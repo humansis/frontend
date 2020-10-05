@@ -44,7 +44,7 @@
 		width: 64px;
 		max-width: 250px;
 		height: 100%;
-		overflow-y: auto;
+		overflow: hidden;
 		background: #132f30;
 		z-index: 100;
 
