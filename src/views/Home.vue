@@ -1,19 +1,17 @@
 <template>
 	<div>
-		<div>Hello</div>
-
-		<b-button @click="clickMe">Click Me</b-button>
+		<Summary />
 	</div>
 </template>
 
 <script>
+import Summary from "@/components/Home/Summary";
+
 export default {
 	name: "Home",
 
-	methods: {
-		clickMe() {
-			this.$buefy.notification.open("Clicked!!");
-		},
+	components: {
+		Summary,
 	},
 };
 </script>
