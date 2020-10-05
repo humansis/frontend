@@ -2,7 +2,7 @@
 	<div>
 		<div>Hello</div>
 		<b-button @click="clickMe">Click Me</b-button>
-		<DistributionMap></DistributionMap>
+		<DistributionMap />
 	</div>
 </template>
 
