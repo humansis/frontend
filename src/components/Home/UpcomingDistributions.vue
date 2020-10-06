@@ -81,7 +81,6 @@ export default {
 
 				const uri = "upcoming-distributions";
 				const { data } = await fetcher({ uri, auth: true });
-				console.log(data);
 				this.tableData = data;
 				loadingComponent.close();
 			} catch (error) {

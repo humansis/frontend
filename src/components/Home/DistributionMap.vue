@@ -1,17 +1,23 @@
 <template>
 	<div>
 		<h2 class="title">Distribution Map</h2>
-		<div class="map">
-			<l-map :zoom="zoom" :center="center">
-				<l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-				<l-marker :lat-lng="marker"></l-marker>
-			</l-map>
-		</div>
+		<LMap :zoom="zoom" :center="center">
+			<l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+			<l-marker :lat-lng="marker"></l-marker>
+		</LMap>
 	</div>
 </template>
 
 <script>
+
+import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+import "leaflet/dist/leaflet.css";
+import Vue from "vue";
 import L from "leaflet";
+
+Vue.component("LMap", LMap);
+Vue.component("LTileLayer", LTileLayer);
+Vue.component("LMarker", LMarker);
 
 export default {
 	name: "DistributionMap",

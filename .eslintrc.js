@@ -14,7 +14,6 @@ module.exports = {
 		"import/extensions": ["warn", "ignorePackages"],
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
-		"import/extensions": ["warn", "ignorePackages"],
 		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-tabs": "off",
