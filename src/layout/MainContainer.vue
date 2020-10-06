@@ -9,7 +9,6 @@
 						icon="home"
 						tag="router-link"
 						:to="{ name: 'Home' }"
-						class="asdasd"
 					/>
 					<b-menu-item
 						label="Projects"
@@ -45,8 +44,8 @@
 		max-width: 250px;
 		height: 100%;
 		overflow: hidden;
-		background: #132f30;
-		z-index: 100;
+		background: var(--primary-color);
+		z-index: 1001;
 
 		&:hover {
 			width: 290px;
@@ -59,6 +58,11 @@
 		color: #fff;
 		border-radius: 0;
 		white-space: nowrap;
+
+		&:hover{
+			color: #a6f2f9;
+		background-color: #134252;
+		}
 
 		.icon {
 			height: 64px;

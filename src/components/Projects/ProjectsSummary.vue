@@ -1,11 +1,10 @@
 <template>
 	<div>
-		<h2 class="title">Summary</h2>
-		<div class="columns is-multiline" ref="summary">
-			<div v-for="{ id, title, value } in summary" :key="id" class="column is-half">
+		<h2 class="title">Projects summary</h2>
+		<div class="columns" ref="projectsSummary">
+			<div v-for="{ title, id } in projectsSummary" :key="id" class="column is-half">
 				<div class="box">
 					<p class="title is-6">{{ title }}</p>
-					<p class="subtitle is-4">{{ value }}</p>
 				</div>
 			</div>
 		</div>
@@ -16,14 +15,14 @@
 import { fetcher } from "@/utils/fetcher";
 
 export default {
-	name: "Summary",
+	name: "ProjectsSummary",
 
 	data() {
 		return {
 			fetch: {
 				error: null,
 			},
-			summary: [],
+			projectsSummary: [],
 		};
 	},
 
@@ -40,15 +39,15 @@ export default {
 			try {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.summary,
+					container: this.$refs.projectsSummary,
 				});
 
-				this.summary = [];
+				this.projectsSummary = [];
 
-				const uri = "home-summary";
+				const uri = "projects-summary";
 				const { data } = await fetcher({ uri, auth: true });
 
-				this.summary = data;
+				this.projectsSummary = data;
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
@@ -66,7 +65,6 @@ export default {
 
 <style scoped>
 	.columns {
-		position: relative;
-		min-height: 64px;
+		margin-bottom: 20px;
 	}
 </style>

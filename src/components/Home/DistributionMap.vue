@@ -1,9 +1,12 @@
 <template>
-	<div style="width:400px; height: 400px">
-		<l-map :zoom="zoom" :center="center">
-			<l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-			<l-marker :lat-lng="marker"></l-marker>
-		</l-map>
+	<div>
+		<h2 class="title">Distribution Map</h2>
+		<div class="map">
+			<l-map :zoom="zoom" :center="center">
+				<l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+				<l-marker :lat-lng="marker"></l-marker>
+			</l-map>
+		</div>
 	</div>
 </template>
 
@@ -25,3 +28,9 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+	.vue2leaflet-map{
+		height: 400px;
+	}
+</style>
