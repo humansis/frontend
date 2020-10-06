@@ -32,6 +32,36 @@ const routes = [
 				name: "Projects",
 				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
 			},
+			{
+				path: "/beneficiaries",
+				name: "Beneficiaries",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
+			{
+				path: "/reports",
+				name: "Reports",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
+			{
+				path: "/vouchers",
+				name: "Vouchers",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
+			{
+				path: "/configuration",
+				name: "Configuration",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
+			{
+				path: "/administrative-settings",
+				name: "Administrative Settings",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
+			{
+				path: "/logs",
+				name: "Logs",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+			},
 		],
 	},
 	{
