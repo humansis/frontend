@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Distribution Map</h2>
 		<LMap :zoom="zoom" :center="center">
-			<l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-			<l-marker :lat-lng="marker"></l-marker>
+			<LTileLayer :url="url" :attribution="attribution"></LTileLayer>
+			<LMarker :lat-lng="marker"></LMarker>
 		</LMap>
 	</div>
 </template>
