@@ -4,19 +4,78 @@
 			<b-menu>
 				<b-menu-list>
 					<b-menu-item
+						tag="router-link"
+						:to="{ name: 'Home' }"
+					>
+						<template slot="label">
+							<span class="icon">
+								<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
+							</span>
+						</template>
+					</b-menu-item>
+					<b-menu-item
 						label="Home"
 						icon-pack="fas"
 						icon="home"
 						tag="router-link"
 						:to="{ name: 'Home' }"
-						class="asdasd"
+						exact-active-class="is-active"
 					/>
 					<b-menu-item
 						label="Projects"
 						icon-pack="fas"
-						icon="list"
+						icon="clipboard-list"
 						tag="router-link"
 						:to="{ name: 'Projects' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Beneficiaries"
+						icon-pack="fas"
+						icon="user-friends"
+						tag="router-link"
+						:to="{ name: 'Beneficiaries' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Reports"
+						icon-pack="fas"
+						icon="chart-line"
+						tag="router-link"
+						:to="{ name: 'Reports' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Vouchers"
+						icon-pack="fas"
+						icon="ticket-alt"
+						tag="router-link"
+						:to="{ name: 'Vouchers' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Configuration"
+						icon-pack="fas"
+						icon="cog"
+						tag="router-link"
+						:to="{ name: 'Configuration' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Administrative Settings"
+						icon-pack="fas"
+						icon="wrench"
+						tag="router-link"
+						:to="{ name: 'Administrative Settings' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="Logs"
+						icon-pack="fas"
+						icon="eye"
+						tag="router-link"
+						:to="{ name: 'Logs' }"
+						active-class="is-active"
 					/>
 				</b-menu-list>
 			</b-menu>
@@ -42,7 +101,7 @@
 		top: 0;
 		left: 0;
 		width: 64px;
-		max-width: 250px;
+		max-width: 290px;
 		height: 100%;
 		overflow: hidden;
 		background: #132f30;
@@ -54,15 +113,37 @@
 	}
 
 	.menu-list ::v-deep a {
+		display: flex;
+		align-items: center;
 		padding: 0;
-		height: 64px;
+		height: 56px;
 		color: #fff;
 		border-radius: 0;
 		white-space: nowrap;
 
+		&.is-active {
+			color: #a6f2f9;
+			background-color: #134252;
+		}
+
+		&:hover {
+			background: #0c1f1f;
+		}
+
 		.icon {
-			height: 64px;
-			width: 64px;
+			flex: 0 0 64px;
+			height: 56px;
+		}
+
+		.bms-logo {
+			flex-shrink: 0;
+			width: 24px;
+			height: 24px;
+			font-size: 24px;
+			box-sizing: content-box;
+			border-radius: 50%;
+			padding: 4px;
+			background: #fbfcfc;
 		}
 	}
 </style>
