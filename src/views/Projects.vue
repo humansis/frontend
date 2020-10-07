@@ -1,4 +1,3 @@
-import ProjectsSummary from '@/components/Projects/ProjectsSummary';
 <template>
 	<div>
 		<ProjectsList />
