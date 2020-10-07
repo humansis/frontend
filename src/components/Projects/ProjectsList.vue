@@ -1,6 +1,13 @@
 <template>
 	<div>
 		<h2 class="title">Projects</h2>
+        <b-button
+            size="is-medium"
+            type="is-danger"
+            icon-left="plus"
+        >
+                Add
+        </b-button>
         <b-table
             :data="tableData"
             :paginated="true"
@@ -40,27 +47,27 @@
                 </b-table-column>
 
                 <b-table-column
-                    field="startDate"
+                    field="start_date"
                     label="Start date"
                     sortable
                 >
-                    {{ props.row.startDate }}
+                    {{ props.row.start_date }}
                 </b-table-column>
 
                 <b-table-column
-                    field="endDate"
+                    field="end_date"
                     label="End date"
                     sortable
                 >
-                    {{ props.row.endDate }}
+                    {{ props.row.end_date }}
                 </b-table-column>
 
                 <b-table-column
-                    field="numberOfHouseholds"
+                    field="number_of_households"
                     label="Number of households"
                     sortable numeric
                 >
-                    {{ props.row.numberOfHouseholds }}
+                    {{ props.row.number_of_households }}
                 </b-table-column>
 
                 <b-table-column
@@ -73,24 +80,46 @@
                 </b-table-column>
 
                 <b-table-column
-                    field="totalTargetBeneficiaries"
+                    field="total_target_beneficiaries"
                     label="Total target beneficiaries"
                     sortable numeric
                 >
-                    {{ props.row.totalTargetBeneficiaries }}
+                    {{ props.row.total_target_beneficiaries }}
                 </b-table-column>
 
                 <b-table-column
-                    field="beneficiariesReached"
+                    field="beneficiaries_reached"
                     label="Beneficiaries reached"
                     sortable numeric
                 >
-                    {{ props.row.beneficiariesReached }}
+                    {{ props.row.beneficiaries_reached }}
                 </b-table-column>
 
                 <b-table-column
                     label="Actions"
                 >
+                <div class="block">
+                    <b-icon
+                        icon="edit"
+                        type="is-link"
+                        size="is-medium">
+                    </b-icon>
+                    <b-icon
+                        icon="search"
+                        type="is-info"
+                        size="is-medium">
+                    </b-icon>
+                    <b-icon
+                        icon="trash"
+                        type="is-danger"
+                        size="is-medium">
+                    </b-icon>
+                    <b-icon
+                        icon="copy"
+                        type="is-dark"
+                        size="is-medium">
+                    </b-icon>
+                </div>
                 </b-table-column>
 
             </template>
