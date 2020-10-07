@@ -1,9 +1,19 @@
+import ProjectsSummary from '@/components/Projects/ProjectsSummary';
 <template>
-	<div>Projects</div>
+	<div>
+		<ProjectsList />
+	</div>
 </template>
 
 <script>
+
+import ProjectsList from "@/components/Projects/ProjectsList";
+
 export default {
 	name: "Projects",
+
+	components: {
+		ProjectsList,
+	},
 };
 </script>
