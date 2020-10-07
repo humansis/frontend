@@ -12,6 +12,7 @@
             :sort-icon="'arrow-up'"
             :sort-icon-size="'is-small'"
             :striped="true"
+            :hoverable="true"
             default-sort="id"
             aria-next-label="Next page"
             aria-previous-label="Previous page"
