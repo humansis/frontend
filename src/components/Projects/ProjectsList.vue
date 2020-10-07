@@ -2,12 +2,25 @@
 	<div>
 		<h2 class="title">Projects</h2>
         <b-button
+            class="add-button"
             size="is-medium"
             type="is-danger"
             icon-left="plus"
         >
                 Add
         </b-button>
+        <div class="columns">
+            <div class="column is-two-fifths">
+                <b-field>
+                    <b-input placeholder="Search..."
+                        type="search"
+                        icon-pack="fas"
+                        icon="search">
+                    </b-input>
+                </b-field>
+            </div>
+        </div>
+
         <b-table
             :data="tableData"
             :paginated="true"
@@ -186,7 +199,7 @@ export default {
 </script>
 
 <style scoped>
-	.columns {
+	.add-button {
 		margin-bottom: 20px;
 	}
 </style>
