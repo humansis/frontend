@@ -190,8 +190,7 @@ export default {
 		},
 
 		goToDetail(item) {
-			console.log(item.id);
-			// this.$router.push({ path: "/details/:recordId" });
+			this.$router.push({ name: "Project", params: { id: item.id } });
 		},
 
 	},
