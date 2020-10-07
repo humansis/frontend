@@ -23,20 +23,34 @@
             <template slot-scope="props">
                 <b-table-column
                     tag="router-link"
-                    :to="{ name: 'Vouchers' }"
-                    field="name" label="Name" sortable>
+                    :to="{ name: '' }"
+                    field="name" label="Name"
+                    sortable
+                >
                     {{ props.row.name }}
                 </b-table-column>
 
-                <b-table-column field="sectors" label="Sectors" sortable>
+                <b-table-column
+                    field="sectors"
+                    label="Sectors"
+                    sortable
+                >
                     {{ props.row.sectors }}
                 </b-table-column>
 
-                <b-table-column field="startDate" label="Start date" sortable>
+                <b-table-column
+                    field="startDate"
+                    label="Start date"
+                    sortable
+                >
                     {{ props.row.startDate }}
                 </b-table-column>
 
-                <b-table-column field="endDate" label="End date" sortable>
+                <b-table-column
+                    field="endDate"
+                    label="End date"
+                    sortable
+                >
                     {{ props.row.endDate }}
                 </b-table-column>
 
@@ -48,7 +62,12 @@
                     {{ props.row.numberOfHouseholds }}
                 </b-table-column>
 
-                <b-table-column field="donors" label="Donors" sortable numeric>
+                <b-table-column
+                    field="donors"
+                    label="Donors"
+                    sortable
+                    numeric
+                >
                     {{ props.row.donors }}
                 </b-table-column>
 
@@ -68,7 +87,10 @@
                     {{ props.row.beneficiariesReached }}
                 </b-table-column>
 
-                <b-table-column label="Actions" sortable></b-table-column>
+                <b-table-column
+                    label="Actions"
+                >
+                </b-table-column>
 
             </template>
         </b-table>
