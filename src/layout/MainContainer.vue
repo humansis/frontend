@@ -104,8 +104,8 @@
 		max-width: 290px;
 		height: 100%;
 		overflow: hidden;
-		background: #132f30;
-		z-index: 100;
+		background: var(--primary-color);
+		z-index: 1001;
 
 		&:hover {
 			width: 290px;
