@@ -12,15 +12,15 @@
 
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import "leaflet/dist/leaflet.css";
-import Vue from "vue";
 import L from "leaflet";
-
-Vue.component("LMap", LMap);
-Vue.component("LTileLayer", LTileLayer);
-Vue.component("LMarker", LMarker);
 
 export default {
 	name: "DistributionMap",
+	components: {
+		LMap,
+		LTileLayer,
+		LMarker,
+	},
 	data() {
 		return {
 			map: null,
