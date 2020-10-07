@@ -11,16 +11,19 @@
 <script>
 
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+
+import "leaflet/dist/leaflet.css";
 
 export default {
 	name: "DistributionMap",
+
 	components: {
 		LMap,
 		LTileLayer,
 		LMarker,
 	},
+
 	data() {
 		return {
 			map: null,
@@ -35,7 +38,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 	.vue2leaflet-map{
 		height: 400px;
 	}
