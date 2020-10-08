@@ -1,21 +1,23 @@
 <template>
 	<div>
-        <b-button
-            class="add-button"
-            size="is-medium"
-            type="is-danger"
-            icon-left="plus"
-        >
-            Go back
-        </b-button>
+        <GoBackButton />
+        <ProjectSummary />
+        <Assistances />
 	</div>
 </template>
 
 <script>
+import Assistances from "@/components/Projects/Assistances";
+import ProjectSummary from "@/components/Projects/ProjectSummary";
+import GoBackButton from "@/components/GoBackButton";
 
 export default {
 	name: "Project",
 
-	components: {},
+	components: {
+		Assistances,
+		ProjectSummary,
+		GoBackButton,
+	},
 };
 </script>

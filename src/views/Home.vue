@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<ProjectsSummary />
-		<UpcomingDistributions />
+		<UpcomingAssistances />
 	</div>
 </template>
 
@@ -17,14 +17,14 @@
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
 import ProjectsSummary from "@/components/Projects/ProjectsSummary";
-import UpcomingDistributions from "@/components/Home/UpcomingDistributions";
+import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 
 export default {
 	name: "Home",
 	components: {
 		DistributionMap,
 		Summary,
-		UpcomingDistributions,
+		UpcomingAssistances,
 		ProjectsSummary,
 	},
 };

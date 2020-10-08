@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Upcoming distributions</h2>
+		<h2 class="title">Upcoming assistances</h2>
         <b-table
             :data="tableData"
             :paginated="true"
@@ -19,30 +19,42 @@
             aria-current-label="Current page"
             >
             <template slot-scope="props">
+
                 <b-table-column field="id"
                     label="Distribution ID" sortable numeric>
                     {{ props.row.id }}
                 </b-table-column>
+
                 <b-table-column field="name" label="Name" sortable >
                     {{ props.row.name }}
                 </b-table-column>
+
+                <b-table-column field="type" label="Type" sortable >
+                    {{ props.row.type }}
+                </b-table-column>
+
                 <b-table-column field="target" label="Location" sortable>
                     {{ props.row.target }}
                 </b-table-column>
+
                 <b-table-column field="target" label="Beneficiaries" sortable>
                     {{ props.row.target }}
                 </b-table-column>
+
                 <b-table-column field="date" label="Date of Distribution" sortable centered>
                     <span class="tag is-success">
                         {{ props.row.date }}
                     </span>
                 </b-table-column>
+
                 <b-table-column field="target" label="Target" sortable>
                     {{ props.row.target }}
                 </b-table-column>
+
                 <b-table-column field="commodity" label="Commodity" sortable>
                     {{ props.row.commodity }}
                 </b-table-column>
+
             </template>
         </b-table>
 	</div>
@@ -51,7 +63,7 @@
 import { fetcher } from "@/utils/fetcher";
 
 export default {
-	name: "UpcomingDistributions",
+	name: "UpcomingAssistances",
 
 	data() {
 		return {
@@ -80,7 +92,7 @@ export default {
 
 				this.tableData = [];
 
-				const uri = "upcoming-distributions";
+				const uri = "upcoming-assistances";
 				const { data } = await fetcher({ uri, auth: true });
 				this.tableData = data;
 				loadingComponent.close();

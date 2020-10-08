@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Distribution Map</h2>
+		<h2 class="title">Assistances Map</h2>
 		<LMap :zoom="zoom" :center="center">
 			<LTileLayer :url="url" :attribution="attribution"></LTileLayer>
 			<LMarker :lat-lng="marker"></LMarker>
