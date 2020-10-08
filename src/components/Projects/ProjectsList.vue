@@ -53,7 +53,35 @@
 					>
 						<template>{{ entry }}</template>
 					</b-table-column>
+
 				</template>
+
+				<b-table-column
+					label="Actions"
+				>
+					<div class="block">
+						<b-icon
+							icon="edit"
+							type="is-link"
+							size="is-medium">
+						</b-icon>
+						<b-icon
+							icon="search"
+							type="is-info"
+							size="is-medium">
+						</b-icon>
+						<b-icon
+							icon="trash"
+							type="is-danger"
+							size="is-medium">
+						</b-icon>
+						<b-icon
+							icon="copy"
+							type="is-dark"
+							size="is-medium">
+						</b-icon>
+					</div>
+				</b-table-column>
 
 			</template>
 		</b-table>
@@ -115,7 +143,7 @@ export default {
 		},
 
 		goToDetail(item) {
-			this.$router.push({ name: "Project", params: { id: item.id } });
+			this.$router.push({ name: "Project", params: { projectId: item.id } });
 		},
 
 	},
