@@ -1,8 +1,8 @@
 <template>
 	<div>
-        <GoBackButton />
-        <ProjectSummary />
-        <Assistances />
+		<GoBackButton />
+		<ProjectSummary />
+		<Assistances />
 	</div>
 </template>
 

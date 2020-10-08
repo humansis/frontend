@@ -43,8 +43,6 @@
 		>
 			<template slot-scope="props">
 				<b-table-column
-					tag="router-link"
-					:to="{ name: '' }"
 					field="name" label="Name"
 					sortable
 				>

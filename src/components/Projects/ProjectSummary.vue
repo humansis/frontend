@@ -1,55 +1,55 @@
 <template>
 	<div>
-        <div v-if="projectSummary.length" ref="projectSummary">
-            <h2 class="title has-text-centered">
-                {{ projectSummary[0].name }}
-            </h2>
-            <nav class="level is-mobile">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Sectors</p>
-                        <p class="title">{{ projectSummary[0].sectors }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Start Date</p>
-                        <p class="title">{{ projectSummary[0].start_date }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">End Date</p>
-                        <p class="title">{{ projectSummary[0].end_date }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Number of Households</p>
-                        <p class="title">{{ projectSummary[0].number_of_households }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Donors</p>
-                        <p class="title">{{ projectSummary[0].donors }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Total Target Beneficiaries</p>
-                        <p class="title">{{ projectSummary[0].total_target_beneficiaries }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Beneficiaries Reached</p>
-                        <p class="title">{{ projectSummary[0].beneficiaries_reached }}</p>
-                    </div>
-                </div>
-            </nav>
-            <hr />
-        </div>
+		<div v-if="projectSummary.length" ref="projectSummary">
+			<h2 class="title has-text-centered">
+				{{ projectSummary[0].name }}
+			</h2>
+			<nav class="level is-mobile">
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Sectors</p>
+						<p class="title">{{ projectSummary[0].sectors }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Start Date</p>
+						<p class="title">{{ projectSummary[0].start_date }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">End Date</p>
+						<p class="title">{{ projectSummary[0].end_date }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Number of Households</p>
+						<p class="title">{{ projectSummary[0].number_of_households }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Donors</p>
+						<p class="title">{{ projectSummary[0].donors }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Total Target Beneficiaries</p>
+						<p class="title">{{ projectSummary[0].total_target_beneficiaries }}</p>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Beneficiaries Reached</p>
+						<p class="title">{{ projectSummary[0].beneficiaries_reached }}</p>
+					</div>
+				</div>
+			</nav>
+			<hr />
+		</div>
 	</div>
 </template>
 
