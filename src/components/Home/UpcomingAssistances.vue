@@ -1,26 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Projects</h2>
-		<b-button
-			class="add-button"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-		>
-			Add
-		</b-button>
-		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon-pack="fas"
-						icon="search">
-					</b-input>
-				</b-field>
-			</div>
-		</div>
-
+		<h2 class="title">Upcoming assistances</h2>
 		<b-table
 			:data="tableData"
 			:paginated="true"
@@ -32,16 +12,12 @@
 			:sort-icon="'arrow-up'"
 			:sort-icon-size="'is-small'"
 			:striped="true"
-			:hoverable="true"
-			default-sort="id"
+			default-sort="date"
 			aria-next-label="Next page"
 			aria-previous-label="Previous page"
 			aria-page-label="Page"
 			aria-current-label="Current page"
-			selectable
-			@select="goToDetail"
 		>
-
 			<template slot-scope="props">
 
 				<template v-for="(entry, keymain) in props.row">
@@ -53,47 +29,18 @@
 					>
 						<template>{{ entry }}</template>
 					</b-table-column>
-
 				</template>
-
-				<b-table-column
-					label="Actions"
-				>
-					<div class="block">
-						<b-icon
-							icon="edit"
-							type="is-link"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="search"
-							type="is-info"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="trash"
-							type="is-danger"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="copy"
-							type="is-dark"
-							size="is-medium">
-						</b-icon>
-					</div>
-				</b-table-column>
 
 			</template>
 		</b-table>
 	</div>
 </template>
-
 <script>
 import { fetcher } from "@/utils/fetcher";
 import { normalizeText } from "@/utils/normalizeText";
 
 export default {
-	name: "ProjectsList",
+	name: "UpcomingAssistances",
 
 	data() {
 		return {
@@ -121,14 +68,13 @@ export default {
 			try {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectsList,
+					container: this.$refs.table,
 				});
 
 				this.tableData = [];
 
-				const uri = "projects";
+				const uri = "upcoming-assistances";
 				const { data } = await fetcher({ uri, auth: true });
-
 				this.tableData = data;
 				loadingComponent.close();
 			} catch (error) {
@@ -141,17 +87,6 @@ export default {
 			this.fetch.loading = false;
 			this.fetch.error = error.toString();
 		},
-
-		goToDetail(item) {
-			this.$router.push({ name: "Project", params: { projectId: item.id } });
-		},
-
 	},
 };
 </script>
-
-<style scoped>
-	.add-button {
-		margin-bottom: 20px;
-	}
-</style>
