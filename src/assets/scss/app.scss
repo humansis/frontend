@@ -27,3 +27,4 @@ $colors: map-merge($colors, $addColors);
 
 // 4. Provide custom buefy overrides and site styles here
 @import "layout";
+@import "components";
