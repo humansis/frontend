@@ -41,97 +41,19 @@
 			selectable
 			@select="goToDetail"
 		>
+
 			<template slot-scope="props">
-				<b-table-column
-					field="name" label="Name"
-					sortable
-				>
-					{{ props.row.name }}
-				</b-table-column>
 
-				<b-table-column
-					field="sectors"
-					label="Sectors"
-					sortable
-				>
-					{{ props.row.sectors }}
-				</b-table-column>
-
-				<b-table-column
-					field="start_date"
-					label="Start date"
-					sortable
-				>
-					{{ props.row.start_date }}
-				</b-table-column>
-
-				<b-table-column
-					field="end_date"
-					label="End date"
-					sortable
-				>
-					{{ props.row.end_date }}
-				</b-table-column>
-
-				<b-table-column
-					field="number_of_households"
-					label="Number of households"
-					sortable numeric
-				>
-					{{ props.row.number_of_households }}
-				</b-table-column>
-
-				<b-table-column
-					field="donors"
-					label="Donors"
-					sortable
-					numeric
-				>
-					{{ props.row.donors }}
-				</b-table-column>
-
-				<b-table-column
-					field="total_target_beneficiaries"
-					label="Total target beneficiaries"
-					sortable numeric
-				>
-					{{ props.row.total_target_beneficiaries }}
-				</b-table-column>
-
-				<b-table-column
-					field="beneficiaries_reached"
-					label="Beneficiaries reached"
-					sortable numeric
-				>
-					{{ props.row.beneficiaries_reached }}
-				</b-table-column>
-
-				<b-table-column
-					label="Actions"
-				>
-					<div class="block">
-						<b-icon
-							icon="edit"
-							type="is-link"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="search"
-							type="is-info"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="trash"
-							type="is-danger"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="copy"
-							type="is-dark"
-							size="is-medium">
-						</b-icon>
-					</div>
-				</b-table-column>
+				<template v-for="(entry, keymain) in props.row">
+					<b-table-column
+						:key="keymain"
+						:field="keymain"
+						:label="normalizeText(keymain)"
+						sortable
+					>
+						<template>{{ entry }}</template>
+					</b-table-column>
+				</template>
 
 			</template>
 		</b-table>
@@ -140,6 +62,7 @@
 
 <script>
 import { fetcher } from "@/utils/fetcher";
+import { normalizeText } from "@/utils/normalizeText";
 
 export default {
 	name: "ProjectsList",
@@ -162,6 +85,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async fetchData() {
 			try {
 				this.fetch.error = null;
