@@ -40,7 +40,22 @@ const routes = [
 			{
 				path: "/beneficiaries",
 				name: "Beneficiaries",
-				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/Beneficiaries/Households"),
+			},
+			{
+				path: "/beneficiaries/households",
+				name: "Households",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/Beneficiaries/Households"),
+			},
+			{
+				path: "/beneficiaries/communities",
+				name: "Communities",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/Beneficiaries/Communities"),
+			},
+			{
+				path: "/beneficiaries/institutions",
+				name: "Institutions",
+				component: () => import(/* webpackChunkName: "TODO" */ "@/views/Beneficiaries/Institutions"),
 			},
 			{
 				path: "/reports",

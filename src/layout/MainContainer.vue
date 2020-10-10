@@ -38,6 +38,30 @@
 						active-class="is-active"
 					/>
 					<b-menu-item
+						label="| Households"
+						icon-pack="fas"
+						icon="arrow"
+						tag="router-link"
+						:to="{ name: 'Households' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="| Institutions"
+						icon-pack="fas"
+						icon="arrow"
+						tag="router-link"
+						:to="{ name: 'Institutions' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
+						label="| Communities"
+						icon-pack="fas"
+						icon="arrow"
+						tag="router-link"
+						:to="{ name: 'Communities' }"
+						active-class="is-active"
+					/>
+					<b-menu-item
 						label="Reports"
 						icon-pack="fas"
 						icon="chart-line"
