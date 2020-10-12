@@ -2,9 +2,10 @@
 	<div>
 		<h2 class="title">Projects summary</h2>
 		<div class="columns" ref="projectsSummary">
-			<div v-for="{ title, id } in projectsSummary" :key="id" class="column is-half">
+			<div v-for="{ id, title, value } in projectsSummary" :key="id" class="column is-half">
 				<div class="box">
 					<p class="title is-6">{{ title }}</p>
+					<p class="subtitle is-4">{{ value }}</p>
 				</div>
 			</div>
 		</div>
@@ -44,7 +45,7 @@ export default {
 
 				this.projectsSummary = [];
 
-				const uri = "projects-summary";
+				const uri = `project-summary/${this.$route.params.id}`;
 				const { data } = await fetcher({ uri, auth: true });
 
 				this.projectsSummary = data;

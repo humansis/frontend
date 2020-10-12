@@ -15,7 +15,6 @@
 					</b-menu-item>
 					<b-menu-item
 						label="Home"
-						icon-pack="fas"
 						icon="home"
 						tag="router-link"
 						:to="{ name: 'Home' }"
@@ -23,7 +22,6 @@
 					/>
 					<b-menu-item
 						label="Projects"
-						icon-pack="fas"
 						icon="clipboard-list"
 						tag="router-link"
 						:to="{ name: 'Projects' }"
@@ -31,7 +29,6 @@
 					/>
 					<b-menu-item
 						label="Beneficiaries"
-						icon-pack="fas"
 						icon="user-friends"
 						tag="router-link"
 						:to="{ name: 'Beneficiaries' }"
@@ -39,7 +36,6 @@
 					/>
 					<b-menu-item
 						label="| Households"
-						icon-pack="fas"
 						icon="arrow"
 						tag="router-link"
 						:to="{ name: 'Households' }"
@@ -47,7 +43,6 @@
 					/>
 					<b-menu-item
 						label="| Institutions"
-						icon-pack="fas"
 						icon="arrow"
 						tag="router-link"
 						:to="{ name: 'Institutions' }"
@@ -55,7 +50,6 @@
 					/>
 					<b-menu-item
 						label="| Communities"
-						icon-pack="fas"
 						icon="arrow"
 						tag="router-link"
 						:to="{ name: 'Communities' }"
@@ -63,7 +57,6 @@
 					/>
 					<b-menu-item
 						label="Reports"
-						icon-pack="fas"
 						icon="chart-line"
 						tag="router-link"
 						:to="{ name: 'Reports' }"
@@ -71,7 +64,6 @@
 					/>
 					<b-menu-item
 						label="Vouchers"
-						icon-pack="fas"
 						icon="ticket-alt"
 						tag="router-link"
 						:to="{ name: 'Vouchers' }"
@@ -79,7 +71,6 @@
 					/>
 					<b-menu-item
 						label="Configuration"
-						icon-pack="fas"
 						icon="cog"
 						tag="router-link"
 						:to="{ name: 'Configuration' }"
@@ -87,7 +78,6 @@
 					/>
 					<b-menu-item
 						label="Administrative Settings"
-						icon-pack="fas"
 						icon="wrench"
 						tag="router-link"
 						:to="{ name: 'Administrative Settings' }"
@@ -95,7 +85,6 @@
 					/>
 					<b-menu-item
 						label="Logs"
-						icon-pack="fas"
 						icon="eye"
 						tag="router-link"
 						:to="{ name: 'Logs' }"

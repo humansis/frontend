@@ -5,7 +5,6 @@
 				<b-field>
 					<b-input placeholder="Search by keyword"
 						type="search"
-						icon-pack="fas"
 						icon="search">
 					</b-input>
 				</b-field>
@@ -14,7 +13,7 @@
 				<button
 					class="button"
 					slot="trigger"
-					@click="advancedSearchVisible = !advancedSearchVisible"
+					@click="filtersToggle"
 				>
 					<span>Advanced search</span>
 					<b-icon
@@ -24,10 +23,10 @@
 				</button>
 			</div>
 		</div>
-		<div v-if="advancedSearchVisible" id="advanced-search">
+		<div v-if="advancedSearchVisible" class="mb-5">
 			<div class="columns is-multiline">
 				<div
-					v-for="(filter, key) in tableFilters"
+					v-for="(filter, key) in gridFilters"
 					:key="key"
 					class="column"
 				>
@@ -53,7 +52,7 @@
 		</div>
 
 		<b-table
-			:data="tableData"
+			:data="gridData"
 			:paginated="true"
 			:per-page="'15'"
 			:current-page="1"
@@ -95,17 +94,20 @@
 						<b-icon
 							icon="edit"
 							type="is-link"
-							size="is-medium">
+							size="is-medium"
+						>
 						</b-icon>
 						<b-icon
 							icon="search"
 							type="is-info"
-							size="is-medium">
+							size="is-medium"
+						>
 						</b-icon>
 						<b-icon
 							icon="trash"
 							type="is-danger"
-							size="is-medium">
+							size="is-medium"
+						>
 						</b-icon>
 					</div>
 				</b-table-column>
@@ -119,11 +121,11 @@
 import { normalizeText } from "@/utils/normalizeText";
 
 export default {
-	name: "GridList",
+	name: "DataGrid",
 
 	props: {
-		tableData: Array,
-		tableFilters: Array,
+		gridData: Array,
+		gridFilters: Array,
 	},
 
 	data() {
@@ -138,13 +140,9 @@ export default {
 			return normalizeText(text);
 		},
 
-		onFilterChange() {},
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
 	},
 };
 </script>
-
-<style scoped>
-	#advanced-search{
-		margin-bottom: 20px;
-	}
-</style>

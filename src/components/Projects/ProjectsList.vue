@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="title">Projects</h2>
 		<b-button
-			class="add-button"
+			class="mb-5"
 			size="is-medium"
 			type="is-danger"
 			icon-left="plus"
@@ -14,7 +14,6 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon-pack="fas"
 						icon="search">
 					</b-input>
 				</b-field>
@@ -149,9 +148,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-	.add-button {
-		margin-bottom: 20px;
-	}
-</style>

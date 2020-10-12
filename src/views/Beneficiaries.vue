@@ -7,6 +7,6 @@
 <script>
 
 export default {
-	name: "beneficiaries",
+	name: "Beneficiaries",
 };
 </script>

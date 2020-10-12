@@ -2,26 +2,26 @@
 	<div>
 		<h2 class="title">Households</h2>
 		<b-button
-			class="add-button"
+			class="mb-5"
 			size="is-medium"
 			type="is-danger"
 			icon-left="plus"
 		>
 			Create
 		</b-button>
-		<GridList :tableData="tableData" :tableFilters="tableFilters" />
+		<DataGrid :gridData="gridData" :gridFilters="gridFilters" />
 	</div>
 </template>
 
 <script>
 import { fetcher } from "@/utils/fetcher";
-import GridList from "@/components/Beneficiaries/GridList";
+import DataGrid from "@/components/Beneficiaries/DataGrid";
 
 export default {
-	name: "households",
+	name: "Households",
 
 	components: {
-		GridList,
+		DataGrid,
 	},
 
 	data() {
@@ -29,8 +29,8 @@ export default {
 			fetch: {
 				error: null,
 			},
-			tableData: [],
-			tableFilters: [],
+			gridData: [],
+			gridFilters: [],
 		};
 	},
 
@@ -51,8 +51,8 @@ export default {
 				const { data } = await fetcher({ uri: "beneficiaries/households", auth: true });
 				const filters = await fetcher({ uri: "beneficiaries/filters", auth: true });
 
-				this.tableData = data;
-				this.tableFilters = filters.data;
+				this.gridData = data;
+				this.gridFilters = filters.data;
 
 				loadingComponent.close();
 			} catch (error) {
@@ -68,9 +68,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-	.add-button {
-		margin-bottom: 20px;
-	}
-</style>
