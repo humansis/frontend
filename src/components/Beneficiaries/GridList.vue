@@ -42,7 +42,6 @@
 								v-for="(option, key) in filter.options"
 								:value="option"
 								:key="key"
-								@change="console.log(event)"
 							>
 								{{ option }}
 							</option>
