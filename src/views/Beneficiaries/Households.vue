@@ -18,7 +18,7 @@ import { fetcher } from "@/utils/fetcher";
 import GridList from "@/components/Beneficiaries/GridList";
 
 export default {
-	name: "Households",
+	name: "households",
 
 	components: {
 		GridList,

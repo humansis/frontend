@@ -9,7 +9,7 @@
 		>
 			Create
 		</b-button>
-		<GridList :tableData="tableData" />
+		<GridList :tableData="tableData" :tableFilters="tableFilters" />
 	</div>
 </template>
 
@@ -18,7 +18,7 @@ import { fetcher } from "@/utils/fetcher";
 import GridList from "@/components/Beneficiaries/GridList";
 
 export default {
-	name: "Communities",
+	name: "communities",
 
 	components: {
 		GridList,
@@ -30,6 +30,7 @@ export default {
 				error: null,
 			},
 			tableData: [],
+			tableFilters: [],
 		};
 	},
 
@@ -47,12 +48,12 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				this.tableData = [];
-
-				const uri = "beneficiaries/households";
-				const { data } = await fetcher({ uri, auth: true });
+				const { data } = await fetcher({ uri: "beneficiaries/households", auth: true });
+				const filters = await fetcher({ uri: "beneficiaries/filters", auth: true });
 
 				this.tableData = data;
+				this.tableFilters = filters.data;
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
@@ -69,7 +70,7 @@ export default {
 </script>
 
 <style scoped>
-	.add-button {
-		margin-bottom: 20px;
-	}
+.add-button {
+	margin-bottom: 20px;
+}
 </style>
