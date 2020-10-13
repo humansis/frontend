@@ -18,26 +18,19 @@
 			aria-page-label="Page"
 			aria-current-label="Current page"
 		>
-			<template slot-scope="props">
-
-				<template v-for="(entry, keymain) in props.row">
-					<b-table-column
-						:key="keymain"
-						:field="keymain"
-						:label="normalizeText(keymain)"
-						sortable
-					>
-						<template>{{ entry }}</template>
-					</b-table-column>
-				</template>
-
+			<template v-for="column in tableColumns">
+				<b-table-column :key="column.id" v-bind="column">
+					<template v-slot="props">
+						{{ props.row[column.field] }}
+					</template>
+				</b-table-column>
 			</template>
 		</b-table>
 	</div>
 </template>
 <script>
 import { fetcher } from "@/utils/fetcher";
-import { normalizeText } from "@/utils/normalizeText";
+import { generateColumnsFromData } from "@/utils/datagrid";
 
 export default {
 	name: "UpcomingAssistances",
@@ -48,6 +41,7 @@ export default {
 				error: null,
 			},
 			tableData: [],
+			tableColumns: [],
 		};
 	},
 
@@ -60,10 +54,6 @@ export default {
 	},
 
 	methods: {
-		normalizeText(text) {
-			return normalizeText(text);
-		},
-
 		async fetchData() {
 			try {
 				this.fetch.error = null;
@@ -72,10 +62,12 @@ export default {
 				});
 
 				this.tableData = [];
+				this.tableColumns = [];
 
 				const uri = "upcoming-assistances";
 				const { data } = await fetcher({ uri, auth: true });
 				this.tableData = data;
+				this.tableColumns = generateColumnsFromData(data);
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

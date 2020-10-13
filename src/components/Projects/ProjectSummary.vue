@@ -86,7 +86,7 @@ export default {
 
 				this.projectSummary = [];
 
-				const uri = `project/${this.$route.params.id}`;
+				const uri = `project/${this.$route.params.projectId}`;
 
 				const { data } = await fetcher({ uri, auth: true });
 

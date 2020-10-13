@@ -35,12 +35,28 @@ const routes = [
 			{
 				path: "/project/:projectId",
 				name: "Project",
-				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project"),
+				component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 			},
 			{
 				path: "/beneficiaries",
-				name: "Beneficiaries",
-				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/Beneficiaries"),
+				children: [
+					{
+						path: "households",
+						name: "Households",
+						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/Households"),
+					},
+					{
+						path: "communities",
+						name: "Communities",
+						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
+					},
+					{
+						path: "institutions",
+						name: "Institutions",
+						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/Institutions"),
+					},
+				],
 			},
 			{
 				path: "/reports",
