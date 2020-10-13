@@ -31,18 +31,18 @@
 					class="column"
 				>
 					<b-field
-						:label="normalizeText(filter.category)"
+						:label="normalizeText(filter.name)"
 					>
 						<b-select
-							v-model="selectedFilters"
-							:placeholder="normalizeText(filter.category)">
+							:placeholder="normalizeText(filter.name)"
+						>
 
 							<option
 								v-for="(option, key) in filter.options"
-								:value="option"
+								:value="option.value"
 								:key="key"
 							>
-								{{ option }}
+								{{ option.label }}
 							</option>
 
 						</b-select>
@@ -131,7 +131,6 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			selectedFilters: [],
 		};
 	},
 

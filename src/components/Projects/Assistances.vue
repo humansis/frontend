@@ -73,7 +73,7 @@ export default {
 
 				this.tableData = [];
 
-				const uri = `assistances/${this.$route.params.id}`;
+				const uri = `project/${this.$route.params.id}/assistances`;
 				const { data } = await fetcher({ uri, auth: true });
 				this.tableData = data;
 				loadingComponent.close();
