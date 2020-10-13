@@ -64,7 +64,7 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const uri = `project/${this.$route.params.id}/assistances`;
+				const uri = `project/${this.$route.params.projectId}/assistances`;
 				const { data } = await fetcher({ uri, auth: true });
 				this.tableData = data;
 				this.tableColumns = generateColumnsFromData(data);

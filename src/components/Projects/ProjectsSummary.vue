@@ -45,7 +45,7 @@ export default {
 
 				this.projectsSummary = [];
 
-				const uri = `project-summary/${this.$route.params.id}`;
+				const uri = `project-summary`;
 				const { data } = await fetcher({ uri, auth: true });
 
 				this.projectsSummary = data;
