@@ -3,10 +3,7 @@
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
-					<b-input placeholder="Search by keyword"
-						type="search"
-						icon="search">
-					</b-input>
+					<b-input placeholder="Search by keyword" type="search" icon="search" />
 				</b-field>
 			</div>
 			<div class="column">
@@ -71,54 +68,44 @@
 			selectable
 			checkable
 		>
-
-			<template slot-scope="props">
-
-				<template v-for="(entry, keymain) in props.row">
-
-					<b-table-column
-						:key="keymain"
-						:field="keymain"
-						:label="normalizeText(keymain)"
-						sortable
-					>
-						<template>{{ entry }}</template>
-					</b-table-column>
-
-				</template>
-
-				<b-table-column
-					label="Actions"
-				>
-					<div class="block">
-						<b-icon
-							icon="edit"
-							type="is-link"
-							size="is-medium"
-						>
-						</b-icon>
-						<b-icon
-							icon="search"
-							type="is-info"
-							size="is-medium"
-						>
-						</b-icon>
-						<b-icon
-							icon="trash"
-							type="is-danger"
-							size="is-medium"
-						>
-						</b-icon>
-					</div>
+			<template v-for="column in tableColumns">
+				<b-table-column :key="column.id" v-bind="column">
+					<template v-slot="props">
+						{{ props.row[column.field] }}
+					</template>
 				</b-table-column>
-
 			</template>
+
+			<b-table-column
+				label="Actions"
+			>
+				<div class="block">
+					<b-icon
+						icon="edit"
+						type="is-link"
+						size="is-medium"
+					>
+					</b-icon>
+					<b-icon
+						icon="search"
+						type="is-info"
+						size="is-medium"
+					>
+					</b-icon>
+					<b-icon
+						icon="trash"
+						type="is-danger"
+						size="is-medium"
+					>
+					</b-icon>
+				</div>
+			</b-table-column>
 		</b-table>
 	</div>
 </template>
 
 <script>
-import { normalizeText } from "@/utils/normalizeText";
+import { generateColumnsFromData, normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "DataGrid",
@@ -132,6 +119,12 @@ export default {
 		return {
 			advancedSearchVisible: false,
 		};
+	},
+
+	computed: {
+		tableColumns() {
+			return generateColumnsFromData(this.gridData);
+		},
 	},
 
 	methods: {

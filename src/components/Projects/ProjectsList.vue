@@ -40,56 +40,47 @@
 			selectable
 			@select="goToDetail"
 		>
-
-			<template slot-scope="props">
-
-				<template v-for="(entry, keymain) in props.row">
-					<b-table-column
-						:key="keymain"
-						:field="keymain"
-						:label="normalizeText(keymain)"
-						sortable
-					>
-						<template>{{ entry }}</template>
-					</b-table-column>
-
-				</template>
-
-				<b-table-column
-					label="Actions"
-				>
-					<div class="block">
-						<b-icon
-							icon="edit"
-							type="is-link"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="search"
-							type="is-info"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="trash"
-							type="is-danger"
-							size="is-medium">
-						</b-icon>
-						<b-icon
-							icon="copy"
-							type="is-dark"
-							size="is-medium">
-						</b-icon>
-					</div>
+			<template v-for="column in tableColumns">
+				<b-table-column :key="column.id" v-bind="column">
+					<template v-slot="props">
+						{{ props.row[column.field] }}
+					</template>
 				</b-table-column>
-
 			</template>
+
+			<b-table-column
+				label="Actions"
+			>
+				<div class="block">
+					<b-icon
+						icon="edit"
+						type="is-link"
+						size="is-medium">
+					</b-icon>
+					<b-icon
+						icon="search"
+						type="is-info"
+						size="is-medium">
+					</b-icon>
+					<b-icon
+						icon="trash"
+						type="is-danger"
+						size="is-medium">
+					</b-icon>
+					<b-icon
+						icon="copy"
+						type="is-dark"
+						size="is-medium">
+					</b-icon>
+				</div>
+			</b-table-column>
 		</b-table>
 	</div>
 </template>
 
 <script>
 import { fetcher } from "@/utils/fetcher";
-import { normalizeText } from "@/utils/normalizeText";
+import { generateColumnsFromData } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectsList",
@@ -100,6 +91,7 @@ export default {
 				error: null,
 			},
 			tableData: [],
+			tableColumns: [],
 		};
 	},
 
@@ -112,10 +104,6 @@ export default {
 	},
 
 	methods: {
-		normalizeText(text) {
-			return normalizeText(text);
-		},
-
 		async fetchData() {
 			try {
 				this.fetch.error = null;
@@ -124,11 +112,13 @@ export default {
 				});
 
 				this.tableData = [];
+				this.tableColumns = [];
 
 				const uri = "projects";
 				const { data } = await fetcher({ uri, auth: true });
 
 				this.tableData = data;
+				this.tableColumns = generateColumnsFromData(data);
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
