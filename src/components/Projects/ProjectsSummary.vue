@@ -45,7 +45,7 @@ export default {
 
 				this.projectsSummary = [];
 
-				const uri = `projects-summary`;
+				const uri = "projects-summary";
 				const { data } = await fetcher({ uri, auth: true });
 
 				this.projectsSummary = data;
