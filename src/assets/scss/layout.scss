@@ -1,4 +1,16 @@
-.container{
+.container {
     max-width: initial;
-    padding: 20px;
+    padding: 1.2rem;
+}
+
+.breadcrumb {
+    display: flex;
+
+    .breadcrumb-item::before {
+        margin-right: 0.75rem;
+    }
+
+    .active {
+        font-weight: bold;
+    }
 }
