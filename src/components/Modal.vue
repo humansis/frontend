@@ -1,9 +1,10 @@
 <template>
 	<b-modal
-		:active="active"
 		trap-focus
 		aria-role="dialog"
+		scroll="keep"
 		aria-modal
+		:active="active"
 		:can-cancel="canCancel"
 		:destroy-on-hide="false"
 	>
