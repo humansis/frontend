@@ -77,7 +77,7 @@
 						</b-field>
 
 						<b-field label="Total Target">
-							<b-numberinput v-model="project.totalTargetBeneficiaries" :min="0" />
+							<b-numberinput v-model="project.totalTarget" :min="0" />
 						</b-field>
 
 						<b-field label="Notes">
@@ -286,7 +286,6 @@ export default {
 			this.projectModal.isEditing = true;
 			this.projectModal.isOpened = true;
 			const project = this.tableData.find((item) => item.id === id);
-			console.log(project);
 			this.project.name = project.name;
 			this.project.internalId = project.internal_id;
 			this.project.selectedSector = project.selected_sector;
@@ -295,12 +294,23 @@ export default {
 			this.project.selectedDonor = project.selected_donor;
 			this.project.selectedTargetType = project.selected_target_type;
 			this.project.totalTarget = project.total_target;
+			this.project.selectedTargetType = project.target_type;
 			this.project.notes = project.notes;
 		},
 
 		createProject() {
 			this.projectModal.isEditing = false;
 			this.projectModal.isOpened = true;
+
+			this.project.name = "";
+			this.project.internalId = "";
+			this.project.selectedSector = "";
+			this.project.startDate = new Date();
+			this.project.endDate = new Date();
+			this.project.selectedDonor = "";
+			this.project.selectedTargetType = "";
+			this.project.totalTarget = "";
+			this.project.notes = "";
 		},
 
 		closeProjectModal() {
@@ -309,11 +319,23 @@ export default {
 
 		submitProjectForm(id = null) {
 			if (this.projectModal.isEditing && id) {
-				// Update project by ID
-				console.log("hellou");
+				// update item
 			} else {
-				// Create new project
-				// this.gridData.push(); pushnout this.project
+				const newProject = {
+					beneficiaries_reached: 0,
+					donors: this.project.selectedDonor,
+					end_date: this.project.endDate,
+					id: Math.floor(Math.random() * 200) + 1,
+					name: this.project.name,
+					number_of_households: 0,
+					project_permissions: "CRUD",
+					sectors: this.project.selectedSector,
+					start_date: this.project.startDate,
+					total_target: this.project.totalTarget,
+					target_type: this.project.selectedTargetType,
+				};
+
+				this.tableData.push(newProject);
 			}
 		},
 
