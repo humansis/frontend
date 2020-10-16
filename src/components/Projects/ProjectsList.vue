@@ -105,7 +105,7 @@
 			size="is-medium"
 			type="is-danger"
 			icon-left="plus"
-			@click="createProject"
+			@click="addNewProject"
 		>
 			New
 		</b-button>
@@ -285,6 +285,7 @@ export default {
 		editProject(id) {
 			this.projectModal.isEditing = true;
 			this.projectModal.isOpened = true;
+
 			const project = this.tableData.find((item) => item.id === id);
 			this.project.name = project.name;
 			this.project.internalId = project.internal_id;
@@ -293,12 +294,12 @@ export default {
 			this.project.endDate = new Date();
 			this.project.selectedDonor = project.selected_donor;
 			this.project.selectedTargetType = project.selected_target_type;
-			this.project.totalTarget = project.total_target;
+			this.project.totalTarget = parseInt(project.total_target, 2);
 			this.project.selectedTargetType = project.target_type;
 			this.project.notes = project.notes;
 		},
 
-		createProject() {
+		addNewProject() {
 			this.projectModal.isEditing = false;
 			this.projectModal.isOpened = true;
 
@@ -321,22 +322,25 @@ export default {
 			if (this.projectModal.isEditing && id) {
 				// update item
 			} else {
+				console.log(this.project.startDate);
 				const newProject = {
 					beneficiaries_reached: 0,
 					donors: this.project.selectedDonor,
-					end_date: this.project.endDate,
+					end_date: "DD-MM-YY",
+					start_date: "DD-MM-YY",
 					id: Math.floor(Math.random() * 200) + 1,
 					name: this.project.name,
 					number_of_households: 0,
 					project_permissions: "CRUD",
 					sectors: this.project.selectedSector,
-					start_date: this.project.startDate,
 					total_target: this.project.totalTarget,
 					target_type: this.project.selectedTargetType,
 				};
 
 				this.tableData.push(newProject);
 			}
+
+			this.closeProjectModal();
 		},
 
 	},

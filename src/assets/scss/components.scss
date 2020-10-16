@@ -9,4 +9,13 @@
     form {
         overflow-y: scroll;
     }
+
+    .modal-card {
+        width: auto;
+    }
+
+    .modal-card-foot {
+        display: flex;
+        justify-content: flex-end;
+    }
 }

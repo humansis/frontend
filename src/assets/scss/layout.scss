@@ -27,14 +27,28 @@
     margin-left: 14px;
 }
 
-.b-sidebar{
+.table-wrapper {
+    overflow-x: scroll;
+}
 
+.b-sidebar{
     .sidebar-content {
         z-index: 1001;
         padding: 1rem 0.5rem 0.5rem;
         background-color: #132e30;
 
         .menu-list {
+            a {
+                color: #ffffff;
+
+                &.is-active {
+                    background: #134252;
+                }
+
+                &:hover {
+                    background: #134252;
+                }
+            }
 
             .icon {
                 position: relative;

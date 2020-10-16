@@ -7,7 +7,8 @@
 			:right="right"
 			:open.sync="open"
 			:expand-on-hover="true"
-			:reduce="true">
+			:reduce="true"
+			:can-cancel="false">
 			<div class="m-2">
 				<span class="icon">
 					<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
@@ -31,6 +32,7 @@
 						<b-menu-item
 							label="Beneficiaries"
 							icon="user-friends"
+							class="to-dropdown-item"
 						>
 							<b-menu-item
 								label="Households"

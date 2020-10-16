@@ -16,7 +16,8 @@
 			<b-dropdown
 				position="is-bottom-left"
 				append-to-body
-				aria-role="menu">
+				aria-role="menu"
+			>
 				<a
 					class="navbar-item"
 					slot="trigger"
