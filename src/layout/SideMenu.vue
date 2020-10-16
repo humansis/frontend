@@ -1,13 +1,13 @@
 <template>
 	<aside>
 		<b-sidebar
-			:fullheight="true"
-			:fullwidth="false"
+			fullheight
+			fullwidth
+			open
+			expand-on-hover
+			reduce
 			:overlay="false"
 			:right="false"
-			:open.sync="true"
-			:expand-on-hover="true"
-			:reduce="true"
 			:can-cancel="false">
 			<div class="m-2">
 				<span class="icon">
