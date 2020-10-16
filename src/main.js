@@ -3,7 +3,6 @@ import App from "@/App.vue";
 import router from "@/router";
 import store from "@/store";
 
-import "@/plugins/http";
 import "@/plugins/buefy";
 import "@/plugins/breadcrumbs";
 
