@@ -12,11 +12,11 @@
 				<form @submit.prevent="submitProjectForm">
 					<section class="modal-card-body">
 						<b-field label="Project Name">
-							<b-input v-model="project.name"></b-input>
+							<b-input v-model="project.name" />
 						</b-field>
 
 						<b-field label="Internal ID">
-							<b-input v-model="project.internalId"></b-input>
+							<b-input v-model="project.internalId" />
 						</b-field>
 
 						<b-field label="Sectors">
@@ -214,7 +214,6 @@ export default {
 				isOpened: false,
 				isEditing: true,
 			},
-			isProjectModalOpened: false,
 			project: {
 				name: "",
 				internalId: "",
@@ -278,7 +277,6 @@ export default {
 		},
 
 		goToDetail(item) {
-			console.log("detail");
 			this.$router.push({ name: "Project", params: { projectId: item.id } });
 		},
 

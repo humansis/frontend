@@ -1,6 +1,5 @@
 .container {
     max-width: initial;
-    padding: 1.2rem;
 }
 
 .breadcrumb {
@@ -35,7 +34,7 @@
     .sidebar-content {
         z-index: 1001;
         padding: 1rem 0.5rem 0.5rem;
-        background-color: #132e30;
+        background: #132e30;
 
         .menu-list {
             a {

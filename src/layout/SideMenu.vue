@@ -1,11 +1,11 @@
 <template>
 	<aside>
 		<b-sidebar
-			:fullheight="fullheight"
-			:fullwidth="fullwidth"
-			:overlay="overlay"
-			:right="right"
-			:open.sync="open"
+			:fullheight="true"
+			:fullwidth="false"
+			:overlay="false"
+			:right="false"
+			:open.sync="true"
 			:expand-on-hover="true"
 			:reduce="true"
 			:can-cancel="false">
@@ -18,16 +18,16 @@
 						<b-menu-item
 							label="Home"
 							icon="home"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Home' }"
-							exact-active-class="is-active"
 						/>
 						<b-menu-item
 							label="Projects"
 							icon="clipboard-list"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Projects' }"
-							active-class="is-active"
 						/>
 						<b-menu-item
 							label="Beneficiaries"
@@ -37,59 +37,59 @@
 							<b-menu-item
 								label="Households"
 								icon="arrow"
+								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
-								active-class="is-active"
 							/>
 							<b-menu-item
 								label="Institutions"
 								icon="arrow"
+								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
-								active-class="is-active"
 							/>
 							<b-menu-item
 								label="Communities"
 								icon="arrow"
+								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
-								active-class="is-active"
 							/>
 						</b-menu-item>
 						<b-menu-item
 							label="Reports"
 							icon="chart-line"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Reports' }"
-							active-class="is-active"
 						/>
 						<b-menu-item
 							label="Vouchers"
 							icon="ticket-alt"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Vouchers' }"
-							active-class="is-active"
 						/>
 						<b-menu-item
 							label="Configuration"
 							icon="cog"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Configuration' }"
-							active-class="is-active"
 						/>
 						<b-menu-item
 							label="Administrative Settings"
 							icon="wrench"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Administrative Settings' }"
-							active-class="is-active"
 						/>
 						<b-menu-item
 							label="Logs"
 							icon="eye"
+							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Logs' }"
-							active-class="is-active"
 						/>
 					</b-menu-list>
 				</b-menu>
@@ -102,15 +102,5 @@
 <script>
 export default {
 	name: "SideBar",
-
-	data() {
-		return {
-			open: true,
-			overlay: false,
-			fullheight: true,
-			fullwidth: false,
-			right: false,
-		};
-	},
 };
 </script>
