@@ -8825,6 +8825,11 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
+vue-2-breadcrumbs@^0.7.10:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/vue-2-breadcrumbs/-/vue-2-breadcrumbs-0.7.10.tgz#42556cfc163303c98df38a429bbdced8c4af6ad9"
+  integrity sha512-7zCV1sccuDpI0YHmowJqHDATfO61bPk8BG/ddAAA29JCHrlefOi/2rS6QTXjWB4P8+G8rxtVuCpnzd8ymxZcGQ==
+
 vue-cli-plugin-buefy@~0.3.7:
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/vue-cli-plugin-buefy/-/vue-cli-plugin-buefy-0.3.7.tgz#31e5637529482a5a4564676f539db16278b0895c"

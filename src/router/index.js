@@ -26,35 +26,56 @@ const routes = [
 				path: "/",
 				name: "Home",
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
+				meta: {
+					breadcrumb: "Home",
+				},
 			},
 			{
 				path: "/projects",
 				name: "Projects",
 				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
+				meta: {
+					breadcrumb: "Projects",
+				},
 			},
 			{
 				path: "/project/:projectId",
 				name: "Project",
 				component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
+				meta: {
+					breadcrumb: "Project",
+				},
 			},
 			{
 				path: "/beneficiaries",
 				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/Beneficiaries"),
+				meta: {
+					breadcrumb: "Beneficiaries",
+				},
 				children: [
 					{
 						path: "households",
 						name: "Households",
 						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/Households"),
+						meta: {
+							breadcrumb: "Households",
+						},
 					},
 					{
 						path: "communities",
 						name: "Communities",
 						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
+						meta: {
+							breadcrumb: "Communities",
+						},
 					},
 					{
 						path: "institutions",
 						name: "Institutions",
 						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/Institutions"),
+						meta: {
+							breadcrumb: "Institutions",
+						},
 					},
 				],
 			},
@@ -62,26 +83,41 @@ const routes = [
 				path: "/reports",
 				name: "Reports",
 				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				meta: {
+					breadcrumb: "Reports",
+				},
 			},
 			{
 				path: "/vouchers",
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				meta: {
+					breadcrumb: "Vouchers",
+				},
 			},
 			{
 				path: "/configuration",
 				name: "Configuration",
 				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				meta: {
+					breadcrumb: "Configuration",
+				},
 			},
 			{
 				path: "/administrative-settings",
 				name: "Administrative Settings",
 				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				meta: {
+					breadcrumb: "Administrative Settings",
+				},
 			},
 			{
 				path: "/logs",
 				name: "Logs",
 				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				meta: {
+					breadcrumb: "Logs",
+				},
 			},
 		],
 	},

@@ -4,6 +4,7 @@ import router from "@/router";
 import store from "@/store";
 
 import "@/plugins/buefy";
+import "@/plugins/breadcrumbs";
 
 Vue.config.productionTip = false;
 
