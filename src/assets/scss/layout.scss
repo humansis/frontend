@@ -1,4 +1,96 @@
-.container{
+.container {
     max-width: initial;
-    padding: 20px;
 }
+
+.breadcrumb {
+    display: flex;
+
+    .breadcrumb-item::before {
+        margin-right: 0.75rem;
+    }
+
+    .active {
+        font-weight: bold;
+    }
+}
+
+.bms-logo {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    box-sizing: content-box;
+    border-radius: 50%;
+    padding: 4px;
+    background: #fbfcfc;
+    margin-left: 14px;
+}
+
+.table-wrapper {
+    overflow-x: scroll;
+}
+
+.b-sidebar{
+    .sidebar-content {
+        z-index: 1001;
+        padding: 1rem 0.5rem 0.5rem;
+        background: #132e30;
+
+        .menu-list {
+            a {
+                color: #ffffff;
+
+                &.is-active {
+                    background: #134252;
+                }
+
+                &:hover {
+                    background: #134252;
+                }
+            }
+
+            .icon {
+                position: relative;
+                top: 1px;
+                margin-right: 0.3rem;
+            }
+        }
+
+        &.is-mini {
+            width: 58px;
+
+            &:not(.is-mini-expand),
+            &.is-mini-expand:not(:hover) {
+
+                .menu-list {
+
+                    li {
+
+                        a {
+                            span:nth-child(2) {
+                                display: none;
+                            }
+                        }
+
+                        ul {
+                            padding-left: 0;
+
+                            li {
+
+                                a {
+                                    display: inline-block;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .menu-label:not(:last-child) {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+
