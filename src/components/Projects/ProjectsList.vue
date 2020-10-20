@@ -334,7 +334,7 @@ export default {
 
 		submitProjectForm(id = null) {
 			if (this.projectModal.isEditing && id) {
-				// update item
+				// TODO update item
 			} else {
 				console.log(this.project.startDate);
 				const newProject = {
