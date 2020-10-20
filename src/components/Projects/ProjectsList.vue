@@ -77,7 +77,7 @@
 						</b-field>
 
 						<b-field label="Total Target">
-							<b-numberinput v-model="project.totalTarget" :min="0" />
+							<b-numberinput v-model="project.totalTarget" min="0" />
 						</b-field>
 
 						<b-field label="Notes">
@@ -281,35 +281,51 @@ export default {
 		},
 
 		editProject(id) {
-			this.projectModal.isEditing = true;
-			this.projectModal.isOpened = true;
+			this.projectModal = {
+				isEditing: true,
+				isOpened: true,
+			};
 
-			const project = this.tableData.find((item) => item.id === id);
-			this.project.name = project.name;
-			this.project.internalId = project.internal_id;
-			this.project.selectedSector = project.selected_sector;
-			this.project.startDate = new Date();
-			this.project.endDate = new Date();
-			this.project.selectedDonor = project.selected_donor;
-			this.project.selectedTargetType = project.selected_target_type;
-			this.project.totalTarget = parseInt(project.total_target, 2);
-			this.project.selectedTargetType = project.target_type;
-			this.project.notes = project.notes;
+			const {
+				name,
+				internal_id: internalId,
+				selected_sector: selectedSector,
+				selected_donor: selectedDonor,
+				selected_target_type: selectedTargetType,
+				total_target: totalTarget,
+				notes,
+			} = this.tableData.find((item) => item.id === id);
+
+			this.project = {
+				name,
+				internalId,
+				selectedSector,
+				startDate: new Date(),
+				endDate: new Date(),
+				selectedDonor,
+				selectedTargetType,
+				totalTarget,
+				notes,
+			};
 		},
 
 		addNewProject() {
-			this.projectModal.isEditing = false;
-			this.projectModal.isOpened = true;
+			this.projectModal = {
+				isEditing: false,
+				isOpened: true,
+			};
 
-			this.project.name = "";
-			this.project.internalId = "";
-			this.project.selectedSector = "";
-			this.project.startDate = new Date();
-			this.project.endDate = new Date();
-			this.project.selectedDonor = "";
-			this.project.selectedTargetType = "";
-			this.project.totalTarget = "";
-			this.project.notes = "";
+			this.project = {
+				name: "",
+				internalId: "",
+				selectedSector: "",
+				startDate: new Date(),
+				endDate: new Date(),
+				selectedDonor: "",
+				selectedTargetType: "",
+				totalTarget: "",
+				notes: "",
+			};
 		},
 
 		closeProjectModal() {
