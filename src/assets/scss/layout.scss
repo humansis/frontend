@@ -1,5 +1,6 @@
 .container {
     max-width: initial;
+    padding: 0.2rem 1.2rem 1.2rem;
 }
 
 .breadcrumb {
@@ -83,10 +84,6 @@
                             }
                         }
                     }
-                }
-
-                .menu-label:not(:last-child) {
-                    margin-bottom: 0;
                 }
             }
         }

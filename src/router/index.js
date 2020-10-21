@@ -98,10 +98,20 @@ const routes = [
 			{
 				path: "/configuration",
 				name: "Configuration",
-				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/Configuration"),
 				meta: {
 					breadcrumb: "Configuration",
 				},
+				children: [
+					{
+						path: "vendors",
+						name: "Vendors",
+						component: () => import(/* webpackChunkName: "ConfigurationVendors" */ "@/views/Configuration/Vendors"),
+						meta: {
+							breadcrumb: "Vendors",
+						},
+					},
+				],
 			},
 			{
 				path: "/administrative-settings",

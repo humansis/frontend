@@ -114,7 +114,7 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const uri = "projects";
+				const uri = "vendors";
 				const { data } = await fetcher({ uri, auth: true });
 
 				this.tableData = data;
@@ -131,8 +131,8 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		goToDetail(item) {
-			this.$router.push({ name: "Project", params: { projectId: item.id } });
+		goToDetail() {
+			// TODO go to vendor detail
 		},
 
 	},
