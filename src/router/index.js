@@ -111,6 +111,14 @@ const routes = [
 							breadcrumb: "Vendors",
 						},
 					},
+					{
+						path: "products",
+						name: "Products",
+						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/Products"),
+						meta: {
+							breadcrumb: "Products",
+						},
+					},
 				],
 			},
 			{
