@@ -2,10 +2,10 @@
 	<aside>
 		<b-sidebar
 			fullheight
-			fullwidth
 			open
 			expand-on-hover
 			reduce
+			:fullwidth="false"
 			:overlay="false"
 			:right="false"
 			:can-cancel="false">
@@ -73,10 +73,16 @@
 						<b-menu-item
 							label="Configuration"
 							icon="cog"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Configuration' }"
-						/>
+							class="to-dropdown-item"
+						>
+							<b-menu-item
+								label="Vendors"
+								icon="arrow"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'Vendors' }"
+							/>
+						</b-menu-item>
 						<b-menu-item
 							label="Administrative Settings"
 							icon="wrench"

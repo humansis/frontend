@@ -2,7 +2,7 @@
 	<div>
 		<SideMenu />
 		<section class="main-content is-fullheight">
-			<div class="container pt-4">
+			<div class="container">
 				<NavBar />
 				<router-view />
 			</div>
