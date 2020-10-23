@@ -8,7 +8,7 @@
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
 
 export default {
-	name: "Vendors",
+	name: "Institutions",
 
 	components: {
 		InstitutionsList,
