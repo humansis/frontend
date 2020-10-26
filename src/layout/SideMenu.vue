@@ -89,6 +89,20 @@
 								tag="router-link"
 								:to="{ name: 'Products' }"
 							/>
+							<b-menu-item
+								label="Country options"
+								icon="arrow"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'CountryOptions' }"
+							/>
+							<b-menu-item
+								label="Communities"
+								icon="arrow"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'Communities' }"
+							/>
 						</b-menu-item>
 						<b-menu-item
 							label="Administrative Settings"
