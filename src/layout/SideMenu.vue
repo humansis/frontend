@@ -83,6 +83,13 @@
 								:to="{ name: 'Vendors' }"
 							/>
 							<b-menu-item
+								label="Products"
+								icon="arrow"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'Products' }"
+							/>
+							<b-menu-item
 								label="Country options"
 								icon="arrow"
 								exact-active-class="is-active"
