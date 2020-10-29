@@ -8,19 +8,17 @@
 		:can-cancel="canCancel"
 		:destroy-on-hide="false"
 	>
-		<template>
-			<div class="modal-card">
-				<header class="modal-card-head">
-					<p class="modal-card-title">{{ header }}</p>
-					<button
-						type="button"
-						class="delete"
-						@click="$emit('close')"
-					/>
-				</header>
-				<slot name="content"/>
-			</div>
-		</template>
+		<div class="modal-card">
+			<header class="modal-card-head">
+				<p class="modal-card-title">{{ header }}</p>
+				<button
+					type="button"
+					class="delete"
+					@click="$emit('close')"
+				/>
+			</header>
+			<slot/>
+		</div>
 	</b-modal>
 </template>
 
