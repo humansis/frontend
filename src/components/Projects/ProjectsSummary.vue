@@ -2,10 +2,10 @@
 	<div>
 		<h2 class="title">Projects summary</h2>
 		<div class="columns is-multiline" ref="projectsSummary">
-			<div v-for="{data} in projectsSummary" :key="data[0].id" class="column is-half">
+			<div v-for="{id, name, target} in projectsSummary" :key="id" class="column is-half">
 				<div class="box">
-					<p class="title is-6">{{ normalizeText(data[0].name) }}</p>
-					<p class="subtitle is-4">{{ data[0].target }}</p>
+					<p class="title is-6">{{ normalizeText(name) }}</p>
+					<p class="subtitle is-4">{{ target }}</p>
 				</div>
 			</div>
 		</div>
@@ -51,8 +51,9 @@ export default {
 				this.projectsSummary = [];
 
 				const uri = "projects?page=1&size=15&sort=asc";
-				const { data } = await fetcher({ uri, auth: true });
+				const { data: { data } } = await fetcher({ uri, auth: true });
 				this.projectsSummary = data;
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

@@ -14,8 +14,8 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon="search">
-					</b-input>
+						icon="search"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -114,6 +114,7 @@ export default {
 
 				this.tableData = data;
 				this.tableColumns = generateColumnsFromData(data);
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

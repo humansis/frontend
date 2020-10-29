@@ -52,8 +52,8 @@ export default {
 
 				const uri = "summaries?code[]=total_registrations";
 				const { data: { data } } = await fetcher({ uri, auth: true });
-
 				this.summary = data;
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

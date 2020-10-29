@@ -14,8 +14,8 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon="search">
-					</b-input>
+						icon="search"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -115,11 +115,11 @@ export default {
 				this.tableColumns = [];
 
 				const uri = "communities?page=1&size=15&sort=asc";
-				const { data } = await fetcher({ uri, auth: true });
+				const { data: { data } } = await fetcher({ uri, auth: true });
 
-				this.tableData = data[0].data;
+				this.tableData = data;
+				this.tableColumns = generateColumnsFromData(data);
 
-				this.tableColumns = generateColumnsFromData(data[0].data);
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

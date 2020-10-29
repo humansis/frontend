@@ -156,8 +156,8 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon="search">
-					</b-input>
+						icon="search"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -306,10 +306,10 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const { data } = await fetcher({ uri: "projects?page=1&size=15&sort=asc", auth: true });
+				const { data: { data } } = await fetcher({ uri: "projects?page=1&size=15&sort=asc", auth: true });
 
-				this.tableData = data[0].data;
-				this.tableColumns = generateColumnsFromData(this.tableData, this.visibleColumns);
+				this.tableData = data;
+				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
 
 				const sectors = await fetcher({ uri: "sectors/CODE/subsectors", auth: true });
 				this.sectors = sectors.data.data;

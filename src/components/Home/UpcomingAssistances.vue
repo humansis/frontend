@@ -77,6 +77,7 @@ export default {
 
 				this.tableData = data;
 				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
