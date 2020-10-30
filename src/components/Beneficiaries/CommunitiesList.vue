@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Institutions</h2>
+		<h2 class="title">Communities</h2>
 		<b-button
 			class="mb-5"
 			size="is-medium"
@@ -83,7 +83,7 @@ import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
 
 export default {
-	name: "InstitutionsList",
+	name: "CommunitionsList",
 
 	data() {
 		return {
@@ -114,7 +114,7 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const uri = "institutions?page=1&size=15&sort=asc";
+				const uri = "communities?page=1&size=15&sort=asc";
 				const { data: { data } } = await fetcher({ uri, auth: true });
 
 				this.tableData = data;

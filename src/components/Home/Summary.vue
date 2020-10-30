@@ -2,9 +2,9 @@
 	<div>
 		<h2 class="title">Summary</h2>
 		<div class="columns is-multiline" ref="summary">
-			<div v-for="{ id, title, value } in summary" :key="id" class="column is-half">
+			<div v-for="{ id, code, value } in summary" :key="id" class="column is-half">
 				<div class="box">
-					<p class="title is-6">{{ title }}</p>
+					<p class="title is-6">{{ normalizeText(code) }}</p>
 					<p class="subtitle is-4">{{ value }}</p>
 				</div>
 			</div>
@@ -14,6 +14,7 @@
 
 <script>
 import { fetcher } from "@/utils/fetcher";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "Summary",
@@ -36,6 +37,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async fetchData() {
 			try {
 				this.fetch.error = null;
@@ -45,10 +50,10 @@ export default {
 
 				this.summary = [];
 
-				const uri = "home-summary";
-				const { data } = await fetcher({ uri, auth: true });
-
+				const uri = "summaries?code[]=total_registrations";
+				const { data: { data } } = await fetcher({ uri, auth: true });
 				this.summary = data;
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

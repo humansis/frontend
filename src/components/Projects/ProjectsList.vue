@@ -1,103 +1,145 @@
 <template>
 	<div>
 		<h2 class="title">Projects</h2>
-
 		<Modal
 			:active="projectModal.isOpened"
 			:can-cancel="true"
 			:header="projectModal.isEditing ? 'Edit project' : 'Create new project'"
 			@close="closeProjectModal"
 		>
-			<template v-slot:content>
-				<form @submit.prevent="submitProjectForm">
-					<section class="modal-card-body">
-						<b-field label="Project Name">
-							<b-input v-model="project.name" />
-						</b-field>
+			<form @submit.prevent="submitProjectForm">
+				<section class="modal-card-body">
+					<b-field label="Project Name">
+						<b-input v-model="project.name" />
+					</b-field>
 
-						<b-field label="Internal ID">
-							<b-input v-model="project.internalId" />
-						</b-field>
+					<b-field label="Internal ID">
+						<b-input v-model="project.internalId" />
+					</b-field>
 
-						<b-field label="Sectors">
-							<b-select v-model="project.selectedSector" placeholder="Sectors">
-								<option
-									v-for="sector in project.sectors"
-									:value="sector.value"
-									:key="sector.value">
-									{{ sector.label }}
-								</option>
-							</b-select>
-						</b-field>
+					<b-field label="Sectors">
+						<b-tag
+							v-for="selectedSector in project.selectedSectors"
+							:key="selectedSector"
+							type="is-success"
+							closable
+						>
+							{{ selectedSector }}
+						</b-tag>
+						<b-dropdown
+							v-model="project.selectedSectors"
+							multiple
+						>
+							<button class="button is-primary is-light" type="button" slot="trigger">
+								<span>Select sectors</span>
+								<b-icon icon="chevron-circle-down"></b-icon>
+							</button>
+							<b-dropdown-item
+								v-for="{code, value} in sectors"
+								:value="value"
+								:key="value"
+							>
+								<span>{{ code }}</span>
+							</b-dropdown-item>
+						</b-dropdown>
+					</b-field>
 
-						<b-field label="Start date">
-							<b-datepicker
-								v-model="project.startDate"
-								show-week-number
-								locale="en-GB"
-								placeholder="Click to select..."
-								icon="calendar-day"
-								trap-focus>
-							</b-datepicker>
-						</b-field>
+					<b-field label="Start date">
+						<b-datepicker
+							v-model="project.startDate"
+							show-week-number
+							locale="en-GB"
+							placeholder="Click to select..."
+							icon="calendar-day"
+							trap-focus>
+						</b-datepicker>
+					</b-field>
 
-						<b-field label="Start end">
-							<b-datepicker
-								v-model="project.endDate"
-								show-week-number
-								locale="en-US"
-								placeholder="Click to select..."
-								icon="calendar-day"
-								trap-focus>
-							</b-datepicker>
-						</b-field>
+					<b-field label="Start end">
+						<b-datepicker
+							v-model="project.endDate"
+							show-week-number
+							locale="en-US"
+							placeholder="Click to select..."
+							icon="calendar-day"
+							trap-focus>
+						</b-datepicker>
+					</b-field>
 
-						<b-field label="Donors">
-							<b-select v-model="project.selectedDonor" placeholder="Donors">
-								<option
-									v-for="donor in project.donors"
-									:value="donor.value"
-									:key="donor.value"
-								>
-									{{ donor.label }}
-								</option>
-							</b-select>
-						</b-field>
+					<b-field label="Donors">
+						<b-tag
+							v-for="selectedDonor in project.selectedDonors"
+							:key="selectedDonor"
+							type="is-success"
+							closable
+						>
+							{{ selectedDonor }}
+						</b-tag>
+						<b-dropdown
+							v-model="project.selectedDonors"
+							multiple
+						>
+							<button class="button is-primary is-light" type="button" slot="trigger">
+								<span>Select donors</span>
+								<b-icon icon="chevron-circle-down"></b-icon>
+							</button>
+							<b-dropdown-item
+								v-for="{id, shortname} in donors"
+								:value="id"
+								:key="id"
+							>
+								<span>{{ shortname }}</span>
+							</b-dropdown-item>
+						</b-dropdown>
+					</b-field>
 
-						<b-field label="Target Type">
-							<b-select v-model="project.selectedTargetType" placeholder="Target Types">
-								<option
-									v-for="targetType in project.targetTypes"
-									:value="targetType.value"
-									:key="targetType.value"
-								>
-									{{ targetType.label }}
-								</option>
-							</b-select>
-						</b-field>
+					<b-field label="Target Type">
+						<b-tag
+							v-for="selectedTargetType in project.selectedTargetTypes"
+							:key="selectedTargetType"
+							type="is-success"
+							closable
+						>
+							{{ selectedTargetType }}
+						</b-tag>
+						<b-dropdown
+							v-model="project.selectedTargetTypes"
+							multiple
+						>
+							<button class="button is-primary is-light" type="button" slot="trigger">
+								<span>Select target types</span>
+								<b-icon icon="chevron-circle-down"></b-icon>
+							</button>
+							<b-dropdown-item
+								v-for="{code, value} in targetTypes"
+								:value="value"
+								:key="value"
+							>
+								<span>{{ code }}</span>
+							</b-dropdown-item>
+						</b-dropdown>
+					</b-field>
 
-						<b-field label="Total Target">
-							<b-numberinput v-model="project.totalTarget" min="0" />
-						</b-field>
+					<b-field label="Total Target">
+						<b-numberinput v-model="project.totalTarget" min="0" />
+					</b-field>
 
-						<b-field label="Notes">
-							<b-input v-model="project.notes" type="textarea"></b-input>
-						</b-field>
+					<b-field label="Notes">
+						<b-input v-model="project.notes" type="textarea"></b-input>
+					</b-field>
 
-					</section>
+				</section>
 
-					<footer class="modal-card-foot">
-						<button class="button" type="button" @click="closeProjectModal">
-							Close
-						</button>
-						<b-button tag="input"
-							class="is-success"
-							native-type="submit"
-							:value="projectModal.isEditing ? 'Update' : 'Create'" />
-					</footer>
-				</form>
-
-			</template>
+				<footer class="modal-card-foot">
+					<button class="button" type="button" @click="closeProjectModal">
+						Close
+					</button>
+					<b-button tag="input"
+						class="is-success"
+						native-type="submit"
+						:value="projectModal.isEditing ? 'Update' : 'Create'" />
+				</footer>
+			</form>
 		</Modal>
 
 		<b-button
@@ -114,8 +156,8 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon="search">
-					</b-input>
+						icon="search"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -146,7 +188,12 @@
 					:key="column.id"
 				>
 					<template v-slot="props">
-						{{ props.row[column.field] }}
+						<div v-if="column.field === 'donorIds'">
+							{{ props.row[column.field].length }}
+						</div>
+						<div v-else>
+							{{ props.row[column.field] }}
+						</div>
 					</template>
 				</b-table-column>
 			</template>
@@ -214,17 +261,26 @@ export default {
 				isOpened: false,
 				isEditing: true,
 			},
+			visibleColumns: [
+				"id",
+				"name",
+				"donorIds",
+				"startDate",
+				"endDate",
+				"target",
+				"numberOfHouseholds",
+			],
+			sectors: [],
+			donors: [],
+			targetTypes: [],
 			project: {
 				name: "",
 				internalId: "",
-				sectors: [],
-				selectedSector: [],
+				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
-				donors: [],
-				selectedDonor: [],
-				targetTypes: [],
-				selectedTargetType: [],
+				selectedDonors: [],
+				selectedTargetTypes: [],
 				totalTarget: 0,
 				notes: "",
 			},
@@ -250,19 +306,19 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const { data } = await fetcher({ uri: "projects", auth: true });
+				const { data: { data } } = await fetcher({ uri: "projects?page=1&size=15&sort=asc", auth: true });
 
 				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data);
+				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
 
-				const sectors = await fetcher({ uri: "sectors", auth: true });
-				this.project.sectors = sectors.data;
+				const sectors = await fetcher({ uri: "sectors/CODE/subsectors", auth: true });
+				this.sectors = sectors.data.data;
 
 				const donors = await fetcher({ uri: "donors", auth: true });
-				this.project.donors = donors.data;
+				this.donors = donors.data.data;
 
-				const targetTypes = await fetcher({ uri: "target-types", auth: true });
-				this.project.targetTypes = targetTypes.data;
+				const targetTypes = await fetcher({ uri: "assistances/targets", auth: true });
+				this.targetTypes = targetTypes.data.data;
 
 				loadingComponent.close();
 			} catch (error) {
@@ -286,24 +342,25 @@ export default {
 				isOpened: true,
 			};
 
+			console.log(this.tableData.find((item) => item.id === id));
+
 			const {
 				name,
-				internal_id: internalId,
-				selected_sector: selectedSector,
-				selected_donor: selectedDonor,
-				selected_target_type: selectedTargetType,
-				total_target: totalTarget,
+				id: internalId,
+				sectorIds: selectedSectors,
+				donorIds: selectedDonors,
+				target: totalTarget,
 				notes,
 			} = this.tableData.find((item) => item.id === id);
 
 			this.project = {
 				name,
 				internalId,
-				selectedSector,
-				startDate: new Date(),
-				endDate: new Date(),
-				selectedDonor,
-				selectedTargetType,
+				selectedSectors,
+				startDate: new Date("DD/MMM/YY"),
+				endDate: new Date("DD/MMM/YY"),
+				selectedDonors,
+				selectedTargetTypes: [],
 				totalTarget,
 				notes,
 			};
@@ -318,12 +375,15 @@ export default {
 			this.project = {
 				name: "",
 				internalId: "",
-				selectedSector: "",
+				sectors: [],
+				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
-				selectedDonor: "",
-				selectedTargetType: "",
-				totalTarget: "",
+				donors: [],
+				selectedDonors: [],
+				targetTypes: [],
+				selectedTargetTypes: [],
+				totalTarget: 0,
 				notes: "",
 			};
 		},
@@ -336,22 +396,7 @@ export default {
 			if (this.projectModal.isEditing && id) {
 				// TODO update item
 			} else {
-				console.log(this.project.startDate);
-				const newProject = {
-					beneficiaries_reached: 0,
-					donors: this.project.selectedDonor,
-					end_date: "DD-MM-YY",
-					start_date: "DD-MM-YY",
-					id: Math.floor(Math.random() * 200) + 1,
-					name: this.project.name,
-					number_of_households: 0,
-					project_permissions: "CRUD",
-					sectors: this.project.selectedSector,
-					total_target: this.project.totalTarget,
-					target_type: this.project.selectedTargetType,
-				};
-
-				this.tableData.push(newProject);
+				// TODO put new item
 			}
 
 			this.closeProjectModal();

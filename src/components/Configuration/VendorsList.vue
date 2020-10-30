@@ -14,8 +14,8 @@
 				<b-field>
 					<b-input placeholder="Search..."
 						type="search"
-						icon="search">
-					</b-input>
+						icon="search"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -114,8 +114,8 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const uri = "vendors";
-				const { data } = await fetcher({ uri, auth: true });
+				const uri = "vendors?page=1&size=15&sort=asc";
+				const { data: { data } } = await fetcher({ uri, auth: true });
 
 				this.tableData = data;
 				this.tableColumns = generateColumnsFromData(data);
