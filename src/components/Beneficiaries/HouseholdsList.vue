@@ -69,24 +69,9 @@
 				label="Actions"
 			>
 				<div class="block">
-					<b-icon
-						icon="edit"
-						type="is-link"
-						size="is-medium"
-					>
-					</b-icon>
-					<b-icon
-						icon="search"
-						type="is-info"
-						size="is-medium"
-					>
-					</b-icon>
-					<b-icon
-						icon="trash"
-						type="is-danger"
-						size="is-medium"
-					>
-					</b-icon>
+					<ActionButton icon="edit" type="is-link" />
+					<ActionButton icon="search" type="is-info" />
+					<ActionButton icon="trash" type="is-danger" />
 				</div>
 			</b-table-column>
 
@@ -98,12 +83,14 @@
 import { generateColumnsFromData, normalizeText } from "@/utils/datagrid";
 import { fetcher } from "@/utils/fetcher";
 import Table from "@/components/Table";
+import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "HouseholdsList",
 
 	components: {
 		Table,
+		ActionButton,
 	},
 
 	data() {

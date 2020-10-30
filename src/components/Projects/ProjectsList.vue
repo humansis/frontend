@@ -192,34 +192,14 @@
 				v-slot="props"
 			>
 				<div class="block">
-					<button @click.prevent="editProject(props.row.id)" class="button is-light">
-						<b-icon
-							icon="edit"
-							type="is-link"
-							size="is-medium"
-						/>
-					</button>
-					<button class="button is-light">
-						<b-icon
-							icon="search"
-							type="is-info"
-							size="is-medium"
-						/>
-					</button>
-					<button class="button is-light">
-						<b-icon
-							icon="trash"
-							type="is-danger"
-							size="is-medium"
-						/>
-					</button>
-					<button class="button is-light">
-						<b-icon
-							icon="copy"
-							type="is-dark"
-							size="is-medium"
-						/>
-					</button>
+					<ActionButton
+						icon="edit"
+						type="is-link"
+						@click.prevent="editProject(props.row.id)"
+					/>
+					<ActionButton icon="search" type="is-info" />
+					<ActionButton icon="trash" type="is-danger" />
+					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
 
@@ -232,6 +212,7 @@ import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
+import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "ProjectsList",
@@ -239,6 +220,7 @@ export default {
 	components: {
 		Modal,
 		Table,
+		ActionButton,
 	},
 
 	data() {
