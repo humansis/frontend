@@ -9,59 +9,19 @@
 		>
 			Create
 		</b-button>
-		<DataGrid :gridData="gridData" :gridFilters="gridFilters" />
+		<HouseholdsList />
 	</div>
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
-import DataGrid from "@/components/Beneficiaries/DataGrid";
+import HouseholdsList from "@/components/Beneficiaries/HouseholdsList";
 
 export default {
 	name: "Households",
 
 	components: {
-		DataGrid,
+		HouseholdsList,
 	},
 
-	data() {
-		return {
-			fetch: {
-				error: null,
-			},
-			gridData: [],
-			gridFilters: [],
-		};
-	},
-
-	watch: {
-		$route: "fetchData",
-	},
-
-	mounted() {
-		this.fetchData();
-	},
-
-	methods: {
-		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
-
-				const { data: { data } } = await fetcher({ uri: "households?offset=0&limit=15&sort_by=asc", auth: true });
-				this.gridData = data;
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
-		},
-	},
 };
 </script>

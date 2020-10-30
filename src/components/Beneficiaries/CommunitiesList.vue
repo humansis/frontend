@@ -20,27 +20,16 @@
 			</div>
 		</div>
 
-		<b-table
-			striped
-			hoverable
-			paginated
-			selectable
-			default-sort="id"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
-			per-page="15"
-			pagination-position="bottom"
-			default-sort-direction="asc"
-			sort-icon="arrow-up"
-			sort-icon-size="is-small"
-			:data="tableData"
-			:current-page="1"
-			:pagination-simple="false"
-			@select="goToDetail"
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:per-page="table.perPage"
+			@clicked="goToDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
 		>
-			<template v-for="column in tableColumns">
+			<template v-for="column in table.columns">
 				<b-table-column :key="column.id" v-bind="column">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
@@ -74,24 +63,36 @@
 					</b-icon>
 				</div>
 			</b-table-column>
-		</b-table>
+
+		</Table>
 	</div>
 </template>
 
 <script>
 import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
+import Table from "@/components/Table";
 
 export default {
 	name: "CommunitionsList",
+
+	components: {
+		Table,
+	},
 
 	data() {
 		return {
 			fetch: {
 				error: null,
 			},
-			tableData: [],
-			tableColumns: [],
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [],
+				total: 0,
+				currentPage: 1,
+				perPage: 15,
+			},
 		};
 	},
 
@@ -111,14 +112,14 @@ export default {
 					container: this.$refs.projectsList,
 				});
 
-				this.tableData = [];
-				this.tableColumns = [];
+				this.table.data = [];
+				this.table.columns = [];
 
 				const uri = "communities?page=1&size=15&sort=asc";
 				const { data: { data } } = await fetcher({ uri, auth: true });
 
-				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data);
+				this.table.data = data;
+				this.table.columns = generateColumnsFromData(data);
 
 				loadingComponent.close();
 			} catch (error) {
@@ -133,9 +134,16 @@ export default {
 		},
 
 		goToDetail() {
-			// TODO go to institution detail
+			// TODO go to detail
 		},
 
+		onPageChange() {
+			// TODO on table page change
+		},
+
+		onSort() {
+			// TODO on table sort
+		},
 	},
 };
 </script>

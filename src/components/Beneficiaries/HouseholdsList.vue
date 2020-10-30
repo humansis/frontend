@@ -48,27 +48,16 @@
 			</div>
 		</div>
 
-		<b-table
-			:data="gridData"
-			:paginated="true"
-			:per-page="'15'"
-			:current-page="1"
-			:pagination-simple="false"
-			:pagination-position="'bottom'"
-			:default-sort-direction="'asc'"
-			:sort-icon="'arrow-up'"
-			:sort-icon-size="'is-small'"
-			:striped="true"
-			:hoverable="true"
-			default-sort="id"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
-			selectable
-			checkable
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:per-page="table.perPage"
+			@clicked="goToDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
 		>
-			<template v-for="column in tableColumns">
+			<template v-for="column in table.columns">
 				<b-table-column :key="column.id" v-bind="column">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
@@ -100,25 +89,46 @@
 					</b-icon>
 				</div>
 			</b-table-column>
-		</b-table>
+
+		</Table>
 	</div>
 </template>
 
 <script>
 import { generateColumnsFromData, normalizeText } from "@/utils/datagrid";
+import { fetcher } from "@/utils/fetcher";
+import Table from "@/components/Table";
 
 export default {
-	name: "DataGrid",
+	name: "HouseholdsList",
 
-	props: {
-		gridData: Array,
-		gridFilters: Array,
+	components: {
+		Table,
 	},
 
 	data() {
 		return {
+			fetch: {
+				error: null,
+			},
 			advancedSearchVisible: false,
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [],
+				total: 0,
+				currentPage: 1,
+				perPage: 15,
+			},
 		};
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	mounted() {
+		this.fetchData();
 	},
 
 	computed: {
@@ -128,12 +138,45 @@ export default {
 	},
 
 	methods: {
+		async fetchData() {
+			try {
+				this.fetch.error = null;
+				const loadingComponent = this.$buefy.loading.open();
+
+				const { data: { data } } = await fetcher({ uri: "households?offset=0&limit=15&sort_by=asc", auth: true });
+				this.table.data = data;
+				this.table.columns = generateColumnsFromData(data);
+
+				loadingComponent.close();
+			} catch (error) {
+				this.handleError(error);
+			}
+		},
+
+		handleError(error) {
+			console.error(error);
+			this.fetch.loading = false;
+			this.fetch.error = error.toString();
+		},
+
 		normalizeText(text) {
 			return normalizeText(text);
 		},
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		goToDetail() {
+			// TODO go to detail
+		},
+
+		onPageChange() {
+			// TODO on table page change
+		},
+
+		onSort() {
+			// TODO on table sort
 		},
 	},
 };
