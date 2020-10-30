@@ -32,6 +32,8 @@
 <script>
 export default {
 	name: "Table",
+
 	props: ["data", "total", "currentPage", "perPage"],
+
 };
 </script>
