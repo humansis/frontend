@@ -11,13 +11,10 @@
 <script>
 export default {
 	name: "ActionButton",
+
 	props: {
 		icon: String,
 		type: String,
 	},
 };
 </script>
-
-<style scoped>
-
-</style>

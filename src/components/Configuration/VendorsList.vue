@@ -69,6 +69,7 @@ import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "VendorsList",
+
 	components: { ActionButton },
 
 	data() {

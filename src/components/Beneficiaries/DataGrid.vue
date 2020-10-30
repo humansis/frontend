@@ -95,7 +95,9 @@ import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "DataGrid",
+
 	components: { ActionButton },
+
 	props: {
 		gridData: Array,
 		gridFilters: Array,

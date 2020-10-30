@@ -69,7 +69,9 @@ import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "InstitutionsList",
+
 	components: { ActionButton },
+
 	data() {
 		return {
 			fetch: {

@@ -69,7 +69,9 @@ import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "CommunitionsList",
+
 	components: { ActionButton },
+
 	data() {
 		return {
 			fetch: {

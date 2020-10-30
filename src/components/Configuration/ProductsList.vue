@@ -68,6 +68,7 @@ import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "ProductsList",
+
 	components: { ActionButton },
 
 	data() {
