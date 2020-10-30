@@ -1,50 +1,50 @@
 <template>
 	<div>
-		<div v-if="projectSummary.length" ref="projectSummary">
+		<div v-if="projectSummary" ref="projectSummary">
 			<h2 class="title has-text-centered">
-				{{ projectSummary[0].name }}
+				{{ projectSummary.name }}
 			</h2>
 			<nav class="level is-mobile">
 				<div class="level-item has-text-centered">
-					<div>
+					<div class="box">
 						<p class="heading">Sectors</p>
-						<p class="title">{{ projectSummary[0].sectors }}</p>
+						<p class="title">{{ projectSummary.sectorIds.length }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
+					<div class="box">
 						<p class="heading">Start Date</p>
-						<p class="title">{{ projectSummary[0].start_date }}</p>
+						<p class="title">{{ projectSummary.startDate }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
+					<div class="box">
 						<p class="heading">End Date</p>
-						<p class="title">{{ projectSummary[0].end_date }}</p>
+						<p class="title">{{ projectSummary.endDate }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
-						<p class="heading">Number of Households</p>
-						<p class="title">{{ projectSummary[0].number_of_households }}</p>
+					<div class="box">
+						<p class="heading">Number of households</p>
+						<p class="title">{{ projectSummary.numberOfHouseholds }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
+					<div class="box">
 						<p class="heading">Donors</p>
-						<p class="title">{{ projectSummary[0].donors }}</p>
+						<p class="title">{{ projectSummary.donorIds.length }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
-						<p class="heading">Total Target Beneficiaries</p>
-						<p class="title">{{ projectSummary[0].total_target_beneficiaries }}</p>
+					<div class="box">
+						<p class="heading">Total target beneficiaries</p>
+						<p class="title">{{ projectSummary.target }}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered">
-					<div>
-						<p class="heading">Beneficiaries Reached</p>
-						<p class="title">{{ projectSummary[0].beneficiaries_reached }}</p>
+					<div class="box">
+						<p class="heading">Beneficiaries reached</p>
+						<p class="title">{{ projectSummary.target }}</p>
 					</div>
 				</div>
 			</nav>
@@ -55,6 +55,7 @@
 
 <script>
 import { fetcher } from "@/utils/fetcher";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectSummary",
@@ -64,7 +65,7 @@ export default {
 			fetch: {
 				error: null,
 			},
-			projectSummary: [],
+			projectSummary: null,
 		};
 	},
 
@@ -77,6 +78,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async fetchData() {
 			try {
 				this.fetch.error = null;
@@ -86,11 +91,11 @@ export default {
 
 				this.projectSummary = [];
 
-				const uri = `project/${this.$route.params.projectId}`;
+				const uri = `projects/${this.$route.params.projectId}`;
 
 				const { data } = await fetcher({ uri, auth: true });
-
 				this.projectSummary = data;
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);

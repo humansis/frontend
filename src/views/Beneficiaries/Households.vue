@@ -48,11 +48,8 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				const { data } = await fetcher({ uri: "beneficiaries/households", auth: true });
-				const filters = await fetcher({ uri: "beneficiaries/filters", auth: true });
-
+				const { data: { data } } = await fetcher({ uri: "households?offset=0&limit=15&sort_by=asc", auth: true });
 				this.gridData = data;
-				this.gridFilters = filters.data;
 
 				loadingComponent.close();
 			} catch (error) {

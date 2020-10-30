@@ -42,6 +42,12 @@ export default {
 			},
 			tableData: [],
 			tableColumns: [],
+			visibleColumns: [
+				"name",
+				"id",
+				"target",
+				"type",
+			],
 		};
 	},
 
@@ -64,10 +70,11 @@ export default {
 				this.tableData = [];
 				this.tableColumns = [];
 
-				const uri = `project/${this.$route.params.projectId}/assistances`;
-				const { data } = await fetcher({ uri, auth: true });
+				const uri = `projects/${this.$route.params.projectId}/assistances?page=1&size=15&sort=asc`;
+				const { data: { data } } = await fetcher({ uri, auth: true });
 				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data);
+				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
+
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
