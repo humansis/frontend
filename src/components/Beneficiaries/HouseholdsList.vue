@@ -107,18 +107,6 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			filters: {
-				projects: ["project 1", "project 2"],
-				vulnerabilities: [],
-				gender: null,
-				residencies: [],
-				referrals: [],
-				livelihoods: [],
-				adm1: "",
-				adm2: "",
-				adm3: "",
-				adm4: "",
-			},
 		};
 	},
 
@@ -140,8 +128,6 @@ export default {
 					this.table.currentPage,
 					this.table.perPage,
 					"desc",
-					this.filters,
-					null,
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
