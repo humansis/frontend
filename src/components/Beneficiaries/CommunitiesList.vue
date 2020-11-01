@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
+import CommunitiesService from "@/services/CommunitiesService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 
@@ -94,18 +94,20 @@ export default {
 		async fetchData() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectsList,
+				const loadingComponent = this.$buefy.loading.open();
+
+				await CommunitiesService.getListOfCommunities(
+					this.table.currentPage,
+					this.table.perPage,
+					"desc",
+				).then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumnsFromData(
+						response.data,
+						this.table.visibleColumns,
+					);
 				});
-
-				this.table.data = [];
-				this.table.columns = [];
-
-				const uri = "communities?page=1&size=15&sort=asc";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.table.data = data;
-				this.table.columns = generateColumnsFromData(data);
 
 				loadingComponent.close();
 			} catch (error) {

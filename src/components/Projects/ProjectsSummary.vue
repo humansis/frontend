@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { normalizeText } from "@/utils/datagrid";
+import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "ProjectsSummary",
@@ -25,6 +25,8 @@ export default {
 				error: null,
 			},
 			projectsSummary: [],
+			currentPage: 1,
+			perPage: 15,
 		};
 	},
 
@@ -48,11 +50,13 @@ export default {
 					container: this.$refs.projectsSummary,
 				});
 
-				this.projectsSummary = [];
-
-				const uri = "projects?page=1&size=15&sort=asc";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-				this.projectsSummary = data;
+				await ProjectsService.getListOfProjects(
+					this.currentPage,
+					this.perPage,
+					"desc",
+				).then((response) => {
+					this.projectsSummary = response.data;
+				});
 
 				loadingComponent.close();
 			} catch (error) {

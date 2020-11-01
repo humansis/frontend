@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { normalizeText } from "@/utils/datagrid";
+import HomeService from "@/services/HomeService";
 
 export default {
 	name: "Summary",
@@ -48,11 +48,11 @@ export default {
 					container: this.$refs.summary,
 				});
 
-				this.summary = [];
-
-				const uri = "summaries?code[]=total_registrations";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-				this.summary = data;
+				await HomeService.getSummariesForHomePage(
+					"total_registrations",
+				).then((response) => {
+					this.summary = response.data;
+				});
 
 				loadingComponent.close();
 			} catch (error) {

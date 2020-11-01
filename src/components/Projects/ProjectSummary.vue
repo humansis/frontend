@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { normalizeText } from "@/utils/datagrid";
+import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "ProjectSummary",
@@ -89,12 +89,11 @@ export default {
 					container: this.$refs.projectSummary,
 				});
 
-				this.projectSummary = [];
-
-				const uri = `projects/${this.$route.params.projectId}`;
-
-				const { data } = await fetcher({ uri, auth: true });
-				this.projectSummary = data;
+				await ProjectsService.getDetailOfProject(
+					this.$route.params.projectId,
+				).then((response) => {
+					this.projectSummary = response.data;
+				});
 
 				loadingComponent.close();
 			} catch (error) {
