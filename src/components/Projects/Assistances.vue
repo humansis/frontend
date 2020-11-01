@@ -1,53 +1,56 @@
 <template>
 	<div>
 		<h2 class="title">Project assistances</h2>
-		<b-table
-			:data="tableData"
-			:paginated="true"
-			:per-page="'15'"
-			:current-page="1"
-			:pagination-simple="false"
-			:pagination-position="'bottom'"
-			:default-sort-direction="'asc'"
-			:sort-icon="'arrow-up'"
-			:sort-icon-size="'is-small'"
-			:striped="true"
-			default-sort="date"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
+
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:per-page="table.perPage"
+			@clicked="goToDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
 		>
-			<template v-for="column in tableColumns">
+			<template v-for="column in table.columns">
 				<b-table-column :key="column.id" v-bind="column">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
 				</b-table-column>
 			</template>
-		</b-table>
+		</Table>
 	</div>
 </template>
 <script>
 import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
+import Table from "@/components/Table";
 
 export default {
 	name: "Assistances",
+
+	components: {
+		Table,
+	},
 
 	data() {
 		return {
 			fetch: {
 				error: null,
 			},
-			tableData: [],
-			tableColumns: [],
-			visibleColumns: [
-				"name",
-				"id",
-				"target",
-				"type",
-			],
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					"name",
+					"id",
+					"target",
+					"type",
+				],
+				total: 0,
+				currentPage: 1,
+				perPage: 15,
+			},
 		};
 	},
 
@@ -67,13 +70,13 @@ export default {
 					container: this.$refs.table,
 				});
 
-				this.tableData = [];
-				this.tableColumns = [];
+				this.table.data = [];
+				this.table.columns = [];
 
 				const uri = `projects/${this.$route.params.projectId}/assistances?page=1&size=15&sort=asc`;
 				const { data: { data } } = await fetcher({ uri, auth: true });
-				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
+				this.table.data = data;
+				this.table.columns = generateColumnsFromData(data, this.table.visibleColumns);
 
 				loadingComponent.close();
 			} catch (error) {
@@ -85,6 +88,18 @@ export default {
 			console.error(error);
 			this.fetch.loading = false;
 			this.fetch.error = error.toString();
+		},
+
+		goToDetail() {
+			// TODO go to detail
+		},
+
+		onPageChange() {
+			// TODO on table page change
+		},
+
+		onSort() {
+			// TODO on table sort
 		},
 	},
 };

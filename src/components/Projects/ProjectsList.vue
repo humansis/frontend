@@ -162,27 +162,16 @@
 			</div>
 		</div>
 
-		<b-table
-			:data="tableData"
-			:paginated="true"
-			:per-page="'15'"
-			:current-page="1"
-			:pagination-simple="false"
-			:pagination-position="'bottom'"
-			:default-sort-direction="'asc'"
-			:sort-icon="'arrow-up'"
-			:sort-icon-size="'is-small'"
-			:striped="true"
-			:hoverable="true"
-			default-sort="id"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
-			selectable
-			@dblclick="goToDetail"
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:per-page="table.perPage"
+			@clicked="goToDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
 		>
-			<template v-for="column in tableColumns">
+			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
 					:key="column.id"
@@ -204,16 +193,17 @@
 			>
 				<div class="block">
 					<ActionButton
-						@click.prevent.native="editProject(props.row.id)"
 						icon="edit"
-						type="is-link" />
+						type="is-link"
+						@click.prevent="editProject(props.row.id)"
+					/>
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />
 					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
 
-		</b-table>
+		</Table>
 	</div>
 </template>
 
@@ -221,14 +211,16 @@
 import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
 import Modal from "@/components/Modal";
+import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 
 export default {
 	name: "ProjectsList",
 
 	components: {
-		ActionButton,
 		Modal,
+		Table,
+		ActionButton,
 	},
 
 	data() {
@@ -236,21 +228,26 @@ export default {
 			fetch: {
 				error: null,
 			},
-			tableData: [],
-			tableColumns: [],
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					"id",
+					"name",
+					"donorIds",
+					"startDate",
+					"endDate",
+					"target",
+					"numberOfHouseholds",
+				],
+				total: 0,
+				currentPage: 1,
+				perPage: 15,
+			},
 			projectModal: {
 				isOpened: false,
 				isEditing: true,
 			},
-			visibleColumns: [
-				"id",
-				"name",
-				"donorIds",
-				"startDate",
-				"endDate",
-				"target",
-				"numberOfHouseholds",
-			],
 			sectors: [],
 			donors: [],
 			targetTypes: [],
@@ -289,8 +286,8 @@ export default {
 
 				const { data: { data } } = await fetcher({ uri: "projects?page=1&size=15&sort=asc", auth: true });
 
-				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
+				this.table.data = data;
+				this.table.columns = generateColumnsFromData(data, this.visibleColumns);
 
 				const sectors = await fetcher({ uri: "sectors/CODE/subsectors", auth: true });
 				this.sectors = sectors.data.data;
@@ -311,10 +308,6 @@ export default {
 			console.error(error);
 			this.fetch.loading = false;
 			this.fetch.error = error.toString();
-		},
-
-		goToDetail(item) {
-			this.$router.push({ name: "Project", params: { projectId: item.id } });
 		},
 
 		editProject(id) {
@@ -383,6 +376,17 @@ export default {
 			this.closeProjectModal();
 		},
 
+		goToDetail(item) {
+			this.$router.push({ name: "Project", params: { projectId: item.id } });
+		},
+
+		onPageChange() {
+			// TODO on table page change
+		},
+
+		onSort() {
+			// TODO on table sort
+		},
 	},
 };
 </script>

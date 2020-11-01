@@ -1,0 +1,39 @@
+<template>
+	<div>
+		<b-table
+			:data="data"
+			:total="total"
+			:per-page="perPage"
+			:current-page="currentPage"
+			:pagination-simple="false"
+			:pagination-position="'bottom'"
+			:default-sort-direction="'asc'"
+			:sort-icon="'arrow-up'"
+			:sort-icon-size="'is-small'"
+			paginated
+			striped
+			hoverable
+			backend-pagination
+			default-sort="id"
+			aria-next-label="Next page"
+			aria-previous-label="Previous page"
+			aria-page-label="Page"
+			aria-current-label="Current page"
+			selectable
+			@click="$emit('clicked', $event)"
+			@page-change="$emit('pageChanged', $event)"
+			@sort="$emit('sorted', $event)"
+		>
+			<slot></slot>
+		</b-table>
+	</div>
+</template>
+
+<script>
+export default {
+	name: "Table",
+
+	props: ["data", "total", "currentPage", "perPage"],
+
+};
+</script>
