@@ -119,6 +119,14 @@ const routes = [
 							breadcrumb: "Products",
 						},
 					},
+					{
+						path: "country_options",
+						name: "CountryOptions",
+						component: () => import(/* webpackChunkName: "ConfigurationCountryOptions" */ "@/views/Configuration/CountryOptions"),
+						meta: {
+							breadcrumb: "Products",
+						},
+					},
 				],
 			},
 			{
