@@ -31,7 +31,7 @@ export default {
 
 	async removeInstitution(id) {
 		const { data, status } = await fetcher({
-			uri: `institutions/${id}`, method: "REMOVE",
+			uri: `institutions/${id}`, method: "DELETE",
 		});
 		return { data, status };
 	},

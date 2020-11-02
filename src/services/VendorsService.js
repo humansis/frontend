@@ -31,7 +31,7 @@ export default {
 
 	async removeVendor(id) {
 		const { data, status } = await fetcher({
-			uri: `vendors/${id}`, method: "REMOVE",
+			uri: `vendors/${id}`, method: "DELETE",
 		});
 		return { data, status };
 	},

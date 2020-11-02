@@ -33,7 +33,7 @@ export default {
 
 	async removeHousehold(id) {
 		const { data, status } = await fetcher({
-			uri: `households/${id}`, method: "REMOVE",
+			uri: `households/${id}`, method: "DELETE",
 		});
 		return { data, status };
 	},
