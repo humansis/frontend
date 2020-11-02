@@ -20,33 +20,12 @@
 				</button>
 			</div>
 		</div>
-		<div v-if="advancedSearchVisible" class="mb-5">
-			<div class="columns is-multiline">
-				<div
-					v-for="(filter, key) in gridFilters"
-					:key="key"
-					class="column"
-				>
-					<b-field
-						:label="normalizeText(filter.name)"
-					>
-						<b-select
-							:placeholder="normalizeText(filter.name)"
-						>
 
-							<option
-								v-for="(option, key) in filter.options"
-								:value="option.value"
-								:key="key"
-							>
-								{{ option.label }}
-							</option>
-
-						</b-select>
-					</b-field>
-				</div>
-			</div>
-		</div>
+		<HouseholdsFilters
+			v-if="advancedSearchVisible"
+			:filtersOptions="filtersOptions"
+			@filtersChanged="onFiltersChange"
+		/>
 
 		<Table
 			:data="table.data"
@@ -84,6 +63,7 @@ import { generateColumnsFromData, normalizeText } from "@/utils/datagrid";
 import { fetcher } from "@/utils/fetcher";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 
 export default {
 	name: "HouseholdsList",
@@ -91,6 +71,7 @@ export default {
 	components: {
 		Table,
 		ActionButton,
+		HouseholdsFilters,
 	},
 
 	data() {
@@ -106,6 +87,18 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+			},
+			filtersOptions: {
+				projects: [],
+				vulnerabilities: [],
+				gender: [],
+				residencies: [],
+				referrals: [],
+				livelihoods: [],
+				adm1: [],
+				adm2: [],
+				adm3: [],
+				adm4: [],
 			},
 		};
 	},
@@ -164,6 +157,10 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		onFiltersChange() {
+			// TODO on filters change
 		},
 	},
 };
