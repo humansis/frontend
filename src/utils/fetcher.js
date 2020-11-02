@@ -31,7 +31,7 @@ export const getResponseJSON = async (response) => {
 	throw new Error(response.statusText || data.message || "Something went wrong");
 };
 
-export const fetcher = async ({ uri, auth, method, body, contentType }) => {
+export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
 	const url = `${CONST.API}/${uri}`;
 
 	let headers = {};

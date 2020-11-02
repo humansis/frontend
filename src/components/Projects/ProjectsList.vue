@@ -208,8 +208,11 @@
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
+import AssistancesService from "@/services/AssistancesService";
+import ProjectsService from "@/services/ProjectsService";
+import HomeService from "@/services/HomeService";
+import SectorsService from "@/services/SectorsService";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
@@ -277,26 +280,32 @@ export default {
 		async fetchData() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectsList,
+				const loadingComponent = this.$buefy.loading.open();
+
+				await ProjectsService.getListOfProjects(
+					this.table.currentPage,
+					this.table.perPage,
+					"desc",
+				).then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumnsFromData(
+						response.data,
+						this.table.visibleColumns,
+					);
 				});
 
-				this.tableData = [];
-				this.tableColumns = [];
+				await SectorsService.getListOfSectors().then((response) => {
+					this.sectors = response.data;
+				});
 
-				const { data: { data } } = await fetcher({ uri: "projects?page=1&size=15&sort=asc", auth: true });
+				await HomeService.getListOfDonors().then((response) => {
+					this.donors = response.data;
+				});
 
-				this.table.data = data;
-				this.table.columns = generateColumnsFromData(data, this.visibleColumns);
-
-				const sectors = await fetcher({ uri: "sectors/CODE/subsectors", auth: true });
-				this.sectors = sectors.data.data;
-
-				const donors = await fetcher({ uri: "donors", auth: true });
-				this.donors = donors.data.data;
-
-				const targetTypes = await fetcher({ uri: "assistances/targets", auth: true });
-				this.targetTypes = targetTypes.data.data;
+				await AssistancesService.getListOfTargetsForAssistances().then((response) => {
+					this.targetTypes = response.data;
+				});
 
 				loadingComponent.close();
 			} catch (error) {
@@ -315,8 +324,6 @@ export default {
 				isEditing: true,
 				isOpened: true,
 			};
-
-			console.log(this.tableData.find((item) => item.id === id));
 
 			const {
 				name,

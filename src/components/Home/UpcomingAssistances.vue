@@ -21,8 +21,8 @@
 	</div>
 </template>
 <script>
-import { fetcher } from "@/utils/fetcher";
 import { generateColumnsFromData } from "@/utils/datagrid";
+import AssistancesService from "@/services/AssistancesService";
 import Table from "@/components/Table";
 
 export default {
@@ -74,11 +74,19 @@ export default {
 				this.table.data = [];
 				this.table.columns = [];
 
-				const uri = "assistances?page=1&size=15&sort=asc&upcoming=true";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.table.data = data;
-				this.table.columns = generateColumnsFromData(data, this.table.visibleColumns);
+				await AssistancesService.getListOfAssistances(
+					this.table.currentPage,
+					this.table.perPage,
+					"desc",
+					true,
+				).then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumnsFromData(
+						response.data,
+						this.table.visibleColumns,
+					);
+				});
 
 				loadingComponent.close();
 			} catch (error) {
