@@ -3,22 +3,22 @@
 		<b-tabs size="is-medium">
 			<b-tab-item
 				label="Users"
-				icon="users">
+				icon="user">
 				<UsersList />
 			</b-tab-item>
 			<b-tab-item
 				label="Donors"
-				icon="donors">
+				icon="dollar-sign">
 				<DonorsList />
 			</b-tab-item>
 			<b-tab-item
 				label="My Organizations"
-				icon="my-organizations">
+				icon="child">
 				<MyOrganizationsList />
 			</b-tab-item>
 			<b-tab-item
 				label="Organization services"
-				icon="organization-services">
+				icon="th-large">
 				<OrganizationServicesList />
 			</b-tab-item>
 		</b-tabs>

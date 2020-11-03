@@ -40,7 +40,7 @@
 				label="Actions"
 			>
 				<div class="block">
-					<ActionButton icon="clock" type="is-link" />
+					<ActionButton icon="history" type="is-link" />
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />
 				</div>
