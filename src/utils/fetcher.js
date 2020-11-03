@@ -54,7 +54,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	}
 
 	if (body) {
-		config.body = body;
+		config.body = JSON.stringify(body);
 	}
 
 	const response = await fetch(url, config);
