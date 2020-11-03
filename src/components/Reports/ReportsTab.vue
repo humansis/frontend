@@ -3,17 +3,17 @@
 		<b-tabs size="is-medium">
 			<b-tab-item
 				label="Country Report"
-				icon="country-report">
+				icon="th-large">
 				<CountryReportList />
 			</b-tab-item>
 			<b-tab-item
 				label="Project Report"
-				icon="project-report">
+				icon="clipboard">
 				<ProjectReportList />
 			</b-tab-item>
 			<b-tab-item
 				label="Distribution Report"
-				icon="distribution-report">
+				icon="box">
 				<DistributionReportList />
 			</b-tab-item>
 		</b-tabs>
