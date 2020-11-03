@@ -1,10 +1,10 @@
 <template>
 	<div>
 		<div>
-			<b-button class="period-button">Per Year</b-button>
-			<b-button class="period-button">Per Quarter</b-button>
-			<b-button class="period-button">Per Month</b-button>
-			<b-button class="period-button" @click="showChoosePeriod">Choose Period</b-button>
+			<b-button class="mx-2">Per Year</b-button>
+			<b-button class="mx-2">Per Quarter</b-button>
+			<b-button class="mx-2">Per Month</b-button>
+			<b-button class="mx-2" @click="showChoosePeriod">Choose Period</b-button>
 		</div>
 		<div v-if="showChoosePeriodForm">
 			<b-field>
@@ -40,9 +40,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.period-button {
-	margin: 0 10px 0 10px;
-}
-</style>

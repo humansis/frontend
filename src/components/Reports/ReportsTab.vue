@@ -40,26 +40,5 @@ export default {
 		};
 	},
 
-	methods: {
-		// changeTab(tab) {
-		// 	switch (tab) {
-		// 		case "country-report":
-		// 			this.selectedTab = CountryReportList;
-		// 			break;
-		// 		case "project-report":
-		// 			this.selectedTab = ProjectReportList;
-		// 			break;
-		// 		case "distribution-report":
-		// 			this.selectedTab = DistributionReportList;
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// },
-	},
 };
 </script>
-
-<style scoped>
-
-</style>

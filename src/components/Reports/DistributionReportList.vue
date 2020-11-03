@@ -66,12 +66,12 @@
 <script>
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
-import { fetcher } from "@/utils/fetcher";
-import { generateColumnsFromData } from "@/utils/datagrid";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
 import MultiSelect from "vue-multiselect";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
+import DistributionReportService from "@/services/DistributionReportService";
+import { generateColumnsFromData } from "@/utils/datagrid";
 
 export default {
 	name: "DistributionReportList",
@@ -104,30 +104,32 @@ export default {
 	},
 
 	watch: {
-		$route: "fetchData",
+		$route: "fetchDistributionReports",
 	},
 
 	mounted() {
-		this.fetchData();
+		this.fetchDistributionReports();
 		this.fetchProjects();
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchDistributionReports() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectList,
+				const loadingComponent = this.$buefy.loading.open();
+
+				await DistributionReportService.getListOfDistributionReports(
+					this.table.currentPage,
+					this.table.perPage,
+					"desc",
+				).then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumnsFromData(
+						response.data,
+						this.table.visibleColumns,
+					);
 				});
-
-				this.table.data = [];
-				this.table.columns = [];
-
-				const uri = "country_options?page=1&size=15&sort=asc";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.table.data = data;
-				this.table.columns = generateColumnsFromData(data);
 
 				loadingComponent.close();
 			} catch (error) {
@@ -205,7 +207,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-
-</style>

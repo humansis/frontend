@@ -54,11 +54,11 @@
 <script>
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
-import { fetcher } from "@/utils/fetcher";
-import { generateColumnsFromData } from "@/utils/datagrid";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
 import MultiSelect from "vue-multiselect";
 import ProjectsService from "@/services/ProjectsService";
+import ProjectReportService from "@/services/ProjectReportService";
+import { generateColumnsFromData } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectReportList",
@@ -89,30 +89,32 @@ export default {
 	},
 
 	watch: {
-		$route: "fetchData",
+		$route: "fetchProjectReports",
 	},
 
 	mounted() {
-		this.fetchData();
+		this.fetchProjectReports();
 		this.fetchProjects();
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchProjectReports() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectList,
+				const loadingComponent = this.$buefy.loading.open();
+
+				await ProjectReportService.getListOfProjectReports(
+					this.table.currentPage,
+					this.table.perPage,
+					"desc",
+				).then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumnsFromData(
+						response.data,
+						this.table.visibleColumns,
+					);
 				});
-
-				this.table.data = [];
-				this.table.columns = [];
-
-				const uri = "country_options?page=1&size=15&sort=asc";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.table.data = data;
-				this.table.columns = generateColumnsFromData(data);
 
 				loadingComponent.close();
 			} catch (error) {
@@ -169,7 +171,3 @@ export default {
 };
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-<style scoped>
-
-</style>
