@@ -195,7 +195,7 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.prevent="editProject(props.row.id)"
+						@click.native="editProject(props.row.id)"
 					/>
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />
