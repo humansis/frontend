@@ -1,25 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Country Options</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-		>
-			Add
-		</b-button>
-		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
-		</div>
-
+		<PeriodFilter />
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -30,9 +11,17 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column :key="column.id" v-bind="column">
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+				>
 					<template v-slot="props">
-						{{ props.row[column.field] }}
+						<div v-if="column.field === 'donorIds'">
+							{{ props.row[column.field].length }}
+						</div>
+						<div v-else>
+							{{ props.row[column.field] }}
+						</div>
 					</template>
 				</b-table-column>
 			</template>
@@ -41,26 +30,29 @@
 				label="Actions"
 			>
 				<div class="block">
-					<ActionButton icon="edit" type="is-link" />
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />
+					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
 
 		</Table>
 	</div>
+
 </template>
 
 <script>
-import { generateColumnsFromData } from "@/utils/datagrid";
-import CountryOptionsService from "@/services/CountryOptionsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import { generateColumnsFromData } from "@/utils/datagrid";
+import PeriodFilter from "@/components/Reports/PeriodFilter";
+import CountryReportService from "@/services/CountryReportService";
 
 export default {
-	name: "CountryOptionsList",
+	name: "CountryReportList",
 
 	components: {
+		PeriodFilter,
 		Table,
 		ActionButton,
 	},
@@ -95,11 +87,12 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				await CountryOptionsService.getListOfCountryOptions(
+				await CountryReportService.getListOfCountryReports(
 					this.table.currentPage,
 					this.table.perPage,
 					"desc",
 				).then((response) => {
+					console.log(response.data);
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
 					this.table.columns = generateColumnsFromData(
