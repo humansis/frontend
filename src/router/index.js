@@ -132,7 +132,7 @@ const routes = [
 			{
 				path: "/administrative-settings",
 				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 				meta: {
 					breadcrumb: "Administrative Settings",
 				},
