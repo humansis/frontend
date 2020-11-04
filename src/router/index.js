@@ -140,7 +140,7 @@ const routes = [
 			{
 				path: "/logs",
 				name: "Logs",
-				component: () => import(/* webpackChunkName: "TODO" */ "@/views/tmp"),
+				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
 				meta: {
 					breadcrumb: "Logs",
 				},
