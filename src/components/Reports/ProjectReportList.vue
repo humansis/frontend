@@ -129,9 +129,9 @@ export default {
 					container: this.$refs.projectList,
 				});
 
-				await ProjectsService.getAllProjects(
-					this.table.currentPage,
-					this.table.perPage,
+				await ProjectsService.getListOfProjects(
+					1,
+					15,
 					"desc",
 				).then((response) => {
 					response.data.forEach(({ name, id }) => {

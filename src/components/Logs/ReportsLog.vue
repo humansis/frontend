@@ -3,20 +3,24 @@
 		<h2>Status Rate</h2>
 		<PieChart
 			:datacollection="pieData"
-			:options="pieOptions" />
+			:options="pieOptions"
+		/>
 		<h2>Requests Per Day</h2>
 		<LineChart
 			:datacollection="lineData"
-			:options="lineOptions" />
+			:options="lineOptions"
+		/>
 		<h2>Most Active Users</h2>
 		<BarChart
 			:datacollection="barData"
-			:options="barOptions" />
+			:options="barOptions"
+		/>
 		<h2>Requests Per Country</h2>
 		<LineChart
 			ref="requestsPerCountry"
 			:datacollection="multiLineData"
-			:options="multiLineOptions" />
+			:options="multiLineOptions"
+		/>
 	</div>
 </template>
 

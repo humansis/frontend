@@ -144,7 +144,11 @@ export default {
 					container: this.$refs.projectList,
 				});
 
-				await ProjectsService.getAllProjects()
+				await ProjectsService.getListOfProjects(
+					1,
+					15,
+					"desc",
+				)
 					.then((response) => {
 						response.data.forEach(({ name, id }) => {
 							this.projectsForFilter.push(
@@ -169,7 +173,12 @@ export default {
 					container: this.$refs.projectList,
 				});
 				this.distributionsForFilter = [];
-				await AssistancesService.getAllProjectAssistances(this.selectedProjectsForFilter.id)
+				await AssistancesService.getListOfProjectAssistances(
+					this.selectedProjectsForFilter.id,
+					1,
+					15,
+					"desc",
+				)
 					.then((response) => {
 						response.data.forEach(({ name, id }) => {
 							this.distributionsForFilter.push(

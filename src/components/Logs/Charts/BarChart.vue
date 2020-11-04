@@ -7,17 +7,17 @@ export default {
 	extends: Bar,
 
 	props: {
-		datacollection: {},
+		dataCollection: {},
 		options: {},
 	},
 
 	mounted() {
-		this.renderChart(this.datacollection, this.options);
+		this.renderChart(this.dataCollection, this.options);
 	},
 
 	watch: {
-		datacollection() {
-			this.renderChart(this.datacollection, this.options);
+		dataCollection() {
+			this.renderChart(this.dataCollection, this.options);
 		},
 	},
 

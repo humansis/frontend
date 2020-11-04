@@ -20,17 +20,9 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column :key="column.id" v-bind="column">
 					<template v-slot="props">
-						<div v-if="column.field === 'donorIds'">
-							{{ props.row[column.field].length }}
-						</div>
-						<div v-else>
-							{{ props.row[column.field] }}
-						</div>
+						{{ props.row[column.field] }}
 					</template>
 				</b-table-column>
 			</template>
@@ -63,13 +55,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			projectsForFilter: [],
-			selectedProjectsForFilter: [],
 		};
 	},
 
 	watch: {
-		$route: "fetchProjectReports",
+		$route: "fetchData",
 	},
 
 	mounted() {

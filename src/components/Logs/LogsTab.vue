@@ -3,33 +3,39 @@
 		<b-tabs v-model="selectedTab" size="is-medium">
 			<b-tab-item
 				label="Distributions"
-				icon="clipboard">
+				icon="clipboard"
+			>
 				<DistributionsLogList />
 			</b-tab-item>
 			<b-tab-item
 				label="Beneficiaries"
-				icon="users">
+				icon="users"
+			>
 				<BeneficiariesLogList />
 			</b-tab-item>
 			<b-tab-item
 				label="Vouchers"
-				icon="ticket-alt">
+				icon="ticket-alt"
+			>
 				<VouchersLogList />
 			</b-tab-item>
 			<b-tab-item
 				label="Administrative Settings"
-				icon="wrench">
+				icon="wrench"
+			>
 				<AdministrativeSettingsLogList />
 			</b-tab-item>
 			<b-tab-item
 				label="Other"
-				icon="box">
+				icon="box"
+			>
 				<OtherLogList />
 			</b-tab-item>
 			<b-tab-item
 				label="Reports"
-				icon="chart-line">
-				<ReportsLog v-if="this.loadedReports"/>
+				icon="chart-line"
+			>
+				<ReportsLog v-if="loadedReports"/>
 			</b-tab-item>
 		</b-tabs>
 	</div>

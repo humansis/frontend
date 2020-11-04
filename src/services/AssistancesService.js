@@ -27,11 +27,4 @@ export default {
 		});
 		return { data, totalCount };
 	},
-
-	async getAllProjectAssistances(id) {
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/assistances`,
-		});
-		return { data, totalCount };
-	},
 };
