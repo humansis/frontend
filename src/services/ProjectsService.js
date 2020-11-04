@@ -36,7 +36,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async editProject(id, body) {
+	async updateProject(id, body) {
 		const { data, status } = await fetcher({ uri: `projects/${id}`, method: "PUT", body });
 		return { data, status };
 	},

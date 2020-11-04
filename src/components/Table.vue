@@ -20,7 +20,7 @@
 			aria-page-label="Page"
 			aria-current-label="Current page"
 			selectable
-			@click="$emit('clicked', $event)"
+			@dblclick="$emit('clicked', $event)"
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
 		>

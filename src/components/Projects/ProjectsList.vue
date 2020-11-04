@@ -7,139 +7,13 @@
 			:header="projectModal.isEditing ? 'Edit project' : 'Create new project'"
 			@close="closeProjectModal"
 		>
-			<form @submit.prevent="submitProjectForm">
-				<section class="modal-card-body">
-					<b-field label="Project Name">
-						<b-input v-model="project.name" />
-					</b-field>
-
-					<b-field label="Internal ID">
-						<b-input v-model="project.internalId" />
-					</b-field>
-
-					<b-field label="Sectors">
-						<b-tag
-							v-for="selectedSector in project.selectedSectors"
-							:key="selectedSector"
-							type="is-success"
-							closable
-						>
-							{{ selectedSector }}
-						</b-tag>
-						<b-dropdown
-							v-model="project.selectedSectors"
-							multiple
-						>
-							<button class="button is-primary is-light" type="button" slot="trigger">
-								<span>Select sectors</span>
-								<b-icon icon="chevron-circle-down"></b-icon>
-							</button>
-							<b-dropdown-item
-								v-for="{code, value} in sectors"
-								:value="value"
-								:key="value"
-							>
-								<span>{{ code }}</span>
-							</b-dropdown-item>
-						</b-dropdown>
-					</b-field>
-
-					<b-field label="Start date">
-						<b-datepicker
-							v-model="project.startDate"
-							show-week-number
-							locale="en-GB"
-							placeholder="Click to select..."
-							icon="calendar-day"
-							trap-focus>
-						</b-datepicker>
-					</b-field>
-
-					<b-field label="Start end">
-						<b-datepicker
-							v-model="project.endDate"
-							show-week-number
-							locale="en-US"
-							placeholder="Click to select..."
-							icon="calendar-day"
-							trap-focus>
-						</b-datepicker>
-					</b-field>
-
-					<b-field label="Donors">
-						<b-tag
-							v-for="selectedDonor in project.selectedDonors"
-							:key="selectedDonor"
-							type="is-success"
-							closable
-						>
-							{{ selectedDonor }}
-						</b-tag>
-						<b-dropdown
-							v-model="project.selectedDonors"
-							multiple
-						>
-							<button class="button is-primary is-light" type="button" slot="trigger">
-								<span>Select donors</span>
-								<b-icon icon="chevron-circle-down"></b-icon>
-							</button>
-							<b-dropdown-item
-								v-for="{id, shortname} in donors"
-								:value="id"
-								:key="id"
-							>
-								<span>{{ shortname }}</span>
-							</b-dropdown-item>
-						</b-dropdown>
-					</b-field>
-
-					<b-field label="Target Type">
-						<b-tag
-							v-for="selectedTargetType in project.selectedTargetTypes"
-							:key="selectedTargetType"
-							type="is-success"
-							closable
-						>
-							{{ selectedTargetType }}
-						</b-tag>
-						<b-dropdown
-							v-model="project.selectedTargetTypes"
-							multiple
-						>
-							<button class="button is-primary is-light" type="button" slot="trigger">
-								<span>Select target types</span>
-								<b-icon icon="chevron-circle-down"></b-icon>
-							</button>
-							<b-dropdown-item
-								v-for="{code, value} in targetTypes"
-								:value="value"
-								:key="value"
-							>
-								<span>{{ code }}</span>
-							</b-dropdown-item>
-						</b-dropdown>
-					</b-field>
-
-					<b-field label="Total Target">
-						<b-numberinput v-model="project.totalTarget" min="0" />
-					</b-field>
-
-					<b-field label="Notes">
-						<b-input v-model="project.notes" type="textarea"></b-input>
-					</b-field>
-
-				</section>
-
-				<footer class="modal-card-foot">
-					<button class="button" type="button" @click="closeProjectModal">
-						Close
-					</button>
-					<b-button tag="input"
-						class="is-success"
-						native-type="submit"
-						:value="projectModal.isEditing ? 'Update' : 'Create'" />
-				</footer>
-			</form>
+			<ProjectForm
+				close-button
+				:formModel="projectModel"
+				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
+				@formSubmitted="submitProjectForm"
+				@formClosed="closeProjectModal"
+			/>
 		</Modal>
 
 		<b-button
@@ -195,7 +69,7 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.prevent="editProject(props.row.id)"
+						@click.native="editProject(props.row.id)"
 					/>
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />
@@ -216,6 +90,7 @@ import SectorsService from "@/services/SectorsService";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import ProjectForm from "@/components/Projects/ProjectForm";
 
 export default {
 	name: "ProjectsList",
@@ -224,6 +99,7 @@ export default {
 		Modal,
 		Table,
 		ActionButton,
+		ProjectForm,
 	},
 
 	data() {
@@ -251,17 +127,18 @@ export default {
 				isOpened: false,
 				isEditing: true,
 			},
-			sectors: [],
-			donors: [],
-			targetTypes: [],
-			project: {
+			projectModel: {
+				id: null,
 				name: "",
 				internalId: "",
+				sectors: [],
 				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
+				donors: [],
 				selectedDonors: [],
-				selectedTargetTypes: [],
+				targetTypes: [],
+				selectedTargetType: [],
 				totalTarget: 0,
 				notes: "",
 			},
@@ -296,15 +173,15 @@ export default {
 				});
 
 				await SectorsService.getListOfSectors().then((response) => {
-					this.sectors = response.data;
+					this.projectModel.sectors = response.data;
 				});
 
 				await HomeService.getListOfDonors().then((response) => {
-					this.donors = response.data;
+					this.projectModel.donors = response.data;
 				});
 
 				await AssistancesService.getListOfTargetsForAssistances().then((response) => {
-					this.targetTypes = response.data;
+					this.projectModel.targetTypes = response.data;
 				});
 
 				loadingComponent.close();
@@ -327,21 +204,22 @@ export default {
 
 			const {
 				name,
-				id: internalId,
 				sectorIds: selectedSectors,
 				donorIds: selectedDonors,
 				target: totalTarget,
 				notes,
-			} = this.tableData.find((item) => item.id === id);
+			} = this.table.data.find((item) => item.id === id);
 
-			this.project = {
+			this.projectModel = {
+				...this.projectModel,
+				id,
 				name,
-				internalId,
+				internalId: id,
 				selectedSectors,
 				startDate: new Date("DD/MMM/YY"),
 				endDate: new Date("DD/MMM/YY"),
 				selectedDonors,
-				selectedTargetTypes: [],
+				selectedTargetType: [],
 				totalTarget,
 				notes,
 			};
@@ -353,34 +231,80 @@ export default {
 				isOpened: true,
 			};
 
-			this.project = {
+			this.projectModel = {
+				...this.projectModel,
+				id: null,
 				name: "",
-				internalId: "",
-				sectors: [],
+				internalId: null,
 				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
-				donors: [],
 				selectedDonors: [],
-				targetTypes: [],
-				selectedTargetTypes: [],
+				selectedTargetType: [],
 				totalTarget: 0,
 				notes: "",
 			};
 		},
 
-		closeProjectModal() {
-			this.projectModal.isOpened = false;
-		},
+		submitProjectForm(projectForm) {
+			const {
+				id,
+				name,
+				selectedSectors: sectorIds,
+				startDate,
+				endDate,
+				selectedDonors: donorIds,
+				selectedTargetType: targetType,
+				totalTarget: target,
+				notes,
+			} = projectForm;
 
-		submitProjectForm(id = null) {
+			const projectBody = {
+				iso3: "",
+				name,
+				notes,
+				target,
+				targetType,
+				numberOfHouseholds: 0,
+				startDate,
+				endDate,
+				sectorIds,
+				donorIds,
+			};
+
 			if (this.projectModal.isEditing && id) {
-				// TODO update item
+				this.updateProject(id, projectBody);
 			} else {
-				// TODO put new item
+				this.createProject(projectBody);
 			}
 
 			this.closeProjectModal();
+		},
+
+		async createProject(projectBody) {
+			await ProjectsService.createProject(projectBody).then((response) => {
+				if (response.status === 200) {
+					this.$buefy.toast.open({
+						message: "Project Successfully Created",
+						type: "is-success",
+					});
+				}
+			});
+		},
+
+		async updateProject(id, projectBody) {
+			await ProjectsService.updateProject(id, projectBody).then((response) => {
+				if (response.status === 200) {
+					this.$buefy.toast.open({
+						message: "Project Successfully Updated",
+						type: "is-success",
+					});
+				}
+			});
+		},
+
+		closeProjectModal() {
+			this.projectModal.isOpened = false;
 		},
 
 		goToDetail(item) {
