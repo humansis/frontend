@@ -9,8 +9,9 @@
 				placeholder="Search"
 				label="name"
 				track-by="id"
+				multiple
 				:options="projectsForFilter"
-				:multiple="true"/>
+			/>
 		</div>
 		<Table
 			:data="table.data"
@@ -129,9 +130,9 @@ export default {
 					container: this.$refs.projectList,
 				});
 
-				await ProjectsService.getAllProjects(
-					this.table.currentPage,
-					this.table.perPage,
+				await ProjectsService.getListOfProjects(
+					1,
+					15,
 					"desc",
 				).then((response) => {
 					response.data.forEach(({ name, id }) => {

@@ -8,13 +8,6 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getAllProjects() {
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects`,
-		});
-		return { data, totalCount };
-	},
-
 	async getListOfProjects(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 
