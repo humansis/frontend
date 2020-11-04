@@ -7,8 +7,8 @@ export default {
 	extends: Bar,
 
 	props: {
-		dataCollection: {},
-		options: {},
+		dataCollection: Object,
+		options: Object,
 	},
 
 	mounted() {

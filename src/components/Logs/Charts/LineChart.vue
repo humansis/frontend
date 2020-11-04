@@ -7,8 +7,8 @@ export default {
 	extends: Line,
 
 	props: {
-		dataCollection: {},
-		options: {},
+		dataCollection: Object,
+		options: Object,
 	},
 
 	mounted() {

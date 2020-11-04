@@ -9,8 +9,9 @@
 				placeholder="Search"
 				label="name"
 				track-by="id"
+				multiple
 				:options="projectsForFilter"
-				:multiple="true"/>
+			/>
 		</div>
 		<Table
 			:data="table.data"

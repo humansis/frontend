@@ -1,26 +1,35 @@
 <template>
-	<div>
-		<h2>Status Rate</h2>
-		<PieChart
-			:datacollection="pieData"
-			:options="pieOptions"
-		/>
-		<h2>Requests Per Day</h2>
-		<LineChart
-			:datacollection="lineData"
-			:options="lineOptions"
-		/>
-		<h2>Most Active Users</h2>
-		<BarChart
-			:datacollection="barData"
-			:options="barOptions"
-		/>
-		<h2>Requests Per Country</h2>
-		<LineChart
-			ref="requestsPerCountry"
-			:datacollection="multiLineData"
-			:options="multiLineOptions"
-		/>
+	<div class="columns">
+		<div class="column">
+			<div class="is-size-5 has-text-centered">Status Rate</div>
+			<PieChart
+				:dataCollection="pieData"
+				:options="pieOptions"
+			/>
+		</div>
+		<div class="column">
+			<div class="is-size-5 has-text-centered">Requests Per Day</div>
+			<LineChart
+				:dataCollection="lineData"
+				:options="lineOptions"
+			/>
+		</div>
+		<div class="column">
+			<div class="is-size-5 has-text-centered">Most Active Users</div>
+			<BarChart
+				:dataCollection="barData"
+				:options="barOptions"
+			/>
+		</div>
+		<div class="column">
+			<div class="is-size-5 has-text-centered">Requests Per Country</div>
+			<LineChart
+				ref="requestsPerCountry"
+				:dataCollection="multiLineData"
+				:options="multiLineOptions"
+			/>
+		</div>
+
 	</div>
 </template>
 

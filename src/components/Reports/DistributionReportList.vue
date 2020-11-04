@@ -10,7 +10,6 @@
 				label="name"
 				track-by="id"
 				:options="projectsForFilter"
-				:multiple="false"
 				@input="fetchDistributions"
 			/>
 			<label class="typo__label">Distributions</label>
@@ -21,7 +20,7 @@
 				label="name"
 				track-by="id"
 				:options="distributionsForFilter"
-				:multiple="false"/>
+			/>
 		</div>
 		<Table
 			:data="table.data"
