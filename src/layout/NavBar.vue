@@ -81,6 +81,7 @@ export default {
 			this.$router.go();
 		},
 	},
+
 	created() {
 		this.updateCountry();
 	},
