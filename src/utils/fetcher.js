@@ -1,6 +1,8 @@
 import Vue from "vue";
 import CONST from "@/const";
 
+import state from "@/store/state";
+
 export const getResponseJSON = async (response) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
@@ -45,7 +47,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		headers.Authentication = localStorage.getItem("user-token");
 	}
 
-	headers.Country = "KHM";
+	headers.Country = state.country;
 
 	const config = { headers };
 
