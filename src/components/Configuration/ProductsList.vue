@@ -43,7 +43,7 @@
 				<div class="block">
 					<ActionButton icon="edit" type="is-link" />
 					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
+					<SafeDelete icon="trash" entity="Product"/>
 				</div>
 			</b-table-column>
 
@@ -56,11 +56,13 @@ import { generateColumnsFromData } from "@/utils/datagrid";
 import ProductsService from "@/services/ProductsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import SafeDelete from "@/components/SafeDelete/SafeDelete";
 
 export default {
 	name: "ProductsList",
 
 	components: {
+		SafeDelete,
 		Table,
 		ActionButton,
 	},
