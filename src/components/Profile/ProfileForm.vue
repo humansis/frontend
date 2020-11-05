@@ -17,13 +17,15 @@
 								/>
 							</b-field>
 							<b-field>
-								<b-input type="password"
+								<b-input
+									type="password"
 									placeholder="New Password"
 									v-model="passwordForm.newPassword"
 								/>
 							</b-field>
 							<b-field>
-								<b-input type="password"
+								<b-input
+									type="password"
 									placeholder="Re-Enter New Password"
 									v-model="passwordForm.reenteredPassword"
 								/>
