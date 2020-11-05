@@ -145,6 +145,14 @@ const routes = [
 					breadcrumb: "Logs",
 				},
 			},
+			{
+				path: "/profile",
+				name: "Profile",
+				component: () => import(/* webpackChunkName: Profile */ "@/views/Profile"),
+				meta: {
+					breadcrumb: "Profile",
+				},
+			},
 		],
 	},
 	{

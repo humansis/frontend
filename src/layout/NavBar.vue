@@ -51,10 +51,12 @@
 					<b-icon class="mr-1" icon="language" />
 					Language
 				</b-dropdown-item>
-				<b-dropdown-item value="profile">
-					<b-icon class="mr-1" icon="user" />
-					Profile
-				</b-dropdown-item>
+				<router-link to="/profile">
+					<b-dropdown-item value="profile">
+						<b-icon class="mr-1" icon="user"/>
+						Profile
+					</b-dropdown-item>
+				</router-link>
 				<b-dropdown-item value="logout">
 					<b-icon class="mr-1" icon="sign-out-alt" />
 					Log out
