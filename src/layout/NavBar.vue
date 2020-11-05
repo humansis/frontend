@@ -17,6 +17,7 @@
 				position="is-bottom-left"
 				append-to-body
 				aria-role="menu"
+				v-model="country"
 			>
 				<a
 					class="navbar-item"
@@ -67,18 +68,27 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
 	name: "NavBar",
 
 	methods: {
-		...mapActions(["changeCountry"]),
+		...mapActions(["updateCountry"]),
 
-		async handleChangeCountry(country) {
-			await this.changeCountry(country);
+		handleChangeCountry(country) {
+			localStorage.setItem("country", country);
+			this.$router.go();
 		},
 	},
+	created() {
+		this.updateCountry();
+	},
+
+	computed: {
+		...mapState(["country"]),
+	},
+
 };
 </script>
 

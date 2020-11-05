@@ -1,5 +1,6 @@
 export default {
-	changeCountry: ({ commit }, country) => {
-		commit("changeCountry", country);
+	updateCountry: ({ commit }) => {
+		const country = localStorage.getItem("country");
+		commit("changeCountry", country === null ? "KHM" : country);
 	},
 };
