@@ -39,11 +39,17 @@
 
 			<b-table-column
 				label="Actions"
+				v-slot="props"
 			>
 				<div class="block">
 					<ActionButton icon="edit" type="is-link" />
 					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
+					<SafeDelete
+						icon="trash"
+						entity="Product"
+						:id="props.row.id"
+						@submitted="onRemoveProduct"
+					/>
 				</div>
 			</b-table-column>
 
@@ -56,11 +62,13 @@ import { generateColumnsFromData } from "@/utils/datagrid";
 import ProductsService from "@/services/ProductsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "ProductsList",
 
 	components: {
+		SafeDelete,
 		Table,
 		ActionButton,
 	},
@@ -130,6 +138,11 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		onRemoveProduct(id) {
+			// TODO on product delete
+			console.log(`Removing product with id: ${id}`);
 		},
 	},
 };
