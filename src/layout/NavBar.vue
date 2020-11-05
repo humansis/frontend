@@ -17,6 +17,7 @@
 				position="is-bottom-left"
 				append-to-body
 				aria-role="menu"
+				v-model="country"
 			>
 				<a
 					class="navbar-item"
@@ -24,15 +25,15 @@
 					role="button">
 					<b-icon icon="globe-africa" size="is-medium" />
 				</a>
-				<b-dropdown-item value="KHM">
+				<b-dropdown-item value="KHM" @click="handleChangeCountry('KHM')">
 					<b-icon class="mr-1" icon="globe" />
 					KHM
 				</b-dropdown-item>
-				<b-dropdown-item value="SYR">
+				<b-dropdown-item value="SYR" @click="handleChangeCountry('SYR')">
 					<b-icon class="mr-1" icon="globe" />
 					SYR
 				</b-dropdown-item>
-				<b-dropdown-item value="UKR">
+				<b-dropdown-item value="UKR" @click="handleChangeCountry('UKR')">
 					<b-icon class="mr-1" icon="globe" />
 					UKR
 				</b-dropdown-item>
@@ -67,8 +68,28 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 export default {
 	name: "NavBar",
+
+	methods: {
+		...mapActions(["updateCountry"]),
+
+		handleChangeCountry(country) {
+			localStorage.setItem("country", country);
+			this.$router.go();
+		},
+	},
+
+	created() {
+		this.updateCountry();
+	},
+
+	computed: {
+		...mapState(["country"]),
+	},
+
 };
 </script>
 
