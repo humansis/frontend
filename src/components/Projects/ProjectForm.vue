@@ -1,123 +1,142 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="Project Name">
-				<b-input v-model="formModel.name" />
+			<b-field
+				label="Project Name"
+				:type="getValidationType('name')"
+				:message="getValidationMessage('name', 'Required')"
+			>
+				<b-input
+					@blur="validateInput('name')"
+					v-model="formModel.name"
+				/>
 			</b-field>
 
-			<b-field label="Internal ID">
-				<b-input v-model="formModel.internalId" />
+			<b-field
+				label="Internal ID"
+				:type="getValidationType('internalId')"
+				:message="getValidationMessage('internalId', 'Required number')"
+			>
+				<b-input
+					v-model="formModel.internalId"
+					@blur="validateInput('internalId')"
+				/>
 			</b-field>
 
-			<b-field label="Sectors">
-				<b-tag
-					v-for="selectedSector in formModel.selectedSectors"
-					:key="selectedSector"
-					type="is-success"
-					closable
-				>
-					{{ selectedSector }}
-				</b-tag>
-				<b-dropdown
+			<b-field
+				label="Sectors"
+				:type="getValidationType('selectedSectors')"
+				:message="getValidationMessage('selectedSectors', 'Required')"
+			>
+				<MultiSelect
 					v-model="formModel.selectedSectors"
+					searchable
+					placeholder="Select sectors"
+					label="code"
+					track-by="value"
 					multiple
+					:options="formModel.sectors"
+					@select="validateInput('selectedSectors')"
 				>
-					<button class="button is-primary is-light" type="button" slot="trigger">
-						<span>Select sectors</span>
-						<b-icon icon="chevron-circle-down"></b-icon>
-					</button>
-					<b-dropdown-item
-						v-for="{code, value} in formModel.sectors"
-						:value="value"
-						:key="value"
+					<template
+						slot="singleLabel"
+						slot-scope="option"
 					>
-						<span>{{ code }}</span>
-					</b-dropdown-item>
-				</b-dropdown>
+						{{ option.code }}
+					</template>
+				</MultiSelect>
 			</b-field>
 
-			<b-field label="Start date">
+			<b-field
+				label="Start date"
+				:type="getValidationType('startDate')"
+				:message="getValidationMessage('startDate', 'Required')"
+			>
 				<b-datepicker
 					v-model="formModel.startDate"
 					show-week-number
 					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
-					trap-focus>
-				</b-datepicker>
+					trap-focus
+					@input="validateInput('startDate')"
+				/>
 			</b-field>
 
-			<b-field label="Start end">
+			<b-field
+				label="Start end"
+				:type="getValidationType('endDate')"
+				:message="getValidationMessage('endDate', 'Required')"
+			>
 				<b-datepicker
 					v-model="formModel.endDate"
 					show-week-number
 					locale="en-US"
 					placeholder="Click to select..."
 					icon="calendar-day"
-					trap-focus>
-				</b-datepicker>
+					trap-focus
+					@input="validateInput('endDate')"
+				/>
 			</b-field>
 
-			<b-field label="Donors">
-				<b-tag
-					v-for="selectedDonor in formModel.selectedDonors"
-					:key="selectedDonor"
-					type="is-success"
-					closable
-				>
-					{{ selectedDonor }}
-				</b-tag>
-				<b-dropdown
+			<b-field
+				label="Donors"
+				:type="getValidationType('selectedDonors')"
+				:message="getValidationMessage('selectedDonors', 'Required')"
+			>
+				<MultiSelect
 					v-model="formModel.selectedDonors"
+					searchable
+					placeholder="Select donors"
+					label="shortname"
+					track-by="id"
 					multiple
+					:options="formModel.donors"
+					@select="validateInput('selectedDonors')"
 				>
-					<button class="button is-primary is-light" type="button" slot="trigger">
-						<span>Select donors</span>
-						<b-icon icon="chevron-circle-down"></b-icon>
-					</button>
-					<b-dropdown-item
-						v-for="{id, shortname} in formModel.donors"
-						:value="id"
-						:key="id"
+					<template
+						slot="singleLabel"
+						slot-scope="option"
 					>
-						<span>{{ shortname }}</span>
-					</b-dropdown-item>
-				</b-dropdown>
+						{{ option.shortname }}
+					</template>
+				</MultiSelect>
 			</b-field>
 
-			<b-field label="Target Type">
-				<b-tag
-					v-for="selectedTargetType in formModel.selectedTargetType"
-					:key="selectedTargetType"
-					type="is-success"
-					closable
-				>
-					{{ selectedTargetType }}
-				</b-tag>
-				<b-dropdown
+			<b-field
+				label="Target Type"
+				:type="getValidationType('selectedTargetType')"
+				:message="getValidationMessage('selectedTargetType', 'Required')"
+			>
+				<MultiSelect
 					v-model="formModel.selectedTargetType"
-					multiple
-				>
-					<button class="button is-primary is-light" type="button" slot="trigger">
-						<span>Select donors</span>
-						<b-icon icon="chevron-circle-down"></b-icon>
-					</button>
-					<b-dropdown-item
-						v-for="{code, value} in formModel.targetTypes"
-						:value="value"
-						:key="value"
-					>
-						<span>{{ code }}</span>
-					</b-dropdown-item>
-				</b-dropdown>
+					:options="formModel.targetTypes"
+					:searchable="false"
+					label="code"
+					track-by="value"
+					placeholder="Select target type"
+					@select="validateInput('selectedTargetType')"
+				/>
 			</b-field>
 
-			<b-field label="Total Target">
-				<b-numberinput v-model="formModel.totalTarget" min="0" />
+			<b-field
+				label="Total Target"
+				:type="getValidationType('totalTarget')"
+				:message="getValidationMessage('totalTarget', 'Required, min length is 0')"
+			>
+				<b-numberinput
+					v-model="formModel.totalTarget"
+					@blur="validateInput('totalTarget')"
+				/>
 			</b-field>
 
-			<b-field label="Notes">
-				<b-input v-model="formModel.notes" type="textarea"></b-input>
+			<b-field
+				label="Notes"
+			>
+				<b-input
+					v-model="formModel.notes"
+					type="textarea"
+				/>
 			</b-field>
 
 		</section>
@@ -126,15 +145,19 @@
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close
 			</button>
-			<b-button tag="input"
+			<b-button
+				tag="input"
 				class="is-success"
 				native-type="submit"
-				:value="submitButtonLabel" />
+				:value="submitButtonLabel"
+			/>
 		</footer>
 	</form>
 </template>
 
 <script>
+import { required, minLength, numeric } from "vuelidate/lib/validators";
+
 export default {
 	name: "ProjectForm",
 
@@ -144,9 +167,62 @@ export default {
 		closeButton: Boolean,
 	},
 
+	validations: {
+		formModel: {
+			name: {
+				required,
+			},
+			internalId: {
+				required,
+				numeric,
+			},
+			selectedSectors: {
+				required,
+			},
+			startDate: {
+				required,
+			},
+			endDate: {
+				required,
+			},
+			selectedDonors: {
+				required,
+			},
+			selectedTargetType: {
+				required,
+			},
+			totalTarget: {
+				required,
+				minLength: minLength(0),
+			},
+		},
+	},
+
 	methods: {
 		submitForm() {
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				return;
+			}
+
 			this.$emit("formSubmitted", this.formModel);
+			this.$v.$reset();
+		},
+
+		validateInput(fieldName) {
+			this.$v.formModel[fieldName].$touch();
+		},
+
+		getValidationMessage(fieldName, message) {
+			return this.$v.formModel[fieldName].$error ? message : "";
+		},
+
+		getValidationType(fieldName) {
+			let result = "";
+			if (this.$v.formModel[fieldName].$dirty) {
+				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
+			}
+			return result;
 		},
 
 		closeForm() {
