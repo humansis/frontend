@@ -39,11 +39,17 @@
 
 			<b-table-column
 				label="Actions"
+				v-slot="props"
 			>
 				<div class="block">
 					<ActionButton icon="edit" type="is-link" />
 					<ActionButton icon="search" type="is-info" />
-					<SafeDelete icon="trash" entity="Product"/>
+					<SafeDelete
+						icon="trash"
+						entity="Product"
+						:id="props.row.id"
+						@submitted="onRemoveProduct"
+					/>
 				</div>
 			</b-table-column>
 
@@ -132,6 +138,11 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		onRemoveProduct(id) {
+			// TODO on product delete
+			console.log(`Removing product with id: ${id}`);
 		},
 	},
 };

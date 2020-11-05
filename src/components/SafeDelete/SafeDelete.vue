@@ -15,6 +15,7 @@ export default {
 	props: {
 		icon: String,
 		entity: String,
+		id: Number,
 	},
 
 	methods: {
@@ -22,7 +23,7 @@ export default {
 			let message = "Are you sure";
 			let title = "Deleting";
 			let confirmMessage = "Deleted";
-			if (this.entity !== undefined) {
+			if (this.entity) {
 				message = `${message} you want to delete ${this.entity}`;
 				title = `${title} ${this.entity}`;
 				confirmMessage = `${this.entity} ${confirmMessage}`;
@@ -33,14 +34,13 @@ export default {
 				confirmText: "Delete",
 				type: "is-danger",
 				hasIcon: true,
-				onConfirm: () => this.$buefy.toast.open(`${confirmMessage}!`),
+				onConfirm: () => {
+					this.$emit("submitted", this.id);
+					this.$buefy.toast.open(`${confirmMessage}!`);
+				},
 			});
 		},
 	},
 };
 
 </script>
-
-<style scoped>
-
-</style>
