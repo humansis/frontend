@@ -6,6 +6,7 @@ import store from "@/store";
 import "@/plugins/buefy";
 import "@/plugins/vuelidate";
 import "@/plugins/breadcrumbs";
+import "@/plugins/vueselect";
 
 Vue.config.productionTip = false;
 

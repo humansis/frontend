@@ -56,7 +56,6 @@
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
-import MultiSelect from "vue-multiselect";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import { generateColumnsFromData } from "@/utils/datagrid";
@@ -65,7 +64,6 @@ export default {
 	name: "ProjectReportList",
 
 	components: {
-		MultiSelect,
 		PeriodFilter,
 		Table,
 		ActionButton,
@@ -171,4 +169,3 @@ export default {
 	},
 };
 </script>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
