@@ -82,7 +82,7 @@ const routes = [
 			{
 				path: "/reports",
 				name: "Reports",
-				component: () => import(/* webpackChunkName: Reports */ "@/views/Reports"),
+				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
 				meta: {
 					breadcrumb: "Reports",
 				},
@@ -90,7 +90,7 @@ const routes = [
 			{
 				path: "/vouchers",
 				name: "Vouchers",
-				component: () => import(/* webpackChunkName: Vouchers */ "@/views/Vouchers"),
+				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				meta: {
 					breadcrumb: "Vouchers",
 				},
@@ -148,7 +148,7 @@ const routes = [
 			{
 				path: "/profile",
 				name: "Profile",
-				component: () => import(/* webpackChunkName: Profile */ "@/views/Profile"),
+				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				meta: {
 					breadcrumb: "Profile",
 				},
