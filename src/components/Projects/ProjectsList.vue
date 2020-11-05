@@ -83,6 +83,7 @@
 
 <script>
 import { generateColumnsFromData } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI.js";
 import AssistancesService from "@/services/AssistancesService";
 import ProjectsService from "@/services/ProjectsService";
 import HomeService from "@/services/HomeService";
@@ -284,10 +285,7 @@ export default {
 		async createProject(projectBody) {
 			await ProjectsService.createProject(projectBody).then((response) => {
 				if (response.status === 200) {
-					this.$buefy.toast.open({
-						message: "Project Successfully Created",
-						type: "is-success",
-					});
+					Toast("Project Successfully Created", "is-success");
 				}
 			});
 		},
@@ -295,10 +293,7 @@ export default {
 		async updateProject(id, projectBody) {
 			await ProjectsService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
-					this.$buefy.toast.open({
-						message: "Project Successfully Updated",
-						type: "is-success",
-					});
+					Toast("Project Successfully Updated", "is-success");
 				}
 			});
 		},

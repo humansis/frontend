@@ -139,9 +139,7 @@ export default {
 		async fetchProjects() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectList,
-				});
+				const loadingComponent = this.$buefy.loading.open();
 
 				await ProjectsService.getListOfProjects(
 					1,
@@ -168,9 +166,8 @@ export default {
 		async fetchDistributions() {
 			try {
 				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectList,
-				});
+				const loadingComponent = this.$buefy.loading.open();
+
 				this.distributionsForFilter = [];
 				await AssistancesService.getListOfProjectAssistances(
 					this.selectedProjectsForFilter.id,

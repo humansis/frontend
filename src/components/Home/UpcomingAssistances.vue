@@ -2,6 +2,7 @@
 	<div>
 		<h2 class="title">Upcoming assistances</h2>
 		<Table
+			ref="table"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
