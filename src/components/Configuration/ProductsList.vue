@@ -62,7 +62,7 @@ import { generateColumnsFromData } from "@/utils/datagrid";
 import ProductsService from "@/services/ProductsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete/SafeDelete";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "ProductsList",
