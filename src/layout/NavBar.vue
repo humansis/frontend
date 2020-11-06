@@ -2,7 +2,7 @@
 	<b-navbar>
 		<template slot="start">
 			<b-navbar-item>
-				<Breadcrumbs/>
+				<Breadcrumbs />
 			</b-navbar-item>
 		</template>
 
@@ -22,7 +22,8 @@
 				<a
 					class="navbar-item"
 					slot="trigger"
-					role="button">
+					role="button"
+				>
 					<b-icon icon="globe-africa" size="is-medium" />
 				</a>
 				<b-dropdown-item value="KHM" @click="handleChangeCountry('KHM')">
@@ -41,11 +42,13 @@
 			<b-dropdown
 				position="is-bottom-left"
 				append-to-body
-				aria-role="menu">
+				aria-role="menu"
+			>
 				<a
 					class="navbar-item"
 					slot="trigger"
-					role="button">
+					role="button"
+				>
 					<b-icon icon="user" size="is-medium" />
 				</a>
 				<b-dropdown-item value="language">
@@ -54,7 +57,7 @@
 				</b-dropdown-item>
 				<router-link to="/profile">
 					<b-dropdown-item value="profile">
-						<b-icon class="mr-1" icon="user"/>
+						<b-icon class="mr-1" icon="user" />
 						Profile
 					</b-dropdown-item>
 				</router-link>

@@ -1,5 +1,5 @@
 <template>
-	<ReportsTab></ReportsTab>
+	<ReportsTab />
 </template>
 
 <script>
@@ -13,7 +13,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-
-</style>

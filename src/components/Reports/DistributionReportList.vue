@@ -66,7 +66,6 @@
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
-import MultiSelect from "vue-multiselect";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
@@ -76,7 +75,6 @@ export default {
 	name: "DistributionReportList",
 
 	components: {
-		MultiSelect,
 		PeriodFilter,
 		Table,
 		ActionButton,
