@@ -9,7 +9,6 @@ export const generateColumns = ((visibleColumns) => {
 		preparedColumns.push({
 			field: column.key,
 			label: column.label ? column.label : column.key,
-			visible: true,
 		});
 	});
 	return preparedColumns;
