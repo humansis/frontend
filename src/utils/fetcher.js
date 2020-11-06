@@ -62,3 +62,15 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	const response = await fetch(url, config);
 	return getResponseJSON(response);
 };
+
+export const filtersToUri = (filters) => {
+	let query = "";
+	Object.keys(filters).forEach((key) => {
+		if (filters[key].length) {
+			filters[key].forEach((item) => {
+				query += `&${key}[]=${item}`;
+			});
+		}
+	});
+	return query;
+};
