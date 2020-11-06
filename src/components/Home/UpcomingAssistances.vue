@@ -22,7 +22,7 @@
 	</div>
 </template>
 <script>
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";
 import Table from "@/components/Table";
 
@@ -42,12 +42,30 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					"id",
-					"name",
-					"adm1Id",
-					"dateDistribution",
-					"target",
-					"type",
+					{
+						key: "id",
+						label: "Id",
+					},
+					{
+						key: "name",
+						label: "Name",
+					},
+					{
+						key: "adm1Id",
+						label: "Adm 1 Id",
+					},
+					{
+						key: "dateDistribution",
+						label: "Date of Distribution",
+					},
+					{
+						key: "target",
+						label: "Target",
+					},
+					{
+						key: "type",
+						label: "Type",
+					},
 				],
 				total: 0,
 				currentPage: 1,
@@ -83,8 +101,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});
