@@ -52,7 +52,7 @@
 <script>
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import DonorsService from "@/services/DonorsService";
 
 export default {
@@ -71,7 +71,12 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [],
+				visibleColumns: [
+					{
+						key: "name",
+						label: "Name",
+					},
+				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
@@ -100,8 +105,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});

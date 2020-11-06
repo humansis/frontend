@@ -44,7 +44,7 @@
 <script>
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
 import CountryReportService from "@/services/CountryReportService";
 
@@ -65,7 +65,12 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [],
+				visibleColumns: [
+					{
+						key: "name",
+						label: "Name",
+					},
+				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
@@ -92,11 +97,9 @@ export default {
 					this.table.perPage,
 					"desc",
 				).then((response) => {
-					console.log(response.data);
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});
