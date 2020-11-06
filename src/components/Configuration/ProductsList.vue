@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import ProductsService from "@/services/ProductsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
@@ -81,7 +81,20 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [],
+				visibleColumns: [
+					{
+						key: "name",
+						label: "Name",
+					},
+					{
+						key: "unit",
+						label: "Unit",
+					},
+					{
+						key: "iso3",
+						label: "Iso 3",
+					},
+				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
@@ -110,8 +123,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});

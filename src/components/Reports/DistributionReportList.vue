@@ -66,17 +66,15 @@
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
-import MultiSelect from "vue-multiselect";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "DistributionReportList",
 
 	components: {
-		MultiSelect,
 		PeriodFilter,
 		Table,
 		ActionButton,
@@ -90,7 +88,12 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [],
+				visibleColumns: [
+					{
+						key: "name",
+						label: "Name",
+					},
+				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
@@ -124,8 +127,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});

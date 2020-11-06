@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import CommunitiesService from "@/services/CommunitiesService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
@@ -74,7 +74,28 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [],
+				visibleColumns: [
+					{
+						key: "id",
+						label: "Id",
+					},
+					{
+						key: "longitude",
+						label: "Longitude",
+					},
+					{
+						key: "latitude",
+						label: "Latitude",
+					},
+					{
+						key: "contactGivenName",
+						label: "Contact Given Name",
+					},
+					{
+						key: "contactFamilyName",
+						label: "Contact Family Name",
+					},
+				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
@@ -103,8 +124,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
+					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
 				});

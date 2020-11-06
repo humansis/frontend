@@ -1,5 +1,5 @@
 <template>
-	<ReportsTab></ReportsTab>
+	<ReportsTab />
 </template>
 
 <script>

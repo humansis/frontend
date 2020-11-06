@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { generateColumnsFromData } from "@/utils/datagrid";
+import { generateColumns } from "@/utils/datagrid";
 import { Toast } from "@/utils/UI.js";
 import AssistancesService from "@/services/AssistancesService";
 import ProjectsService from "@/services/ProjectsService";
@@ -112,13 +112,34 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					"id",
-					"name",
-					"donorIds",
-					"startDate",
-					"endDate",
-					"target",
-					"numberOfHouseholds",
+					{
+						key: "id",
+						label: "Id",
+					},
+					{
+						key: "name",
+						label: "Name",
+					},
+					{
+						key: "donorIds",
+						label: "Donor Ids",
+					},
+					{
+						key: "startDate",
+						label: "Start Date",
+					},
+					{
+						key: "endDate",
+						label: "End Date",
+					},
+					{
+						key: "target",
+						label: "Target",
+					},
+					{
+						key: "numberOfHouseHolds",
+						label: "Number of Households",
+					},
 				],
 				total: 0,
 				currentPage: 1,
@@ -167,10 +188,7 @@ export default {
 				).then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumnsFromData(
-						response.data,
-						this.table.visibleColumns,
-					);
+					this.table.columns = generateColumns(this.table.visibleColumns);
 				});
 
 				await SectorsService.getListOfSectors().then((response) => {

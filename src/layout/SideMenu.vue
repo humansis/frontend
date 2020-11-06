@@ -8,7 +8,8 @@
 			:fullwidth="false"
 			:overlay="false"
 			:right="false"
-			:can-cancel="false">
+			:can-cancel="false"
+		>
 			<div class="m-2">
 				<span class="icon">
 					<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">

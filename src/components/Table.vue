@@ -24,7 +24,7 @@
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
 		>
-			<slot></slot>
+			<slot />
 		</b-table>
 	</div>
 </template>

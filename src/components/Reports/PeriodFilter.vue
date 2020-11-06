@@ -11,13 +11,13 @@
 				<b-datepicker
 					placeholder="From"
 					icon="calendar-today"
-					editable>
-				</b-datepicker>
+					editable
+				/>
 				<b-datepicker
 					placeholder="To"
 					icon="calendar-today"
-					editable>
-				</b-datepicker>
+					editable
+				/>
 			</b-field>
 		</div>
 	</div>

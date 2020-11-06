@@ -3,15 +3,19 @@ export const normalizeText = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
-export const generateColumnsFromData = (data, visibleColumns = []) => Object.keys(
-	data[0],
-).map((key) => ({
-	field: key,
-	label: normalizeText(key),
-	visible: (visibleColumns.length ? visibleColumns.includes(key) : true),
-}));
+export const generateColumns = ((visibleColumns) => {
+	const preparedColumns = [];
+	visibleColumns.forEach((column) => {
+		preparedColumns.push({
+			field: column.key,
+			label: column.label ? column.label : column.key,
+			visible: true,
+		});
+	});
+	return preparedColumns;
+});
 
 export default {
-	generateColumnsFromData,
 	normalizeText,
+	generateColumns,
 };
