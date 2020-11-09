@@ -1,14 +1,14 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfHouseholds(page, size, sort, search = null) {
+	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
-
-		// TODO parsing filters
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `households?page=${page}&size=${size}&sort=${sort + fulltext + filtersUri}`,
 		});
+
 		return { data, totalCount };
 	},
 

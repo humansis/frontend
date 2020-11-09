@@ -1,33 +1,23 @@
 <template>
 	<div class="mb-5">
 		<div class="columns is-multiline">
-			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column">
+			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column is-half">
 				<b-field :label="filter">
-					<b-tag
-						v-for="filterSelectedOptions in selectedFiltersOptions[filter]"
-						type="is-success"
-						closable
-						:key="filterSelectedOptions"
-					>
-						{{ filterSelectedOptions }}
-					</b-tag>
-					<b-dropdown
+					<MultiSelect
 						v-model="selectedFiltersOptions[filter]"
+						searchable
+						placeholder="Select sectors"
 						multiple
-						@change="filterChanged"
+						:options="options"
+						@input="filterChanged"
 					>
-						<button class="button is-primary is-light" type="button" slot="trigger">
-							<span>Select {{ filter }}</span>
-							<b-icon icon="chevron-circle-down"></b-icon>
-						</button>
-						<b-dropdown-item
-							v-for="(value, key) in options"
-							:key="key"
-							:value="value"
+						<template
+							slot="singleLabel"
+							slot-scope="option"
 						>
-							<span>{{ value }}</span>
-						</b-dropdown-item>
-					</b-dropdown>
+							{{ option }}
+						</template>
+					</MultiSelect>
 				</b-field>
 			</div>
 		</div>
@@ -47,14 +37,14 @@ export default {
 			selectedFiltersOptions: {
 				projects: [],
 				vulnerabilities: [],
-				gender: "",
+				gender: [],
 				residencies: [],
 				referrals: [],
 				livelihoods: [],
-				adm1: "",
-				adm2: "",
-				adm3: "",
-				adm4: "",
+				adm1: [],
+				adm2: [],
+				adm3: [],
+				adm4: [],
 			},
 		};
 	},

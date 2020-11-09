@@ -23,7 +23,7 @@
 
 		<HouseholdsFilters
 			v-if="advancedSearchVisible"
-			:filtersOptions="filtersOptions"
+			:filtersOptions="filters"
 			@filtersChanged="onFiltersChange"
 		/>
 
@@ -117,7 +117,7 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			filtersOptions: {
+			filters: {
 				projects: [],
 				vulnerabilities: [],
 				gender: [],
@@ -190,8 +190,17 @@ export default {
 			// TODO on table sort
 		},
 
-		onFiltersChange() {
-			// TODO on filters change
+		async onFiltersChange(selectedFilters) {
+			await BeneficiariesService.getListOfHouseholds(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+				null,
+				selectedFilters,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+			});
 		},
 	},
 };
