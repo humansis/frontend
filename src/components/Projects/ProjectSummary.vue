@@ -48,7 +48,7 @@
 					</div>
 				</div>
 			</nav>
-			<hr />
+			<hr>
 		</div>
 	</div>
 </template>

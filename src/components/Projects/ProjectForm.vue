@@ -7,8 +7,9 @@
 				:message="getValidationMessage('name', 'Required')"
 			>
 				<b-input
-					@blur="validateInput('name')"
 					v-model="formModel.name"
+					:disabled="formDisabled"
+					@blur="validateInput('name')"
 				/>
 			</b-field>
 
@@ -19,6 +20,7 @@
 			>
 				<b-input
 					v-model="formModel.internalId"
+					:disabled="formDisabled"
 					@blur="validateInput('internalId')"
 				/>
 			</b-field>
@@ -35,6 +37,7 @@
 					label="code"
 					track-by="value"
 					multiple
+					:disabled="formDisabled"
 					:options="formModel.sectors"
 					@select="validateInput('selectedSectors')"
 				>
@@ -59,6 +62,7 @@
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					:disabled="formDisabled"
 					@input="validateInput('startDate')"
 				/>
 			</b-field>
@@ -75,6 +79,7 @@
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					:disabled="formDisabled"
 					@input="validateInput('endDate')"
 				/>
 			</b-field>
@@ -91,6 +96,7 @@
 					label="shortname"
 					track-by="id"
 					multiple
+					:disabled="formDisabled"
 					:options="formModel.donors"
 					@select="validateInput('selectedDonors')"
 				>
@@ -110,11 +116,12 @@
 			>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
-					:options="formModel.targetTypes"
-					:searchable="false"
 					label="code"
 					track-by="value"
 					placeholder="Select target type"
+					:options="formModel.targetTypes"
+					:searchable="false"
+					:disabled="formDisabled"
 					@select="validateInput('selectedTargetType')"
 				/>
 			</b-field>
@@ -126,6 +133,7 @@
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					:disabled="formDisabled"
 					@blur="validateInput('totalTarget')"
 				/>
 			</b-field>
@@ -136,6 +144,7 @@
 				<b-input
 					v-model="formModel.notes"
 					type="textarea"
+					:disabled="formDisabled"
 				/>
 			</b-field>
 
@@ -146,6 +155,7 @@
 				Close
 			</button>
 			<b-button
+				v-if="!formDisabled"
 				tag="input"
 				class="is-success"
 				native-type="submit"
@@ -165,6 +175,7 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+		formDisabled: Boolean,
 	},
 
 	validations: {
@@ -227,6 +238,7 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+			this.$v.$reset();
 		},
 	},
 };

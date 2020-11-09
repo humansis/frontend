@@ -352,8 +352,11 @@ export default {
 
 		showDetail(institution) {
 			this.mapToFormModel(institution);
-			this.institutionModal.isDetail = true;
-			this.institutionModal.isOpened = true;
+			this.institutionModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+			};
 		},
 
 		mapToFormModel(

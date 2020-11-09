@@ -4,13 +4,14 @@
 		<Modal
 			:active="projectModal.isOpened"
 			:can-cancel="true"
-			:header="projectModal.isEditing ? 'Edit project' : 'Create new project'"
+			:header="modalHeader"
 			@close="closeProjectModal"
 		>
 			<ProjectForm
 				close-button
 				:formModel="projectModel"
 				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="projectModal.isDetail"
 				@formSubmitted="submitProjectForm"
 				@formClosed="closeProjectModal"
 			/>
@@ -71,7 +72,11 @@
 						type="is-link"
 						@click.native="editProject(props.row.id)"
 					/>
-					<ActionButton icon="search" type="is-info" />
+					<ActionButton
+						icon="search"
+						type="is-link"
+						@click.native="showDetailWithId(props.row.id)"
+					/>
 					<SafeDelete
 						icon="trash"
 						entity="Project"
@@ -89,6 +94,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import { Toast } from "@/utils/UI.js";
+import { getArrayOfIdsByParam, getArrayOfCodeListByKey } from "@/utils/codeList";
 import AssistancesService from "@/services/AssistancesService";
 import ProjectsService from "@/services/ProjectsService";
 import HomeService from "@/services/HomeService";
@@ -154,7 +160,8 @@ export default {
 			},
 			projectModal: {
 				isOpened: false,
-				isEditing: true,
+				isEditing: false,
+				isDetail: false,
 			},
 			projectModel: {
 				id: null,
@@ -176,6 +183,20 @@ export default {
 
 	watch: {
 		$route: "fetchData",
+	},
+
+	computed: {
+		modalHeader() {
+			let result = "";
+			if (this.projectModal.isDetail) {
+				result = "Detail of Project";
+			} else if (this.projectModal.isEditing) {
+				result = "Edit Project";
+			} else {
+				result = "Create new Project";
+			}
+			return result;
+		},
 	},
 
 	mounted() {
@@ -226,35 +247,17 @@ export default {
 			this.projectModal = {
 				isEditing: true,
 				isOpened: true,
+				isDetail: false,
 			};
 
-			const {
-				name,
-				sectorIds: selectedSectors,
-				donorIds: selectedDonors,
-				target: totalTarget,
-				notes,
-			} = this.table.data.find((item) => item.id === id);
-
-			this.projectModel = {
-				...this.projectModel,
-				id,
-				name,
-				internalId: id,
-				selectedSectors,
-				startDate: new Date("DD/MMM/YY"),
-				endDate: new Date("DD/MMM/YY"),
-				selectedDonors,
-				selectedTargetType: [],
-				totalTarget,
-				notes,
-			};
+			this.mapToFormModel(this.table.data.find((item) => item.id === id));
 		},
 
 		addNewProject() {
 			this.projectModal = {
 				isEditing: false,
 				isOpened: true,
+				isDetail: false,
 			};
 
 			this.projectModel = {
@@ -276,11 +279,11 @@ export default {
 			const {
 				id,
 				name,
-				selectedSectors: sectorIds,
+				selectedSectors,
 				startDate,
 				endDate,
-				selectedDonors: donorIds,
-				selectedTargetType: targetType,
+				selectedDonors,
+				selectedTargetType: { code: targetType },
 				totalTarget: target,
 				notes,
 			} = projectForm;
@@ -294,8 +297,8 @@ export default {
 				numberOfHouseholds: 0,
 				startDate,
 				endDate,
-				sectorIds,
-				donorIds,
+				sectorIds: getArrayOfIdsByParam(selectedSectors, "code"),
+				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};
 
 			if (this.projectModal.isEditing && id) {
@@ -338,8 +341,45 @@ export default {
 			this.projectModal.isOpened = false;
 		},
 
-		goToDetail(item) {
-			this.$router.push({ name: "Project", params: { projectId: item.id } });
+		showDetailWithId(id) {
+			const project = this.table.data.find((item) => item.id === id);
+			this.showDetail(project);
+		},
+
+		showDetail(project) {
+			this.mapToFormModel(project);
+			this.projectModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+			};
+		},
+
+		mapToFormModel({
+			id,
+			name,
+			sectorIds,
+			donorIds,
+			target: totalTarget,
+			notes,
+		}) {
+			this.projectModel = {
+				...this.projectModel,
+				id,
+				name,
+				internalId: id,
+				selectedSectors: getArrayOfCodeListByKey(sectorIds, this.projectModel.sectors, "code"),
+				startDate: new Date("10.10.2020"),
+				endDate: new Date("10.10.2020"),
+				selectedDonors: getArrayOfCodeListByKey(donorIds, this.projectModel.donors, "id"),
+				selectedTargetType: getArrayOfCodeListByKey([], this.projectModel.targetTypes, "code"),
+				totalTarget,
+				notes,
+			};
+		},
+
+		goToDetail(project) {
+			this.$router.push({ name: "Project", params: { projectId: project.id } });
 		},
 
 		onPageChange() {
