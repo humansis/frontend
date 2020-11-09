@@ -4,8 +4,7 @@
 		<Modal
 			:active="institutionModal.isOpened"
 			:can-cancel="true"
-			:header="institutionModal.isDetail ? 'Detail of Institution' :
-				institutionModal.isEditing ? 'Edit institution' : 'Create new institution'"
+			:header="header"
 			@close="closeInstitutionModal"
 		>
 			<InstitutionsForm
@@ -68,7 +67,7 @@
 					<ActionButton
 						icon="search"
 						type="is-link"
-						@click.native="goToDetail(props.row.id)"
+						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
@@ -164,12 +163,23 @@ export default {
 				addressAdm3Id: "",
 				addressAdm4Id: "",
 			},
-			detailOpened: false,
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
+	},
+
+	computed: {
+		header() {
+			if (this.institutionModal.isDetail) {
+				return "Detail of Institution";
+			}
+			if (this.institutionModal.isEditing) {
+				return "Edit Institution";
+			}
+			return "Create new Institution";
+		},
 	},
 
 	mounted() {
@@ -213,39 +223,7 @@ export default {
 				isDetail: false,
 			};
 
-			const {
-				name,
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
-				type,
-				phone,
-				address,
-				nationalIdCard,
-			} = this.table.data.find((item) => item.id === id);
-
-			this.institutionModel = {
-				...this.institutionModel,
-				id: null,
-				longitude,
-				latitude,
-				name,
-				contactGivenName,
-				contactFamilyName,
-				type,
-				addressStreet: address.street,
-				addressNumber: address.number,
-				addressPostCode: address.postcode,
-				nationalCardNumber: nationalIdCard.number,
-				nationalCardType: nationalIdCard.type,
-				phonePrefix: phone.prefix,
-				phoneNumber: phone.number,
-				addressAdm1Id: address.adm1Id,
-				addressAdm2Id: address.adm2Id,
-				addressAdm3Id: address.adm3Id,
-				addressAdm4Id: address.adm4Id,
-			};
+			this.mapToFormModel(this.table.data.find((item) => item.id === id));
 		},
 
 		addNewInstitution() {
@@ -339,6 +317,7 @@ export default {
 			await InstitutionsService.createInstitution(institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Created", "is-success");
+					this.fetchData();
 				}
 			});
 		},
@@ -347,6 +326,7 @@ export default {
 			await InstitutionsService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Updated", "is-success");
+					this.fetchData();
 				}
 			});
 		},
@@ -355,6 +335,7 @@ export default {
 			await InstitutionsService.deleteInstitution(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Institution Successfully Deleted", "is-success");
+					this.fetchData();
 				}
 			});
 		},
@@ -363,34 +344,64 @@ export default {
 			this.institutionModal.isOpened = false;
 		},
 
-		goToDetail(id) {
-			this.$router.push({ name: "Institution", params: { institutionId: id } });
+		showDetailWithId(id) {
+			const institution = this.table.data.find((item) => item.id === id);
+			this.showDetail(institution);
 		},
 
 		showDetail(institution) {
-			this.institutionModel = {
-				...this.institutionModel,
-				id: institution.id,
-				longitude: institution.longitude,
-				latitude: institution.latitude,
-				name: institution.name,
-				contactGivenName: institution.contactGivenName,
-				contactFamilyName: institution.contactFamilyName,
-				type: institution.type,
-				addressStreet: institution.address.street,
-				addressNumber: institution.address.number,
-				addressPostCode: institution.address.postcode,
-				nationalCardNumber: institution.nationalIdCard.number,
-				nationalCardType: institution.nationalIdCard.type,
-				phonePrefix: institution.phone.prefix,
-				phoneNumber: institution.phone.number,
-				addressAdm1Id: institution.address.adm1Id,
-				addressAdm2Id: institution.address.adm2Id,
-				addressAdm3Id: institution.address.adm3Id,
-				addressAdm4Id: institution.address.adm4Id,
-			};
+			this.mapToFormModel(institution);
 			this.institutionModal.isDetail = true;
 			this.institutionModal.isOpened = true;
+		},
+
+		mapToFormModel(
+			{
+				name,
+				longitude,
+				latitude,
+				contactGivenName,
+				contactFamilyName,
+				type,
+				phone: {
+					prefix: phonePrefix,
+					number: phoneNumber,
+				},
+				address: {
+					street: addressStreet,
+					number: addressNumber,
+					postcode: addressPostCode,
+					adm1Id: addressAdm1Id,
+					adm2Id: addressAdm2Id,
+					adm3Id: addressAdm3Id,
+					adm4Id: addressAdm4Id,
+				},
+				nationalIdCard: {
+					number: nationalCardNumber,
+					type: nationalCardType,
+				},
+			},
+		) {
+			this.institutionModel = {
+				...this.institutionModel,
+				longitude,
+				latitude,
+				name,
+				contactGivenName,
+				contactFamilyName,
+				type,
+				addressStreet,
+				addressNumber,
+				addressPostCode,
+				nationalCardNumber,
+				nationalCardType,
+				phonePrefix,
+				phoneNumber,
+				addressAdm1Id,
+				addressAdm2Id,
+				addressAdm3Id,
+				addressAdm4Id,
+			};
 		},
 
 		onPageChange() {

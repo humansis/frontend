@@ -77,14 +77,6 @@ const routes = [
 							breadcrumb: "Institutions",
 						},
 					},
-					{
-						path: "/institution/:institutionId",
-						name: "Institution",
-						component: () => import(/* webpackChunkName: "Institution" */ "@/views/Institution"),
-						meta: {
-							breadcrumb: "Institution",
-						},
-					},
 				],
 			},
 			{

@@ -311,6 +311,7 @@ export default {
 			await ProjectsService.createProject(projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Created", "is-success");
+					this.fetchData();
 				}
 			});
 		},
@@ -319,6 +320,7 @@ export default {
 			await ProjectsService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Updated", "is-success");
+					this.fetchData();
 				}
 			});
 		},
@@ -327,6 +329,7 @@ export default {
 			await ProjectsService.deleteProject(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Project Successfully Deleted", "is-success");
+					this.fetchData();
 				}
 			});
 		},

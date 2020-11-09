@@ -2,11 +2,12 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Institution Name"
+				label="Name"
 				:type="getValidationType('name')"
 				:message="getValidationMessage('name', 'Required')"
 			>
 				<b-input
+					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validateInput('name')"
 					v-model="formModel.name"
@@ -14,35 +15,12 @@
 			</b-field>
 
 			<b-field
-				label="Longitude"
-				:type="getValidationType('longitude')"
-				:message="getValidationMessage('longitude', 'Required')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.longitude"
-					@blur="validateInput('longitude')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Latitude"
-				:type="getValidationType('latitude')"
-				:message="getValidationMessage('latitude', 'Required')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.latitude"
-					@blur="validateInput('latitude')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Contact First Name"
+				label="Contact Name"
 				:type="getValidationType('contactGivenName')"
 				:message="getValidationMessage('contactGivenName', 'Required')"
 			>
 				<b-input
+					placeholder="Contact Name"
 					:disabled="formDisabled"
 					v-model="formModel.contactGivenName"
 					@blur="validateInput('contactGivenName')"
@@ -50,14 +28,32 @@
 			</b-field>
 
 			<b-field
-				label="Contact Last Name"
+				label="Contact Family Name"
 				:type="getValidationType('contactFamilyName')"
 				:message="getValidationMessage('contactFamilyName', 'Required')"
 			>
 				<b-input
+					placeholder="Contact Family Name"
 					:disabled="formDisabled"
 					v-model="formModel.contactFamilyName"
 					@blur="validateInput('contactFamilyName')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Type"
+				:type="getValidationType('type')"
+				:message="getValidationMessage('type', 'Required')"
+			>
+				<MultiSelect
+					:disabled="formDisabled"
+					v-model="formModel.type"
+					searchable
+					placeholder="Type"
+					label="value"
+					track-by="code"
+					:options="types"
+					@select="validateInput('type')"
 				/>
 			</b-field>
 
@@ -73,7 +69,7 @@
 							:disabled="formDisabled"
 							v-model="formModel.phonePrefix"
 							searchable
-							placeholder="Select prefix"
+							placeholder="Phone Ext"
 							label="name"
 							track-by="id"
 							:options="phonePrefixes"
@@ -87,39 +83,106 @@
 					>
 						<b-input
 							:disabled="formDisabled"
-							placeholder="PhoneNumber"
+							placeholder="Phone No."
 							v-model="formModel.phoneNumber"
 							@blur="validateInput('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
 			</b-field>
+
 			<b-field
-				label="Type"
-				:type="getValidationType('type')"
-				:message="getValidationMessage('type', 'Required')"
+				label="Contact ID Type"
+				:type="getValidationType('nationalCardType')"
+				:message="getValidationMessage('nationalCardType', 'Required')"
 			>
 				<MultiSelect
 					:disabled="formDisabled"
-					v-model="formModel.type"
+					v-model="formModel.nationalCardType"
 					searchable
-					placeholder="Select type"
+					placeholder="Contact ID Type"
 					label="name"
 					track-by="id"
-					:options="types"
-					@select="validateInput('type')"
+					:options="nationalCardTypes"
+					@select="validateInput('nationalCardType')"
+				/>
+			</b-field>
+			<b-field
+				label="Contact ID Number"
+				:type="getValidationType('nationalCardNumber')"
+				:message="getValidationMessage('nationalCardNumber', 'Required number')"
+			>
+				<b-input
+					expanded
+					placeholder="Contact ID Number"
+					:disabled="formDisabled"
+					v-model="formModel.nationalCardNumber"
+					@blur="validateInput('nationalCardNumber')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Address Street"
-				:type="getValidationType('addressStreet')"
-				:message="getValidationMessage('addressStreet', 'Required')"
+				label="Province"
+				:type="getValidationType('addressAdm1Id')"
+				:message="getValidationMessage('addressAdm1Id', 'Required')"
 			>
-				<b-input
+				<MultiSelect
 					:disabled="formDisabled"
-					v-model="formModel.addressStreet"
-					@blur="validateInput('addressStreet')"
+					v-model="formModel.addressAdm1Id"
+					searchable
+					placeholder="Province"
+					label="name"
+					track-by="id"
+					:options="provinces"
+					@select="onProvinceSelect"
+				/>
+			</b-field>
+
+			<b-field
+				label="District"
+				:type="getValidationType('addressAdm2Id')"
+			>
+				<MultiSelect
+					:disabled="formDisabled"
+					v-model="formModel.addressAdm2Id"
+					searchable
+					placeholder="District"
+					label="name"
+					track-by="id"
+					:options="districts"
+					@select="onDistrictSelect"
+				/>
+			</b-field>
+
+			<b-field
+				label="Commune"
+				:type="getValidationType('addressAdm3Id')"
+			>
+				<MultiSelect
+					:disabled="formDisabled"
+					v-model="formModel.addressAdm3Id"
+					searchable
+					placeholder="Commune"
+					label="name"
+					track-by="id"
+					:options="communes"
+					@select="onCommuneSelect"
+				/>
+			</b-field>
+
+			<b-field
+				label="Village"
+				:type="getValidationType('addressAdm4Id')"
+			>
+				<MultiSelect
+					:disabled="formDisabled"
+					v-model="formModel.addressAdm3Id"
+					searchable
+					placeholder="Village"
+					label="name"
+					track-by="id"
+					:options="villages"
+					@select="validateInput('addressAdm4Id')"
 				/>
 			</b-field>
 
@@ -129,6 +192,7 @@
 				:message="getValidationMessage('addressNumber', 'Required')"
 			>
 				<b-input
+					placeholder="Address Number"
 					:disabled="formDisabled"
 					v-model="formModel.addressNumber"
 					@blur="validateInput('addressNumber')"
@@ -136,89 +200,54 @@
 			</b-field>
 
 			<b-field
-				label="Address Post Code"
+				label="Address Street"
+				:type="getValidationType('addressStreet')"
+				:message="getValidationMessage('addressStreet', 'Required')"
+			>
+				<b-input
+					placeholder="Address Street"
+					:disabled="formDisabled"
+					v-model="formModel.addressStreet"
+					@blur="validateInput('addressStreet')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Address Postcode"
 				:type="getValidationType('addressPostCode')"
 				:message="getValidationMessage('addressPostCode', 'Required')"
 			>
 				<b-input
+					placeholder="Address Postcode"
 					:disabled="formDisabled"
 					v-model="formModel.addressPostCode"
 					@blur="validateInput('addressPostCode')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Adm ID 1"
-				:type="getValidationType('addressAdm1Id')"
-				:message="getValidationMessage('addressAdm1Id', 'Required')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.addressAdm1Id"
-					@blur="validateInput('addressAdm1Id')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Address Adm ID 2"
-				:type="getValidationType('addressAdm2Id')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.addressAdm2Id"
-					@blur="validateInput('addressAdm2Id')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Address Adm ID 3"
-				:type="getValidationType('addressAdm3Id')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.addressAdm3Id"
-					@blur="validateInput('addressAdm3Id')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Address Adm ID 4"
-				:type="getValidationType('addressAdm4Id')"
-			>
-				<b-input
-					:disabled="formDisabled"
-					v-model="formModel.addressAdm4Id"
-					@blur="validateInput('addressAdm4Id')"
-				/>
-			</b-field>
-
-			<b-field grouped
-				label="National Card"
-			>
+			<b-field grouped>
 				<b-field
-					:type="getValidationType('nationalCardType')"
-					:message="getValidationMessage('nationalCardType', 'Required')"
+					label="Latitude"
+					:type="getValidationType('latitude')"
+					:message="getValidationMessage('latitude', 'Required')"
 				>
-					<MultiSelect
+					<b-input
+						placeholder="Latitude"
 						:disabled="formDisabled"
-						v-model="formModel.nationalCardType"
-						searchable
-						placeholder="Select type"
-						label="name"
-						track-by="id"
-						:options="nationalCardTypes"
-						@select="validateInput('nationalCardType')"
+						v-model="formModel.latitude"
+						@blur="validateInput('latitude')"
 					/>
 				</b-field>
 				<b-field
-					:type="getValidationType('nationalCardNumber')"
-					:message="getValidationMessage('nationalCardNumber', 'Required number')"
+					label="Longitude"
+					:type="getValidationType('longitude')"
+					:message="getValidationMessage('longitude', 'Required')"
 				>
 					<b-input
-						expanded
+						placeholder="Longitude"
 						:disabled="formDisabled"
-						v-model="formModel.nationalCardNumber"
-						@blur="validateInput('nationalCardNumber')"
+						v-model="formModel.longitude"
+						@blur="validateInput('longitude')"
 					/>
 				</b-field>
 			</b-field>
@@ -241,6 +270,8 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
+import InstitutionsService from "@/services/InstitutionsService";
+import LocationsService from "@/services/LocationsService";
 
 export default {
 	name: "InstitutionForm",
@@ -309,33 +340,8 @@ export default {
 
 	data() {
 		return {
+			types: [],
 			// TODO get from API
-			types: [
-				{
-					id: "health",
-					name: "Health",
-				},
-				{
-					id: "school",
-					name: "School",
-				},
-				{
-					id: "community_center",
-					name: "Community Center",
-				},
-				{
-					id: "government",
-					name: "Government",
-				},
-				{
-					id: "production",
-					name: "Production",
-				},
-				{
-					id: "commerce",
-					name: "Commerce",
-				},
-			],
 			nationalCardTypes: [
 				{
 					id: "national_id",
@@ -346,6 +352,7 @@ export default {
 					name: "Passport",
 				},
 			],
+			// TODO get from API
 			phonePrefixes: [
 				{
 					id: "+420",
@@ -356,6 +363,10 @@ export default {
 					name: "SK - +421",
 				},
 			],
+			provinces: [],
+			districts: [],
+			communes: [],
+			villages: [],
 		};
 	},
 
@@ -389,12 +400,58 @@ export default {
 		closeForm() {
 			this.$emit("formClosed");
 		},
+
+		onProvinceSelect({ id }) {
+			this.validateInput("addressAdm1Id");
+			this.fetchDistricts(id);
+		},
+
+		onDistrictSelect({ id }) {
+			this.validateInput("addressAdm2Id");
+			this.fetchCommunes(id);
+		},
+
+		onCommuneSelect({ id }) {
+			this.validateInput("addressAdm3Id");
+			this.fetchVillages(id);
+		},
+
+		fetchTypes() {
+			InstitutionsService.getListOfInstitutionTypes()
+				.then((result) => { this.types = result.data; });
+		},
+
+		fetchProvinces() {
+			LocationsService.getListOfAdm1()
+				.then((result) => { this.provinces = result.data; });
+		},
+
+		fetchDistricts(adm1Id) {
+			LocationsService.getListOfAdm2(adm1Id)
+				.then((result) => { this.districts = result.data; });
+		},
+
+		fetchCommunes(adm2Id) {
+			LocationsService.getListOfAdm3(adm2Id)
+				.then((result) => { this.communes = result.data; });
+		},
+
+		fetchVillages(adm3Id) {
+			LocationsService.getListOfAdm4(adm3Id)
+				.then((result) => { this.villages = result.data; });
+		},
+
+		resetForm() {
+			if (this.formDisabled) {
+				this.$v.$reset();
+			}
+		},
 	},
 
 	mounted() {
-		if (this.formDisabled) {
-			this.$v.reset();
-		}
+		this.fetchTypes();
+		this.fetchProvinces();
+		this.resetForm();
 	},
 };
 </script>
