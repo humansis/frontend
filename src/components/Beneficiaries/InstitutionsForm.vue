@@ -7,10 +7,10 @@
 				:message="getValidationMessage('name', 'Required')"
 			>
 				<b-input
+					v-model="formModel.name"
 					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validateInput('name')"
-					v-model="formModel.name"
 				/>
 			</b-field>
 
@@ -20,9 +20,9 @@
 				:message="getValidationMessage('contactGivenName', 'Required')"
 			>
 				<b-input
+					v-model="formModel.contactGivenName"
 					placeholder="Contact Name"
 					:disabled="formDisabled"
-					v-model="formModel.contactGivenName"
 					@blur="validateInput('contactGivenName')"
 				/>
 			</b-field>
@@ -33,9 +33,9 @@
 				:message="getValidationMessage('contactFamilyName', 'Required')"
 			>
 				<b-input
+					v-model="formModel.contactFamilyName"
 					placeholder="Contact Family Name"
 					:disabled="formDisabled"
-					v-model="formModel.contactFamilyName"
 					@blur="validateInput('contactFamilyName')"
 				/>
 			</b-field>
@@ -46,12 +46,12 @@
 				:message="getValidationMessage('type', 'Required')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.type"
 					searchable
 					placeholder="Type"
 					label="value"
 					track-by="code"
+					:disabled="formDisabled"
 					:options="types"
 					@select="validateInput('type')"
 				/>
@@ -66,12 +66,12 @@
 						:message="getValidationMessage('phonePrefix', 'Required')"
 					>
 						<MultiSelect
-							:disabled="formDisabled"
 							v-model="formModel.phonePrefix"
 							searchable
 							placeholder="Phone Ext"
 							label="name"
 							track-by="id"
+							:disabled="formDisabled"
 							:options="phonePrefixes"
 							@select="validateInput('phonePrefix')"
 						/>
@@ -82,9 +82,9 @@
 						:message="getValidationMessage('phoneNumber', 'Required number')"
 					>
 						<b-input
-							:disabled="formDisabled"
-							placeholder="Phone No."
 							v-model="formModel.phoneNumber"
+							placeholder="Phone No."
+							:disabled="formDisabled"
 							@blur="validateInput('phoneNumber')"
 						/>
 					</b-field>
@@ -97,12 +97,12 @@
 				:message="getValidationMessage('nationalCardType', 'Required')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.nationalCardType"
 					searchable
 					placeholder="Contact ID Type"
 					label="name"
 					track-by="id"
+					:disabled="formDisabled"
 					:options="nationalCardTypes"
 					@select="validateInput('nationalCardType')"
 				/>
@@ -113,10 +113,10 @@
 				:message="getValidationMessage('nationalCardNumber', 'Required number')"
 			>
 				<b-input
+					v-model="formModel.nationalCardNumber"
 					expanded
 					placeholder="Contact ID Number"
 					:disabled="formDisabled"
-					v-model="formModel.nationalCardNumber"
 					@blur="validateInput('nationalCardNumber')"
 				/>
 			</b-field>
@@ -127,12 +127,12 @@
 				:message="getValidationMessage('addressAdm1Id', 'Required')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.addressAdm1Id"
 					searchable
 					placeholder="Province"
 					label="name"
 					track-by="id"
+					:disabled="formDisabled"
 					:options="provinces"
 					@select="onProvinceSelect"
 				/>
@@ -143,12 +143,12 @@
 				:type="getValidationType('addressAdm2Id')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.addressAdm2Id"
 					searchable
 					placeholder="District"
 					label="name"
 					track-by="id"
+					:disabled="formDisabled"
 					:options="districts"
 					@select="onDistrictSelect"
 				/>
@@ -159,12 +159,12 @@
 				:type="getValidationType('addressAdm3Id')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.addressAdm3Id"
 					searchable
 					placeholder="Commune"
 					label="name"
 					track-by="id"
+					:disabled="formDisabled"
 					:options="communes"
 					@select="onCommuneSelect"
 				/>
@@ -175,12 +175,12 @@
 				:type="getValidationType('addressAdm4Id')"
 			>
 				<MultiSelect
-					:disabled="formDisabled"
 					v-model="formModel.addressAdm3Id"
 					searchable
 					placeholder="Village"
 					label="name"
 					track-by="id"
+					:disabled="formDisabled"
 					:options="villages"
 					@select="validateInput('addressAdm4Id')"
 				/>
@@ -192,9 +192,9 @@
 				:message="getValidationMessage('addressNumber', 'Required')"
 			>
 				<b-input
+					v-model="formModel.addressNumber"
 					placeholder="Address Number"
 					:disabled="formDisabled"
-					v-model="formModel.addressNumber"
 					@blur="validateInput('addressNumber')"
 				/>
 			</b-field>
@@ -205,9 +205,9 @@
 				:message="getValidationMessage('addressStreet', 'Required')"
 			>
 				<b-input
+					v-model="formModel.addressStreet"
 					placeholder="Address Street"
 					:disabled="formDisabled"
-					v-model="formModel.addressStreet"
 					@blur="validateInput('addressStreet')"
 				/>
 			</b-field>
@@ -218,9 +218,9 @@
 				:message="getValidationMessage('addressPostCode', 'Required')"
 			>
 				<b-input
+					v-model="formModel.addressPostCode"
 					placeholder="Address Postcode"
 					:disabled="formDisabled"
-					v-model="formModel.addressPostCode"
 					@blur="validateInput('addressPostCode')"
 				/>
 			</b-field>
@@ -232,9 +232,9 @@
 					:message="getValidationMessage('latitude', 'Required')"
 				>
 					<b-input
+						v-model="formModel.latitude"
 						placeholder="Latitude"
 						:disabled="formDisabled"
-						v-model="formModel.latitude"
 						@blur="validateInput('latitude')"
 					/>
 				</b-field>
@@ -244,9 +244,9 @@
 					:message="getValidationMessage('longitude', 'Required')"
 				>
 					<b-input
+						v-model="formModel.longitude"
 						placeholder="Longitude"
 						:disabled="formDisabled"
-						v-model="formModel.longitude"
 						@blur="validateInput('longitude')"
 					/>
 				</b-field>
@@ -370,6 +370,11 @@ export default {
 		};
 	},
 
+	mounted() {
+		this.fetchTypes();
+		this.fetchProvinces();
+	},
+
 	methods: {
 		submitForm() {
 			this.$v.$touch();
@@ -399,6 +404,7 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+			this.$v.$reset();
 		},
 
 		onProvinceSelect({ id }) {
@@ -440,18 +446,6 @@ export default {
 			LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.villages = result.data; });
 		},
-
-		resetForm() {
-			if (this.formDisabled) {
-				this.$v.$reset();
-			}
-		},
-	},
-
-	mounted() {
-		this.fetchTypes();
-		this.fetchProvinces();
-		this.resetForm();
 	},
 };
 </script>

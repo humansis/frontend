@@ -23,10 +23,10 @@ export default {
 	},
 
 	async getDetailOfProject(id) {
-		const { data: { data, totalCount } } = await fetcher({
+		const { data } = await fetcher({
 			uri: `projects/${id}`,
 		});
-		return { data, totalCount };
+		return { data };
 	},
 
 	async updateProject(id, body) {
