@@ -4,7 +4,7 @@
 		<Modal
 			:active="institutionModal.isOpened"
 			:can-cancel="true"
-			:header="header"
+			:header="modalHeader"
 			@close="closeInstitutionModal"
 		>
 			<InstitutionsForm
@@ -140,7 +140,7 @@ export default {
 			},
 			institutionModal: {
 				isOpened: false,
-				isEditing: true,
+				isEditing: false,
 				isDetail: false,
 			},
 			institutionModel: {
@@ -171,14 +171,16 @@ export default {
 	},
 
 	computed: {
-		header() {
+		modalHeader() {
+			let result = "";
 			if (this.institutionModal.isDetail) {
-				return "Detail of Institution";
+				result = "Detail of Institution";
+			} else if (this.institutionModal.isEditing) {
+				result = "Edit Institution";
+			} else {
+				result = "Create new Institution";
 			}
-			if (this.institutionModal.isEditing) {
-				return "Edit Institution";
-			}
-			return "Create new Institution";
+			return result;
 		},
 	},
 
@@ -303,7 +305,6 @@ export default {
 					number: phoneNumber,
 				},
 			};
-
 			if (this.institutionModal.isEditing && id) {
 				this.updateInstitution(id, institutionBody);
 			} else {
@@ -357,6 +358,7 @@ export default {
 
 		mapToFormModel(
 			{
+				id,
 				name,
 				longitude,
 				latitude,
@@ -384,6 +386,7 @@ export default {
 		) {
 			this.institutionModel = {
 				...this.institutionModel,
+				id,
 				longitude,
 				latitude,
 				name,
