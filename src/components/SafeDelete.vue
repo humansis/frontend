@@ -16,6 +16,7 @@ export default {
 		icon: String,
 		entity: String,
 		id: Number,
+		hasConfirmMessage: Boolean,
 	},
 
 	methods: {
@@ -36,7 +37,9 @@ export default {
 				hasIcon: true,
 				onConfirm: () => {
 					this.$emit("submitted", this.id);
-					this.$buefy.toast.open(`${confirmMessage}!`);
+					if (this.hasConfirmMessage) {
+						this.$buefy.toast.open(`${confirmMessage}!`);
+					}
 				},
 			});
 		},

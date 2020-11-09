@@ -3,7 +3,7 @@
 		<div class="columns">
 			<div class="column is-half is-offset-one-quarter">
 				<section class="modal-card-body">
-					<p class="is-size-4 my-5" >User Information</p>
+					<p class="is-size-4 my-5">User Information</p>
 					<b-field label="Email">
 						<b-input disabled v-model="user.email" />
 					</b-field>
@@ -38,7 +38,7 @@
 						</section>
 					</form>
 					<form @submit.prevent="submitTelephoneForm">
-						<p class="is-size-4 my-5" >Change Phone Number</p>
+						<p class="is-size-4 my-5">Change Phone Number</p>
 						<b-field grouped>
 							<b-field>
 								<b-field>
