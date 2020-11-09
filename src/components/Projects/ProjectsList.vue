@@ -72,7 +72,12 @@
 						@click.native="editProject(props.row.id)"
 					/>
 					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
+					<SafeDelete
+						icon="trash"
+						entity="Project"
+						:id="props.row.id"
+						@submitted="onProjectDelete"
+					/>
 					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
@@ -92,11 +97,13 @@ import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectForm from "@/components/Projects/ProjectForm";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "ProjectsList",
 
 	components: {
+		SafeDelete,
 		Modal,
 		Table,
 		ActionButton,
@@ -312,6 +319,14 @@ export default {
 			await ProjectsService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Updated", "is-success");
+				}
+			});
+		},
+
+		async onProjectDelete(id) {
+			await ProjectsService.deleteProject(id).then((response) => {
+				if (response.status === 204) {
+					Toast("Project Successfully Deleted", "is-success");
 				}
 			});
 		},
