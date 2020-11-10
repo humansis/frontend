@@ -15,7 +15,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfTypesForAssistances() {
+	async getListOfTargetTypesForAssistances() {
 		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/types" });
 		return { data, totalCount };
 	},
