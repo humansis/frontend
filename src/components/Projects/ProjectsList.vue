@@ -227,7 +227,7 @@ export default {
 					this.projectModel.donors = response.data;
 				});
 
-				await AssistancesService.getListOfTargetsForAssistances().then((response) => {
+				await AssistancesService.getListOfTypesForAssistances().then((response) => {
 					this.projectModel.targetTypes = response.data;
 				});
 

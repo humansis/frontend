@@ -1,12 +1,12 @@
 <template>
 	<b-modal
+		v-model="active"
+		has-modal-card
 		trap-focus
 		aria-role="dialog"
-		scroll="keep"
+		destroy-on-hide
 		aria-modal
-		:active="active"
 		:can-cancel="canCancel"
-		:destroy-on-hide="false"
 	>
 		<div class="modal-card">
 			<header class="modal-card-head">
@@ -17,7 +17,7 @@
 					@click="$emit('close')"
 				/>
 			</header>
-			<slot/>
+			<slot />
 		</div>
 	</b-modal>
 </template>
@@ -30,12 +30,6 @@ export default {
 		active: Boolean,
 		header: String,
 		canCancel: Boolean,
-	},
-
-	data() {
-		return {
-			isModalActive: false,
-		};
 	},
 };
 </script>

@@ -5,9 +5,26 @@
 }
 
 .modal{
+    z-index: 100;
+
+    .modal-background {
+        background-color: rgb(19 46 48 / 80%);
+    }
+
+    .modal-card-foot {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+    }
+
+    .animation-content {
+        width: 100%;
+    }
 
     form {
         overflow-y: scroll;
+        padding-bottom: 80px;
     }
 
     .modal-card {
@@ -18,4 +35,8 @@
         display: flex;
         justify-content: flex-end;
     }
+}
+
+.vue2leaflet-map {
+    z-index: 0;
 }
