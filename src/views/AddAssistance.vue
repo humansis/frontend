@@ -5,7 +5,7 @@
 				<NewAssistanceForm @updatedData="fetchNewAssistanceForm" />
 			</div>
 			<div class="column is-three-fifths">
-				<SelectionCriteria />
+				<SelectionCriteria @updatedData="fetchSelectionCriteria" />
 				<DistributedCommodity />
 			</div>
 		</div>
@@ -34,6 +34,7 @@ export default {
 	data() {
 		return {
 			newAssistanceForm: null,
+			selectionCriteria: null,
 		};
 	},
 
@@ -45,6 +46,12 @@ export default {
 		fetchNewAssistanceForm(formModel) {
 			if (formModel) {
 				this.newAssistanceForm = formModel;
+			}
+		},
+
+		fetchSelectionCriteria(data) {
+			if (data) {
+				this.selectionCriteria = data;
 			}
 		},
 	},
