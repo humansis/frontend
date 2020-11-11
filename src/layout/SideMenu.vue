@@ -37,21 +37,21 @@
 						>
 							<b-menu-item
 								label="Households"
-								icon="arrow"
+								icon="home"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
 							/>
 							<b-menu-item
 								label="Institutions"
-								icon="arrow"
+								icon="building"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
 							/>
 							<b-menu-item
 								label="Communities"
-								icon="arrow"
+								icon="users"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
@@ -78,21 +78,21 @@
 						>
 							<b-menu-item
 								label="Vendors"
-								icon="arrow"
+								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Vendors' }"
 							/>
 							<b-menu-item
 								label="Products"
-								icon="arrow"
+								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Products' }"
 							/>
 							<b-menu-item
 								label="Country specifics"
-								icon="arrow"
+								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'CountrySpecifics' }"
