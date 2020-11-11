@@ -54,9 +54,10 @@
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
-import VouchersService from "@/services/VouchersService";
+import BookletsService from "@/services/BookletsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
+import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "VoucherList",
@@ -80,12 +81,28 @@ export default {
 						label: "Project",
 					},
 					{
+						key: "code",
+						label: "Code",
+					},
+					{
+						key: "quantityOfVouchers",
+						label: "Quantity Of Vouchers",
+					},
+					{
+						key: "individualValue",
+						label: "Individual Value",
+					},
+					{
 						key: "status",
 						label: "Status",
 					},
 					{
 						key: "beneficiary",
 						label: "Beneficiary",
+					},
+					{
+						key: "distribution",
+						label: "Distribution",
 					},
 				],
 				total: 0,
@@ -109,22 +126,37 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				await VouchersService.getListOfVouchers(
+				await BookletsService.getListOfBooklets(
 					this.table.currentPage,
 					this.table.perPage,
 					"desc",
 				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
+					this.getProjectNameForBooklets(response.data).then((data) => {
+						this.table.data = data;
+						this.table.total = response.totalCount;
+						this.table.columns = generateColumns(
+							this.table.visibleColumns,
+						);
+					});
 				});
 
 				loadingComponent.close();
 			} catch (error) {
 				this.handleError(error);
 			}
+		},
+
+		async getProjectNameForBooklets(data) {
+			const booklets = [];
+			data.forEach((booklet) => {
+				const preparedBooklet = booklet;
+				ProjectsService.getDetailOfProject(booklet.projectId)
+					.then((response) => {
+						preparedBooklet.project = response.data.name;
+						booklets.push(preparedBooklet);
+					});
+			});
+			return booklets;
 		},
 
 		handleError(error) {

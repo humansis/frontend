@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Country Options</h2>
+		<h2 class="title">Country Specific Options</h2>
 		<b-button
 			class="mb-5"
 			size="is-medium"
@@ -53,12 +53,12 @@
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
-import CountryOptionsService from "@/services/CountryOptionsService";
+import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 
 export default {
-	name: "CountryOptionsList",
+	name: "CountrySpecificOptionsList",
 
 	components: {
 		Table,
@@ -82,10 +82,6 @@ export default {
 						key: "type",
 						label: "Type",
 					},
-					{
-						key: "iso3",
-						label: "Iso 3",
-					},
 				],
 				total: 0,
 				currentPage: 1,
@@ -108,7 +104,7 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				await CountryOptionsService.getListOfCountryOptions(
+				await CountrySpecificOptionsService.getListOfCountrySpecificOptions(
 					this.table.currentPage,
 					this.table.perPage,
 					"desc",
