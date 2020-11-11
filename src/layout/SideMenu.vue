@@ -91,11 +91,11 @@
 								:to="{ name: 'Products' }"
 							/>
 							<b-menu-item
-								label="Country options"
+								label="Country specifics"
 								icon="arrow"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'CountryOptions' }"
+								:to="{ name: 'CountrySpecifics' }"
 							/>
 						</b-menu-item>
 						<b-menu-item

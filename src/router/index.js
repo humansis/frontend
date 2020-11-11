@@ -141,11 +141,11 @@ const routes = [
 						},
 					},
 					{
-						path: "country_options",
-						name: "CountryOptions",
-						component: () => import(/* webpackChunkName: "ConfigurationCountryOptions" */ "@/views/Configuration/CountryOptions"),
+						path: "country-specifics",
+						name: "CountrySpecifics",
+						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecifics" */ "@/views/Configuration/CountrySpecifics"),
 						meta: {
-							breadcrumb: "CountryOptions",
+							breadcrumb: "Country Specifics",
 						},
 					},
 				],
