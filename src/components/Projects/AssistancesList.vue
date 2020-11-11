@@ -1,7 +1,15 @@
 <template>
 	<div>
 		<h2 class="title">Project assistances</h2>
-
+		<b-button
+			class="mb-5"
+			size="is-medium"
+			type="is-danger"
+			icon-left="plus"
+			@click="goToAddAssistance"
+		>
+			New
+		</b-button>
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -27,7 +35,7 @@ import Table from "@/components/Table";
 import AssistancesService from "@/services/AssistancesService";
 
 export default {
-	name: "Assistances",
+	name: "AssistancesList",
 
 	components: {
 		Table,
@@ -104,6 +112,10 @@ export default {
 			console.error(error);
 			this.fetch.loading = false;
 			this.fetch.error = error.toString();
+		},
+
+		goToAddAssistance() {
+			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
 		goToDetail() {

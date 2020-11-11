@@ -40,11 +40,32 @@ const routes = [
 			},
 			{
 				path: "/project/:projectId",
-				name: "Project",
 				component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 				meta: {
 					breadcrumb: "Project",
 				},
+				children: [
+					{
+						path: "/",
+						name: "Project",
+						component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectList"),
+					},
+					{
+						path: "assistance/:assistanceId",
+						name: "Assistance",
+						component: () => import(/* webpackChunkName: "Assistance" */ "@/views/Assistance"),
+						meta: {
+							breadcrumb: "Assistance",
+						},
+					},
+					{
+						path: "add-assistance",
+						name: "AddAssistance",
+						component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
+						meta: {
+							breadcrumb: "Add Assistance",
+						},
+					}],
 			},
 			{
 				path: "/beneficiaries",
