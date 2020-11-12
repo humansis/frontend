@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
 import ProjectsService from "@/services/ProjectsService";
 
 export default {
@@ -78,10 +77,6 @@ export default {
 	},
 
 	methods: {
-		normalizeText(text) {
-			return normalizeText(text);
-		},
-
 		async fetchData() {
 			try {
 				this.fetch.error = null;
@@ -109,9 +104,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-	.columns {
-		margin-bottom: 20px;
-	}
-</style>
