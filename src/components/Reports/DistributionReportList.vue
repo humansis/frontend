@@ -37,12 +37,7 @@
 					:key="column.id"
 				>
 					<template v-slot="props">
-						<div v-if="column.field === 'donorIds'">
-							{{ props.row[column.field].length }}
-						</div>
-						<div v-else>
-							{{ props.row[column.field] }}
-						</div>
+						{{ props.row[column.field] }}
 					</template>
 				</b-table-column>
 			</template>

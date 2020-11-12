@@ -35,7 +35,7 @@
 				label="Reports"
 				icon="chart-line"
 			>
-				<ReportsLog v-if="loadedReports"/>
+				<ReportsLog v-if="loadedReports" />
 			</b-tab-item>
 		</b-tabs>
 	</div>
