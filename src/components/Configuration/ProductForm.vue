@@ -97,10 +97,8 @@ export default {
 			name: {
 				required,
 			},
-			unit: {
-			},
-			image: {
-			},
+			unit: {},
+			image: {},
 		},
 	},
 

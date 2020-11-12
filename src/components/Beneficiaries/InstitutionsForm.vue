@@ -272,12 +272,9 @@ export default {
 			adm1Id: {
 				required,
 			},
-			adm2Id: {
-			},
-			adm3Id: {
-			},
-			adm4Id: {
-			},
+			adm2Id: {},
+			adm3Id: {},
+			adm4Id: {},
 		},
 	},
 
