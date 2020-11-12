@@ -67,7 +67,7 @@
 <script>
 import Table from "@/components/Table";
 import Modal from "@/components/Modal";
-import SelectionCriteriaForm from "@/components/AddAsistance/SelectionCriteriaForm";
+import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
 import ActionButton from "@/components/ActionButton";
 
 export default {

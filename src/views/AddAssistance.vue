@@ -18,9 +18,9 @@
 
 <script>
 import { Toast } from "@/utils/UI";
-import NewAssistanceForm from "@/components/AddAsistance/NewAssistanceForm";
-import SelectionCriteria from "@/components/AddAsistance/SelectionCriteria";
-import DistributedCommodity from "@/components/AddAsistance/DistributedCommodity";
+import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
+import SelectionCriteria from "@/components/AddAssistance/SelectionCriteria";
+import DistributedCommodity from "@/components/AddAssistance/DistributedCommodity";
 
 export default {
 	name: "AddAssistance",
