@@ -6,7 +6,7 @@
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria @updatedData="fetchSelectionCriteria" />
-				<DistributedCommodity />
+				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
 			</div>
 		</div>
 		<div class="buttons">
@@ -35,6 +35,7 @@ export default {
 		return {
 			newAssistanceForm: null,
 			selectionCriteria: null,
+			distributedCommodity: null,
 		};
 	},
 
@@ -52,6 +53,12 @@ export default {
 		fetchSelectionCriteria(data) {
 			if (data) {
 				this.selectionCriteria = data;
+			}
+		},
+
+		fetchDistributedCommodity(data) {
+			if (data) {
+				this.distributedCommodity = data;
 			}
 		},
 	},

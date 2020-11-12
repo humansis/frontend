@@ -27,7 +27,7 @@
 			/>
 		</Modal>
 
-		<div>
+		<div class="mb-2">
 			<Table
 				v-if="table.data.length"
 				:data="table.data"
@@ -50,8 +50,13 @@
 
 				<b-table-column
 					label="Actions"
+					v-slot="props"
 				>
-					<ActionButton icon="trash" type="is-danger" />
+					<ActionButton
+						@click.native="removeCriteria(props.index)"
+						icon="trash"
+						type="is-danger"
+					/>
 				</b-table-column>
 			</Table>
 			<b-notification
@@ -61,6 +66,13 @@
 				No data
 			</b-notification>
 		</div>
+		<b-field label="Minimum Selection Score">
+			<b-numberinput :value="0" />
+		</b-field>
+		<p>
+			The system will only select beneficiaries/households that have a score higher
+			than the minimum selection score
+		</p>
 	</div>
 </template>
 
@@ -149,6 +161,10 @@ export default {
 		submitCriteriaForm(criteriaForm) {
 			this.table.data.push(criteriaForm);
 			this.criteriaModal.isOpened = false;
+		},
+
+		removeCriteria(index) {
+			this.table.data.splice(index, 1);
 		},
 	},
 };
