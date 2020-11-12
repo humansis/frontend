@@ -46,7 +46,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column :key="column.id" v-bind="column">
+				<b-table-column v-bind="column" :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -54,8 +54,8 @@
 			</template>
 
 			<b-table-column
-				label="Actions"
 				v-slot="props"
+				label="Actions"
 			>
 				<div class="block">
 					<ActionButton
@@ -147,10 +147,10 @@ export default {
 				nationalCardType: "",
 				phonePrefix: "",
 				phoneNumber: "",
-				addressAdm1Id: "",
-				addressAdm2Id: "",
-				addressAdm3Id: "",
-				addressAdm4Id: "",
+				adm1Id: "",
+				adm2Id: "",
+				adm3Id: "",
+				adm4Id: "",
 			},
 		};
 	},
@@ -239,10 +239,10 @@ export default {
 				nationalCardType: "",
 				phonePrefix: "",
 				phoneNumber: "",
-				addressAdm1Id: "",
-				addressAdm2Id: "",
-				addressAdm3Id: "",
-				addressAdm4Id: "",
+				adm1Id: "",
+				adm2Id: "",
+				adm3Id: "",
+				adm4Id: "",
 			};
 		},
 
@@ -260,10 +260,10 @@ export default {
 				nationalCardType,
 				phonePrefix,
 				phoneNumber,
-				addressAdm1Id,
-				addressAdm2Id,
-				addressAdm3Id,
-				addressAdm4Id,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 			} = communityForm;
 
 			const communityBody = {
@@ -275,10 +275,10 @@ export default {
 					street: addressStreet,
 					number: addressNumber,
 					postCode: addressPostCode,
-					adm1Id: addressAdm1Id,
-					adm2Id: addressAdm2Id,
-					adm3Id: addressAdm3Id,
-					adm4Id: addressAdm4Id,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
 				},
 				nationalCard: {
 					idNumber: nationalCardNumber,
@@ -361,10 +361,10 @@ export default {
 					street: addressStreet,
 					number: addressNumber,
 					postcode: addressPostCode,
-					adm1Id: addressAdm1Id,
-					adm2Id: addressAdm2Id,
-					adm3Id: addressAdm3Id,
-					adm4Id: addressAdm4Id,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
 				},
 				nationalIdCard: {
 					number: nationalCardNumber,
@@ -387,10 +387,10 @@ export default {
 				nationalCardType,
 				phonePrefix,
 				phoneNumber,
-				addressAdm1Id,
-				addressAdm2Id,
-				addressAdm3Id,
-				addressAdm4Id,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 			};
 		},
 

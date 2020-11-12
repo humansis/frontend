@@ -121,70 +121,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Province"
-				:type="getValidationType('addressAdm1Id')"
-				:message="getValidationMessage('addressAdm1Id', 'Required')"
-			>
-				<MultiSelect
-					v-model="formModel.addressAdm1Id"
-					searchable
-					placeholder="Province"
-					label="name"
-					track-by="id"
-					:disabled="formDisabled"
-					:options="provinces"
-					@select="onProvinceSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="District"
-				:type="getValidationType('addressAdm2Id')"
-			>
-				<MultiSelect
-					v-model="formModel.addressAdm2Id"
-					searchable
-					placeholder="District"
-					label="name"
-					track-by="id"
-					:disabled="formDisabled"
-					:options="districts"
-					@select="onDistrictSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="Commune"
-				:type="getValidationType('addressAdm3Id')"
-			>
-				<MultiSelect
-					v-model="formModel.addressAdm3Id"
-					searchable
-					placeholder="Commune"
-					label="name"
-					track-by="id"
-					:disabled="formDisabled"
-					:options="communes"
-					@select="onCommuneSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="Village"
-				:type="getValidationType('addressAdm4Id')"
-			>
-				<MultiSelect
-					v-model="formModel.addressAdm3Id"
-					searchable
-					placeholder="Village"
-					label="name"
-					track-by="id"
-					:disabled="formDisabled"
-					:options="villages"
-					@select="validateInput('addressAdm4Id')"
-				/>
-			</b-field>
+			<LocationFormComponent
+				ref="locationForm"
+				:form-model="formModel"
+				:form-disabled="formDisabled"
+			/>
 
 			<b-field
 				label="Address Number"
@@ -271,10 +212,12 @@
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
 import InstitutionsService from "@/services/InstitutionsService";
-import LocationsService from "@/services/LocationsService";
+import LocationFormComponent from "@/components/LocationFormComponent";
 
 export default {
 	name: "InstitutionForm",
+
+	components: { LocationFormComponent },
 
 	props: {
 		formModel: Object,
@@ -326,14 +269,14 @@ export default {
 			nationalCardType: {
 				required,
 			},
-			addressAdm1Id: {
+			adm1Id: {
 				required,
 			},
-			addressAdm2Id: {
+			adm2Id: {
 			},
-			addressAdm3Id: {
+			adm3Id: {
 			},
-			addressAdm4Id: {
+			adm4Id: {
 			},
 		},
 	},
@@ -372,12 +315,12 @@ export default {
 
 	mounted() {
 		this.fetchTypes();
-		this.fetchProvinces();
 	},
 
 	methods: {
 		submitForm() {
 			this.$v.$touch();
+			this.$refs.locationForm.submitLocationForm();
 			if (this.$v.$invalid) {
 				return;
 			}
@@ -407,44 +350,9 @@ export default {
 			this.$v.$reset();
 		},
 
-		onProvinceSelect({ id }) {
-			this.validateInput("addressAdm1Id");
-			this.fetchDistricts(id);
-		},
-
-		onDistrictSelect({ id }) {
-			this.validateInput("addressAdm2Id");
-			this.fetchCommunes(id);
-		},
-
-		onCommuneSelect({ id }) {
-			this.validateInput("addressAdm3Id");
-			this.fetchVillages(id);
-		},
-
 		fetchTypes() {
 			InstitutionsService.getListOfInstitutionTypes()
 				.then((result) => { this.types = result.data; });
-		},
-
-		fetchProvinces() {
-			LocationsService.getListOfAdm1()
-				.then((result) => { this.provinces = result.data; });
-		},
-
-		fetchDistricts(adm1Id) {
-			LocationsService.getListOfAdm2(adm1Id)
-				.then((result) => { this.districts = result.data; });
-		},
-
-		fetchCommunes(adm2Id) {
-			LocationsService.getListOfAdm3(adm2Id)
-				.then((result) => { this.communes = result.data; });
-		},
-
-		fetchVillages(adm3Id) {
-			LocationsService.getListOfAdm4(adm3Id)
-				.then((result) => { this.villages = result.data; });
 		},
 	},
 };

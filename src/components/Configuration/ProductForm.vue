@@ -30,8 +30,8 @@
 				:type="getValidationType('image')"
 			>
 				<b-field
-					class="file"
 					v-if="!formDisabled"
+					class="file"
 				>
 					<b-upload
 						v-model="formModel.image"
@@ -60,7 +60,12 @@
 		</section>
 
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
+			<button
+				v-if="closeButton"
+				class="button"
+				type="button"
+				@click="closeForm"
+			>
 				Close
 			</button>
 			<b-button

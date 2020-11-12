@@ -7,8 +7,23 @@ export default {
 	},
 
 	async getDetailOfAdm1(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `adm1/${id}` });
-		return { data, totalCount };
+		const { data } = await fetcher({ uri: `adm1/${id}` });
+		return { data };
+	},
+
+	async getDetailOfAdm2(id) {
+		const { data } = await fetcher({ uri: `adm2/${id}` });
+		return { data };
+	},
+
+	async getDetailOfAdm3(id) {
+		const { data } = await fetcher({ uri: `adm3/${id}` });
+		return { data };
+	},
+
+	async getDetailOfAdm4(id) {
+		const { data } = await fetcher({ uri: `adm4/${id}` });
+		return { data };
 	},
 
 	async getListOfAdm2(id) {

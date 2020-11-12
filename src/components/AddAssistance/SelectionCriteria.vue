@@ -13,9 +13,9 @@
 		</h2>
 
 		<Modal
+			header="Create A New Criteria"
 			:active.sync="criteriaModal.isOpened"
 			:can-cancel="true"
-			header="Create A New Criteria"
 			@close="closeCriteriaModal"
 		>
 			<SelectionCriteriaForm
