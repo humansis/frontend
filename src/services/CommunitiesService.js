@@ -29,7 +29,7 @@ export default {
 		return { data, status };
 	},
 
-	async removeCommunity(id) {
+	async deleteCommunity(id) {
 		const { data, status } = await fetcher({
 			uri: `communities/${id}`, method: "DELETE",
 		});
