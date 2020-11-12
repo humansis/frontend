@@ -1,27 +1,27 @@
 <template>
-	<div class="columns">
-		<div class="column">
+	<div class="is-flex-wrap-wrap is-flex is-flex-direction-row is-justify-content-space-around">
+		<div class="is-flex-grow-0 graph-item">
 			<div class="is-size-5 has-text-centered">Status Rate</div>
 			<PieChart
 				:dataCollection="pieData"
 				:options="pieOptions"
 			/>
 		</div>
-		<div class="column">
+		<div class="is-flex-grow-0 graph-item">
 			<div class="is-size-5 has-text-centered">Requests Per Day</div>
 			<LineChart
 				:dataCollection="lineData"
 				:options="lineOptions"
 			/>
 		</div>
-		<div class="column">
+		<div class="is-flex-grow-0 graph-item">
 			<div class="is-size-5 has-text-centered">Most Active Users</div>
 			<BarChart
 				:dataCollection="barData"
 				:options="barOptions"
 			/>
 		</div>
-		<div class="column">
+		<div class="is-flex-grow-0 graph-item is-block">
 			<div class="is-size-5 has-text-centered">Requests Per Country</div>
 			<LineChart
 				ref="requestsPerCountry"
@@ -187,3 +187,10 @@ export default {
 };
 
 </script>
+
+<style scoped>
+.graph-item {
+	width: 300px;
+	height: 500px;
+}
+</style>
