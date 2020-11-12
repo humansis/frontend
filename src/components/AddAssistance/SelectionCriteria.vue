@@ -53,9 +53,9 @@
 					v-slot="props"
 				>
 					<ActionButton
-						@click.native="removeCriteria(props.index)"
 						icon="trash"
 						type="is-danger"
+						@click.native="removeCriteria(props.index)"
 					/>
 				</b-table-column>
 			</Table>
