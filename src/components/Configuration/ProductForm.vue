@@ -126,10 +126,6 @@ export default {
 			return result;
 		},
 
-		removeImage() {
-			this.formModel.image = null;
-		},
-
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
