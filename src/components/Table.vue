@@ -1,15 +1,10 @@
 <template>
 	<div>
 		<b-table
-			:data="data"
-			:total="total"
-			:per-page="perPage"
-			:current-page="currentPage"
-			:pagination-simple="false"
-			:pagination-position="'bottom'"
-			:default-sort-direction="'asc'"
-			:sort-icon="'arrow-up'"
-			:sort-icon-size="'is-small'"
+			pagination-position="bottom"
+			default-sort-direction="asc"
+			sort-icon="arrow-up"
+			sort-icon-size="is-small"
 			paginated
 			striped
 			hoverable
@@ -20,6 +15,11 @@
 			aria-page-label="Page"
 			aria-current-label="Current page"
 			selectable
+			:data="data"
+			:total="total"
+			:per-page="perPage"
+			:current-page="currentPage"
+			:pagination-simple="false"
 			@dblclick="$emit('clicked', $event)"
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
@@ -33,7 +33,12 @@
 export default {
 	name: "Table",
 
-	props: ["data", "total", "currentPage", "perPage"],
+	props: {
+		data: Array,
+		total: Number,
+		currentPage: Number,
+		perPage: Number,
+	},
 
 };
 </script>

@@ -7,6 +7,7 @@
 		destroy-on-hide
 		aria-modal
 		:can-cancel="canCancel"
+		@close="$emit('close')"
 	>
 		<div class="modal-card">
 			<header class="modal-card-head">
