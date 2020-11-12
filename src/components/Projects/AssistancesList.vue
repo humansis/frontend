@@ -20,17 +20,45 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column :key="column.id" v-bind="column">
+				<b-table-column v-bind="column" :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
 				</b-table-column>
 			</template>
+
+			<b-table-column
+				v-slot="props"
+				label="Actions"
+			>
+				<div class="block">
+					<ActionButton
+						icon="edit"
+						type="is-link"
+					/>
+					<ActionButton
+						icon="search"
+						type="is-link"
+					/>
+					<ActionButton
+						icon="lock"
+						type="is-danger"
+					/>
+					<SafeDelete
+						icon="trash"
+						entity="Project"
+						:id="props.row.id"
+					/>
+					<ActionButton icon="copy" type="is-dark" />
+				</div>
+			</b-table-column>
 		</Table>
 	</div>
 </template>
 <script>
 import { generateColumns } from "@/utils/datagrid";
+import ActionButton from "@/components/ActionButton";
+import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/Table";
 import AssistancesService from "@/services/AssistancesService";
 
@@ -39,6 +67,8 @@ export default {
 
 	components: {
 		Table,
+		ActionButton,
+		SafeDelete,
 	},
 
 	data() {
@@ -51,12 +81,20 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{
+						key: "id",
+						label: "Assistance ID",
+					},
+					{
 						key: "name",
 						label: "Name",
 					},
 					{
-						key: "id",
-						label: "Id",
+						key: "adm1Id",
+						label: "Location",
+					},
+					{
+						key: "dateDistribution",
+						label: "Date Of Distribution",
 					},
 					{
 						key: "target",
@@ -65,6 +103,10 @@ export default {
 					{
 						key: "type",
 						label: "Type",
+					},
+					{
+						key: "commodityIds",
+						label: "Commodity",
 					},
 				],
 				total: 0,
