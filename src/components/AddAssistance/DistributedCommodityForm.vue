@@ -37,8 +37,8 @@
 			</b-field>
 
 			<b-field
-				label="Unit"
 				v-if="formModel.modality !== 'Cash'"
+				label="Unit"
 			>
 				<MultiSelect
 					v-model="formModel.unit"
@@ -49,8 +49,8 @@
 			</b-field>
 
 			<b-field
-				label="Quantity"
 				v-if="formModel.modality !== 'Vouchers'"
+				label="Quantity"
 			>
 				<b-input
 					v-model="formModel.quantity"
@@ -58,8 +58,8 @@
 			</b-field>
 
 			<b-field
-				label="Description"
 				v-if="formModel.modality === 'In Kind'"
+				label="Description"
 			>
 				<b-input
 					v-model="formModel.description"
@@ -67,8 +67,8 @@
 			</b-field>
 
 			<b-field
-				label="Total Value of Booklet"
 				v-if="formModel.modality === 'Vouchers'"
+				label="Total Value of Booklet"
 			>
 				<b-input
 					v-model="formModel.totalValueOfBooklet"

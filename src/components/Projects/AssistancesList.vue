@@ -20,7 +20,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column :key="column.id" v-bind="column">
+				<b-table-column v-bind="column" :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -28,8 +28,8 @@
 			</template>
 
 			<b-table-column
-				label="Actions"
 				v-slot="props"
+				label="Actions"
 			>
 				<div class="block">
 					<ActionButton

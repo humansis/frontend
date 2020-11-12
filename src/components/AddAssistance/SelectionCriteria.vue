@@ -49,8 +49,8 @@
 				</template>
 
 				<b-table-column
-					label="Actions"
 					v-slot="props"
+					label="Actions"
 				>
 					<ActionButton
 						icon="trash"
