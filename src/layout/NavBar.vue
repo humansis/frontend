@@ -14,10 +14,10 @@
 				/>
 			</b-navbar-item>
 			<b-dropdown
+				v-model="country.iso3"
 				position="is-bottom-left"
 				append-to-body
 				aria-role="menu"
-				v-model="country.iso3"
 			>
 				<a
 					class="navbar-item"
@@ -26,17 +26,14 @@
 				>
 					<b-icon icon="globe-africa" size="is-medium" />
 				</a>
-				<b-dropdown-item value="KHM" @click="handleChangeCountry('KHM')">
+				<b-dropdown-item
+					v-for="country in countries"
+					:key="country.iso3"
+					:value="country.iso3"
+					@click="handleChangeCountry(country)"
+				>
 					<b-icon class="mr-1" icon="globe" />
-					KHM
-				</b-dropdown-item>
-				<b-dropdown-item value="SYR" @click="handleChangeCountry('SYR')">
-					<b-icon class="mr-1" icon="globe" />
-					SYR
-				</b-dropdown-item>
-				<b-dropdown-item value="UKR" @click="handleChangeCountry('UKR')">
-					<b-icon class="mr-1" icon="globe" />
-					UKR
+					{{ country.iso3 }}
 				</b-dropdown-item>
 			</b-dropdown>
 			<b-dropdown
@@ -72,21 +69,36 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import LocationsService from "@/services/LocationsService";
 
 export default {
 	name: "NavBar",
+
+	data() {
+		return {
+			countries: [],
+		};
+	},
 
 	methods: {
 		...mapActions(["updateCountry"]),
 
 		handleChangeCountry(country) {
-			localStorage.setItem("country", country);
+			localStorage.setItem("country", country.iso3);
 			this.$router.go();
+		},
+
+		fetchCountries() {
+			LocationsService.getListOfCountries()
+				.then((response) => {
+					this.countries = response.data;
+				});
 		},
 	},
 
 	created() {
 		this.updateCountry();
+		this.fetchCountries();
 	},
 
 	computed: {
