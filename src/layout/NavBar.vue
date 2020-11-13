@@ -17,7 +17,7 @@
 				position="is-bottom-left"
 				append-to-body
 				aria-role="menu"
-				v-model="country"
+				v-model="country.iso3"
 			>
 				<a
 					class="navbar-item"
