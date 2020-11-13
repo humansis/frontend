@@ -1,17 +1,32 @@
 <template>
 	<div>
 		<Modal
-			:active="addBeneficiaryModal.isOpened"
-			:can-cancel="true"
+			can-cancel
 			header="Add Beneficiaries To This Assistance"
+			:active="addBeneficiaryModal.isOpened"
 			@close="closeAddBeneficiaryModal"
 		>
 			<AddBeneficiaryForm
 				close-button
+				submit-button-label="Confirm"
 				:formModel="addBeneficiaryModel"
-				submit-button-label="Add"
 				@formSubmitted="submitAddBeneficiaryForm"
 				@formClosed="closeAddBeneficiaryModal"
+			/>
+		</Modal>
+
+		<Modal
+			can-cancel
+			header="Edit This Beneficiary"
+			:active="editBeneficiaryModal.isOpened"
+			@close="closeEditBeneficiaryModal"
+		>
+			<EditBeneficiaryForm
+				close-button
+				submit-button-label="Save"
+				:formModel="editBeneficiaryModel"
+				@formSubmitted="submitEditBeneficiaryForm"
+				@formClosed="closeEditBeneficiaryModal"
 			/>
 		</Modal>
 		<b-button
@@ -40,7 +55,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column :key="column.id" v-bind="column">
+				<b-table-column v-bind="column" :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -71,6 +86,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
+import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import Modal from "@/components/Modal";
 
 export default {
@@ -78,6 +94,7 @@ export default {
 
 	components: {
 		AddBeneficiaryForm,
+		EditBeneficiaryForm,
 		Table,
 		ActionButton,
 		Modal,
@@ -137,8 +154,15 @@ export default {
 				isOpened: false,
 			},
 			editBeneficiaryModel: {
-				beneficiaries: null,
-				justification: null,
+				firstName: null,
+				familyName: null,
+				gender: null,
+				dateOfBirth: null,
+				residencyStatus: null,
+				status: null,
+				referralType: null,
+				comment: null,
+				justificationForAdding: null,
 			},
 		};
 	},
@@ -191,11 +215,22 @@ export default {
 		},
 
 		submitAddBeneficiaryForm() {
+			// TODO Add Beneficiaries to Assistances
 			this.addBeneficiaryModal.isOpened = false;
+		},
+
+		closeEditBeneficiaryModal() {
+			this.editBeneficiaryModal.isOpened = false;
+		},
+
+		submitEditBeneficiaryForm() {
+			// TODO Update Beneficiary in thi assistance
+			this.editBeneficiaryModal.isOpened = false;
 		},
 
 		showDetail(beneficiary) {
 			console.log(beneficiary.id);
+			this.editBeneficiaryModal.isOpened = true;
 		},
 
 		onPageChange() {
