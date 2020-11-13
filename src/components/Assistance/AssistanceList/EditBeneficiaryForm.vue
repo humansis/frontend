@@ -120,7 +120,6 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
-		formDisabled: Boolean,
 	},
 
 	data() {

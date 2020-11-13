@@ -29,9 +29,9 @@
 		</b-tabs>
 		<div class="has-text-right">
 			<b-button
-				@click="goToNextTab"
 				v-if="selectedTabIndex !== 3"
 				type="is-success"
+				@click="goToNextTab"
 			>
 				Next
 			</b-button>
