@@ -35,6 +35,7 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
+						@click.native="goToDetail(props.row.id)"
 					/>
 					<ActionButton
 						icon="search"
@@ -160,8 +161,11 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		goToDetail() {
-			// TODO go to detail
+		goToDetail(id) {
+			this.$router.push({ name: "Assistance",
+				params: {
+					assistanceId: id,
+				} });
 		},
 
 		onPageChange() {
