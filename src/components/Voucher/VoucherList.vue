@@ -9,8 +9,8 @@
 		>
 			<VoucherForm
 				close-button
+				submit-button-label="Create"
 				:formModel="voucherModel"
-				:submit-button-label="voucherModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="voucherModal.isDetail"
 				@formSubmitted="submitVoucherForm"
 				@formClosed="closeVoucherModal"
@@ -143,7 +143,6 @@ export default {
 			},
 			voucherModal: {
 				isOpened: false,
-				isEditing: false,
 				isDetail: false,
 			},
 			voucherModel: {
@@ -170,8 +169,6 @@ export default {
 			let result = "";
 			if (this.voucherModal.isDetail) {
 				result = "Detail of Voucher";
-			} else if (this.voucherModal.isEditing) {
-				result = "Edit Voucher";
 			} else {
 				result = "Create new Voucher";
 			}
@@ -236,7 +233,6 @@ export default {
 		showDetail(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {
-				isEditing: false,
 				isOpened: true,
 				isDetail: true,
 			};
@@ -273,7 +269,6 @@ export default {
 
 		addNewVoucher() {
 			this.voucherModal = {
-				isEditing: false,
 				isOpened: true,
 				isDetail: false,
 			};

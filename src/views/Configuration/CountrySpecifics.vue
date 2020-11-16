@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import CountrySpecificsList from "@/components/Configuration/CountrSpecificsList";
+import CountrySpecificsList from "@/components/Configuration/CountrySpecificsList";
 
 export default {
 	name: "CountrySpecifics",
