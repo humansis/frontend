@@ -1,11 +1,27 @@
 <template>
 	<div>
 		<h2 class="title">Vouchers</h2>
+		<Modal
+			:active="voucherModal.isOpened"
+			:can-cancel="true"
+			:header="modalHeader"
+			@close="closeVoucherModal"
+		>
+			<VoucherForm
+				close-button
+				:formModel="voucherModel"
+				:submit-button-label="voucherModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="voucherModal.isDetail"
+				@formSubmitted="submitVoucherForm"
+				@formClosed="closeVoucherModal"
+			/>
+		</Modal>
 		<b-button
 			class="mb-5"
 			size="is-medium"
 			type="is-danger"
 			icon-left="plus"
+			@click="addNewVoucher"
 		>
 			Add
 		</b-button>
@@ -25,7 +41,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
-			@clicked="goToDetail"
+			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -38,12 +54,21 @@
 			</template>
 
 			<b-table-column
+				v-slot="props"
 				label="Actions"
 			>
 				<div class="block">
-					<ActionButton icon="edit" type="is-link" />
-					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
+					<ActionButton
+						icon="search"
+						type="is-info"
+						@click.native="showDetailWithId(props.row.id)"
+					/>
+					<SafeDelete
+						icon="trash"
+						entity="Voucher"
+						:id="props.row.id"
+						@submitted="onRemoveVoucher"
+					/>
 					<ActionButton icon="print" type="is-dark" />
 				</div>
 			</b-table-column>
@@ -58,11 +83,18 @@ import BookletsService from "@/services/BookletsService";
 import Table from "@/components/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
+import VoucherForm from "@/components/Voucher/VoucherForm";
+import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
+import Modal from "@/components/Modal";
 
 export default {
 	name: "VoucherList",
 
 	components: {
+		Modal,
+		SafeDelete,
+		VoucherForm,
 		Table,
 		ActionButton,
 	},
@@ -109,11 +141,42 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
+			voucherModal: {
+				isOpened: false,
+				isEditing: false,
+				isDetail: false,
+			},
+			voucherModel: {
+				id: null,
+				quantityOfBooklets: 0,
+				quantityOfVouchers: 0,
+				individualValue: "",
+				projectId: 0,
+				project: "",
+				password: "",
+				status: 0,
+				code: "",
+				defineAPassword: false,
+			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
+	},
+
+	computed: {
+		modalHeader() {
+			let result = "";
+			if (this.voucherModal.isDetail) {
+				result = "Detail of Voucher";
+			} else if (this.voucherModal.isEditing) {
+				result = "Edit Voucher";
+			} else {
+				result = "Create new Voucher";
+			}
+			return result;
+		},
 	},
 
 	mounted() {
@@ -165,8 +228,111 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		goToDetail() {
-			// TODO go to detail
+		showDetailWithId(id) {
+			const voucher = this.table.data.find((item) => item.id === id);
+			this.showDetail(voucher);
+		},
+
+		showDetail(voucher) {
+			this.mapToFormModel(voucher);
+			this.voucherModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+			};
+		},
+
+		mapToFormModel(
+			{
+				id,
+				quantityOfBooklets,
+				quantityOfVouchers,
+				individualValue,
+				projectId,
+				password,
+				status,
+				code,
+			},
+		) {
+			this.voucherModel = {
+				...this.voucherModel,
+				id,
+				quantityOfBooklets,
+				quantityOfVouchers,
+				individualValue,
+				projectId,
+				password,
+				status,
+				code,
+			};
+		},
+
+		closeVoucherModal() {
+			this.voucherModal.isOpened = false;
+		},
+
+		addNewVoucher() {
+			this.voucherModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+			};
+
+			this.voucherModel = {
+				...this.voucherModel,
+				id: null,
+				quantityOfBooklets: 1,
+				quantityOfVouchers: 1,
+				individualValue: "",
+				projectId: null,
+				project: "",
+				password: "",
+				status: null,
+				code: "",
+				defineAPassword: false,
+			};
+		},
+
+		submitVoucherForm(voucherForm) {
+			const {
+				quantityOfBooklets,
+				quantityOfVouchers,
+				individualValue,
+				projectId,
+				password,
+			} = voucherForm;
+
+			const voucherBody = {
+				quantityOfBooklets,
+				quantityOfVouchers,
+				individualValue,
+				projectId,
+				password,
+				status: 0,
+			};
+
+			this.createVoucher(voucherBody);
+
+			this.closeVoucherModal();
+		},
+
+		async createVoucher(voucherBody) {
+			await BookletsService.createBooklet(voucherBody).then((response) => {
+				if (response.status === 200) {
+					Toast("Voucher Successfully Created", "is-success");
+					this.fetchData();
+				}
+			});
+		},
+
+		async onRemoveVoucher(id) {
+			await BookletsService.removeBooklet(id)
+				.then((response) => {
+					if (response.status === 204) {
+						Toast("Voucher successfully removed", "is-success");
+						this.fetchData();
+					}
+				});
 		},
 
 		onPageChange() {
