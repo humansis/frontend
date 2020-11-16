@@ -2,63 +2,110 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				label="Project"
+				:type="getValidationType('projectId')"
+				:message="getValidationMessage('projectId', 'Required')"
+			>
+				<MultiSelect
+					v-model="formModel.projectId"
+					searchable
+					placeholder="Project"
+					label="name"
+					track-by="id"
+					:disabled="formDisabled"
+					:options="projects"
+					@select="validateInput('projectId')"
+				/>
+			</b-field>
+			<b-field
+				label="Quantity Of Booklets"
+				:type="getValidationType('quantityOfBooklets')"
+				:message="getValidationMessage('quantityOfBooklets', 'Required')"
+			>
+				<b-numberinput
+					v-model="formModel.quantityOfBooklets"
+					expanded
+					min="0"
+					controls-alignment="right"
+					controls-position="compact"
+					placeholder="Quantity Of Booklets"
+					:disabled="formDisabled"
+					@blur="validateInput('Quantity Of Booklets')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Quantity Of Vouchers"
+				:type="getValidationType('quantityOfVouchers')"
+				:message="getValidationMessage('quantityOfVouchers', 'Required')"
+			>
+				<b-numberinput
+					v-model="formModel.quantityOfVouchers"
+					expanded
+					min="0"
+					placeholder="Quantity Of Vouchers"
+					controls-alignment="right"
+					controls-position="compact"
+					:disabled="formDisabled"
+					@blur="validateInput('quantityOfVouchers')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Individual Value"
+				:type="getValidationType('individualValue')"
+				:message="getValidationMessage('individualValue', 'Required')"
 			>
 				<b-input
-					v-model="formModel.name"
-					placeholder="Name"
+					v-model="formModel.individualValue"
+					placeholder="Individual Value"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validateInput('individualValue')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Unit"
-				:type="getValidationType('unit')"
+				label="Currency"
+				:type="getValidationType('currency')"
+				:message="getValidationMessage('currency', 'Required')"
+			>
+				<MultiSelect
+					v-model="formModel.currency"
+					searchable
+					placeholder="Currency"
+					label="name"
+					track-by="id"
+					:disabled="formDisabled"
+					:options="currencies"
+					@select="validateInput('currency')"
+				/>
+			</b-field>
+
+			<b-field
+				v-if="!formDisabled"
+				label="Define A Password"
+			>
+				<b-checkbox
+					v-model="formModel.defineAPassword"
+				/>
+			</b-field>
+
+			<b-field
+				v-if="formModel.defineAPassword || formDisabled"
+				label="Password"
+				:type="getValidationType('password')"
+				:message="getValidationMessage('password', 'Required')"
 			>
 				<b-input
-					v-model="formModel.unit"
-					placeholder="Unit"
+					v-model="formModel.password"
+					type="password"
+					placeholder="Password"
+					password-reveal
 					:disabled="formDisabled"
-					@blur="validateInput('unit')"
+					@blur="validateInput('password')"
 				/>
-			</b-field>
-			<b-field
-				label="Image"
-				:type="getValidationType('image')"
-			>
-				<b-field
-					v-if="!formDisabled"
-					class="file"
-				>
-					<b-upload
-						v-model="formModel.image"
-						expanded
-					>
-						<a class="button is-primary is-fullwidth">
-							<b-icon icon="upload" />
-							<span>
-								{{ formModel.image ? formModel.image.name : "Click to upload"}}
-							</span>
-						</a>
-					</b-upload>
-
-				</b-field>
-			</b-field>
-			<b-field
-				v-if="formDisabled && formModel.image"
-			>
-				<b-image
-					alt="Image"
-					ratio="601by235"
-					src="https://www.hello.com/img_/hellowithwaves.png"
-				/>
-
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button
 				v-if="closeButton"
@@ -80,7 +127,8 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
+import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "VoucherForm",
@@ -92,14 +140,57 @@ export default {
 		formDisabled: Boolean,
 	},
 
+	data() {
+		return {
+			projects: [],
+			// TODO fill currencies
+			currencies: [
+				{
+					id: "CZK",
+					name: "CZK",
+				},
+				{
+					id: "USD",
+					name: "USD",
+				},
+				{
+					id: "GBP",
+					name: "GBP",
+				},
+				{
+					id: "EUR",
+					name: "EUR",
+				},
+			],
+		};
+	},
+
 	validations: {
 		formModel: {
-			name: {
+			quantityOfBooklets: {
 				required,
 			},
-			unit: {},
-			image: {},
+			quantityOfVouchers: {
+				required,
+			},
+			individualValue: {
+				required,
+			},
+			projectId: {
+				required,
+			},
+			password: {
+				required: requiredIf((form) => form.defineAPassword),
+			},
+			status: {},
+			currency: {
+				required,
+			},
 		},
+	},
+
+	mounted() {
+		this.fetchProjects();
 	},
 
 	methods: {
@@ -130,8 +221,18 @@ export default {
 		},
 
 		closeForm() {
-			this.$emit("formClosed");
 			this.$v.$reset();
+			this.$emit("formClosed");
+		},
+
+		fetchProjects() {
+			ProjectsService.getListOfProjects(
+				1,
+				15,
+				"desc",
+			).then((response) => {
+				this.projects = response.data;
+			});
 		},
 	},
 };
