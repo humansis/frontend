@@ -92,12 +92,12 @@ export default {
 			LocationsService.getListOfCountries()
 				.then((response) => {
 					this.countries = response.data;
+					this.updateCountry(this.countries);
 				});
 		},
 	},
 
 	created() {
-		this.updateCountry();
 		this.fetchCountries();
 	},
 
