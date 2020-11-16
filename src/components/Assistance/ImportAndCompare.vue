@@ -35,9 +35,9 @@
 			<b-tag size="is-large" type="is-info">
 				{{file.name}}
 				<button
-					@click="deleteDropFile(index)"
 					class="delete is-medium"
 					type="button"
+					@click="deleteDropFile(index)"
 				/>
 			</b-tag>
 		</b-taglist>
@@ -61,6 +61,7 @@ export default {
 			dropFiles: [],
 		};
 	},
+
 	methods: {
 		deleteDropFile(index) {
 			this.dropFiles.splice(index, 1);
