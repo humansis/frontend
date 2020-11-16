@@ -47,7 +47,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		headers.Authentication = localStorage.getItem("user-token");
 	}
 
-	headers.Country = state.country;
+	headers.Country = state.country.iso3;
 
 	const config = { headers };
 

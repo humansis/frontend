@@ -1,6 +1,9 @@
 export default {
-	updateCountry: ({ commit }) => {
-		const country = localStorage.getItem("country");
-		commit("changeCountry", country === null ? "KHM" : country);
+	updateCountry: ({ commit }, countries) => {
+		const country = localStorage.getItem("country") || "KHM";
+		const countryObj = countries.find((item) => item.iso3 === country);
+		if (countryObj) {
+			commit("changeCountry", countryObj);
+		}
 	},
 };
