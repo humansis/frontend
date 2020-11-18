@@ -83,6 +83,22 @@ const routes = [
 						},
 					},
 					{
+						path: "add-household",
+						name: "AddHousehold",
+						component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+						meta: {
+							breadcrumb: "Add Household",
+						},
+					},
+					{
+						path: "edit-household/:householdId",
+						name: "EditHousehold",
+						component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+						meta: {
+							breadcrumb: "Edit Household",
+						},
+					},
+					{
 						path: "communities",
 						name: "Communities",
 						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
