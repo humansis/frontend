@@ -1,10 +1,9 @@
 <template>
 	<div>
 		<h2 class="title">Country Specific Options</h2>
-
 		<Modal
+			can-cancel
 			:active="countrySpecificsModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeCountrySpecificsModal"
 		>

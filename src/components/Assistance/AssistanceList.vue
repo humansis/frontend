@@ -14,7 +14,6 @@
 				@formClosed="closeAddBeneficiaryModal"
 			/>
 		</Modal>
-
 		<Modal
 			can-cancel
 			header="Edit This Beneficiary"
@@ -52,6 +51,7 @@
 				<b-numberinput size="is-medium" placeholder="%" controls-position="compact" />
 			</b-field>
 			<b-button
+				v-if="exportButton"
 				class="mb-5"
 				size="is-medium"
 				type="is-success"
@@ -117,6 +117,7 @@ export default {
 	props: {
 		addButton: Boolean,
 		changeButton: Boolean,
+		exportButton: Boolean,
 	},
 
 	components: {

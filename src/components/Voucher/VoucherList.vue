@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Vouchers</h2>
 		<Modal
+			can-cancel
 			:active="voucherModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeVoucherModal"
 		>

@@ -11,11 +11,10 @@
 				Add
 			</b-button>
 		</h2>
-
 		<Modal
+			can-cancel
 			header="Create A New Criteria"
 			:active.sync="criteriaModal.isOpened"
-			:can-cancel="true"
 			@close="closeCriteriaModal"
 		>
 			<SelectionCriteriaForm

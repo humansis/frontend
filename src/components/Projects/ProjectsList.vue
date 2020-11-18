@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Projects</h2>
 		<Modal
+			can-cancel
 			:active="projectModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeProjectModal"
 		>

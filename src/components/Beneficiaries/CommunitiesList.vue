@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Communities</h2>
 		<Modal
+			can-cancel
 			:active="communityModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeCommunityModal"
 		>
