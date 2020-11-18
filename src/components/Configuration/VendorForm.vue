@@ -163,15 +163,6 @@ export default {
 		},
 	},
 
-	data() {
-		return {
-			provinces: [],
-			districts: [],
-			communes: [],
-			villages: [],
-		};
-	},
-
 	methods: {
 		submitForm() {
 			this.$v.$touch();
