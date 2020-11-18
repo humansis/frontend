@@ -12,21 +12,21 @@ export default {
 
 	async createCountrySpecificOption(body) {
 		const { data, status } = await fetcher({
-			uri: "country_options", method: "POST", body,
+			uri: "country-specifics", method: "POST", body,
 		});
 		return { data, status };
 	},
 
 	async getDetailOfCountrySpecificOption(id) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `country_options/${id}`,
+			uri: `country-specifics/${id}`,
 		});
 		return { data, totalCount };
 	},
 
 	async deleteCountryOption(id) {
 		const { data, status } = await fetcher({
-			uri: `country_options/${id}`, method: "DELETE",
+			uri: `country-specifics/${id}`, method: "DELETE",
 		});
 		return { data, status };
 	},
