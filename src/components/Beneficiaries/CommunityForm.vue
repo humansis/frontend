@@ -265,10 +265,6 @@ export default {
 					name: "SK - +421",
 				},
 			],
-			provinces: [],
-			districts: [],
-			communes: [],
-			villages: [],
 		};
 	},
 
