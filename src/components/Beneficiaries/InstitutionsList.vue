@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Institutions</h2>
 		<Modal
+			can-cancel
 			:active="institutionModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeInstitutionModal"
 		>

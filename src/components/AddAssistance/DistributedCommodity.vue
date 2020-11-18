@@ -11,10 +11,9 @@
 				Add
 			</b-button>
 		</h2>
-
 		<Modal
+			can-cancel
 			:active.sync="commodityModal.isOpened"
-			:can-cancel="true"
 			header="Create A New Commodity"
 			@close="closeCommodityModal"
 		>

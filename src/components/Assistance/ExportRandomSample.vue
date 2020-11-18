@@ -1,7 +1,9 @@
 <template>
-	<div>
-		<AssistanceList change-button :add-button="false" />
-	</div>
+	<AssistanceList
+		change-button
+		export-button
+		:add-button="false"
+	/>
 </template>
 
 <script>

@@ -6,7 +6,11 @@
 				label="Assistance List Of Beneficiaries"
 				icon="list"
 			>
-				<AssistanceList add-button :change-button="false" />
+				<AssistanceList
+					export-button
+					add-button
+					:change-button="false"
+				/>
 			</b-tab-item>
 			<b-tab-item
 				label="Import & Compare"

@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Products</h2>
 		<Modal
+			can-cancel
 			:active="productModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			@close="closeProductModal"
 		>
