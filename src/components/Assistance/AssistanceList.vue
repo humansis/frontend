@@ -29,15 +29,37 @@
 				@formClosed="closeEditBeneficiaryModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="openAddBeneficiaryModal"
-		>
-			Add
-		</b-button>
+		<div class="buttons space-between">
+			<b-button
+				v-if="addButton"
+				class="mb-5"
+				size="is-medium"
+				type="is-danger"
+				icon-left="plus"
+				@click="openAddBeneficiaryModal"
+			>
+				Add
+			</b-button>
+			<b-field v-if="changeButton" class="mb-5">
+				<p class="control">
+					<button class="button is-danger is-medium">
+						<b-icon icon="exchange-alt" />
+						<span>
+							Change
+						</span>
+					</button>
+				</p>
+				<b-numberinput size="is-medium" placeholder="%" controls-position="compact" />
+			</b-field>
+			<b-button
+				class="mb-5"
+				size="is-medium"
+				type="is-success"
+				icon-left="file-download"
+			>
+				Export
+			</b-button>
+		</div>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -91,6 +113,11 @@ import Modal from "@/components/Modal";
 
 export default {
 	name: "AssistanceList",
+
+	props: {
+		addButton: Boolean,
+		changeButton: Boolean,
+	},
 
 	components: {
 		AddBeneficiaryForm,
