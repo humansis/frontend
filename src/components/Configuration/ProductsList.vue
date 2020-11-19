@@ -138,7 +138,6 @@ export default {
 				name: "",
 				unit: "",
 				image: null,
-				iso3: "",
 			},
 		};
 	},
@@ -213,7 +212,6 @@ export default {
 			{
 				id,
 				name,
-				iso3,
 				image,
 				unit,
 			},
@@ -222,7 +220,6 @@ export default {
 				...this.productModel,
 				id,
 				name,
-				iso3,
 				image,
 				unit,
 			};
@@ -257,7 +254,6 @@ export default {
 				name: "",
 				image: null,
 				unit: "",
-				iso3: "",
 			};
 		},
 
@@ -273,7 +269,6 @@ export default {
 				name,
 				image,
 				unit,
-				iso3: this.$store.state.country,
 			};
 
 			if (this.productModal.isEditing && id) {
