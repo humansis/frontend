@@ -51,7 +51,7 @@
 					v-slot="props"
 					:key="column.id"
 				>
-					<Column :column="column" :data="props" />
+					<TableColumn :column="column" :data="props" />
 				</b-table-column>
 			</template>
 
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import DonorsService from "@/services/DonorsService";
@@ -92,13 +92,13 @@ import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import SafeDelete from "@/components/SafeDelete";
 import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
-import Column from "@/components/Column";
+import TableColumn from "@/components/Table/TableColumn";
 
 export default {
 	name: "DonorsList",
 
 	components: {
-		Column,
+		TableColumn,
 		Modal,
 		SafeDelete,
 		DonorForm,

@@ -86,7 +86,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import { Toast } from "@/utils/UI";
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import VendorForm from "@/components/Configuration/VendorForm";
 import SafeDelete from "@/components/SafeDelete";

@@ -100,7 +100,7 @@ import ProjectsService from "@/services/ProjectsService";
 import HomeService from "@/services/HomeService";
 import SectorsService from "@/services/SectorsService";
 import Modal from "@/components/Modal";
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectForm from "@/components/Projects/ProjectForm";
 import SafeDelete from "@/components/SafeDelete";

@@ -105,7 +105,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";

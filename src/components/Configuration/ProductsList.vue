@@ -85,7 +85,7 @@
 import { generateColumns } from "@/utils/datagrid";
 import { Toast } from "@/utils/UI";
 import ProductsService from "@/services/ProductsService";
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ProductForm from "@/components/Configuration/ProductForm";

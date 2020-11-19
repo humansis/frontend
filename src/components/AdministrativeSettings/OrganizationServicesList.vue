@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import OrganizationServicesService from "@/services/OrganizationServicesService";

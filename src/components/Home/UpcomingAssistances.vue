@@ -24,7 +24,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";
-import Table from "@/components/Table";
+import Table from "@/components/Table/Table";
 
 export default {
 	name: "UpcomingAssistances",
