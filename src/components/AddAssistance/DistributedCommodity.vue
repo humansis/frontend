@@ -72,7 +72,7 @@
 
 import Modal from "@/components/Modal";
 import DistributedCommodityForm from "@/components/AddAssistance/DistributedCommodityForm";
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 
 export default {

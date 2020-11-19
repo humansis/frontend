@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
 import ActionButton from "@/components/ActionButton";

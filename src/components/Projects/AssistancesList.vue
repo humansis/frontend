@@ -60,7 +60,7 @@
 import { generateColumns } from "@/utils/datagrid";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import AssistancesService from "@/services/AssistancesService";
 
 export default {

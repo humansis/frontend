@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import MyOrganizationsService from "@/services/MyOrganizationsService";

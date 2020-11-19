@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import PeriodFilter from "@/components/Reports/PeriodFilter";
 import ProjectsService from "@/services/ProjectsService";

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import LogsService from "@/services/LogsService";
 
