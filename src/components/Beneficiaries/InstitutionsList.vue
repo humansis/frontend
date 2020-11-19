@@ -86,7 +86,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import InstitutionsService from "@/services/InstitutionsService";
-import Table from "@/components/Table/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { Toast } from "@/utils/UI";
 import SafeDelete from "@/components/SafeDelete";

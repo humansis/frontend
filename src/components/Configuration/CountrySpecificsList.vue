@@ -79,7 +79,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
-import Table from "@/components/Table/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import CountrySpecificsForm from "@/components/Configuration/CountrySpecificsForm";
 import SafeDelete from "@/components/SafeDelete";

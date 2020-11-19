@@ -80,7 +80,7 @@
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import BookletsService from "@/services/BookletsService";
-import Table from "@/components/Table/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import VoucherForm from "@/components/Voucher/VoucherForm";

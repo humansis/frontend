@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ImageColumn from "@/components/Table/ImageColumn";
+import ImageColumn from "@/components/DataGrid/ImageColumn";
 
 export default {
 	name: "TableColumn",
