@@ -216,14 +216,14 @@ export default {
 				livelihood: {
 					livelihood: "",
 					incomeLevel: "",
-					debtLevel: "",
+					debtLevel: 0,
 					assets: "",
-					foodConsumptionScore: "",
-					copingStrategiesIndex: "",
+					foodConsumptionScore: 0,
+					copingStrategiesIndex: 0,
 				},
 				externalSupport: {
 					externalSupportReceivedType: "",
-					supportDateReceived: "",
+					supportDateReceived: new Date(),
 					supportOrganisation: "",
 				},
 				countrySpecificOptions: {
