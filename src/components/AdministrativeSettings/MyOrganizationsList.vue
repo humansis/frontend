@@ -37,10 +37,12 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column  v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					v-slot="props"
+					:key="column.id"
+				>
+					<ColumnField :column="column" :data="props" />
 				</b-table-column>
 			</template>
 
@@ -79,11 +81,13 @@ import MyOrganizationsService from "@/services/MyOrganizationsService";
 import { Toast } from "@/utils/UI";
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizationForm";
 import Modal from "@/components/Modal";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "MyOrganizationsList",
 
 	components: {
+		ColumnField,
 		Modal,
 		MyOrganizationForm,
 		Table,
@@ -104,18 +108,22 @@ export default {
 						label: "Organization Name",
 					},
 					{
+						type: "image",
 						key: "logo",
 						label: "Organization Logo",
 					},
 					{
+						type: "font",
 						key: "font",
 						label: "Font To Apply To The Pdf",
 					},
 					{
+						type: "color",
 						key: "primaryColor",
 						label: "Organization Primary Color",
 					},
 					{
+						type: "color",
 						key: "secondaryColor",
 						label: "Organization Secondary Color",
 					},

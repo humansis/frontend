@@ -46,10 +46,12 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 
@@ -90,11 +92,13 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "ProductsList",
 
 	components: {
+		ColumnField,
 		Modal,
 		ProductForm,
 		SafeDelete,
@@ -120,6 +124,7 @@ export default {
 						label: "Unit",
 					},
 					{
+						type: "image",
 						key: "image",
 						label: "Image",
 					},
