@@ -181,7 +181,7 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
-import locationForm from "@/components/LocationForm";
+import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "CommunityForm",
