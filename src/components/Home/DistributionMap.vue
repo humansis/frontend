@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">Assistances Map</h2>
 		<LMap :zoom="zoom" :center="center">
-			<LTileLayer :url="url" :attribution="attribution"></LTileLayer>
-			<LMarker :lat-lng="marker"></LMarker>
+			<LTileLayer :url="url" :attribution="attribution" />
+			<LMarker :lat-lng="marker" />
 		</LMap>
 	</div>
 </template>
