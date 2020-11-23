@@ -69,7 +69,6 @@
 </template>
 
 <script>
-
 import Modal from "@/components/Modal";
 import DistributedCommodityForm from "@/components/AddAssistance/DistributedCommodityForm";
 import Table from "@/components/DataGrid/Table";

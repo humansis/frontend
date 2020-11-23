@@ -39,6 +39,5 @@ export default {
 		currentPage: Number,
 		perPage: Number,
 	},
-
 };
 </script>

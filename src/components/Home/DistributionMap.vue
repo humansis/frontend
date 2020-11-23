@@ -39,7 +39,7 @@ export default {
 </script>
 
 <style scoped>
-	.vue2leaflet-map{
-		height: 400px;
-	}
+.vue2leaflet-map{
+	height: 400px;
+}
 </style>

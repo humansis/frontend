@@ -56,6 +56,7 @@
 		</Table>
 	</div>
 </template>
+
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import ActionButton from "@/components/ActionButton";

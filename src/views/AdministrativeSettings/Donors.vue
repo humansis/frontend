@@ -58,7 +58,7 @@ export default {
 			},
 			donorModel: {
 				id: null,
-				fullname: "",
+				fullName: "",
 				shortName: "",
 				logo: null,
 				notes: "",
@@ -93,7 +93,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
-				fullname,
+				fullName,
 				shortName,
 				logo,
 				notes,
@@ -102,7 +102,7 @@ export default {
 			this.donorModel = {
 				...this.donorModel,
 				id,
-				fullname,
+				fullName,
 				shortName,
 				logo,
 				notes,
@@ -132,7 +132,7 @@ export default {
 			this.donorModel = {
 				...this.donorModel,
 				id: null,
-				fullname: "",
+				fullName: "",
 				shortName: "",
 				logo: null,
 				notes: "",
@@ -142,14 +142,14 @@ export default {
 		submitDonorForm(donorForm) {
 			const {
 				id,
-				fullname,
+				fullName,
 				shortName,
 				logo,
 				notes,
 			} = donorForm;
 
 			const donorBody = {
-				fullname,
+				fullName,
 				shortName,
 				logo,
 				notes,

@@ -1,6 +1,5 @@
 <template>
 	<section>
-
 		<b-field
 			label="Province"
 			:type="getValidationType('adm1Id')"

@@ -20,6 +20,5 @@ export default {
 			this.renderChart(this.dataCollection, this.options);
 		},
 	},
-
 };
 </script>

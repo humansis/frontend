@@ -77,6 +77,7 @@
 					@select="validateInput('nationalCardType')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Contact ID Number"
 				:type="getValidationType('nationalCardNumber')"
@@ -149,6 +150,7 @@
 						@blur="validateInput('latitude')"
 					/>
 				</b-field>
+
 				<b-field
 					label="Longitude"
 					:type="getValidationType('longitude')"

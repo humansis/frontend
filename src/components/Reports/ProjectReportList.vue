@@ -42,7 +42,6 @@
 					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>

@@ -76,6 +76,7 @@
 							@select="validateInput('phonePrefix')"
 						/>
 					</b-field>
+
 					<b-field
 						expanded
 						:type="getValidationType('phoneNumber')"
@@ -193,7 +194,6 @@
 				</b-field>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

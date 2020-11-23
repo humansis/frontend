@@ -13,6 +13,7 @@
 					@blur="validateInput('username')"
 				/>
 			</b-field>
+
 			<b-field
 				v-if="formModel.creating"
 				label="Password"
@@ -28,6 +29,7 @@
 					@blur="validateInput('password')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Name"
 				:type="getValidationType('name')"
@@ -195,7 +197,6 @@ export default {
 			this.$emit("formClosed");
 			this.$v.$reset();
 		},
-
 	},
 };
 </script>

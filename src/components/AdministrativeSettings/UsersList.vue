@@ -10,7 +10,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -27,7 +26,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -56,7 +54,6 @@
 					/>
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>

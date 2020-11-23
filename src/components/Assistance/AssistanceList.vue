@@ -97,7 +97,6 @@
 					<ActionButton icon="trash" type="is-danger" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>

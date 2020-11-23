@@ -3,14 +3,14 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Donor Name"
-				:type="getValidationType('fullname')"
-				:message="getValidationMessage('fullname', 'Required')"
+				:type="getValidationType('fullName')"
+				:message="getValidationMessage('fullName', 'Required')"
 			>
 				<b-input
-					v-model="formModel.fullname"
+					v-model="formModel.fullName"
 					placeholder="Donor Name"
 					:disabled="formDisabled"
-					@blur="validateInput('fullname')"
+					@blur="validateInput('fullName')"
 				/>
 			</b-field>
 
@@ -117,7 +117,7 @@ export default {
 
 	validations: {
 		formModel: {
-			fullname: {
+			fullName: {
 				required,
 			},
 			shortName: {

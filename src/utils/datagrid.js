@@ -8,7 +8,7 @@ export const generateColumns = ((visibleColumns) => {
 	visibleColumns.forEach((column) => {
 		preparedColumns.push({
 			field: column.key,
-			label: column.label ? column.label : column.key,
+			label: column.label ? column.label : normalizeText(column.key),
 			type: column.type,
 		});
 	});

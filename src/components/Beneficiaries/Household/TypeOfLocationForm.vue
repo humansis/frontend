@@ -54,7 +54,6 @@
 				/>
 			</b-field>
 		</div>
-
 	</section>
 </template>
 

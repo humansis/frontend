@@ -21,6 +21,7 @@
 		</Table>
 	</div>
 </template>
+
 <script>
 import { generateColumns } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";

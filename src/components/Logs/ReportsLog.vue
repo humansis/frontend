@@ -29,7 +29,6 @@
 				:options="multiLineOptions"
 			/>
 		</div>
-
 	</div>
 </template>
 

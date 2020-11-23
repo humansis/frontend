@@ -30,7 +30,6 @@
 </template>
 
 <script>
-
 import Users from "@/views/AdministrativeSettings/Users";
 import Donors from "@/views/AdministrativeSettings/Donors";
 import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";

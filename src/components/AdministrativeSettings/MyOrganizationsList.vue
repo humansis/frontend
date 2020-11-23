@@ -1,48 +1,46 @@
 <template>
-	<div>
-		<Table
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:per-page="table.perPage"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					v-slot="props"
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
-
+	<Table
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:per-page="table.perPage"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
 				v-slot="props"
-				label="Actions"
+				:key="column.id"
 			>
-				<div class="block">
-					<ActionButton
-						icon="search"
-						type="is-info"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						@click.native="showEdit(props.row.id)"
-					/>
-					<ActionButton
-						icon="print"
-						type="is-dark"
-						@click.native="print(props.row.id)"
-					/>
-				</div>
+				<ColumnField :column="column" :data="props" />
 			</b-table-column>
-		</Table>
-	</div>
+		</template>
+
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+		>
+			<div class="block">
+				<ActionButton
+					icon="search"
+					type="is-info"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					type="is-link"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<ActionButton
+					icon="print"
+					type="is-dark"
+					@click.native="print(props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+	</Table>
 </template>
 
 <script>

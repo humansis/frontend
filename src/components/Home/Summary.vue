@@ -70,8 +70,8 @@ export default {
 </script>
 
 <style scoped>
-	.columns {
-		position: relative;
-		min-height: 64px;
-	}
+.columns {
+	position: relative;
+	min-height: 64px;
+}
 </style>

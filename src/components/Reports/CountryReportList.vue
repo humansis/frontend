@@ -33,7 +33,6 @@
 
 		</Table>
 	</div>
-
 </template>
 
 <script>

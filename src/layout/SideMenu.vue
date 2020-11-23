@@ -116,7 +116,6 @@
 				</b-menu>
 			</div>
 		</b-sidebar>
-
 	</aside>
 </template>
 
