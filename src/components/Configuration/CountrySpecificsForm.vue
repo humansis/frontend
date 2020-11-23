@@ -126,9 +126,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.modal-card-body {
-	height: 18em;
-}
-</style>
