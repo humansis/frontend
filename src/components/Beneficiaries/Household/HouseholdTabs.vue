@@ -26,11 +26,21 @@
 				<Summary />
 			</b-tab-item>
 		</b-tabs>
-		<div class="has-text-right">
+		<div class="buttons flex-end">
+			<b-button
+				type="is-danger is-light"
+			>
+				Close
+			</b-button>
 			<b-button
 				type="is-success"
 			>
 				Next
+			</b-button>
+			<b-button
+				type="is-success"
+			>
+				Update
 			</b-button>
 		</div>
 	</div>
