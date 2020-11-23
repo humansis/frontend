@@ -1,30 +1,5 @@
 <template>
 	<div>
-		<Modal
-			:active="userModal.isOpened"
-			:can-cancel="true"
-			:header="modalHeader"
-			@close="closeUserModal"
-		>
-			<UserForm
-				close-button
-				:formModel="userModel"
-				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="userModal.isDetail"
-				@formSubmitted="submitUserForm"
-				@formClosed="closeUserModal"
-			/>
-		</Modal>
-
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewUser"
-		>
-			Add
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -71,13 +46,13 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="editUser(props.row.id)"
+						@click.native="showDetail(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="User"
 						:id="props.row.id"
-						@submitted="onUserDelete"
+						@submitted="remove"
 					/>
 				</div>
 			</b-table-column>
@@ -92,16 +67,11 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
-import { Toast } from "@/utils/UI";
-import UserForm from "@/components/AdministrativeSettings/UserForm";
-import Modal from "@/components/Modal";
 
 export default {
 	name: "UsersList",
 
 	components: {
-		Modal,
-		UserForm,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -137,41 +107,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			userModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			userModel: {
-				id: null,
-				email: "",
-				password: "",
-				rights: "",
-				projects: "",
-				countries: "",
-				prefix: "",
-				phoneNumber: "",
-				updatePasswordOnNextLogin: false,
-			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.userModal.isDetail) {
-				result = "Detail of User";
-			} else if (this.userModal.isEditing) {
-				result = "Edit User";
-			} else {
-				result = "Create new User";
-			}
-			return result;
-		},
 	},
 
 	mounted() {
@@ -208,98 +148,9 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		editUser(id) {
-			this.userModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.mapToFormModel(this.table.data.find((item) => item.id === id));
-		},
-
-		addNewUser() {
-			this.userModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.userModel = {
-				...this.userModel,
-				id: null,
-				email: "",
-				password: "",
-				rights: "",
-				projects: "",
-				countries: "",
-				prefix: "",
-				phoneNumber: "",
-				updatePasswordOnNextLogin: false,
-			};
-		},
-
-		submitUserForm(userForm) {
-			const {
-				id,
-				email,
-				password,
-				rights,
-				projects,
-				countries,
-				prefix,
-				phoneNumber,
-				updatePasswordOnNextLogin,
-			} = userForm;
-
-			const userBody = {
-				email,
-				password,
-				rights,
-				projects,
-				countries,
-				prefix,
-				phoneNumber,
-				updatePasswordOnNextLogin,
-			};
-			if (this.userModal.isEditing && id) {
-				this.updateUser(id, userBody);
-			} else {
-				this.createUser(userBody);
-			}
-
-			this.closeUserModal();
-		},
-
-		async createUser(userBody) {
-			await UsersService.createUser(userBody).then((response) => {
-				if (response.status === 200) {
-					Toast("User Successfully Created", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async updateUser(id, userBody) {
-			await UsersService.updateUser(id, userBody).then((response) => {
-				if (response.status === 200) {
-					Toast("User Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async onUserDelete(id) {
-			await UsersService.deleteUser(id).then((response) => {
-				if (response.status === 204) {
-					Toast("User Successfully Deleted", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		closeUserModal() {
-			this.userModal.isOpened = false;
+		showEdit(id) {
+			const user = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowEdit", user);
 		},
 
 		showDetailWithId(id) {
@@ -308,43 +159,15 @@ export default {
 		},
 
 		showDetail(user) {
-			this.mapToFormModel(user);
-			this.userModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
-		},
-
-		mapToFormModel(
-			{
-				id,
-				email,
-				password,
-				rights,
-				projects,
-				countries,
-				prefix,
-				phoneNumber,
-				updatePasswordOnNextLogin,
-			},
-		) {
-			this.userModel = {
-				...this.userModel,
-				id,
-				email,
-				password,
-				rights,
-				projects,
-				countries,
-				prefix,
-				phoneNumber,
-				updatePasswordOnNextLogin,
-			};
+			this.$emit("onShowDetail", user);
 		},
 
 		sendHistory(id) {
 			UsersService.sendHistory(id);
+		},
+
+		remove(id) {
+			this.$emit("onRemove", id);
 		},
 
 		onPageChange() {

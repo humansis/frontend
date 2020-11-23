@@ -73,7 +73,7 @@ import { required } from "vuelidate/lib/validators";
 import LocationsService from "@/services/LocationsService";
 
 export default {
-	name: "LocationFormComponent",
+	name: "locationForm",
 
 	props: {
 		formModel: Object,

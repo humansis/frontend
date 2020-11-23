@@ -36,13 +36,13 @@
 					class="file"
 				>
 					<b-upload
-						v-model="formModel.logo"
+						v-model="formModel.uploadedImage"
 						expanded
 					>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.logo ? formModel.logo.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
 							</span>
 						</a>
 					</b-upload>
@@ -102,6 +102,12 @@ import { required } from "vuelidate/lib/validators";
 export default {
 	name: "DonorForm",
 
+	date() {
+		return {
+			uploadedImage: null,
+		};
+	},
+
 	props: {
 		formModel: Object,
 		submitButtonLabel: String,
@@ -124,6 +130,7 @@ export default {
 
 	methods: {
 		submitForm() {
+			this.formModel.logo = this.uploadedImage;
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

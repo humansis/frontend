@@ -91,7 +91,7 @@
 				/>
 			</b-field>
 
-			<LocationFormComponent
+			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
@@ -181,12 +181,12 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
-import LocationFormComponent from "@/components/LocationFormComponent";
+import locationForm from "@/components/LocationForm";
 
 export default {
 	name: "CommunityForm",
 
-	components: { LocationFormComponent },
+	components: { LocationForm },
 
 	props: {
 		formModel: Object,

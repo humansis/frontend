@@ -1,31 +1,5 @@
 <template>
 	<div>
-		<h2 class="title">Vendors</h2>
-		<Modal
-			can-cancel
-			:active="vendorModal.isOpened"
-			:header="modalHeader"
-			@close="closeVendorModal"
-		>
-			<VendorForm
-				close-button
-				:formModel="vendorModel"
-				:submit-button-label="vendorModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="vendorModal.isDetail"
-				@formSubmitted="submitVendorForm"
-				@formClosed="closeVendorModal"
-			/>
-		</Modal>
-
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewVendor"
-		>
-			Add
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -67,13 +41,13 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="editVendor(props.row.id)"
+						@click.native="showEdit(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Vendor"
 						:id="props.row.id"
-						@submitted="onVendorDelete"
+						@submitted="remove"
 					/>
 					<ActionButton icon="print" type="is-dark" />
 				</div>
@@ -85,22 +59,17 @@
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import VendorForm from "@/components/Configuration/VendorForm";
 import SafeDelete from "@/components/SafeDelete";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
-import Modal from "@/components/Modal";
 
 export default {
 	name: "VendorsList",
 
 	components: {
-		Modal,
 		SafeDelete,
-		VendorForm,
 		Table,
 		ActionButton,
 	},
@@ -147,45 +116,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			vendorModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			vendorModel: {
-				creating: false,
-				id: null,
-				username: "",
-				password: "",
-				name: "",
-				description: "",
-				addressStreet: "",
-				addressNumber: "",
-				addressPostCode: "",
-				adm1Id: "",
-				adm2Id: "",
-				adm3Id: "",
-				adm4Id: "",
-			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.vendorModal.isDetail) {
-				result = "Detail of Vendor";
-			} else if (this.vendorModal.isEditing) {
-				result = "Edit Vendor";
-			} else {
-				result = "Create new Vendor";
-			}
-			return result;
-		},
 	},
 
 	mounted() {
@@ -257,112 +192,9 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		editVendor(id) {
-			this.vendorModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.mapToFormModel(this.table.data.find((item) => item.id === id));
-		},
-
-		addNewVendor() {
-			this.vendorModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.vendorModel = {
-				...this.vendorModel,
-				creating: true,
-				id: null,
-				name: "",
-				contactGivenName: "",
-				contactFamilyName: "",
-				type: "",
-				addressStreet: "",
-				addressNumber: "",
-				addressPostCode: "",
-				nationalCardNumber: "",
-				nationalCardType: "",
-				phonePrefix: "",
-				phoneNumber: "",
-				adm1Id: "",
-				adm2Id: "",
-				adm3Id: "",
-				adm4Id: "",
-			};
-		},
-
-		submitVendorForm(vendorForm) {
-			const {
-				id,
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			} = vendorForm;
-
-			const vendorBody = {
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			};
-			if (this.vendorModal.isEditing && id) {
-				this.updateVendor(id, vendorBody);
-			} else {
-				this.createVendor(vendorBody);
-			}
-
-			this.closeVendorModal();
-		},
-
-		async createVendor(vendorBody) {
-			await VendorsService.createVendor(vendorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Vendor Successfully Created", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async updateVendor(id, vendorBody) {
-			await VendorsService.updateVendor(id, vendorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Vendor Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async onVendorDelete(id) {
-			await VendorsService.deleteVendor(id).then((response) => {
-				if (response.status === 204) {
-					Toast("Vendor Successfully Deleted", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		closeVendorModal() {
-			this.vendorModal.isOpened = false;
+		showEdit(id) {
+			const vendor = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowEdit", vendor);
 		},
 
 		showDetailWithId(id) {
@@ -371,46 +203,11 @@ export default {
 		},
 
 		showDetail(vendor) {
-			this.mapToFormModel(vendor);
-			this.vendorModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
+			this.$emit("onShowDetail", vendor);
 		},
 
-		mapToFormModel(
-			{
-				id,
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			},
-		) {
-			this.vendorModel = {
-				...this.vendorModel,
-				creating: !this.vendorModal.isEditing && !this.vendorModal.isDetail,
-				id,
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			};
+		remove(id) {
+			this.$emit("onRemove", id);
 		},
 
 		onPageChange() {

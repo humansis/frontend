@@ -21,6 +21,7 @@ import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 
 export default {
 	name: "Home",
+
 	components: {
 		DistributionMap,
 		Summary,
