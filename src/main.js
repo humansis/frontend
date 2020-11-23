@@ -7,6 +7,7 @@ import "@/plugins/buefy";
 import "@/plugins/vuelidate";
 import "@/plugins/breadcrumbs";
 import "@/plugins/vueselect";
+import "@/plugins/vueswatches";
 
 Vue.config.productionTip = false;
 

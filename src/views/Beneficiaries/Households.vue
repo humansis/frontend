@@ -71,7 +71,7 @@
 <script>
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import Table from "@/components/Table";
+import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 
