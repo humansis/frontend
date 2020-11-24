@@ -33,9 +33,15 @@
 			</b-tab-item>
 			<b-tab-item
 				label="Languages"
-				icon="th-large"
+				icon="language"
 			>
 				<Languages />
+			</b-tab-item>
+			<b-tab-item
+				label="Currencies"
+				icon="dollar-sign"
+			>
+				<Currencies />
 			</b-tab-item>
 		</b-tabs>
 	</div>
@@ -48,11 +54,13 @@ import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
 import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
 import Countries from "@/views/AdministrativeSettings/Countries";
 import Languages from "@/views/AdministrativeSettings/Languages";
+import Currencies from "@/views/AdministrativeSettings/Currencies";
 
 export default {
 	name: "AdministrativeSettings",
 
 	components: {
+		Currencies,
 		Countries,
 		Languages,
 		OrganizationServices,
