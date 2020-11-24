@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
@@ -21,7 +20,6 @@
 			>
 				<b-input
 					v-model="formModel.contactGivenName"
-					placeholder="Contact Name"
 					:disabled="formDisabled"
 					@blur="validate('contactGivenName')"
 				/>
@@ -34,7 +32,6 @@
 			>
 				<b-input
 					v-model="formModel.contactFamilyName"
-					placeholder="Contact Family Name"
 					:disabled="formDisabled"
 					@blur="validate('contactFamilyName')"
 				/>
@@ -48,7 +45,6 @@
 				<MultiSelect
 					v-model="formModel.type"
 					searchable
-					placeholder="Type"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"

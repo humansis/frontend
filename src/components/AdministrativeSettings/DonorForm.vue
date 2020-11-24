@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.fullName"
-					placeholder="Donor Name"
 					:disabled="formDisabled"
 					@blur="validate('fullName')"
 				/>
@@ -21,7 +20,6 @@
 			>
 				<b-input
 					v-model="formModel.shortName"
-					placeholder="Short Name"
 					:disabled="formDisabled"
 					@blur="validate('shortName')"
 				/>
@@ -68,7 +66,6 @@
 			>
 				<b-input
 					v-model="formModel.notes"
-					placeholder="Notes"
 					:disabled="formDisabled"
 					@blur="validate('notes')"
 				/>

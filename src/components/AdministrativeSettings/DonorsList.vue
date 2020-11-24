@@ -3,7 +3,8 @@
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
-					<b-input placeholder="Search..."
+					<b-input
+						placeholder="Search..."
 						type="search"
 						icon="search"
 					/>

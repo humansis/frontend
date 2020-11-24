@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.field"
-					placeholder="Field"
 					:disabled="formDisabled"
 					@blur="validate('field')"
 				/>
@@ -23,7 +22,6 @@
 					v-model="formModel.type"
 					searchable
 					is-relative
-					placeholder="Type"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -41,7 +39,6 @@
 					v-model="formModel.target"
 					searchable
 					is-relative
-					placeholder="Target"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"

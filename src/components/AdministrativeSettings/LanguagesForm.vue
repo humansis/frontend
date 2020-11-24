@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>

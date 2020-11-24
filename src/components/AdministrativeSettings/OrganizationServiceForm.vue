@@ -9,7 +9,6 @@
 				<b-input
 					v-model="formModel.name"
 					disabled
-					placeholder="Service Name"
 				/>
 			</b-field>
 
@@ -20,7 +19,6 @@
 				<b-input
 					v-model="formModel.country"
 					disabled
-					placeholder="Country"
 				/>
 			</b-field>
 
@@ -33,7 +31,6 @@
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
 					@blur="validate('password')"
@@ -48,7 +45,6 @@
 			>
 				<b-input
 					v-model="formModel.username"
-					placeholder="Username"
 					:disabled="formDisabled"
 					@blur="validate('username')"
 				/>
@@ -62,7 +58,6 @@
 			>
 				<b-input
 					v-model="formModel.email"
-					placeholder="Email"
 					:disabled="formDisabled"
 					@blur="validate('email')"
 				/>
@@ -76,7 +71,6 @@
 			>
 				<b-input
 					v-model="formModel.token"
-					placeholder="Token"
 					:disabled="formDisabled"
 					@blur="validate('token')"
 				/>

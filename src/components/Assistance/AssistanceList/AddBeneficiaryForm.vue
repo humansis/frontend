@@ -5,7 +5,6 @@
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable
-					placeholder="Beneficiaries"
 					:disabled="formDisabled"
 					:options="options.beneficiaries"
 				/>
@@ -16,7 +15,6 @@
 			>
 				<b-input
 					v-model="formModel.justification"
-					placeholder="Justification"
 					:disabled="formDisabled"
 				/>
 			</b-field>

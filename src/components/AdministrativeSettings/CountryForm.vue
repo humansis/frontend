@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
@@ -21,7 +20,6 @@
 			>
 				<b-input
 					v-model="formModel.iso3"
-					placeholder="Short Name"
 					:disabled="formDisabled"
 					@blur="validate('iso3')"
 				/>
@@ -35,7 +33,6 @@
 					v-model="formModel.availableCurrencies"
 					multiple
 					searchable
-					placeholder="Available Currencies"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -51,7 +48,6 @@
 				<MultiSelect
 					v-model="formModel.countryFlag"
 					searchable
-					placeholder="Country Flag"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"

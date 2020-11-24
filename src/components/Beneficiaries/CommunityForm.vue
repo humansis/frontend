@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.contactGivenName"
-					placeholder="Contact Name"
 					:disabled="formDisabled"
 					@blur="validate('contactGivenName')"
 				/>
@@ -21,7 +20,6 @@
 			>
 				<b-input
 					v-model="formModel.contactFamilyName"
-					placeholder="Contact Family Name"
 					:disabled="formDisabled"
 					@blur="validate('contactFamilyName')"
 				/>
@@ -69,7 +67,6 @@
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					placeholder="Contact ID Type"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -86,7 +83,6 @@
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
-					placeholder="Contact ID Number"
 					:disabled="formDisabled"
 					@blur="validate('nationalCardNumber')"
 				/>
@@ -105,7 +101,6 @@
 			>
 				<b-input
 					v-model="formModel.addressNumber"
-					placeholder="Address Number"
 					:disabled="formDisabled"
 					@blur="validate('addressNumber')"
 				/>
@@ -118,7 +113,6 @@
 			>
 				<b-input
 					v-model="formModel.addressStreet"
-					placeholder="Address Street"
 					:disabled="formDisabled"
 					@blur="validate('addressStreet')"
 				/>
@@ -131,7 +125,6 @@
 			>
 				<b-input
 					v-model="formModel.addressPostCode"
-					placeholder="Address Postcode"
 					:disabled="formDisabled"
 					@blur="validate('addressPostCode')"
 				/>
@@ -145,7 +138,6 @@
 				>
 					<b-input
 						v-model="formModel.latitude"
-						placeholder="Latitude"
 						:disabled="formDisabled"
 						@blur="validate('latitude')"
 					/>
@@ -158,7 +150,6 @@
 				>
 					<b-input
 						v-model="formModel.longitude"
-						placeholder="Longitude"
 						:disabled="formDisabled"
 						@blur="validate('longitude')"
 					/>

@@ -10,24 +10,21 @@
 					<form @submit.prevent="submitPasswordForm">
 						<p class="is-size-4 my-5">Change Password</p>
 						<section>
-							<b-field>
+							<b-field label="Old Password">
 								<b-input
 									type="password"
-									placeholder="Old Password"
 								/>
 							</b-field>
-							<b-field>
+							<b-field label="New Password">
 								<b-input
 									v-model="passwordForm.newPassword"
 									type="password"
-									placeholder="New Password"
 								/>
 							</b-field>
-							<b-field>
+							<b-field label="Re-Enter New Password">
 								<b-input
 									v-model="passwordForm.reenteredPassword"
 									type="password"
-									placeholder="Re-Enter New Password"
 								/>
 							</b-field>
 							<div class="level-right mt-5">
@@ -41,9 +38,8 @@
 						<p class="is-size-4 my-5">Change Phone Number</p>
 						<b-field grouped>
 							<b-field>
-								<b-field>
+								<b-field label="Prefix">
 									<b-select
-										placeholder="Prefix"
 										v-model="telephoneForm.prefix"
 									>
 										<option>CZ - +420</option>
@@ -51,10 +47,9 @@
 									</b-select>
 								</b-field>
 							</b-field>
-							<b-field expanded>
+							<b-field label="Phone Number" expanded>
 								<b-input
 									v-model="telephoneForm.telephoneNumber"
-									placeholder="PhoneNumber"
 								/>
 							</b-field>
 						</b-field>

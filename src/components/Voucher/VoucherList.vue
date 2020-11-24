@@ -2,8 +2,8 @@
 	<div>
 		<div class="columns">
 			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
+				<b-field label="Search...">
+					<b-input
 						type="search"
 						icon="search"
 					/>

@@ -8,7 +8,6 @@
 			<MultiSelect
 				v-model="formModel.adm1Id"
 				searchable
-				placeholder="Province"
 				label="name"
 				track-by="id"
 				:disabled="formDisabled"
@@ -24,7 +23,6 @@
 			<MultiSelect
 				v-model="formModel.adm2Id"
 				searchable
-				placeholder="District"
 				label="name"
 				track-by="id"
 				:disabled="formDisabled"
@@ -40,7 +38,6 @@
 			<MultiSelect
 				v-model="formModel.adm3Id"
 				searchable
-				placeholder="Commune"
 				label="name"
 				track-by="id"
 				:disabled="formDisabled"
@@ -56,7 +53,6 @@
 			<MultiSelect
 				v-model="formModel.adm4Id"
 				searchable
-				placeholder="Village"
 				label="name"
 				track-by="id"
 				:disabled="formDisabled"

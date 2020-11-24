@@ -8,7 +8,6 @@
 				<b-input
 					v-model="formModel.email"
 					type="email"
-					placeholder="Email"
 					:disabled="formDisabled"
 					@blur="validate('email')"
 				/>
@@ -22,7 +21,6 @@
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
 					@blur="validate('password')"
@@ -37,7 +35,6 @@
 				<MultiSelect
 					v-model="formModel.rights"
 					searchable
-					placeholder="Rights"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -54,7 +51,6 @@
 				<MultiSelect
 					v-model="formModel.organization"
 					searchable
-					placeholder="Organization"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -71,7 +67,6 @@
 				<MultiSelect
 					v-model="formModel.projects"
 					searchable
-					placeholder="Project"
 					label="name"
 					track-by="iso3"
 					:multiple="true"
@@ -89,7 +84,6 @@
 				<MultiSelect
 					v-model="formModel.countries"
 					searchable
-					placeholder="Country"
 					label="name"
 					track-by="iso3"
 					:multiple="!onlyOneCountry"
@@ -113,7 +107,6 @@
 			>
 				<b-input
 					v-model="formModel.prefix"
-					placeholder="Prefix"
 					:disabled="formDisabled"
 					@blur="validate('prefix')"
 				/>
@@ -125,7 +118,6 @@
 			>
 				<b-input
 					v-model="formModel.phoneNumber"
-					placeholder="Phone Number"
 					:disabled="formDisabled"
 					@blur="validate('phoneNumber')"
 				/>

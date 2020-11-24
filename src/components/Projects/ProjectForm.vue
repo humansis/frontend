@@ -33,7 +33,6 @@
 				<MultiSelect
 					v-model="formModel.selectedSectors"
 					searchable
-					placeholder="Select sectors"
 					label="code"
 					track-by="value"
 					multiple
@@ -92,7 +91,6 @@
 				<MultiSelect
 					v-model="formModel.selectedDonors"
 					searchable
-					placeholder="Select donors"
 					label="shortname"
 					track-by="id"
 					multiple
@@ -118,7 +116,6 @@
 					v-model="formModel.selectedTargetType"
 					label="code"
 					track-by="value"
-					placeholder="Select target type"
 					:options="formModel.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"

@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.username"
-					placeholder="Username"
 					:disabled="formDisabled"
 					@blur="validate('username')"
 				/>
@@ -23,7 +22,6 @@
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
 					@blur="validate('password')"
@@ -37,7 +35,6 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
@@ -50,7 +47,6 @@
 			>
 				<b-input
 					v-model="formModel.description"
-					placeholder="Description"
 					:disabled="formDisabled"
 					@blur="validate('description')"
 				/>
@@ -63,7 +59,6 @@
 			>
 				<b-input
 					v-model="formModel.addressStreet"
-					placeholder="Address Street"
 					:disabled="formDisabled"
 					@blur="validate('addressStreet')"
 				/>
@@ -76,7 +71,6 @@
 			>
 				<b-input
 					v-model="formModel.addressNumber"
-					placeholder="Address Number"
 					:disabled="formDisabled"
 					@blur="validate('addressNumber')"
 				/>
@@ -89,7 +83,6 @@
 			>
 				<b-input
 					v-model="formModel.addressPostcode"
-					placeholder="Address Postcode"
 					:disabled="formDisabled"
 					@blur="validate('addressPostcode')"
 				/>

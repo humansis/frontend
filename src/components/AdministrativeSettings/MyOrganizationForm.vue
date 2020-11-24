@@ -8,7 +8,6 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Organization Name"
 					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
@@ -55,7 +54,6 @@
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
-					placeholder="Font To Apply To The Pdf"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -100,7 +98,6 @@
 			>
 				<b-input
 					v-model="formModel.footerContent"
-					placeholder="Pdf Footer Content"
 					:disabled="formDisabled"
 					@blur="validate('footerContent')"
 				/>
