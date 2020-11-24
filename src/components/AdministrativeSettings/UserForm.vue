@@ -47,7 +47,23 @@
 			</b-field>
 
 			<b-field
-				v-show="!disabledProject"
+				label="Organization"
+				:type="getValidationType('organization')"
+				:message="getValidationMessage('organization', 'Required')"
+			>
+				<MultiSelect
+					v-model="formModel.organization"
+					searchable
+					placeholder="Organization"
+					label="name"
+					track-by="id"
+					:disabled="formDisabled"
+					:options="organizations"
+				/>
+			</b-field>
+
+			<b-field
+				v-show="!formModel.disabledProject"
 				label="Project"
 				:type="getValidationType('projects')"
 				:message="getValidationMessage('projects', 'Required')"
@@ -59,13 +75,13 @@
 					label="name"
 					track-by="iso3"
 					:multiple="true"
-					:disabled="formDisabled || disabledProject"
+					:disabled="formDisabled || formModel.disabledProject"
 					:options="projects"
 				/>
 			</b-field>
 
 			<b-field
-				v-show="!disabledCountry"
+				v-show="!formModel.disabledCountry"
 				label="Country"
 				:type="getValidationType('countries')"
 				:message="getValidationMessage('countries', 'Required')"
@@ -77,7 +93,7 @@
 					label="name"
 					track-by="iso3"
 					:multiple="!onlyOneCountry"
-					:disabled="formDisabled || disabledCountry"
+					:disabled="formDisabled || formModel.disabledCountry"
 					:options="countries"
 				/>
 			</b-field>
@@ -136,6 +152,7 @@
 import { required, requiredIf, email } from "vuelidate/lib/validators";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
+import MyOrganizationsService from "@/services/MyOrganizationsService";
 
 export default {
 	name: "userForm",
@@ -159,11 +176,14 @@ export default {
 			rights: {
 				required,
 			},
+			organization: {
+				required,
+			},
 			projects: {
-				required: requiredIf(() => this.disabledProject),
+				required: requiredIf((form) => !form.disabledProject),
 			},
 			countries: {
-				required: requiredIf(() => this.disabledCountry),
+				required: requiredIf((form) => !form.disabledCountry),
 			},
 			phoneNumber: {},
 			prefix: {},
@@ -206,10 +226,13 @@ export default {
 			],
 			projects: [],
 			countries: [],
+			organizations: [],
 			onlyOneCountry: false,
-			disabledCountry: true,
-			disabledProject: true,
 		};
+	},
+
+	mounted() {
+		this.fetchOrganizations();
 	},
 
 	methods: {
@@ -243,13 +266,13 @@ export default {
 			this.validateInput("rights");
 			if (id === 1 || id === 2 || id === 3 || id === 6) {
 				this.fetchProjects();
-				this.disabledProject = false;
-				this.disabledCountry = true;
+				this.formModel.disabledProject = false;
+				this.formModel.disabledCountry = true;
 			} else if (id === 4 || id === 5) {
 				this.onlyOneCountry = (id === 4);
 				this.fetchCountries();
-				this.disabledProject = true;
-				this.disabledCountry = false;
+				this.formModel.disabledProject = true;
+				this.formModel.disabledCountry = false;
 			}
 		},
 
@@ -264,6 +287,13 @@ export default {
 			await LocationsService.getListOfCountries()
 				.then((response) => {
 					this.countries = response.data;
+				});
+		},
+
+		async fetchOrganizations() {
+			await MyOrganizationsService.getListOfMyOrganizations()
+				.then((response) => {
+					this.organizations = response.data;
 				});
 		},
 

@@ -96,6 +96,10 @@ export default {
 						label: "Prefix",
 					},
 					{
+						key: "organization",
+						label: "Organization",
+					},
+					{
 						key: "phoneNumber",
 						label: "Phone Number",
 					},

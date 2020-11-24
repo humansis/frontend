@@ -14,7 +14,7 @@ export default {
 			data: [
 				{
 					id: 15,
-					name: "Test",
+					name: "Test1",
 					logo: "https://www.hello.com/img_/hellowithwaves.png",
 					footerContent: "TST",
 					primaryColor: "#F00",
@@ -23,7 +23,7 @@ export default {
 				},
 				{
 					id: 16,
-					name: "Test",
+					name: "Test2",
 					logo: null,
 					footerContent: "TST",
 					primaryColor: "#00F",
