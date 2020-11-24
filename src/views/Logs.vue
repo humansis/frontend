@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<b-tabs v-model="selectedTab" size="is-medium">
+		<b-tabs size="is-medium">
 			<b-tab-item
 				label="Distributions"
 				icon="clipboard"
@@ -35,7 +35,7 @@
 				label="Reports"
 				icon="chart-line"
 			>
-				<ReportsLog v-if="loadedReports" />
+				<ReportsLog />
 			</b-tab-item>
 		</b-tabs>
 	</div>
@@ -63,17 +63,8 @@ export default {
 
 	data() {
 		return {
-			loadedReports: false,
 			selectedTab: 0,
 		};
-	},
-
-	watch: {
-		selectedTab(value) {
-			if (value === 5) {
-				this.loadedReports = true;
-			}
-		},
 	},
 };
 </script>
