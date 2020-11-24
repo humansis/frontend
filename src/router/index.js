@@ -114,6 +114,14 @@ const routes = [
 							breadcrumb: "Institutions",
 						},
 					},
+					{
+						path: "vendors",
+						name: "Vendors",
+						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/Vendors"),
+						meta: {
+							breadcrumb: "Vendors",
+						},
+					},
 				],
 			},
 			{
@@ -140,14 +148,6 @@ const routes = [
 					breadcrumb: "Configuration",
 				},
 				children: [
-					{
-						path: "vendors",
-						name: "Vendors",
-						component: () => import(/* webpackChunkName: "ConfigurationVendors" */ "@/views/Configuration/Vendors"),
-						meta: {
-							breadcrumb: "Vendors",
-						},
-					},
 					{
 						path: "products",
 						name: "Products",

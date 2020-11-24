@@ -37,10 +37,10 @@
 
 <script>
 import { Toast } from "@/utils/UI";
-import VendorForm from "@/components/Configuration/VendorForm";
+import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsService from "@/services/VendorsService";
 import Modal from "@/components/Modal";
-import VendorsList from "@/components/Configuration/VendorsList";
+import VendorsList from "@/components/Beneficiaries/VendorsList";
 
 export default {
 	name: "Vendors",
