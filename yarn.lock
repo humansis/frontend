@@ -8683,6 +8683,11 @@ vue-cli-plugin-buefy@~0.3.7:
   resolved "https://registry.yarnpkg.com/vue-cli-plugin-buefy/-/vue-cli-plugin-buefy-0.3.8.tgz#62d1494a27387c93eb65e9b8dbc5ebe284190cf2"
   integrity sha512-19tRQuNle2OF4BaYG9d69ysb2kgSzg32DrcEwNRzYtt7uQnTdYRJ6QtiTpBcEDvQamspLrPtCIu4Nmm0DsnJcA==
 
+vue-country-flag@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/vue-country-flag/-/vue-country-flag-2.0.2.tgz#a2df339378761285699c28b840da5da02253f85f"
+  integrity sha512-hRK0ZLcbQNdTo5H4UFOUoN6Tqy0BwepmaG1BNuf6cMyEWRQCkcbwBv0CQJXiNhPI+VYt/DyndQMT+E1/H82F/Q==
+
 vue-eslint-parser@^7.0.0:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.1.1.tgz#c43c1c715ff50778b9a7e9a4e16921185f3425d3"

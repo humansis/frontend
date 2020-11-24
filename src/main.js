@@ -8,6 +8,7 @@ import "@/plugins/vuelidate";
 import "@/plugins/breadcrumbs";
 import "@/plugins/vueselect";
 import "@/plugins/vueswatches";
+import "@/plugins/vuecountryflag";
 
 Vue.config.productionTip = false;
 
