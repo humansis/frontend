@@ -4,17 +4,13 @@
 			<div class="columns is-multiline">
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (Local)</h4>
-					<b-field
-						label="Family Name"
-					>
+					<b-field label="Family Name">
 						<b-input
 							v-model="formModel.nameLocal.familyName"
 							placeholder="Family Name"
 						/>
 					</b-field>
-					<b-field
-						label="First Name"
-					>
+					<b-field label="First Name">
 						<b-input
 							v-model="formModel.nameLocal.firstName"
 							placeholder="First Name"
@@ -23,17 +19,13 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (English)</h4>
-					<b-field
-						label="Family Name"
-					>
+					<b-field label="Family Name">
 						<b-input
 							v-model="formModel.nameEnglish.familyName"
 							placeholder="Family Name"
 						/>
 					</b-field>
-					<b-field
-						label="First Name"
-					>
+					<b-field label="First Name">
 						<b-input
 							v-model="formModel.nameEnglish.firstName"
 							placeholder="First Name"
@@ -42,9 +34,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Personal Information</h4>
-					<b-field
-						label="Gender"
-					>
+					<b-field label="Gender">
 						<MultiSelect
 							v-model="formModel.personalInformation.gender"
 							searchable
@@ -52,9 +42,7 @@
 							:options="options.gender"
 						/>
 					</b-field>
-					<b-field
-						label="Date Of Birth"
-					>
+					<b-field label="Date Of Birth">
 						<b-datepicker
 							v-model="formModel.personalInformation.dateOfBirth"
 							show-week-number
@@ -67,9 +55,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">ID</h4>
-					<b-field
-						label="ID Type"
-					>
+					<b-field label="ID Type">
 						<MultiSelect
 							v-model="formModel.id.idType"
 							searchable
@@ -77,9 +63,7 @@
 							:options="options.idType"
 						/>
 					</b-field>
-					<b-field
-						label="ID Number"
-					>
+					<b-field label="ID Number">
 						<b-input
 							v-model="formModel.id.idNumber"
 							placeholder="ID Number"
@@ -88,9 +72,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Residency</h4>
-					<b-field
-						label="Residency Status"
-					>
+					<b-field label="Residency Status">
 						<MultiSelect
 							v-model="formModel.residency.residencyStatus"
 							searchable
@@ -106,10 +88,7 @@
 							Add a Referral
 						</b-checkbox>
 					</div>
-					<b-field
-						v-if="formModel.addAReferral"
-						label="Referral Type"
-					>
+					<b-field v-if="formModel.addAReferral" label="Referral Type">
 						<MultiSelect
 							v-model="formModel.referral.referralType"
 							searchable
@@ -117,10 +96,7 @@
 							:options="options.referralType"
 						/>
 					</b-field>
-					<b-field
-						v-if="formModel.addAReferral"
-						label="Comment"
-					>
+					<b-field v-if="formModel.addAReferral" label="Comment">
 						<b-input
 							v-model="formModel.referral.comment"
 							placeholder="Comment"
@@ -129,10 +105,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Phone 1</h4>
-					<b-field
-						label="Type"
-						grouped
-					>
+					<b-field label="Type" grouped>
 						<MultiSelect
 							v-model="formModel.phone1.type"
 							searchable
@@ -143,10 +116,7 @@
 							Proxy
 						</b-checkbox>
 					</b-field>
-					<b-field
-						label="Ext"
-						grouped
-					>
+					<b-field label="Ext" grouped>
 						<MultiSelect
 							v-model="formModel.phone1.ext"
 							searchable
@@ -163,10 +133,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Phone 2</h4>
-					<b-field
-						label="Type"
-						grouped
-					>
+					<b-field label="Type" grouped>
 						<MultiSelect
 							v-model="formModel.phone2.type"
 							searchable
@@ -177,10 +144,7 @@
 							Proxy
 						</b-checkbox>
 					</b-field>
-					<b-field
-						label="Ext"
-						grouped
-					>
+					<b-field label="Ext" grouped>
 						<MultiSelect
 							v-model="formModel.phone2.ext"
 							searchable
@@ -196,7 +160,7 @@
 					</b-field>
 				</div>
 			</div>
-			<div class="field">
+			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
 					v-for="typeOfBeneficiary of options.typeOfBeneficiary"
 					:key="typeOfBeneficiary"
@@ -212,7 +176,11 @@
 <script>
 
 export default {
-	name: "HouseholdHead",
+	name: "HouseholdForm",
+
+	props: {
+		showTypeOfBeneficiary: Boolean,
+	},
 
 	data() {
 		return {
