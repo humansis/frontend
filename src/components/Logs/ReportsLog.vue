@@ -1,15 +1,10 @@
 <template>
-	<div>
-		TODO
-	</div>
+	<div />
 </template>
 
 <script>
 export default {
 	name: "ReportsLog",
-
-	data() {
-	},
 };
 
 </script>

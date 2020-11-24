@@ -29,6 +29,16 @@
 				disabled
 			/>
 		</template>
+
+		<template
+			v-if="column.type === 'flag'"
+		>
+			<CountryFlag
+				:country="data.row[column.field]"
+				size="normal"
+				disabled
+			/>
+		</template>
 	</div>
 </template>
 
