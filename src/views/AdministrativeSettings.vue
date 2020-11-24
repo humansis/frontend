@@ -31,6 +31,12 @@
 			>
 				<Countries />
 			</b-tab-item>
+			<b-tab-item
+				label="Languages"
+				icon="th-large"
+			>
+				<Languages />
+			</b-tab-item>
 		</b-tabs>
 	</div>
 </template>
@@ -41,12 +47,14 @@ import Donors from "@/views/AdministrativeSettings/Donors";
 import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
 import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
 import Countries from "@/views/AdministrativeSettings/Countries";
+import Languages from "@/views/AdministrativeSettings/Languages";
 
 export default {
 	name: "AdministrativeSettings",
 
 	components: {
 		Countries,
+		Languages,
 		OrganizationServices,
 		MyOrganizations,
 		Donors,

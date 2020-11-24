@@ -31,6 +31,15 @@
 		</template>
 
 		<template
+			v-if="column.type === 'checkbox'"
+		>
+			<b-checkbox
+				v-model="data.row[column.field]"
+				disabled
+			/>
+		</template>
+
+		<template
 			v-if="column.type === 'flag'"
 		>
 			<CountryFlag
