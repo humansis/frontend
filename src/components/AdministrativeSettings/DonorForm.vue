@@ -3,34 +3,34 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Donor Name"
-				:type="getValidationType('fullName')"
-				:message="getValidationMessage('fullName', 'Required')"
+				:type="validateType('fullName')"
+				:message="validateMsg('fullName', 'Required')"
 			>
 				<b-input
 					v-model="formModel.fullName"
 					placeholder="Donor Name"
 					:disabled="formDisabled"
-					@blur="validateInput('fullName')"
+					@blur="validate('fullName')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Short Name"
-				:type="getValidationType('shortName')"
-				:message="getValidationMessage('shortName', 'Required')"
+				:type="validateType('shortName')"
+				:message="validateMsg('shortName', 'Required')"
 			>
 				<b-input
 					v-model="formModel.shortName"
 					placeholder="Short Name"
 					:disabled="formDisabled"
-					@blur="validateInput('shortName')"
+					@blur="validate('shortName')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="!formDisabled"
 				label="Image"
-				:type="getValidationType('logo')"
+				:type="validateType('logo')"
 			>
 				<b-field
 					class="file"
@@ -52,7 +52,7 @@
 			<b-field
 				v-if="formDisabled && formModel.logo"
 				label="Image"
-				:type="getValidationType('logo')"
+				:type="validateType('logo')"
 			>
 				<b-image
 					alt="Image"
@@ -64,13 +64,13 @@
 
 			<b-field
 				label="Notes"
-				:type="getValidationType('notes')"
+				:type="validateType('notes')"
 			>
 				<b-input
 					v-model="formModel.notes"
 					placeholder="Notes"
 					:disabled="formDisabled"
-					@blur="validateInput('notes')"
+					@blur="validate('notes')"
 				/>
 			</b-field>
 
@@ -98,9 +98,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "DonorForm",
+
+	mixins: [Validation],
 
 	date() {
 		return {
@@ -138,22 +141,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

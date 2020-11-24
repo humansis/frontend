@@ -3,26 +3,26 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				:type="validateType('name')"
+				:message="validateMsg('name', 'Required')"
 			>
 				<b-input
 					v-model="formModel.name"
 					placeholder="Name"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validate('name')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Published"
-				:type="getValidationType('published')"
-				:message="getValidationMessage('published', 'Required')"
+				:type="validateType('published')"
+				:message="validateMsg('published', 'Required')"
 			>
 				<b-checkbox
 					v-model="formModel.published"
 					:disabled="formDisabled"
-					@select="validateInput('published')"
+					@select="validate('published')"
 				/>
 			</b-field>
 		</section>
@@ -48,9 +48,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "LanguagesForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -79,22 +82,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

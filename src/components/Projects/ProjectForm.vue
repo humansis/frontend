@@ -3,32 +3,32 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Project Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				:type="validateType('name')"
+				:message="validateMsg('name', 'Required')"
 			>
 				<b-input
 					v-model="formModel.name"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validate('name')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Internal ID"
-				:type="getValidationType('internalId')"
-				:message="getValidationMessage('internalId', 'Required number')"
+				:type="validateType('internalId')"
+				:message="validateMsg('internalId', 'Required number')"
 			>
 				<b-input
 					v-model="formModel.internalId"
 					:disabled="formDisabled"
-					@blur="validateInput('internalId')"
+					@blur="validate('internalId')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Sectors"
-				:type="getValidationType('selectedSectors')"
-				:message="getValidationMessage('selectedSectors', 'Required')"
+				:type="validateType('selectedSectors')"
+				:message="validateMsg('selectedSectors', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedSectors"
@@ -39,7 +39,7 @@
 					multiple
 					:disabled="formDisabled"
 					:options="formModel.sectors"
-					@select="validateInput('selectedSectors')"
+					@select="validate('selectedSectors')"
 				>
 					<template
 						slot="singleLabel"
@@ -52,8 +52,8 @@
 
 			<b-field
 				label="Start date"
-				:type="getValidationType('startDate')"
-				:message="getValidationMessage('startDate', 'Required')"
+				:type="validateType('startDate')"
+				:message="validateMsg('startDate', 'Required')"
 			>
 				<b-datepicker
 					v-model="formModel.startDate"
@@ -63,14 +63,14 @@
 					icon="calendar-day"
 					trap-focus
 					:disabled="formDisabled"
-					@input="validateInput('startDate')"
+					@input="validate('startDate')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Start end"
-				:type="getValidationType('endDate')"
-				:message="getValidationMessage('endDate', 'Required')"
+				:type="validateType('endDate')"
+				:message="validateMsg('endDate', 'Required')"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
@@ -80,14 +80,14 @@
 					icon="calendar-day"
 					trap-focus
 					:disabled="formDisabled"
-					@input="validateInput('endDate')"
+					@input="validate('endDate')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Donors"
-				:type="getValidationType('selectedDonors')"
-				:message="getValidationMessage('selectedDonors', 'Required')"
+				:type="validateType('selectedDonors')"
+				:message="validateMsg('selectedDonors', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedDonors"
@@ -98,7 +98,7 @@
 					multiple
 					:disabled="formDisabled"
 					:options="formModel.donors"
-					@select="validateInput('selectedDonors')"
+					@select="validate('selectedDonors')"
 				>
 					<template
 						slot="singleLabel"
@@ -111,8 +111,8 @@
 
 			<b-field
 				label="Target Type"
-				:type="getValidationType('selectedTargetType')"
-				:message="getValidationMessage('selectedTargetType', 'Required')"
+				:type="validateType('selectedTargetType')"
+				:message="validateMsg('selectedTargetType', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
@@ -122,19 +122,19 @@
 					:options="formModel.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
-					@select="validateInput('selectedTargetType')"
+					@select="validate('selectedTargetType')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Total Target"
-				:type="getValidationType('totalTarget')"
-				:message="getValidationMessage('totalTarget', 'Required, min length is 0')"
+				:type="validateType('totalTarget')"
+				:message="validateMsg('totalTarget', 'Required, min length is 0')"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
 					:disabled="formDisabled"
-					@blur="validateInput('totalTarget')"
+					@blur="validate('totalTarget')"
 				/>
 			</b-field>
 
@@ -167,9 +167,12 @@
 
 <script>
 import { required, minLength, numeric } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "ProjectForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -218,22 +221,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

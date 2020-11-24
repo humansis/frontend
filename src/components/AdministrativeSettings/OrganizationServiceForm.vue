@@ -4,7 +4,7 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Service Name"
-				:type="getValidationType('name')"
+				:type="validateType('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -15,7 +15,7 @@
 
 			<b-field
 				label="Country"
-				:type="getValidationType('country')"
+				:type="validateType('country')"
 			>
 				<b-input
 					v-model="formModel.country"
@@ -27,8 +27,8 @@
 			<b-field
 				v-if="formModel.password"
 				label="Password"
-				:type="getValidationType('password')"
-				:message="getValidationMessage('password', 'Required')"
+				:type="validateType('password')"
+				:message="validateMsg('password', 'Required')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -36,49 +36,49 @@
 					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
-					@blur="validateInput('password')"
+					@blur="validate('password')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="formModel.username"
 				label="Username"
-				:type="getValidationType('username')"
-				:message="getValidationMessage('username', 'Required')"
+				:type="validateType('username')"
+				:message="validateMsg('username', 'Required')"
 			>
 				<b-input
 					v-model="formModel.username"
 					placeholder="Username"
 					:disabled="formDisabled"
-					@blur="validateInput('username')"
+					@blur="validate('username')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="formModel.email"
 				label="Email"
-				:type="getValidationType('email')"
-				:message="getValidationMessage('email', 'Required')"
+				:type="validateType('email')"
+				:message="validateMsg('email', 'Required')"
 			>
 				<b-input
 					v-model="formModel.email"
 					placeholder="Email"
 					:disabled="formDisabled"
-					@blur="validateInput('email')"
+					@blur="validate('email')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="formModel.token"
 				label="Token"
-				:type="getValidationType('token')"
-				:message="getValidationMessage('token', 'Required')"
+				:type="validateType('token')"
+				:message="validateMsg('token', 'Required')"
 			>
 				<b-input
 					v-model="formModel.token"
 					placeholder="Token"
 					:disabled="formDisabled"
-					@blur="validateInput('token')"
+					@blur="validate('token')"
 				/>
 			</b-field>
 
@@ -125,9 +125,12 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import ProjectsService from "@/services/ProjectsService";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "OrganizationServiceForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -168,22 +171,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

@@ -3,8 +3,8 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Project"
-				:type="getValidationType('projectId')"
-				:message="getValidationMessage('projectId', 'Required')"
+				:type="validateType('projectId')"
+				:message="validateMsg('projectId', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.projectId"
@@ -14,14 +14,14 @@
 					track-by="id"
 					:disabled="formDisabled"
 					:options="projects"
-					@select="validateInput('projectId')"
+					@select="validate('projectId')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Quantity Of Booklets"
-				:type="getValidationType('quantityOfBooklets')"
-				:message="getValidationMessage('quantityOfBooklets', 'Required')"
+				:type="validateType('quantityOfBooklets')"
+				:message="validateMsg('quantityOfBooklets', 'Required')"
 			>
 				<b-numberinput
 					v-model="formModel.quantityOfBooklets"
@@ -31,14 +31,14 @@
 					controls-position="compact"
 					placeholder="Quantity Of Booklets"
 					:disabled="formDisabled"
-					@blur="validateInput('Quantity Of Booklets')"
+					@blur="validate('Quantity Of Booklets')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Quantity Of Vouchers"
-				:type="getValidationType('quantityOfVouchers')"
-				:message="getValidationMessage('quantityOfVouchers', 'Required')"
+				:type="validateType('quantityOfVouchers')"
+				:message="validateMsg('quantityOfVouchers', 'Required')"
 			>
 				<b-numberinput
 					v-model="formModel.quantityOfVouchers"
@@ -48,27 +48,27 @@
 					controls-alignment="right"
 					controls-position="compact"
 					:disabled="formDisabled"
-					@blur="validateInput('quantityOfVouchers')"
+					@blur="validate('quantityOfVouchers')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Individual Value"
-				:type="getValidationType('individualValue')"
-				:message="getValidationMessage('individualValue', 'Required')"
+				:type="validateType('individualValue')"
+				:message="validateMsg('individualValue', 'Required')"
 			>
 				<b-input
 					v-model="formModel.individualValue"
 					placeholder="Individual Value"
 					:disabled="formDisabled"
-					@blur="validateInput('individualValue')"
+					@blur="validate('individualValue')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Currency"
-				:type="getValidationType('currency')"
-				:message="getValidationMessage('currency', 'Required')"
+				:type="validateType('currency')"
+				:message="validateMsg('currency', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
@@ -78,7 +78,7 @@
 					track-by="id"
 					:disabled="formDisabled"
 					:options="currencies"
-					@select="validateInput('currency')"
+					@select="validate('currency')"
 				/>
 			</b-field>
 
@@ -94,8 +94,8 @@
 			<b-field
 				v-if="formModel.defineAPassword || formDisabled"
 				label="Password"
-				:type="getValidationType('password')"
-				:message="getValidationMessage('password', 'Required')"
+				:type="validateType('password')"
+				:message="validateMsg('password', 'Required')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -103,7 +103,7 @@
 					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
-					@blur="validateInput('password')"
+					@blur="validate('password')"
 				/>
 			</b-field>
 		</section>
@@ -129,10 +129,13 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "VoucherForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -203,22 +206,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

@@ -3,21 +3,21 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Email"
-				:type="getValidationType('email')"
+				:type="validateType('email')"
 			>
 				<b-input
 					v-model="formModel.email"
 					type="email"
 					placeholder="Email"
 					:disabled="formDisabled"
-					@blur="validateInput('email')"
+					@blur="validate('email')"
 				/>
 			</b-field>
 			<!-- TODO add rules to password -->
 			<b-field
 				label="Password"
-				:type="getValidationType('password')"
-				:message="getValidationMessage('password', 'Required')"
+				:type="validateType('password')"
+				:message="validateMsg('password', 'Required')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -25,14 +25,14 @@
 					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
-					@blur="validateInput('password')"
+					@blur="validate('password')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Rights"
-				:type="getValidationType('rights')"
-				:message="getValidationMessage('rights', 'Required')"
+				:type="validateType('rights')"
+				:message="validateMsg('rights', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.rights"
@@ -48,8 +48,8 @@
 
 			<b-field
 				label="Organization"
-				:type="getValidationType('organization')"
-				:message="getValidationMessage('organization', 'Required')"
+				:type="validateType('organization')"
+				:message="validateMsg('organization', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.organization"
@@ -65,8 +65,8 @@
 			<b-field
 				v-show="!formModel.disabledProject"
 				label="Project"
-				:type="getValidationType('projects')"
-				:message="getValidationMessage('projects', 'Required')"
+				:type="validateType('projects')"
+				:message="validateMsg('projects', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.projects"
@@ -83,8 +83,8 @@
 			<b-field
 				v-show="!formModel.disabledCountry"
 				label="Country"
-				:type="getValidationType('countries')"
-				:message="getValidationMessage('countries', 'Required')"
+				:type="validateType('countries')"
+				:message="validateMsg('countries', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.countries"
@@ -109,25 +109,25 @@
 
 			<b-field
 				label="Prefix"
-				:type="getValidationType('prefix')"
+				:type="validateType('prefix')"
 			>
 				<b-input
 					v-model="formModel.prefix"
 					placeholder="Prefix"
 					:disabled="formDisabled"
-					@blur="validateInput('prefix')"
+					@blur="validate('prefix')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Phone Number"
-				:type="getValidationType('phoneNumber')"
+				:type="validateType('phoneNumber')"
 			>
 				<b-input
 					v-model="formModel.phoneNumber"
 					placeholder="Phone Number"
 					:disabled="formDisabled"
-					@blur="validateInput('phoneNumber')"
+					@blur="validate('phoneNumber')"
 				/>
 			</b-field>
 
@@ -150,12 +150,15 @@
 
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
 
 export default {
 	name: "userForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -246,24 +249,8 @@ export default {
 			this.$v.$reset();
 		},
 
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
-		},
-
 		onRightsSelect({ id }) {
-			this.validateInput("rights");
+			this.validate("rights");
 			if (id === 1 || id === 2 || id === 3 || id === 6) {
 				this.fetchProjects();
 				this.formModel.disabledProject = false;
