@@ -1,19 +1,48 @@
 <template>
-	<AdministrativeSettingsTab />
+	<div>
+		<b-tabs size="is-medium">
+			<b-tab-item
+				label="Users"
+				icon="user"
+			>
+				<Users />
+			</b-tab-item>
+			<b-tab-item
+				label="Donors"
+				icon="dollar-sign"
+			>
+				<Donors />
+			</b-tab-item>
+			<b-tab-item
+				label="My Organizations"
+				icon="child"
+			>
+				<MyOrganizations />
+			</b-tab-item>
+			<b-tab-item
+				label="Organization services"
+				icon="th-large"
+			>
+				<OrganizationServices />
+			</b-tab-item>
+		</b-tabs>
+	</div>
 </template>
 
 <script>
-import AdministrativeSettingsTab from "@/components/AdministrativeSettings/AdministrativeSettingsTab";
+import Users from "@/views/AdministrativeSettings/Users";
+import Donors from "@/views/AdministrativeSettings/Donors";
+import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
+import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
 
 export default {
 	name: "AdministrativeSettings",
 
 	components: {
-		AdministrativeSettingsTab,
+		OrganizationServices,
+		MyOrganizations,
+		Donors,
+		Users,
 	},
 };
 </script>
-
-<style scoped>
-
-</style>

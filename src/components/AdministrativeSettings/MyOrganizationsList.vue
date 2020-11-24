@@ -1,76 +1,46 @@
 <template>
-	<div>
-		<Modal
-			can-cancel
-			:active="myOrganizationModal.isOpened"
-			:header="modalHeader"
-			@close="closeMyOrganizationModal"
-		>
-			<MyOrganizationForm
-				close-button
-				:formModel="myOrganizationModel"
-				:submit-button-label="myOrganizationModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="myOrganizationModal.isDetail"
-				@formSubmitted="submitMyOrganizationForm"
-				@formClosed="closeMyOrganizationModal"
-			/>
-		</Modal>
-
-		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
-		</div>
-
-		<Table
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:per-page="table.perPage"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					v-slot="props"
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
-
+	<Table
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:per-page="table.perPage"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
 				v-slot="props"
-				label="Actions"
+				:key="column.id"
 			>
-				<div class="block">
-					<ActionButton
-						icon="search"
-						type="is-info"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						@click.native="editMyOrganization(props.row.id)"
-					/>
-					<ActionButton
-						icon="print"
-						type="is-dark"
-						@click.native="printMyOrganization(props.row.id)"
-					/>
-				</div>
+				<ColumnField :column="column" :data="props" />
 			</b-table-column>
+		</template>
 
-		</Table>
-	</div>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+		>
+			<div class="block">
+				<ActionButton
+					icon="search"
+					type="is-info"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					type="is-link"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<ActionButton
+					icon="print"
+					type="is-dark"
+					@click.native="print(props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+	</Table>
 </template>
 
 <script>
@@ -78,9 +48,6 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
-import { Toast } from "@/utils/UI";
-import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizationForm";
-import Modal from "@/components/Modal";
 import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
@@ -88,8 +55,6 @@ export default {
 
 	components: {
 		ColumnField,
-		Modal,
-		MyOrganizationForm,
 		Table,
 		ActionButton,
 	},
@@ -136,38 +101,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			myOrganizationModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			myOrganizationModel: {
-				id: null,
-				name: "",
-				logo: "",
-				font: "",
-				primaryColor: "",
-				secondaryColor: "",
-				footerContent: "",
-				uploadedImage: "",
-			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.myOrganizationModal.isDetail) {
-				result = "Detail of MyOrganization";
-			} else if (this.myOrganizationModal.isEditing) {
-				result = "Edit MyOrganization";
-			}
-			return result;
-		},
 	},
 
 	mounted() {
@@ -209,96 +147,16 @@ export default {
 		},
 
 		showDetail(myOrganization) {
-			this.mapToFormModel(myOrganization);
-			this.myOrganizationModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
+			this.$emit("onShowDetail", myOrganization);
 		},
 
-		mapToFormModel(
-			{
-				id,
-				name,
-				logo,
-				font,
-				primaryColor,
-				secondaryColor,
-				footerContent,
-				uploadedImage,
-			},
-		) {
-			this.myOrganizationModel = {
-				...this.myOrganizationModel,
-				id,
-				name,
-				logo,
-				font,
-				primaryColor,
-				secondaryColor,
-				footerContent,
-				uploadedImage,
-			};
-		},
-
-		closeMyOrganizationModal() {
-			this.myOrganizationModal.isOpened = false;
-		},
-
-		editMyOrganization(id) {
-			this.myOrganizationModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
+		showEdit(id) {
 			const myOrganization = this.table.data.find((item) => item.id === id);
-			myOrganization.image = null;
-			this.mapToFormModel(myOrganization);
+			this.$emit("onShowEdit", myOrganization);
 		},
 
-		submitMyOrganizationForm(myOrganizationForm) {
-			const {
-				id,
-				name,
-				font,
-				primaryColor,
-				secondaryColor,
-				footerContent,
-				uploadedImage,
-			} = myOrganizationForm;
-
-			const myOrganizationBody = {
-				id,
-				name,
-				logo: uploadedImage,
-				font,
-				primaryColor,
-				secondaryColor,
-				footerContent,
-			};
-
-			this.updateMyOrganization(id, myOrganizationBody);
-
-			this.closeMyOrganizationModal();
-		},
-
-		async updateMyOrganization(id, myOrganizationBody) {
-			await MyOrganizationsService.updateMyOrganization(id, myOrganizationBody).then((response) => {
-				if (response.status === 200) {
-					Toast("My Organization Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async printMyOrganization(id) {
-			await MyOrganizationsService.printMyOrganization(id).then((response) => {
-				if (response.status === 200) {
-					Toast("Your Download is starting", "is-success");
-				}
-			});
+		print(id) {
+			this.$emit("onPrint", id);
 		},
 
 		onPageChange() {

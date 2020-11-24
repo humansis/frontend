@@ -3,14 +3,14 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Donor Name"
-				:type="getValidationType('fullname')"
-				:message="getValidationMessage('fullname', 'Required')"
+				:type="getValidationType('fullName')"
+				:message="getValidationMessage('fullName', 'Required')"
 			>
 				<b-input
-					v-model="formModel.fullname"
+					v-model="formModel.fullName"
 					placeholder="Donor Name"
 					:disabled="formDisabled"
-					@blur="validateInput('fullname')"
+					@blur="validateInput('fullName')"
 				/>
 			</b-field>
 
@@ -36,13 +36,13 @@
 					class="file"
 				>
 					<b-upload
-						v-model="formModel.logo"
+						v-model="formModel.uploadedImage"
 						expanded
 					>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.logo ? formModel.logo.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
 							</span>
 						</a>
 					</b-upload>
@@ -102,6 +102,12 @@ import { required } from "vuelidate/lib/validators";
 export default {
 	name: "DonorForm",
 
+	date() {
+		return {
+			uploadedImage: null,
+		};
+	},
+
 	props: {
 		formModel: Object,
 		submitButtonLabel: String,
@@ -111,7 +117,7 @@ export default {
 
 	validations: {
 		formModel: {
-			fullname: {
+			fullName: {
 				required,
 			},
 			shortName: {
@@ -124,6 +130,7 @@ export default {
 
 	methods: {
 		submitForm() {
+			this.formModel.logo = this.uploadedImage;
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

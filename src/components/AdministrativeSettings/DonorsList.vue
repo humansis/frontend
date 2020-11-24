@@ -1,29 +1,5 @@
 <template>
 	<div>
-		<Modal
-			:active="donorModal.isOpened"
-			:can-cancel="true"
-			:header="modalHeader"
-			@close="closeDonorModal"
-		>
-			<DonorForm
-				close-button
-				:formModel="donorModel"
-				:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="donorModal.isDetail"
-				@formSubmitted="submitDonorForm"
-				@formClosed="closeDonorModal"
-			/>
-		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewDonor"
-		>
-			Add
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -34,7 +10,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -68,13 +43,13 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="editDonor(props.row.id)"
+						@click.native="showEdit(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Donor"
 						:id="props.row.id"
-						@submitted="onRemoveDonor"
+						@submitted="remove"
 					/>
 				</div>
 			</b-table-column>
@@ -88,10 +63,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import DonorsService from "@/services/DonorsService";
-import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import SafeDelete from "@/components/SafeDelete";
-import Modal from "@/components/Modal";
-import { Toast } from "@/utils/UI";
 import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
@@ -99,9 +71,7 @@ export default {
 
 	components: {
 		ColumnField,
-		Modal,
 		SafeDelete,
-		DonorForm,
 		Table,
 		ActionButton,
 	},
@@ -140,18 +110,6 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			donorModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			donorModel: {
-				id: null,
-				fullname: "",
-				shortName: "",
-				logo: null,
-				notes: "",
-			},
 		};
 	},
 
@@ -161,20 +119,6 @@ export default {
 
 	mounted() {
 		this.fetchData();
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.donorModal.isDetail) {
-				result = "Detail of Donor";
-			} else if (this.donorModal.isEditing) {
-				result = "Edit Donor";
-			} else {
-				result = "Create new Donor";
-			}
-			return result;
-		},
 	},
 
 	methods: {
@@ -213,117 +157,16 @@ export default {
 		},
 
 		showDetail(donor) {
-			this.mapToFormModel(donor);
-			this.donorModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
+			this.$emit("onShowDetail", donor);
 		},
 
-		mapToFormModel(
-			{
-				id,
-				fullname,
-				shortName,
-				logo,
-				notes,
-			},
-		) {
-			this.donorModel = {
-				...this.donorModel,
-				id,
-				fullname,
-				shortName,
-				logo,
-				notes,
-			};
+		remove(id) {
+			this.$emit("onRemove", id);
 		},
 
-		closeDonorModal() {
-			this.donorModal.isOpened = false;
-		},
-
-		editDonor(id) {
-			this.donorModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
+		showEdit(id) {
 			const donor = this.table.data.find((item) => item.id === id);
-			donor.logo = null;
-			this.mapToFormModel(donor);
-		},
-
-		addNewDonor() {
-			this.donorModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.donorModel = {
-				...this.donorModel,
-				id: null,
-				fullname: "",
-				shortName: "",
-				logo: null,
-				notes: "",
-			};
-		},
-
-		submitDonorForm(donorForm) {
-			const {
-				id,
-				fullname,
-				shortName,
-				logo,
-				notes,
-			} = donorForm;
-
-			const donorBody = {
-				fullname,
-				shortName,
-				logo,
-				notes,
-			};
-
-			if (this.donorModal.isEditing && id) {
-				this.updateDonor(id, donorBody);
-			} else {
-				this.createDonor(donorBody);
-			}
-
-			this.closeDonorModal();
-		},
-
-		async createDonor(donorBody) {
-			await DonorsService.createDonor(donorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Donor Successfully Created", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async updateDonor(id, donorBody) {
-			await DonorsService.updateDonor(id, donorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Donor Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async onRemoveDonor(id) {
-			await DonorsService.deleteDonor(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast("Donor successfully removed", "is-success");
-						this.fetchData();
-					}
-				});
+			this.$emit("onShowEdit", donor);
 		},
 
 		onPageChange() {

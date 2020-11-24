@@ -1,31 +1,5 @@
 <template>
 	<div>
-		<h2 class="title">Projects</h2>
-		<Modal
-			can-cancel
-			:active="projectModal.isOpened"
-			:header="modalHeader"
-			@close="closeProjectModal"
-		>
-			<ProjectForm
-				close-button
-				:formModel="projectModel"
-				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="projectModal.isDetail"
-				@formSubmitted="submitProjectForm"
-				@formClosed="closeProjectModal"
-			/>
-		</Modal>
-
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewProject"
-		>
-			New
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -36,7 +10,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -70,7 +43,7 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="editProject(props.row.id)"
+						@click.native="edit(props.row.id)"
 					/>
 					<ActionButton
 						icon="search"
@@ -81,39 +54,37 @@
 						icon="trash"
 						entity="Project"
 						:id="props.row.id"
-						@submitted="onProjectDelete"
+						@submitted="onDelete"
 					/>
 					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI.js";
-import { getArrayOfIdsByParam, getArrayOfCodeListByKey } from "@/utils/codeList";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import AssistancesService from "@/services/AssistancesService";
 import ProjectsService from "@/services/ProjectsService";
 import HomeService from "@/services/HomeService";
 import SectorsService from "@/services/SectorsService";
-import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ProjectForm from "@/components/Projects/ProjectForm";
 import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "ProjectsList",
 
+	props: {
+		projectModel: Object,
+	},
+
 	components: {
 		SafeDelete,
-		Modal,
 		Table,
 		ActionButton,
-		ProjectForm,
 	},
 
 	data() {
@@ -158,45 +129,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			projectModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			projectModel: {
-				id: null,
-				name: "",
-				internalId: "",
-				sectors: [],
-				selectedSectors: [],
-				startDate: new Date(),
-				endDate: new Date(),
-				donors: [],
-				selectedDonors: [],
-				targetTypes: [],
-				selectedTargetType: [],
-				totalTarget: 0,
-				notes: "",
-			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.projectModal.isDetail) {
-				result = "Detail of Project";
-			} else if (this.projectModal.isEditing) {
-				result = "Edit Project";
-			} else {
-				result = "Create new Project";
-			}
-			return result;
-		},
 	},
 
 	mounted() {
@@ -243,118 +180,6 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		editProject(id) {
-			this.projectModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.mapToFormModel(this.table.data.find((item) => item.id === id));
-		},
-
-		addNewProject() {
-			this.projectModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.projectModel = {
-				...this.projectModel,
-				id: null,
-				name: "",
-				internalId: null,
-				selectedSectors: [],
-				startDate: new Date(),
-				endDate: new Date(),
-				selectedDonors: [],
-				selectedTargetType: [],
-				totalTarget: 0,
-				notes: "",
-			};
-		},
-
-		submitProjectForm(projectForm) {
-			const {
-				id,
-				name,
-				selectedSectors,
-				startDate,
-				endDate,
-				selectedDonors,
-				selectedTargetType: { code: targetType },
-				totalTarget: target,
-				notes,
-			} = projectForm;
-
-			const projectBody = {
-				iso3: "",
-				name,
-				notes,
-				target,
-				targetType,
-				numberOfHouseholds: 0,
-				startDate,
-				endDate,
-				sectorIds: getArrayOfIdsByParam(selectedSectors, "code"),
-				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
-			};
-
-			if (this.projectModal.isEditing && id) {
-				this.updateProject(id, projectBody);
-			} else {
-				this.createProject(projectBody);
-			}
-
-			this.closeProjectModal();
-		},
-
-		async createProject(projectBody) {
-			await ProjectsService.createProject(projectBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Project Successfully Created", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async updateProject(id, projectBody) {
-			await ProjectsService.updateProject(id, projectBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Project Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async onProjectDelete(id) {
-			await ProjectsService.deleteProject(id).then((response) => {
-				if (response.status === 204) {
-					Toast("Project Successfully Deleted", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		closeProjectModal() {
-			this.projectModal.isOpened = false;
-		},
-
-		showDetailWithId(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.showDetail(project);
-		},
-
-		showDetail(project) {
-			this.mapToFormModel(project);
-			this.projectModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
-		},
-
 		mapToFormModel({
 			id,
 			name,
@@ -380,6 +205,20 @@ export default {
 
 		goToDetail(project) {
 			this.$router.push({ name: "Project", params: { projectId: project.id } });
+		},
+
+		edit(id) {
+			const project = this.table.data.find((item) => item.id === id);
+			this.$emit("onEdit", project);
+		},
+
+		onDelete(id) {
+			this.$emit("onDelete", id);
+		},
+
+		showDetailWithId(id) {
+			const project = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowDetail", project);
 		},
 
 		onPageChange() {

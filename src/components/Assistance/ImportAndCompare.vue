@@ -27,7 +27,6 @@
 				</section>
 			</b-upload>
 		</b-field>
-
 		<b-taglist v-for="(file, index) in dropFiles" attached :key="index">
 			<b-tag  size="is-large" type="is-dark">
 				<b-icon icon="file-alt" size="is-medium" />

@@ -1,9 +1,7 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="First Name"
-			>
+			<b-field label="First Name">
 				<b-input
 					v-model="formModel.firstName"
 					disabled
@@ -11,9 +9,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Family Name"
-			>
+			<b-field label="Family Name">
 				<b-input
 					v-model="formModel.familyName"
 					disabled
@@ -21,9 +17,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Gender"
-			>
+			<b-field label="Gender">
 				<b-input
 					v-model="formModel.gender"
 					disabled
@@ -31,9 +25,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Date Of Birth"
-			>
+			<b-field label="Date Of Birth">
 				<b-input
 					v-model="formModel.dateOfBirth"
 					disabled
@@ -41,9 +33,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Residency Status"
-			>
+			<b-field label="Residency Status">
 				<b-input
 					v-model="formModel.residencyStatus"
 					disabled
@@ -51,9 +41,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Status"
-			>
+			<b-field label="Status">
 				<b-input
 					v-model="formModel.residencyStatus"
 					disabled
@@ -65,10 +53,7 @@
 				<b-checkbox v-model="addAReferral" />
 			</b-field>
 
-			<b-field
-				v-if="addAReferral"
-				label="Referral Type"
-			>
+			<b-field v-if="addAReferral" label="Referral Type">
 				<MultiSelect
 					v-model="formModel.referralType"
 					searchable
@@ -77,10 +62,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				v-if="addAReferral"
-				label="Comment"
-			>
+			<b-field v-if="addAReferral" label="Comment">
 				<b-input
 					v-model="formModel.comment"
 					placeholder="Comment"

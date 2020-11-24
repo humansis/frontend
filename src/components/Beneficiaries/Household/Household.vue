@@ -3,7 +3,7 @@
 		<div class="columns is-multiline">
 			<div class="column is-half">
 				<h4 class="title is-4">Current Location</h4>
-				<LocationFormComponent
+				<LocationForm
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
@@ -28,7 +28,7 @@
 		>
 			<div class="column is-half">
 				<h4 class="title is-4">Resident Location</h4>
-				<LocationFormComponent
+				<LocationForm
 					ref="residentLocationForm"
 					:form-model="formModel"
 					:form-disabled="false"
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import LocationFormComponent from "@/components/LocationFormComponent";
+import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 
 const locationModel = {
@@ -199,7 +199,7 @@ export default {
 	name: "Household",
 
 	components: {
-		LocationFormComponent,
+		LocationForm,
 		TypeOfLocationForm,
 	},
 

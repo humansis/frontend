@@ -1,6 +1,5 @@
 <template>
 	<section>
-
 		<b-field
 			label="Province"
 			:type="getValidationType('adm1Id')"
@@ -73,7 +72,7 @@ import { required } from "vuelidate/lib/validators";
 import LocationsService from "@/services/LocationsService";
 
 export default {
-	name: "LocationFormComponent",
+	name: "locationForm",
 
 	props: {
 		formModel: Object,

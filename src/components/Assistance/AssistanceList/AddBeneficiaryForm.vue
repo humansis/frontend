@@ -1,9 +1,7 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="Beneficiaries"
-			>
+			<b-field label="Beneficiaries">
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable

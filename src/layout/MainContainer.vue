@@ -24,8 +24,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-	.main-content {
-		margin-left: 60px;
-	}
+<style scoped>
+.main-content {
+	margin-left: 60px;
+}
 </style>

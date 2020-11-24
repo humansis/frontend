@@ -76,6 +76,7 @@
 							@select="validateInput('phonePrefix')"
 						/>
 					</b-field>
+
 					<b-field
 						expanded
 						:type="getValidationType('phoneNumber')"
@@ -121,7 +122,7 @@
 				/>
 			</b-field>
 
-			<LocationFormComponent
+			<locationForm
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
@@ -193,7 +194,6 @@
 				</b-field>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close
@@ -212,12 +212,12 @@
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
 import InstitutionsService from "@/services/InstitutionsService";
-import LocationFormComponent from "@/components/LocationFormComponent";
+import locationForm from "@/components/LocationForm";
 
 export default {
 	name: "InstitutionForm",
 
-	components: { LocationFormComponent },
+	components: { locationForm },
 
 	props: {
 		formModel: Object,

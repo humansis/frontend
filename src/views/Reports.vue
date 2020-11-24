@@ -1,15 +1,47 @@
 <template>
-	<ReportsTab />
+	<div>
+		<b-tabs size="is-medium">
+			<b-tab-item
+				label="Country Report"
+				icon="th-large"
+			>
+				<CountryReportList />
+			</b-tab-item>
+			<b-tab-item
+				label="Project Report"
+				icon="clipboard"
+			>
+				<ProjectReportList />
+			</b-tab-item>
+			<b-tab-item
+				label="Distribution Report"
+				icon="box"
+			>
+				<DistributionReportList />
+			</b-tab-item>
+		</b-tabs>
+	</div>
 </template>
 
 <script>
-import ReportsTab from "@/components/Reports/ReportsTab";
+import CountryReportList from "@/components/Reports/CountryReportList";
+import ProjectReportList from "@/components/Reports/ProjectReportList";
+import DistributionReportList from "@/components/Reports/DistributionReportList";
 
 export default {
 	name: "Reports",
 
 	components: {
-		ReportsTab,
+		CountryReportList,
+		ProjectReportList,
+		DistributionReportList,
 	},
+
+	data() {
+		return {
+			selectedTab: CountryReportList,
+		};
+	},
+
 };
 </script>

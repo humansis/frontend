@@ -17,6 +17,7 @@
 					@select="validateInput('projectId')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Quantity Of Booklets"
 				:type="getValidationType('quantityOfBooklets')"

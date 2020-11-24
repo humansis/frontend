@@ -1,30 +1,5 @@
 <template>
 	<div>
-		<h2 class="title">Products</h2>
-		<Modal
-			can-cancel
-			:active="productModal.isOpened"
-			:header="modalHeader"
-			@close="closeProductModal"
-		>
-			<ProductForm
-				close-button
-				:formModel="productModel"
-				:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="productModal.isDetail"
-				@formSubmitted="submitProductForm"
-				@formClosed="closeProductModal"
-			/>
-		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewProduct"
-		>
-			Add
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -35,7 +10,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -68,13 +42,13 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="editProduct(props.row.id)"
+						@click.native="showEdit(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Product"
 						:id="props.row.id"
-						@submitted="onRemoveProduct"
+						@submitted="remove"
 					/>
 				</div>
 			</b-table-column>
@@ -85,13 +59,10 @@
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
 import ProductsService from "@/services/ProductsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import ProductForm from "@/components/Configuration/ProductForm";
-import Modal from "@/components/Modal";
 import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
@@ -99,8 +70,6 @@ export default {
 
 	components: {
 		ColumnField,
-		Modal,
-		ProductForm,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -132,17 +101,6 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
-			},
-			productModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-			},
-			productModel: {
-				id: null,
-				name: "",
-				unit: "",
-				image: null,
 			},
 		};
 	},
@@ -205,112 +163,16 @@ export default {
 		},
 
 		showDetail(product) {
-			this.mapToFormModel(product);
-			this.productModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
+			this.$emit("onShowDetail", product);
 		},
 
-		mapToFormModel(
-			{
-				id,
-				name,
-				image,
-				unit,
-			},
-		) {
-			this.productModel = {
-				...this.productModel,
-				id,
-				name,
-				image,
-				unit,
-			};
-		},
-
-		closeProductModal() {
-			this.productModal.isOpened = false;
-		},
-
-		editProduct(id) {
-			this.productModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-			};
-
+		showEdit(id) {
 			const product = this.table.data.find((item) => item.id === id);
-			product.image = null;
-			this.mapToFormModel(product);
+			this.$emit("onShowEdit", product);
 		},
 
-		addNewProduct() {
-			this.productModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.productModel = {
-				...this.productModel,
-				id: null,
-				name: "",
-				image: null,
-				unit: "",
-			};
-		},
-
-		submitProductForm(productForm) {
-			const {
-				id,
-				name,
-				image,
-				unit,
-			} = productForm;
-
-			const productBody = {
-				name,
-				image,
-				unit,
-			};
-
-			if (this.productModal.isEditing && id) {
-				this.updateProduct(id, productBody);
-			} else {
-				this.createProduct(productBody);
-			}
-
-			this.closeProductModal();
-		},
-
-		async createProduct(productBody) {
-			await ProductsService.createProduct(productBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Product Successfully Created", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async updateProduct(id, productBody) {
-			await ProductsService.updateProduct(id, productBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Product Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			});
-		},
-
-		async onRemoveProduct(id) {
-			await ProductsService.removeProduct(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast("Product successfully removed", "is-success");
-						this.fetchData();
-					}
-				});
+		remove(id) {
+			this.$emit("onRemove", id);
 		},
 
 		onPageChange() {

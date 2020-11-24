@@ -77,6 +77,7 @@
 					@select="validateInput('nationalCardType')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Contact ID Number"
 				:type="getValidationType('nationalCardNumber')"
@@ -91,7 +92,7 @@
 				/>
 			</b-field>
 
-			<LocationFormComponent
+			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
@@ -149,6 +150,7 @@
 						@blur="validateInput('latitude')"
 					/>
 				</b-field>
+
 				<b-field
 					label="Longitude"
 					:type="getValidationType('longitude')"
@@ -181,12 +183,12 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
-import LocationFormComponent from "@/components/LocationFormComponent";
+import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "CommunityForm",
 
-	components: { LocationFormComponent },
+	components: { LocationForm },
 
 	props: {
 		formModel: Object,

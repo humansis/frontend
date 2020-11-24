@@ -1,30 +1,5 @@
 <template>
 	<div>
-		<h2 class="title">Country Specific Options</h2>
-		<Modal
-			can-cancel
-			:active="countrySpecificsModal.isOpened"
-			:header="modalHeader"
-			@close="closeCountrySpecificsModal"
-		>
-			<CountrySpecificsForm
-				close-button
-				:formModel="countrySpecificsModel"
-				:submit-button-label="'Create'"
-				:form-disabled="countrySpecificsModal.isDetail"
-				@formSubmitted="submitCountrySpecificsForm"
-				@formClosed="closeCountrySpecificsModal"
-			/>
-		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewCountrySpecifics"
-		>
-			Add
-		</b-button>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -35,7 +10,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -67,7 +41,7 @@
 						icon="trash"
 						entity="Country Specifics"
 						:id="props.row.id"
-						@submitted="onRemoveCountrySpecifics"
+						@submitted="onRemove"
 					/>
 				</div>
 			</b-table-column>
@@ -81,18 +55,13 @@ import { generateColumns } from "@/utils/datagrid";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import CountrySpecificsForm from "@/components/Configuration/CountrySpecificsForm";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
-import Modal from "@/components/Modal";
 
 export default {
-	name: "CountrySpecificOptionsList",
+	name: "CountrySpecificsList",
 
 	components: {
-		Modal,
 		SafeDelete,
-		CountrySpecificsForm,
 		Table,
 		ActionButton,
 	},
@@ -119,32 +88,11 @@ export default {
 				currentPage: 1,
 				perPage: 15,
 			},
-			countrySpecificsModal: {
-				isOpened: false,
-				isDetail: false,
-			},
-			countrySpecificsModel: {
-				id: null,
-				field: "",
-				type: "",
-			},
 		};
 	},
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.countrySpecificsModal.isDetail) {
-				result = "Detail of Country Specifics";
-			} else {
-				result = "Create new Country Specifics";
-			}
-			return result;
-		},
 	},
 
 	mounted() {
@@ -187,81 +135,11 @@ export default {
 		},
 
 		showDetail(countrySpecifics) {
-			this.mapToFormModel(countrySpecifics);
-			this.countrySpecificsModal = {
-				isOpened: true,
-				isDetail: true,
-			};
+			this.$emit("onShowDetail", countrySpecifics);
 		},
 
-		mapToFormModel(
-			{
-				id,
-				field,
-				type,
-			},
-		) {
-			this.countrySpecificsModel = {
-				...this.countrySpecificsModel,
-				id,
-				field,
-				type,
-			};
-		},
-
-		closeCountrySpecificsModal() {
-			this.countrySpecificsModal.isOpened = false;
-		},
-
-		addNewCountrySpecifics() {
-			this.countrySpecificsModal = {
-				isOpened: true,
-				isDetail: false,
-			};
-
-			this.countrySpecificsModel = {
-				...this.countrySpecificsModel,
-				id: null,
-				field: "",
-				type: "",
-			};
-		},
-
-		submitCountrySpecificsForm(countrySpecificsForm) {
-			const {
-				field,
-				type,
-			} = countrySpecificsForm;
-
-			const countrySpecificsBody = {
-				field,
-				type,
-				iso3: this.$store.state.country,
-			};
-
-			this.createCountrySpecifics(countrySpecificsBody);
-
-			this.closeCountrySpecificsModal();
-		},
-
-		async createCountrySpecifics(countrySpecificsBody) {
-			await CountrySpecificOptionsService.createCountrySpecificOption(countrySpecificsBody)
-				.then((response) => {
-					if (response.status === 200) {
-						Toast("Country Specifics Successfully Created", "is-success");
-						this.fetchData();
-					}
-				});
-		},
-
-		async onRemoveCountrySpecifics(id) {
-			await CountrySpecificOptionsService.deleteCountryOption(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast("Country Specifics successfully removed", "is-success");
-						this.fetchData();
-					}
-				});
+		onRemove(id) {
+			this.$emit("onRemove", id);
 		},
 
 		onPageChange() {
