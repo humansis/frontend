@@ -56,6 +56,13 @@
 								tag="router-link"
 								:to="{ name: 'Communities' }"
 							/>
+							<b-menu-item
+								label="Vendors"
+								icon="store"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'Vendors' }"
+							/>
 						</b-menu-item>
 						<b-menu-item
 							label="Reports"
@@ -76,13 +83,6 @@
 							icon="cog"
 							class="to-dropdown-item"
 						>
-							<b-menu-item
-								label="Vendors"
-								icon="store"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Vendors' }"
-							/>
 							<b-menu-item
 								label="Products"
 								icon="shopping-cart"
