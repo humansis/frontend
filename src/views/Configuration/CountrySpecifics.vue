@@ -59,6 +59,7 @@ export default {
 				id: null,
 				field: "",
 				type: "",
+				target: "",
 			},
 		};
 	},
@@ -89,6 +90,7 @@ export default {
 				id,
 				field,
 				type,
+				target,
 			},
 		) {
 			this.countrySpecificsModel = {
@@ -96,6 +98,7 @@ export default {
 				id,
 				field,
 				type,
+				target,
 			};
 		},
 
@@ -121,11 +124,13 @@ export default {
 			const {
 				field,
 				type,
+				target,
 			} = countrySpecificsForm;
 
 			const countrySpecificsBody = {
 				field,
 				type,
+				target,
 				iso3: this.$store.state.country,
 			};
 

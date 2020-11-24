@@ -31,6 +31,24 @@
 					@select="validateInput('type')"
 				/>
 			</b-field>
+
+			<b-field
+				label="Target"
+				:type="getValidationType('target')"
+				:message="getValidationMessage('target', 'Required')"
+			>
+				<MultiSelect
+					v-model="formModel.target"
+					searchable
+					is-relative
+					placeholder="Target"
+					label="name"
+					track-by="id"
+					:disabled="formDisabled"
+					:options="targets"
+					@select="validateInput('target')"
+				/>
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<button
@@ -77,6 +95,20 @@ export default {
 					name: "Text",
 				},
 			],
+			targets: [
+				{
+					id: 0,
+					name: "Vendor",
+				},
+				{
+					id: 1,
+					name: "Household",
+				},
+				{
+					id: 2,
+					name: "Institution",
+				},
+			],
 		};
 	},
 
@@ -86,6 +118,9 @@ export default {
 				required,
 			},
 			type: {
+				required,
+			},
+			target: {
 				required,
 			},
 		},
