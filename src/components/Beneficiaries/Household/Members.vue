@@ -1,9 +1,9 @@
 <template>
 	<div>
 		<b-collapse
+			v-for="(collapse, index) of collapses"
 			class="card"
 			animation="slide"
-			v-for="(collapse, index) of collapses"
 			:key="index"
 			:open="isOpen === index"
 			@open="isOpen = index"
@@ -18,7 +18,10 @@
 					<span class="ml-3">Member</span>
 				</p>
 				<a class="card-header-icon">
-					<button @click="removeMember(index)" class="button button is-danger is-light mr-4">
+					<button
+						class="button button is-danger is-light mr-4"
+						@click="removeMember(index)"
+					>
 						<b-icon icon="trash" />
 					</button>
 					<b-icon icon="arrow-down" />
