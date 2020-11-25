@@ -15,4 +15,9 @@ export default {
 			],
 			totalCount: 2 };
 	},
+
+	async saveTranslation() {
+		// TODO send translation
+		return { status: 200 };
+	},
 };

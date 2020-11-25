@@ -1,23 +1,34 @@
 <template>
-	<Table
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:per-page="table.perPage"
-		@pageChanged="onPageChange"
-		@sorted="onSort"
-	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				v-slot="props"
-				:key="column.id"
-			>
-				<ColumnField :column="column" :data="props" />
-			</b-table-column>
-		</template>
-
-	</Table>
+	<div>
+		<div class="columns">
+			<div class="column is-two-fifths">
+				<b-field>
+					<b-input placeholder="Search..."
+						type="search"
+						icon="search"
+					/>
+				</b-field>
+			</div>
+		</div>
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:per-page="table.perPage"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
+		>
+			<template v-for="column in table.columns">
+				<b-table-column
+					v-bind="column"
+					v-slot="props"
+					:key="column.id"
+				>
+					<ColumnField :column="column" :data="props" />
+				</b-table-column>
+			</template>
+		</Table>
+	</div>
 </template>
 
 <script>

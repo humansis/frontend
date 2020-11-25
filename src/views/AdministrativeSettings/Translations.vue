@@ -1,5 +1,27 @@
 <template>
 	<div>
+		<div class="columns">
+			<div class="column is-two-fifths">
+				<b-field>
+					<b-input placeholder="Search..."
+						type="search"
+						icon="search"
+					/>
+				</b-field>
+			</div>
+			<div class="column is-pulled-right">
+				<b-field>
+					<b-button
+						type="is-success"
+						icon-left="plus"
+						@click="addTranslation"
+					>
+						Add Translation
+					</b-button>
+				</b-field>
+			</div>
+		</div>
+
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -17,13 +39,27 @@
 					<ColumnField :column="column" :data="props" />
 				</b-table-column>
 			</template>
+			<b-table-column
+				v-slot="props"
+				label="Actions"
+			>
+				<div class="block">
+					<SafeDelete
+						tabindex="-1"
+						icon="trash"
+						entity="Translation"
+						:id="props.row.key"
+						@submitted="remove"
+					/>
+				</div>
+			</b-table-column>
 		</Table>
 
 		<b-button
 			class="mb-5"
 			size="is-medium"
 			type="is-danger"
-			icon-left="plus"
+			icon-left="save"
 			@click="submit"
 		>
 			Save
@@ -36,11 +72,14 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import TranslationService from "@/services/TranslationService";
+import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Translations",
 
 	components: {
+		SafeDelete,
 		Table,
 		ColumnField,
 	},
@@ -108,6 +147,27 @@ export default {
 				this.handleError(error);
 			}
 		},
+
+		async submit() {
+			const data = this.table.data.filter((item) => item.key);
+			console.log(data);
+			await TranslationService.saveTranslation()
+				.then((response) => {
+					if (response.status === 200) {
+						Toast("Translation successfully saved", "is-success");
+						this.fetchData();
+					}
+				});
+		},
+
+		remove(key) {
+			this.table.data = this.table.data.filter((item) => item.key !== key);
+		},
+
+		addTranslation() {
+			this.table.data.unshift({});
+		},
+
 		onPageChange() {
 			// TODO on table page change
 		},
@@ -115,14 +175,6 @@ export default {
 		onSort() {
 			// TODO on table sort
 		},
-
-		submit() {
-			console.log(this.table.data);
-		},
 	},
 };
 </script>
-
-<style scoped>
-
-</style>
