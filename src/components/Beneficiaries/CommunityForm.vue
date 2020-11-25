@@ -3,27 +3,25 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Contact Name"
-				:type="getValidationType('contactGivenName')"
-				:message="getValidationMessage('contactGivenName', 'Required')"
+				:type="validateType('contactGivenName')"
+				:message="validateMsg('contactGivenName', 'Required')"
 			>
 				<b-input
 					v-model="formModel.contactGivenName"
-					placeholder="Contact Name"
 					:disabled="formDisabled"
-					@blur="validateInput('contactGivenName')"
+					@blur="validate('contactGivenName')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Contact Family Name"
-				:type="getValidationType('contactFamilyName')"
-				:message="getValidationMessage('contactFamilyName', 'Required')"
+				:type="validateType('contactFamilyName')"
+				:message="validateMsg('contactFamilyName', 'Required')"
 			>
 				<b-input
 					v-model="formModel.contactFamilyName"
-					placeholder="Contact Family Name"
 					:disabled="formDisabled"
-					@blur="validateInput('contactFamilyName')"
+					@blur="validate('contactFamilyName')"
 				/>
 			</b-field>
 
@@ -32,8 +30,8 @@
 			>
 				<b-field grouped>
 					<b-field
-						:type="getValidationType('phonePrefix')"
-						:message="getValidationMessage('phonePrefix', 'Required')"
+						:type="validateType('phonePrefix')"
+						:message="validateMsg('phonePrefix', 'Required')"
 					>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
@@ -43,19 +41,19 @@
 							track-by="id"
 							:disabled="formDisabled"
 							:options="phonePrefixes"
-							@select="validateInput('phonePrefix')"
+							@select="validate('phonePrefix')"
 						/>
 					</b-field>
 					<b-field
 						expanded
-						:type="getValidationType('phoneNumber')"
-						:message="getValidationMessage('phoneNumber', 'Required number')"
+						:type="validateType('phoneNumber')"
+						:message="validateMsg('phoneNumber', 'Required number')"
 					>
 						<b-input
 							v-model="formModel.phoneNumber"
 							placeholder="Phone No."
 							:disabled="formDisabled"
-							@blur="validateInput('phoneNumber')"
+							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
@@ -63,32 +61,30 @@
 
 			<b-field
 				label="Contact ID Type"
-				:type="getValidationType('nationalCardType')"
-				:message="getValidationMessage('nationalCardType', 'Required')"
+				:type="validateType('nationalCardType')"
+				:message="validateMsg('nationalCardType', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					placeholder="Contact ID Type"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
 					:options="nationalCardTypes"
-					@select="validateInput('nationalCardType')"
+					@select="validate('nationalCardType')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Contact ID Number"
-				:type="getValidationType('nationalCardNumber')"
-				:message="getValidationMessage('nationalCardNumber', 'Required number')"
+				:type="validateType('nationalCardNumber')"
+				:message="validateMsg('nationalCardNumber', 'Required number')"
 			>
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
-					placeholder="Contact ID Number"
 					:disabled="formDisabled"
-					@blur="validateInput('nationalCardNumber')"
+					@blur="validate('nationalCardNumber')"
 				/>
 			</b-field>
 
@@ -100,67 +96,62 @@
 
 			<b-field
 				label="Address Number"
-				:type="getValidationType('addressNumber')"
-				:message="getValidationMessage('addressNumber', 'Required')"
+				:type="validateType('addressNumber')"
+				:message="validateMsg('addressNumber', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
-					placeholder="Address Number"
 					:disabled="formDisabled"
-					@blur="validateInput('addressNumber')"
+					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Street"
-				:type="getValidationType('addressStreet')"
-				:message="getValidationMessage('addressStreet', 'Required')"
+				:type="validateType('addressStreet')"
+				:message="validateMsg('addressStreet', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
-					placeholder="Address Street"
 					:disabled="formDisabled"
-					@blur="validateInput('addressStreet')"
+					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Postcode"
-				:type="getValidationType('addressPostCode')"
-				:message="getValidationMessage('addressPostCode', 'Required')"
+				:type="validateType('addressPostCode')"
+				:message="validateMsg('addressPostCode', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressPostCode"
-					placeholder="Address Postcode"
 					:disabled="formDisabled"
-					@blur="validateInput('addressPostCode')"
+					@blur="validate('addressPostCode')"
 				/>
 			</b-field>
 
 			<b-field grouped>
 				<b-field
 					label="Latitude"
-					:type="getValidationType('latitude')"
-					:message="getValidationMessage('latitude', 'Required')"
+					:type="validateType('latitude')"
+					:message="validateMsg('latitude', 'Required')"
 				>
 					<b-input
 						v-model="formModel.latitude"
-						placeholder="Latitude"
 						:disabled="formDisabled"
-						@blur="validateInput('latitude')"
+						@blur="validate('latitude')"
 					/>
 				</b-field>
 
 				<b-field
 					label="Longitude"
-					:type="getValidationType('longitude')"
-					:message="getValidationMessage('longitude', 'Required')"
+					:type="validateType('longitude')"
+					:message="validateMsg('longitude', 'Required')"
 				>
 					<b-input
 						v-model="formModel.longitude"
-						placeholder="Longitude"
 						:disabled="formDisabled"
-						@blur="validateInput('longitude')"
+						@blur="validate('longitude')"
 					/>
 				</b-field>
 			</b-field>
@@ -183,10 +174,13 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "CommunityForm",
+
+	mixins: [Validation],
 
 	components: { LocationForm },
 
@@ -280,22 +274,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

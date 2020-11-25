@@ -7,13 +7,11 @@
 					<b-field label="Family Name">
 						<b-input
 							v-model="formModel.nameLocal.familyName"
-							placeholder="Family Name"
 						/>
 					</b-field>
 					<b-field label="First Name">
 						<b-input
 							v-model="formModel.nameLocal.firstName"
-							placeholder="First Name"
 						/>
 					</b-field>
 				</div>
@@ -22,13 +20,11 @@
 					<b-field label="Family Name">
 						<b-input
 							v-model="formModel.nameEnglish.familyName"
-							placeholder="Family Name"
 						/>
 					</b-field>
 					<b-field label="First Name">
 						<b-input
 							v-model="formModel.nameEnglish.firstName"
-							placeholder="First Name"
 						/>
 					</b-field>
 				</div>
@@ -38,7 +34,6 @@
 						<MultiSelect
 							v-model="formModel.personalInformation.gender"
 							searchable
-							placeholder="Gender"
 							:options="options.gender"
 						/>
 					</b-field>
@@ -59,14 +54,12 @@
 						<MultiSelect
 							v-model="formModel.id.idType"
 							searchable
-							placeholder="ID Type"
 							:options="options.idType"
 						/>
 					</b-field>
 					<b-field label="ID Number">
 						<b-input
 							v-model="formModel.id.idNumber"
-							placeholder="ID Number"
 						/>
 					</b-field>
 				</div>
@@ -76,7 +69,6 @@
 						<MultiSelect
 							v-model="formModel.residency.residencyStatus"
 							searchable
-							placeholder="Residency Status"
 							:options="options.residencyStatus"
 						/>
 					</b-field>
@@ -92,14 +84,12 @@
 						<MultiSelect
 							v-model="formModel.referral.referralType"
 							searchable
-							placeholder="Referral Type"
 							:options="options.referralType"
 						/>
 					</b-field>
 					<b-field v-if="formModel.addAReferral" label="Comment">
 						<b-input
 							v-model="formModel.referral.comment"
-							placeholder="Comment"
 						/>
 					</b-field>
 				</div>
@@ -109,7 +99,6 @@
 						<MultiSelect
 							v-model="formModel.phone1.type"
 							searchable
-							placeholder="Type"
 							:options="options.phoneType"
 						/>
 						<b-checkbox v-model="formModel.phone1.proxy">
@@ -120,7 +109,6 @@
 						<MultiSelect
 							v-model="formModel.phone1.ext"
 							searchable
-							placeholder="Ext"
 							label="name"
 							track-by="id"
 							:options="options.phonePrefixes"
@@ -137,7 +125,6 @@
 						<MultiSelect
 							v-model="formModel.phone2.type"
 							searchable
-							placeholder="Type"
 							:options="options.phoneType"
 						/>
 						<b-checkbox v-model="formModel.phone2.proxy">
@@ -148,7 +135,6 @@
 						<MultiSelect
 							v-model="formModel.phone2.ext"
 							searchable
-							placeholder="Ext"
 							label="name"
 							track-by="id"
 							:options="options.phonePrefixes"

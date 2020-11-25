@@ -3,21 +3,20 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Organization Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				:type="validateType('name')"
+				:message="validateMsg('name', 'Required')"
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Organization Name"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validate('name')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="!formDisabled"
 				label="Organizational Logo"
-				:type="getValidationType('logo')"
+				:type="validateType('logo')"
 			>
 				<b-field
 					class="file"
@@ -50,23 +49,22 @@
 
 			<b-field
 				label="Font To Apply To The Pdf"
-				:type="getValidationType('font')"
+				:type="validateType('font')"
 			>
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
-					placeholder="Font To Apply To The Pdf"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
 					:options="fonts"
-					@blur="validateInput('font')"
+					@blur="validate('font')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Organization Primary Color"
-				:type="getValidationType('primaryColor')"
+				:type="validateType('primaryColor')"
 			>
 				<VSwatches
 					v-model="formModel.primaryColor"
@@ -74,13 +72,13 @@
 					popover-y="top"
 					swatches="text-advanced"
 					:disabled="formDisabled"
-					@blur="validateInput('primaryColor')"
+					@blur="validate('primaryColor')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Organization Secondary Color"
-				:type="getValidationType('secondaryColor')"
+				:type="validateType('secondaryColor')"
 			>
 
 				<VSwatches
@@ -90,19 +88,18 @@
 					popover-y="top"
 					swatches="text-advanced"
 					:disabled="formDisabled"
-					@blur="validateInput('secondaryColor')"
+					@blur="validate('secondaryColor')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Pdf Footer Content"
-				:type="getValidationType('footerContent')"
+				:type="validateType('footerContent')"
 			>
 				<b-input
 					v-model="formModel.footerContent"
-					placeholder="Pdf Footer Content"
 					:disabled="formDisabled"
-					@blur="validateInput('footerContent')"
+					@blur="validate('footerContent')"
 				/>
 			</b-field>
 		</section>
@@ -129,9 +126,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "MyOrganizationForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -183,22 +183,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {

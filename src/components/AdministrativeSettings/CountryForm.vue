@@ -3,39 +3,36 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				:type="validateType('name')"
+				:message="validateMsg('name', 'Required')"
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validate('name')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Iso 3"
-				:type="getValidationType('iso3')"
-				:message="getValidationMessage('iso3', 'Required')"
+				:type="validateType('iso3')"
+				:message="validateMsg('iso3', 'Required')"
 			>
 				<b-input
 					v-model="formModel.iso3"
-					placeholder="Short Name"
 					:disabled="formDisabled"
-					@blur="validateInput('iso3')"
+					@blur="validate('iso3')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Available Currencies"
-				:type="getValidationType('availableCurrencies')"
+				:type="validateType('availableCurrencies')"
 			>
 				<MultiSelect
 					v-model="formModel.availableCurrencies"
 					multiple
 					searchable
-					placeholder="Available Currencies"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -45,13 +42,12 @@
 
 			<b-field
 				label="Country Flag"
-				:type="getValidationType('countryFlag')"
-				:message="getValidationMessage('countryFlag', 'Required')"
+				:type="validateType('countryFlag')"
+				:message="validateMsg('countryFlag', 'Required')"
 			>
 				<MultiSelect
 					v-model="formModel.countryFlag"
 					searchable
-					placeholder="Country Flag"
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -97,9 +93,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "CountryForm",
+
+	mixins: [Validation],
 
 	data() {
 		return {
@@ -177,22 +176,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		prepareFlags() {

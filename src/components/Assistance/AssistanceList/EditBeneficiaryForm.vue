@@ -5,7 +5,6 @@
 				<b-input
 					v-model="formModel.firstName"
 					disabled
-					placeholder="First Name"
 				/>
 			</b-field>
 
@@ -13,7 +12,6 @@
 				<b-input
 					v-model="formModel.familyName"
 					disabled
-					placeholder="Family Name"
 				/>
 			</b-field>
 
@@ -21,7 +19,6 @@
 				<b-input
 					v-model="formModel.gender"
 					disabled
-					placeholder="Gender"
 				/>
 			</b-field>
 
@@ -29,7 +26,6 @@
 				<b-input
 					v-model="formModel.dateOfBirth"
 					disabled
-					placeholder="Date Of Birth"
 				/>
 			</b-field>
 
@@ -37,7 +33,6 @@
 				<b-input
 					v-model="formModel.residencyStatus"
 					disabled
-					placeholder="Residency Status"
 				/>
 			</b-field>
 
@@ -45,7 +40,6 @@
 				<b-input
 					v-model="formModel.residencyStatus"
 					disabled
-					placeholder="Status"
 				/>
 			</b-field>
 
@@ -57,7 +51,6 @@
 				<MultiSelect
 					v-model="formModel.referralType"
 					searchable
-					placeholder="Referral Type"
 					:options="options.referralType"
 				/>
 			</b-field>
@@ -65,7 +58,6 @@
 			<b-field v-if="addAReferral" label="Comment">
 				<b-input
 					v-model="formModel.comment"
-					placeholder="Comment"
 				/>
 			</b-field>
 
@@ -75,7 +67,6 @@
 				<b-input
 					v-model="formModel.justificationForAdding"
 					disabled
-					placeholder="Justification For Adding"
 				/>
 			</b-field>
 		</section>

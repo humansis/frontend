@@ -3,95 +3,88 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Username"
-				:type="getValidationType('username')"
-				:message="getValidationMessage('username', 'Required')"
+				:type="validateType('username')"
+				:message="validateMsg('username', 'Required')"
 			>
 				<b-input
 					v-model="formModel.username"
-					placeholder="Username"
 					:disabled="formDisabled"
-					@blur="validateInput('username')"
+					@blur="validate('username')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="formModel.creating"
 				label="Password"
-				:type="getValidationType('password')"
-				:message="getValidationMessage('password', 'Required')"
+				:type="validateType('password')"
+				:message="validateMsg('password', 'Required')"
 			>
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
 					:disabled="formDisabled"
-					@blur="validateInput('password')"
+					@blur="validate('password')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Name"
-				:type="getValidationType('name')"
-				:message="getValidationMessage('name', 'Required')"
+				:type="validateType('name')"
+				:message="validateMsg('name', 'Required')"
 			>
 				<b-input
 					v-model="formModel.name"
-					placeholder="Name"
 					:disabled="formDisabled"
-					@blur="validateInput('name')"
+					@blur="validate('name')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Description"
-				:type="getValidationType('description')"
-				:message="getValidationMessage('description', 'Required')"
+				:type="validateType('description')"
+				:message="validateMsg('description', 'Required')"
 			>
 				<b-input
 					v-model="formModel.description"
-					placeholder="Description"
 					:disabled="formDisabled"
-					@blur="validateInput('description')"
+					@blur="validate('description')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Street"
-				:type="getValidationType('addressStreet')"
-				:message="getValidationMessage('addressStreet', 'Required')"
+				:type="validateType('addressStreet')"
+				:message="validateMsg('addressStreet', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
-					placeholder="Address Street"
 					:disabled="formDisabled"
-					@blur="validateInput('addressStreet')"
+					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Number"
-				:type="getValidationType('addressNumber')"
-				:message="getValidationMessage('addressNumber', 'Required')"
+				:type="validateType('addressNumber')"
+				:message="validateMsg('addressNumber', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
-					placeholder="Address Number"
 					:disabled="formDisabled"
-					@blur="validateInput('addressNumber')"
+					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Postcode"
-				:type="getValidationType('addressPostcode')"
-				:message="getValidationMessage('addressPostcode', 'Required')"
+				:type="validateType('addressPostcode')"
+				:message="validateMsg('addressPostcode', 'Required')"
 			>
 				<b-input
 					v-model="formModel.addressPostcode"
-					placeholder="Address Postcode"
 					:disabled="formDisabled"
-					@blur="validateInput('addressPostcode')"
+					@blur="validate('addressPostcode')"
 				/>
 			</b-field>
 
@@ -120,10 +113,13 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 import locationForm from "@/components/LocationForm";
 
 export default {
 	name: "vendorForm",
+
+	mixins: [Validation],
 
 	components: { locationForm },
 
@@ -175,22 +171,6 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
 		},
 
 		closeForm() {
