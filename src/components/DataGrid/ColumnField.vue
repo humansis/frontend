@@ -48,6 +48,14 @@
 				disabled
 			/>
 		</template>
+
+		<template
+			v-if="column.type === 'editable'"
+		>
+			<b-input
+				v-model="data.row[column.field]"
+			/>
+		</template>
 	</div>
 </template>
 

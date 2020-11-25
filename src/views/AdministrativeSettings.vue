@@ -43,6 +43,12 @@
 			>
 				<Currencies />
 			</b-tab-item>
+			<b-tab-item
+				label="Translations"
+				icon="translation"
+			>
+				<Translations />
+			</b-tab-item>
 		</b-tabs>
 	</div>
 </template>
@@ -55,11 +61,13 @@ import OrganizationServices from "@/views/AdministrativeSettings/OrganizationSer
 import Countries from "@/views/AdministrativeSettings/Countries";
 import Languages from "@/views/AdministrativeSettings/Languages";
 import Currencies from "@/views/AdministrativeSettings/Currencies";
+import Translations from "@/views/AdministrativeSettings/Translations";
 
 export default {
 	name: "AdministrativeSettings",
 
 	components: {
+		Translations,
 		Currencies,
 		Countries,
 		Languages,
