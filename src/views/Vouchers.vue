@@ -25,7 +25,12 @@
 		>
 			Add
 		</b-button>
+		<BatchList
+			@onRemove="onRemoveVoucher"
+			@onShowDetail="showDetail"
+		/>
 		<VoucherList
+			v-show="false"
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
@@ -40,6 +45,7 @@ import VoucherForm from "@/components/Voucher/VoucherForm";
 import { Toast } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import VoucherList from "@/components/Voucher/VoucherList";
+import BatchList from "@/components/Voucher/BatchList";
 
 export default {
 	name: "Vouchers",
@@ -48,6 +54,7 @@ export default {
 		VoucherList,
 		Modal,
 		VoucherForm,
+		BatchList,
 	},
 
 	data() {
@@ -75,9 +82,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {
-				result = "Detail of Voucher";
+				result = "Detail Of This Voucher Booklets";
 			} else {
-				result = "Create new Voucher";
+				result = "Create New Voucher Booklets";
 			}
 			return result;
 		},

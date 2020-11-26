@@ -15,6 +15,7 @@
 			aria-page-label="Page"
 			aria-current-label="Current page"
 			selectable
+			:checkable="checkable"
 			:data="data"
 			:total="total"
 			:per-page="perPage"
@@ -38,6 +39,10 @@ export default {
 		total: Number,
 		currentPage: Number,
 		perPage: Number,
+		checkable: {
+			type: Boolean,
+			default: false,
+		},
 	},
 };
 </script>
