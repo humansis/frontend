@@ -15,7 +15,7 @@ export default {
 	props: {
 		icon: String,
 		entity: String,
-		id: null,
+		id: Number,
 		hasConfirmMessage: Boolean,
 	},
 
