@@ -8,6 +8,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.projectId"
+					v-if="!formDisabled"
 					searchable
 					placeholder="Project"
 					label="name"
@@ -15,6 +16,12 @@
 					:disabled="formDisabled"
 					:options="projects"
 					@select="validateInput('projectId')"
+				/>
+
+				<b-input
+					v-model="formModel.project"
+					v-show="formDisabled"
+					:disabled="formDisabled"
 				/>
 			</b-field>
 

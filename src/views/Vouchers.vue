@@ -115,6 +115,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
 				individualValue,
@@ -127,6 +128,7 @@ export default {
 			this.voucherModel = {
 				...this.voucherModel,
 				id,
+				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
 				individualValue,
@@ -135,6 +137,7 @@ export default {
 				status,
 				code,
 			};
+			console.log(this.voucherModel);
 		},
 
 		closeVoucherModal() {

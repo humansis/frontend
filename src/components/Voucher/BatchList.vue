@@ -3,7 +3,8 @@
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
-					<b-input placeholder="Search..."
+					<b-input
+						placeholder="Search..."
 						type="search"
 						icon="search"
 					/>
@@ -14,9 +15,8 @@
 		<b-collapse
 			class="panel"
 			animation="slide"
-			v-for="(collapse, index) of collapses"
+			v-for="(batch, index) of getBatches"
 			:key="index"
-			:open="isOpen == index"
 			@open="isOpen = index"
 		>
 			<div
@@ -26,9 +26,8 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-primary mr-1">{{ index + 1 }}. Batch</b-tag>
-					<b-tag type="is-info mr-1">20 x Booklets</b-tag>
-					<b-tag type="is-success mr-3">20 x Vouchers</b-tag>
-					{{ collapse.title }}
+					<b-tag type="is-info mr-4">{{ batch.booklets.length }} x Booklets</b-tag>
+					{{ batch.code }}
 				</p>
 				<a class="card-header-icon">
 					<b-icon icon="arrow-down" />
@@ -37,10 +36,7 @@
 			<div class="card-content">
 				<Table
 					checkable
-					:data="table.data"
-					:total="table.total"
-					:current-page="table.currentPage"
-					:per-page="table.perPage"
+					:data="batch.booklets"
 					@clicked="showDetail"
 					@pageChanged="onPageChange"
 					@sorted="onSort"
@@ -94,55 +90,35 @@ export default {
 
 	data() {
 		return {
+			batches: [],
 			fetch: {
 				error: null,
 			},
 			isOpen: 0,
-			collapses: [
-				{
-					title: "SYR_Dev SYR Project_25-11-2020_batch000001",
-					text: "Text 1",
-				},
-				{
-					title: "SYR_Dev SYR Project_25-11-2020_batch000001",
-					text: "Text 2",
-				},
-				{
-					title: "SYR_Dev SYR Project_25-11-2020_batch000001",
-					text: "Text 3",
-				},
-			],
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
 					{
 						key: "project",
-						label: "Project",
 					},
 					{
 						key: "code",
-						label: "Code",
 					},
 					{
 						key: "quantityOfVouchers",
-						label: "Quantity Of Vouchers",
 					},
 					{
 						key: "individualValue",
-						label: "Individual Value",
 					},
 					{
 						key: "status",
-						label: "Status",
 					},
 					{
 						key: "beneficiary",
-						label: "Beneficiary",
 					},
 					{
 						key: "distribution",
-						label: "Distribution",
 					},
 				],
 				total: 0,
@@ -165,6 +141,27 @@ export default {
 				result = "Create new Voucher";
 			}
 			return result;
+		},
+
+		getBatches() {
+			const loadingComponent = this.$buefy.loading.open();
+
+			const batches = [];
+			this.table.data.forEach((item) => {
+				if (batches.length) {
+					if (batches[batches.length - 1].code === item.code) {
+						batches[batches.length - 1].booklets.push(item);
+					} else {
+						batches.push({ code: item.code, booklets: [item] });
+					}
+				} else {
+					batches.push({ code: item.code, booklets: [item] });
+				}
+			});
+
+			loadingComponent.close();
+
+			return batches;
 		},
 	},
 
@@ -218,12 +215,13 @@ export default {
 		},
 
 		showDetailWithId(id) {
-			const voucher = this.table.data.find((item) => item.id === id);
-			this.showDetail(voucher);
+			const booklet = this.table.data.find((item) => item.id === id);
+			this.showDetail(booklet);
 		},
 
-		showDetail(voucher) {
-			this.$emit("onShowDetail", voucher);
+		showDetail(booklet) {
+			console.log(booklet);
+			this.$emit("onShowDetail", booklet);
 		},
 
 		onRemove(id) {
