@@ -106,6 +106,13 @@
 							:to="{ name: 'Administrative Settings' }"
 						/>
 						<b-menu-item
+							label="Transactions"
+							icon="credit-card"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Transactions' }"
+						/>
+						<b-menu-item
 							label="Jobs"
 							icon="briefcase"
 							exact-active-class="is-active"
