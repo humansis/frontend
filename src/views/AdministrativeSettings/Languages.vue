@@ -9,7 +9,7 @@
 			<LanguagesForm
 				close-button
 				:formModel="languageModel"
-				:submit-button-label="'Create'"
+				:submit-button-label="'Add'"
 				:form-disabled="languageModal.isDetail"
 				@formSubmitted="submitLanguageForm"
 				@formClosed="closeLanguageModal"
@@ -65,9 +65,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.languageModal.isDetail) {
-				result = "Detail of Country Specifics";
+				result = "Detail of Language";
 			} else {
-				result = "Create new Country Specifics";
+				result = "Add New Language";
 			}
 			return result;
 		},
@@ -135,7 +135,7 @@ export default {
 			await CountrySpecificOptionsService.createCountrySpecificOption(languageBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Country Specifics Successfully Created", "is-success");
+						Toast("Language Successfully Added", "is-success");
 						this.$refs.languagesList.fetchData();
 					}
 				});

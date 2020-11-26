@@ -3,7 +3,8 @@
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
-					<b-input placeholder="Search..."
+					<b-input
+						placeholder="Search..."
 						type="search"
 						icon="search"
 					/>
@@ -48,7 +49,7 @@
 						tabindex="-1"
 						icon="trash"
 						entity="Translation"
-						:id="props.row.key"
+						:id="props.index"
 						@submitted="remove"
 					/>
 				</div>
@@ -160,8 +161,8 @@ export default {
 				});
 		},
 
-		remove(key) {
-			this.table.data = this.table.data.filter((item) => item.key !== key);
+		remove(index) {
+			this.table.data.splice(index, 1);
 		},
 
 		addTranslation() {
