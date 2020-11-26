@@ -175,6 +175,14 @@ const routes = [
 				},
 			},
 			{
+				path: "/jobs",
+				name: "Jobs",
+				component: () => import(/* webpackChunkName: "Jobs" */ "@/views/Jobs"),
+				meta: {
+					breadcrumb: "Jobs",
+				},
+			},
+			{
 				path: "/logs",
 				name: "Logs",
 				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),

@@ -106,6 +106,13 @@
 							:to="{ name: 'Administrative Settings' }"
 						/>
 						<b-menu-item
+							label="Jobs"
+							icon="briefcase"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Jobs' }"
+						/>
+						<b-menu-item
 							label="Logs"
 							icon="eye"
 							exact-active-class="is-active"
