@@ -119,7 +119,9 @@ export default {
 				this.table.columns = generateColumns(
 					this.table.visibleColumns,
 				);
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Distribution Reports) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
@@ -141,7 +143,9 @@ export default {
 							},
 						);
 					});
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
 
 			this.$store.commit("loading", false);
 		},
@@ -164,7 +168,9 @@ export default {
 						},
 					);
 				});
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Project Assistances) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},

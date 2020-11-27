@@ -138,7 +138,9 @@ export default {
 						Toast("Language Successfully Added", "is-success");
 						this.$refs.languagesList.fetchData();
 					}
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Language) ${e}`, "is-danger");
+				});
 		},
 	},
 };

@@ -146,7 +146,9 @@ export default {
 						Toast("Country Specifics Successfully Created", "is-success");
 						this.$refs.countrySpecificList.fetchData();
 					}
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Country Specific Options) ${e}`, "is-danger");
+				});
 		},
 
 		async onRemoveCountrySpecifics(id) {
@@ -156,7 +158,9 @@ export default {
 						Toast("Country Specifics successfully removed", "is-success");
 						this.$refs.countrySpecificList.fetchData();
 					}
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Country Specific Options) ${e}`, "is-danger");
+				});
 		},
 	},
 };

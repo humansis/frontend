@@ -94,7 +94,9 @@ export default {
 				.then((response) => {
 					this.countries = response.data;
 					this.updateCountry(this.countries);
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Countries) ${e}`, "is-danger");
+				});
 		},
 	},
 

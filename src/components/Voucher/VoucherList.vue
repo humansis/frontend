@@ -161,7 +161,9 @@ export default {
 					.then((response) => {
 						preparedBooklet.project = response.data.name;
 						booklets.push(preparedBooklet);
-					}).catch((e) => { Toast(e, "is-danger"); });
+					}).catch((e) => {
+						Toast(`(Project Detail) ${e}`, "is-danger");
+					});
 			});
 			return booklets;
 		},

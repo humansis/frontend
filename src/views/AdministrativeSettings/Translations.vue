@@ -136,7 +136,9 @@ export default {
 				this.table.columns = generateColumns(
 					this.table.visibleColumns,
 				);
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Translations) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
@@ -150,7 +152,9 @@ export default {
 						Toast("Translation successfully saved", "is-success");
 						this.fetchData();
 					}
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Translations) ${e}`, "is-danger");
+				});
 		},
 
 		remove(index) {

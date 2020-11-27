@@ -48,7 +48,9 @@ export default {
 				"total_registrations",
 			).then((response) => {
 				this.summary = response.data;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Summaries) ${e}`, "is-danger");
+			});
 
 			loadingComponent.close();
 		},

@@ -91,7 +91,9 @@ export default {
 				ProjectsService.getDetailOfProject(booklet.projectId).then((response) => {
 					preparedBooklet.project = response.data.name;
 					booklets.push(preparedBooklet);
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Project Detail) ${e}`, "is-danger");
+				});
 			});
 			return booklets;
 		},
@@ -183,7 +185,9 @@ export default {
 					Toast("Voucher Successfully Created", "is-success");
 					this.$refs.voucherList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Booklet) ${e}`, "is-danger");
+			});
 		},
 
 		async onRemoveVoucher(id) {
@@ -192,7 +196,9 @@ export default {
 					Toast("Voucher successfully removed", "is-success");
 					this.$refs.voucherList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Booklet) ${e}`, "is-danger");
+			});
 		},
 	},
 };

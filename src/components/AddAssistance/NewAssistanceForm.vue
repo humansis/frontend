@@ -142,25 +142,33 @@ export default {
 		fetchProvinces() {
 			LocationsService.getListOfAdm1()
 				.then((result) => { this.provinces = result.data; })
-				.catch((e) => { Toast(e, "is-danger"); });
+				.catch((e) => {
+					Toast(`(Provinces) ${e}`, "is-danger");
+				});
 		},
 
 		fetchDistricts(adm1Id) {
 			LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.districts = result.data; })
-				.catch((e) => { Toast(e, "is-danger"); });
+				.catch((e) => {
+					Toast(`(Districts) ${e}`, "is-danger");
+				});
 		},
 
 		fetchCommunes(adm2Id) {
 			LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.communes = result.data; })
-				.catch((e) => { Toast(e, "is-danger"); });
+				.catch((e) => {
+					Toast(`(Communes) ${e}`, "is-danger");
+				});
 		},
 
 		fetchVillages(adm3Id) {
 			LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.villages = result.data; })
-				.catch((e) => { Toast(e, "is-danger"); });
+				.catch((e) => {
+					Toast(`(Villages) ${e}`, "is-danger");
+				});
 		},
 	},
 };

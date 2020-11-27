@@ -330,7 +330,9 @@ export default {
 		fetchTypes() {
 			InstitutionsService.getListOfInstitutionTypes()
 				.then((result) => { this.types = result.data; })
-				.catch((e) => { Toast(e, "is-danger"); });
+				.catch((e) => {
+					Toast(`(Institution Types) ${e}`, "is-danger");
+				});
 		},
 	},
 };

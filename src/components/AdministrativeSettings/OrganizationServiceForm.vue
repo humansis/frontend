@@ -180,7 +180,9 @@ export default {
 				"desc",
 			).then((response) => {
 				this.projects = response.data;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
 		},
 	},
 };

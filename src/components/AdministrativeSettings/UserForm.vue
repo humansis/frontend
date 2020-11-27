@@ -260,21 +260,27 @@ export default {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
 				.then((response) => {
 					this.projects = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchCountries() {
 			await LocationsService.getListOfCountries()
 				.then((response) => {
 					this.countries = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Countries) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchOrganizations() {
 			await MyOrganizationsService.getListOfMyOrganizations()
 				.then((response) => {
 					this.organizations = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Organizations) ${e}`, "is-danger");
+				});
 		},
 
 		closeForm() {

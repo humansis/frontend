@@ -165,7 +165,9 @@ export default {
 					Toast("Product Successfully Created", "is-success");
 					this.$refs.productsList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Product) ${e}`, "is-danger");
+			});
 		},
 
 		async updateProduct(id, productBody) {
@@ -174,7 +176,9 @@ export default {
 					Toast("Product Successfully Updated", "is-success");
 					this.$refs.productsList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Product) ${e}`, "is-danger");
+			});
 		},
 
 		async onRemoveProduct(id) {
@@ -183,7 +187,9 @@ export default {
 					Toast("Product successfully removed", "is-success");
 					this.$refs.productsList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Product) ${e}`, "is-danger");
+			});
 		},
 	},
 };

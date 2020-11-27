@@ -128,7 +128,9 @@ export default {
 						Toast("Organization Service Successfully Created", "is-success");
 						this.$refs.organizationServicesList.fetchData();
 					}
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => {
+					Toast(`(Organization) ${e}`, "is-danger");
+				});
 		},
 	},
 };

@@ -140,7 +140,9 @@ export default {
 						this.table.visibleColumns,
 					);
 				});
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Vendors) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
@@ -155,25 +157,33 @@ export default {
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						}).catch((e) => { Toast(e, "is-danger"); });
+						}).catch((e) => {
+							Toast(`(Adm4) ${e}`, "is-danger");
+						});
 				} else if (vendor.adm3Id) {
 					LocationsService.getDetailOfAdm3(vendor.adm3Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						}).catch((e) => { Toast(e, "is-danger"); });
+						}).catch((e) => {
+							Toast(`(Adm3) ${e}`, "is-danger");
+						});
 				} else if (vendor.adm2Id) {
 					LocationsService.getDetailOfAdm2(vendor.adm2Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						}).catch((e) => { Toast(e, "is-danger"); });
+						}).catch((e) => {
+							Toast(`(Adm2) ${e}`, "is-danger");
+						});
 				} else if (vendor.adm1Id) {
 					LocationsService.getDetailOfAdm1(vendor.adm1Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						}).catch((e) => { Toast(e, "is-danger"); });
+						}).catch((e) => {
+							Toast(`(Adm1) ${e}`, "is-danger");
+						});
 				}
 			});
 			return preparedVendors;

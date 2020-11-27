@@ -52,7 +52,9 @@ export default {
 				"desc",
 			).then((response) => {
 				this.projectsSummary = response.data;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
 
 			loadingComponent.close();
 		},

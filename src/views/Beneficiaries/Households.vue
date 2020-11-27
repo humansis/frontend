@@ -165,7 +165,9 @@ export default {
 				this.table.columns = generateColumns(
 					this.table.visibleColumns,
 				);
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Households) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
@@ -204,7 +206,9 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Households) ${e}`, "is-danger");
+			});
 		},
 	},
 };

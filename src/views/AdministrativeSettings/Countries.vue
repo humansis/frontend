@@ -171,7 +171,9 @@ export default {
 					Toast("Country Successfully Created", "is-success");
 					this.$refs.countriesList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Country) ${e}`, "is-danger");
+			});
 		},
 
 		async updateCountry(id, countryBody) {
@@ -180,7 +182,9 @@ export default {
 					Toast("Country Successfully Updated", "is-success");
 					this.$refs.countriesList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Country) ${e}`, "is-danger");
+			});
 		},
 
 		async removeCountry(id) {
@@ -189,7 +193,9 @@ export default {
 					Toast("Country successfully removed", "is-success");
 					this.$refs.countriesList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Country) ${e}`, "is-danger");
+			});
 		},
 	},
 };

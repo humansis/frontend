@@ -152,7 +152,9 @@ export default {
 					Toast("My Organization Successfully Updated", "is-success");
 					this.$refs.myOrganizationsList.fetchData();
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Organization) ${e}`, "is-danger");
+			});
 		},
 
 		async printMyOrganization(id) {
@@ -160,7 +162,9 @@ export default {
 				if (response.status === 200) {
 					Toast("Your Download is starting", "is-success");
 				}
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Organization) ${e}`, "is-danger");
+			});
 		},
 	},
 

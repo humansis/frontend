@@ -124,7 +124,9 @@ export default {
 				this.table.columns = generateColumns(
 					this.table.visibleColumns,
 				);
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Toast(`(Organizations) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
