@@ -5,7 +5,7 @@
 			default-sort-direction="asc"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
-			paginated
+			:paginated="isPaginated"
 			striped
 			hoverable
 			backend-pagination
@@ -39,9 +39,16 @@ export default {
 		total: Number,
 		currentPage: Number,
 		perPage: Number,
+		paginated: Boolean,
 		checkable: {
 			type: Boolean,
 			default: false,
+		},
+	},
+
+	computed: {
+		isPaginated() {
+			return this.paginated === undefined ? true : this.paginated;
 		},
 	},
 };

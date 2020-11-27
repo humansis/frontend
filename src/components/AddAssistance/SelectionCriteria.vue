@@ -6,9 +6,9 @@
 				class="mb-5"
 				type="is-success"
 				icon-left="plus"
-				@click="addCriteria"
+				@click="addCriteria(undefined)"
 			>
-				Add
+				Add Group
 			</b-button>
 		</h2>
 		<Modal
@@ -19,6 +19,7 @@
 		>
 			<SelectionCriteriaForm
 				close-button
+				ref="criteriaForm"
 				submit-button-label="Create"
 				:formModel="criteriaModel"
 				@formSubmitted="submitCriteriaForm"
@@ -26,40 +27,19 @@
 			/>
 		</Modal>
 
-		<div class="mb-2">
-			<Table
-				v-if="table.data.length"
-				:data="table.data"
-			>
-				<template v-for="(column, key) in table.columns">
-					<b-table-column
-						v-bind="column"
-						:key="key"
-					>
-						<template v-slot="props">
-							<div v-if="column.field === 'donorIds'">
-								{{ props.row[column.field].length }}
-							</div>
-							<div v-else>
-								{{ props.row[column.field] }}
-							</div>
-						</template>
-					</b-table-column>
-				</template>
+		<div class="mb-2" ref="selectionGroupPanel">
+			<SelectionCriteriaGroup
+				v-for="(group, key) in groups"
+				:data="group.data"
+				:key="key"
+				:group-id="key"
+				:groupName="'Group ' + key"
+				@addCriteria="addCriteria"
+				@removeGroup="removeGroup"
+			/>
 
-				<b-table-column
-					v-slot="props"
-					label="Actions"
-				>
-					<ActionButton
-						icon="trash"
-						type="is-danger"
-						@click.native="removeCriteria(props.index)"
-					/>
-				</b-table-column>
-			</Table>
 			<b-notification
-				v-else
+				v-if="groups.length === 0"
 				type="is-light"
 			>
 				No data
@@ -76,19 +56,17 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
-import ActionButton from "@/components/ActionButton";
+import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionCriteriaGroup";
 
 export default {
 	name: "SelectionCriteria",
 
 	components: {
+		SelectionCriteriaGroup,
 		Modal,
 		SelectionCriteriaForm,
-		Table,
-		ActionButton,
 	},
 
 	data() {
@@ -103,45 +81,19 @@ export default {
 				value: null,
 				scoreWeight: 1,
 			},
-			table: {
-				data: [],
-				columns: [
-					{
-						field: "criteriaTarget",
-						label: "Criteria Target",
-					},
-					{
-						field: "criteria",
-						label: "Criteria",
-					},
-					{
-						field: "condition",
-						label: "Condition",
-					},
-					{
-						field: "value",
-						label: "Value",
-					},
-					{
-						field: "scoreWeight",
-						label: "Score Weight",
-					},
-					{
-						field: "action",
-						label: "Action",
-					},
-				],
-			},
+			groups: [],
+			maxGroupId: 0,
 		};
 	},
 
 	updated() {
 		// TODO Emit only if table data length > 0
-		this.$emit("updatedData", this.table.data);
+		this.$emit("updatedData", this.groups);
 	},
 
 	methods: {
-		addCriteria() {
+		addCriteria(id) {
+			console.log(id);
 			this.criteriaModal.isOpened = true;
 
 			this.criteriaModel = {
@@ -150,6 +102,7 @@ export default {
 				condition: null,
 				value: null,
 				scoreWeight: 1,
+				groupId: id,
 			};
 		},
 
@@ -158,12 +111,27 @@ export default {
 		},
 
 		submitCriteriaForm(criteriaForm) {
-			this.table.data.push(criteriaForm);
+			if (criteriaForm.groupId !== undefined) {
+				this.groups[criteriaForm.groupId].data.push(criteriaForm);
+			} else {
+				const index = this.groups.push({ data: [] }) - 1;
+				this.groups[index].data.push(criteriaForm);
+			}
 			this.criteriaModal.isOpened = false;
 		},
 
-		removeCriteria(index) {
-			this.table.data.splice(index, 1);
+		removeGroup(groupId) {
+			// TODO I'm working on delete group, but if I delete top group, then deletes with lowest index
+			console.log(groupId);
+			// console.log(this.groups);
+			// const selectedGroup = this.groups.find((item, key) => key === groupId);
+			// console.log(selectedGroup);
+			// const index = selectedGroup.indexOf();
+			// console.log(index);
+			// this.groups = this.groups.filter((value, key) => key !== groupId);
+			this.groups = this.groups.splice(groupId, 1);
+			// const preparedGroups = this.groups.filter((value, key) => key !== groupId);
+			// this.groups = preparedGroups;
 		},
 	},
 };
