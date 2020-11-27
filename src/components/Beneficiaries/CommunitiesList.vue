@@ -108,7 +108,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await CommunitiesService.getListOfCommunities(
 				this.table.currentPage,
@@ -121,7 +121,8 @@ export default {
 					this.table.visibleColumns,
 				);
 			}).catch((e) => { Toast(e, "is-danger"); });
-			loadingComponent.close();
+
+			this.$store.commit("loading", false);
 		},
 
 		showEdit(id) {

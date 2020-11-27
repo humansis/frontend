@@ -134,7 +134,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
@@ -150,7 +150,7 @@ export default {
 				});
 			});
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		async getProjectNameForBooklets(data) {

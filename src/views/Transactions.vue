@@ -142,7 +142,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await TransactionService.getListOfTransactions().then((response) => {
 				this.table.data = response.data;
@@ -152,7 +152,7 @@ export default {
 				);
 			}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		onPageChange() {

@@ -107,7 +107,7 @@ export default {
 
 	methods: {
 		async fetchDistributionReports() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await DistributionReportService.getListOfDistributionReports(
 				this.table.currentPage,
@@ -121,11 +121,11 @@ export default {
 				);
 			}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		async fetchProjects() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await ProjectsService.getListOfProjects(
 				1,
@@ -143,11 +143,11 @@ export default {
 					});
 				}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		async fetchDistributions() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			this.distributionsForFilter = [];
 			await AssistancesService.getListOfProjectAssistances(
@@ -166,7 +166,7 @@ export default {
 				});
 			}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		goToDetail() {

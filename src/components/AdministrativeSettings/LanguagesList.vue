@@ -98,7 +98,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await LanguagesService.getListOfLanguages(
 				this.table.currentPage,
@@ -112,7 +112,7 @@ export default {
 				);
 			}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		showDetailWithId(id) {

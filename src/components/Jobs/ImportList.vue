@@ -89,7 +89,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			await ImportService.getListOfImports()
 				.then((response) => {
@@ -100,7 +100,7 @@ export default {
 					);
 				}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		showDetail(donor) {

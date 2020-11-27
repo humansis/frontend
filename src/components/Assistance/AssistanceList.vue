@@ -202,7 +202,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
 			// TODO Get list of households by assistance id
 			await BeneficiariesService.getListOfHouseholds(
@@ -217,7 +217,7 @@ export default {
 				);
 			}).catch((e) => { Toast(e, "is-danger"); });
 
-			loadingComponent.close();
+			this.$store.commit("loading", false);
 		},
 
 		openAddBeneficiaryModal() {

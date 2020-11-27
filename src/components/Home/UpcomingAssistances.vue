@@ -87,9 +87,6 @@ export default {
 				container: this.$refs.table,
 			});
 
-			this.table.data = [];
-			this.table.columns = [];
-
 			await AssistancesService.getListOfAssistances(
 				this.table.currentPage,
 				this.table.perPage,
