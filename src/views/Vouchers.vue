@@ -137,7 +137,6 @@ export default {
 				status,
 				code,
 			};
-			console.log(this.voucherModel);
 		},
 
 		closeVoucherModal() {

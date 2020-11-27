@@ -13,9 +13,9 @@
 		</div>
 
 		<b-collapse
+			v-for="(batch, index) of getBatches"
 			class="panel"
 			animation="slide"
-			v-for="(batch, index) of getBatches"
 			:key="index"
 			@open="isOpen = index"
 		>
@@ -220,7 +220,6 @@ export default {
 		},
 
 		showDetail(booklet) {
-			console.log(booklet);
 			this.$emit("onShowDetail", booklet);
 		},
 
