@@ -59,6 +59,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VoucherList",
@@ -168,7 +169,7 @@ export default {
 					.then((response) => {
 						preparedBooklet.project = response.data.name;
 						booklets.push(preparedBooklet);
-					});
+					}).catch((e) => { Toast(e, "is-danger"); });
 			});
 			return booklets;
 		},

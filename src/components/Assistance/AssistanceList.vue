@@ -109,6 +109,7 @@ import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import Modal from "@/components/Modal";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistanceList",
@@ -219,7 +220,7 @@ export default {
 					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

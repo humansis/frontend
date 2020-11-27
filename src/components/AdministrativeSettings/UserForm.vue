@@ -146,6 +146,7 @@ import Validation from "@/mixins/validation";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "userForm",
@@ -259,21 +260,21 @@ export default {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
 				.then((response) => {
 					this.projects = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async fetchCountries() {
 			await LocationsService.getListOfCountries()
 				.then((response) => {
 					this.countries = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async fetchOrganizations() {
 			await MyOrganizationsService.getListOfMyOrganizations()
 				.then((response) => {
 					this.organizations = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		closeForm() {

@@ -170,7 +170,7 @@ export default {
 					Toast("Donor Successfully Created", "is-success");
 					this.$refs.donorsList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateDonor(id, donorBody) {
@@ -179,7 +179,7 @@ export default {
 					Toast("Donor Successfully Updated", "is-success");
 					this.$refs.donorsList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async removeDonor(id) {
@@ -189,7 +189,7 @@ export default {
 						Toast("Donor successfully removed", "is-success");
 						this.$refs.donorsList.fetchData();
 					}
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

@@ -63,6 +63,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import AssistancesService from "@/services/AssistancesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistancesList",
@@ -144,7 +145,7 @@ export default {
 					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

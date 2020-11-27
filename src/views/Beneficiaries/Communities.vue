@@ -253,7 +253,7 @@ export default {
 					Toast("Community Successfully Created", "is-success");
 					this.$refs.communitiesList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateCommunity(id, communityBody) {
@@ -262,17 +262,16 @@ export default {
 					Toast("Community Successfully Updated", "is-success");
 					this.$refs.communitiesList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async removeCommunity(id) {
-			await CommunitiesService.deleteCommunity(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast("Community Successfully Deleted", "is-success");
-						this.$refs.communitiesList.fetchData();
-					}
-				});
+			await CommunitiesService.deleteCommunity(id).then((response) => {
+				if (response.status === 204) {
+					Toast("Community Successfully Deleted", "is-success");
+					this.$refs.communitiesList.fetchData();
+				}
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

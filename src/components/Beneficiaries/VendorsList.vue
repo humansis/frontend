@@ -63,6 +63,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VendorsList",
@@ -144,7 +145,7 @@ export default {
 							this.table.visibleColumns,
 						);
 					});
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -161,25 +162,25 @@ export default {
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						});
+						}).catch((e) => { Toast(e, "is-danger"); });
 				} else if (vendor.adm3Id) {
 					LocationsService.getDetailOfAdm3(vendor.adm3Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						});
+						}).catch((e) => { Toast(e, "is-danger"); });
 				} else if (vendor.adm2Id) {
 					LocationsService.getDetailOfAdm2(vendor.adm2Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						});
+						}).catch((e) => { Toast(e, "is-danger"); });
 				} else if (vendor.adm1Id) {
 					LocationsService.getDetailOfAdm1(vendor.adm1Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
-						});
+						}).catch((e) => { Toast(e, "is-danger"); });
 				}
 			});
 			return preparedVendors;

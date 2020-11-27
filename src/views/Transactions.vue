@@ -59,6 +59,7 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import TransactionService from "@/services/TransactionService";
 import TransactionFilter from "@/components/Transactions/TransactionFilter";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Transactions",
@@ -148,14 +149,13 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
-				await TransactionService.getListOfTransactions()
-					.then((response) => {
-						this.table.data = response.data;
-						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
-					});
+				await TransactionService.getListOfTransactions().then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -182,7 +182,6 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
-			console.log(selectedFilters);
 			await TransactionService.getListOfTransactions(
 				this.table.currentPage,
 				this.table.perPage,
@@ -192,7 +191,7 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

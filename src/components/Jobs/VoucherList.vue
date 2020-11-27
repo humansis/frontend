@@ -39,6 +39,7 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import VoucherService from "@/services/VoucherService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ImportList",
@@ -102,7 +103,7 @@ export default {
 						this.table.columns = generateColumns(
 							this.table.visibleColumns,
 						);
-					});
+					}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

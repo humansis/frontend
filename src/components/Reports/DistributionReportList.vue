@@ -63,6 +63,7 @@ import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
 import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DistributionReportList",
@@ -123,7 +124,7 @@ export default {
 					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -150,7 +151,7 @@ export default {
 								},
 							);
 						});
-					});
+					}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -169,17 +170,16 @@ export default {
 					1,
 					15,
 					"desc",
-				)
-					.then((response) => {
-						response.data.forEach(({ name, id }) => {
-							this.distributionsForFilter.push(
-								{
-									name,
-									id,
-								},
-							);
-						});
+				).then((response) => {
+					response.data.forEach(({ name, id }) => {
+						this.distributionsForFilter.push(
+							{
+								name,
+								id,
+							},
+						);
 					});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

@@ -207,7 +207,7 @@ export default {
 					Toast("User Successfully Created", "is-success");
 					this.$refs.usersList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateUser(id, userBody) {
@@ -216,7 +216,7 @@ export default {
 					Toast("User Successfully Updated", "is-success");
 					this.$refs.usersList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async removeUser(id) {
@@ -225,7 +225,7 @@ export default {
 					Toast("User Successfully Deleted", "is-success");
 					this.$refs.usersList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

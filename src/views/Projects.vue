@@ -205,7 +205,7 @@ export default {
 					Toast("Project Successfully Created", "is-success");
 					this.$refs.projectList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateProject(id, projectBody) {
@@ -214,7 +214,7 @@ export default {
 					Toast("Project Successfully Updated", "is-success");
 					this.$refs.projectList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async onProjectDelete(id) {
@@ -223,7 +223,7 @@ export default {
 					Toast("Project Successfully Deleted", "is-success");
 					this.$refs.projectList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

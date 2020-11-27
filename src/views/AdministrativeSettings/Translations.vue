@@ -141,7 +141,7 @@ export default {
 					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -150,15 +150,15 @@ export default {
 		},
 
 		async submit() {
-			const data = this.table.data.filter((item) => item.key);
-			console.log(data);
+			// TODO send data via API service
+			// const data = this.table.data.filter((item) => item.key);
 			await TranslationService.saveTranslation()
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Translation successfully saved", "is-success");
 						this.fetchData();
 					}
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		remove(index) {

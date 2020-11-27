@@ -37,6 +37,7 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import CurrencyService from "@/services/CurrencyService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Currencies",
@@ -100,7 +101,7 @@ export default {
 						this.table.columns = generateColumns(
 							this.table.visibleColumns,
 						);
-					});
+					}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

@@ -73,6 +73,7 @@ import SectorsService from "@/services/SectorsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectsList",
@@ -154,21 +155,21 @@ export default {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
 					this.table.columns = generateColumns(this.table.visibleColumns);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
+
+				loadingComponent.close();
 
 				await SectorsService.getListOfSectors().then((response) => {
 					this.projectModel.sectors = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				await HomeService.getListOfDonors().then((response) => {
 					this.projectModel.donors = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
 					this.projectModel.targetTypes = response.data;
-				});
-
-				loadingComponent.close();
+				}).catch((e) => { Toast(e, "is-danger"); });
 			} catch (error) {
 				this.handleError(error);
 			}

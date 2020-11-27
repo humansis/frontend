@@ -53,6 +53,7 @@
 
 <script>
 import ProjectsService from "@/services/ProjectsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectSummary",
@@ -86,7 +87,7 @@ export default {
 					this.$route.params.projectId,
 				).then((response) => {
 					this.projectSummary = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

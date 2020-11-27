@@ -15,6 +15,7 @@
 <script>
 import { normalizeText } from "@/utils/datagrid";
 import HomeService from "@/services/HomeService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Summary",
@@ -52,7 +53,7 @@ export default {
 					"total_registrations",
 				).then((response) => {
 					this.summary = response.data;
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

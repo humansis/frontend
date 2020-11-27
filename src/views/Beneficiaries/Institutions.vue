@@ -260,7 +260,7 @@ export default {
 					Toast("Institution Successfully Created", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateInstitution(id, institutionBody) {
@@ -269,7 +269,7 @@ export default {
 					Toast("Institution Successfully Updated", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async removeInstitution(id) {
@@ -278,7 +278,7 @@ export default {
 					Toast("Institution Successfully Deleted", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

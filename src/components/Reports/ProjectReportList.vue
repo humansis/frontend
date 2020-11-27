@@ -53,6 +53,7 @@ import PeriodFilter from "@/components/Reports/PeriodFilter";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectReportList",
@@ -111,7 +112,7 @@ export default {
 					this.table.columns = generateColumns(
 						this.table.visibleColumns,
 					);
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {
@@ -137,7 +138,7 @@ export default {
 							},
 						);
 					});
-				});
+				}).catch((e) => { Toast(e, "is-danger"); });
 
 				loadingComponent.close();
 			} catch (error) {

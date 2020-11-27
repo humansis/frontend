@@ -210,6 +210,7 @@ import { required, numeric } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import InstitutionsService from "@/services/InstitutionsService";
 import locationForm from "@/components/LocationForm";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "InstitutionForm",
@@ -328,7 +329,8 @@ export default {
 
 		fetchTypes() {
 			InstitutionsService.getListOfInstitutionTypes()
-				.then((result) => { this.types = result.data; });
+				.then((result) => { this.types = result.data; })
+				.catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };

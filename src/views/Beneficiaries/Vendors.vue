@@ -220,7 +220,7 @@ export default {
 					Toast("Vendor Successfully Created", "is-success");
 					this.$refs.vendorsList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async updateVendor(id, vendorBody) {
@@ -229,7 +229,7 @@ export default {
 					Toast("Vendor Successfully Updated", "is-success");
 					this.$refs.vendorsList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 
 		async onVendorRemove(id) {
@@ -238,7 +238,7 @@ export default {
 					Toast("Vendor Successfully Deleted", "is-success");
 					this.$refs.vendorsList.fetchData();
 				}
-			});
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };
