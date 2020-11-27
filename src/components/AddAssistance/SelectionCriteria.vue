@@ -16,7 +16,7 @@
 				class="mb-5"
 				type="is-success"
 				icon-left="plus"
-				@click="addCriteria()"
+				@click="addCriteria"
 			>
 				Add Group
 			</b-button>
@@ -50,7 +50,7 @@
 			/>
 
 			<b-notification
-				v-if="groups.length === 0"
+				v-if="!groups.length"
 				type="is-light"
 			>
 				No data
