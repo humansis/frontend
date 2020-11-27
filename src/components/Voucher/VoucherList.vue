@@ -72,9 +72,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -137,28 +134,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			const loadingComponent = this.$buefy.loading.open();
 
-				await BookletsService.getListOfBooklets(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.getProjectNameForBooklets(response.data).then((data) => {
-						this.table.data = data;
-						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
-					});
+			await BookletsService.getListOfBooklets(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.getProjectNameForBooklets(response.data).then((data) => {
+					this.table.data = data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
 				});
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			loadingComponent.close();
 		},
 
 		async getProjectNameForBooklets(data) {
@@ -172,12 +164,6 @@ export default {
 					}).catch((e) => { Toast(e, "is-danger"); });
 			});
 			return booklets;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showDetailWithId(id) {

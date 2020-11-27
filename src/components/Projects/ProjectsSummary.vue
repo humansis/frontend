@@ -22,9 +22,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			projectsSummary: [],
 			currentPage: 1,
 			perPage: 15,
@@ -45,30 +42,19 @@ export default {
 		},
 
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectsSummary,
-				});
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.projectsSummary,
+			});
 
-				await ProjectsService.getListOfProjects(
-					this.currentPage,
-					this.perPage,
-					"desc",
-				).then((response) => {
-					this.projectsSummary = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await ProjectsService.getListOfProjects(
+				this.currentPage,
+				this.perPage,
+				"desc",
+			).then((response) => {
+				this.projectsSummary = response.data;
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			loadingComponent.close();
 		},
 	},
 };

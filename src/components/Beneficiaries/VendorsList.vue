@@ -76,9 +76,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -129,32 +126,28 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			const loadingComponent = this.$buefy.loading.open();
 
-				await VendorsService.getListOfVendors(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.buildLocationsForVendors(response.data).then((result) => {
-						this.table.data = result;
-						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
-					});
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await VendorsService.getListOfVendors(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.buildLocationsForVendors(response.data).then((result) => {
+					this.table.data = result;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
+				});
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			loadingComponent.close();
 		},
 
 		async buildLocationsForVendors(data) {
 			const preparedVendors = [];
+
 			data.forEach((vendor) => {
 				const preparedVendor = vendor;
 				if (vendor.adm4Id) {
@@ -184,12 +177,6 @@ export default {
 				}
 			});
 			return preparedVendors;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showEdit(id) {

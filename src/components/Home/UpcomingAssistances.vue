@@ -37,9 +37,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -86,38 +83,27 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.table,
-				});
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.table,
+			});
 
-				this.table.data = [];
-				this.table.columns = [];
+			this.table.data = [];
+			this.table.columns = [];
 
-				await AssistancesService.getListOfAssistances(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-					true,
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await AssistancesService.getListOfAssistances(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+				true,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			loadingComponent.close();
 		},
 
 		goToDetail() {

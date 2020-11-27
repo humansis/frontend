@@ -76,9 +76,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -110,69 +107,34 @@ export default {
 
 	methods: {
 		async fetchDistributionReports() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			const loadingComponent = this.$buefy.loading.open();
 
-				await DistributionReportService.getListOfDistributionReports(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await DistributionReportService.getListOfDistributionReports(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			loadingComponent.close();
 		},
 
 		async fetchProjects() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			const loadingComponent = this.$buefy.loading.open();
 
-				await ProjectsService.getListOfProjects(
-					1,
-					15,
-					"desc",
-				)
-					.then((response) => {
-						response.data.forEach(({ name, id }) => {
-							this.projectsForFilter.push(
-								{
-									name,
-									id,
-								},
-							);
-						});
-					}).catch((e) => { Toast(e, "is-danger"); });
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		async fetchDistributions() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
-
-				this.distributionsForFilter = [];
-				await AssistancesService.getListOfProjectAssistances(
-					this.selectedProjectsForFilter.id,
-					1,
-					15,
-					"desc",
-				).then((response) => {
+			await ProjectsService.getListOfProjects(
+				1,
+				15,
+				"desc",
+			)
+				.then((response) => {
 					response.data.forEach(({ name, id }) => {
-						this.distributionsForFilter.push(
+						this.projectsForFilter.push(
 							{
 								name,
 								id,
@@ -181,16 +143,30 @@ export default {
 					});
 				}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			loadingComponent.close();
 		},
 
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+		async fetchDistributions() {
+			const loadingComponent = this.$buefy.loading.open();
+
+			this.distributionsForFilter = [];
+			await AssistancesService.getListOfProjectAssistances(
+				this.selectedProjectsForFilter.id,
+				1,
+				15,
+				"desc",
+			).then((response) => {
+				response.data.forEach(({ name, id }) => {
+					this.distributionsForFilter.push(
+						{
+							name,
+							id,
+						},
+					);
+				});
+			}).catch((e) => { Toast(e, "is-danger"); });
+
+			loadingComponent.close();
 		},
 
 		goToDetail() {

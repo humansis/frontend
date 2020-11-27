@@ -161,7 +161,6 @@ export default {
 		submitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
-			console.log(this.table.data);
 		},
 
 		removeCommodity(index) {

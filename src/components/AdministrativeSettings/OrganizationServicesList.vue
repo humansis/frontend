@@ -105,26 +105,21 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			const loadingComponent = this.$buefy.loading.open();
 
-				await OrganizationServicesService.getListOfOrganizationServices(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = this.prepareDataForTable(response.data);
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await OrganizationServicesService.getListOfOrganizationServices(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = this.prepareDataForTable(response.data);
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			loadingComponent.close();
 		},
 
 		prepareDataForTable(data) {
@@ -134,12 +129,6 @@ export default {
 				preparedData.push(formModel);
 			});
 			return preparedData;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showDetailWithId(id) {

@@ -90,9 +90,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -143,42 +140,39 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await ProjectsService.getListOfProjects(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(this.table.visibleColumns);
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await ProjectsService.getListOfProjects(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(this.table.visibleColumns);
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
+			this.$store.commit("loading", false);
 
-				await SectorsService.getListOfSectors().then((response) => {
-					this.projectModel.sectors = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await SectorsService.getListOfSectors().then((response) => {
+				this.projectModel.sectors = response.data;
+			}).catch((e) => {
+				Toast(`(Sectors) ${e}`, "is-danger");
+			});
 
-				await HomeService.getListOfDonors().then((response) => {
-					this.projectModel.donors = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await HomeService.getListOfDonors().then((response) => {
+				this.projectModel.donors = response.data;
+			}).catch((e) => {
+				Toast(`(Donors) ${e}`, "is-danger");
+			});
 
-				await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
-					this.projectModel.targetTypes = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
+				this.projectModel.targetTypes = response.data;
+			}).catch((e) => {
+				Toast(`(Target Types) ${e}`, "is-danger");
+			});
 		},
 
 		mapToFormModel({

@@ -60,9 +60,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			projectSummary: null,
 		};
 	},
@@ -77,28 +74,17 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectSummary,
-				});
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.projectSummary,
+			});
 
-				await ProjectsService.getDetailOfProject(
-					this.$route.params.projectId,
-				).then((response) => {
-					this.projectSummary = response.data;
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await ProjectsService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then((response) => {
+				this.projectSummary = response.data;
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			loadingComponent.close();
 		},
 	},
 };
