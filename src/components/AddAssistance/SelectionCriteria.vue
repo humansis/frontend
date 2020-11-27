@@ -1,12 +1,22 @@
 <template>
 	<div class="mb-5">
+		<Modal
+			can-cancel
+			:active="detailModal.isOpened"
+			@close="closeCriteriaGroupModal"
+		>
+			<CriteriaModalList
+				close-button
+				:criteria="criteriaGroupData"
+			/>
+		</Modal>
 		<h2 class="title space-between mb-0">
 			Selection Criteria
 			<b-button
 				class="mb-5"
 				type="is-success"
 				icon-left="plus"
-				@click="addCriteria(undefined)"
+				@click="addCriteria()"
 			>
 				Add Group
 			</b-button>
@@ -27,15 +37,16 @@
 			/>
 		</Modal>
 
-		<div class="mb-2" ref="selectionGroupPanel">
+		<div class="mb-2">
 			<SelectionCriteriaGroup
 				v-for="(group, key) in groups"
 				:data="group.data"
 				:key="key"
 				:group-id="key"
-				:groupName="'Group ' + key"
+				:target-type="targetType"
 				@addCriteria="addCriteria"
-				@removeGroup="removeGroup"
+				@removeGroup="removeCriteriaGroup(key)"
+				@showDetail="showDetail"
 			/>
 
 			<b-notification
@@ -48,10 +59,22 @@
 		<b-field label="Minimum Selection Score">
 			<b-numberinput :value="0" />
 		</b-field>
-		<p>
-			The system will only select beneficiaries/households that have a score higher
-			than the minimum selection score
-		</p>
+		<b-field>
+			<b-button
+				class="is-pulled-right"
+				icon="detail"
+				type="is-link"
+				@click="showDetailWithAllCriteria"
+			>
+				Details
+			</b-button>
+		</b-field>
+		<b-field>
+			<p>
+				The system will only select beneficiaries/households that have a score higher
+				than the minimum selection score
+			</p>
+		</b-field>
 	</div>
 </template>
 
@@ -59,14 +82,20 @@
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
 import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionCriteriaGroup";
+import CriteriaModalList from "@/components/AddAssistance/CriteriaModalList";
 
 export default {
 	name: "SelectionCriteria",
 
 	components: {
+		CriteriaModalList,
 		SelectionCriteriaGroup,
 		Modal,
 		SelectionCriteriaForm,
+	},
+
+	props: {
+		targetType: String,
 	},
 
 	data() {
@@ -83,6 +112,10 @@ export default {
 			},
 			groups: [],
 			maxGroupId: 0,
+			detailModal: {
+				isOpened: false,
+			},
+			criteriaGroupData: [],
 		};
 	},
 
@@ -93,7 +126,6 @@ export default {
 
 	methods: {
 		addCriteria(id) {
-			console.log(id);
 			this.criteriaModal.isOpened = true;
 
 			this.criteriaModel = {
@@ -120,18 +152,24 @@ export default {
 			this.criteriaModal.isOpened = false;
 		},
 
-		removeGroup(groupId) {
-			// TODO I'm working on delete group, but if I delete top group, then deletes with lowest index
-			console.log(groupId);
-			// console.log(this.groups);
-			// const selectedGroup = this.groups.find((item, key) => key === groupId);
-			// console.log(selectedGroup);
-			// const index = selectedGroup.indexOf();
-			// console.log(index);
-			// this.groups = this.groups.filter((value, key) => key !== groupId);
-			this.groups = this.groups.splice(groupId, 1);
-			// const preparedGroups = this.groups.filter((value, key) => key !== groupId);
-			// this.groups = preparedGroups;
+		removeCriteriaGroup(key) {
+			this.groups.splice(key, 1);
+		},
+
+		showDetail(criteria) {
+			// TODO rename attribs
+			console.log(criteria);
+			this.criteriaGroupData = criteria;
+			this.detailModal.isOpened = true;
+		},
+
+		closeCriteriaGroupModal() {
+			this.detailModal.isOpened = false;
+		},
+
+		showDetailWithAllCriteria() {
+			console.log(this.groups);
+			this.showDetail(this.groups);
 		},
 	},
 };

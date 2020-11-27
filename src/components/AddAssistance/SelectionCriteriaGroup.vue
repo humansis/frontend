@@ -21,7 +21,7 @@
 				<div class="content">
 					<Table
 						:paginated="false"
-						:data="table.data"
+						:data="data"
 					>
 						<template v-for="(column, key) in table.columns">
 							<b-table-column
@@ -59,7 +59,12 @@
 				>
 					Add
 				</a>
-				<div class="card-footer-item" />
+				<a
+					class="card-footer-item"
+					@click="showDetail"
+				>
+					0 {{ targetType }}
+				</a>
 				<a
 					class="card-footer-item"
 					@click="removeGroup"
@@ -85,14 +90,19 @@ export default {
 
 	props: {
 		data: Array,
-		groupName: String,
 		groupId: Number,
+		targetType: String,
+	},
+
+	computed: {
+		groupName() {
+			return `Group ${(this.groupId + 1)}`;
+		},
 	},
 
 	data() {
 		return {
 			table: {
-				data: this.data,
 				columns: [
 					{
 						field: "criteriaTarget",
@@ -133,12 +143,12 @@ export default {
 		},
 
 		removeGroup() {
-			this.$emit("removeGroup", this.groupId);
+			this.$emit("removeGroup");
+		},
+
+		showDetail() {
+			this.$emit("showDetail", this.data);
 		},
 	},
 };
 </script>
-
-<style scoped>
-
-</style>
