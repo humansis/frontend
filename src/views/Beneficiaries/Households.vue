@@ -87,9 +87,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			advancedSearchVisible: false,
 			table: {
 				data: [],

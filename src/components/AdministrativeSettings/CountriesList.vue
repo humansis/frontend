@@ -66,9 +66,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
