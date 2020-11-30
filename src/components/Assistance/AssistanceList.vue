@@ -109,6 +109,7 @@ import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import Modal from "@/components/Modal";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistanceList",
@@ -129,9 +130,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			advancedSearchVisible: false,
 			table: {
 				data: [],
@@ -204,33 +202,24 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				// TODO Get list of households by assistance id
-				await BeneficiariesService.getListOfHouseholds(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			// TODO Get list of households by assistance id
+			await BeneficiariesService.getListOfHouseholds(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Households) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		openAddBeneficiaryModal() {

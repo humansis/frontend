@@ -74,6 +74,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Households",
@@ -86,9 +87,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			advancedSearchVisible: false,
 			table: {
 				data: [],
@@ -152,32 +150,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await BeneficiariesService.getListOfHouseholds(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await BeneficiariesService.getListOfHouseholds(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Households) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		goToCreatePage() {
@@ -214,6 +203,8 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
+			}).catch((e) => {
+				Toast(`(Households) ${e}`, "is-danger");
 			});
 		},
 	},

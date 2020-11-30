@@ -87,9 +87,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -127,37 +124,36 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await TranslationService.getTranslations(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await TranslationService.getTranslations(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Translations) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async submit() {
-			const data = this.table.data.filter((item) => item.key);
-			console.log(data);
+			// TODO send data via API service
+			// const data = this.table.data.filter((item) => item.key);
 			await TranslationService.saveTranslation()
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Translation successfully saved", "is-success");
 						this.fetchData();
 					}
+				}).catch((e) => {
+					Toast(`(Translations) ${e}`, "is-danger");
 				});
 		},
 

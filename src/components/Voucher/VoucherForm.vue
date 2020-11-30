@@ -138,6 +138,7 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import ProjectsService from "@/services/ProjectsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VoucherForm",
@@ -227,6 +228,8 @@ export default {
 				"desc",
 			).then((response) => {
 				this.projects = response.data;
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
 			});
 		},
 	},

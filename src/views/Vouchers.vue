@@ -95,11 +95,12 @@ export default {
 			const booklets = [];
 			data.forEach((booklet) => {
 				const preparedBooklet = booklet;
-				ProjectsService.getDetailOfProject(booklet.projectId)
-					.then((response) => {
-						preparedBooklet.project = response.data.name;
-						booklets.push(preparedBooklet);
-					});
+				ProjectsService.getDetailOfProject(booklet.projectId).then((response) => {
+					preparedBooklet.project = response.data.name;
+					booklets.push(preparedBooklet);
+				}).catch((e) => {
+					Toast(`(Project Detail) ${e}`, "is-danger");
+				});
 			});
 			return booklets;
 		},
@@ -193,17 +194,20 @@ export default {
 					Toast("Voucher Successfully Created", "is-success");
 					this.$refs.voucherList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Booklet) ${e}`, "is-danger");
 			});
 		},
 
 		async onRemoveVoucher(id) {
-			await BookletsService.removeBooklet(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast("Voucher successfully removed", "is-success");
-						this.$refs.voucherList.fetchData();
-					}
-				});
+			await BookletsService.removeBooklet(id).then((response) => {
+				if (response.status === 204) {
+					Toast("Voucher successfully removed", "is-success");
+					this.$refs.voucherList.fetchData();
+				}
+			}).catch((e) => {
+				Toast(`(Booklet) ${e}`, "is-danger");
+			});
 		},
 	},
 };

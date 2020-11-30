@@ -52,6 +52,7 @@ import CountriesService from "@/services/CountriesService";
 import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CountriesList",
@@ -65,9 +66,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -107,32 +105,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await CountriesService.getListOfCountries(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await CountriesService.getListOfCountries(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Countries) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		showDetailWithId(id) {

@@ -260,6 +260,8 @@ export default {
 					Toast("Institution Successfully Created", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Institution) ${e}`, "is-danger");
 			});
 		},
 
@@ -269,6 +271,8 @@ export default {
 					Toast("Institution Successfully Updated", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Institution) ${e}`, "is-danger");
 			});
 		},
 
@@ -278,6 +282,8 @@ export default {
 					Toast("Institution Successfully Deleted", "is-success");
 					this.$refs.institutionList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Institution) ${e}`, "is-danger");
 			});
 		},
 	},

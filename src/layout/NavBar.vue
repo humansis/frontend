@@ -70,6 +70,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "NavBar",
@@ -93,6 +94,8 @@ export default {
 				.then((response) => {
 					this.countries = response.data;
 					this.updateCountry(this.countries);
+				}).catch((e) => {
+					Toast(`(Countries) ${e}`, "is-danger");
 				});
 		},
 	},

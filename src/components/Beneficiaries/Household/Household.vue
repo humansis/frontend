@@ -124,10 +124,10 @@
 					/>
 				</b-field>
 				<b-field
-					label="Support Organisation"
+					label="Support Organization"
 				>
 					<b-input
-						v-model="formModel.externalSupport.supportOrganisation"
+						v-model="formModel.externalSupport.supportOrganization"
 					/>
 				</b-field>
 			</div>
@@ -224,7 +224,7 @@ export default {
 				externalSupport: {
 					externalSupportReceivedType: "",
 					supportDateReceived: new Date(),
-					supportOrganisation: "",
+					supportOrganization: "",
 				},
 				countrySpecificOptions: {
 					idPoorNo: "",

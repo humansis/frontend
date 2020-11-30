@@ -65,6 +65,7 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "UsersList",
@@ -77,9 +78,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -122,32 +120,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await UsersService.getListOfUsers(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await UsersService.getListOfUsers(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Users) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		showEdit(id) {

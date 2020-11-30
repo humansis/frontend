@@ -63,6 +63,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import AssistancesService from "@/services/AssistancesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistancesList",
@@ -75,9 +76,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -128,34 +126,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await AssistancesService.getListOfProjectAssistances(
-					this.$route.params.projectId,
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-					false,
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await AssistancesService.getListOfProjectAssistances(
+				this.$route.params.projectId,
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+				false,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => { Toast(e, "is-danger"); });
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		goToAddAssistance() {

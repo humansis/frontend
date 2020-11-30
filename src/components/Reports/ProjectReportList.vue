@@ -53,6 +53,7 @@ import PeriodFilter from "@/components/Reports/PeriodFilter";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectReportList",
@@ -65,9 +66,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -97,58 +95,46 @@ export default {
 
 	methods: {
 		async fetchProjectReports() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await ProjectReportService.getListOfProjectReports(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await ProjectReportService.getListOfProjectReports(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Project Reports) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async fetchProjects() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await ProjectsService.getListOfProjects(
-					1,
-					15,
-					"desc",
-				).then((response) => {
-					response.data.forEach(({ name, id }) => {
-						this.projectsForFilter.push(
-							{
-								name,
-								id,
-							},
-						);
-					});
+			await ProjectsService.getListOfProjects(
+				1,
+				15,
+				"desc",
+			).then((response) => {
+				response.data.forEach(({ name, id }) => {
+					this.projectsForFilter.push(
+						{
+							name,
+							id,
+						},
+					);
 				});
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		goToDetail() {

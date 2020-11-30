@@ -120,6 +120,7 @@
 import { required } from "vuelidate/lib/validators";
 import ProjectsService from "@/services/ProjectsService";
 import Validation from "@/mixins/validation";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "OrganizationServiceForm",
@@ -179,6 +180,8 @@ export default {
 				"desc",
 			).then((response) => {
 				this.projects = response.data;
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
 			});
 		},
 	},

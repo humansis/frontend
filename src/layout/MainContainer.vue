@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<b-loading v-model="isLoading" />
 		<SideMenu />
 		<section class="main-content is-fullheight">
 			<div class="container">
@@ -13,6 +14,7 @@
 <script>
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
+import { mapState } from "vuex";
 
 export default {
 	name: "MainContainer",
@@ -20,6 +22,10 @@ export default {
 	components: {
 		SideMenu,
 		NavBar,
+	},
+
+	computed: {
+		...mapState(["isLoading"]),
 	},
 };
 </script>

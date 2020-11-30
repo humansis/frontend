@@ -59,6 +59,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VoucherList",
@@ -71,9 +72,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -136,28 +134,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await BookletsService.getListOfBooklets(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.getProjectNameForBooklets(response.data).then((data) => {
-						this.table.data = data;
-						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
-					});
+			await BookletsService.getListOfBooklets(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.getProjectNameForBooklets(response.data).then((data) => {
+					this.table.data = data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
 				});
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async getProjectNameForBooklets(data) {
@@ -168,15 +161,11 @@ export default {
 					.then((response) => {
 						preparedBooklet.project = response.data.name;
 						booklets.push(preparedBooklet);
+					}).catch((e) => {
+						Toast(`(Project Detail) ${e}`, "is-danger");
 					});
 			});
 			return booklets;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showDetailWithId(id) {

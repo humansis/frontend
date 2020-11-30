@@ -205,6 +205,8 @@ export default {
 					Toast("Project Successfully Created", "is-success");
 					this.$refs.projectList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Project) ${e}`, "is-danger");
 			});
 		},
 
@@ -214,6 +216,8 @@ export default {
 					Toast("Project Successfully Updated", "is-success");
 					this.$refs.projectList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Project) ${e}`, "is-danger");
 			});
 		},
 
@@ -223,6 +227,8 @@ export default {
 					Toast("Project Successfully Deleted", "is-success");
 					this.$refs.projectList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Project) ${e}`, "is-danger");
 			});
 		},
 	},

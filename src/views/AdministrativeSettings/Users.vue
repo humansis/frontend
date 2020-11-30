@@ -207,6 +207,8 @@ export default {
 					Toast("User Successfully Created", "is-success");
 					this.$refs.usersList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(User) ${e}`, "is-danger");
 			});
 		},
 
@@ -216,6 +218,8 @@ export default {
 					Toast("User Successfully Updated", "is-success");
 					this.$refs.usersList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(User) ${e}`, "is-danger");
 			});
 		},
 
@@ -225,6 +229,8 @@ export default {
 					Toast("User Successfully Deleted", "is-success");
 					this.$refs.usersList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(User) ${e}`, "is-danger");
 			});
 		},
 	},

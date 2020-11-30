@@ -63,6 +63,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VendorsList",
@@ -75,9 +76,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -128,32 +126,30 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await VendorsService.getListOfVendors(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.buildLocationsForVendors(response.data).then((result) => {
-						this.table.data = result;
-						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
-					});
+			await VendorsService.getListOfVendors(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.buildLocationsForVendors(response.data).then((result) => {
+					this.table.data = result;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
 				});
+			}).catch((e) => {
+				Toast(`(Vendors) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async buildLocationsForVendors(data) {
 			const preparedVendors = [];
+
 			data.forEach((vendor) => {
 				const preparedVendor = vendor;
 				if (vendor.adm4Id) {
@@ -161,34 +157,36 @@ export default {
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
+						}).catch((e) => {
+							Toast(`(Adm4) ${e}`, "is-danger");
 						});
 				} else if (vendor.adm3Id) {
 					LocationsService.getDetailOfAdm3(vendor.adm3Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
+						}).catch((e) => {
+							Toast(`(Adm3) ${e}`, "is-danger");
 						});
 				} else if (vendor.adm2Id) {
 					LocationsService.getDetailOfAdm2(vendor.adm2Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
+						}).catch((e) => {
+							Toast(`(Adm2) ${e}`, "is-danger");
 						});
 				} else if (vendor.adm1Id) {
 					LocationsService.getDetailOfAdm1(vendor.adm1Id)
 						.then((response) => {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
+						}).catch((e) => {
+							Toast(`(Adm1) ${e}`, "is-danger");
 						});
 				}
 			});
 			return preparedVendors;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showEdit(id) {

@@ -15,15 +15,13 @@
 <script>
 import { normalizeText } from "@/utils/datagrid";
 import HomeService from "@/services/HomeService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Summary",
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			summary: [],
 		};
 	},
@@ -42,28 +40,19 @@ export default {
 		},
 
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.summary,
-				});
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.summary,
+			});
 
-				await HomeService.getSummariesForHomePage(
-					"total_registrations",
-				).then((response) => {
-					this.summary = response.data;
-				});
+			await HomeService.getSummariesForHomePage(
+				"total_registrations",
+			).then((response) => {
+				this.summary = response.data;
+			}).catch((e) => {
+				Toast(`(Summaries) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			loadingComponent.close();
 		},
 	},
 };

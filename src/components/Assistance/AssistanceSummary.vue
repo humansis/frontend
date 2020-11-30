@@ -54,9 +54,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			assistanceSummary: null,
 		};
 	},
@@ -71,24 +68,13 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.assistanceSummary,
-				});
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.assistanceSummary,
+			});
 
-				// TODO Add service: Get single assistance
+			// TODO Add service: Get single assistance
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			loadingComponent.close();
 		},
 	},
 };

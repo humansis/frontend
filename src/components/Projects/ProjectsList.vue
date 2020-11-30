@@ -73,6 +73,7 @@ import SectorsService from "@/services/SectorsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectsList",
@@ -89,9 +90,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -142,42 +140,39 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await ProjectsService.getListOfProjects(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(this.table.visibleColumns);
-				});
+			await ProjectsService.getListOfProjects(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(this.table.visibleColumns);
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
 
-				await SectorsService.getListOfSectors().then((response) => {
-					this.projectModel.sectors = response.data;
-				});
+			this.$store.commit("loading", false);
 
-				await HomeService.getListOfDonors().then((response) => {
-					this.projectModel.donors = response.data;
-				});
+			await SectorsService.getListOfSectors().then((response) => {
+				this.projectModel.sectors = response.data;
+			}).catch((e) => {
+				Toast(`(Sectors) ${e}`, "is-danger");
+			});
 
-				await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
-					this.projectModel.targetTypes = response.data;
-				});
+			await HomeService.getListOfDonors().then((response) => {
+				this.projectModel.donors = response.data;
+			}).catch((e) => {
+				Toast(`(Donors) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
+				this.projectModel.targetTypes = response.data;
+			}).catch((e) => {
+				Toast(`(Target Types) ${e}`, "is-danger");
+			});
 		},
 
 		mapToFormModel({

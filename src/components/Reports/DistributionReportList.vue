@@ -63,6 +63,7 @@ import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
 import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DistributionReportList",
@@ -75,9 +76,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -109,88 +107,72 @@ export default {
 
 	methods: {
 		async fetchDistributionReports() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await DistributionReportService.getListOfDistributionReports(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await DistributionReportService.getListOfDistributionReports(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Distribution Reports) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async fetchProjects() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await ProjectsService.getListOfProjects(
-					1,
-					15,
-					"desc",
-				)
-					.then((response) => {
-						response.data.forEach(({ name, id }) => {
-							this.projectsForFilter.push(
-								{
-									name,
-									id,
-								},
-							);
-						});
+			await ProjectsService.getListOfProjects(
+				1,
+				15,
+				"desc",
+			)
+				.then((response) => {
+					response.data.forEach(({ name, id }) => {
+						this.projectsForFilter.push(
+							{
+								name,
+								id,
+							},
+						);
 					});
+				}).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		async fetchDistributions() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				this.distributionsForFilter = [];
-				await AssistancesService.getListOfProjectAssistances(
-					this.selectedProjectsForFilter.id,
-					1,
-					15,
-					"desc",
-				)
-					.then((response) => {
-						response.data.forEach(({ name, id }) => {
-							this.distributionsForFilter.push(
-								{
-									name,
-									id,
-								},
-							);
-						});
-					});
+			this.distributionsForFilter = [];
+			await AssistancesService.getListOfProjectAssistances(
+				this.selectedProjectsForFilter.id,
+				1,
+				15,
+				"desc",
+			).then((response) => {
+				response.data.forEach(({ name, id }) => {
+					this.distributionsForFilter.push(
+						{
+							name,
+							id,
+						},
+					);
+				});
+			}).catch((e) => {
+				Toast(`(Project Assistances) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			this.$store.commit("loading", false);
 		},
 
 		goToDetail() {

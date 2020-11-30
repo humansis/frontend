@@ -56,6 +56,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "OrganizationServicesList",
@@ -67,9 +68,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -104,26 +102,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await OrganizationServicesService.getListOfOrganizationServices(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = this.prepareDataForTable(response.data);
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await OrganizationServicesService.getListOfOrganizationServices(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = this.prepareDataForTable(response.data);
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Organizations) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
 		prepareDataForTable(data) {
@@ -133,12 +128,6 @@ export default {
 				preparedData.push(formModel);
 			});
 			return preparedData;
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
 		},
 
 		showDetailWithId(id) {

@@ -7,6 +7,7 @@ export const getResponseJSON = async (response) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
+	const notFound = response.status === 404;
 	const noContent = response.status === 204;
 
 	if (noContent) {
@@ -22,6 +23,10 @@ export const getResponseJSON = async (response) => {
 		const redirect = Vue.$router.currentRoute.query?.redirect || Vue.$router.currentRoute.fullPath;
 		Vue.$router.push({ name: "Logout", query: { redirect } });
 		throw new Error("You need to login to continue");
+	}
+
+	if (notFound) {
+		throw new Error(response.statusText);
 	}
 
 	const data = await response.json();

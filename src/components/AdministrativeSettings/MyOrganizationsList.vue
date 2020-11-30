@@ -49,6 +49,7 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "MyOrganizationsList",
@@ -61,9 +62,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -114,33 +112,25 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
+			this.$store.commit("loading", true);
 
-				await MyOrganizationsService.getListOfMyOrganizations(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-				).then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				});
+			await MyOrganizationsService.getListOfMyOrganizations(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Organizations) ${e}`, "is-danger");
+			});
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
-		},
 		showDetailWithId(id) {
 			const myOrganization = this.table.data.find((item) => item.id === id);
 			this.showDetail(myOrganization);
