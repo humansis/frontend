@@ -8,6 +8,8 @@
 			:paginated="isPaginated"
 			striped
 			hoverable
+			scrollable
+			narrowed
 			backend-pagination
 			default-sort="id"
 			aria-next-label="Next page"
