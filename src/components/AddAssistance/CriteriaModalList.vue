@@ -1,16 +1,14 @@
 <!-- TODO implement -->
 <template>
-	<div>
+	<section class="modal-card-body">
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<b-field class="column is-two-fifths">
+				<b-input
+					placeholder="Search..."
+					type="search"
+					icon="search"
+				/>
+			</b-field>
 		</div>
 		<Table
 			:data="table.data"
@@ -31,7 +29,7 @@
 				</b-table-column>
 			</template>
 		</Table>
-	</div>
+	</section>
 </template>
 
 <script>

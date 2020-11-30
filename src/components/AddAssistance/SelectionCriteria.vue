@@ -16,7 +16,7 @@
 				class="mb-5"
 				type="is-success"
 				icon-left="plus"
-				@click="addCriteria"
+				@click="addCriteria()"
 			>
 				Add Group
 			</b-button>
@@ -168,7 +168,6 @@ export default {
 		},
 
 		showDetailWithAllCriteria() {
-			console.log(this.groups);
 			this.showDetail(this.groups);
 		},
 	},
