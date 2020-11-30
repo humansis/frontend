@@ -5,7 +5,10 @@
 				<NewAssistanceForm @updatedData="fetchNewAssistanceForm" />
 			</div>
 			<div class="column is-three-fifths">
-				<SelectionCriteria @updatedData="fetchSelectionCriteria" />
+				<SelectionCriteria
+					:target-type="targetType"
+					@updatedData="fetchSelectionCriteria"
+				/>
 				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
 			</div>
 		</div>
@@ -29,6 +32,15 @@ export default {
 		NewAssistanceForm,
 		SelectionCriteria,
 		DistributedCommodity,
+	},
+
+	computed: {
+		targetType() {
+			if (this.newAssistanceForm === null) {
+				return "";
+			}
+			return this.newAssistanceForm.target;
+		},
 	},
 
 	data() {

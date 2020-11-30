@@ -1,5 +1,15 @@
 <template>
 	<div class="mb-5">
+		<Modal
+			can-cancel
+			:active="detailModal.isOpened"
+			@close="closeCriteriaGroupModal"
+		>
+			<CriteriaModalList
+				close-button
+				:criteria="criteriaGroupData"
+			/>
+		</Modal>
 		<h2 class="title space-between mb-0">
 			Selection Criteria
 			<b-button
@@ -8,7 +18,7 @@
 				icon-left="plus"
 				@click="addCriteria"
 			>
-				Add
+				Add Group
 			</b-button>
 		</h2>
 		<Modal
@@ -19,6 +29,7 @@
 		>
 			<SelectionCriteriaForm
 				close-button
+				ref="criteriaForm"
 				submit-button-label="Create"
 				:formModel="criteriaModel"
 				@formSubmitted="submitCriteriaForm"
@@ -27,39 +38,19 @@
 		</Modal>
 
 		<div class="mb-2">
-			<Table
-				v-if="table.data.length"
-				:data="table.data"
-			>
-				<template v-for="(column, key) in table.columns">
-					<b-table-column
-						v-bind="column"
-						:key="key"
-					>
-						<template v-slot="props">
-							<div v-if="column.field === 'donorIds'">
-								{{ props.row[column.field].length }}
-							</div>
-							<div v-else>
-								{{ props.row[column.field] }}
-							</div>
-						</template>
-					</b-table-column>
-				</template>
+			<SelectionCriteriaGroup
+				v-for="(group, key) in groups"
+				:data="group.data"
+				:key="key"
+				:group-id="key"
+				:target-type="targetType"
+				@addCriteria="addCriteria"
+				@removeGroup="removeCriteriaGroup(key)"
+				@showDetail="showDetail"
+			/>
 
-				<b-table-column
-					v-slot="props"
-					label="Actions"
-				>
-					<ActionButton
-						icon="trash"
-						type="is-danger"
-						@click.native="removeCriteria(props.index)"
-					/>
-				</b-table-column>
-			</Table>
 			<b-notification
-				v-else
+				v-if="!groups.length"
 				type="is-light"
 			>
 				No data
@@ -68,27 +59,43 @@
 		<b-field label="Minimum Selection Score">
 			<b-numberinput :value="0" />
 		</b-field>
-		<p>
-			The system will only select beneficiaries/households that have a score higher
-			than the minimum selection score
-		</p>
+		<b-field>
+			<b-button
+				class="is-pulled-right"
+				icon="detail"
+				type="is-link"
+				@click="showDetailWithAllCriteria"
+			>
+				Details
+			</b-button>
+		</b-field>
+		<b-field>
+			<p>
+				The system will only select beneficiaries/households that have a score higher
+				than the minimum selection score
+			</p>
+		</b-field>
 	</div>
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
-import ActionButton from "@/components/ActionButton";
+import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionCriteriaGroup";
+import CriteriaModalList from "@/components/AddAssistance/CriteriaModalList";
 
 export default {
 	name: "SelectionCriteria",
 
 	components: {
+		CriteriaModalList,
+		SelectionCriteriaGroup,
 		Modal,
 		SelectionCriteriaForm,
-		Table,
-		ActionButton,
+	},
+
+	props: {
+		targetType: String,
 	},
 
 	data() {
@@ -103,45 +110,22 @@ export default {
 				value: null,
 				scoreWeight: 1,
 			},
-			table: {
-				data: [],
-				columns: [
-					{
-						field: "criteriaTarget",
-						label: "Criteria Target",
-					},
-					{
-						field: "criteria",
-						label: "Criteria",
-					},
-					{
-						field: "condition",
-						label: "Condition",
-					},
-					{
-						field: "value",
-						label: "Value",
-					},
-					{
-						field: "scoreWeight",
-						label: "Score Weight",
-					},
-					{
-						field: "action",
-						label: "Action",
-					},
-				],
+			groups: [],
+			maxGroupId: 0,
+			detailModal: {
+				isOpened: false,
 			},
+			criteriaGroupData: [],
 		};
 	},
 
 	updated() {
 		// TODO Emit only if table data length > 0
-		this.$emit("updatedData", this.table.data);
+		this.$emit("updatedData", this.groups);
 	},
 
 	methods: {
-		addCriteria() {
+		addCriteria(id) {
 			this.criteriaModal.isOpened = true;
 
 			this.criteriaModel = {
@@ -150,6 +134,7 @@ export default {
 				condition: null,
 				value: null,
 				scoreWeight: 1,
+				groupId: id,
 			};
 		},
 
@@ -158,12 +143,33 @@ export default {
 		},
 
 		submitCriteriaForm(criteriaForm) {
-			this.table.data.push(criteriaForm);
+			if (criteriaForm.groupId !== undefined) {
+				this.groups[criteriaForm.groupId].data.push(criteriaForm);
+			} else {
+				const index = this.groups.push({ data: [] }) - 1;
+				this.groups[index].data.push(criteriaForm);
+			}
 			this.criteriaModal.isOpened = false;
 		},
 
-		removeCriteria(index) {
-			this.table.data.splice(index, 1);
+		removeCriteriaGroup(key) {
+			this.groups.splice(key, 1);
+		},
+
+		showDetail(criteria) {
+			// TODO rename attribs
+			console.log(criteria);
+			this.criteriaGroupData = criteria;
+			this.detailModal.isOpened = true;
+		},
+
+		closeCriteriaGroupModal() {
+			this.detailModal.isOpened = false;
+		},
+
+		showDetailWithAllCriteria() {
+			console.log(this.groups);
+			this.showDetail(this.groups);
 		},
 	},
 };
