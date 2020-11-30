@@ -91,6 +91,14 @@ const routes = [
 						},
 					},
 					{
+						path: "import-household",
+						name: "ImportHousehold",
+						component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+						meta: {
+							breadcrumb: "Import Household",
+						},
+					},
+					{
 						path: "edit-household/:householdId",
 						name: "EditHousehold",
 						component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),

@@ -1,15 +1,41 @@
 <template>
 	<div>
 		<h2 class="title">Households</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="goToCreatePage"
-		>
-			Create
-		</b-button>
+		<b-dropdown>
+			<b-button
+				class="mb-5"
+				size="is-medium"
+				type="is-danger"
+				icon-left="plus"
+				slot="trigger"
+			>
+				<span>Create</span>
+			</b-button>
+			<b-dropdown-item
+				:value="false"
+				@click="goToImportPage"
+			>
+				<div class="media">
+					<b-icon class="media-left" icon="upload" />
+					<div class="media-content">
+						<h2>Import</h2>
+						<small>Import from file</small>
+					</div>
+				</div>
+			</b-dropdown-item>
+			<b-dropdown-item
+				:value="false"
+				@click="goToCreatePage"
+			>
+				<div class="media">
+					<b-icon class="media-left" icon="user-plus" />
+					<div class="media-content">
+						<h2>Add Beneficiary</h2>
+						<small>Create household form</small>
+					</div>
+				</div>
+			</b-dropdown-item>
+		</b-dropdown>
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -171,6 +197,10 @@ export default {
 
 		goToCreatePage() {
 			this.$router.push({ name: "AddHousehold" });
+		},
+
+		goToImportPage() {
+			this.$router.push({ name: "ImportHousehold" });
 		},
 
 		normalizeText(text) {
