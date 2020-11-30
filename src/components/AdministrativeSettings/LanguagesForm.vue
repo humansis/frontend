@@ -63,12 +63,8 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
-			published: {
-				required,
-			},
+			name: { required },
+			published: { required },
 		},
 	},
 

@@ -34,6 +34,8 @@
 						<MultiSelect
 							v-model="formModel.personalInformation.gender"
 							searchable
+							label="value"
+							track-by="code"
 							:options="options.gender"
 						/>
 					</b-field>
@@ -160,12 +162,19 @@
 </template>
 
 <script>
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "HouseholdForm",
 
+	mixins: [Validation],
+
 	props: {
 		showTypeOfBeneficiary: Boolean,
+	},
+
+	validations: {
+		formModel: {},
 	},
 
 	data() {
@@ -210,7 +219,16 @@ export default {
 				typeOfBeneficiary: "",
 			},
 			options: {
-				gender: ["Male", "Female"],
+				gender: [
+					{
+						code: "M",
+						value: "Male",
+					},
+					{
+						code: "F",
+						value: "Female",
+					},
+				],
 				idType: [
 					"Passport", "National ID", "Driver's License", "Family Registration",
 					"Birth Certificate", "Other",
@@ -233,6 +251,13 @@ export default {
 				],
 			},
 		};
+	},
+
+	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
+		},
 	},
 };
 </script>

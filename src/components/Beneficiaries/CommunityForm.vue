@@ -193,44 +193,18 @@ export default {
 
 	validations: {
 		formModel: {
-			longitude: {
-				required,
-			},
-			latitude: {
-				required,
-			},
-			contactGivenName: {
-				required,
-			},
-			contactFamilyName: {
-				required,
-			},
-			phonePrefix: {
-				required,
-			},
-			phoneNumber: {
-				required,
-				numeric,
-			},
-			addressStreet: {
-				required,
-			},
-			addressNumber: {
-				required,
-			},
-			addressPostCode: {
-				required,
-			},
-			nationalCardNumber: {
-				required,
-				numeric,
-			},
-			nationalCardType: {
-				required,
-			},
-			adm1Id: {
-				required,
-			},
+			longitude: { required },
+			latitude: { required },
+			contactGivenName: { required },
+			contactFamilyName: { required },
+			phonePrefix: { required },
+			phoneNumber: { required, numeric },
+			addressStreet: { required },
+			addressNumber: { required },
+			addressPostCode: { required },
+			nationalCardNumber: { required, numeric },
+			nationalCardType: { required },
+			adm1Id: { required },
 			adm2Id: {},
 			adm3Id: {},
 			adm4Id: {},

@@ -45,9 +45,7 @@
 		<div class="columns is-multiline">
 			<div class="column is-one-third">
 				<h4 class="title is-4">Livelihood</h4>
-				<b-field
-					label="Livelihood"
-				>
+				<b-field label="Livelihood">
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
@@ -55,26 +53,22 @@
 						:options="options.livelihood"
 					/>
 				</b-field>
-				<b-field
-					label="Income Level"
-				>
+				<b-field label="Income Level">
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
 						searchable
+						label="value"
+						track-by="id"
 						placeholder="Income Level"
 						:options="options.incomeLevel"
 					/>
 				</b-field>
-				<b-field
-					label="Debt Level"
-				>
+				<b-field label="Debt Level">
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
 					/>
 				</b-field>
-				<b-field
-					label="Assets"
-				>
+				<b-field label="Assets">
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
 						searchable
@@ -83,16 +77,12 @@
 						:options="options.assets"
 					/>
 				</b-field>
-				<b-field
-					label="Food Consumption Score"
-				>
+				<b-field label="Food Consumption Score">
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
 					/>
 				</b-field>
-				<b-field
-					label="Coping Strategies Index"
-				>
+				<b-field label="Coping Strategies Index">
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
 					/>
@@ -100,20 +90,18 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">External Support</h4>
-				<b-field
-					label="External Support Received Type"
-				>
+				<b-field label="External Support Received Type">
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
 						searchable
 						multiple
+						label="value"
+						track-by="id"
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
 					/>
 				</b-field>
-				<b-field
-					label="Support Date Received"
-				>
+				<b-field label="Support Date Received">
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
@@ -123,9 +111,7 @@
 						trap-focus
 					/>
 				</b-field>
-				<b-field
-					label="Support Organization"
-				>
+				<b-field label="Support Organization">
 					<b-input
 						v-model="formModel.externalSupport.supportOrganization"
 					/>
@@ -133,23 +119,17 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
-				<b-field
-					label="ID Poor No"
-				>
+				<b-field label="ID Poor No">
 					<b-input
 						v-model="formModel.countrySpecificOptions.idPoorNo"
 					/>
 				</b-field>
-				<b-field
-					label="Equity Card No"
-				>
+				<b-field label="Equity Card No">
 					<b-input
 						v-model="formModel.countrySpecificOptions.equityCardNo"
 					/>
 				</b-field>
-				<b-field
-					label="Fieldes"
-				>
+				<b-field label="Fieldes">
 					<b-input
 						v-model="formModel.countrySpecificOptions.fieldes"
 					/>
@@ -157,9 +137,7 @@
 			</div>
 		</div>
 		<h4 class="title is-4">Household Status</h4>
-		<b-field
-			label="Shelter Type"
-		>
+		<b-field label="Shelter Type">
 			<MultiSelect
 				v-model="formModel.shelterType"
 				searchable
@@ -180,6 +158,7 @@
 <script>
 import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
+import Validation from "@/mixins/validation";
 
 const locationModel = {
 	adm1Id: "",
@@ -198,9 +177,15 @@ const locationModel = {
 export default {
 	name: "Household",
 
+	mixins: [Validation],
+
 	components: {
 		LocationForm,
 		TypeOfLocationForm,
+	},
+
+	validations: {
+		formModel: {},
 	},
 
 	data() {
@@ -240,19 +225,80 @@ export default {
 					"Government", "Home Duties", "Trading", "Own Business", "Textiles",
 				],
 				incomeLevel: [
-					"Very Low (Income < 100 USD)", "Low (100 USD < Income < 100 USD)",
-					"Average (150 USD < Income < 250 USD)",
-					"High (250 USD < Income < 300 USD)",
-					"Very High (300 USD < Income)",
+					{
+						code: 0,
+						value: "Very Low (Income < 100 USD)",
+					},
+					{
+						code: 1,
+						value: "Low (100 USD < Income < 100 USD)",
+					},
+					{
+						code: 2,
+						value: "Average (150 USD < Income < 250 USD)",
+					},
+					{
+						code: 3,
+						value: "High (250 USD < Income < 300 USD)",
+					},
+					{
+						code: 4,
+						value: "Very High (300 USD < Income)",
+					},
 				],
 				assets: [
 					"AC", "Agricultural Land", "Car", "Flatscreen TV", "Livestock",
 					"Motorbike", "Washing Machine",
 				],
 				externalSupportReceivedType: [
-					"MPCA", "Cash For Work", "Food Kit", "Food Voucher", "Hygiene Kit",
-					"Shelter Kit", "Shelter Reconstruction Support", "Non Food Items",
-					"Livelihoods Support", "Vocational Training", "None", "Other",
+					{
+						code: 0,
+						value: "MPCA",
+					},
+					{
+						code: 1,
+						value: "Cash For Work",
+					},
+					{
+						code: 2,
+						value: "Food Kit",
+					},
+					{
+						code: 3,
+						value: "Food Voucher",
+					},
+					{
+						code: 4,
+						value: "Hygiene Kit",
+					},
+					{
+						code: 5,
+						value: "Shelter Kit",
+					},
+					{
+						code: 6,
+						value: "Shelter Reconstruction Support",
+					},
+					{
+						code: 7,
+						value: "Non Food Items",
+					},
+					{
+						code: 8,
+						value: "Livelihoods Support",
+					},
+					{
+						code: 9,
+						value: "Vocational Training",
+					},
+					{
+						code: 10,
+						value: "None",
+					},
+					{
+						code: 11,
+						value: "Other",
+					},
 				],
 				shelterType: [
 					"Tent", "Makeshift Shelter", "Transitional Shelter",
@@ -265,6 +311,13 @@ export default {
 				],
 			},
 		};
+	},
+
+	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
+		},
 	},
 };
 </script>

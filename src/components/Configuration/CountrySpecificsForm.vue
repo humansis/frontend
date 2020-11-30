@@ -114,15 +114,9 @@ export default {
 
 	validations: {
 		formModel: {
-			field: {
-				required,
-			},
-			type: {
-				required,
-			},
-			target: {
-				required,
-			},
+			field: { required },
+			type: { required },
+			target: { required },
 		},
 	},
 

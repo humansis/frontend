@@ -142,16 +142,12 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
+			name: { required },
 			logo: {},
 			font: {},
 			primaryColor: {},
 			secondaryColor: {},
-			footerContent: {
-				required,
-			},
+			footerContent: { required },
 		},
 	},
 

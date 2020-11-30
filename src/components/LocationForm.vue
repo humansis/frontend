@@ -89,9 +89,7 @@ export default {
 
 	validations: {
 		formModel: {
-			adm1Id: {
-				required,
-			},
+			adm1Id: { required },
 			adm2Id: {},
 			adm3Id: {},
 			adm4Id: {},
