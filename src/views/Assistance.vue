@@ -1,52 +1,79 @@
 <template>
 	<div>
 		<AssistanceSummary />
-		<b-tabs v-model="selectedTabIndex" size="is-medium">
-			<b-tab-item
+		<b-steps
+			v-model="activeStep"
+			animated
+			rounded
+			has-navigation
+		>
+			<b-step-item
+				clickable
+				step="1"
 				label="Assistance List Of Beneficiaries"
-				icon="list"
 			>
 				<AssistanceList
 					export-button
 					add-button
 					:change-button="false"
 				/>
-			</b-tab-item>
-			<b-tab-item
+			</b-step-item>
+
+			<b-step-item
+				clickable
+				step="2"
 				label="Import & Compare"
-				icon="file-import"
 			>
 				<ImportAndCompare />
-			</b-tab-item>
-			<b-tab-item
+			</b-step-item>
+
+			<b-step-item
+				clickable
+				step="3"
 				label="Export Random Sample"
-				icon="file-export"
 			>
 				<ExportRandomSample />
-			</b-tab-item>
-			<b-tab-item
-				label="Validate & Lock"
-				icon="lock"
+			</b-step-item>
+
+			<b-step-item
+				clickable
+				step="4"
+				label="ValidateAndLock"
 			>
 				<ValidateAndLock />
-			</b-tab-item>
-		</b-tabs>
-		<div class="has-text-right">
-			<b-button
-				v-if="selectedTabIndex !== 3"
-				type="is-success"
-				@click="goToNextTab"
+			</b-step-item>
+
+			<template
+				v-if="true"
+				slot="navigation"
+				slot-scope="{previous, next}"
 			>
-				Next
-			</b-button>
-			<b-button
-				v-if="selectedTabIndex === 3"
-				icon-left="lock"
-				type="is-danger"
-			>
-				Validate
-			</b-button>
-		</div>
+				<div class="buttons flex-end">
+					<b-button
+						type="is-danger is-light"
+						:disabled="previous.disabled"
+						@click.prevent="previous.action"
+					>
+						Back
+					</b-button>
+					<b-button
+						type="is-success"
+						:disabled="next.disabled"
+						@click.prevent="nextPage(next)"
+					>
+						Next
+					</b-button>
+					<b-button
+						v-show="activeStep === 3"
+						type="is-danger"
+						icon-left="lock"
+						@click.prevent="validate"
+					>
+						Validate
+					</b-button>
+				</div>
+			</template>
+		</b-steps>
 	</div>
 </template>
 
@@ -70,15 +97,18 @@ export default {
 
 	data() {
 		return {
-			selectedTabIndex: 0,
+			activeStep: 0,
 		};
 	},
 
 	methods: {
-		goToNextTab() {
-			if (this.selectedTabIndex <= 3) {
-				this.selectedTabIndex += 1;
-			}
+		nextPage(next) {
+			// TODO checkForms
+			next.action();
+		},
+
+		validate() {
+			// TODO implement validate and lock method
 		},
 	},
 };
