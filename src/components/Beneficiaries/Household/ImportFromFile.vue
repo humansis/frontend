@@ -126,10 +126,7 @@ export default {
 
 	computed: {
 		uploadText() {
-			if (!this.dropFile) {
-				return "Drop your files here or click to upload";
-			}
-			return this.dropFile.name;
+			return !this.dropFile ? "Drop your files here or click to upload" : this.dropFile.name;
 		},
 	},
 
@@ -159,8 +156,7 @@ export default {
 
 		importFile() {
 			if (!this.dropFile || !this.selectedProject) {
-				const message = "You must insert file for import and select project before uploading";
-				Toast(message, "is-danger");
+				Toast("You must insert file for import and select project before uploading", "is-danger");
 			}
 			// TODO route to next page and prepare file for show
 		},
