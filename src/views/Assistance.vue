@@ -38,7 +38,7 @@
 			<b-step-item
 				clickable
 				step="4"
-				label="ValidateAndLock"
+				label="Validate And Lock"
 			>
 				<ValidateAndLock />
 			</b-step-item>
