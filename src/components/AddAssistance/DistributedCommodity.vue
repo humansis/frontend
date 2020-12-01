@@ -136,7 +136,9 @@ export default {
 
 	updated() {
 		// TODO Emit only if form is validated else emit false
-		this.$emit("updatedData", this.formModel);
+		if (this.table.data.length > 0) {
+			this.$emit("updatedData", this.table.data);
+		}
 	},
 
 	methods: {

@@ -105,6 +105,7 @@ export default {
 	methods: {
 		submitLocationForm() {
 			this.$v.$touch();
+			return this.$v.$invalid;
 		},
 
 		onProvinceSelect({ id }) {

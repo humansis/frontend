@@ -57,7 +57,7 @@
 			</b-notification>
 		</div>
 		<b-field label="Minimum Selection Score">
-			<b-numberinput :value="0" />
+			<b-numberinput v-model="minimumSelectionScore" />
 		</b-field>
 		<b-field>
 			<b-button
@@ -116,12 +116,15 @@ export default {
 				isOpened: false,
 			},
 			criteriaGroupData: [],
+			minimumSelectionScore: 0,
 		};
 	},
 
 	updated() {
 		// TODO Emit only if table data length > 0
-		this.$emit("updatedData", this.groups);
+		if (this.groups.length > 0) {
+			this.$emit("updatedData", this.groups, this.minimumSelectionScore);
+		}
 	},
 
 	methods: {
