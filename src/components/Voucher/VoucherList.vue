@@ -78,31 +78,24 @@ export default {
 				visibleColumns: [
 					{
 						key: "project",
-						label: "Project",
 					},
 					{
 						key: "code",
-						label: "Code",
 					},
 					{
 						key: "quantityOfVouchers",
-						label: "Quantity Of Vouchers",
 					},
 					{
 						key: "individualValue",
-						label: "Individual Value",
 					},
 					{
 						key: "status",
-						label: "Status",
 					},
 					{
 						key: "beneficiary",
-						label: "Beneficiary",
 					},
 					{
 						key: "distribution",
-						label: "Distribution",
 					},
 				],
 				total: 0,

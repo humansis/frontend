@@ -81,23 +81,18 @@ export default {
 				visibleColumns: [
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "longitude",
-						label: "Longitude",
 					},
 					{
 						key: "latitude",
-						label: "Latitude",
 					},
 					{
 						key: "type",
-						label: "Type",
 					},
 					{
 						key: "contactGivenName",
-						label: "Contact Given Name",
 					},
 				],
 				total: 0,

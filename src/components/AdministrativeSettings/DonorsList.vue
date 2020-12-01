@@ -92,7 +92,6 @@ export default {
 					{
 						type: "text",
 						key: "shortName",
-						label: "Short Name",
 					},
 					{
 						type: "image",
@@ -102,7 +101,6 @@ export default {
 					{
 						type: "text",
 						key: "notes",
-						label: "Notes",
 					},
 				],
 				total: 0,

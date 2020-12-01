@@ -94,7 +94,6 @@ export default {
 					{
 						type: "editable",
 						key: "key",
-						label: "Key",
 					},
 					{
 						type: "editable",

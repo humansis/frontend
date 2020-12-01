@@ -20,10 +20,12 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 
@@ -63,6 +65,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import AssistancesService from "@/services/AssistancesService";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
 
 export default {
@@ -72,6 +75,7 @@ export default {
 		Table,
 		ActionButton,
 		SafeDelete,
+		ColumnField,
 	},
 
 	data() {
@@ -86,7 +90,6 @@ export default {
 					},
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "adm1Id",
@@ -98,13 +101,12 @@ export default {
 					},
 					{
 						key: "target",
-						label: "Target",
 					},
 					{
 						key: "type",
-						label: "Type",
 					},
 					{
+						type: "count",
 						key: "commodityIds",
 						label: "Commodity",
 					},

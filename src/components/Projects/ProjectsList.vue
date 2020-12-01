@@ -23,15 +23,9 @@
 				<b-table-column
 					v-bind="column"
 					:key="column.id"
+					v-slot="props"
 				>
-					<template v-slot="props">
-						<div v-if="column.field === 'donorIds'">
-							{{ props.row[column.field].length }}
-						</div>
-						<div v-else>
-							{{ props.row[column.field] }}
-						</div>
-					</template>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 
@@ -64,6 +58,7 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import AssistancesService from "@/services/AssistancesService";
@@ -73,7 +68,7 @@ import SectorsService from "@/services/SectorsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "ProjectsList",
@@ -86,6 +81,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	data() {
@@ -96,31 +92,25 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
-						label: "Id",
 					},
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
+						type: "count",
 						key: "donorIds",
-						label: "Donor Ids",
 					},
 					{
 						key: "startDate",
-						label: "Start Date",
 					},
 					{
 						key: "endDate",
-						label: "End Date",
 					},
 					{
 						key: "target",
-						label: "Target",
 					},
 					{
 						key: "numberOfHouseHolds",
-						label: "Number of Households",
 					},
 				],
 				total: 0,

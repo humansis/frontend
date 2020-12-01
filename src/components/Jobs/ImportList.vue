@@ -57,19 +57,15 @@ export default {
 				visibleColumns: [
 					{
 						key: "who",
-						label: "Who",
 					},
 					{
 						key: "where",
-						label: "Where",
 					},
 					{
 						key: "what",
-						label: "What",
 					},
 					{
 						key: "status",
-						label: "Status",
 					},
 				],
 				total: 0,

@@ -72,20 +72,16 @@ export default {
 				visibleColumns: [
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "iso3",
-						label: "Iso 3",
 					},
 					{
 						key: "availableCurrencies",
-						label: "Available Currencies",
 					},
 					{
 						type: "flag",
 						key: "countryFlag",
-						label: "Country Flag",
 					},
 				],
 				total: 0,

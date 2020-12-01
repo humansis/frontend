@@ -55,19 +55,15 @@ export default {
 				visibleColumns: [
 					{
 						key: "country",
-						label: "Country",
 					},
 					{
 						key: "currency",
-						label: "Currency",
 					},
 					{
 						key: "code",
-						label: "Code",
 					},
 					{
 						key: "number",
-						label: "Number",
 					},
 				],
 				total: 0,

@@ -76,15 +76,12 @@ export default {
 				visibleColumns: [
 					{
 						key: "field",
-						label: "Field",
 					},
 					{
 						key: "type",
-						label: "Type",
 					},
 					{
 						key: "target",
-						label: "Target",
 					},
 				],
 				total: 0,

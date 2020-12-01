@@ -82,31 +82,24 @@ export default {
 				visibleColumns: [
 					{
 						key: "username",
-						label: "Username",
 					},
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "description",
-						label: "Description",
 					},
 					{
 						key: "addressStreet",
-						label: "Address Street",
 					},
 					{
 						key: "addressNumber",
-						label: "Description",
 					},
 					{
 						key: "addressPostcode",
-						label: "Description",
 					},
 					{
 						key: "location",
-						label: "Location",
 					},
 				],
 				total: 0,

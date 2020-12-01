@@ -78,11 +78,9 @@ export default {
 					},
 					{
 						key: "country",
-						label: "Country",
 					},
 					{
 						key: "enabled",
-						label: "Enabled",
 					},
 				],
 				total: 0,
