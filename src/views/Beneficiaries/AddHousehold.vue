@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h2 class="title">Add Households</h2>
-		<HouseholdTabs />
+		<HouseholdTabs :is-editing="false" />
 	</div>
 </template>
 

@@ -132,32 +132,17 @@ export default {
 
 	validations: {
 		formModel: {
-			username: {
-				required,
-			},
-			password: {
-				required: requiredIf((form) => form.creating),
-			},
-			name: {
-				required,
-			},
-			description: {
-			},
-			addressStreet: {
-			},
-			addressNumber: {
-			},
-			addressPostcode: {
-			},
-			adm1Id: {
-				required,
-			},
-			adm2Id: {
-			},
-			adm3Id: {
-			},
-			adm4Id: {
-			},
+			username: { required },
+			password: { required: requiredIf((form) => form.creating) },
+			name: { required },
+			description: {},
+			addressStreet: {},
+			addressNumber: {},
+			addressPostcode: {},
+			adm1Id: { required },
+			adm2Id: {},
+			adm3Id: {},
+			adm4Id: {},
 		},
 	},
 

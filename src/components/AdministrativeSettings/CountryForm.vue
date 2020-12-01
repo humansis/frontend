@@ -147,18 +147,10 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
-			iso3: {
-				required,
-			},
-			availableCurrencies: {
-				required,
-			},
-			countryFlag: {
-				required,
-			},
+			name: { required },
+			iso3: { required },
+			availableCurrencies: { required },
+			countryFlag: { required },
 		},
 	},
 

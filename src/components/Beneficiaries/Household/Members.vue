@@ -29,7 +29,7 @@
 			</div>
 			<div class="card-content">
 				<div class="content">
-					<HouseholdForm :show-type-of-beneficiary="false" />
+					<HouseholdForm ref="member" :show-type-of-beneficiary="false" />
 				</div>
 			</div>
 		</b-collapse>
@@ -59,17 +59,20 @@ export default {
 		return {
 			isOpen: 0,
 			collapses: [],
+			members: [],
 		};
 	},
 
 	methods: {
 		addMember() {
-			if (!this.collapses.length) {
-				this.collapses.push(this.collapses.length);
-			} else {
+			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
+				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
 				const newCollapseIndex = (this.collapses.length - 1) + 1;
+
 				this.collapses.push(newCollapseIndex);
 				this.isOpen = newCollapseIndex;
+			} else {
+				this.collapses.push(this.collapses.length);
 			}
 		},
 

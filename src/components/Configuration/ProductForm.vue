@@ -100,9 +100,7 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
+			name: { required },
 			unit: {},
 			image: {},
 		},

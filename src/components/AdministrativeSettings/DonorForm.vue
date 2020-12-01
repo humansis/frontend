@@ -117,12 +117,8 @@ export default {
 
 	validations: {
 		formModel: {
-			fullName: {
-				required,
-			},
-			shortName: {
-				required,
-			},
+			fullName: { required },
+			shortName: { required },
 			logo: {},
 			notes: {},
 		},

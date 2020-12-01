@@ -136,15 +136,9 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
-			country: {
-				required,
-			},
-			enabled: {
-				required,
-			},
+			name: { required },
+			country: { required },
+			enabled: { required },
 			password: {},
 			username: {},
 			token: {},

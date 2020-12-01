@@ -162,25 +162,12 @@ export default {
 
 	validations: {
 		formModel: {
-			email: {
-				required,
-				email,
-			},
-			password: {
-				required,
-			},
-			rights: {
-				required,
-			},
-			organization: {
-				required,
-			},
-			projects: {
-				required: requiredIf((form) => !form.disabledProject),
-			},
-			countries: {
-				required: requiredIf((form) => !form.disabledCountry),
-			},
+			email: { required, email },
+			password: { required },
+			rights: { required },
+			organization: { required },
+			projects: { required: requiredIf((form) => !form.disabledProject) },
+			countries: { required: requiredIf((form) => !form.disabledCountry) },
 			phoneNumber: {},
 			prefix: {},
 			updatePasswordOnNextLogin: {},

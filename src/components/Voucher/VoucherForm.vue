@@ -179,25 +179,13 @@ export default {
 
 	validations: {
 		formModel: {
-			quantityOfBooklets: {
-				required,
-			},
-			quantityOfVouchers: {
-				required,
-			},
-			individualValue: {
-				required,
-			},
-			projectId: {
-				required,
-			},
-			password: {
-				required: requiredIf((form) => form.defineAPassword),
-			},
+			quantityOfBooklets: { required },
+			quantityOfVouchers: { required },
+			individualValue: { required },
+			projectId: { required },
+			password: { required: requiredIf((form) => form.defineAPassword) },
 			status: {},
-			currency: {
-				required,
-			},
+			currency: { required },
 		},
 	},
 
@@ -221,8 +209,8 @@ export default {
 			this.$emit("formClosed");
 		},
 
-		fetchProjects() {
-			ProjectsService.getListOfProjects(
+		async fetchProjects() {
+			await ProjectsService.getListOfProjects(
 				1,
 				15,
 				"desc",

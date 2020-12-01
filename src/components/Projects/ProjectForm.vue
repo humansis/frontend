@@ -180,32 +180,14 @@ export default {
 
 	validations: {
 		formModel: {
-			name: {
-				required,
-			},
-			internalId: {
-				required,
-				numeric,
-			},
-			selectedSectors: {
-				required,
-			},
-			startDate: {
-				required,
-			},
-			endDate: {
-				required,
-			},
-			selectedDonors: {
-				required,
-			},
-			selectedTargetType: {
-				required,
-			},
-			totalTarget: {
-				required,
-				minLength: minLength(0),
-			},
+			name: { required },
+			internalId: { required, numeric },
+			selectedSectors: { required },
+			startDate: { required },
+			endDate: { required },
+			selectedDonors: { required },
+			selectedTargetType: { required },
+			totalTarget: { required, minLength: minLength(0) },
 		},
 	},
 

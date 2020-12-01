@@ -63,6 +63,10 @@ import Summary from "@/components/Beneficiaries/Household/Summary";
 export default {
 	name: "HouseholdTabs",
 
+	props: {
+		isEditing: Boolean,
+	},
+
 	components: {
 		HouseholdForm,
 		Household,
@@ -73,10 +77,33 @@ export default {
 	data() {
 		return {
 			activeStep: 0,
+			household: null,
+			householdHead: null,
+			householdMembers: null,
 		};
 	},
 
 	methods: {
+		fetchHousehold() {
+			if (this.$refs.household.submit()) {
+				this.household = this.$refs.household.formModel;
+			}
+		},
+
+		fetchHouseholdHead() {
+			if (this.$refs.householdHead.submit()) {
+				this.householdHead = this.$refs.householdHead.formModel;
+			}
+		},
+
+		fetchMembers() {
+			this.householdMembers = this.$refs.householdMembers.members;
+		},
+
+		close() {
+			this.$router.go(-1);
+		},
+
 		nextPage(next) {
 			// TODO checkForms
 			next.action();
