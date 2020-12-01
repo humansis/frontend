@@ -60,7 +60,6 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
-						label: "ID",
 					},
 					{
 						key: "familyName",

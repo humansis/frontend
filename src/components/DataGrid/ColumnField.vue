@@ -6,6 +6,12 @@
 			{{ data.row[column.field] }}
 		</template>
 
+		<template
+			v-if="column.type === 'count'"
+		>
+			{{ data.row[column.field].length }}
+		</template>
+
 		<ImageColumn
 			v-if="column.type === 'image'"
 			:image="data.row[column.field]"

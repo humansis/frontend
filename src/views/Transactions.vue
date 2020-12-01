@@ -78,19 +78,15 @@ export default {
 				visibleColumns: [
 					{
 						key: "beneficiary",
-						label: "Beneficiary",
 					},
 					{
 						key: "type",
-						label: "Type",
 					},
 					{
 						key: "item",
-						label: "Item",
 					},
 					{
 						key: "value",
-						label: "Value",
 					},
 				],
 				total: 0,

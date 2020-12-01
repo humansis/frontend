@@ -73,12 +73,10 @@ export default {
 				visibleColumns: [
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						type: "checkbox",
 						key: "published",
-						label: "Published",
 					},
 				],
 				total: 0,

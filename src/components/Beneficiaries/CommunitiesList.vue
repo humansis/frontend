@@ -80,7 +80,6 @@ export default {
 				visibleColumns: [
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "contactGivenName",
@@ -88,7 +87,6 @@ export default {
 					},
 					{
 						key: "contactFamilyName",
-						label: "Contact Family Name",
 					},
 				],
 				total: 0,

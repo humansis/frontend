@@ -137,31 +137,24 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
-						label: "Id",
 					},
 					{
 						key: "shelterStatus",
-						label: "Shelter Status",
 					},
 					{
 						key: "notes",
-						label: "Notes",
 					},
 					{
 						key: "longitude",
-						label: "Longitude",
 					},
 					{
 						key: "latitude",
-						label: "Latitude",
 					},
 					{
 						key: "incomeLevel",
-						label: "Income Level",
 					},
 					{
 						key: "deptLevel",
-						label: "Dept Level",
 					},
 				],
 				total: 0,

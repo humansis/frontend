@@ -84,23 +84,18 @@ export default {
 				visibleColumns: [
 					{
 						key: "email",
-						label: "Email",
 					},
 					{
 						key: "rights",
-						label: "Rights",
 					},
 					{
 						key: "prefix",
-						label: "Prefix",
 					},
 					{
 						key: "organization",
-						label: "Organization",
 					},
 					{
 						key: "phoneNumber",
-						label: "Phone Number",
 					},
 				],
 				total: 0,

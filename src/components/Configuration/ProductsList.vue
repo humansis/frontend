@@ -85,16 +85,13 @@ export default {
 				visibleColumns: [
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "unit",
-						label: "Unit",
 					},
 					{
 						type: "image",
 						key: "image",
-						label: "Image",
 					},
 				],
 				total: 0,

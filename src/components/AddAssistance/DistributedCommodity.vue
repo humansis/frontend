@@ -103,31 +103,24 @@ export default {
 				columns: [
 					{
 						field: "modality",
-						label: "Modality",
 					},
 					{
 						field: "type",
-						label: "Type",
 					},
 					{
 						field: "currency",
-						label: "Currency",
 					},
 					{
 						field: "unit",
-						label: "Unit",
 					},
 					{
 						field: "quantity",
-						label: "Quantity",
 					},
 					{
 						field: "description",
-						label: "Description",
 					},
 					{
 						field: "totalValueOfBooklet",
-						label: "Total Value Of Booklet",
 					},
 				],
 			},

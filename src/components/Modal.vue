@@ -1,6 +1,6 @@
 <template>
 	<b-modal
-		v-model="active"
+		:active="active"
 		has-modal-card
 		trap-focus
 		aria-role="dialog"
