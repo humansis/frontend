@@ -1,11 +1,13 @@
 <template>
-	<button class="button is-light" @click="confirmDelete">
-		<b-icon
-			:icon="icon"
-			type="is-danger"
-			size="is-medium"
-		/>
-	</button>
+	<b-tooltip :label="tooltip" :active="isActive">
+		<button class="button is-light" @click="confirmDelete">
+			<b-icon
+				:icon="icon"
+				type="is-danger"
+				size="is-medium"
+			/>
+		</button>
+	</b-tooltip>
 </template>
 
 <script>
@@ -15,8 +17,15 @@ export default {
 	props: {
 		icon: String,
 		entity: String,
+		tooltip: String,
 		id: Number,
 		hasConfirmMessage: Boolean,
+	},
+
+	computed: {
+		isActive() {
+			return !!(this.tooltip && this.tooltip.length !== 0);
+		},
 	},
 
 	methods: {
