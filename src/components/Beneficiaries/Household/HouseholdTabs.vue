@@ -102,6 +102,15 @@ export default {
 		close() {
 			this.$router.go(-1);
 		},
+
+		nextPage(next) {
+			// TODO checkForms
+			next.action();
+		},
+
+		previousPage(previous) {
+			previous.action();
+		},
 	},
 };
 </script>
