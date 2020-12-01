@@ -76,6 +76,7 @@ export default {
 
 	data() {
 		return {
+			activeStep: 0,
 			household: null,
 			householdHead: null,
 			householdMembers: null,
