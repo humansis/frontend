@@ -89,7 +89,7 @@ export default {
 						label: "Assistance ID",
 					},
 					{
-						label: "Name",
+						key: "name",
 					},
 					{
 						key: "adm1Id",
@@ -100,10 +100,10 @@ export default {
 						label: "Date Of Distribution",
 					},
 					{
-						label: "Target",
+						key: "target",
 					},
 					{
-						label: "Type",
+						key: "type",
 					},
 					{
 						type: "count",
