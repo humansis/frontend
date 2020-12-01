@@ -83,16 +83,14 @@ export default {
 						key: "name",
 					},
 					{
-						key: "longitude",
-					},
-					{
-						key: "latitude",
-					},
-					{
 						key: "type",
 					},
 					{
 						key: "contactGivenName",
+						label: "Contact Name",
+					},
+					{
+						key: "contactFamilyName",
 					},
 				],
 				total: 0,

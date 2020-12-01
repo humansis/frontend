@@ -50,8 +50,22 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{
-						key: "name",
-						label: "Name",
+						key: "object",
+					},
+					{
+						key: "action",
+					},
+					{
+						key: "status",
+					},
+					{
+						key: "date",
+					},
+					{
+						key: "user",
+					},
+					{
+						key: "country",
 					},
 				],
 				total: 0,

@@ -87,16 +87,13 @@ export default {
 						key: "name",
 					},
 					{
-						key: "description",
-					},
-					{
-						key: "addressStreet",
-					},
-					{
 						key: "addressNumber",
 					},
 					{
 						key: "addressPostcode",
+					},
+					{
+						key: "addressStreet",
 					},
 					{
 						key: "location",

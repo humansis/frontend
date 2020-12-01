@@ -92,9 +92,6 @@ export default {
 						key: "prefix",
 					},
 					{
-						key: "organization",
-					},
-					{
 						key: "phoneNumber",
 					},
 				],

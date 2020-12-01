@@ -127,6 +127,10 @@ export default {
 						label: "Location",
 					},
 					{
+						key: "beneficiaries",
+						label: "Beneficiaries",
+					},
+					{
 						key: "dateDistribution",
 						label: "Date Of Distribution",
 					},
@@ -134,10 +138,7 @@ export default {
 						key: "target",
 					},
 					{
-						key: "type",
-					},
-					{
-						type: "count",
+						type: "commodity",
 						key: "commodityIds",
 						label: "Commodity",
 					},
