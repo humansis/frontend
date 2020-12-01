@@ -23,7 +23,7 @@
 			:per-page="perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
-			@dblclick="$emit('clicked', $event)"
+			@cellclick="onClick"
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
 		>
@@ -51,6 +51,14 @@ export default {
 	computed: {
 		isPaginated() {
 			return this.paginated === undefined ? true : this.paginated;
+		},
+	},
+
+	methods: {
+		onClick(row, column) {
+			if (column.$options.propsData.label !== "Actions") {
+				this.$emit("clicked", row);
+			}
 		},
 	},
 };

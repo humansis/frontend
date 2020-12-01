@@ -2,60 +2,10 @@
 	<div>
 		<h2 class="title">New Assistance</h2>
 		<form>
-			<b-field
-				label="Province"
-			>
-				<MultiSelect
-					v-model="formModel.adm1"
-					searchable
-					placeholder="Province"
-					label="name"
-					track-by="id"
-					:options="provinces"
-					@select="onProvinceSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="District"
-			>
-				<MultiSelect
-					v-model="formModel.adm2"
-					searchable
-					placeholder="District"
-					label="name"
-					track-by="id"
-					:options="districts"
-					@select="onDistrictSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="Commune"
-			>
-				<MultiSelect
-					v-model="formModel.adm3"
-					searchable
-					placeholder="Commune"
-					label="name"
-					track-by="id"
-					:options="communes"
-					@select="onCommuneSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="Village"
-			>
-				<MultiSelect
-					v-model="formModel.adm4"
-					searchable
-					placeholder="Village"
-					label="name"
-					track-by="id"
-					:options="villages"
-				/>
-			</b-field>
+			<LocationForm
+				ref="locationForm"
+				:form-model="formModel"
+			/>
 			<b-field
 				label="Date of Assistance"
 			>
@@ -71,6 +21,8 @@
 
 			<b-field
 				label="Target"
+				:type="validateType('target')"
+				:message="validateMsg('target', 'Target is Required')"
 			>
 				<div class="block">
 					<b-radio
@@ -94,16 +46,23 @@
 </template>
 
 <script>
-import LocationsService from "@/services/LocationsService";
 import { Toast } from "@/utils/UI";
+import { required } from "vuelidate/lib/validators";
+import LocationsService from "@/services/LocationsService";
+import LocationForm from "@/components/LocationForm";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "NewAssistanceForm",
+
+	components: { LocationForm },
 
 	updated() {
 		// TODO Emit only if form is validated else emit false
 		this.$emit("updatedData", this.formModel);
 	},
+
+	mixins: [Validation],
 
 	data() {
 		return {
@@ -122,11 +81,35 @@ export default {
 		};
 	},
 
+	validations: {
+		formModel: {
+			target: {
+				required,
+			},
+			adm1: {
+			},
+			adm2: {
+			},
+			adm3: {
+			},
+			adm4: {
+			},
+			dateOfAssistance: {
+			},
+		},
+	},
+
 	mounted() {
 		this.fetchProvinces();
 	},
 
 	methods: {
+		submit() {
+			this.$v.$touch();
+			const validLocationForm = this.$refs.locationForm.submitLocationForm();
+			return this.$v.$invalid || validLocationForm;
+		},
+
 		onProvinceSelect({ id }) {
 			this.fetchDistricts(id);
 		},

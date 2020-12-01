@@ -27,4 +27,9 @@ export default {
 		});
 		return { data, totalCount };
 	},
+
+	async createAssistance(body) {
+		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
+		return { data, status };
+	},
 };
