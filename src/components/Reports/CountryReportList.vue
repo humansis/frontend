@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<PeriodFilter />
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -36,18 +35,16 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumns } from "@/utils/datagrid";
-import PeriodFilter from "@/components/Reports/PeriodFilter";
 import CountryReportService from "@/services/CountryReportService";
-import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CountryReportList",
 
 	components: {
-		PeriodFilter,
 		Table,
 		ActionButton,
 	},

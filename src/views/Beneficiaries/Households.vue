@@ -41,7 +41,7 @@
 			type="is-success"
 			size="is-default"
 			class="is-pulled-right"
-			:formats="{ xlsx: true, csv: true, odt: true}"
+			:formats="{ xlsx: true, csv: true, ods: true}"
 			@exportData="exportHousehold"
 		/>
 

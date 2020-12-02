@@ -131,9 +131,9 @@
 						v-model="formModel.countrySpecificOptions.equityCardNo"
 					/>
 				</b-field>
-				<b-field label="Fieldes">
+				<b-field label="Fields">
 					<b-input
-						v-model="formModel.countrySpecificOptions.fieldes"
+						v-model="formModel.countrySpecificOptions.fields"
 					/>
 				</b-field>
 			</div>
@@ -216,7 +216,7 @@ export default {
 				countrySpecificOptions: {
 					idPoorNo: "",
 					equityCardNo: "",
-					fieldes: "",
+					fields: "",
 				},
 				shelterType: "",
 				notes: "",
