@@ -13,8 +13,8 @@
 			</div>
 		</div>
 		<div class="buttons">
-			<b-button type="is-danger is-light">Cancel</b-button>
-			<b-button @click="submitAddingAssistance" type="is-success">Create</b-button>
+			<b-button type="is-danger is-light" @click="goBack">Cancel</b-button>
+			<b-button type="is-success" @click="submitAddingAssistance">Create</b-button>
 		</div>
 	</div>
 </template>
@@ -73,6 +73,10 @@ export default {
 					Toast("Assistance Successfully Created", "is-success");
 				}
 			});
+		},
+
+		goBack() {
+			this.$router.go(-1);
 		},
 
 		fetchNewAssistanceForm(formModel) {

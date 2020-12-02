@@ -32,4 +32,24 @@ export default {
 		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
 		return { data, status };
 	},
+
+	async removeAssistance(id) {
+		console.log(id);
+		return { data: {}, status: 204 };
+	},
+
+	async printAssistance(id) {
+		console.log(id);
+		return { data: {}, status: 200 };
+	},
+
+	async saveAssistance(body) {
+		console.log(body);
+		return { data: {}, status: 200 };
+	},
+
+	async updateAssistance(id, body) {
+		console.log(id, body);
+		return { data: {}, status: 200 };
+	},
 };

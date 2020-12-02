@@ -83,6 +83,8 @@ import AssistanceList from "@/components/Assistance/AssistanceList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
+import AssistancesService from "@/services/AssistancesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AddAssistance",
@@ -107,8 +109,16 @@ export default {
 			next.action();
 		},
 
-		validate() {
+		async validate() {
 			// TODO implement validate and lock method
+			await AssistancesService.saveAssistance().then(({ status }) => {
+				if (status === 200) {
+					Toast("Assistance Successfully Saved and lock", "is-success");
+					this.$router.go(-1);
+				}
+			}).catch((e) => {
+				Toast(`(Assistance) ${e}`, "is-danger");
+			});
 		},
 	},
 };

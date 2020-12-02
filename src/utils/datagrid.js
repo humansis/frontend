@@ -10,6 +10,8 @@ export const generateColumns = ((visibleColumns) => {
 			field: column.key,
 			label: column.label ? column.label : normalizeText(column.key),
 			type: column.type,
+			width: column.width,
+			centered: true,
 		});
 	});
 	return preparedColumns;
