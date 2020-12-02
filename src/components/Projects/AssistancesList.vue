@@ -24,6 +24,16 @@
 		>
 			New
 		</b-button>
+
+		<ExportButton
+			type="is-success"
+			size="is-default"
+			class="is-pulled-right"
+			space-between
+			:formats="{ xlsx: true, csv: true, ods: true}"
+			@exportData="exportAssistance"
+		/>
+
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -89,9 +99,10 @@
 <script>
 import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
+import ExportButton from "@/components/ExportButton";
+import ActionButton from "@/components/ActionButton";
 import AssistancesService from "@/services/AssistancesService";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
@@ -106,6 +117,7 @@ export default {
 		ActionButton,
 		SafeDelete,
 		ColumnField,
+		ExportButton,
 		Modal,
 	},
 
@@ -260,6 +272,10 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		exportAssistance(format) {
+			console.log(format);
 		},
 	},
 };

@@ -11,7 +11,7 @@
 
 		<b-dropdown
 			v-model="currentFormat"
-			class="ml-1"
+			:class="spaceBetween ? 'ml-1' : ''"
 			aria-role="list"
 		>
 			<b-button slot="trigger" :size="size" type="is-default">
@@ -45,6 +45,7 @@ export default {
 		size: String,
 		type: String,
 		formats: Object,
+		spaceBetween: Boolean,
 	},
 
 	data() {
@@ -54,6 +55,7 @@ export default {
 				{ name: ".xlsx", disabled: this.formats.xlsx },
 				{ name: ".csv", disabled: this.formats.csv },
 				{ name: ".odt", disabled: this.formats.odt },
+				{ name: ".ods", disabled: this.formats.ods },
 				{ name: ".pdf", disabled: this.formats.pdf },
 			],
 		};
