@@ -78,6 +78,17 @@ export default {
 
 		removeMember(index) {
 			this.collapses.splice(index, 1);
+			this.members.splice(index, 1);
+		},
+
+		submit() {
+			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
+				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
+
+				return true;
+			}
+
+			return false;
 		},
 	},
 };
