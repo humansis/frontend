@@ -21,6 +21,7 @@
 					placeholder="Click to select..."
 					:options="criteria"
 					:searchable="false"
+					@select="onCriteriaSelect"
 				/>
 			</b-field>
 
@@ -36,6 +37,7 @@
 			</b-field>
 
 			<b-field
+				v-if="showValueInput && !showLocation"
 				label="Value"
 			>
 
@@ -54,6 +56,12 @@
 					trap-focus
 				/>
 			</b-field>
+
+			<LocationForm
+				v-if="showLocation"
+				ref="locationForm"
+				:form-model="formModel"
+			/>
 
 			<b-field
 				label="Score Weight"
@@ -80,9 +88,12 @@
 </template>
 
 <script>
+import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "SelectionCriteriaForm",
+
+	components: { LocationForm },
 
 	props: {
 		formModel: Object,
@@ -97,6 +108,8 @@ export default {
 				criteria: [],
 				condition: [">", "<", ">=", "<=", "=", "!="],
 			},
+			showValueInput: true,
+			showLocation: false,
 		};
 	},
 
@@ -131,12 +144,50 @@ export default {
 			}
 		},
 
+		onCriteriaSelect(criteria) {
+			this.showValueInput = true;
+			this.showLocation = false;
+			switch (criteria) {
+				case "Residency Status":
+				case "Location Type":
+				case "IDPoor":
+				case "EquityCardNo":
+				case "Gender":
+					this.options.condition = ["=", "!="];
+					break;
+				case "Household Size":
+				case "Date Of Birth":
+					this.options.condition = [">", "<", ">=", "<=", "=", "!="];
+					break;
+				case "Livelihood":
+				case "Food Consumption Score":
+				case "Income Level":
+				case "Copying Strategies Index":
+				case "Has Not Been In A Distribution Since":
+					this.options.condition = ["="];
+					break;
+				case "Solo Parent":
+				case "Lactating":
+				case "Pregnant":
+				case "Nutritional Issues":
+				case "Disable":
+					this.options.condition = ["True", "False"];
+					this.showValueInput = false;
+					break;
+				case "Current Location":
+					this.options.condition = ["="];
+					this.showLocation = true;
+					break;
+				default: break;
+			}
+		},
+
 		submitForm() {
 			this.$emit("formSubmitted", this.formModel);
 		},
 
 		closeForm() {
-			this.$emit("close");
+			this.$emit("formClosed");
 		},
 	},
 };

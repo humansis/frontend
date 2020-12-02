@@ -251,7 +251,6 @@ export default {
 	data() {
 		return {
 			types: [],
-			// TODO get from API
 			nationalCardTypes: [
 				{
 					id: "national_id",
@@ -260,6 +259,30 @@ export default {
 				{
 					id: "passport",
 					name: "Passport",
+				},
+				{
+					id: "familyRegistration",
+					name: "Family Registration",
+				},
+				{
+					id: "birthCertificate",
+					name: "Birth Certificate",
+				},
+				{
+					id: "driverLicense",
+					name: "Driver's License",
+				},
+				{
+					id: "campId",
+					name: "Camp ID",
+				},
+				{
+					id: "socialServiceCard",
+					name: "Social Service Card",
+				},
+				{
+					id: "other",
+					name: "Other",
 				},
 			],
 			// TODO get from API

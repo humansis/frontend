@@ -59,7 +59,6 @@
 
 		<HouseholdsFilters
 			v-if="advancedSearchVisible"
-			:filtersOptions="filters"
 			@filtersChanged="onFiltersChange"
 		/>
 
@@ -95,12 +94,12 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
-import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Households",
@@ -143,18 +142,6 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
-			},
-			filters: {
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencies: [],
-				referrals: [],
-				livelihoods: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
 			},
 		};
 	},

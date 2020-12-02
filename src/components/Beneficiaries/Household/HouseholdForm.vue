@@ -150,11 +150,11 @@
 			</div>
 			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
-					v-for="typeOfBeneficiary of options.typeOfBeneficiary"
-					:key="typeOfBeneficiary"
-					v-model="formModel.typeOfBeneficiary"
+					v-for="vulnerability of options.vulnerabilities"
+					v-model="formModel.vulnerabilities[vulnerability.id]"
+					:key="vulnerability.id"
 				>
-					{{ typeOfBeneficiary }}
+					{{ vulnerability.name }}
 				</b-checkbox>
 			</div>
 		</form>
@@ -216,7 +216,7 @@ export default {
 					ext: "",
 					phoneNo: "",
 				},
-				typeOfBeneficiary: "",
+				vulnerabilities: [],
 			},
 			options: {
 				gender: [
@@ -246,8 +246,27 @@ export default {
 						name: "SK - +421",
 					},
 				],
-				typeOfBeneficiary: [
-					"Disabled", "Solo Parent", "Lactating", "Pregnant", "Nutrition Issues",
+				vulnerabilities: [
+					{
+						id: "disabled",
+						name: "Disabled",
+					},
+					{
+						id: "soloParent",
+						name: "Solo Parent",
+					},
+					{
+						id: "lactating",
+						name: "Lactating",
+					},
+					{
+						id: "pregnant",
+						name: "Pregnant",
+					},
+					{
+						id: "chronicallylll",
+						name: "Chronicallylll",
+					},
 				],
 			},
 		};

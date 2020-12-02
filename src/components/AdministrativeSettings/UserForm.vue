@@ -28,6 +28,21 @@
 			</b-field>
 
 			<b-field
+				label="Organization"
+				:type="validateType('organization')"
+				:message="validateMsg('organization', 'Required')"
+			>
+				<MultiSelect
+					v-model="formModel.organization"
+					searchable
+					label="name"
+					track-by="id"
+					:disabled="formDisabled"
+					:options="organizations"
+				/>
+			</b-field>
+
+			<b-field
 				label="Rights"
 				:type="validateType('rights')"
 				:message="validateMsg('rights', 'Required')"
@@ -40,21 +55,6 @@
 					:disabled="formDisabled"
 					:options="rights"
 					@select="onRightsSelect"
-				/>
-			</b-field>
-
-			<b-field
-				label="Organization"
-				:type="validateType('organization')"
-				:message="validateMsg('organization', 'Required')"
-			>
-				<MultiSelect
-					v-model="formModel.organization"
-					searchable
-					label="name"
-					track-by="id"
-					:disabled="formDisabled"
-					:options="organizations"
 				/>
 			</b-field>
 
@@ -90,6 +90,9 @@
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="countries"
 				/>
+				<small v-if="onlyOneCountry" class="ml-2">
+					<strong>You can select only one country</strong>
+				</small>
 			</b-field>
 
 			<b-field

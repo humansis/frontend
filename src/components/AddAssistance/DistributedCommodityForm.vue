@@ -25,13 +25,13 @@
 			</b-field>
 
 			<b-field
-				label="Currency"
 				v-if="formModel.modality === 'Cash' || formModel.modality === 'Vouchers'"
+				label="Currency"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
 					placeholder="Click to select..."
-					:options="options.type"
+					:options="options.currency"
 					:searchable="false"
 				/>
 			</b-field>
@@ -146,7 +146,7 @@ export default {
 		},
 
 		closeForm() {
-			this.$emit("close");
+			this.$emit("formClosed");
 		},
 	},
 };

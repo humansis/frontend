@@ -49,6 +49,8 @@
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
+						label="name"
+						track-by="id"
 						placeholder="Livelihood"
 						:options="options.livelihood"
 					/>
@@ -221,8 +223,106 @@ export default {
 			},
 			options: {
 				livelihood: [
-					"Daily Labour", "Farming - Argiculture", "Farming - Livestock",
-					"Government", "Home Duties", "Trading", "Own Business", "Textiles",
+					{
+						id: "agricultureLivestock",
+						name: "Agriculture - Livestock",
+					},
+					{
+						id: "agricultureCrops",
+						name: "Agriculture - Crops",
+					},
+					{
+						id: "agricultureFishing",
+						name: "Agriculture - Fishing",
+					},
+					{
+						id: "agricultureOther",
+						name: "Agriculture - Other",
+					},
+					{
+						id: "mining",
+						name: "Mining",
+					},
+					{
+						id: "construction",
+						name: "Construction",
+					},
+					{
+						id: "manufacturing",
+						name: "Manufacturing",
+					},
+					{
+						id: "retail",
+						name: "Retail",
+					},
+					{
+						id: "transportation",
+						name: "Transportation",
+					},
+					{
+						id: "education",
+						name: "Education",
+					},
+					{
+						id: "healthCare",
+						name: "Health Care",
+					},
+					{
+						id: "hospitalityAndTourism",
+						name: "Hospitality And Tourism",
+					},
+					{
+						id: "legalServices",
+						name: "Legal Services",
+					},
+					{
+						id: "homeDuties",
+						name: "Home Duties",
+					},
+					{
+						id: "religiousService",
+						name: "Religious Service",
+					},
+					{
+						id: "itAndTelecommunications",
+						name: "IT And Telecommunications",
+					},
+					{
+						id: "financeAndInsurance",
+						name: "Finance And Insurance",
+					},
+					{
+						id: "manualLabour",
+						name: "Manual Labour",
+					},
+					{
+						id: "ngoAndNonProfit",
+						name: "NGO And Non Profit",
+					},
+					{
+						id: "militaryOrPolice",
+						name: "Military Or Police",
+					},
+					{
+						id: "governmentAndPublicEnterprise",
+						name: "Government And Public Enterprise",
+					},
+					{
+						id: "garmentIndustry",
+						name: "Garment Industry",
+					},
+					{
+						id: "securityIndustry",
+						name: "Security Industry",
+					},
+					{
+						id: "serviceIndustryAndOtherProfessionals",
+						name: "Service Industry And Other Professionals",
+					},
+					{
+						id: "other",
+						name: "Other",
+					},
 				],
 				incomeLevel: [
 					{

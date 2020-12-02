@@ -120,7 +120,7 @@ export default {
 			currencies: [
 				{
 					id: "eur",
-					name: "EURO",
+					name: "EUR",
 				},
 				{
 					id: "usd",

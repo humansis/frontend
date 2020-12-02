@@ -9,6 +9,8 @@
 					<MultiSelect
 						v-model="selectedProjects"
 						searchable
+						track-by="id"
+						label="name"
 						multiple
 						:options="options.projects"
 					/>
@@ -50,6 +52,7 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
+import ProjectsService from "@/services/ProjectsService";
 
 export default {
 	name: "Summary",
@@ -97,6 +100,19 @@ export default {
 				perPage: 15,
 			},
 		};
+	},
+
+	mounted() {
+		this.fetchProjects();
+	},
+
+	methods: {
+		async fetchProjects() {
+			await ProjectsService.getListOfProjects(1, 15, "desc")
+				.then((response) => {
+					this.options.projects = response.data;
+				});
+		},
 	},
 };
 </script>

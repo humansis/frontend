@@ -59,7 +59,28 @@
 					:disabled="formDisabled"
 					:options="fonts"
 					@blur="validate('font')"
-				/>
+				>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span
+								class="option__title"
+								:style="`font-family: ${props.option.name}, sans-serif`"
+							>
+								{{ props.option.name }}
+							</span>
+						</div>
+					</template>
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span
+								class="option__title"
+								:style="`font-family: ${props.option.name}, sans-serif`"
+							>
+								{{ props.option.name }}
+							</span>
+						</div>
+					</template>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -168,6 +189,12 @@ export default {
 				},
 			],
 		};
+	},
+
+	computed: {
+		fontFamily() {
+			return `font-family: ${this.data.row[this.column.field]}, sans-serif`;
+		},
 	},
 
 	methods: {
