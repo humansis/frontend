@@ -85,17 +85,22 @@
 			</template>
 
 			<b-table-column
-				label="Actions"
 				v-slot="props"
+				label="Actions"
 				width="100"
 			>
 				<div class="block">
 					<ActionButton
-						icon="search"
-						type="is-info"
+						icon="edit"
+						type="is-link"
 						@click.native="showDetail(props.row)"
 					/>
-					<ActionButton icon="trash" type="is-danger" />
+					<SafeDelete
+						icon="trash"
+						entity="Assistance"
+						:id="props.row.id"
+						@submitted="removeAssistance"
+					/>
 				</div>
 			</b-table-column>
 		</Table>
@@ -111,6 +116,7 @@ import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBenefi
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "AssistanceList",
@@ -122,6 +128,7 @@ export default {
 	},
 
 	components: {
+		SafeDelete,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		Table,
@@ -241,6 +248,10 @@ export default {
 		showDetail(beneficiary) {
 			console.log(beneficiary.id);
 			this.editBeneficiaryModal.isOpened = true;
+		},
+
+		removeAssistance(id) {
+			this.table.data = this.table.data.filter((item) => item.id !== id);
 		},
 
 		onPageChange() {
