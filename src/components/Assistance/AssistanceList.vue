@@ -87,7 +87,6 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
-				v-slot="props"
 				width="100"
 			>
 				<div class="block">
