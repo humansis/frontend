@@ -6,7 +6,7 @@ export default {
 		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?page=${page}&size=${size}&upcoming=${upcoming +sortText + fulltext}`,
+			uri: `assistances?page=${page}&size=${size}&upcoming=${upcoming + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
