@@ -24,6 +24,9 @@
 		>
 			New
 		</b-button>
+		<div class="columns">
+			<Search class="column is-two-fifths" @search="fetchData" />
+		</div>
 
 		<ExportButton
 			type="is-success"
@@ -56,6 +59,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 				width="220"
 			>
 				<div class="block">
@@ -107,11 +111,13 @@ import AssistancesService from "@/services/AssistancesService";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
+import Search from "@/components/Search";
 
 export default {
 	name: "AssistancesList",
 
 	components: {
+		Search,
 		AssistanceForm,
 		Table,
 		ActionButton,
@@ -183,7 +189,7 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await AssistancesService.getListOfProjectAssistances(
@@ -191,7 +197,7 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
-				false,
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

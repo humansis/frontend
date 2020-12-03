@@ -46,11 +46,8 @@
 		/>
 
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search by keyword" type="search" icon="search" />
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
+
 			<div class="column">
 				<button
 					class="button"
@@ -92,6 +89,8 @@
 
 			<b-table-column
 				label="Actions"
+				width="140"
+				centered
 			>
 				<div class="block">
 					<ActionButton icon="edit" type="is-link" />
@@ -111,12 +110,14 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
+import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "Households",
 
 	components: {
+		Search,
 		ExportButton,
 		Table,
 		ActionButton,
@@ -126,6 +127,7 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
+			searchPhrase: "",
 			table: {
 				data: [],
 				columns: [],
@@ -177,13 +179,15 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value, filters) {
+			this.searchPhrase = value;
 			this.$store.commit("loading", true);
-
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
+				filters,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -231,18 +235,7 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
-			await BeneficiariesService.getListOfHouseholds(
-				this.table.currentPage,
-				this.table.perPage,
-				"desc",
-				null,
-				selectedFilters,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Toast(`(Households) ${e}`, "is-danger");
-			});
+			await this.fetchData(this.searchPhrase, selectedFilters);
 		},
 	},
 };

@@ -1,15 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 		<Table
 			:data="table.data"
@@ -40,11 +32,13 @@ import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import VoucherService from "@/services/VoucherService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "ImportList",
 
 	components: {
+		Search,
 		ColumnField,
 		Table,
 	},

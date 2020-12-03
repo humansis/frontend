@@ -2,14 +2,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 
 		<Table
@@ -32,6 +25,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -57,11 +51,13 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "OrganizationServicesList",
 
 	components: {
+		Search,
 		Table,
 		ActionButton,
 	},
@@ -99,13 +95,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await OrganizationServicesService.getListOfOrganizationServices(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = this.prepareDataForTable(response.data);
 				this.table.total = response.totalCount;

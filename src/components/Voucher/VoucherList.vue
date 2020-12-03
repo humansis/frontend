@@ -1,14 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field label="Search...">
-					<b-input
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 
 		<Table
@@ -31,6 +24,8 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				width="140"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -60,11 +55,13 @@ import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "VoucherList",
 
 	components: {
+		Search,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -129,13 +126,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.getProjectNameForBooklets(response.data).then((data) => {
 					this.table.data = data;

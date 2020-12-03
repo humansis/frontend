@@ -1,14 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 		<Table
 			:data="table.data"
@@ -30,6 +23,8 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				width="180"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -64,11 +59,13 @@ import SafeDelete from "@/components/SafeDelete";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "VendorsList",
 
 	components: {
+		Search,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -115,13 +112,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await VendorsService.getListOfVendors(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.buildLocationsForVendors(response.data).then((result) => {
 					this.table.data = result;

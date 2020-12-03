@@ -2,13 +2,7 @@
 <template>
 	<section class="modal-card-body">
 		<div class="columns">
-			<b-field class="column is-two-fifths">
-				<b-input
-					placeholder="Search..."
-					type="search"
-					icon="search"
-				/>
-			</b-field>
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
 		<Table
 			:data="table.data"
@@ -36,11 +30,13 @@
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import Search from "@/components/Search";
 
 export default {
 	name: "CriteriaModalList",
 
 	components: {
+		Search,
 		ColumnField,
 		Table,
 	},
@@ -51,9 +47,6 @@ export default {
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			table: {
 				data: [],
 				columns: [],
@@ -87,24 +80,17 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
-				// TODO get real data from API
-				this.table.columns = generateColumns(
-					this.table.visibleColumns,
-				);
+			this.$store.commit("loading", true);
+			// TODO get real data from API
+			this.table.columns = generateColumns(
+				this.table.visibleColumns,
+			);
 
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.$store.commit("loading", false);
 		},
 
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+		onSearch(value) {
+			console.log(value);
 		},
 
 		onPageChange() {

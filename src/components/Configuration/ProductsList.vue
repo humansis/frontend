@@ -1,15 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 
 			<ExportButton
 				class="column is-2 is-offset-5"
@@ -42,6 +34,8 @@
 			<b-table-column
 				label="Actions"
 				v-slot="props"
+				width="140"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -75,12 +69,14 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "ProductsList",
 
 	components: {
+		Search,
 		ExportButton,
 		ColumnField,
 		SafeDelete,
@@ -135,13 +131,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await ProductsService.getListOfProducts(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
