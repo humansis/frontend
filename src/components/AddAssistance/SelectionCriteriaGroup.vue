@@ -45,6 +45,7 @@
 						>
 							<ActionButton
 								icon="trash"
+								centered
 								type="is-danger"
 								@click.native="remove(props.index)"
 							/>

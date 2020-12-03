@@ -1,14 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 		<Table
 			:data="table.data"
@@ -35,11 +28,13 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import LogsService from "@/services/LogsService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "BeneficiariesLogList",
 
 	components: {
+		Search,
 		Table,
 	},
 
@@ -84,13 +79,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await LogsService.getLogs(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

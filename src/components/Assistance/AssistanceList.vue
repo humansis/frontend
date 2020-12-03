@@ -62,11 +62,7 @@
 
 		</div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search by keyword" type="search" icon="search" />
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 		<Table
 			:data="table.data"
@@ -88,6 +84,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 				width="100"
 			>
 				<div class="block">
@@ -119,6 +116,7 @@ import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
+import Search from "@/components/Search";
 
 export default {
 	name: "AssistanceList",
@@ -130,6 +128,7 @@ export default {
 	},
 
 	components: {
+		Search,
 		SafeDelete,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
@@ -205,7 +204,7 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			// TODO Get list of households by assistance id
@@ -213,6 +212,7 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

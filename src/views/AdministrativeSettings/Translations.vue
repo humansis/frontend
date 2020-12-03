@@ -1,15 +1,8 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
+
 			<div class="column is-pulled-right">
 				<b-field>
 					<b-button
@@ -43,6 +36,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 			>
 				<div class="block">
 					<SafeDelete
@@ -75,11 +69,13 @@ import { generateColumns } from "@/utils/datagrid";
 import TranslationService from "@/services/TranslationService";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "Translations",
 
 	components: {
+		Search,
 		SafeDelete,
 		Table,
 		ColumnField,
@@ -122,13 +118,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await TranslationService.getTranslations(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

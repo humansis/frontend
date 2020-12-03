@@ -1,15 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
 		<Table
 			:data="table.data"
@@ -34,6 +26,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -55,11 +48,13 @@ import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import LanguagesService from "@/services/LanguagesService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "LanguagesList",
 
 	components: {
+		Search,
 		ColumnField,
 		Table,
 		ActionButton,
@@ -95,13 +90,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await LanguagesService.getListOfLanguages(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

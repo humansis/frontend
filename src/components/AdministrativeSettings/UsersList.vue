@@ -1,22 +1,13 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
-
+			<Search class="column is-two-fifths" @search="fetchData" />
 			<ExportButton
 				class="column is-2 is-offset-5"
 				type="is-success"
 				size="is-default"
-				space-between
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				space-between
 			/>
 		</div>
 		<Table
@@ -38,6 +29,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -74,12 +66,14 @@ import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "UsersList",
 
 	components: {
+		Search,
 		ExportButton,
 		SafeDelete,
 		Table,
@@ -121,13 +115,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await UsersService.getListOfUsers(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

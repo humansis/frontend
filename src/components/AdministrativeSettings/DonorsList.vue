@@ -1,16 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input
-						placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
-
+			<Search class="column is-two-fifths" @search="fetchData" />
 			<ExportButton
 				class="column is-2 is-offset-5"
 				type="is-success"
@@ -42,6 +33,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
 			>
 				<div class="block">
 					<ActionButton
@@ -76,12 +68,14 @@ import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
+import Search from "@/components/Search";
 
 export default {
 	name: "DonorsList",
 
 	components: {
 		ExportButton,
+		Search,
 		ColumnField,
 		SafeDelete,
 		Table,
@@ -129,13 +123,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value) {
 			this.$store.commit("loading", true);
 
 			await DonorsService.getListOfDonors(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
+				value,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

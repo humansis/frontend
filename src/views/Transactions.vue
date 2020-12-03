@@ -2,11 +2,7 @@
 	<div>
 		<h2 class="title">Transactions</h2>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search by keyword" type="search" icon="search" />
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchData" />
 			<div class="column">
 				<button
 					class="button"
@@ -60,11 +56,13 @@ import { generateColumns } from "@/utils/datagrid";
 import TransactionService from "@/services/TransactionService";
 import TransactionFilter from "@/components/Transactions/TransactionFilter";
 import { Toast } from "@/utils/UI";
+import Search from "@/components/Search";
 
 export default {
 	name: "Transactions",
 
 	components: {
+		Search,
 		TransactionFilter,
 		Table,
 	},
@@ -72,6 +70,7 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
+			searchPhrase: "",
 			table: {
 				data: [],
 				columns: [],
@@ -137,18 +136,26 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(value, filters) {
+			this.searchPhrase = value;
 			this.$store.commit("loading", true);
 
-			await TransactionService.getListOfTransactions().then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-				this.table.columns = generateColumns(
-					this.table.visibleColumns,
-				);
-			}).catch((e) => {
-				Toast(`(Transactions) ${e}`, "is-danger");
-			});
+			await TransactionService.getListOfTransactions(
+				1,
+				15,
+				"desc",
+				filters,
+				this.searchPhrase,
+			)
+				.then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+					this.table.columns = generateColumns(
+						this.table.visibleColumns,
+					);
+				}).catch((e) => {
+					Toast(`(Transactions) ${e}`, "is-danger");
+				});
 
 			this.$store.commit("loading", false);
 		},

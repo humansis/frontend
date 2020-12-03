@@ -1,14 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="fetchProjects" />
 		</div>
 		<Table
 			:data="table.data"
@@ -32,6 +25,8 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				centered
+				width="180"
 			>
 				<div class="block">
 					<ActionButton
@@ -69,6 +64,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import Search from "@/components/Search";
 
 export default {
 	name: "ProjectsList",
@@ -78,6 +74,7 @@ export default {
 	},
 
 	components: {
+		Search,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -107,7 +104,8 @@ export default {
 						key: "target",
 					},
 					{
-						key: "numberOfHouseholds",
+						key: "numberOfHouseHolds",
+						width: "120",
 					},
 				],
 				total: 0,
@@ -127,21 +125,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
-
-			await ProjectsService.getListOfProjects(
-				this.table.currentPage,
-				this.table.perPage,
-				"desc",
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-				this.table.columns = generateColumns(this.table.visibleColumns);
-			}).catch((e) => {
-				Toast(`(Projects) ${e}`, "is-danger");
-			});
-
-			this.$store.commit("loading", false);
+			await this.fetchProjects();
 
 			await SectorsService.getListOfSectors().then((response) => {
 				this.projectModel.sectors = response.data;
@@ -160,6 +144,25 @@ export default {
 			}).catch((e) => {
 				Toast(`(Target Types) ${e}`, "is-danger");
 			});
+		},
+
+		async fetchProjects(value) {
+			this.$store.commit("loading", true);
+
+			await ProjectsService.getListOfProjects(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+				value,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(this.table.visibleColumns);
+			}).catch((e) => {
+				Toast(`(Projects) ${e}`, "is-danger");
+			});
+
+			this.$store.commit("loading", false);
 		},
 
 		mapToFormModel({
