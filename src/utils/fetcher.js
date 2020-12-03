@@ -72,17 +72,9 @@ export const filtersToUri = (filters) => {
 	let query = "";
 	Object.keys(filters).forEach((key) => {
 		if (filters[key].length) {
-			let ids = "";
-			let first = true;
 			filters[key].forEach((item) => {
-				if (first) {
-					ids = `${ids}${item.id}`;
-					first = false;
-				} else {
-					ids = `${ids},${item.id}`;
-				}
+				query += `&${key}[]=${item}`;
 			});
-			query += `&${key}[]=${ids}`;
 		}
 	});
 	return query;
