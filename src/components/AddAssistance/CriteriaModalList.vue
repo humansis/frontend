@@ -90,6 +90,7 @@ export default {
 		},
 
 		onSearch(value) {
+			// TODO implement after real data
 			console.log(value);
 		},
 
