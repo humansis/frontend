@@ -19,7 +19,10 @@
 			</b-step-item>
 
 			<b-step-item step="4" label="Summary">
-				<Summary />
+				<Summary
+					ref="householdSummary"
+					:members="summaryMembers"
+				/>
 			</b-step-item>
 
 			<template
@@ -82,8 +85,9 @@ export default {
 		return {
 			activeStep: 0,
 			household: null,
-			householdHead: null,
-			householdMembers: null,
+			householdHead: [],
+			householdMembers: [],
+			summaryMembers: [],
 			selectedProjects: [],
 		};
 	},
@@ -110,6 +114,7 @@ export default {
 				case 2:
 					if (this.$refs.householdMembers.submit()) {
 						this.householdMembers = this.$refs.householdMembers.members;
+						this.prepareMembers(this.$refs.householdMembers.members);
 						next.action();
 					}
 					break;
@@ -121,9 +126,7 @@ export default {
 		},
 
 		save() {
-			// TODO Get selected projects for household
 			// TODO Mapping form models to householdBody
-
 			const {
 				id,
 				shelterType: shelterStatus,
@@ -209,10 +212,15 @@ export default {
 				],
 			};
 
-			if (this.isEditing && id) {
-				this.updateHousehold(id, householdBody);
-			} else {
-				this.createHousehold(householdBody);
+			if (
+				this.$refs.householdSummary.submit()
+				&& this.$refs.householdSummary.selectedProjects.length
+			) {
+				if (this.isEditing && id) {
+					this.updateHousehold(id, householdBody);
+				} else {
+					this.createHousehold(householdBody);
+				}
 			}
 		},
 
@@ -229,6 +237,24 @@ export default {
 			}).catch((e) => {
 				Toast(`(Household) ${e}`, "is-danger");
 			});
+		},
+
+		prepareMembers(members) {
+			const membersData = [];
+			if (members.length) {
+				members.forEach((member) => {
+					membersData.push({
+						firstName: member.nameLocal.firstName,
+						familyName: member.nameLocal.familyName,
+						gender: member.personalInformation.gender,
+						dateBirth: member.personalInformation.dateOfBirth,
+						phone: `${member.phone1.ext} ${member.phone1.phoneNo}`,
+						nationalId: member.id.idNumber,
+					});
+				});
+			}
+
+			this.summaryMembers = [...membersData];
 		},
 	},
 };
