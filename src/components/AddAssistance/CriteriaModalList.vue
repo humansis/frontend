@@ -7,9 +7,6 @@
 		<Table
 			:data="table.data"
 			:total="table.total"
-			:current-page="table.currentPage"
-			:per-page="table.perPage"
-			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
 
@@ -64,8 +61,6 @@ export default {
 					},
 				],
 				total: 0,
-				currentPage: 1,
-				perPage: 15,
 			},
 		};
 	},

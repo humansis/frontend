@@ -3,9 +3,10 @@ import { fetcher } from "@/utils/fetcher";
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `products?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `products?page=${page}&size=${size + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

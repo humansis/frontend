@@ -23,6 +23,7 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					:key="column.id"
 					v-slot="props"
@@ -104,6 +105,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -137,7 +140,7 @@ export default {
 			await ProductsService.getListOfProducts(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;
@@ -170,12 +173,19 @@ export default {
 			this.$emit("onRemove", id);
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 	},
 };

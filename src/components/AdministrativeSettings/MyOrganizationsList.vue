@@ -10,6 +10,7 @@
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
+				sortable
 				v-bind="column"
 				v-slot="props"
 				:key="column.id"
@@ -100,6 +101,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -119,7 +122,7 @@ export default {
 			await MyOrganizationsService.getListOfMyOrganizations(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -151,12 +154,19 @@ export default {
 			this.$emit("onPrint", id);
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 	},
 

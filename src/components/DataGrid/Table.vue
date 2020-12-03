@@ -19,6 +19,7 @@
 			:checked-rows.sync="checkedRows"
 			:paginated="paginated"
 			:checkable="checkable"
+			:backend-sorting="true"
 			:data="data"
 			:total="total"
 			:per-page="perPage"

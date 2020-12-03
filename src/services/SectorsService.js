@@ -6,7 +6,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfSubsectors(code) {
+	async getListOfSubSectors(code) {
 		const { data: { data, totalCount } } = await fetcher({ uri: `sectors/${code}/subsectors` });
 		return { data, totalCount };
 	},

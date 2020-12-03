@@ -31,19 +31,13 @@
 				v-if="table.data.length"
 				:data="table.data"
 			>
-				<template v-for="(column, key) in table.columns">
+				<template v-for="(column) in table.columns">
 					<b-table-column
 						v-bind="column"
-						:key="key"
+						v-slot="props"
+						:key="column.id"
 					>
-						<template v-slot="props">
-							<div v-if="column.field === 'donorIds'">
-								{{ props.row[column.field].length }}
-							</div>
-							<div v-else>
-								{{ props.row[column.field] }}
-							</div>
-						</template>
+						<ColumnField :column="column" :data="props" />
 					</b-table-column>
 				</template>
 
@@ -73,11 +67,13 @@ import Modal from "@/components/Modal";
 import DistributedCommodityForm from "@/components/AddAssistance/DistributedCommodityForm";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "DistributedCommodity",
 
 	components: {
+		ColumnField,
 		Modal,
 		DistributedCommodityForm,
 		Table,

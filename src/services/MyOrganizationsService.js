@@ -4,9 +4,10 @@ export default {
 	// eslint-disable-next-line no-unused-vars
 	async getListOfMyOrganizations(page, size, sort, search = null) {
 		// const fulltext = search ? `&fulltext=${search}` : "";
+		// const sortText = sort ? `&sort=${sort}` : "";
 		//
 		// const { data: { data, totalCount } } = await fetcher({
-		// 	uri: `organization?page=${page}&size=${size}&sort=${sort + fulltext}`,
+		// 	uri: `organization?page=${page}&size=${size + sortText + fulltext}`,
 		// });
 		// return { data, totalCount };
 		// return { data: [], totalCount: 0 };

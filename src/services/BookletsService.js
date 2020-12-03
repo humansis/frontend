@@ -3,9 +3,10 @@ import { fetcher } from "@/utils/fetcher";
 export default {
 	async getListOfBooklets(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `booklets?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `booklets?page=${page}&size=${size + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

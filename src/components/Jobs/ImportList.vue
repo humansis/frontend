@@ -15,6 +15,7 @@
 
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					v-slot="props"
 					centered
@@ -66,6 +67,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -82,14 +85,17 @@ export default {
 		async fetchData() {
 			this.$store.commit("loading", true);
 
-			await ImportService.getListOfImports()
-				.then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => { Toast(e, "is-danger"); });
+			await ImportService.getListOfImports(
+				this.table.currentPage,
+				this.table.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => { Toast(e, "is-danger"); });
 
 			this.$store.commit("loading", false);
 		},
@@ -98,12 +104,19 @@ export default {
 			this.$emit("onShowDetail", donor);
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 	},
 };

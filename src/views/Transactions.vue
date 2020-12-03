@@ -37,10 +37,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -91,6 +88,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			filters: {
 				beneficiary: {
@@ -141,31 +140,37 @@ export default {
 			this.$store.commit("loading", true);
 
 			await TransactionService.getListOfTransactions(
-				1,
-				15,
-				"desc",
+				this.table.currentPage,
+				this.table.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				filters,
 				this.searchPhrase,
-			)
-				.then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => {
-					Toast(`(Transactions) ${e}`, "is-danger");
-				});
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Transactions) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 
 		filtersToggle() {

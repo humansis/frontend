@@ -1,25 +1,29 @@
 <template>
 	<div>
-		<div>
-			<label class="typo__label">Projects</label>
-			<MultiSelect
-				v-model="selectedProjectsForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				:options="projectsForFilter"
-				@input="fetchDistributions"
-			/>
-			<label class="typo__label">Distributions</label>
-			<MultiSelect
-				v-model="selectedDistributionForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				:options="distributionsForFilter"
-			/>
+		<div class="ml-1 columns box" style="width: 80%">
+			<div class="column is-half">
+				<label class="typo__label">Projects</label>
+				<MultiSelect
+					v-model="selectedProjectsForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					:options="projectsForFilter"
+					@input="fetchDistributions"
+				/>
+			</div>
+			<div class="column is-half">
+				<label class="typo__label">Distributions</label>
+				<MultiSelect
+					v-model="selectedDistributionForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					:options="distributionsForFilter"
+				/>
+			</div>
 		</div>
 		<Table
 			:data="table.data"
@@ -31,10 +35,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -85,6 +86,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			projectsForFilter: [],
 			distributionsForFilter: [],
@@ -109,7 +112,7 @@ export default {
 			await DistributionReportService.getListOfDistributionReports(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

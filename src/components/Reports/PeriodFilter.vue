@@ -6,18 +6,22 @@
 			<b-button class="mx-2">Per Month</b-button>
 			<b-button class="mx-2" @click="showChoosePeriod">Choose Period</b-button>
 		</div>
-		<div v-if="showChoosePeriodForm">
-			<b-field>
-				<b-datepicker
-					placeholder="From"
-					icon="calendar-today"
-					editable
-				/>
-				<b-datepicker
-					placeholder="To"
-					icon="calendar-today"
-					editable
-				/>
+		<div v-if="showChoosePeriodForm" class="ml-2 mt-5 box">
+			<b-field class="columns">
+				<div class="column is-half">
+					<b-datepicker
+						placeholder="From"
+						icon="calendar"
+						editable
+					/>
+				</div>
+				<div class="column is-half">
+					<b-datepicker
+						placeholder="To"
+						icon="calendar"
+						editable
+					/>
+				</div>
 			</b-field>
 		</div>
 	</div>

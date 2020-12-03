@@ -1,17 +1,20 @@
 <template>
 	<div>
-		<div>
-			<label class="typo__label">Projects</label>
-			<MultiSelect
-				v-model="selectedProjectsForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				multiple
-				:options="projectsForFilter"
-			/>
+		<div class="columns">
+			<div class="box column is-four-fifths ml-4" style="width: 78%">
+				<label class="typo__label">Projects</label>
+				<MultiSelect
+					v-model="selectedProjectsForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					multiple
+					:options="projectsForFilter"
+				/>
+			</div>
 		</div>
+
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -22,10 +25,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -75,6 +75,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			projectsForFilter: [],
 			selectedProjectsForFilter: [],
@@ -97,7 +99,7 @@ export default {
 			await ProjectReportService.getListOfProjectReports(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -138,12 +140,19 @@ export default {
 			// TODO go to detail
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 	},
 };

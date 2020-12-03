@@ -41,6 +41,7 @@
 			type="is-success"
 			size="is-default"
 			class="is-pulled-right"
+			space-between
 			:formats="{ xlsx: true, csv: true, ods: true}"
 			@exportData="exportHousehold"
 		/>
@@ -74,13 +75,14 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
-			:checkable="true"
+			checkable
+			paginated
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
+				<b-table-column v-bind="column" :key="column.id" sortable>
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -182,6 +184,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortColumn: "",
+				sortDirection: "desc",
 			},
 			checkedRows: [],
 		};
@@ -204,7 +208,7 @@ export default {
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 				filters,
 			).then((response) => {
@@ -244,12 +248,19 @@ export default {
 			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 
 		async remove(id) {

@@ -4,9 +4,10 @@ export default {
 	// eslint-disable-next-line no-unused-vars
 	async getListOfCountries(page, size, sort, search = null) {
 		// const fulltext = search ? `&fulltext=${search}` : "";
+		// const sortText = sort ? `&sort=${sort}` : "";
 		//
 		// const { data: { data, totalCount } } = await fetcher({
-		// 	uri: `users?page=${page}&size=${size}&sort=${sort + fulltext}`,
+		// 	uri: `users?page=${page}&size=${size + sortText + fulltext}`,
 		// });
 		// return { data, totalCount };
 		return {
