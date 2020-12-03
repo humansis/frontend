@@ -43,10 +43,10 @@
 						Next
 					</b-button>
 					<b-button
-						@click="save"
 						v-if="activeStep === 3"
 						type="is-danger"
 						icon-left="save"
+						@click="save"
 					>
 						Save
 					</b-button>
