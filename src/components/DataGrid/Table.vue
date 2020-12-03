@@ -17,7 +17,7 @@
 			aria-current-label="Current page"
 			selectable
 			:checked-rows.sync="checkedRows"
-			:paginated="isPaginated"
+			:paginated="paginated"
 			:checkable="checkable"
 			:data="data"
 			:total="total"
@@ -42,7 +42,10 @@ export default {
 		total: Number,
 		currentPage: Number,
 		perPage: Number,
-		paginated: Boolean,
+		paginated: {
+			type: Boolean,
+			default: true,
+		},
 		checkable: {
 			type: Boolean,
 			default: false,
@@ -53,12 +56,6 @@ export default {
 		return {
 			checkedRows: [],
 		};
-	},
-
-	computed: {
-		isPaginated() {
-			return this.paginated === undefined ? true : this.paginated;
-		},
 	},
 
 	methods: {

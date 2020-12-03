@@ -5,9 +5,13 @@
 		</h4>
 		<div class="columns mb-5">
 			<div class="column is-half is-offset-one-quarter">
-				<b-field label="Projects">
+				<b-field
+					label="Projects"
+					:type="validateType('selectedProjects')"
+					:message="validateMsg('selectedProjects', 'Projects are Required')"
+				>
 					<MultiSelect
-						v-model="selectedProjects"
+						v-model="formModel.selectedProjects"
 						searchable
 						track-by="id"
 						label="name"
@@ -34,7 +38,7 @@
 		</div>
 		<h4 class="title is-4 has-text-centered">Household Members</h4>
 		<Table
-			:data="table.data"
+			:data="membersData"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
@@ -53,22 +57,37 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ProjectsService from "@/services/ProjectsService";
+import Validation from "@/mixins/validation";
+import { required } from "vuelidate/lib/validators";
 
 export default {
 	name: "Summary",
+
+	mixins: [Validation],
 
 	components: {
 		Table,
 	},
 
+	props: {
+		members: Array,
+	},
+
+	validations: {
+		formModel: {
+			selectedProjects: { required },
+		},
+	},
+
 	data() {
 		return {
-			selectedProjects: [],
+			formModel: {
+				selectedProjects: null,
+			},
 			options: {
 				projects: [],
 			},
 			table: {
-				data: [],
 				columns: [
 					{
 						field: "firstName",
@@ -83,7 +102,7 @@ export default {
 						label: "Gender",
 					},
 					{
-						field: "dateOfBirth",
+						field: "dateBirth",
 						label: "Date Of Birth",
 					},
 					{
@@ -106,12 +125,23 @@ export default {
 		this.fetchProjects();
 	},
 
+	computed: {
+		membersData() {
+			return this.members;
+		},
+	},
+
 	methods: {
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
 				.then((response) => {
 					this.options.projects = response.data;
 				});
+		},
+
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
 		},
 	},
 };
