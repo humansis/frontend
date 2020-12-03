@@ -31,7 +31,7 @@
 					<b-button
 						type="is-danger is-light"
 						:disabled="previous.disabled"
-						@click.prevent="previousPage(previous)"
+						@click.prevent="previous.action"
 					>
 						Back
 					</b-button>
@@ -118,10 +118,6 @@ export default {
 					break;
 				default:
 			}
-		},
-
-		previousPage(previous) {
-			previous.action();
 		},
 
 		save() {
