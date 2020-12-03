@@ -1,5 +1,9 @@
 <template>
 	<div>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
 		<div class="columns">
 			<div class="box column is-four-fifths ml-4" style="width: 78%">
 				<label class="typo__label">Projects</label>
@@ -11,6 +15,7 @@
 					track-by="id"
 					multiple
 					:options="projectsForFilter"
+					@input="fetchProjectReports"
 				/>
 			</div>
 		</div>
@@ -46,12 +51,13 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
-import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
 
 export default {
 	name: "ProjectReportList",
@@ -59,6 +65,7 @@ export default {
 	components: {
 		Table,
 		ActionButton,
+		ReportNavbar,
 	},
 
 	data() {
@@ -80,6 +87,8 @@ export default {
 			},
 			projectsForFilter: [],
 			selectedProjectsForFilter: [],
+			selectedPeriod: null,
+			choosePeriod: null,
 		};
 	},
 
@@ -100,6 +109,9 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.selectedPeriod,
+				this.choosePeriod,
+				this.selectedProjectsForFilter,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -140,9 +152,19 @@ export default {
 			// TODO go to detail
 		},
 
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchProjectReports();
+		},
+
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchProjectReports();
+		},
+
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
-			this.fetchData();
+			this.fetchProjectReports();
 		},
 
 		onSort(column) {

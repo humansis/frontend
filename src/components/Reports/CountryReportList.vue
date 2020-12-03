@@ -1,5 +1,9 @@
 <template>
 	<div>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -37,11 +41,13 @@ import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import CountryReportService from "@/services/CountryReportService";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
 
 export default {
 	name: "CountryReportList",
 
 	components: {
+		ReportNavbar,
 		Table,
 		ActionButton,
 	},
@@ -63,6 +69,8 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 			},
+			selectedPeriod: null,
+			choosePeriod: null,
 		};
 	},
 
@@ -82,6 +90,8 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.period,
+				this.choosePeriod,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -97,6 +107,16 @@ export default {
 
 		goToDetail() {
 			// TODO go to detail
+		},
+
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchData();
+		},
+
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchData();
 		},
 
 		onPageChange(currentPage) {

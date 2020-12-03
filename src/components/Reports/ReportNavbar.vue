@@ -1,6 +1,11 @@
 <template>
 	<div class="columns">
-		<PeriodFilter class="column is-four-fifths" />
+		<PeriodFilter
+			ref="periodFilter"
+			class="column is-four-fifths"
+			@periodChanged="$emit('periodChanged', $event)"
+			@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
+		/>
 
 		<ExportButton
 			class="column is-one-fifth ml-6"
@@ -24,7 +29,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-
-</style>

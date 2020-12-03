@@ -1,5 +1,9 @@
 <template>
 	<div>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
 		<div class="ml-1 columns box" style="width: 80%">
 			<div class="column is-half">
 				<label class="typo__label">Projects</label>
@@ -22,6 +26,7 @@
 					label="name"
 					track-by="id"
 					:options="distributionsForFilter"
+					@input="fetchDistributionReports"
 				/>
 			</div>
 		</div>
@@ -63,11 +68,13 @@ import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
 
 export default {
 	name: "DistributionReportList",
 
 	components: {
+		ReportNavbar,
 		Table,
 		ActionButton,
 	},
@@ -89,6 +96,8 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 			},
+			selectedPeriod: null,
+			choosePeriod: null,
 			projectsForFilter: [],
 			distributionsForFilter: [],
 			selectedProjectsForFilter: [],
@@ -113,6 +122,10 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.selectedPeriod,
+				this.choosePeriod,
+				this.selectedProjectsForFilter,
+				this.selectedDistributionForFilter,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -172,6 +185,8 @@ export default {
 				Toast(`(Project Assistances) ${e}`, "is-danger");
 			});
 
+			await this.fetchDistributionReports();
+
 			this.$store.commit("loading", false);
 		},
 
@@ -179,12 +194,29 @@ export default {
 			// TODO go to detail
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchDistributionReports();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchDistributionReports();
+		},
+
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			this.fetchData();
+		},
+
+		onSort(column) {
+			if (this.table.sortColumn === column) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = column;
+				this.table.sortDirection = "desc";
+			}
+			this.fetchData();
 		},
 	},
 };
