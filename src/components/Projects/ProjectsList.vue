@@ -91,9 +91,6 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{
-						key: "id",
-					},
-					{
 						key: "name",
 					},
 					{
@@ -110,7 +107,7 @@ export default {
 						key: "target",
 					},
 					{
-						key: "numberOfHouseHolds",
+						key: "numberOfHouseholds",
 					},
 				],
 				total: 0,

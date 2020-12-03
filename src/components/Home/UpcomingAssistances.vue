@@ -43,15 +43,18 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
-						label: "Id",
+						label: "Assistance ID",
 					},
 					{
 						key: "name",
-						label: "Name",
 					},
 					{
 						key: "adm1Id",
-						label: "Adm 1 Id",
+						label: "Location",
+					},
+					{
+						key: "beneficiaries",
+						label: "Beneficiaries",
 					},
 					{
 						key: "dateDistribution",
@@ -62,8 +65,8 @@ export default {
 						label: "Target",
 					},
 					{
-						key: "type",
-						label: "Type",
+						type: "commodity",
+						key: "commodity",
 					},
 				],
 				total: 0,

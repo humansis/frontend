@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<PeriodFilter />
 		<div>
 			<label class="typo__label">Projects</label>
 			<MultiSelect
@@ -56,20 +55,18 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import PeriodFilter from "@/components/Reports/PeriodFilter";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
-import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DistributionReportList",
 
 	components: {
-		PeriodFilter,
 		Table,
 		ActionButton,
 	},

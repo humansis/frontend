@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<PeriodFilter />
 		<div>
 			<label class="typo__label">Projects</label>
 			<MultiSelect
@@ -49,7 +48,6 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import PeriodFilter from "@/components/Reports/PeriodFilter";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import { generateColumns } from "@/utils/datagrid";
@@ -59,7 +57,6 @@ export default {
 	name: "ProjectReportList",
 
 	components: {
-		PeriodFilter,
 		Table,
 		ActionButton,
 	},

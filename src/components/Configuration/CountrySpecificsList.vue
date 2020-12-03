@@ -10,7 +10,15 @@
 					/>
 				</b-field>
 			</div>
+			<ExportButton
+				class="column is-2 is-offset-5"
+				type="is-success"
+				size="is-default"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+			/>
 		</div>
+
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -58,11 +66,13 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "CountrySpecificsList",
 
 	components: {
+		ExportButton,
 		SafeDelete,
 		Table,
 		ActionButton,

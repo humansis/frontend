@@ -10,6 +10,14 @@
 					/>
 				</b-field>
 			</div>
+
+			<ExportButton
+				class="column is-2 is-offset-5"
+				type="is-success"
+				size="is-default"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+			/>
 		</div>
 		<Table
 			:data="table.data"
@@ -66,11 +74,13 @@ import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "UsersList",
 
 	components: {
+		ExportButton,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -90,9 +100,6 @@ export default {
 					},
 					{
 						key: "prefix",
-					},
-					{
-						key: "organization",
 					},
 					{
 						key: "phoneNumber",

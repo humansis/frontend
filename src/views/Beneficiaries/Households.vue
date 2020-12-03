@@ -36,6 +36,15 @@
 				</div>
 			</b-dropdown-item>
 		</b-dropdown>
+
+		<ExportButton
+			type="is-success"
+			size="is-default"
+			class="is-pulled-right"
+			:formats="{ xlsx: true, csv: true, ods: true}"
+			@exportData="exportHousehold"
+		/>
+
 		<div class="columns">
 			<div class="column is-two-fifths">
 				<b-field>
@@ -63,10 +72,12 @@
 		/>
 
 		<Table
+			ref="householdList"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:checkable="true"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -100,11 +111,13 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "Households",
 
 	components: {
+		ExportButton,
 		Table,
 		ActionButton,
 		HouseholdsFilters,
@@ -119,30 +132,39 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
+						label: "Household ID",
 					},
 					{
-						key: "shelterStatus",
+						key: "contactFamilyName",
+						label: "Family Name",
 					},
 					{
-						key: "notes",
+						key: "contactGivenName",
+						label: "First Name",
 					},
 					{
-						key: "longitude",
+						key: "members",
 					},
 					{
-						key: "latitude",
+						key: "vulnerabilities",
 					},
 					{
-						key: "incomeLevel",
+						key: "idNumber",
+						label: "ID Number",
 					},
 					{
-						key: "deptLevel",
+						key: "projects",
+					},
+					{
+						key: "location",
+						label: "Current Location",
 					},
 				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
 			},
+			checkedRows: [],
 		};
 	},
 
@@ -201,6 +223,11 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		exportHousehold(format) {
+			console.log(format);
+			console.log(this.$refs.householdList.checkedRows);
 		},
 
 		async onFiltersChange(selectedFilters) {

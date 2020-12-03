@@ -5,7 +5,6 @@
 			default-sort-direction="asc"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
-			:paginated="isPaginated"
 			striped
 			hoverable
 			scrollable
@@ -17,6 +16,8 @@
 			aria-page-label="Page"
 			aria-current-label="Current page"
 			selectable
+			:checked-rows.sync="checkedRows"
+			:paginated="isPaginated"
 			:checkable="checkable"
 			:data="data"
 			:total="total"
@@ -46,6 +47,12 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+	},
+
+	data() {
+		return {
+			checkedRows: [],
+		};
 	},
 
 	computed: {

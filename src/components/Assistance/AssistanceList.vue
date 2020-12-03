@@ -50,15 +50,16 @@
 				</p>
 				<b-numberinput size="is-medium" placeholder="%" controls-position="compact" />
 			</b-field>
-			<b-button
+
+			<ExportButton
 				v-if="exportButton"
-				class="mb-5"
-				size="is-medium"
 				type="is-success"
-				icon-left="file-download"
-			>
-				Export
-			</b-button>
+				size="is-default"
+				class="is-pulled-right"
+				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+				@exportData="exportAssistance"
+			/>
+
 		</div>
 		<div class="columns">
 			<div class="column is-two-fifths">
@@ -108,14 +109,15 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import BeneficiariesService from "@/services/BeneficiariesService";
+import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
+import ExportButton from "@/components/ExportButton";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
-import Modal from "@/components/Modal";
-import { Toast } from "@/utils/UI";
 import SafeDelete from "@/components/SafeDelete";
 
 export default {
@@ -134,6 +136,7 @@ export default {
 		Table,
 		ActionButton,
 		Modal,
+		ExportButton,
 	},
 
 	data() {
@@ -221,6 +224,10 @@ export default {
 			});
 
 			this.$store.commit("loading", false);
+		},
+
+		exportAssistance(format) {
+			console.log(format);
 		},
 
 		openAddBeneficiaryModal() {

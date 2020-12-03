@@ -89,6 +89,9 @@ export default {
 						key: "individualValue",
 					},
 					{
+						key: "currency",
+					},
+					{
 						key: "status",
 					},
 					{
