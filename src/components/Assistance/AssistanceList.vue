@@ -117,6 +117,7 @@ import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBenefi
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "AssistanceList",
@@ -137,6 +138,8 @@ export default {
 		Modal,
 		ExportButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -265,21 +268,6 @@ export default {
 
 		removeAssistance(id) {
 			this.table.data = this.table.data.filter((item) => item.id !== id);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

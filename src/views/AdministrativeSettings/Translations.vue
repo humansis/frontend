@@ -71,6 +71,7 @@ import TranslationService from "@/services/TranslationService";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "Translations",
@@ -81,6 +82,8 @@ export default {
 		Table,
 		ColumnField,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -162,21 +165,6 @@ export default {
 
 		addTranslation() {
 			this.table.data.unshift({});
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

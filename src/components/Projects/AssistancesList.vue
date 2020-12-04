@@ -26,16 +26,16 @@
 		</b-button>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-		</div>
 
-		<ExportButton
-			type="is-success"
-			size="is-default"
-			class="is-pulled-right"
-			space-between
-			:formats="{ xlsx: true, csv: true, ods: true}"
-			@exportData="exportAssistance"
-		/>
+			<ExportButton
+				class="column"
+				type="is-success"
+				size="is-default"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@exportData="exportAssistance"
+			/>
+		</div>
 
 		<Table
 			:data="table.data"
@@ -113,6 +113,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "AssistancesList",
@@ -127,6 +128,8 @@ export default {
 		ExportButton,
 		Modal,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -273,21 +276,6 @@ export default {
 			}).catch((e) => {
 				Toast(`(Assistance) ${e}`, "is-danger");
 			});
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 
 		exportAssistance(format) {

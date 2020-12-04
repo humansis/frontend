@@ -42,6 +42,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import CountryReportService from "@/services/CountryReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "CountryReportList",
@@ -51,6 +52,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -116,21 +119,6 @@ export default {
 
 		onChoosePeriodFilterChange(choosePeriod) {
 			this.choosePeriod = choosePeriod;
-			this.fetchData();
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
 			this.fetchData();
 		},
 	},

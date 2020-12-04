@@ -3,7 +3,7 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 			<ExportButton
-				class="column is-2 is-offset-5"
+				class="column"
 				type="is-success"
 				size="is-default"
 				:formats="{ xlsx: true, csv: true, ods: true}"
@@ -68,6 +68,7 @@ import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "UsersList",
@@ -79,6 +80,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -158,21 +161,6 @@ export default {
 
 		remove(id) {
 			this.$emit("onRemove", id);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

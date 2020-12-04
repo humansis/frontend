@@ -29,6 +29,7 @@ import { generateColumns } from "@/utils/datagrid";
 import LogsService from "@/services/LogsService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "VouchersLogList",
@@ -37,6 +38,8 @@ export default {
 		Search,
 		Table,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -102,21 +105,6 @@ export default {
 
 		goToDetail() {
 			// TODO go to detail
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

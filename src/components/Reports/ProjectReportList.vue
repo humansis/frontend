@@ -58,6 +58,7 @@ import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "ProjectReportList",
@@ -67,6 +68,8 @@ export default {
 		ActionButton,
 		ReportNavbar,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -160,21 +163,6 @@ export default {
 		onChoosePeriodFilterChange(choosePeriod) {
 			this.choosePeriod = choosePeriod;
 			this.fetchProjectReports();
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchProjectReports();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

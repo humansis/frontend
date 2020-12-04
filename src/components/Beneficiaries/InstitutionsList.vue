@@ -59,6 +59,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "InstitutionsList",
@@ -69,6 +70,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -145,21 +148,6 @@ export default {
 
 		remove(id) {
 			this.$emit("onRemove", id);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

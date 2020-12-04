@@ -27,6 +27,7 @@ import { generateColumns } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";
 import Table from "@/components/DataGrid/Table";
 import { Toast } from "@/utils/UI";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "UpcomingAssistances",
@@ -34,6 +35,8 @@ export default {
 	components: {
 		Table,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -112,21 +115,6 @@ export default {
 
 		goToDetail() {
 			// TODO go to detail
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

@@ -2,15 +2,16 @@
 	<div class="columns">
 		<PeriodFilter
 			ref="periodFilter"
-			class="column is-four-fifths"
+			class="column is-two-fifths"
 			@periodChanged="$emit('periodChanged', $event)"
 			@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
 		/>
 
 		<ExportButton
-			class="column is-one-fifth ml-6"
+			class="column"
 			type="is-success"
 			size="is-default"
+			space-between
 			:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 		/>
 	</div>

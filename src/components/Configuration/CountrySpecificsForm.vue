@@ -47,7 +47,7 @@
 				/>
 			</b-field>
 		</section>
-		<footer class="modal-card-foot">
+		<section class="modal-card-foot">
 			<button
 				v-if="closeButton"
 				class="button"
@@ -63,7 +63,7 @@
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
-		</footer>
+		</section>
 	</form>
 </template>
 

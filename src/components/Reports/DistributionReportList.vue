@@ -69,6 +69,7 @@ import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "DistributionReportList",
@@ -78,6 +79,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -202,21 +205,6 @@ export default {
 		onChoosePeriodFilterChange(choosePeriod) {
 			this.choosePeriod = choosePeriod;
 			this.fetchDistributionReports();
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

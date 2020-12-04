@@ -35,6 +35,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import ImportService from "@/services/ImportService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "ImportList",
@@ -44,6 +45,8 @@ export default {
 		ColumnField,
 		Table,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -102,21 +105,6 @@ export default {
 
 		showDetail(donor) {
 			this.$emit("onShowDetail", donor);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

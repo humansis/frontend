@@ -66,6 +66,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "ProjectsList",
@@ -73,6 +74,8 @@ export default {
 	props: {
 		projectModel: Object,
 	},
+
+	mixins: [grid],
 
 	components: {
 		Search,
@@ -209,20 +212,6 @@ export default {
 			this.$emit("onShowDetail", project);
 		},
 
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
-		},
 	},
 };
 </script>

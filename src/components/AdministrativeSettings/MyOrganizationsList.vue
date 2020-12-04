@@ -53,6 +53,7 @@ import { generateColumns } from "@/utils/datagrid";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "MyOrganizationsList",
@@ -62,6 +63,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -152,21 +155,6 @@ export default {
 
 		print(id) {
 			this.$emit("onPrint", id);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 

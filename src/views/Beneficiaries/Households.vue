@@ -37,15 +37,6 @@
 			</b-dropdown-item>
 		</b-dropdown>
 
-		<ExportButton
-			type="is-success"
-			size="is-default"
-			class="is-pulled-right"
-			space-between
-			:formats="{ xlsx: true, csv: true, ods: true}"
-			@exportData="exportHousehold"
-		/>
-
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 
@@ -62,6 +53,15 @@
 					/>
 				</button>
 			</div>
+
+			<ExportButton
+				type="is-success"
+				size="is-default"
+				class="column is-2 is-offset-4"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@exportData="exportHousehold"
+			/>
 		</div>
 
 		<HouseholdsFilters
@@ -128,7 +128,7 @@ import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
-import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "Households",
@@ -141,6 +141,8 @@ export default {
 		HouseholdsFilters,
 		SafeDelete,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -246,21 +248,6 @@ export default {
 
 		editHousehold(id) {
 			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 
 		async remove(id) {

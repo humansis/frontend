@@ -11,20 +11,12 @@
         background-color: rgb(19 46 48 / 80%);
     }
 
-    .modal-card-foot {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        left: 0;
-    }
-
     .animation-content {
         width: 100%;
     }
 
     form {
-        overflow-y: scroll;
-        padding-bottom: 80px;
+        overflow-y: auto;
     }
 
     .modal-card {
@@ -32,7 +24,7 @@
     }
 
     .modal-card-body {
-        overflow: visible;
+        overflow: visible !important;
     }
 
     .modal-card-foot {

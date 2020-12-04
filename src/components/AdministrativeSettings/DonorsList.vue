@@ -3,7 +3,7 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 			<ExportButton
-				class="column is-2 is-offset-5"
+				class="column"
 				type="is-success"
 				size="is-default"
 				space-between
@@ -70,6 +70,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "DonorsList",
@@ -82,6 +83,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -163,21 +166,6 @@ export default {
 		showEdit(id) {
 			const donor = this.table.data.find((item) => item.id === id);
 			this.$emit("onShowEdit", donor);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

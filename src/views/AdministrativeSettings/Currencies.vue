@@ -32,6 +32,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import CurrencyService from "@/services/CurrencyService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "Currencies",
@@ -41,6 +42,8 @@ export default {
 		Table,
 		ColumnField,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -97,21 +100,6 @@ export default {
 			});
 
 			this.$store.commit("loading", false);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };

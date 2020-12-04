@@ -55,6 +55,7 @@ import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "CountriesList",
@@ -65,6 +66,8 @@ export default {
 		ActionButton,
 		ColumnField,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -140,21 +143,6 @@ export default {
 		showEdit(id) {
 			const country = this.table.data.find((item) => item.id === id);
 			this.$emit("onShowEdit", country);
-		},
-
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
-			this.fetchData();
-		},
-
-		onSort(column) {
-			if (this.table.sortColumn === column) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = column;
-				this.table.sortDirection = "desc";
-			}
-			this.fetchData();
 		},
 	},
 };
