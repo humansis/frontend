@@ -1,12 +1,18 @@
 <template>
 	<div>
-		<h2 class="title">Edit Households</h2>
+		<h2 class="title">Edit Household</h2>
+		<HouseholdTabs is-editing />
 	</div>
 </template>
 
 <script>
+import HouseholdTabs from "@/components/Beneficiaries/Household/HouseholdTabs";
 
 export default {
 	name: "EditHousehold",
+
+	components: {
+		HouseholdTabs,
+	},
 };
 </script>

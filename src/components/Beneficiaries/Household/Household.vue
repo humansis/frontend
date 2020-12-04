@@ -49,8 +49,8 @@
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
-						label="name"
-						track-by="id"
+						label="value"
+						track-by="code"
 						placeholder="Livelihood"
 						:options="options.livelihood"
 					/>
@@ -75,6 +75,8 @@
 						v-model="formModel.livelihood.assets"
 						searchable
 						multiple
+						label="value"
+						track-by="code"
 						placeholder="Assets"
 						:options="options.assets"
 					/>
@@ -98,7 +100,7 @@
 						searchable
 						multiple
 						label="value"
-						track-by="id"
+						track-by="code"
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
 					/>
@@ -143,6 +145,8 @@
 			<MultiSelect
 				v-model="formModel.shelterType"
 				searchable
+				label="value"
+				track-by="code"
 				placeholder="Shelter Type"
 				:options="options.shelterType"
 			/>
@@ -161,6 +165,8 @@
 import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import Validation from "@/mixins/validation";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Toast } from "@/utils/UI";
 
 const locationModel = {
 	adm1Id: "",
@@ -181,6 +187,16 @@ export default {
 
 	mixins: [Validation],
 
+	props: {
+		detailOfHousehold: null || Object,
+	},
+
+	watch: {
+		detailOfHousehold() {
+			// TODO Map detailOfHousehold to formModel
+		},
+	},
+
 	components: {
 		LocationForm,
 		TypeOfLocationForm,
@@ -193,6 +209,7 @@ export default {
 	data() {
 		return {
 			formModel: {
+				id: null,
 				currentLocation: {
 					...locationModel,
 				},
@@ -201,15 +218,15 @@ export default {
 					...locationModel,
 				},
 				livelihood: {
-					livelihood: "",
-					incomeLevel: "",
+					livelihood: [],
+					incomeLevel: [],
 					debtLevel: 0,
-					assets: "",
+					assets: [],
 					foodConsumptionScore: 0,
 					copingStrategiesIndex: 0,
 				},
 				externalSupport: {
-					externalSupportReceivedType: "",
+					externalSupportReceivedType: [],
 					supportDateReceived: new Date(),
 					supportOrganization: "",
 				},
@@ -218,202 +235,63 @@ export default {
 					equityCardNo: "",
 					fields: "",
 				},
-				shelterType: "",
+				shelterType: [],
 				notes: "",
 			},
 			options: {
-				livelihood: [
-					{
-						id: "agricultureLivestock",
-						name: "Agriculture - Livestock",
-					},
-					{
-						id: "agricultureCrops",
-						name: "Agriculture - Crops",
-					},
-					{
-						id: "agricultureFishing",
-						name: "Agriculture - Fishing",
-					},
-					{
-						id: "agricultureOther",
-						name: "Agriculture - Other",
-					},
-					{
-						id: "mining",
-						name: "Mining",
-					},
-					{
-						id: "construction",
-						name: "Construction",
-					},
-					{
-						id: "manufacturing",
-						name: "Manufacturing",
-					},
-					{
-						id: "retail",
-						name: "Retail",
-					},
-					{
-						id: "transportation",
-						name: "Transportation",
-					},
-					{
-						id: "education",
-						name: "Education",
-					},
-					{
-						id: "healthCare",
-						name: "Health Care",
-					},
-					{
-						id: "hospitalityAndTourism",
-						name: "Hospitality And Tourism",
-					},
-					{
-						id: "legalServices",
-						name: "Legal Services",
-					},
-					{
-						id: "homeDuties",
-						name: "Home Duties",
-					},
-					{
-						id: "religiousService",
-						name: "Religious Service",
-					},
-					{
-						id: "itAndTelecommunications",
-						name: "IT And Telecommunications",
-					},
-					{
-						id: "financeAndInsurance",
-						name: "Finance And Insurance",
-					},
-					{
-						id: "manualLabour",
-						name: "Manual Labour",
-					},
-					{
-						id: "ngoAndNonProfit",
-						name: "NGO And Non Profit",
-					},
-					{
-						id: "militaryOrPolice",
-						name: "Military Or Police",
-					},
-					{
-						id: "governmentAndPublicEnterprise",
-						name: "Government And Public Enterprise",
-					},
-					{
-						id: "garmentIndustry",
-						name: "Garment Industry",
-					},
-					{
-						id: "securityIndustry",
-						name: "Security Industry",
-					},
-					{
-						id: "serviceIndustryAndOtherProfessionals",
-						name: "Service Industry And Other Professionals",
-					},
-					{
-						id: "other",
-						name: "Other",
-					},
-				],
+				livelihood: [],
 				incomeLevel: [
-					{
-						code: 0,
-						value: "Very Low (Income < 100 USD)",
-					},
-					{
-						code: 1,
-						value: "Low (100 USD < Income < 100 USD)",
-					},
-					{
-						code: 2,
-						value: "Average (150 USD < Income < 250 USD)",
-					},
-					{
-						code: 3,
-						value: "High (250 USD < Income < 300 USD)",
-					},
-					{
-						code: 4,
-						value: "Very High (300 USD < Income)",
-					},
+					{ code: 0, value: "Very Low (Income < 100 USD)" },
+					{ code: 1, value: "Low (100 USD < Income < 100 USD)" },
+					{ code: 2, value: "Average (150 USD < Income < 250 USD)" },
+					{ code: 3, value: "High (250 USD < Income < 300 USD)" },
+					{ code: 4, value: "Very High (300 USD < Income)" },
 				],
-				assets: [
-					"AC", "Agricultural Land", "Car", "Flatscreen TV", "Livestock",
-					"Motorbike", "Washing Machine",
-				],
+				assets: [],
 				externalSupportReceivedType: [
-					{
-						code: 0,
-						value: "MPCA",
-					},
-					{
-						code: 1,
-						value: "Cash For Work",
-					},
-					{
-						code: 2,
-						value: "Food Kit",
-					},
-					{
-						code: 3,
-						value: "Food Voucher",
-					},
-					{
-						code: 4,
-						value: "Hygiene Kit",
-					},
-					{
-						code: 5,
-						value: "Shelter Kit",
-					},
-					{
-						code: 6,
-						value: "Shelter Reconstruction Support",
-					},
-					{
-						code: 7,
-						value: "Non Food Items",
-					},
-					{
-						code: 8,
-						value: "Livelihoods Support",
-					},
-					{
-						code: 9,
-						value: "Vocational Training",
-					},
-					{
-						code: 10,
-						value: "None",
-					},
-					{
-						code: 11,
-						value: "Other",
-					},
+					{ code: 0, value: "MPCA" },
+					{ code: 1, value: "Cash For Work" },
+					{ code: 2, value: "Food Kit" },
+					{ code: 3, value: "Food Voucher" },
+					{ code: 4, value: "Hygiene Kit" },
+					{ code: 5, value: "Shelter Kit" },
+					{ code: 6, value: "Shelter Reconstruction Support" },
+					{ code: 7, value: "Non Food Items" },
+					{ code: 8, value: "Livelihoods Support" },
+					{ code: 9, value: "Vocational Training" },
+					{ code: 10, value: "None" },
+					{ code: 11, value: "Other" },
 				],
-				shelterType: [
-					"Tent", "Makeshift Shelter", "Transitional Shelter",
-					"House/Apartment - Severely Damaged",
-					"House/Apartment - Moderately Damaged",
-					"House/Apartment - Good Condition",
-					"Room Or Space In Public Building",
-					"Room Or Space In Unfinished Building",
-					"Other",
-				],
+				shelterType: [],
 			},
 		};
 	},
 
+	mounted() {
+		this.fetchData();
+	},
+
 	methods: {
+		async fetchData() {
+			await BeneficiariesService.getListOfLivelihoods()
+				.then((result) => { this.options.livelihood = result.data; })
+				.catch((e) => {
+					Toast(`(Livelihoods) ${e}`, "is-danger");
+				});
+
+			await BeneficiariesService.getListOfAssets()
+				.then((result) => { this.options.assets = result.data; })
+				.catch((e) => {
+					Toast(`(Assets) ${e}`, "is-danger");
+				});
+
+			await BeneficiariesService.getListOfShelterStatuses()
+				.then((result) => { this.options.shelterType = result.data; })
+				.catch((e) => {
+					Toast(`(Shelter Types) ${e}`, "is-danger");
+				});
+		},
+
 		submit() {
 			this.$v.$touch();
 			return !this.$v.$invalid;

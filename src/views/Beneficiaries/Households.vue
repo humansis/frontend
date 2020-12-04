@@ -75,7 +75,7 @@
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
 			:checkable="true"
-			@clicked="goToDetail"
+			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -88,14 +88,28 @@
 			</template>
 
 			<b-table-column
+				v-slot="props"
 				label="Actions"
 				width="140"
 				centered
 			>
 				<div class="block">
-					<ActionButton icon="edit" type="is-link" />
-					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
+					<ActionButton
+						icon="edit"
+						type="is-link"
+						@click.native="editHousehold(props.row.id)"
+					/>
+					<ActionButton
+						icon="search"
+						type="is-info"
+						@click.native="goToSummaryDetail(props.row.id)"
+					/>
+					<SafeDelete
+						icon="trash"
+						entity="Household"
+						:id="props.row.id"
+						@submitted="remove"
+					/>
 				</div>
 			</b-table-column>
 
@@ -112,6 +126,7 @@ import ActionButton from "@/components/ActionButton";
 import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "Households",
@@ -122,6 +137,7 @@ export default {
 		Table,
 		ActionButton,
 		HouseholdsFilters,
+		SafeDelete,
 	},
 
 	data() {
@@ -155,7 +171,8 @@ export default {
 						label: "ID Number",
 					},
 					{
-						key: "projects",
+						key: "projectIds",
+						label: "Projects",
 					},
 					{
 						key: "location",
@@ -181,7 +198,9 @@ export default {
 	methods: {
 		async fetchData(value, filters) {
 			this.searchPhrase = value;
+
 			this.$store.commit("loading", true);
+
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
@@ -217,8 +236,12 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		goToDetail() {
-			// TODO go to detail
+		goToSummaryDetail(id) {
+			this.$router.push({ name: "HouseholdInformationSummary", params: { householdId: id } });
+		},
+
+		editHousehold(id) {
+			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
 		},
 
 		onPageChange() {
@@ -227,6 +250,17 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		async remove(id) {
+			await BeneficiariesService.removeHousehold(id).then((response) => {
+				if (response.status === 204) {
+					Toast("Household Successfully Deleted", "is-success");
+					this.fetchData();
+				}
+			}).catch((e) => {
+				Toast(`(Household) ${e}`, "is-danger");
+			});
 		},
 
 		exportHousehold(format) {

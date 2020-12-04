@@ -18,10 +18,10 @@ export default {
 	},
 
 	async getDetailOfHousehold(id) {
-		const { data: { data, totalCount } } = await fetcher({
+		const { data } = await fetcher({
 			uri: `households/${id}`,
 		});
-		return { data, totalCount };
+		return data;
 	},
 
 	async updateHousehold(id, body) {

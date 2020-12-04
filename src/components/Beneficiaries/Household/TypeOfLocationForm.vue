@@ -1,11 +1,11 @@
 <template>
 	<section>
-		<b-field
-			label="Type Of Location"
-		>
+		<b-field label="Type Of Location">
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
 				placeholder="Type Of Location"
+				label="value"
+				track-by="code"
 				:options="options.typeOfLocation"
 				:searchable="false"
 			/>
@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -70,13 +72,25 @@ export default {
 		return {
 			createCamp: false,
 			options: {
-				typeOfLocation: ["Camp", "Residence", "Temporary Settlement"],
+				typeOfLocation: [],
 				camps: [],
 			},
 		};
 	},
 
+	mounted() {
+		this.fetchData();
+	},
+
 	methods: {
+		async fetchData() {
+			await BeneficiariesService.getListOfLocationsTypes()
+				.then((result) => { this.options.typeOfLocation = result.data; })
+				.catch((e) => {
+					Toast(`(Location Types) ${e}`, "is-danger");
+				});
+		},
+
 		submitTypeOfLocationForm() {
 			this.$v.$touch();
 		},

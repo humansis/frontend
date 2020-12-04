@@ -59,6 +59,7 @@ import Table from "@/components/DataGrid/Table";
 import ProjectsService from "@/services/ProjectsService";
 import Validation from "@/mixins/validation";
 import { required } from "vuelidate/lib/validators";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Summary",
@@ -71,6 +72,13 @@ export default {
 
 	props: {
 		members: Array,
+		detailOfHousehold: null || Object,
+	},
+
+	watch: {
+		detailOfHousehold() {
+			// TODO Map detailOfHousehold to formModel
+		},
 	},
 
 	validations: {
@@ -97,22 +105,13 @@ export default {
 						field: "familyName",
 						label: "Family Name (Local)",
 					},
-					{
-						field: "gender",
-						label: "Gender",
-					},
+					{ field: "gender" },
 					{
 						field: "dateBirth",
 						label: "Date Of Birth",
 					},
-					{
-						field: "phone",
-						label: "Phone",
-					},
-					{
-						field: "nationalId",
-						label: "National ID",
-					},
+					{ field: "phone" },
+					{ field: "nationalId" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -136,6 +135,9 @@ export default {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
 				.then((response) => {
 					this.options.projects = response.data;
+				})
+				.catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
 				});
 		},
 

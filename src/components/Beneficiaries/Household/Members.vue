@@ -55,6 +55,16 @@ export default {
 		HouseholdForm,
 	},
 
+	props: {
+		detailOfHousehold: null || Object,
+	},
+
+	watch: {
+		detailOfHousehold() {
+			// TODO Map detailOfHousehold to members
+		},
+	},
+
 	data() {
 		return {
 			isOpen: 0,
