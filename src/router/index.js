@@ -65,7 +65,8 @@ const routes = [
 						meta: {
 							breadcrumb: "Add Assistance",
 						},
-					}],
+					},
+				],
 			},
 			{
 				path: "/beneficiaries",
@@ -93,7 +94,7 @@ const routes = [
 					{
 						path: "import-household",
 						name: "ImportHousehold",
-						component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+						component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
 						meta: {
 							breadcrumb: "Import Household",
 						},
@@ -104,6 +105,14 @@ const routes = [
 						component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 						meta: {
 							breadcrumb: "Edit Household",
+						},
+					},
+					{
+						path: "household-information-summary/:householdId",
+						name: "HouseholdInformationSummary",
+						component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+						meta: {
+							breadcrumb: "Household Information Summary",
 						},
 					},
 					{

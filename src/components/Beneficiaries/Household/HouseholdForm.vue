@@ -171,6 +171,13 @@ export default {
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
+		detailOfHousehold: null || Object,
+	},
+
+	watch: {
+		detailOfHousehold() {
+			// TODO Map detailOfHousehold to formModel
+		},
 	},
 
 	validations: {
@@ -220,14 +227,8 @@ export default {
 			},
 			options: {
 				gender: [
-					{
-						code: "M",
-						value: "Male",
-					},
-					{
-						code: "F",
-						value: "Female",
-					},
+					{ code: "M", value: "Male" },
+					{ code: "F", value: "Female" },
 				],
 				idType: [
 					"Passport", "National ID", "Driver's License", "Family Registration",
@@ -237,36 +238,15 @@ export default {
 				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
 				phoneType: ["Landline", "Mobile"],
 				phonePrefixes: [
-					{
-						id: "+420",
-						name: "CZ - +420",
-					},
-					{
-						id: "+421",
-						name: "SK - +421",
-					},
+					{ id: "+420", name: "CZ - +420" },
+					{ id: "+421", name: "SK - +421" },
 				],
 				vulnerabilities: [
-					{
-						id: "disabled",
-						name: "Disabled",
-					},
-					{
-						id: "soloParent",
-						name: "Solo Parent",
-					},
-					{
-						id: "lactating",
-						name: "Lactating",
-					},
-					{
-						id: "pregnant",
-						name: "Pregnant",
-					},
-					{
-						id: "chronicallylll",
-						name: "Chronicallylll",
-					},
+					{ id: "disabled", name: "Disabled" },
+					{ id: "soloParent", name: "Solo Parent" },
+					{ id: "lactating", name: "Lactating" },
+					{ id: "pregnant", name: "Pregnant" },
+					{ id: "chronicallylll", name: "Chronicallylll" },
 				],
 			},
 		};

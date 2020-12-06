@@ -7,24 +7,25 @@
 			:has-navigation="true"
 		>
 			<b-step-item step="1" label="Household">
-				<Household ref="household" />
+				<Household :detailOfHousehold="detailOfHousehold" ref="household" />
 			</b-step-item>
-
 			<b-step-item step="2" label="Household Head">
-				<HouseholdForm ref="householdHead" show-type-of-beneficiary />
+				<HouseholdForm
+					ref="householdHead"
+					show-type-of-beneficiary
+					:detailOfHousehold="detailOfHousehold"
+				/>
 			</b-step-item>
-
 			<b-step-item step="3" label="Members">
-				<Members ref="householdMembers" />
+				<Members :detailOfHousehold="detailOfHousehold" ref="householdMembers" />
 			</b-step-item>
-
 			<b-step-item step="4" label="Summary">
 				<Summary
 					ref="householdSummary"
+					:detailOfHousehold="detailOfHousehold"
 					:members="summaryMembers"
 				/>
 			</b-step-item>
-
 			<template
 				v-if="true"
 				slot="navigation"
@@ -51,7 +52,7 @@
 						icon-left="save"
 						@click="save"
 					>
-						Save
+						{{ isEditing ? "Update" : "Save" }}
 					</b-button>
 				</div>
 			</template>
@@ -84,12 +85,19 @@ export default {
 	data() {
 		return {
 			activeStep: 0,
+			detailOfHousehold: null,
 			household: null,
 			householdHead: [],
 			householdMembers: [],
 			summaryMembers: [],
 			selectedProjects: [],
 		};
+	},
+
+	created() {
+		if (this.isEditing) {
+			this.getDetailOfHousehold(this.$route.params.householdId);
+		}
 	},
 
 	methods: {
@@ -128,8 +136,7 @@ export default {
 		save() {
 			// TODO Mapping form models to householdBody
 			const {
-				id,
-				shelterType: shelterStatus,
+				shelterType,
 				livelihood: {
 					livelihood, assets, incomeLevel, debtLevel, foodConsumptionScore,
 					copingStrategiesIndex,
@@ -145,7 +152,7 @@ export default {
 			const householdBody = {
 				livelihood,
 				assets: [...assets],
-				shelterStatus,
+				shelterStatus: shelterType,
 				projectIds: [...this.selectedProjects],
 				notes,
 				longitude: "string",
@@ -212,28 +219,38 @@ export default {
 				],
 			};
 
-			if (
-				this.$refs.householdSummary.submit()
-				&& this.$refs.householdSummary.selectedProjects.length
-			) {
-				if (this.isEditing && id) {
-					this.updateHousehold(id, householdBody);
+			if (this.$refs.householdSummary.submit()) {
+				if (this.isEditing && this.$route.params.householdId) {
+					this.updateHousehold(this.$route.params.householdId, householdBody);
 				} else {
 					this.createHousehold(householdBody);
 				}
 			}
 		},
 
-		updateHousehold() {
-			// TODO Update Household
+		async updateHousehold(id, householdBody) {
+			await BeneficiariesService.createHousehold(id, householdBody).then((response) => {
+				if (response.status === 200) {
+					Toast("Household Successfully Updated", "is-success");
+				}
+			}).catch((e) => {
+				Toast(`(Household) ${e}`, "is-danger");
+			});
 		},
 
 		async createHousehold(householdBody) {
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Household Successfully Created", "is-success");
-					this.$refs.projectList.fetchData();
 				}
+			}).catch((e) => {
+				Toast(`(Household) ${e}`, "is-danger");
+			});
+		},
+
+		async getDetailOfHousehold(id) {
+			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
+				this.detailOfHousehold = response;
 			}).catch((e) => {
 				Toast(`(Household) ${e}`, "is-danger");
 			});
