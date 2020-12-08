@@ -13,7 +13,6 @@
 				@formClosed="closeVoucherModal"
 			/>
 		</Modal>
-
 		<VoucherList
 			@onShowDetail="showDetail"
 		/>

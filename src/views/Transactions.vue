@@ -17,7 +17,6 @@
 				</button>
 			</div>
 		</div>
-
 		<b-collapse
 			v-model="advancedSearchVisible"
 			animation="slide"
@@ -27,7 +26,6 @@
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
-
 		<Table
 			:data="table.data"
 			:total="table.total"

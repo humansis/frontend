@@ -92,7 +92,6 @@
 					:disabled="formDisabled"
 				/>
 			</b-field>
-
 		</section>
 		<footer class="modal-card-foot">
 			<button

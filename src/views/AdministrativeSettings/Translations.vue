@@ -2,7 +2,6 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-
 			<div class="column is-pulled-right">
 				<b-field>
 					<b-button
@@ -15,7 +14,6 @@
 				</b-field>
 			</div>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -50,7 +48,6 @@
 				</div>
 			</b-table-column>
 		</Table>
-
 		<b-button
 			class="mb-5"
 			size="is-medium"

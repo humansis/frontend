@@ -16,7 +16,6 @@
 					trap-focus
 				/>
 			</b-field>
-
 			<b-field
 				label="Target"
 				:type="validateType('target')"

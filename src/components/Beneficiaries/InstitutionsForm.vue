@@ -70,7 +70,6 @@
 							@select="validate('phonePrefix')"
 						/>
 					</b-field>
-
 					<b-field
 						expanded
 						:type="validateType('phoneNumber')"
@@ -102,6 +101,7 @@
 					@select="validate('nationalCardType')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Contact ID Number"
 				:type="validateType('nationalCardNumber')"

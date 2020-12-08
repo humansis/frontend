@@ -9,6 +9,7 @@
 			<b-step-item step="1" label="Household">
 				<Household :detailOfHousehold="detailOfHousehold" ref="household" />
 			</b-step-item>
+
 			<b-step-item step="2" label="Household Head">
 				<HouseholdForm
 					ref="householdHead"
@@ -16,9 +17,11 @@
 					:detailOfHousehold="detailOfHousehold"
 				/>
 			</b-step-item>
+
 			<b-step-item step="3" label="Members">
 				<Members :detailOfHousehold="detailOfHousehold" ref="householdMembers" />
 			</b-step-item>
+
 			<b-step-item step="4" label="Summary">
 				<Summary
 					ref="householdSummary"

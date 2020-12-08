@@ -19,6 +19,7 @@
 					:searchable="false"
 				/>
 			</b-field>
+
 			<b-field label="Camp" grouped>
 				<b-checkbox v-model="createCamp">Create A Camp</b-checkbox>
 				<b-input
@@ -27,6 +28,7 @@
 					placeholder="Camp name"
 				/>
 			</b-field>
+
 			<b-field label="Tent Number">
 				<b-input
 					v-model="formModel.tentNumber"
@@ -41,12 +43,14 @@
 					placeholder="Address Number"
 				/>
 			</b-field>
+
 			<b-field label="Address Street">
 				<b-input
 					v-model="formModel.addressStreet"
 					placeholder="Address Street"
 				/>
 			</b-field>
+
 			<b-field label="Address Postcode">
 				<b-input
 					v-model="formModel.addressPostCode"

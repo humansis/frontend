@@ -50,10 +50,7 @@
 					/>
 				</b-table-column>
 			</Table>
-			<b-notification
-				v-else
-				type="is-light"
-			>
+			<b-notification v-else type="is-light">
 				No data
 			</b-notification>
 		</div>

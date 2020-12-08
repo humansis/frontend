@@ -12,7 +12,6 @@
 		>
 			<Vouchers />
 		</b-tab-item>
-
 	</b-tabs>
 </template>
 

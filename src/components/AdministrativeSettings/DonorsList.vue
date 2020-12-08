@@ -29,7 +29,6 @@
 					<ColumnField :column="column" :data="props" />
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -54,7 +53,6 @@
 					/>
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>

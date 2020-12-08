@@ -24,10 +24,7 @@
 						:data="data"
 					>
 						<template v-for="(column, key) in table.columns">
-							<b-table-column
-								v-bind="column"
-								:key="key"
-							>
+							<b-table-column v-bind="column" :key="key">
 								<template v-slot="props">
 									<div v-if="column.field === 'donorIds'">
 										{{ props.row[column.field].length }}
@@ -38,11 +35,7 @@
 								</template>
 							</b-table-column>
 						</template>
-
-						<b-table-column
-							v-slot="props"
-							label="Actions"
-						>
+						<b-table-column v-slot="props" label="Actions">
 							<ActionButton
 								icon="trash"
 								centered
@@ -54,22 +47,13 @@
 				</div>
 			</div>
 			<footer class="card-footer">
-				<a
-					class="card-footer-item"
-					@click="addCriteria"
-				>
+				<a class="card-footer-item" @click="addCriteria">
 					Add
 				</a>
-				<a
-					class="card-footer-item"
-					@click="showDetail"
-				>
+				<a class="card-footer-item" @click="showDetail">
 					0 {{ targetType }}
 				</a>
-				<a
-					class="card-footer-item"
-					@click="removeGroup"
-				>
+				<a class="card-footer-item" @click="removeGroup">
 					Remove
 				</a>
 			</footer>

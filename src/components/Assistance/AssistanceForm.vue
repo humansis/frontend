@@ -11,6 +11,7 @@
 				:form-disabled="true"
 				:form-model="formModel"
 			/>
+
 			<b-field label="Date of Assistance">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
@@ -26,7 +27,6 @@
 			<b-field label="target">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
-
 			<footer class="modal-card-foot">
 				<button class="button" type="button" @click="closeForm">
 					Close

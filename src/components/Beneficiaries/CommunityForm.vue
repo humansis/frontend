@@ -140,7 +140,6 @@
 						@blur="validate('latitude')"
 					/>
 				</b-field>
-
 				<b-field
 					label="Longitude"
 					:type="validateType('longitude')"
@@ -154,7 +153,6 @@
 				</b-field>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

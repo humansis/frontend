@@ -26,7 +26,6 @@
 		</b-button>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-
 			<ExportButton
 				class="column"
 				type="is-success"
@@ -36,7 +35,6 @@
 				@exportData="exportAssistance"
 			/>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -56,7 +54,6 @@
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"

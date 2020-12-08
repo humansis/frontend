@@ -3,7 +3,6 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
-
 		<b-collapse
 			v-for="(batch, index) of getBatches"
 			class="panel"
@@ -40,7 +39,6 @@
 							</template>
 						</b-table-column>
 					</template>
-
 					<b-table-column
 						v-slot="props"
 						label="Actions"

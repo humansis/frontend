@@ -10,6 +10,7 @@
 					@select="onModalitySelect"
 				/>
 			</b-field>
+
 			<b-field label="Type">
 				<MultiSelect
 					v-model="formModel.type"
@@ -18,6 +19,7 @@
 					:searchable="false"
 				/>
 			</b-field>
+
 			<b-field
 				v-if="formModel.modality === 'Cash' || formModel.modality === 'Vouchers'"
 				label="Currency"
@@ -29,6 +31,7 @@
 					:searchable="false"
 				/>
 			</b-field>
+
 			<b-field
 				v-if="formModel.modality !== 'Cash'"
 				label="Unit"
@@ -40,18 +43,21 @@
 					:searchable="false"
 				/>
 			</b-field>
+
 			<b-field
 				v-if="formModel.modality !== 'Vouchers'"
 				label="Quantity"
 			>
 				<b-input v-model="formModel.quantity" />
 			</b-field>
+
 			<b-field
 				v-if="formModel.modality === 'In Kind'"
 				label="Description"
 			>
 				<b-input v-model="formModel.description" />
 			</b-field>
+
 			<b-field
 				v-if="formModel.modality === 'Vouchers'"
 				label="Total Value of Booklet"
@@ -59,7 +65,6 @@
 				<b-input v-model="formModel.totalValueOfBooklet" />
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

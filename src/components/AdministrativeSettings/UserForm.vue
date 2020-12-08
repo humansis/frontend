@@ -12,6 +12,7 @@
 					@blur="validate('email')"
 				/>
 			</b-field>
+
 			<!-- TODO add rules to password -->
 			<b-field
 				label="Password"
@@ -123,9 +124,7 @@
 					@blur="validate('phoneNumber')"
 				/>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

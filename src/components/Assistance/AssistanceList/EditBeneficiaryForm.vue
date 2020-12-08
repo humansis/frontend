@@ -48,7 +48,6 @@
 				/>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

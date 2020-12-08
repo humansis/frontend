@@ -57,6 +57,7 @@
 		<b-field label="Minimum Selection Score">
 			<b-numberinput v-model="minimumSelectionScore" />
 		</b-field>
+
 		<b-field>
 			<b-button
 				class="is-pulled-right"
@@ -67,6 +68,7 @@
 				Details
 			</b-button>
 		</b-field>
+
 		<b-field>
 			<p>
 				The system will only select beneficiaries/households that have a score higher

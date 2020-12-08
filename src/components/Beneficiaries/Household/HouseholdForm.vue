@@ -11,6 +11,7 @@
 						<b-input v-model="formModel.nameLocal.firstName" />
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (English)</h4>
 					<b-field label="Family Name">
@@ -20,6 +21,7 @@
 						<b-input v-model="formModel.nameEnglish.firstName" />
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Personal Information</h4>
 					<b-field label="Gender">
@@ -42,6 +44,7 @@
 						/>
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">ID</h4>
 					<b-field label="ID Type">
@@ -55,6 +58,7 @@
 						<b-input v-model="formModel.id.idNumber" />
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Residency</h4>
 					<b-field label="Residency Status">
@@ -65,6 +69,7 @@
 						/>
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Referral</h4>
 					<div class="field">
@@ -83,6 +88,7 @@
 						<b-input v-model="formModel.referral.comment" />
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Phone 1</h4>
 					<b-field label="Type" grouped>
@@ -109,6 +115,7 @@
 						/>
 					</b-field>
 				</div>
+
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Phone 2</h4>
 					<b-field label="Type" grouped>

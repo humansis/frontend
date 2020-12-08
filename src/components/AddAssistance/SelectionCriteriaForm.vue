@@ -10,6 +10,7 @@
 					@select="onCriteriaTargetSelect"
 				/>
 			</b-field>
+
 			<b-field label="Criteria">
 				<MultiSelect
 					v-model="formModel.criteria"
@@ -19,6 +20,7 @@
 					@select="onCriteriaSelect"
 				/>
 			</b-field>
+
 			<b-field label="Condition">
 				<MultiSelect
 					v-model="formModel.condition"
@@ -27,6 +29,7 @@
 					:searchable="false"
 				/>
 			</b-field>
+
 			<b-field
 				v-if="showValueInput && !showLocation"
 				label="Value"
@@ -54,6 +57,7 @@
 				<b-numberinput v-model="formModel.scoreWeight" />
 			</b-field>
 		</section>
+
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

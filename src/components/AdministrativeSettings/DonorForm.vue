@@ -44,6 +44,7 @@
 					</b-upload>
 				</b-field>
 			</b-field>
+
 			<b-field
 				v-if="formDisabled && formModel.logo"
 				label="Image"
@@ -67,7 +68,6 @@
 				/>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button
 				v-if="closeButton"

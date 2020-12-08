@@ -8,7 +8,6 @@
 		>
 			Export
 		</b-button>
-
 		<b-dropdown
 			v-model="currentFormat"
 			:class="spaceBetween ? 'ml-1' : ''"
@@ -20,7 +19,6 @@
 				</template>
 				<b-icon icon="arrow-down" />
 			</b-button>
-
 			<b-dropdown-item
 				v-for="(menu, index) in formatMenu"
 				v-show="menu.disabled"
