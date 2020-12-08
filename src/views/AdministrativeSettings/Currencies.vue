@@ -13,6 +13,7 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					v-slot="props"
 					:key="column.id"
@@ -31,6 +32,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import CurrencyService from "@/services/CurrencyService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "Currencies",
@@ -40,6 +42,8 @@ export default {
 		Table,
 		ColumnField,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -63,6 +67,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -79,26 +85,21 @@ export default {
 		async fetchData() {
 			this.$store.commit("loading", true);
 
-			await CurrencyService.getListOfCurrencies()
-				.then((response) => {
-					this.table.data = response.data;
-					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
-				}).catch((e) => {
-					Toast(`(Currency) ${e}`, "is-danger");
-				});
+			await CurrencyService.getListOfCurrencies(
+				this.table.currentPage,
+				this.table.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+				this.table.columns = generateColumns(
+					this.table.visibleColumns,
+				);
+			}).catch((e) => {
+				Toast(`(Currency) ${e}`, "is-danger");
+			});
 
 			this.$store.commit("loading", false);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

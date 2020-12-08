@@ -3,9 +3,10 @@ import { fetcher } from "@/utils/fetcher";
 export default {
 	async getListOfInstitutions(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `institutions?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `institutions?page=${page}&size=${size + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

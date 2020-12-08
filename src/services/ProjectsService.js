@@ -10,9 +10,10 @@ export default {
 
 	async getListOfProjects(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `projects?page=${page}&size=${size + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

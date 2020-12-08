@@ -74,7 +74,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -117,6 +117,7 @@ import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBenefi
 import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "AssistanceList",
@@ -138,6 +139,8 @@ export default {
 		ExportButton,
 	},
 
+	mixins: [grid],
+
 	data() {
 		return {
 			advancedSearchVisible: false,
@@ -156,20 +159,26 @@ export default {
 					},
 					{
 						key: "longitude",
+						width: "50",
 					},
 					{
 						key: "latitude",
+						width: "50",
 					},
 					{
 						key: "incomeLevel",
+						width: "140",
 					},
 					{
 						key: "deptLevel",
+						width: "130",
 					},
 				],
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -211,7 +220,7 @@ export default {
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;
@@ -259,14 +268,6 @@ export default {
 
 		removeAssistance(id) {
 			this.table.data = this.table.data.filter((item) => item.id !== id);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

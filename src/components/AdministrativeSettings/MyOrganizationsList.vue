@@ -10,6 +10,7 @@
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
+				sortable
 				v-bind="column"
 				v-slot="props"
 				:key="column.id"
@@ -52,6 +53,7 @@ import { generateColumns } from "@/utils/datagrid";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "MyOrganizationsList",
@@ -61,6 +63,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -100,6 +104,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -119,7 +125,7 @@ export default {
 			await MyOrganizationsService.getListOfMyOrganizations(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -149,14 +155,6 @@ export default {
 
 		print(id) {
 			this.$emit("onPrint", id);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 

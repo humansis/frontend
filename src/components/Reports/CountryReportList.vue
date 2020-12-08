@@ -1,5 +1,9 @@
 <template>
 	<div>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -10,10 +14,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -40,14 +41,19 @@ import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import CountryReportService from "@/services/CountryReportService";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "CountryReportList",
 
 	components: {
+		ReportNavbar,
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -63,7 +69,11 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
+			selectedPeriod: null,
+			choosePeriod: null,
 		};
 	},
 
@@ -82,7 +92,9 @@ export default {
 			await CountryReportService.getListOfCountryReports(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.period,
+				this.choosePeriod,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -100,12 +112,14 @@ export default {
 			// TODO go to detail
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchData();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchData();
 		},
 	},
 };

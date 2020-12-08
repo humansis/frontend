@@ -40,8 +40,6 @@
 		<Table
 			:data="membersData"
 			:total="table.total"
-			:current-page="table.currentPage"
-			:per-page="table.perPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" :key="column.id">
@@ -114,8 +112,6 @@ export default {
 					{ field: "nationalId" },
 				],
 				total: 0,
-				currentPage: 1,
-				perPage: 15,
 			},
 		};
 	},

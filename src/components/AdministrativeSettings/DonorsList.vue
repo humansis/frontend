@@ -3,7 +3,7 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 			<ExportButton
-				class="column is-2 is-offset-5"
+				class="column"
 				type="is-success"
 				size="is-default"
 				space-between
@@ -22,6 +22,7 @@
 
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					v-slot="props"
 					:key="column.id"
@@ -69,6 +70,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import { Toast } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "DonorsList",
@@ -81,6 +83,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -110,6 +114,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -129,7 +135,7 @@ export default {
 			await DonorsService.getListOfDonors(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;
@@ -160,14 +166,6 @@ export default {
 		showEdit(id) {
 			const donor = this.table.data.find((item) => item.id === id);
 			this.$emit("onShowEdit", donor);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

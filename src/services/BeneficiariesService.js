@@ -4,9 +4,10 @@ export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?page=${page}&size=${size}&sort=${sort + fulltext + filtersUri}`,
+			uri: `households?page=${page}&size=${size + sortText + fulltext + filtersUri}`,
 		});
 
 		return { data, totalCount };

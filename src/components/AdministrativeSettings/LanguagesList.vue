@@ -15,6 +15,7 @@
 
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					v-slot="props"
 					:key="column.id"
@@ -49,6 +50,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import LanguagesService from "@/services/LanguagesService";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "LanguagesList",
@@ -59,6 +61,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -77,6 +81,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -96,7 +102,7 @@ export default {
 			await LanguagesService.getListOfLanguages(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;
@@ -118,14 +124,6 @@ export default {
 
 		showDetail(language) {
 			this.$emit("onShowDetail", language);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

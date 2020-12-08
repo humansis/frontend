@@ -26,16 +26,16 @@
 		</b-button>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-		</div>
 
-		<ExportButton
-			type="is-success"
-			size="is-default"
-			class="is-pulled-right"
-			space-between
-			:formats="{ xlsx: true, csv: true, ods: true}"
-			@exportData="exportAssistance"
-		/>
+			<ExportButton
+				class="column"
+				type="is-success"
+				size="is-default"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@exportData="exportAssistance"
+			/>
+		</div>
 
 		<Table
 			:data="table.data"
@@ -48,6 +48,7 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					:key="column.id"
 					v-slot="props"
@@ -112,6 +113,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "AssistancesList",
@@ -126,6 +128,8 @@ export default {
 		ExportButton,
 		Modal,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -164,6 +168,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			assistanceModal: {
 				isOpened: false,
@@ -196,7 +202,7 @@ export default {
 				this.$route.params.projectId,
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;
@@ -270,14 +276,6 @@ export default {
 			}).catch((e) => {
 				Toast(`(Assistance) ${e}`, "is-danger");
 			});
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 
 		exportAssistance(format) {

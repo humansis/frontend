@@ -14,6 +14,7 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
+					sortable
 					v-bind="column"
 					:key="column.id"
 					v-slot="props"
@@ -65,6 +66,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "ProjectsList",
@@ -72,6 +74,8 @@ export default {
 	props: {
 		projectModel: Object,
 	},
+
+	mixins: [grid],
 
 	components: {
 		Search,
@@ -111,6 +115,8 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 		};
 	},
@@ -206,13 +212,6 @@ export default {
 			this.$emit("onShowDetail", project);
 		},
 
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
-		},
 	},
 };
 </script>

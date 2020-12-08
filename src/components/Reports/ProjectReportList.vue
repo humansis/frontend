@@ -1,17 +1,25 @@
 <template>
 	<div>
-		<div>
-			<label class="typo__label">Projects</label>
-			<MultiSelect
-				v-model="selectedProjectsForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				multiple
-				:options="projectsForFilter"
-			/>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
+		<div class="columns">
+			<div class="box column is-four-fifths ml-4" style="width: 78%">
+				<label class="typo__label">Projects</label>
+				<MultiSelect
+					v-model="selectedProjectsForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					multiple
+					:options="projectsForFilter"
+					@input="fetchProjectReports"
+				/>
+			</div>
 		</div>
+
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -22,10 +30,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -46,12 +51,14 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
-import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "ProjectReportList",
@@ -59,7 +66,10 @@ export default {
 	components: {
 		Table,
 		ActionButton,
+		ReportNavbar,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -75,9 +85,13 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
 			projectsForFilter: [],
 			selectedProjectsForFilter: [],
+			selectedPeriod: null,
+			choosePeriod: null,
 		};
 	},
 
@@ -97,7 +111,10 @@ export default {
 			await ProjectReportService.getListOfProjectReports(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.selectedPeriod,
+				this.choosePeriod,
+				this.selectedProjectsForFilter,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -138,12 +155,14 @@ export default {
 			// TODO go to detail
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchProjectReports();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchProjectReports();
 		},
 	},
 };

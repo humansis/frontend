@@ -1,25 +1,34 @@
 <template>
 	<div>
-		<div>
-			<label class="typo__label">Projects</label>
-			<MultiSelect
-				v-model="selectedProjectsForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				:options="projectsForFilter"
-				@input="fetchDistributions"
-			/>
-			<label class="typo__label">Distributions</label>
-			<MultiSelect
-				v-model="selectedDistributionForFilter"
-				tag-placeholder="Add this as new tag"
-				placeholder="Search"
-				label="name"
-				track-by="id"
-				:options="distributionsForFilter"
-			/>
+		<ReportNavbar
+			@periodChanged="onPeriodFilterChange"
+			@choosePeriodChanged="onChoosePeriodFilterChange"
+		/>
+		<div class="ml-1 columns box" style="width: 80%">
+			<div class="column is-half">
+				<label class="typo__label">Projects</label>
+				<MultiSelect
+					v-model="selectedProjectsForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					:options="projectsForFilter"
+					@input="fetchDistributions"
+				/>
+			</div>
+			<div class="column is-half">
+				<label class="typo__label">Distributions</label>
+				<MultiSelect
+					v-model="selectedDistributionForFilter"
+					tag-placeholder="Add this as new tag"
+					placeholder="Search"
+					label="name"
+					track-by="id"
+					:options="distributionsForFilter"
+					@input="fetchDistributionReports"
+				/>
+			</div>
 		</div>
 		<Table
 			:data="table.data"
@@ -31,10 +40,7 @@
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-				>
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
@@ -62,14 +68,19 @@ import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionReportService from "@/services/DistributionReportService";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "DistributionReportList",
 
 	components: {
+		ReportNavbar,
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -85,7 +96,11 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				sortDirection: "",
+				sortColumn: "",
 			},
+			selectedPeriod: null,
+			choosePeriod: null,
 			projectsForFilter: [],
 			distributionsForFilter: [],
 			selectedProjectsForFilter: [],
@@ -109,7 +124,11 @@ export default {
 			await DistributionReportService.getListOfDistributionReports(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.selectedPeriod,
+				this.choosePeriod,
+				this.selectedProjectsForFilter,
+				this.selectedDistributionForFilter,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -169,6 +188,8 @@ export default {
 				Toast(`(Project Assistances) ${e}`, "is-danger");
 			});
 
+			await this.fetchDistributionReports();
+
 			this.$store.commit("loading", false);
 		},
 
@@ -176,12 +197,14 @@ export default {
 			// TODO go to detail
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPeriodFilterChange(period) {
+			this.selectedPeriod = period;
+			this.fetchDistributionReports();
 		},
 
-		onSort() {
-			// TODO on table sort
+		onChoosePeriodFilterChange(choosePeriod) {
+			this.choosePeriod = choosePeriod;
+			this.fetchDistributionReports();
 		},
 	},
 };
