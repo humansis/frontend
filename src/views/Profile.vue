@@ -21,6 +21,7 @@
 									v-model="passwordForm.newPassword"
 									type="password"
 								/>
+
 							</b-field>
 
 							<b-field label="Re-Enter New Password">
@@ -29,6 +30,7 @@
 									type="password"
 								/>
 							</b-field>
+
 							<div class="level-right mt-5">
 								<button class="button is-success" slot="trigger">
 									Save

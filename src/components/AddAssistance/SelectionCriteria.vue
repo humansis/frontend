@@ -29,6 +29,7 @@
 		>
 			<SelectionCriteriaForm
 				close-button
+				class="modal-card"
 				ref="criteriaForm"
 				submit-button-label="Create"
 				:formModel="criteriaModel"

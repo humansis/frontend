@@ -9,6 +9,7 @@
 		>
 			<InstitutionsForm
 				close-button
+				class="modal-card"
 				:formModel="institutionModel"
 				:submit-button-label="institutionModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="institutionModal.isDetail"

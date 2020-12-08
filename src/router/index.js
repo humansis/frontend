@@ -32,88 +32,101 @@ const routes = [
 			},
 			{
 				path: "/projects",
-				name: "Projects",
-				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
+				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project/Projects"),
 				meta: {
 					breadcrumb: "Projects",
 				},
-			},
-			{
-				path: "/project/:projectId",
-				component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
-				meta: {
-					breadcrumb: "Project",
-				},
 				children: [
 					{
-						path: "/",
-						name: "Project",
-						component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectList"),
+						path: "",
+						name: "Projects",
+						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectList"),
 					},
 					{
-						path: "assistance/:assistanceId",
-						name: "Assistance",
-						component: () => import(/* webpackChunkName: "Assistance" */ "@/views/Assistance"),
+						path: "/project/:projectId",
+						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/Project"),
 						meta: {
-							breadcrumb: "Assistance",
+							breadcrumb: "Project",
 						},
-					},
-					{
-						path: "add-assistance",
-						name: "AddAssistance",
-						component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
-						meta: {
-							breadcrumb: "Add Assistance",
-						},
+						children: [
+							{
+								path: "",
+								name: "ProjectDetail",
+								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectList"),
+							},
+							{
+								path: "assistance/:assistanceId",
+								name: "Assistance",
+								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/Assistance"),
+								meta: {
+									breadcrumb: "Assistance",
+								},
+							},
+							{
+								path: "add-assistance",
+								name: "AddAssistance",
+								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
+								meta: {
+									breadcrumb: "Add Assistance",
+									parent: "Assistance",
+								},
+							},
+						],
 					},
 				],
 			},
+
 			{
 				path: "/beneficiaries",
 				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/Beneficiaries"),
-				meta: {
-					breadcrumb: "Beneficiaries",
-				},
 				children: [
 					{
 						path: "households",
-						name: "Households",
 						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/Households"),
 						meta: {
 							breadcrumb: "Households",
+							parent: "Beneficiaries",
 						},
-					},
-					{
-						path: "add-household",
-						name: "AddHousehold",
-						component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
-						meta: {
-							breadcrumb: "Add Household",
-						},
-					},
-					{
-						path: "import-household",
-						name: "ImportHousehold",
-						component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
-						meta: {
-							breadcrumb: "Import Household",
-						},
-					},
-					{
-						path: "edit-household/:householdId",
-						name: "EditHousehold",
-						component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
-						meta: {
-							breadcrumb: "Edit Household",
-						},
-					},
-					{
-						path: "household-information-summary/:householdId",
-						name: "HouseholdInformationSummary",
-						component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
-						meta: {
-							breadcrumb: "Household Information Summary",
-						},
+						children: [
+							{
+								path: "",
+								name: "Households",
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdList"),
+							},
+							{
+								path: "add",
+								name: "AddHousehold",
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsAddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+								meta: {
+									breadcrumb: "Add Household",
+								},
+							},
+							{
+								path: "import",
+								name: "ImportHousehold",
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+								meta: {
+									breadcrumb: "Import Household",
+								},
+							},
+							{
+								path: "edit/:householdId",
+								name: "EditHousehold",
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsEditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+								meta: {
+									breadcrumb: "Edit Household",
+								},
+							},
+							{
+								path: "summary/:householdId",
+								name: "HouseholdInformationSummary",
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+								meta: {
+									breadcrumb: "Household Information Summary",
+									parent: "Households",
+								},
+							},
+						],
 					},
 					{
 						path: "communities",
@@ -161,9 +174,6 @@ const routes = [
 				path: "/configuration",
 				name: "Configuration",
 				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/Configuration"),
-				meta: {
-					breadcrumb: "Configuration",
-				},
 				children: [
 					{
 						path: "products",

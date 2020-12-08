@@ -9,6 +9,7 @@
 		>
 			<VendorForm
 				close-button
+				class="modal-card"
 				:formModel="vendorModel"
 				:submit-button-label="vendorModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="vendorModal.isDetail"

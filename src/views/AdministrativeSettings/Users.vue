@@ -8,6 +8,7 @@
 		>
 			<UserForm
 				close-button
+				class="modal-card"
 				:formModel="userModel"
 				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="userModal.isDetail"

@@ -18,11 +18,10 @@
 			</div>
 		</div>
 		<b-collapse
-			v-model="advancedSearchVisible"
+			:open="advancedSearchVisible"
 			animation="slide"
 		>
 			<TransactionFilter
-				:filtersOptions="filters"
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
@@ -92,38 +91,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 			},
-			filters: {
-				beneficiary: {
-					data: [],
-					type: "multiselect",
-					placeholder: "Select Beneficiary ...",
-					label: "Beneficiary",
-				},
-				type: {
-					data: [],
-					type: "multiselect",
-					placeholder: "Select Type ...",
-					label: "Type",
-				},
-				from: {
-					data: [],
-					type: "date",
-					placeholder: "Select Date ...",
-					label: "From",
-				},
-				to: {
-					data: [],
-					type: "date",
-					placeholder: "Select Date ...",
-					label: "To",
-				},
-				reedem: {
-					data: [],
-					type: "multiselect",
-					placeholder: "Select Reedem ...",
-					label: "Reedem",
-				},
-			},
+			filters: {},
 		};
 	},
 
@@ -136,7 +104,7 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value, filters) {
+		async fetchData(value) {
 			this.searchPhrase = value;
 			this.$store.commit("loading", true);
 
@@ -144,8 +112,8 @@ export default {
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				filters,
 				this.searchPhrase,
+				this.filters,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -164,18 +132,18 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
-			await TransactionService.getListOfTransactions(
-				this.table.currentPage,
-				this.table.perPage,
-				"desc",
-				null,
-				selectedFilters,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Toast(`(Transactions) ${e}`, "is-danger");
+			Object.keys(selectedFilters).forEach((key) => {
+				if (Array.isArray(selectedFilters[key])) {
+					this.filters[key] = [];
+					selectedFilters[key].forEach((value) => {
+						this.filters[key].push(value.id);
+					});
+				} else if (selectedFilters[key]) {
+					const date = new Date(selectedFilters[key]);
+					this.filters[key] = [`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`];
+				}
 			});
+			await this.fetchData(this.searchPhrase);
 		},
 	},
 };

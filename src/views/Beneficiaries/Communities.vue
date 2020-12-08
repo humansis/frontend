@@ -9,6 +9,7 @@
 		>
 			<CommunityForm
 				close-button
+				class="modal-card"
 				:formModel="communityModel"
 				:submit-button-label="communityModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="communityModal.isDetail"

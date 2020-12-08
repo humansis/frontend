@@ -8,6 +8,7 @@
 		>
 			<LanguagesForm
 				close-button
+				class="modal-card"
 				:formModel="languageModel"
 				:submit-button-label="'Add'"
 				:form-disabled="languageModal.isDetail"

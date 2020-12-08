@@ -9,6 +9,7 @@
 		>
 			<ProjectForm
 				close-button
+				class="modal-card"
 				:formModel="projectModel"
 				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="projectModal.isDetail"

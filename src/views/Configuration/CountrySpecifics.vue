@@ -3,12 +3,14 @@
 		<h2 class="title">Country Specific Options</h2>
 		<Modal
 			can-cancel
+			is-small
 			:active="countrySpecificsModal.isOpened"
 			:header="modalHeader"
 			@close="closeCountrySpecificsModal"
 		>
 			<CountrySpecificsForm
 				close-button
+				class="modal-card"
 				:formModel="countrySpecificsModel"
 				:submit-button-label="'Create'"
 				:form-disabled="countrySpecificsModal.isDetail"

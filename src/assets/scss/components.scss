@@ -9,28 +9,42 @@
 
     .modal-background {
         background-color: rgb(19 46 48 / 80%);
+        position: fixed !important;
     }
 
     .animation-content {
         width: 100%;
     }
 
-    form {
-        overflow-y: auto;
-    }
-
     .modal-card {
         width: auto;
     }
 
-    .modal-card-body {
+    .small-modal {
         overflow: visible !important;
+        .modal-card-body {
+            overflow: visible !important;
+        }
+
+        .modal-card {
+            overflow: visible !important;
+        }
+
+        .modal-content {
+            overflow: visible !important;
+        }
     }
 
     .modal-card-foot {
         display: flex;
         justify-content: flex-end;
     }
+
+    .modal {
+        position: fixed !important;
+        overflow: auto !important;
+    }
+
 }
 
 .vue2leaflet-map {

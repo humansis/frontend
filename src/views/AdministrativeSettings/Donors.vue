@@ -8,6 +8,7 @@
 		>
 			<DonorForm
 				close-button
+				class="modal-card"
 				:formModel="donorModel"
 				:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="donorModal.isDetail"
