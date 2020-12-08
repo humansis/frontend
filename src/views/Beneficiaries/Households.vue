@@ -129,6 +129,7 @@ import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "Households",
