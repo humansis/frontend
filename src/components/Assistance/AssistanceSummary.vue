@@ -13,30 +13,35 @@
 					<p class="title">Province 1</p>
 				</div>
 			</div>
+
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Beneficiaries</p>
 					<p class="title">1000</p>
 				</div>
 			</div>
+
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Date Of Distribution</p>
 					<p class="title">20-09-2021</p>
 				</div>
 			</div>
+
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Project</p>
 					<p class="title">Project 1</p>
 				</div>
 			</div>
+
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Target</p>
 					<p class="title">1000</p>
 				</div>
 			</div>
+
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Commodity</p>

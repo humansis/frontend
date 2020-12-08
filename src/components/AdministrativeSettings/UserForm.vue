@@ -12,6 +12,7 @@
 					@blur="validate('email')"
 				/>
 			</b-field>
+
 			<!-- TODO add rules to password -->
 			<b-field
 				label="Password"
@@ -99,9 +100,7 @@
 				v-if="!formDisabled"
 				label="Update Password On Next Login"
 			>
-				<b-checkbox
-					v-model="formModel.updatePasswordOnNextLogin"
-				/>
+				<b-checkbox v-model="formModel.updatePasswordOnNextLogin" />
 			</b-field>
 
 			<b-field
@@ -125,9 +124,7 @@
 					@blur="validate('phoneNumber')"
 				/>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

@@ -15,6 +15,7 @@
 				</a>
 			</b-upload>
 		</b-field>
+
 		<b-field>
 			<b-upload v-model="dropFiles" multiple drag-drop expanded>
 				<section class="section">
@@ -27,6 +28,7 @@
 				</section>
 			</b-upload>
 		</b-field>
+
 		<b-taglist v-for="(file, index) in dropFiles" attached :key="index">
 			<b-tag  size="is-large" type="is-dark">
 				<b-icon icon="file-alt" size="is-medium" />

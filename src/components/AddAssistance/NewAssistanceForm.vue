@@ -6,9 +6,7 @@
 				ref="locationForm"
 				:form-model="formModel"
 			/>
-			<b-field
-				label="Date of Assistance"
-			>
+			<b-field label="Date of Assistance">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
@@ -18,7 +16,6 @@
 					trap-focus
 				/>
 			</b-field>
-
 			<b-field
 				label="Target"
 				:type="validateType('target')"
@@ -86,16 +83,11 @@ export default {
 			target: {
 				required,
 			},
-			adm1: {
-			},
-			adm2: {
-			},
-			adm3: {
-			},
-			adm4: {
-			},
-			dateOfAssistance: {
-			},
+			adm1: {},
+			adm2: {},
+			adm3: {},
+			adm4: {},
+			dateOfAssistance: {},
 		},
 	},
 

@@ -46,7 +46,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				label="Actions"
 			>

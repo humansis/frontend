@@ -1,13 +1,8 @@
 <template>
 	<div class="modal-card-body">
 		<form>
-			<b-field
-				label="Name"
-			>
-				<b-input
-					v-model="formModel.name"
-					disabled
-				/>
+			<b-field label="Name">
+				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
 			<LocationForm
@@ -16,9 +11,8 @@
 				:form-disabled="true"
 				:form-model="formModel"
 			/>
-			<b-field
-				label="Date of Assistance"
-			>
+
+			<b-field label="Date of Assistance">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
@@ -30,15 +24,9 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="target"
-			>
-				<b-input
-					v-model="formModel.target"
-					disabled
-				/>
+			<b-field label="target">
+				<b-input v-model="formModel.target" disabled />
 			</b-field>
-
 			<footer class="modal-card-foot">
 				<button class="button" type="button" @click="closeForm">
 					Close

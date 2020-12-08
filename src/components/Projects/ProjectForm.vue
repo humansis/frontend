@@ -135,18 +135,14 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Notes"
-			>
+			<b-field label="Notes">
 				<b-input
 					v-model="formModel.notes"
 					type="textarea"
 					:disabled="formDisabled"
 				/>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

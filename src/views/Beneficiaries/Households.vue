@@ -36,10 +36,8 @@
 				</div>
 			</b-dropdown-item>
 		</b-dropdown>
-
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-
 			<div class="column">
 				<button
 					class="button"
@@ -53,7 +51,6 @@
 					/>
 				</button>
 			</div>
-
 			<ExportButton
 				type="is-success"
 				size="is-default"
@@ -63,12 +60,10 @@
 				@exportData="exportHousehold"
 			/>
 		</div>
-
 		<HouseholdsFilters
 			v-if="advancedSearchVisible"
 			@filtersChanged="onFiltersChange"
 		/>
-
 		<Table
 			ref="householdList"
 			:data="table.data"
@@ -88,7 +83,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -114,7 +108,6 @@
 					/>
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
@@ -165,12 +158,8 @@ export default {
 						key: "contactGivenName",
 						label: "First Name",
 					},
-					{
-						key: "members",
-					},
-					{
-						key: "vulnerabilities",
-					},
+					{ key: "members" },
+					{ key: "vulnerabilities" },
 					{
 						key: "idNumber",
 						label: "ID Number",

@@ -48,25 +48,17 @@ export default {
 						key: "id",
 						label: "Assistance ID",
 					},
-					{
-						key: "name",
-					},
+					{ key: "name" },
 					{
 						key: "adm1Id",
 						label: "Location",
 					},
-					{
-						key: "beneficiaries",
-						label: "Beneficiaries",
-					},
+					{ key: "beneficiaries" },
 					{
 						key: "dateDistribution",
 						label: "Date of Distribution",
 					},
-					{
-						key: "target",
-						label: "Target",
-					},
+					{ key: "target" },
 					{
 						type: "commodity",
 						key: "commodity",

@@ -9,7 +9,6 @@
 			:total="table.total"
 			@sorted="onSort"
 		>
-
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
@@ -48,9 +47,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "id",
-					},
+					{ key: "id" },
 					{
 						key: "familyName",
 						label: "Family Name [English]",
@@ -87,14 +84,6 @@ export default {
 		onSearch(value) {
 			// TODO implement after real data
 			console.log(value);
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

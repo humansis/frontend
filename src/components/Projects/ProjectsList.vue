@@ -22,7 +22,6 @@
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -91,22 +90,14 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
+					{ key: "name" },
 					{
 						type: "count",
 						key: "donorIds",
 					},
-					{
-						key: "startDate",
-					},
-					{
-						key: "endDate",
-					},
-					{
-						key: "target",
-					},
+					{ key: "startDate" },
+					{ key: "endDate" },
+					{ key: "target" },
 					{
 						key: "numberOfHouseHolds",
 						width: "120",

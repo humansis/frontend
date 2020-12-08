@@ -76,7 +76,6 @@
 					</template>
 					<b-icon icon="arrow-down" />
 				</b-button>
-
 				<b-dropdown-item
 					v-for="(menu, index) in formatMenu"
 					:key="index"

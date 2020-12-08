@@ -23,6 +23,7 @@
 					@blur="validate('unit')"
 				/>
 			</b-field>
+
 			<b-field
 				label="Image"
 				:type="validateType('image')"
@@ -42,12 +43,10 @@
 							</span>
 						</a>
 					</b-upload>
-
 				</b-field>
 			</b-field>
-			<b-field
-				v-if="formDisabled && formModel.image"
-			>
+
+			<b-field v-if="formDisabled && formModel.image">
 				<b-image
 					alt="Image"
 					ratio="601by235"

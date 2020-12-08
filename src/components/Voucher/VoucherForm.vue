@@ -17,7 +17,6 @@
 					:options="projects"
 					@select="validate('projectId')"
 				/>
-
 				<b-input
 					v-model="formModel.project"
 					v-show="formDisabled"

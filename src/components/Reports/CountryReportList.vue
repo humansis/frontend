@@ -20,7 +20,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				label="Actions"
 			>
@@ -30,7 +29,6 @@
 					<ActionButton icon="copy" type="is-dark" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>

@@ -1,44 +1,34 @@
 <template>
 	<form>
 		<section class="modal-card-body">
-			<b-field
-				label="Who"
-			>
+			<b-field label="Who">
 				<b-input
 					v-model="formModel.who"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
-			<b-field
-				label="Where"
-			>
+			<b-field label="Where">
 				<b-input
 					v-model="formModel.where"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
-			<b-field
-				label="What"
-			>
+			<b-field label="What">
 				<b-input
 					v-model="formModel.what"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
-			<b-field
-				label="Status"
-			>
+			<b-field label="Status">
 				<b-input
 					v-model="formModel.status"
 					:disabled="formDisabled"
 				/>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button
 				v-if="closeButton"

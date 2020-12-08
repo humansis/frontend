@@ -15,7 +15,6 @@
 				@formClosed="closeUserModal"
 			/>
 		</Modal>
-
 		<b-button
 			class="mb-5"
 			size="is-medium"

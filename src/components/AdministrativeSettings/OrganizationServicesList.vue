@@ -4,7 +4,6 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -21,7 +20,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -40,7 +38,6 @@
 					/>
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
@@ -71,16 +68,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Service Name",
-					},
-					{
-						key: "country",
-					},
-					{
-						key: "enabled",
-					},
+					{ key: "name", label: "Service Name" },
+					{ key: "country" },
+					{ key: "enabled" },
 				],
 				total: 0,
 				currentPage: 1,

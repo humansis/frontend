@@ -36,7 +36,6 @@
 				@formClosed="closeCriteriaModal"
 			/>
 		</Modal>
-
 		<div class="mb-2">
 			<SelectionCriteriaGroup
 				v-for="(group, key) in groups"
@@ -48,7 +47,6 @@
 				@removeGroup="removeCriteriaGroup(key)"
 				@showDetail="showDetail"
 			/>
-
 			<b-notification
 				v-if="!groups.length"
 				type="is-light"
@@ -59,6 +57,7 @@
 		<b-field label="Minimum Selection Score">
 			<b-numberinput v-model="minimumSelectionScore" />
 		</b-field>
+
 		<b-field>
 			<b-button
 				class="is-pulled-right"
@@ -69,6 +68,7 @@
 				Details
 			</b-button>
 		</b-field>
+
 		<b-field>
 			<p>
 				The system will only select beneficiaries/households that have a score higher

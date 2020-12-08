@@ -16,7 +16,6 @@
 				@formClosed="closeProjectModal"
 			/>
 		</Modal>
-
 		<b-button
 			class="mb-5"
 			size="is-medium"
@@ -26,7 +25,6 @@
 		>
 			New
 		</b-button>
-
 		<ProjectsList
 			ref="projectList"
 			:project-model="projectModel"

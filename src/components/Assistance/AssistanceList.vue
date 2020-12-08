@@ -50,7 +50,6 @@
 				</p>
 				<b-numberinput size="is-medium" placeholder="%" controls-position="compact" />
 			</b-field>
-
 			<ExportButton
 				v-if="exportButton"
 				type="is-success"
@@ -59,7 +58,6 @@
 				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 				@exportData="exportAssistance"
 			/>
-
 		</div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
@@ -80,7 +78,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"

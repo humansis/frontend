@@ -59,7 +59,6 @@
 							<span class="option__title">{{ props.option.name }}</span>
 						</span>
 					</template>
-
 					<template slot="option" slot-scope="props">
 						<CountryFlag :country="props.option.id" size="normal" />
 						<div class="option__desc">
@@ -68,9 +67,7 @@
 					</template>
 				</MultiSelect>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button
 				v-if="closeButton"

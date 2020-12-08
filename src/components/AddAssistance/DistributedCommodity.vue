@@ -25,7 +25,6 @@
 				@formClosed="closeCommodityModal"
 			/>
 		</Modal>
-
 		<div class="mb-2">
 			<Table
 				v-if="table.data.length"
@@ -40,7 +39,6 @@
 						<ColumnField :column="column" :data="props" />
 					</b-table-column>
 				</template>
-
 				<b-table-column
 					label="Actions"
 					v-slot="props"
@@ -52,10 +50,7 @@
 					/>
 				</b-table-column>
 			</Table>
-			<b-notification
-				v-else
-				type="is-light"
-			>
+			<b-notification v-else type="is-light">
 				No data
 			</b-notification>
 		</div>
@@ -97,27 +92,13 @@ export default {
 			table: {
 				data: [],
 				columns: [
-					{
-						field: "modality",
-					},
-					{
-						field: "type",
-					},
-					{
-						field: "currency",
-					},
-					{
-						field: "unit",
-					},
-					{
-						field: "quantity",
-					},
-					{
-						field: "description",
-					},
-					{
-						field: "totalValueOfBooklet",
-					},
+					{ field: "modality" },
+					{ field: "type" },
+					{ field: "currency" },
+					{ field: "unit" },
+					{ field: "quantity" },
+					{ field: "description" },
+					{ field: "totalValueOfBooklet" },
 				],
 			},
 		};

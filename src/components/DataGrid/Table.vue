@@ -1,25 +1,25 @@
 <template>
 	<div>
 		<b-table
-			pagination-position="bottom"
-			default-sort-direction="asc"
-			sort-icon="arrow-up"
-			sort-icon-size="is-small"
 			striped
 			hoverable
 			scrollable
 			narrowed
+			backend-sorting
 			backend-pagination
+			selectable
+			pagination-position="bottom"
+			default-sort-direction="asc"
+			sort-icon="arrow-up"
+			sort-icon-size="is-small"
 			default-sort="id"
 			aria-next-label="Next page"
 			aria-previous-label="Previous page"
 			aria-page-label="Page"
 			aria-current-label="Current page"
-			selectable
 			:checked-rows.sync="checkedRows"
 			:paginated="paginated"
 			:checkable="checkable"
-			:backend-sorting="true"
 			:data="data"
 			:total="total"
 			:per-page="perPage"

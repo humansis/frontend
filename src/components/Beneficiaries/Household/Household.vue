@@ -55,6 +55,7 @@
 						:options="options.livelihood"
 					/>
 				</b-field>
+
 				<b-field label="Income Level">
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
@@ -65,11 +66,13 @@
 						:options="options.incomeLevel"
 					/>
 				</b-field>
+
 				<b-field label="Debt Level">
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
 					/>
 				</b-field>
+
 				<b-field label="Assets">
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
@@ -81,11 +84,13 @@
 						:options="options.assets"
 					/>
 				</b-field>
+
 				<b-field label="Food Consumption Score">
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
 					/>
 				</b-field>
+
 				<b-field label="Coping Strategies Index">
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
@@ -105,6 +110,7 @@
 						:options="options.externalSupportReceivedType"
 					/>
 				</b-field>
+
 				<b-field label="Support Date Received">
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
@@ -115,28 +121,23 @@
 						trap-focus
 					/>
 				</b-field>
+
 				<b-field label="Support Organization">
-					<b-input
-						v-model="formModel.externalSupport.supportOrganization"
-					/>
+					<b-input v-model="formModel.externalSupport.supportOrganization" />
 				</b-field>
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
 				<b-field label="ID Poor No">
-					<b-input
-						v-model="formModel.countrySpecificOptions.idPoorNo"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
 				</b-field>
+
 				<b-field label="Equity Card No">
-					<b-input
-						v-model="formModel.countrySpecificOptions.equityCardNo"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
 				</b-field>
+
 				<b-field label="Fields">
-					<b-input
-						v-model="formModel.countrySpecificOptions.fields"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.fields" />
 				</b-field>
 			</div>
 		</div>
@@ -153,10 +154,7 @@
 		</b-field>
 		<h4 class="title is-4">Notes</h4>
 		<b-field>
-			<b-input
-				v-model="formModel.notes"
-				type="textarea"
-			/>
+			<b-input v-model="formModel.notes" type="textarea" />
 		</b-field>
 	</form>
 </template>
@@ -188,7 +186,7 @@ export default {
 	mixins: [Validation],
 
 	props: {
-		detailOfHousehold: null || Object,
+		detailOfHousehold: Object,
 	},
 
 	watch: {

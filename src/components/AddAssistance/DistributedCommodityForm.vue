@@ -1,9 +1,7 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="Modality"
-			>
+			<b-field label="Modality">
 				<MultiSelect
 					v-model="formModel.modality"
 					placeholder="Click to select..."
@@ -13,9 +11,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Type"
-			>
+			<b-field label="Type">
 				<MultiSelect
 					v-model="formModel.type"
 					placeholder="Click to select..."
@@ -52,30 +48,23 @@
 				v-if="formModel.modality !== 'Vouchers'"
 				label="Quantity"
 			>
-				<b-input
-					v-model="formModel.quantity"
-				/>
+				<b-input v-model="formModel.quantity" />
 			</b-field>
 
 			<b-field
 				v-if="formModel.modality === 'In Kind'"
 				label="Description"
 			>
-				<b-input
-					v-model="formModel.description"
-				/>
+				<b-input v-model="formModel.description" />
 			</b-field>
 
 			<b-field
 				v-if="formModel.modality === 'Vouchers'"
 				label="Total Value of Booklet"
 			>
-				<b-input
-					v-model="formModel.totalValueOfBooklet"
-				/>
+				<b-input v-model="formModel.totalValueOfBooklet" />
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

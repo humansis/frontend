@@ -6,7 +6,6 @@
 			@periodChanged="$emit('periodChanged', $event)"
 			@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
 		/>
-
 		<ExportButton
 			class="column"
 			type="is-success"

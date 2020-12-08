@@ -13,7 +13,6 @@
 				@formClosed="closeImportModal"
 			/>
 		</Modal>
-
 		<ImportList
 			@onShowDetail="showDetail"
 		/>

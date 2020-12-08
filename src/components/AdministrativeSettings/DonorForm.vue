@@ -30,9 +30,7 @@
 				label="Image"
 				:type="validateType('logo')"
 			>
-				<b-field
-					class="file"
-				>
+				<b-field class="file">
 					<b-upload
 						v-model="formModel.uploadedImage"
 						expanded
@@ -44,9 +42,9 @@
 							</span>
 						</a>
 					</b-upload>
-
 				</b-field>
 			</b-field>
+
 			<b-field
 				v-if="formDisabled && formModel.logo"
 				label="Image"
@@ -57,7 +55,6 @@
 					ratio="601by235"
 					:src="formModel.logo"
 				/>
-
 			</b-field>
 
 			<b-field
@@ -70,9 +67,7 @@
 					@blur="validate('notes')"
 				/>
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button
 				v-if="closeButton"

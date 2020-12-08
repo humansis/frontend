@@ -12,7 +12,6 @@
 					@blur="validate('name')"
 				/>
 			</b-field>
-
 			<b-field
 				label="Published"
 				:type="validateType('published')"

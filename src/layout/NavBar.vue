@@ -5,7 +5,6 @@
 				<Breadcrumbs />
 			</b-navbar-item>
 		</template>
-
 		<template slot="end">
 			<b-navbar-item>
 				<b-icon

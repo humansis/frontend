@@ -3,7 +3,6 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -20,7 +19,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -42,7 +40,6 @@
 					<ActionButton icon="print" type="is-dark" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
@@ -73,30 +70,14 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "project",
-					},
-					{
-						key: "code",
-					},
-					{
-						key: "quantityOfVouchers",
-					},
-					{
-						key: "individualValue",
-					},
-					{
-						key: "currency",
-					},
-					{
-						key: "status",
-					},
-					{
-						key: "beneficiary",
-					},
-					{
-						key: "distribution",
-					},
+					{ key: "project" },
+					{ key: "code" },
+					{ key: "quantityOfVouchers" },
+					{ key: "individualValue" },
+					{ key: "currency" },
+					{ key: "status" },
+					{ key: "beneficiary" },
+					{ key: "distribution" },
 				],
 				total: 0,
 				currentPage: 1,

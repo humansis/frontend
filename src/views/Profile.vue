@@ -15,12 +15,14 @@
 									type="password"
 								/>
 							</b-field>
+
 							<b-field label="New Password">
 								<b-input
 									v-model="passwordForm.newPassword"
 									type="password"
 								/>
 							</b-field>
+
 							<b-field label="Re-Enter New Password">
 								<b-input
 									v-model="passwordForm.reenteredPassword"

@@ -8,6 +8,7 @@
 			>
 				Per Year
 			</b-button>
+
 			<b-button
 				class="mx-2"
 				:active="selectedPeriod === 'quarter'"
@@ -15,6 +16,7 @@
 			>
 				Per Quarter
 			</b-button>
+
 			<b-button
 				class="mx-2"
 				:active="selectedPeriod === 'month'"
@@ -22,6 +24,7 @@
 			>
 				Per Month
 			</b-button>
+
 			<b-button class="mx-2" @click="showChoosePeriod">
 				Choose Period
 			</b-button>

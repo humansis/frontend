@@ -2,7 +2,6 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="fetchData" />
-
 			<ExportButton
 				class="column"
 				type="is-success"
@@ -11,7 +10,6 @@
 				:formats="{ xlsx: true, csv: true, ods: true}"
 			/>
 		</div>
-
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -31,7 +29,6 @@
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				label="Actions"
 				v-slot="props"
@@ -57,7 +54,6 @@
 					/>
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
@@ -94,16 +90,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
-					{
-						key: "unit",
-					},
-					{
-						type: "image",
-						key: "image",
-					},
+					{ key: "name" },
+					{ key: "unit" },
+					{ type: "image", key: "image" },
 				],
 				total: 0,
 				currentPage: 1,

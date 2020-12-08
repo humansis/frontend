@@ -12,7 +12,6 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
-
 			<template v-for="column in table.columns">
 				<b-table-column
 					sortable
@@ -53,18 +52,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "who",
-					},
-					{
-						key: "where",
-					},
-					{
-						key: "what",
-					},
-					{
-						key: "status",
-					},
+					{ key: "who" },
+					{ key: "where" },
+					{ key: "what" },
+					{ key: "status" },
 				],
 				total: 0,
 				currentPage: 1,

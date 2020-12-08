@@ -19,7 +19,6 @@
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
 				v-slot="props"
 				label="Actions"
@@ -46,7 +45,6 @@
 					<ActionButton icon="print" type="is-dark" />
 				</div>
 			</b-table-column>
-
 		</Table>
 	</div>
 </template>
@@ -80,24 +78,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "username",
-					},
-					{
-						key: "name",
-					},
-					{
-						key: "addressNumber",
-					},
-					{
-						key: "addressPostcode",
-					},
-					{
-						key: "addressStreet",
-					},
-					{
-						key: "location",
-					},
+					{ key: "username" },
+					{ key: "name" },
+					{ key: "addressNumber" },
+					{ key: "addressPostcode" },
+					{ key: "addressStreet" },
+					{ key: "location" },
 				],
 				total: 0,
 				currentPage: 1,

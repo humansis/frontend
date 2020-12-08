@@ -9,17 +9,13 @@
 					:options="options.beneficiaries"
 				/>
 			</b-field>
-
-			<b-field
-				label="Justification"
-			>
+			<b-field label="Justification">
 				<b-input
 					v-model="formModel.justification"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

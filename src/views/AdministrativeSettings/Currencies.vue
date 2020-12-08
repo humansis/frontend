@@ -51,18 +51,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "country",
-					},
-					{
-						key: "currency",
-					},
-					{
-						key: "code",
-					},
-					{
-						key: "number",
-					},
+					{ key: "country" },
+					{ key: "currency" },
+					{ key: "code" },
+					{ key: "number" },
 				],
 				total: 0,
 				currentPage: 1,
