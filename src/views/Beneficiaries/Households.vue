@@ -165,12 +165,8 @@ export default {
 						key: "contactGivenName",
 						label: "First Name",
 					},
-					{
-						key: "members",
-					},
-					{
-						key: "vulnerabilities",
-					},
+					{ key: "members" },
+					{ key: "vulnerabilities" },
 					{
 						key: "idNumber",
 						label: "ID Number",

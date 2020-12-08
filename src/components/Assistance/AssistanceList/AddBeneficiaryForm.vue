@@ -10,9 +10,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Justification"
-			>
+			<b-field label="Justification">
 				<b-input
 					v-model="formModel.justification"
 					:disabled="formDisabled"

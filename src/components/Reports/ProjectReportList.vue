@@ -37,9 +37,7 @@
 				</b-table-column>
 			</template>
 
-			<b-table-column
-				label="Actions"
-			>
+			<b-table-column label="Actions">
 				<div class="block">
 					<ActionButton icon="search" type="is-info" />
 					<ActionButton icon="trash" type="is-danger" />

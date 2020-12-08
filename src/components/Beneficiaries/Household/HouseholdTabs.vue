@@ -2,9 +2,9 @@
 	<div>
 		<b-steps
 			v-model="activeStep"
-			:animated="true"
-			:rounded="true"
-			:has-navigation="true"
+			animated
+			rounded
+			has-navigation
 		>
 			<b-step-item step="1" label="Household">
 				<Household :detailOfHousehold="detailOfHousehold" ref="household" />

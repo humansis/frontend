@@ -45,9 +45,7 @@
 
 				</b-field>
 			</b-field>
-			<b-field
-				v-if="formDisabled && formModel.image"
-			>
+			<b-field v-if="formDisabled && formModel.image">
 				<b-image
 					alt="Image"
 					ratio="601by235"

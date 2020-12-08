@@ -116,27 +116,19 @@
 					/>
 				</b-field>
 				<b-field label="Support Organization">
-					<b-input
-						v-model="formModel.externalSupport.supportOrganization"
-					/>
+					<b-input v-model="formModel.externalSupport.supportOrganization" />
 				</b-field>
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
 				<b-field label="ID Poor No">
-					<b-input
-						v-model="formModel.countrySpecificOptions.idPoorNo"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
 				</b-field>
 				<b-field label="Equity Card No">
-					<b-input
-						v-model="formModel.countrySpecificOptions.equityCardNo"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
 				</b-field>
 				<b-field label="Fields">
-					<b-input
-						v-model="formModel.countrySpecificOptions.fields"
-					/>
+					<b-input v-model="formModel.countrySpecificOptions.fields" />
 				</b-field>
 			</div>
 		</div>
@@ -153,10 +145,7 @@
 		</b-field>
 		<h4 class="title is-4">Notes</h4>
 		<b-field>
-			<b-input
-				v-model="formModel.notes"
-				type="textarea"
-			/>
+			<b-input v-model="formModel.notes" type="textarea" />
 		</b-field>
 	</form>
 </template>
@@ -188,7 +177,7 @@ export default {
 	mixins: [Validation],
 
 	props: {
-		detailOfHousehold: null || Object,
+		detailOfHousehold: Object,
 	},
 
 	watch: {

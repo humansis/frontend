@@ -71,16 +71,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Service Name",
-					},
-					{
-						key: "country",
-					},
-					{
-						key: "enabled",
-					},
+					{ key: "name", label: "Service Name" },
+					{ key: "country" },
+					{ key: "enabled" },
 				],
 				total: 0,
 				currentPage: 1,

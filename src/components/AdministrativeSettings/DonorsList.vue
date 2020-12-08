@@ -19,7 +19,6 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
-
 			<template v-for="column in table.columns">
 				<b-table-column
 					sortable

@@ -99,9 +99,7 @@
 				v-if="!formDisabled"
 				label="Update Password On Next Login"
 			>
-				<b-checkbox
-					v-model="formModel.updatePasswordOnNextLogin"
-				/>
+				<b-checkbox v-model="formModel.updatePasswordOnNextLogin" />
 			</b-field>
 
 			<b-field

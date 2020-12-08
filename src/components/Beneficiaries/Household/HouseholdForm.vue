@@ -5,27 +5,19 @@
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (Local)</h4>
 					<b-field label="Family Name">
-						<b-input
-							v-model="formModel.nameLocal.familyName"
-						/>
+						<b-input v-model="formModel.nameLocal.familyName" />
 					</b-field>
 					<b-field label="First Name">
-						<b-input
-							v-model="formModel.nameLocal.firstName"
-						/>
+						<b-input v-model="formModel.nameLocal.firstName" />
 					</b-field>
 				</div>
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (English)</h4>
 					<b-field label="Family Name">
-						<b-input
-							v-model="formModel.nameEnglish.familyName"
-						/>
+						<b-input v-model="formModel.nameEnglish.familyName" />
 					</b-field>
 					<b-field label="First Name">
-						<b-input
-							v-model="formModel.nameEnglish.firstName"
-						/>
+						<b-input v-model="formModel.nameEnglish.firstName" />
 					</b-field>
 				</div>
 				<div class="column is-one-quarter">
@@ -60,9 +52,7 @@
 						/>
 					</b-field>
 					<b-field label="ID Number">
-						<b-input
-							v-model="formModel.id.idNumber"
-						/>
+						<b-input v-model="formModel.id.idNumber" />
 					</b-field>
 				</div>
 				<div class="column is-one-quarter">
@@ -90,9 +80,7 @@
 						/>
 					</b-field>
 					<b-field v-if="formModel.addAReferral" label="Comment">
-						<b-input
-							v-model="formModel.referral.comment"
-						/>
+						<b-input v-model="formModel.referral.comment" />
 					</b-field>
 				</div>
 				<div class="column is-one-quarter">
@@ -171,7 +159,7 @@ export default {
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
-		detailOfHousehold: null || Object,
+		detailOfHousehold: Object,
 	},
 
 	watch: {

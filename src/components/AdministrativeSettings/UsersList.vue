@@ -6,8 +6,8 @@
 				class="column"
 				type="is-success"
 				size="is-default"
-				:formats="{ xlsx: true, csv: true, ods: true}"
 				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
 			/>
 		</div>
 		<Table
@@ -89,18 +89,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "email",
-					},
-					{
-						key: "rights",
-					},
-					{
-						key: "prefix",
-					},
-					{
-						key: "phoneNumber",
-					},
+					{ key: "email" },
+					{ key: "rights" },
+					{ key: "prefix" },
+					{ key: "phoneNumber" },
 				],
 				total: 0,
 				currentPage: 1,

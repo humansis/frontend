@@ -80,24 +80,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "username",
-					},
-					{
-						key: "name",
-					},
-					{
-						key: "addressNumber",
-					},
-					{
-						key: "addressPostcode",
-					},
-					{
-						key: "addressStreet",
-					},
-					{
-						key: "location",
-					},
+					{ key: "username" },
+					{ key: "name" },
+					{ key: "addressNumber" },
+					{ key: "addressPostcode" },
+					{ key: "addressStreet" },
+					{ key: "location" },
 				],
 				total: 0,
 				currentPage: 1,

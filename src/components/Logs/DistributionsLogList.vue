@@ -47,24 +47,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "object",
-					},
-					{
-						key: "action",
-					},
-					{
-						key: "status",
-					},
-					{
-						key: "date",
-					},
-					{
-						key: "user",
-					},
-					{
-						key: "country",
-					},
+					{ key: "object" },
+					{ key: "action" },
+					{ key: "status" },
+					{ key: "date" },
+					{ key: "user" },
+					{ key: "country" },
 				],
 				total: 0,
 				currentPage: 1,

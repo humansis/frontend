@@ -36,7 +36,6 @@
 				@formClosed="closeCriteriaModal"
 			/>
 		</Modal>
-
 		<div class="mb-2">
 			<SelectionCriteriaGroup
 				v-for="(group, key) in groups"
@@ -48,7 +47,6 @@
 				@removeGroup="removeCriteriaGroup(key)"
 				@showDetail="showDetail"
 			/>
-
 			<b-notification
 				v-if="!groups.length"
 				type="is-light"

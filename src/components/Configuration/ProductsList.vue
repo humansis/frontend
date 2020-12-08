@@ -94,16 +94,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
-					{
-						key: "unit",
-					},
-					{
-						type: "image",
-						key: "image",
-					},
+					{ key: "name" },
+					{ key: "unit" },
+					{ type: "image", key: "image" },
 				],
 				total: 0,
 				currentPage: 1,

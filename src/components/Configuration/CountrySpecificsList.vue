@@ -82,15 +82,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "field",
-					},
-					{
-						key: "type",
-					},
-					{
-						key: "target",
-					},
+					{ key: "field" },
+					{ key: "type" },
+					{ key: "target" },
 				],
 				total: 0,
 				currentPage: 1,

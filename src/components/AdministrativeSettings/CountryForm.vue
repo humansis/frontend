@@ -68,7 +68,6 @@
 					</template>
 				</MultiSelect>
 			</b-field>
-
 		</section>
 
 		<footer class="modal-card-foot">

@@ -25,9 +25,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Phone"
-			>
+			<b-field label="Phone">
 				<b-field grouped>
 					<b-field
 						:type="validateType('phonePrefix')"

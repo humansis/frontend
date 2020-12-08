@@ -1,9 +1,7 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="Criteria Target"
-			>
+			<b-field label="Criteria Target">
 				<MultiSelect
 					v-model="formModel.criteriaTarget"
 					placeholder="Click to select..."
@@ -12,10 +10,7 @@
 					@select="onCriteriaTargetSelect"
 				/>
 			</b-field>
-
-			<b-field
-				label="Criteria"
-			>
+			<b-field label="Criteria">
 				<MultiSelect
 					v-model="formModel.criteria"
 					placeholder="Click to select..."
@@ -24,10 +19,7 @@
 					@select="onCriteriaSelect"
 				/>
 			</b-field>
-
-			<b-field
-				label="Condition"
-			>
+			<b-field label="Condition">
 				<MultiSelect
 					v-model="formModel.condition"
 					placeholder="Click to select..."
@@ -35,17 +27,14 @@
 					:searchable="false"
 				/>
 			</b-field>
-
 			<b-field
 				v-if="showValueInput && !showLocation"
 				label="Value"
 			>
-
 				<b-input
 					v-model="formModel.value"
 					v-if="formModel.criteria !== 'Date Of Birth'"
 				/>
-
 				<b-datepicker
 					v-else
 					v-model="formModel.value"
@@ -56,23 +45,15 @@
 					trap-focus
 				/>
 			</b-field>
-
 			<LocationForm
 				v-if="showLocation"
 				ref="locationForm"
 				:form-model="formModel"
 			/>
-
-			<b-field
-				label="Score Weight"
-			>
-				<b-numberinput
-					v-model="formModel.scoreWeight"
-				/>
+			<b-field label="Score Weight">
+				<b-numberinput v-model="formModel.scoreWeight" />
 			</b-field>
-
 		</section>
-
 		<footer class="modal-card-foot">
 			<button v-if="closeButton" class="button" type="button" @click="closeForm">
 				Close

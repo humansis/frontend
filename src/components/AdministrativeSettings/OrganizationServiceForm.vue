@@ -86,9 +86,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Enabled"
-			>
+			<b-field label="Enabled">
 				<b-checkbox
 					v-model="formModel.enabled"
 					:disabled="formDisabled"

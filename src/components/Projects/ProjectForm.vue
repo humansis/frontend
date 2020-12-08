@@ -135,9 +135,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Notes"
-			>
+			<b-field label="Notes">
 				<b-input
 					v-model="formModel.notes"
 					type="textarea"

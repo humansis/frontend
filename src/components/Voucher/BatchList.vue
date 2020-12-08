@@ -98,27 +98,13 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "project",
-					},
-					{
-						key: "code",
-					},
-					{
-						key: "quantityOfVouchers",
-					},
-					{
-						key: "individualValue",
-					},
-					{
-						key: "status",
-					},
-					{
-						key: "beneficiary",
-					},
-					{
-						key: "distribution",
-					},
+					{ key: "project" },
+					{ key: "code" },
+					{ key: "quantityOfVouchers" },
+					{ key: "individualValue" },
+					{ key: "status" },
+					{ key: "beneficiary" },
+					{ key: "distribution" },
 				],
 				total: 0,
 				currentPage: 1,

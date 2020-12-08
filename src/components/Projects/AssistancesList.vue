@@ -141,9 +141,7 @@ export default {
 						key: "id",
 						label: "Assistance ID",
 					},
-					{
-						key: "name",
-					},
+					{ key: "name" },
 					{
 						key: "adm1Id",
 						label: "Location",
@@ -156,9 +154,7 @@ export default {
 						key: "dateDistribution",
 						label: "Date Of Distribution",
 					},
-					{
-						key: "target",
-					},
+					{ key: "target" },
 					{
 						type: "commodity",
 						key: "commodityIds",

@@ -18,9 +18,7 @@
 				label="Organizational Logo"
 				:type="validateType('logo')"
 			>
-				<b-field
-					class="file"
-				>
+				<b-field class="file">
 					<b-upload
 						v-model="formModel.uploadedImage"
 						expanded
