@@ -9,15 +9,17 @@
 		:can-cancel="canCancel"
 		@close="$emit('close')"
 	>
-		<div class="modal-card">
+		<div :class="modalCardClass">
 			<header class="modal-card-head">
 				<p class="modal-card-title">{{ header }}</p>
+
 				<button
 					type="button"
 					class="delete"
 					@click="$emit('close')"
 				/>
 			</header>
+
 			<slot />
 		</div>
 	</b-modal>
@@ -31,6 +33,16 @@ export default {
 		active: Boolean,
 		header: String,
 		canCancel: Boolean,
+		isSmall: {
+			type: Boolean,
+			default: false,
+		},
+	},
+
+	computed: {
+		modalCardClass() {
+			return this.isSmall ? "modal-card small-modal" : "modal-card";
+		},
 	},
 };
 </script>

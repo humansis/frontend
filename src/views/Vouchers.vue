@@ -9,6 +9,7 @@
 		>
 			<VoucherForm
 				close-button
+				class="modal-card"
 				submit-button-label="Create"
 				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"

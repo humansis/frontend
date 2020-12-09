@@ -8,6 +8,7 @@
 		>
 			<MyOrganizationForm
 				close-button
+				class="modal-card"
 				:formModel="myOrganizationModel"
 				:submit-button-label="myOrganizationModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="myOrganizationModal.isDetail"

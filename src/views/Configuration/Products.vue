@@ -9,6 +9,7 @@
 		>
 			<ProductForm
 				close-button
+				class="modal-card"
 				:formModel="productModel"
 				:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="productModal.isDetail"

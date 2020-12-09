@@ -19,6 +19,7 @@
 		>
 			<DistributedCommodityForm
 				close-button
+				class="modal-card"
 				submit-button-label="Create"
 				:formModel="commodityModel"
 				@formSubmitted="submitCommodityForm"

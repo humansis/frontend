@@ -8,6 +8,7 @@
 		>
 			<CountryForm
 				close-button
+				class="modal-card"
 				:formModel="countryModel"
 				:submit-button-label="countryModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="countryModal.isDetail"

@@ -1,7 +1,7 @@
 <template>
 	<div class="mb-5">
 		<div class="columns is-multiline">
-			<div v-for="(filter, name) in filtersOptions" :key="name" class="column is-half">
+			<div v-for="(filter, name) in filters" :key="name" class="column is-half">
 				<b-field :label="filter.label">
 					<MultiSelect
 						v-if="filter.type === 'multiselect'"
@@ -37,10 +37,6 @@
 export default {
 	name: "TransactionFilters",
 
-	props: {
-		filtersOptions: Object,
-	},
-
 	data() {
 		return {
 			selectedFiltersOptions: {
@@ -49,6 +45,38 @@ export default {
 				from: [],
 				to: [],
 				reedem: [],
+			},
+			filters: {
+				beneficiary: {
+					data: [],
+					type: "multiselect",
+					placeholder: "Select Beneficiary ...",
+					label: "Beneficiary",
+				},
+				type: {
+					data: [],
+					type: "multiselect",
+					placeholder: "Select Type ...",
+					label: "Type",
+				},
+				from: {
+					data: [],
+					type: "date",
+					placeholder: "Select Date ...",
+					label: "From",
+				},
+				to: {
+					data: [],
+					type: "date",
+					placeholder: "Select Date ...",
+					label: "To",
+				},
+				reedem: {
+					data: [],
+					type: "multiselect",
+					placeholder: "Select Reedem ...",
+					label: "Reedem",
+				},
 			},
 		};
 	},

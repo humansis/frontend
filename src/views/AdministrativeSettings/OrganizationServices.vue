@@ -9,6 +9,7 @@
 		>
 			<OrganizationServiceForm
 				close-button
+				class="modal-card"
 				submit-button-label="Create"
 				:formModel="organizationServiceModel"
 				:form-disabled="organizationServiceModal.isDetail"
