@@ -27,8 +27,10 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "HouseholdsFilters",
@@ -86,14 +88,8 @@ export default {
 					name: "Gender",
 					placeholder: "Select Gender",
 					data: [
-						{
-							id: "male",
-							name: "Male",
-						},
-						{
-							id: "female",
-							name: "Female",
-						},
+						{ code: "M", value: "Male" },
+						{ code: "F", value: "Female" },
 					],
 				},
 				residencies: {
@@ -146,108 +142,7 @@ export default {
 					name: "Livelihood",
 					placeholder: "Select Livelihood",
 					multiple: true,
-					data: [
-						{
-							id: "agricultureLivestock",
-							name: "Agriculture - Livestock",
-						},
-						{
-							id: "agricultureCrops",
-							name: "Agriculture - Crops",
-						},
-						{
-							id: "agricultureFishing",
-							name: "Agriculture - Fishing",
-						},
-						{
-							id: "agricultureOther",
-							name: "Agriculture - Other",
-						},
-						{
-							id: "mining",
-							name: "Mining",
-						},
-						{
-							id: "construction",
-							name: "Construction",
-						},
-						{
-							id: "manufacturing",
-							name: "Manufacturing",
-						},
-						{
-							id: "retail",
-							name: "Retail",
-						},
-						{
-							id: "transportation",
-							name: "Transportation",
-						},
-						{
-							id: "education",
-							name: "Education",
-						},
-						{
-							id: "healthCare",
-							name: "Health Care",
-						},
-						{
-							id: "hospitalityAndTourism",
-							name: "Hospitality And Tourism",
-						},
-						{
-							id: "legalServices",
-							name: "Legal Services",
-						},
-						{
-							id: "homeDuties",
-							name: "Home Duties",
-						},
-						{
-							id: "religiousService",
-							name: "Religious Service",
-						},
-						{
-							id: "itAndTelecommunications",
-							name: "IT And Telecommunications",
-						},
-						{
-							id: "financeAndInsurance",
-							name: "Finance And Insurance",
-						},
-						{
-							id: "manualLabour",
-							name: "Manual Labour",
-						},
-						{
-							id: "ngoAndNonProfit",
-							name: "NGO And Non Profit",
-						},
-						{
-							id: "militaryOrPolice",
-							name: "Military Or Police",
-						},
-						{
-							id: "governmentAndPublicEnterprise",
-							name: "Government And Public Enterprise",
-						},
-						{
-							id: "garmentIndustry",
-							name: "Garment Industry",
-						},
-						{
-							id: "securityIndustry",
-							name: "Security Industry",
-						},
-						{
-							id: "serviceIndustryAndOtherProfessionals",
-							name: "Service Industry And Other Professionals",
-						},
-						{
-							id: "other",
-							name: "Other",
-						},
-					],
+					data: [],
 				},
 				adm1: {
 					name: "Province",
@@ -276,6 +171,7 @@ export default {
 	mounted() {
 		this.fetchProjects();
 		this.fetchProvinces();
+		this.fetchLivelihoods();
 	},
 
 	methods: {
@@ -297,27 +193,50 @@ export default {
 
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
-				.then((response) => { this.filtersOptions.projects.data = response.data; });
+				.then((response) => { this.filtersOptions.projects.data = response.data; })
+				.catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchProvinces() {
 			await LocationsService.getListOfAdm1()
-				.then((response) => { this.filtersOptions.adm1.data = response.data; });
+				.then((response) => { this.filtersOptions.adm1.data = response.data; })
+				.catch((e) => {
+					Toast(`(Provinces) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchDistricts(id) {
 			await LocationsService.getListOfAdm2(id)
-				.then((response) => { this.filtersOptions.adm2.data = response.data; });
+				.then((response) => { this.filtersOptions.adm2.data = response.data; })
+				.catch((e) => {
+					Toast(`(Districts) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchCommunes(id) {
 			await LocationsService.getListOfAdm3(id)
-				.then((response) => { this.filtersOptions.adm3.data = response.data; });
+				.then((response) => { this.filtersOptions.adm3.data = response.data; })
+				.catch((e) => {
+					Toast(`(Communes) ${e}`, "is-danger");
+				});
 		},
 
 		async fetchVillages(id) {
 			await LocationsService.getListOfAdm4(id)
-				.then((response) => { this.filtersOptions.adm4.data = response.data; });
+				.then((response) => { this.filtersOptions.adm4.data = response.data; })
+				.catch((e) => {
+					Toast(`(Villages) ${e}`, "is-danger");
+				});
+		},
+
+		async fetchLivelihoods() {
+			await BeneficiariesService.getListOfLivelihoods()
+				.then((response) => { this.filtersOptions.livelihoods.data = response.data; })
+				.catch((e) => {
+					Toast(`(Livelihoods) ${e}`, "is-danger");
+				});
 		},
 	},
 };

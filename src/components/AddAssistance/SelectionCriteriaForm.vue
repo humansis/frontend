@@ -34,12 +34,8 @@
 				v-if="showValueInput && !showLocation"
 				label="Value"
 			>
-				<b-input
-					v-model="formModel.value"
-					v-if="formModel.criteria !== 'Date Of Birth'"
-				/>
 				<b-datepicker
-					v-else
+					v-if="formModel.criteria === 'Date Of Birth'"
 					v-model="formModel.value"
 					show-week-number
 					locale="en-GB"
@@ -47,6 +43,20 @@
 					icon="calendar-day"
 					trap-focus
 				/>
+				<MultiSelect
+					v-else-if="formModel.criteria === 'Gender'"
+					v-model="formModel.value"
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:options="options.gender"
+					:searchable="false"
+				/>
+				<b-input
+					v-else
+					v-model="formModel.value"
+				/>
+
 			</b-field>
 			<LocationForm
 				v-if="showLocation"
@@ -92,6 +102,10 @@ export default {
 				criteriaTarget: ["Beneficiary", "Head", "Household"],
 				criteria: [],
 				condition: [">", "<", ">=", "<=", "=", "!="],
+				gender: [
+					{ code: "M", value: "Male" },
+					{ code: "F", value: "Female" },
+				],
 			},
 			showValueInput: true,
 			showLocation: false,
@@ -106,6 +120,8 @@ export default {
 
 	methods: {
 		onCriteriaTargetSelect(criteriaTarget) {
+			this.formModel.criteria = "";
+			this.formModel.condition = "";
 			switch (criteriaTarget) {
 				case "Beneficiary":
 					this.options.criteria = [
@@ -130,6 +146,7 @@ export default {
 		},
 
 		onCriteriaSelect(criteria) {
+			this.formModel.condition = "";
 			this.showValueInput = true;
 			this.showLocation = false;
 			switch (criteria) {

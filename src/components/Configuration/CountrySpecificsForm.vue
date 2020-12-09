@@ -39,8 +39,8 @@
 					v-model="formModel.target"
 					searchable
 					is-relative
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="targets"
 					@select="validate('target')"
@@ -68,8 +68,10 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import AssistancesService from "@/services/AssistancesService";
 
 export default {
 	name: "CountrySpecificsForm",
@@ -95,20 +97,7 @@ export default {
 					name: "Text",
 				},
 			],
-			targets: [
-				{
-					id: 0,
-					name: "Vendor",
-				},
-				{
-					id: 1,
-					name: "Household",
-				},
-				{
-					id: 2,
-					name: "Institution",
-				},
-			],
+			targets: [],
 		};
 	},
 
@@ -118,6 +107,10 @@ export default {
 			type: { required },
 			target: { required },
 		},
+	},
+
+	mounted() {
+		this.fetchTargets();
 	},
 
 	methods: {
@@ -134,6 +127,14 @@ export default {
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
+		},
+
+		fetchTargets() {
+			AssistancesService.getListOfTargetsForAssistances()
+				.then((response) => { this.targets = response.data; })
+				.catch((e) => {
+					Toast(`(Target Types) ${e}`, "is-danger");
+				});
 		},
 	},
 };

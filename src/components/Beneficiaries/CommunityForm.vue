@@ -65,8 +65,8 @@
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="nationalCardTypes"
 					@select="validate('nationalCardType')"
@@ -169,9 +169,11 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { required, numeric } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LocationForm from "@/components/LocationForm";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "CommunityForm",
@@ -209,40 +211,7 @@ export default {
 
 	data() {
 		return {
-			nationalCardTypes: [
-				{
-					id: "national_id",
-					name: "National ID",
-				},
-				{
-					id: "passport",
-					name: "Passport",
-				},
-				{
-					id: "familyRegistration",
-					name: "Family Registration",
-				},
-				{
-					id: "birthCertificate",
-					name: "Birth Certificate",
-				},
-				{
-					id: "driverLicense",
-					name: "Driver's License",
-				},
-				{
-					id: "campId",
-					name: "Camp ID",
-				},
-				{
-					id: "socialServiceCard",
-					name: "Social Service Card",
-				},
-				{
-					id: "other",
-					name: "Other",
-				},
-			],
+			nationalCardTypes: [],
 			// TODO get from API
 			phonePrefixes: [
 				{
@@ -257,6 +226,10 @@ export default {
 		};
 	},
 
+	mounted() {
+		this.fetchNationalCardTypes();
+	},
+
 	methods: {
 		submitForm() {
 			this.$v.$touch();
@@ -267,6 +240,14 @@ export default {
 
 			this.$emit("formSubmitted", this.formModel);
 			this.$v.$reset();
+		},
+
+		async fetchNationalCardTypes() {
+			await BeneficiariesService.getListOfTypesOfNationalIds()
+				.then((response) => { this.nationalCardTypes = response.data; })
+				.catch((e) => {
+					Toast(`(National IDs) ${e}`, "is-danger");
+				});
 		},
 
 		closeForm() {
