@@ -241,7 +241,7 @@ export default {
 					{ id: "soloParent", name: "Solo Parent" },
 					{ id: "lactating", name: "Lactating" },
 					{ id: "pregnant", name: "Pregnant" },
-					{ id: "chronicallylll", name: "Chronicallylll" },
+					{ id: "chronically", name: "Chronically" },
 				],
 			},
 		};
