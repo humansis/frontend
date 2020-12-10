@@ -36,8 +36,8 @@
 				<MultiSelect
 					v-model="formModel.organization"
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="organizations"
 				/>
@@ -51,8 +51,8 @@
 				<MultiSelect
 					v-model="formModel.rights"
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="rights"
 					@select="onRightsSelect"
@@ -69,7 +69,7 @@
 					v-model="formModel.projects"
 					searchable
 					label="name"
-					track-by="iso3"
+					track-by="id"
 					:multiple="true"
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="projects"
@@ -179,32 +179,32 @@ export default {
 			// TODO fix after implementing real api or roleService or something like that
 			rights: [
 				{
-					name: "Administrator",
-					id: 0,
+					code: 0,
+					value: "Administrator",
 				},
 				{
-					name: "Field Officer",
-					id: 1,
+					code: 1,
+					value: "Field Officer",
 				},
 				{
-					name: "Project Officer",
-					id: 2,
+					code: 2,
+					value: "Project Officer",
 				},
 				{
-					name: "Project Manager",
-					id: 3,
+					code: 3,
+					value: "Project Manager",
 				},
 				{
-					name: "Country Manager",
-					id: 4,
+					value: "Country Manager",
+					code: 4,
 				},
 				{
-					name: "Regional Manager",
-					id: 5,
+					value: "Regional Manager",
+					code: 5,
 				},
 				{
-					name: "Enumerator",
-					id: 6,
+					value: "Enumerator",
+					code: 6,
 				},
 			],
 			projects: [],
@@ -229,14 +229,14 @@ export default {
 			this.$v.$reset();
 		},
 
-		onRightsSelect({ id }) {
+		onRightsSelect({ code }) {
 			this.validate("rights");
-			if (id === 1 || id === 2 || id === 3 || id === 6) {
+			if (code === 1 || code === 2 || code === 3 || code === 6) {
 				this.fetchProjects();
 				this.formModel.disabledProject = false;
 				this.formModel.disabledCountry = true;
-			} else if (id === 4 || id === 5) {
-				this.onlyOneCountry = (id === 4);
+			} else if (code === 4 || code === 5) {
+				this.onlyOneCountry = (code === 4);
 				this.fetchCountries();
 				this.formModel.disabledProject = true;
 				this.formModel.disabledCountry = false;

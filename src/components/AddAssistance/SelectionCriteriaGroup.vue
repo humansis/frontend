@@ -121,7 +121,7 @@ export default {
 
 	methods: {
 		remove(index) {
-			this.table.data.splice(index, 1);
+			this.data.splice(index, 1);
 		},
 
 		addCriteria() {

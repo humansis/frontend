@@ -22,8 +22,8 @@
 					v-model="formModel.type"
 					searchable
 					is-relative
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="types"
 					@select="validate('type')"
@@ -89,12 +89,12 @@ export default {
 		return {
 			types: [
 				{
-					id: "number",
-					name: "Number",
+					code: "number",
+					value: "Number",
 				},
 				{
-					id: "text",
-					name: "Text",
+					code: "text",
+					value: "Text",
 				},
 			],
 			targets: [],

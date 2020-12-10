@@ -6,8 +6,8 @@
 					<MultiSelect
 						v-model="selectedFiltersOptions[filter]"
 						searchable
-						label="name"
-						track-by="id"
+						:label="options.label || 'value'"
+						:track-by="options.trackBy || 'code'"
 						:multiple="options.multiple"
 						:placeholder="options.placeholder || 'Select ...'"
 						:options="options.data"
@@ -54,6 +54,8 @@ export default {
 					name: "Project",
 					placeholder: "Select Project",
 					multiple: true,
+					trackBy: "id",
+					label: "name",
 					data: [],
 				},
 				// TODO get from api
@@ -63,24 +65,24 @@ export default {
 					multiple: true,
 					data: [
 						{
-							id: "disabled",
-							name: "Disabled",
+							code: "disabled",
+							value: "Disabled",
 						},
 						{
-							id: "soloParent",
-							name: "Solo Parent",
+							code: "soloParent",
+							value: "Solo Parent",
 						},
 						{
-							id: "lactating",
-							name: "Lactating",
+							code: "lactating",
+							value: "Lactating",
 						},
 						{
-							id: "pregnant",
-							name: "Pregnant",
+							code: "pregnant",
+							value: "Pregnant",
 						},
 						{
-							id: "chronicallylll",
-							name: "Chronicallylll",
+							code: "chronicallylll",
+							value: "Chronicallylll",
 						},
 					],
 				},
@@ -92,49 +94,51 @@ export default {
 						{ code: "F", value: "Female" },
 					],
 				},
+				// TODO get from api
 				residencies: {
 					name: "Residence Status",
 					placeholder: "Select Residence",
 					multiple: true,
 					data: [
 						{
-							id: "refugee",
-							name: "Refugee",
+							code: "refugee",
+							value: "Refugee",
 						},
 						{
-							id: "idp",
-							name: "IDP",
+							code: "idp",
+							value: "IDP",
 						},
 						{
-							id: "resident",
-							name: "Resident",
+							code: "resident",
+							value: "Resident",
 						},
 					],
 				},
+				// TODO get from api
 				referrals: {
 					name: "Referral",
 					placeholder: "Select Referral",
 					multiple: true,
 					data: [
 						{
-							id: "health",
-							name: "Health",
+							code: "health",
+							value: "Health",
 						},
 						{
-							id: "protection",
-							name: "Protection",
+							code: "protection",
+							value: "Protection",
 						},
 						{
-							id: "shelter",
-							name: "Shelter",
+							code: "shelter",
+							value: "Shelter",
 						},
 						{
-							id: "nutrition",
-							name: "Nutrition",
+							code: "nutrition",
+							value: "Nutrition",
 						},
 						{
-							id: "other",
-							name: "Other",
+							code: "other",
+							value: "Other",
 						},
 					],
 				},
@@ -147,21 +151,29 @@ export default {
 				adm1: {
 					name: "Province",
 					placeholder: "Select Province",
+					trackBy: "id",
+					label: "name",
 					data: [],
 				},
 				adm2: {
 					name: "District",
 					placeholder: "Select District",
+					trackBy: "id",
+					label: "name",
 					data: [],
 				},
 				adm3: {
 					name: "Commune",
 					placeholder: "Select Commune",
+					trackBy: "id",
+					label: "name",
 					data: [],
 				},
 				adm4: {
 					name: "Village",
 					placeholder: "Select Village",
+					trackBy: "id",
+					label: "name",
 					data: [],
 				},
 			},

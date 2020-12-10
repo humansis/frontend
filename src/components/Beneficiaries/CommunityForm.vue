@@ -35,8 +35,8 @@
 							v-model="formModel.phonePrefix"
 							searchable
 							placeholder="Phone Ext"
-							label="name"
-							track-by="id"
+							label="value"
+							track-by="code"
 							:disabled="formDisabled"
 							:options="phonePrefixes"
 							@select="validate('phonePrefix')"
@@ -215,12 +215,12 @@ export default {
 			// TODO get from API
 			phonePrefixes: [
 				{
-					id: "+420",
-					name: "CZ - +420",
+					code: "+420",
+					value: "CZ - +420",
 				},
 				{
-					id: "+421",
-					name: "SK - +421",
+					code: "+421",
+					value: "SK - +421",
 				},
 			],
 		};

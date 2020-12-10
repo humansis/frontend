@@ -80,8 +80,8 @@
 					v-model="formModel.currency"
 					searchable
 					placeholder="Currency"
-					label="name"
-					track-by="id"
+					label="code"
+					track-by="value"
 					:disabled="formDisabled"
 					:options="currencies"
 					@select="validate('currency')"
@@ -157,20 +157,20 @@ export default {
 			// TODO fill currencies
 			currencies: [
 				{
-					id: "CZK",
-					name: "CZK",
+					code: "CZK",
+					value: "CZK",
 				},
 				{
-					id: "USD",
-					name: "USD",
+					code: "USD",
+					value: "USD",
 				},
 				{
-					id: "GBP",
-					name: "GBP",
+					code: "GBP",
+					value: "GBP",
 				},
 				{
-					id: "EUR",
-					name: "EUR",
+					code: "EUR",
+					value: "EUR",
 				},
 			],
 		};
