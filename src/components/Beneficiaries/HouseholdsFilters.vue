@@ -58,33 +58,11 @@ export default {
 					label: "name",
 					data: [],
 				},
-				// TODO get from api
 				vulnerabilities: {
 					name: "Vulnerability",
 					placeholder: "Select Vulnerability",
 					multiple: true,
-					data: [
-						{
-							code: "disabled",
-							value: "Disabled",
-						},
-						{
-							code: "soloParent",
-							value: "Solo Parent",
-						},
-						{
-							code: "lactating",
-							value: "Lactating",
-						},
-						{
-							code: "pregnant",
-							value: "Pregnant",
-						},
-						{
-							code: "chronicallylll",
-							value: "Chronicallylll",
-						},
-					],
+					data: [],
 				},
 				gender: {
 					name: "Gender",
@@ -184,6 +162,8 @@ export default {
 		this.fetchProjects();
 		this.fetchProvinces();
 		this.fetchLivelihoods();
+		this.fetchVulnerabilities();
+		this.fetchResidenceStatuses();
 	},
 
 	methods: {
@@ -204,7 +184,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(1, 15, "desc")
+			await ProjectsService.getListOfProjects()
 				.then((response) => { this.filtersOptions.projects.data = response.data; })
 				.catch((e) => {
 					Toast(`(Projects) ${e}`, "is-danger");
@@ -248,6 +228,22 @@ export default {
 				.then((response) => { this.filtersOptions.livelihoods.data = response.data; })
 				.catch((e) => {
 					Toast(`(Livelihoods) ${e}`, "is-danger");
+				});
+		},
+
+		async fetchVulnerabilities() {
+			await BeneficiariesService.getListOfVulnerabilities()
+				.then((response) => { this.filtersOptions.vulnerabilities.data = response.data; })
+				.catch((e) => {
+					Toast(`(Vulnerability) ${e}`, "is-danger");
+				});
+		},
+
+		async fetchResidenceStatuses() {
+			await BeneficiariesService.getListOfResidenceStatuses()
+				.then((response) => { this.filtersOptions.residencies.data = response.data; })
+				.catch((e) => {
+					Toast(`(Residence Status) ${e}`, "is-danger");
 				});
 		},
 	},

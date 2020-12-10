@@ -6,7 +6,7 @@
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria
-					:target-type="$refs.assistanceForm.formModel.target"
+					:target-type="this.$refs.assistanceForm ? this.$refs.assistanceForm.formModel.target : ''"
 					@updatedData="fetchSelectionCriteria"
 				/>
 				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
@@ -33,15 +33,6 @@ export default {
 		NewAssistanceForm,
 		SelectionCriteria,
 		DistributedCommodity,
-	},
-
-	computed: {
-		targetType() {
-			if (this.newAssistanceForm === null) {
-				return "";
-			}
-			return this.newAssistanceForm.target;
-		},
 	},
 
 	data() {

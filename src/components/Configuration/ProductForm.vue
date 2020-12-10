@@ -8,7 +8,7 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					:disabled="formDisabled"
+					:disabled="formDisabled || editing"
 					@blur="validate('name')"
 				/>
 			</b-field>
@@ -27,19 +27,20 @@
 			<b-field
 				label="Image"
 				:type="validateType('image')"
+				:message="validateMsg('image', 'Required')"
 			>
 				<b-field
 					v-if="!formDisabled"
 					class="file"
 				>
 					<b-upload
-						v-model="formModel.uploadedImage"
+						v-model="uploadedImage"
 						expanded
 					>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
+								{{ uploadedImage ? uploadedImage.name : "Click to upload"}}
 							</span>
 						</a>
 					</b-upload>
@@ -50,7 +51,7 @@
 				<b-image
 					alt="Image"
 					ratio="601by235"
-					src="https://www.hello.com/img_/hellowithwaves.png"
+					:src="formModel.image"
 				/>
 
 			</b-field>
@@ -95,19 +96,24 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		editing: Boolean,
 	},
 
 	validations: {
 		formModel: {
 			name: { required },
 			unit: {},
-			image: {},
+			image: { required },
 		},
 	},
 
 	methods: {
 		submitForm() {
-			this.formModel.image = this.uploadedImage;
+			if (this.uploadedImage) {
+				// TODO uncomment and delete after implement image handler
+				// this.formModel.image = this.uploadedImage;
+				this.formModel.image = "https://www.hello.com/img_/hellowithwaves.png";
+			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

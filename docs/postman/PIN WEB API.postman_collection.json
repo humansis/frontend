@@ -1,0 +1,775 @@
+{
+	"info": {
+		"_postman_id": "2a369604-0625-498d-a9da-a4049c50cb3b",
+		"name": "PIN WEB API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Products",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"s\",\n    \"iso3\": \"KHM\",\n    \"unit\": \"Kg\",\n    \"image\": \"image\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8087/api/basic/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products Copy",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Apple\",\n    \"iso3\": \"KHM\",\n    \"unit\": \"Kg\",\n    \"image\": \"https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15d379307.jpeg\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8087/api/basic/products/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"products",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CodeList",
+			"item": [
+				{
+					"name": "Vulnerabilities",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/beneficiaries/vulnerability-criterias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"beneficiaries",
+								"vulnerability-criterias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Residence Status",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/beneficiaries/residency-statuses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"beneficiaries",
+								"residency-statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Livelihoods",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/households/livelihoods",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"households",
+								"livelihoods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assistance Target",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "country",
+								"value": "KHM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/assistances/targets",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"assistances",
+								"targets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assistance Types",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/assistances/types",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"assistances",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "National ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/beneficiaries/national-ids/types",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"beneficiaries",
+								"national-ids",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phone Types",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/beneficiaries/phones/types",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"beneficiaries",
+								"phones",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Household Assets",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/households/assets",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"households",
+								"assets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Shelter Status",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/households/shelter-statuses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"households",
+								"shelter-statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location Type",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/households/locations/types",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"households",
+								"locations",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sectors",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/sectors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"sectors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subsectors",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/sectors/wash/subsectors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"sectors",
+								"wash",
+								"subsectors"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Project",
+			"item": [
+				{
+					"name": "Projects",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/projects",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Project",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/projects/16",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"projects",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Project Assistances",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json;charset=utf-8"
+							},
+							{
+								"key": "country",
+								"type": "text",
+								"value": "KHM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8087/api/basic/projects/10/assistances",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8087",
+							"path": [
+								"api",
+								"basic",
+								"projects",
+								"10",
+								"assistances"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

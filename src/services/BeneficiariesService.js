@@ -46,6 +46,16 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfVulnerabilities() {
+		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/vulnerability-criterias" });
+		return { data, totalCount };
+	},
+
+	async getListOfResidenceStatuses() {
+		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/residency-statuses" });
+		return { data, totalCount };
+	},
+
 	async getListOfTypesOfPhones() {
 		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/phones/types" });
 		return { data, totalCount };
@@ -62,9 +72,7 @@ export default {
 	},
 
 	async getListOfShelterStatuses() {
-		const { data: { data, totalCount } } = await fetcher({
-			uri: "households/shelter-statuses",
-		});
+		const { data: { data, totalCount } } = await fetcher({ uri: "households/shelter-statuses" });
 		return { data, totalCount };
 	},
 

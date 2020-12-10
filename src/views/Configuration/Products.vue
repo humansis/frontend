@@ -11,8 +11,9 @@
 				close-button
 				class="modal-card"
 				:formModel="productModel"
-				:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
+				:editing="productModal.isEditing"
 				:form-disabled="productModal.isDetail"
+				:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
 				@formSubmitted="submitProductForm"
 				@formClosed="closeProductModal"
 			/>
@@ -62,7 +63,7 @@ export default {
 				id: null,
 				name: "",
 				unit: "",
-				image: null,
+				image: "",
 			},
 		};
 	},
@@ -149,6 +150,7 @@ export default {
 				name,
 				image,
 				unit,
+				iso3: "KHM",
 			};
 
 			if (this.productModal.isEditing && id) {
@@ -160,6 +162,7 @@ export default {
 			this.closeProductModal();
 		},
 
+		// TODO Fix after we have image handler, crashes on image
 		async createProduct(productBody) {
 			await ProductsService.createProduct(productBody).then((response) => {
 				if (response.status === 200) {
@@ -171,6 +174,7 @@ export default {
 			});
 		},
 
+		// TODO Fix after we have image handler, crashes on image
 		async updateProduct(id, productBody) {
 			await ProductsService.updateProduct(id, productBody).then((response) => {
 				if (response.status === 200) {
