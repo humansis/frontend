@@ -194,8 +194,6 @@ export default {
 				],
 			};
 
-			console.log(householdBody);
-
 			if (this.$refs.householdSummary.submit()) {
 				if (this.isEditing && this.$route.params.householdId) {
 					this.updateHousehold(this.$route.params.householdId, householdBody);
