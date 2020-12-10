@@ -33,8 +33,8 @@
 					v-model="formModel.availableCurrencies"
 					multiple
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="currencies"
 				/>
@@ -48,8 +48,8 @@
 				<MultiSelect
 					v-model="formModel.countryFlag"
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="flags"
 				>
@@ -101,36 +101,15 @@ export default {
 		return {
 			uploadedImage: null,
 			flags: [
-				{
-					id: "khm",
-					name: "KHM",
-				},
-				{
-					id: "syr",
-					name: "SYR",
-				},
-				{
-					id: "ukr",
-					name: "UKR",
-				},
+				{ code: "khm", value: "KHM" },
+				{ code: "syr", value: "SYR" },
+				{ code: "ukr", value: "UKR" },
 			],
 			currencies: [
-				{
-					id: "eur",
-					name: "EUR",
-				},
-				{
-					id: "usd",
-					name: "USD",
-				},
-				{
-					id: "czk",
-					name: "CZK",
-				},
-				{
-					id: "gpd",
-					name: "GPD",
-				},
+				{ code: "eur", value: "EUR" },
+				{ code: "usd", value: "USD" },
+				{ code: "czk", value: "CZK" },
+				{ code: "gpd", value: "GPD" },
 			],
 		};
 	},

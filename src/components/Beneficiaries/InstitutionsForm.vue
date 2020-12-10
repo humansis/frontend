@@ -63,8 +63,8 @@
 							v-model="formModel.phonePrefix"
 							searchable
 							placeholder="Phone Ext"
-							label="name"
-							track-by="id"
+							label="value"
+							track-by="code"
 							:disabled="formDisabled"
 							:options="phonePrefixes"
 							@select="validate('phonePrefix')"
@@ -94,8 +94,8 @@
 					v-model="formModel.nationalCardType"
 					searchable
 					placeholder="Contact ID Type"
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="nationalCardTypes"
 					@select="validate('nationalCardType')"
@@ -209,6 +209,7 @@ import Validation from "@/mixins/validation";
 import InstitutionsService from "@/services/InstitutionsService";
 import locationForm from "@/components/LocationForm";
 import { Toast } from "@/utils/UI";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "InstitutionForm",
@@ -249,49 +250,16 @@ export default {
 	data() {
 		return {
 			types: [],
-			nationalCardTypes: [
-				{
-					id: "national_id",
-					name: "National ID",
-				},
-				{
-					id: "passport",
-					name: "Passport",
-				},
-				{
-					id: "familyRegistration",
-					name: "Family Registration",
-				},
-				{
-					id: "birthCertificate",
-					name: "Birth Certificate",
-				},
-				{
-					id: "driverLicense",
-					name: "Driver's License",
-				},
-				{
-					id: "campId",
-					name: "Camp ID",
-				},
-				{
-					id: "socialServiceCard",
-					name: "Social Service Card",
-				},
-				{
-					id: "other",
-					name: "Other",
-				},
-			],
+			nationalCardTypes: [],
 			// TODO get from API
 			phonePrefixes: [
 				{
-					id: "+420",
-					name: "CZ - +420",
+					code: "+420",
+					value: "CZ - +420",
 				},
 				{
-					id: "+421",
-					name: "SK - +421",
+					code: "+421",
+					value: "SK - +421",
 				},
 			],
 		};
@@ -299,6 +267,7 @@ export default {
 
 	mounted() {
 		this.fetchTypes();
+		this.fetchNationalCardTypes();
 	},
 
 	methods: {
@@ -323,6 +292,14 @@ export default {
 				.then((result) => { this.types = result.data; })
 				.catch((e) => {
 					Toast(`(Institution Types) ${e}`, "is-danger");
+				});
+		},
+
+		async fetchNationalCardTypes() {
+			await BeneficiariesService.getListOfTypesOfNationalIds()
+				.then((response) => { this.nationalCardTypes = response.data; })
+				.catch((e) => {
+					Toast(`(National IDs) ${e}`, "is-danger");
 				});
 		},
 	},

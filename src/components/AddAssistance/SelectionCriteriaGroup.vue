@@ -23,16 +23,14 @@
 						:paginated="false"
 						:data="data"
 					>
-						<template v-for="(column, key) in table.columns">
-							<b-table-column v-bind="column" :key="key">
-								<template v-slot="props">
-									<div v-if="column.field === 'donorIds'">
-										{{ props.row[column.field].length }}
-									</div>
-									<div v-else>
-										{{ props.row[column.field] }}
-									</div>
-								</template>
+						<template v-for="(column) in table.columns">
+							<b-table-column
+								sortable
+								v-bind="column"
+								:key="column.id"
+								v-slot="props"
+							>
+								<ColumnField :data="props" :column="column" />
 							</b-table-column>
 						</template>
 						<b-table-column v-slot="props" label="Actions">
@@ -64,6 +62,7 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "SelectionCriteriaGroup",
@@ -71,6 +70,7 @@ export default {
 	components: {
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	props: {
@@ -104,6 +104,7 @@ export default {
 					{
 						field: "value",
 						label: "Value",
+						type: "customValue",
 					},
 					{
 						field: "scoreWeight",
@@ -120,7 +121,7 @@ export default {
 
 	methods: {
 		remove(index) {
-			this.table.data.splice(index, 1);
+			this.data.splice(index, 1);
 		},
 
 		addCriteria() {

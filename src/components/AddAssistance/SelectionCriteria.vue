@@ -23,6 +23,7 @@
 		</h2>
 		<Modal
 			can-cancel
+			is-small
 			header="Create A New Criteria"
 			:active.sync="criteriaModal.isOpened"
 			@close="closeCriteriaModal"
