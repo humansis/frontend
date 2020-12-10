@@ -125,7 +125,9 @@ export default {
 				case 2:
 					if (this.$refs.householdMembers.submit()) {
 						this.householdMembers = this.$refs.householdMembers.members;
-						this.prepareMembers(this.$refs.householdMembers.members);
+						this.prepareSummaryMembers(
+							[this.householdHead, ...this.$refs.householdMembers.members],
+						);
 						next.action();
 					}
 					break;
@@ -141,8 +143,8 @@ export default {
 			const {
 				shelterType,
 				livelihood: {
-					livelihood, assets, incomeLevel, debtLevel, foodConsumptionScore,
-					copingStrategiesIndex,
+					livelihood, assets, incomeLevel, debtLevel,
+					foodConsumptionScore, copingStrategiesIndex,
 				},
 				externalSupport: {
 					externalSupportReceivedType,
@@ -150,6 +152,12 @@ export default {
 					supportOrganization: supportOrganizationName,
 				},
 				notes,
+				currentLocation: {
+					addressNumber, addressPostCode, addressStreet,
+					adm1Id: { id: adm1Id }, adm2Id: { id: adm2Id },
+					adm3Id: { id: adm3Id }, adm4Id: { id: adm4Id },
+					campName, tentNumber,
+				},
 			} = this.household;
 
 			const householdBody = {
@@ -158,38 +166,11 @@ export default {
 				shelterStatus: shelterType,
 				projectIds: [...this.selectedProjects],
 				notes,
-				longitude: "string",
-				latitude: "string",
-				beneficiaries: [
-					{
-						dateOfBirth: "2000-12-01T00:00:00.000Z",
-						localFamilyName: "string",
-						localGivenName: "string",
-						enFamilyName: "string",
-						enlGivenName: "string",
-						gender: "M",
-						nationalIdCards: [
-							{
-								idNumber: "022-33-1547",
-								idType: "national_id",
-							},
-						],
-						phones: [
-							{
-								prefix: 420,
-								number: 123456789,
-								type: "Landline",
-								proxy: true,
-							},
-						],
-						referralType: "string",
-						referralComment: "string",
-						status: 1,
-						vulnerabilityCriteriaIds: [
-							0,
-						],
-					},
-				],
+				// longitude: "string",
+				// latitude: "string",
+				beneficiaries: this.mapBeneficiariesForBody(
+					[this.householdHead, ...this.householdMembers],
+				),
 				incomeLevel,
 				foodConsumptionScore,
 				copingStrategiesIndex,
@@ -197,28 +178,19 @@ export default {
 				supportDateReceived,
 				supportReceivedTypes: [...externalSupportReceivedType],
 				supportOrganizationName,
-				incomeSpentOnFood: 0,
-				houseIncome: 0,
+				// incomeSpentOnFood: 0,
+				// houseIncome: 0,
 				householdLocations: [
 					{
-						number: "string",
-						street: "string",
-						postcode: "string",
-						adm1Id: 0,
-						adm2Id: 0,
-						adm3Id: 0,
-						adm4Id: 0,
+						number: addressNumber,
+						street: addressStreet,
+						postcode: addressPostCode,
+						adm1Id,
+						adm2Id,
+						adm3Id,
+						adm4Id,
 					},
-					{
-						tentNumber: "string",
-						camp: {
-							name: "string",
-							adm1Id: 0,
-							adm2Id: 0,
-							adm3Id: 0,
-							adm4Id: 0,
-						},
-					},
+					this.mapCampResidenceForBody({ campName, tentNumber }),
 				],
 			};
 
@@ -232,7 +204,7 @@ export default {
 		},
 
 		async updateHousehold(id, householdBody) {
-			await BeneficiariesService.createHousehold(id, householdBody).then((response) => {
+			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Household Successfully Updated", "is-success");
 				}
@@ -259,8 +231,9 @@ export default {
 			});
 		},
 
-		prepareMembers(members) {
+		prepareSummaryMembers(members) {
 			const membersData = [];
+
 			if (members.length) {
 				members.forEach((member) => {
 					membersData.push({
@@ -275,6 +248,50 @@ export default {
 			}
 
 			this.summaryMembers = [...membersData];
+		},
+
+		mapBeneficiariesForBody() {
+			return [{
+				dateOfBirth: "2000-12-01T00:00:00.000Z",
+				localFamilyName: "string",
+				localGivenName: "string",
+				enFamilyName: "string",
+				enlGivenName: "string",
+				gender: "M",
+				nationalIdCards: [
+					{
+						idNumber: "022-33-1547",
+						idType: "national_id",
+					},
+				],
+				phones: [
+					{
+						prefix: 420,
+						number: 123456789,
+						type: "Landline",
+						proxy: true,
+					},
+				],
+				referralType: "string",
+				referralComment: "string",
+				status: 1,
+				vulnerabilityCriteriaIds: [
+					0,
+				],
+			}];
+		},
+
+		mapCampResidenceForBody({ campName, tentNumber }) {
+			return {
+				tentNumber,
+				camp: {
+					name: campName,
+					adm1Id: 0,
+					adm2Id: 0,
+					adm3Id: 0,
+					adm4Id: 0,
+				},
+			};
 		},
 	},
 };
