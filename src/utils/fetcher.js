@@ -35,7 +35,7 @@ export const getResponseJSON = async (response) => {
 		return { data, status: response.status };
 	}
 
-	throw new Error(response.statusText || data.message || "Something went wrong");
+	throw new Error(data.error.exception.pop().message || response.statusText || "Something went wrong");
 };
 
 async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
@@ -75,7 +75,7 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 	// return getResponseJSON(response);
 
 	// TODO Remove this after removing swagger api and use commented lines above
-	const response = await fetch(url, config).catch((e) => console.log(e));
+	const response = await fetch(url, config);
 	if (response.status >= 400 && !(method === "POST" || method === "PUT" || method === "DELETE")) {
 		const newResponse = await fetch(mockUrl, config);
 		return getResponseJSON(newResponse);
