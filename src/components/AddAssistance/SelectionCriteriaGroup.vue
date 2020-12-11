@@ -26,6 +26,7 @@
 						<template v-for="(column) in table.columns">
 							<b-table-column
 								sortable
+								centered
 								v-bind="column"
 								:key="column.id"
 								v-slot="props"

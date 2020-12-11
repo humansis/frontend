@@ -38,7 +38,7 @@ export const getResponseJSON = async (response) => {
 	throw new Error(response.statusText || data.message || "Something went wrong");
 };
 
-export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 	// TODO Remove second mockUrl after removing swagger api
 	const url = `${CONST.API}/${uri}`;
 	const mockUrl = `${CONST.API_MOCK}/${uri}`;
@@ -75,11 +75,45 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	// return getResponseJSON(response);
 
 	// TODO Remove this after removing swagger api and use commented lines above
-	const response = await fetch(url, config);
-	if (response.status >= 400 && !(method === "POST" || method === "PUT")) {
+	const response = await fetch(url, config).catch((e) => console.log(e));
+	if (response.status >= 400 && !(method === "POST" || method === "PUT" || method === "DELETE")) {
 		const newResponse = await fetch(mockUrl, config);
 		return getResponseJSON(newResponse);
 	}
+	return getResponseJSON(response);
+}
+
+export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+	// TODO Fix after remove swagger api
+	if (CONST.API_ON) {
+		return fetchFromHumansisApi(uri, auth, method, body, contentType);
+	}
+	const mockUrl = `${CONST.API_MOCK}/${uri}`;
+
+	let headers = {};
+
+	headers = {
+		"Content-Type": contentType || "application/json;charset=utf-8",
+	};
+
+	if (auth) {
+		headers.Authentication = localStorage.getItem("user-token");
+	}
+
+	headers.Country = state.country.iso3;
+
+	const config = { headers };
+
+	if (method) {
+		config.method = method;
+	}
+
+	if (body) {
+		config.body = JSON.stringify(body);
+	}
+
+	const response = await fetch(mockUrl, config);
+
 	return getResponseJSON(response);
 };
 

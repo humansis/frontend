@@ -64,7 +64,7 @@
 
 		<!-- Show Custom Field for Selection Criteria Group -->
 		<template v-if="column.type === 'customValue'">
-			{{ formattedDate }}
+			{{ customValue }}
 		</template>
 
 		<!-- Editable column -->
@@ -92,7 +92,7 @@ export default {
 			return `font-family: ${this.data.row[this.column.field]}, sans-serif`;
 		},
 
-		formattedDate() {
+		customValue() {
 			const value = this.data.row[this.column.field];
 			if (!value) {
 				return "";
@@ -102,12 +102,17 @@ export default {
 				if (value.value) {
 					return value.value;
 				}
-				const newDate = new Date(this.data.row[this.column.field]);
-				if (newDate instanceof Date) {
-					return `${newDate.getDate()}-${newDate.getMonth() + 1}-${newDate.getFullYear()}`;
+				const newDate = this.$moment(this.data.row[this.column.field]);
+				if (newDate.isValid()) {
+					return newDate.format("DD-MM-YYYY");
 				}
 			}
 			return value;
+		},
+
+		formattedDate() {
+			const newDate = this.$moment(this.data.row[this.column.field]);
+			return newDate.format("DD-MM-YYYY");
 		},
 	},
 

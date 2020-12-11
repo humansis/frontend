@@ -67,14 +67,14 @@
 			</b-field>
 
 			<b-field
-				label="Start end"
+				label="End Date"
 				:type="validateType('endDate')"
 				:message="validateMsg('endDate', 'Required')"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
 					show-week-number
-					locale="en-US"
+					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { required, minLength, numeric } from "vuelidate/lib/validators";
+import { required, minLength } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -177,7 +177,7 @@ export default {
 	validations: {
 		formModel: {
 			name: { required },
-			internalId: { required, numeric },
+			internalId: { required },
 			selectedSectors: { required },
 			startDate: { required },
 			endDate: { required },
@@ -189,6 +189,8 @@ export default {
 
 	methods: {
 		submitForm() {
+			// TODO change and fix selectedDonors for multiselect
+			this.formModel.selectedDonors = [{ id: 2, shortName: "Donor" }];
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

@@ -99,7 +99,6 @@ export default {
 				isOpened: true,
 				isDetail: false,
 			};
-
 			this.mapToFormModel(project);
 		},
 
@@ -114,7 +113,7 @@ export default {
 				...this.projectModel,
 				id: null,
 				name: "",
-				internalId: null,
+				internalId: "",
 				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
@@ -129,6 +128,7 @@ export default {
 			const {
 				id,
 				name,
+				internalId,
 				selectedSectors,
 				startDate,
 				endDate,
@@ -137,17 +137,17 @@ export default {
 				totalTarget: target,
 				notes,
 			} = projectForm;
-
 			const projectBody = {
-				iso3: "",
+				iso3: "KHM",
 				name,
+				internalId,
 				notes,
 				target,
 				targetType,
 				numberOfHouseholds: 0,
-				startDate,
-				endDate,
-				sectorIds: getArrayOfIdsByParam(selectedSectors, "code"),
+				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
+				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
+				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};
 
@@ -176,21 +176,24 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				internalId,
 				name,
-				sectorIds,
+				sectors,
 				donorIds,
 				target: totalTarget,
 				notes,
+				startDate,
+				endDate,
 			},
 		) {
 			this.projectModel = {
 				...this.projectModel,
 				id,
 				name,
-				internalId: id,
-				selectedSectors: getArrayOfCodeListByKey(sectorIds, this.projectModel.sectors, "code"),
-				startDate: new Date("10.10.2020"),
-				endDate: new Date("10.10.2020"),
+				internalId,
+				selectedSectors: getArrayOfCodeListByKey(sectors, this.projectModel.sectors, "code"),
+				startDate: new Date(startDate),
+				endDate: new Date(endDate),
 				selectedDonors: getArrayOfCodeListByKey(donorIds, this.projectModel.donors, "id"),
 				selectedTargetType: getArrayOfCodeListByKey([], this.projectModel.targetTypes, "code"),
 				totalTarget,
