@@ -50,6 +50,8 @@
 					<b-field label="ID Type">
 						<MultiSelect
 							v-model="formModel.id.idType"
+							label="value"
+							track-by="code"
 							searchable
 							:options="options.idType"
 						/>
@@ -157,7 +159,9 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import Validation from "@/mixins/validation";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "HouseholdForm",
@@ -225,17 +229,19 @@ export default {
 					{ code: "M", value: "Male" },
 					{ code: "F", value: "Female" },
 				],
-				idType: [
-					"Passport", "National ID", "Driver's License", "Family Registration",
-					"Birth Certificate", "Other",
-				],
+				idType: [],
+				// TODO get from API
 				residencyStatus: ["Refugee", "IDP", "Resident"],
+				// TODO get from API
 				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
+				// TODO get from API
 				phoneType: ["Landline", "Mobile"],
+				// TODO get from API
 				phonePrefixes: [
-					{ id: "+420", name: "CZ - +420" },
-					{ id: "+421", name: "SK - +421" },
+					{ code: "+420", value: "CZ - +420" },
+					{ code: "+421", value: "SK - +421" },
 				],
+				// TODO get from API
 				vulnerabilities: [
 					{ code: "disabled", value: "Disabled" },
 					{ code: "soloParent", value: "Solo Parent" },
@@ -247,10 +253,22 @@ export default {
 		};
 	},
 
+	mounted() {
+		this.fetchNationalCardTypes();
+	},
+
 	methods: {
 		submit() {
 			this.$v.$touch();
 			return !this.$v.$invalid;
+		},
+
+		async fetchNationalCardTypes() {
+			await BeneficiariesService.getListOfTypesOfNationalIds()
+				.then((response) => { this.idType = response.data; })
+				.catch((e) => {
+					Toast(`(National IDs) ${e}`, "is-danger");
+				});
 		},
 	},
 };

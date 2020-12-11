@@ -47,6 +47,26 @@
 			disabled
 		/>
 
+		<!-- Show Object Value -->
+		<template v-if="column.type === 'object'">
+			<p v-if="data.row[column.field].value">
+				{{ data.row[column.field].value }}
+			</p>
+			<p v-else>
+				{{ data.row[column.field] }}
+			</p>
+		</template>
+
+		<!-- Show Date -->
+		<template v-if="column.type === 'date'">
+			{{ formattedDate }}
+		</template>
+
+		<!-- Show Custom Field for Selection Criteria Group -->
+		<template v-if="column.type === 'customValue'">
+			{{ formattedDate }}
+		</template>
+
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
@@ -70,6 +90,24 @@ export default {
 	computed: {
 		fontFamily() {
 			return `font-family: ${this.data.row[this.column.field]}, sans-serif`;
+		},
+
+		formattedDate() {
+			const value = this.data.row[this.column.field];
+			if (!value) {
+				return "";
+			}
+
+			if (typeof value === "object") {
+				if (value.value) {
+					return value.value;
+				}
+				const newDate = new Date(this.data.row[this.column.field]);
+				if (newDate instanceof Date) {
+					return `${newDate.getDate()}-${newDate.getMonth() + 1}-${newDate.getFullYear()}`;
+				}
+			}
+			return value;
 		},
 	},
 

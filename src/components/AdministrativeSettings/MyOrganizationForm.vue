@@ -51,8 +51,8 @@
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
-					label="name"
-					track-by="id"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
 					:options="fonts"
 					@blur="validate('font')"
@@ -170,18 +170,9 @@ export default {
 	data() {
 		return {
 			fonts: [
-				{
-					id: "arial",
-					name: "Arial",
-				},
-				{
-					id: "helvetica",
-					name: "Helvetica",
-				},
-				{
-					id: "courier",
-					name: "Courier",
-				},
+				{ code: "arial", value: "Arial" },
+				{ code: "helvetica", value: "Helvetica" },
+				{ code: "courier", value: "Courier" },
 			],
 		};
 	},

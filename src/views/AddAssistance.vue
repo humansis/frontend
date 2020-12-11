@@ -6,7 +6,7 @@
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria
-					:target-type="targetType"
+					:target-type="$refs.assistanceForm.formModel.target"
 					@updatedData="fetchSelectionCriteria"
 				/>
 				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
