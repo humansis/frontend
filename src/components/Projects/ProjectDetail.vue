@@ -12,7 +12,7 @@ import GoBackButton from "@/components/GoBackButton";
 import AssistancesList from "@/components/Projects/AssistancesList";
 
 export default {
-	name: "ProjectList",
+	name: "ProjectDetail",
 
 	components: {
 		AssistancesList,

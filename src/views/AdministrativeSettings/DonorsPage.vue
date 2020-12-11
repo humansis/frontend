@@ -42,7 +42,7 @@ import DonorsList from "@/components/AdministrativeSettings/DonorsList";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "Donors",
+	name: "DonorsPage",
 
 	components: {
 		Modal,

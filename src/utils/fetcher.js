@@ -55,10 +55,11 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
 
-	headers.Country = state.country.iso3;
-
-	// TODO Remove after we use correct countries in select
-	headers.Country = "KHM";
+	let country = await state.country.iso3;
+	if (!country) {
+		country = localStorage.getItem("country");
+	}
+	headers.Country = country;
 
 	const config = { headers };
 

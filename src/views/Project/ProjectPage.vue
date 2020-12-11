@@ -45,7 +45,7 @@ import ProjectForm from "@/components/Projects/ProjectForm";
 import ProjectsList from "@/components/Projects/ProjectsList";
 
 export default {
-	name: "Projects",
+	name: "ProjectPage",
 
 	components: {
 		ProjectsList,

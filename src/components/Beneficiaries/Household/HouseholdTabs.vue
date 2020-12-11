@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
-import Household from "@/components/Beneficiaries/Household/Household";
+import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import Household from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";

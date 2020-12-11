@@ -87,7 +87,7 @@ import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionCriteria
 import CriteriaModalList from "@/components/AddAssistance/CriteriaModalList";
 
 export default {
-	name: "SelectionCriteria",
+	name: "SelectionCriteriaPage",
 
 	components: {
 		CriteriaModalList,

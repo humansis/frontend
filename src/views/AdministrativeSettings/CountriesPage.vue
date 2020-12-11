@@ -42,7 +42,7 @@ import CountriesList from "@/components/AdministrativeSettings/CountriesList";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "Countries",
+	name: "CountriesPage",
 
 	components: {
 		Modal,

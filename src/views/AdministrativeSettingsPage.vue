@@ -54,14 +54,14 @@
 </template>
 
 <script>
-import Users from "@/views/AdministrativeSettings/Users";
-import Donors from "@/views/AdministrativeSettings/Donors";
-import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
-import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
-import Countries from "@/views/AdministrativeSettings/Countries";
-import Languages from "@/views/AdministrativeSettings/Languages";
-import Currencies from "@/views/AdministrativeSettings/Currencies";
-import Translations from "@/views/AdministrativeSettings/Translations";
+import Users from "@/views/AdministrativeSettings/UsersPage";
+import Donors from "@/views/AdministrativeSettings/DonorsPage";
+import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizationsPage";
+import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServicesPage";
+import Countries from "@/views/AdministrativeSettings/CountriesPage";
+import Languages from "@/views/AdministrativeSettings/LanguagesPage";
+import Currencies from "@/views/AdministrativeSettings/CurrenciesList";
+import Translations from "@/views/AdministrativeSettings/TranslationsList";
 
 export default {
 	name: "AdministrativeSettings",

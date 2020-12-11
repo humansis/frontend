@@ -49,7 +49,7 @@ import VoucherList from "@/components/Voucher/VoucherList";
 import BatchList from "@/components/Voucher/BatchList";
 
 export default {
-	name: "Vouchers",
+	name: "VouchersPage",
 
 	components: {
 		VoucherList,

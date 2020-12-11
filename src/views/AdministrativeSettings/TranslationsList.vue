@@ -71,7 +71,7 @@ import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "Translations",
+	name: "TranslationsList",
 
 	components: {
 		Search,

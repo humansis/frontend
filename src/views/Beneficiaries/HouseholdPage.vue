@@ -126,7 +126,7 @@ import grid from "@/mixins/grid";
 import SafeDelete from "@/components/SafeDelete";
 
 export default {
-	name: "HouseholdList",
+	name: "HouseholdPage",
 
 	components: {
 		Search,

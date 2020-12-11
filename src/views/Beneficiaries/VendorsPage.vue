@@ -43,7 +43,7 @@ import Modal from "@/components/Modal";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
 
 export default {
-	name: "Vendors",
+	name: "VendorsPage",
 
 	components: {
 		VendorsList,

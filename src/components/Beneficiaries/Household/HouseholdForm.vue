@@ -1,167 +1,184 @@
 <template>
-	<div>
-		<form>
-			<div class="columns is-multiline">
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Name (Local)</h4>
-					<b-field label="Family Name">
-						<b-input v-model="formModel.nameLocal.familyName" />
-					</b-field>
-					<b-field label="First Name">
-						<b-input v-model="formModel.nameLocal.firstName" />
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Name (English)</h4>
-					<b-field label="Family Name">
-						<b-input v-model="formModel.nameEnglish.familyName" />
-					</b-field>
-					<b-field label="First Name">
-						<b-input v-model="formModel.nameEnglish.firstName" />
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Personal Information</h4>
-					<b-field label="Gender">
-						<MultiSelect
-							v-model="formModel.personalInformation.gender"
-							searchable
-							label="value"
-							track-by="code"
-							:options="options.gender"
-						/>
-					</b-field>
-					<b-field label="Date Of Birth">
-						<b-datepicker
-							v-model="formModel.personalInformation.dateOfBirth"
-							show-week-number
-							locale="en-US"
-							placeholder="Click to select..."
-							icon="calendar-day"
-							trap-focus
-						/>
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">ID</h4>
-					<b-field label="ID Type">
-						<MultiSelect
-							v-model="formModel.id.idType"
-							label="value"
-							track-by="code"
-							searchable
-							:options="options.idType"
-						/>
-					</b-field>
-					<b-field label="ID Number">
-						<b-input v-model="formModel.id.idNumber" />
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Residency</h4>
-					<b-field label="Residency Status">
-						<MultiSelect
-							v-model="formModel.residency.residencyStatus"
-							searchable
-							:options="options.residencyStatus"
-						/>
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Referral</h4>
-					<div class="field">
-						<b-checkbox v-model="formModel.addAReferral">
-							Add a Referral
-						</b-checkbox>
-					</div>
-					<b-field v-if="formModel.addAReferral" label="Referral Type">
-						<MultiSelect
-							v-model="formModel.referral.referralType"
-							searchable
-							:options="options.referralType"
-						/>
-					</b-field>
-					<b-field v-if="formModel.addAReferral" label="Comment">
-						<b-input v-model="formModel.referral.comment" />
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Phone 1</h4>
-					<b-field label="Type" grouped>
-						<MultiSelect
-							v-model="formModel.phone1.type"
-							searchable
-							:options="options.phoneType"
-						/>
-						<b-checkbox v-model="formModel.phone1.proxy">
-							Proxy
-						</b-checkbox>
-					</b-field>
-					<b-field label="Ext" grouped>
-						<MultiSelect
-							v-model="formModel.phone1.ext"
-							searchable
-							label="name"
-							track-by="id"
-							:options="options.phonePrefixes"
-						/>
-						<b-input
-							v-model="formModel.phone1.phoneNo"
-							placeholder="Phone No. 1"
-						/>
-					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Phone 2</h4>
-					<b-field label="Type" grouped>
-						<MultiSelect
-							v-model="formModel.phone2.type"
-							searchable
-							:options="options.phoneType"
-						/>
-						<b-checkbox v-model="formModel.phone2.proxy">
-							Proxy
-						</b-checkbox>
-					</b-field>
-					<b-field label="Ext" grouped>
-						<MultiSelect
-							v-model="formModel.phone2.ext"
-							searchable
-							label="name"
-							track-by="id"
-							:options="options.phonePrefixes"
-						/>
-						<b-input
-							v-model="formModel.phone2.phoneNo"
-							placeholder="Phone No. 1"
-						/>
-					</b-field>
-				</div>
+	<form>
+		<div class="columns is-multiline">
+			<div class="column is-half">
+				<h4 class="title is-4">Current Location</h4>
+				<LocationForm
+					ref="currentLocationForm"
+					:form-model="formModel.currentLocation"
+					:form-disabled="false"
+				/>
 			</div>
-			<div v-if="showTypeOfBeneficiary" class="field">
-				<b-checkbox
-					v-for="vulnerability of options.vulnerabilities"
-					v-model="formModel.vulnerabilities[vulnerability.id]"
-					:key="vulnerability.id"
-				>
-					{{ vulnerability.name }}
-				</b-checkbox>
+			<div class="column is-half">
+				<h4 class="title is-4">Type Of Location</h4>
+				<TypeOfLocationForm
+					ref="currentTypeOfLocationForm"
+					:form-model="formModel.currentLocation"
+				/>
 			</div>
-		</form>
-	</div>
+		</div>
+		<div class="field">
+			<b-checkbox v-model="formModel.isCurrentLocationOtherThanAddress">
+				Is your current location different than your address?
+			</b-checkbox>
+		</div>
+		<div
+			v-if="formModel.isCurrentLocationOtherThanAddress"
+			class="columns is-multiline"
+		>
+			<div class="column is-half">
+				<h4 class="title is-4">Resident Location</h4>
+				<LocationForm
+					ref="residentLocationForm"
+					:form-model="formModel"
+					:form-disabled="false"
+				/>
+			</div>
+			<div class="column is-half">
+				<h4 class="title is-4">Type Of Location</h4>
+				<TypeOfLocationForm
+					ref="residentTypeOfLocationForm"
+					:form-model="formModel.residentLocation"
+				/>
+			</div>
+		</div>
+		<div class="columns is-multiline">
+			<div class="column is-one-third">
+				<h4 class="title is-4">Livelihood</h4>
+				<b-field label="Livelihood">
+					<MultiSelect
+						v-model="formModel.livelihood.livelihood"
+						searchable
+						label="value"
+						track-by="code"
+						placeholder="Livelihood"
+						:options="options.livelihood"
+					/>
+				</b-field>
+
+				<b-field label="Income Level">
+					<MultiSelect
+						v-model="formModel.livelihood.incomeLevel"
+						searchable
+						label="value"
+						track-by="id"
+						placeholder="Income Level"
+						:options="options.incomeLevel"
+					/>
+				</b-field>
+
+				<b-field label="Debt Level">
+					<b-numberinput
+						v-model="formModel.livelihood.debtLevel"
+					/>
+				</b-field>
+
+				<b-field label="Assets">
+					<MultiSelect
+						v-model="formModel.livelihood.assets"
+						searchable
+						multiple
+						label="value"
+						track-by="code"
+						placeholder="Assets"
+						:options="options.assets"
+					/>
+				</b-field>
+
+				<b-field label="Food Consumption Score">
+					<b-numberinput
+						v-model="formModel.livelihood.foodConsumptionScore"
+					/>
+				</b-field>
+
+				<b-field label="Coping Strategies Index">
+					<b-numberinput
+						v-model="formModel.livelihood.copingStrategiesIndex"
+					/>
+				</b-field>
+			</div>
+			<div class="column is-one-third">
+				<h4 class="title is-4">External Support</h4>
+				<b-field label="External Support Received Type">
+					<MultiSelect
+						v-model="formModel.externalSupport.externalSupportReceivedType"
+						searchable
+						multiple
+						label="value"
+						track-by="code"
+						placeholder="External Support Received Type"
+						:options="options.externalSupportReceivedType"
+					/>
+				</b-field>
+
+				<b-field label="Support Date Received">
+					<b-datepicker
+						v-model="formModel.externalSupport.supportDateReceived"
+						show-week-number
+						locale="en-US"
+						placeholder="Click to select..."
+						icon="calendar-day"
+						trap-focus
+					/>
+				</b-field>
+
+				<b-field label="Support Organization">
+					<b-input v-model="formModel.externalSupport.supportOrganization" />
+				</b-field>
+			</div>
+			<div class="column is-one-third">
+				<h4 class="title is-4">Country Specific Options</h4>
+				<b-field label="ID Poor No">
+					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
+				</b-field>
+
+				<b-field label="Equity Card No">
+					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
+				</b-field>
+
+				<b-field label="Fields">
+					<b-input v-model="formModel.countrySpecificOptions.fields" />
+				</b-field>
+			</div>
+		</div>
+		<h4 class="title is-4">Household Status</h4>
+		<b-field label="Shelter Type">
+			<MultiSelect
+				v-model="formModel.shelterType"
+				searchable
+				label="value"
+				track-by="code"
+				placeholder="Shelter Type"
+				:options="options.shelterType"
+			/>
+		</b-field>
+		<h4 class="title is-4">Notes</h4>
+		<b-field>
+			<b-input v-model="formModel.notes" type="textarea" />
+		</b-field>
+	</form>
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import LocationForm from "@/components/LocationForm";
+import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Toast } from "@/utils/UI";
+
+const locationModel = {
+	adm1Id: "",
+	adm2Id: "",
+	adm3Id: "",
+	adm4Id: "",
+	typeOfLocation: "",
+	camp: "",
+	campName: "",
+	tentNumber: "",
+	addressNumber: "",
+	addressStreet: "",
+	addressPostcode: "",
+};
 
 export default {
 	name: "HouseholdForm",
@@ -169,7 +186,6 @@ export default {
 	mixins: [Validation],
 
 	props: {
-		showTypeOfBeneficiary: Boolean,
 		detailOfHousehold: Object,
 	},
 
@@ -179,6 +195,11 @@ export default {
 		},
 	},
 
+	components: {
+		LocationForm,
+		TypeOfLocationForm,
+	},
+
 	validations: {
 		formModel: {},
 	},
@@ -186,89 +207,92 @@ export default {
 	data() {
 		return {
 			formModel: {
-				nameLocal: {
-					familyName: "",
-					firstName: "",
+				id: null,
+				currentLocation: {
+					...locationModel,
 				},
-				nameEnglish: {
-					familyName: "",
-					firstName: "",
+				isCurrentLocationOtherThanAddress: false,
+				residentLocation: {
+					...locationModel,
 				},
-				personalInformation: {
-					gender: "",
-					dateOfBirth: new Date(),
+				livelihood: {
+					livelihood: [],
+					incomeLevel: [],
+					debtLevel: 0,
+					assets: [],
+					foodConsumptionScore: 0,
+					copingStrategiesIndex: 0,
 				},
-				id: {
-					idType: "",
-					idNumber: "",
+				externalSupport: {
+					externalSupportReceivedType: [],
+					supportDateReceived: new Date(),
+					supportOrganization: "",
 				},
-				residency: {
-					residencyStatus: "",
+				countrySpecificOptions: {
+					idPoorNo: "",
+					equityCardNo: "",
+					fields: "",
 				},
-				addAReferral: false,
-				referral: {
-					referralType: "",
-					comment: "",
-				},
-				phone1: {
-					type: "",
-					proxy: false,
-					ext: "",
-					phoneNo: "",
-				},
-				phone2: {
-					type: "",
-					proxy: false,
-					ext: "",
-					phoneNo: "",
-				},
-				vulnerabilities: [],
+				shelterType: [],
+				notes: "",
 			},
 			options: {
-				gender: [
-					{ code: "M", value: "Male" },
-					{ code: "F", value: "Female" },
+				livelihood: [],
+				incomeLevel: [
+					{ code: 0, value: "Very Low (Income < 100 USD)" },
+					{ code: 1, value: "Low (100 USD < Income < 100 USD)" },
+					{ code: 2, value: "Average (150 USD < Income < 250 USD)" },
+					{ code: 3, value: "High (250 USD < Income < 300 USD)" },
+					{ code: 4, value: "Very High (300 USD < Income)" },
 				],
-				idType: [],
-				// TODO get from API
-				residencyStatus: ["Refugee", "IDP", "Resident"],
-				// TODO get from API
-				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
-				// TODO get from API
-				phoneType: ["Landline", "Mobile"],
-				// TODO get from API
-				phonePrefixes: [
-					{ code: "+420", value: "CZ - +420" },
-					{ code: "+421", value: "SK - +421" },
+				assets: [],
+				externalSupportReceivedType: [
+					{ code: 0, value: "MPCA" },
+					{ code: 1, value: "Cash For Work" },
+					{ code: 2, value: "Food Kit" },
+					{ code: 3, value: "Food Voucher" },
+					{ code: 4, value: "Hygiene Kit" },
+					{ code: 5, value: "Shelter Kit" },
+					{ code: 6, value: "Shelter Reconstruction Support" },
+					{ code: 7, value: "Non Food Items" },
+					{ code: 8, value: "Livelihoods Support" },
+					{ code: 9, value: "Vocational Training" },
+					{ code: 10, value: "None" },
+					{ code: 11, value: "Other" },
 				],
-				// TODO get from API
-				vulnerabilities: [
-					{ code: "disabled", value: "Disabled" },
-					{ code: "soloParent", value: "Solo Parent" },
-					{ code: "lactating", value: "Lactating" },
-					{ code: "pregnant", value: "Pregnant" },
-					{ code: "chronically", value: "Chronically" },
-				],
+				shelterType: [],
 			},
 		};
 	},
 
 	mounted() {
-		this.fetchNationalCardTypes();
+		this.fetchData();
 	},
 
 	methods: {
+		async fetchData() {
+			await BeneficiariesService.getListOfLivelihoods()
+				.then((result) => { this.options.livelihood = result.data; })
+				.catch((e) => {
+					Toast(`(Livelihoods) ${e}`, "is-danger");
+				});
+
+			await BeneficiariesService.getListOfAssets()
+				.then((result) => { this.options.assets = result.data; })
+				.catch((e) => {
+					Toast(`(Assets) ${e}`, "is-danger");
+				});
+
+			await BeneficiariesService.getListOfShelterStatuses()
+				.then((result) => { this.options.shelterType = result.data; })
+				.catch((e) => {
+					Toast(`(Shelter Types) ${e}`, "is-danger");
+				});
+		},
+
 		submit() {
 			this.$v.$touch();
 			return !this.$v.$invalid;
-		},
-
-		async fetchNationalCardTypes() {
-			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.idType = response.data; })
-				.catch((e) => {
-					Toast(`(National IDs) ${e}`, "is-danger");
-				});
 		},
 	},
 };

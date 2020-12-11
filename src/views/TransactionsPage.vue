@@ -54,7 +54,7 @@ import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "Transactions",
+	name: "TransactionsPage",
 
 	components: {
 		Search,

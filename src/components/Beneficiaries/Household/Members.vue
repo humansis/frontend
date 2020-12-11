@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
+import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 
 export default {
 	name: "Members",

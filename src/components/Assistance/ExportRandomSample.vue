@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import AssistanceList from "@/components/Assistance/AssistanceList";
+import AssistanceList from "@/components/Assistance/BeneficiariesList";
 
 export default {
 	name: "ExportRandomSample",

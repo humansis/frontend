@@ -25,7 +25,7 @@
 <script>
 import { Toast } from "@/utils/UI";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
-import SelectionCriteria from "@/components/AddAssistance/SelectionCriteria";
+import SelectionCriteria from "@/components/AddAssistance/SelectionCriteriaPage";
 import DistributedCommodity from "@/components/AddAssistance/DistributedCommodity";
 import AssistancesService from "@/services/AssistancesService";
 

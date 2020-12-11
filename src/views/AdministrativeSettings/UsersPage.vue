@@ -42,7 +42,7 @@ import Modal from "@/components/Modal";
 import UsersList from "@/components/AdministrativeSettings/UsersList";
 
 export default {
-	name: "Users",
+	name: "UsersPage",
 
 	components: {
 		UsersList,

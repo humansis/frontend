@@ -32,7 +32,7 @@ const routes = [
 			},
 			{
 				path: "/projects",
-				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project/Projects"),
+				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project/ProjectsView"),
 				meta: {
 					breadcrumb: "Projects",
 				},
@@ -40,11 +40,11 @@ const routes = [
 					{
 						path: "",
 						name: "Projects",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectList"),
+						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectPage"),
 					},
 					{
 						path: "/project/:projectId",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/Project"),
+						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectView"),
 						meta: {
 							breadcrumb: "Project",
 						},
@@ -52,12 +52,12 @@ const routes = [
 							{
 								path: "",
 								name: "ProjectDetail",
-								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectList"),
+								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectDetail"),
 							},
 							{
 								path: "assistance/:assistanceId",
 								name: "Assistance",
-								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/Assistance"),
+								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceUpdate"),
 								meta: {
 									breadcrumb: "Assistance",
 								},
@@ -78,11 +78,11 @@ const routes = [
 
 			{
 				path: "/beneficiaries",
-				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/Beneficiaries"),
+				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/BeneficiariesView"),
 				children: [
 					{
 						path: "households",
-						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/Households"),
+						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/HouseholdsView"),
 						meta: {
 							breadcrumb: "Households",
 							parent: "Beneficiaries",
@@ -91,7 +91,7 @@ const routes = [
 							{
 								path: "",
 								name: "Households",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdList"),
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdPage"),
 							},
 							{
 								path: "add",
@@ -131,7 +131,7 @@ const routes = [
 					{
 						path: "communities",
 						name: "Communities",
-						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
+						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunitiesPage"),
 						meta: {
 							breadcrumb: "Communities",
 						},
@@ -139,7 +139,7 @@ const routes = [
 					{
 						path: "institutions",
 						name: "Institutions",
-						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/Institutions"),
+						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/InstitutionsPage"),
 						meta: {
 							breadcrumb: "Institutions",
 						},
@@ -147,7 +147,7 @@ const routes = [
 					{
 						path: "vendors",
 						name: "Vendors",
-						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/Vendors"),
+						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorsPage"),
 						meta: {
 							breadcrumb: "Vendors",
 						},
@@ -157,7 +157,7 @@ const routes = [
 			{
 				path: "/reports",
 				name: "Reports",
-				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
+				component: () => import(/* webpackChunkName: "Reports" */ "@/views/ReportsPage"),
 				meta: {
 					breadcrumb: "Reports",
 				},
@@ -165,7 +165,7 @@ const routes = [
 			{
 				path: "/vouchers",
 				name: "Vouchers",
-				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
+				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/VouchersPage"),
 				meta: {
 					breadcrumb: "Vouchers",
 				},
@@ -173,12 +173,12 @@ const routes = [
 			{
 				path: "/configuration",
 				name: "Configuration",
-				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/Configuration"),
+				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/ConfigurationView"),
 				children: [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/Products"),
+						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductsPage"),
 						meta: {
 							breadcrumb: "Products",
 						},
@@ -186,7 +186,7 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecifics",
-						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecifics" */ "@/views/Configuration/CountrySpecifics"),
+						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecifics" */ "@/views/Configuration/CountrySpecificsPage"),
 						meta: {
 							breadcrumb: "Country Specifics",
 						},
@@ -196,7 +196,7 @@ const routes = [
 			{
 				path: "/administrative-settings",
 				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettingsPage"),
 				meta: {
 					breadcrumb: "Administrative Settings",
 				},
@@ -204,7 +204,7 @@ const routes = [
 			{
 				path: "/transactions",
 				name: "Transactions",
-				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/Transactions"),
+				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/TransactionsPage"),
 				meta: {
 					breadcrumb: "Transactions",
 				},
