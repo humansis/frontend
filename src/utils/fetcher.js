@@ -39,9 +39,9 @@ export const getResponseJSON = async (response) => {
 };
 
 export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
-	// TODO Remove second url after removing swagger api
-	const humansisUrl = `${CONST.API2}/${uri}`;
+	// TODO Remove second mockUrl after removing swagger api
 	const url = `${CONST.API}/${uri}`;
+	const mockUrl = `${CONST.API_MOCK}/${uri}`;
 
 	let headers = {};
 
@@ -75,9 +75,9 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	// return getResponseJSON(response);
 
 	// TODO Remove this after removing swagger api and use commented lines above
-	const response = await fetch(humansisUrl, config);
+	const response = await fetch(url, config);
 	if (response.status >= 400 && !(method === "POST" || method === "PUT")) {
-		const newResponse = await fetch(url, config);
+		const newResponse = await fetch(mockUrl, config);
 		return getResponseJSON(newResponse);
 	}
 	return getResponseJSON(response);
