@@ -247,7 +247,7 @@ export default {
 					{ code: "soloParent", value: "Solo Parent" },
 					{ code: "lactating", value: "Lactating" },
 					{ code: "pregnant", value: "Pregnant" },
-					{ code: "chronicallylll", value: "Chronicallylll" },
+					{ code: "chronically", value: "Chronically" },
 				],
 			},
 		};

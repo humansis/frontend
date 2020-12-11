@@ -250,35 +250,50 @@ export default {
 			this.summaryMembers = [...membersData];
 		},
 
-		mapBeneficiariesForBody() {
-			return [{
-				dateOfBirth: "2000-12-01T00:00:00.000Z",
-				localFamilyName: "string",
-				localGivenName: "string",
-				enFamilyName: "string",
-				enlGivenName: "string",
-				gender: "M",
-				nationalIdCards: [
-					{
-						idNumber: "022-33-1547",
-						idType: "national_id",
-					},
-				],
-				phones: [
-					{
-						prefix: 420,
-						number: 123456789,
-						type: "Landline",
-						proxy: true,
-					},
-				],
-				referralType: "string",
-				referralComment: "string",
-				status: 1,
-				vulnerabilityCriteriaIds: [
-					0,
-				],
-			}];
+		mapBeneficiariesForBody(beneficiaries) {
+			const beneficiariesData = [];
+
+			if (beneficiaries.length) {
+				beneficiaries.forEach((beneficiary) => {
+					beneficiariesData.push({
+						dateOfBirth: new Date(beneficiary.personalInformation.dateOfBirth).toISOString(),
+						localFamilyName: beneficiary.nameLocal.familyName,
+						localGivenName: beneficiary.nameLocal.firstName,
+						enFamilyName: beneficiary.nameEnglish.familyName,
+						enlGivenName: beneficiary.nameEnglish.firstName,
+						gender: beneficiary.personalInformation.gender,
+						nationalIdCards: [
+							{
+								idNumber: beneficiary.id.idNumber,
+								idType: beneficiary.id.idType,
+							},
+						],
+						phones: [
+							{
+								prefix: beneficiary.phone1.ext,
+								number: beneficiary.phone1.phoneNo,
+								type: beneficiary.phone1.type,
+								proxy: beneficiary.phone1.proxy,
+							},
+							{
+								prefix: beneficiary.phone2.ext,
+								number: beneficiary.phone2.phoneNo,
+								type: beneficiary.phone2.type,
+								proxy: beneficiary.phone2.proxy,
+							},
+						],
+						referralType: beneficiary.referral.referralType,
+						referralComment: beneficiary.referral.comment,
+						status: 0,
+						// TODO Get vulnerabilityCriteriaIds
+						vulnerabilityCriteriaIds: [],
+					});
+				});
+
+				beneficiariesData[0].status = 1;
+			}
+
+			return beneficiariesData;
 		},
 
 		mapCampResidenceForBody({ campName, tentNumber }) {
