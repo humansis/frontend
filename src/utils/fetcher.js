@@ -39,20 +39,26 @@ export const getResponseJSON = async (response) => {
 };
 
 export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+	// TODO Remove second mockUrl after removing swagger api
 	const url = `${CONST.API}/${uri}`;
+	const mockUrl = `${CONST.API_MOCK}/${uri}`;
 
 	let headers = {};
-	if (contentType) {
-		headers = {
-			"Content-Type": contentType,
-		};
-	}
+
+	headers = {
+		"Content-Type": contentType || "application/json;charset=utf-8",
+	};
 
 	if (auth) {
 		headers.Authentication = localStorage.getItem("user-token");
+		// TODO Remove after implement authorization layer
+		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
 
 	headers.Country = state.country.iso3;
+
+	// TODO Remove after we use correct countries in select
+	headers.Country = "KHM";
 
 	const config = { headers };
 
@@ -64,7 +70,16 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		config.body = JSON.stringify(body);
 	}
 
+	// const response = await fetch(url, config);
+
+	// return getResponseJSON(response);
+
+	// TODO Remove this after removing swagger api and use commented lines above
 	const response = await fetch(url, config);
+	if (response.status >= 400 && !(method === "POST" || method === "PUT")) {
+		const newResponse = await fetch(mockUrl, config);
+		return getResponseJSON(newResponse);
+	}
 	return getResponseJSON(response);
 };
 
