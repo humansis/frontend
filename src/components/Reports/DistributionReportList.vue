@@ -144,11 +144,7 @@ export default {
 		async fetchProjects() {
 			this.$store.commit("loading", true);
 
-			await ProjectsService.getListOfProjects(
-				1,
-				15,
-				"desc",
-			)
+			await ProjectsService.getListOfProjects()
 				.then((response) => {
 					response.data.forEach(({ name, id }) => {
 						this.projectsForFilter.push(
@@ -169,23 +165,19 @@ export default {
 			this.$store.commit("loading", true);
 
 			this.distributionsForFilter = [];
-			await AssistancesService.getListOfProjectAssistances(
-				this.selectedProjectsForFilter.id,
-				1,
-				15,
-				"desc",
-			).then((response) => {
-				response.data.forEach(({ name, id }) => {
-					this.distributionsForFilter.push(
-						{
-							name,
-							id,
-						},
-					);
+			await AssistancesService.getListOfProjectAssistances(this.selectedProjectsForFilter.id)
+				.then((response) => {
+					response.data.forEach(({ name, id }) => {
+						this.distributionsForFilter.push(
+							{
+								name,
+								id,
+							},
+						);
+					});
+				}).catch((e) => {
+					Toast(`(Project Assistances) ${e}`, "is-danger");
 				});
-			}).catch((e) => {
-				Toast(`(Project Assistances) ${e}`, "is-danger");
-			});
 
 			await this.fetchDistributionReports();
 

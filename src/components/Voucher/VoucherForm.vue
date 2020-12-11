@@ -209,15 +209,12 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(
-				1,
-				15,
-				"desc",
-			).then((response) => {
-				this.projects = response.data;
-			}).catch((e) => {
-				Toast(`(Projects) ${e}`, "is-danger");
-			});
+			await ProjectsService.getListOfProjects()
+				.then((response) => {
+					this.projects = response.data;
+				}).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
 		},
 	},
 };
