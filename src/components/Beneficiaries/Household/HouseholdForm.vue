@@ -237,11 +237,11 @@ export default {
 					{ id: "+421", name: "SK - +421" },
 				],
 				vulnerabilities: [
-					{ id: "disabled", name: "Disabled" },
-					{ id: "soloParent", name: "Solo Parent" },
-					{ id: "lactating", name: "Lactating" },
-					{ id: "pregnant", name: "Pregnant" },
-					{ id: "chronically", name: "Chronically" },
+					{ code: "disabled", value: "Disabled" },
+					{ code: "soloParent", value: "Solo Parent" },
+					{ code: "lactating", value: "Lactating" },
+					{ code: "pregnant", value: "Pregnant" },
+					{ code: "chronically", value: "Chronically" },
 				],
 			},
 		};
