@@ -16,7 +16,7 @@
 <script>
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
-import ProjectsSummary from "@/components/Projects/ProjectsSummary";
+import ProjectsSummary from "@/components/Home/ProjectsSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 
 export default {

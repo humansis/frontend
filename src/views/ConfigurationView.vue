@@ -6,6 +6,6 @@
 
 <script>
 export default {
-	name: "Configuration",
+	name: "ConfigurationView",
 };
 </script>

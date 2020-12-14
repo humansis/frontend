@@ -110,14 +110,14 @@ import Table from "@/components/DataGrid/Table";
 import ExportButton from "@/components/ExportButton";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ActionButton from "@/components/ActionButton";
-import AddBeneficiaryForm from "@/components/Assistance/AssistanceList/AddBeneficiaryForm";
-import EditBeneficiaryForm from "@/components/Assistance/AssistanceList/EditBeneficiaryForm";
+import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
+import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "AssistanceList",
+	name: "BeneficiariesList",
 
 	props: {
 		addButton: Boolean,

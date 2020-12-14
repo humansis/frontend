@@ -33,7 +33,7 @@ import OrganizationServiceForm from "@/components/AdministrativeSettings/Organiz
 import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServicesList";
 
 export default {
-	name: "OrganizationServices",
+	name: "OrganizationServicesPage",
 
 	components: {
 		OrganizationServicesList,

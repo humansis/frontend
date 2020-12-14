@@ -1,20 +1,20 @@
 <template>
 	<div>
-		<h2 class="title">Institutions</h2>
+		<h2 class="title">Communities</h2>
 		<Modal
 			can-cancel
-			:active="institutionModal.isOpened"
+			:active="communityModal.isOpened"
 			:header="modalHeader"
-			@close="closeInstitutionModal"
+			@close="closeCommunityModal"
 		>
-			<InstitutionsForm
+			<CommunityForm
 				close-button
 				class="modal-card"
-				:formModel="institutionModel"
-				:submit-button-label="institutionModal.isEditing ? 'Update' : 'Create'"
-				:form-disabled="institutionModal.isDetail"
-				@formSubmitted="submitInstitutionForm"
-				@formClosed="closeInstitutionModal"
+				:formModel="communityModel"
+				:submit-button-label="communityModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="communityModal.isDetail"
+				@formSubmitted="submitCommunityForm"
+				@formClosed="closeCommunityModal"
 			/>
 		</Modal>
 		<b-button
@@ -22,50 +22,49 @@
 			size="is-medium"
 			type="is-danger"
 			icon-left="plus"
-			@click="addNewInstitution"
+			@click="addNewCommunity"
 		>
 			Add
 		</b-button>
-		<InstitutionsList
-			ref="institutionList"
-			@onRemove="removeInstitution"
-			@onShowEdit="editInstitution"
+		<CommunitiesList
+			ref="communitiesList"
+			@onRemove="removeCommunity"
+			@onShowEdit="editCommunity"
 			@onShowDetail="showDetail"
 		/>
 	</div>
 </template>
 
 <script>
-import InstitutionsService from "@/services/InstitutionsService";
+import CommunitiesService from "@/services/CommunitiesService";
 import { Toast } from "@/utils/UI";
-import InstitutionsForm from "@/components/Beneficiaries/InstitutionsForm";
+import CommunityForm from "@/components/Beneficiaries/CommunityForm";
 import Modal from "@/components/Modal";
-import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
+import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
 
 export default {
-	name: "Institutions",
+	name: "CommunitiesPage",
 
 	components: {
-		InstitutionsList,
+		CommunitiesList,
 		Modal,
-		InstitutionsForm,
+		CommunityForm,
 	},
 
 	data() {
 		return {
-			institutionModal: {
+			communityModal: {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
 			},
-			institutionModel: {
+			communityModel: {
 				id: null,
 				longitude: "",
 				latitude: "",
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
-				type: "",
 				addressStreet: "",
 				addressNumber: "",
 				addressPostCode: "",
@@ -84,43 +83,42 @@ export default {
 	computed: {
 		modalHeader() {
 			let result = "";
-			if (this.institutionModal.isDetail) {
-				result = "Detail of Institution";
-			} else if (this.institutionModal.isEditing) {
-				result = "Edit Institution";
+			if (this.communityModal.isDetail) {
+				result = "Detail of Community";
+			} else if (this.communityModal.isEditing) {
+				result = "Edit Community";
 			} else {
-				result = "Create new Institution";
+				result = "Create new Community";
 			}
 			return result;
 		},
 	},
 
 	methods: {
-		editInstitution(institution) {
-			this.mapToFormModel(institution);
-			this.institutionModal = {
+		editCommunity(community) {
+			this.mapToFormModel(community);
+			this.communityModal = {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
 			};
 		},
 
-		addNewInstitution() {
-			this.institutionModal = {
+		addNewCommunity() {
+			this.communityModal = {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
 			};
 
-			this.institutionModel = {
-				...this.institutionModel,
+			this.communityModel = {
+				...this.communityModel,
 				id: null,
 				longitude: "",
 				latitude: "",
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
-				type: "",
 				addressStreet: "",
 				addressNumber: "",
 				addressPostCode: "",
@@ -135,15 +133,13 @@ export default {
 			};
 		},
 
-		submitInstitutionForm(institutionForm) {
+		submitCommunityForm(communityForm) {
 			const {
 				id,
 				longitude,
 				latitude,
-				name,
 				contactGivenName,
 				contactFamilyName,
-				type,
 				addressStreet,
 				addressNumber,
 				addressPostCode,
@@ -155,15 +151,13 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
-			} = institutionForm;
+			} = communityForm;
 
-			const institutionBody = {
-				name,
+			const communityBody = {
 				longitude,
 				latitude,
 				contactGivenName,
 				contactFamilyName,
-				type,
 				address: {
 					street: addressStreet,
 					number: addressNumber,
@@ -182,22 +176,23 @@ export default {
 					number: phoneNumber,
 				},
 			};
-			if (this.institutionModal.isEditing && id) {
-				this.updateInstitution(id, institutionBody);
+
+			if (this.communityModal.isEditing && id) {
+				this.updateCommunity(id, communityBody);
 			} else {
-				this.createInstitution(institutionBody);
+				this.createCommunity(communityBody);
 			}
 
-			this.closeInstitutionModal();
+			this.closeCommunityModal();
 		},
 
-		closeInstitutionModal() {
-			this.institutionModal.isOpened = false;
+		closeCommunityModal() {
+			this.communityModal.isOpened = false;
 		},
 
-		showDetail(institution) {
-			this.mapToFormModel(institution);
-			this.institutionModal = {
+		showDetail(community) {
+			this.mapToFormModel(community);
+			this.communityModal = {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
@@ -212,7 +207,6 @@ export default {
 				latitude,
 				contactGivenName,
 				contactFamilyName,
-				type,
 				phone: {
 					prefix: phonePrefix,
 					number: phoneNumber,
@@ -232,15 +226,14 @@ export default {
 				},
 			},
 		) {
-			this.institutionModel = {
-				...this.institutionModel,
+			this.communityModel = {
+				...this.communityModel,
 				id,
 				longitude,
 				latitude,
 				name,
 				contactGivenName,
 				contactFamilyName,
-				type,
 				addressStreet,
 				addressNumber,
 				addressPostCode,
@@ -255,36 +248,36 @@ export default {
 			};
 		},
 
-		async createInstitution(institutionBody) {
-			await InstitutionsService.createInstitution(institutionBody).then((response) => {
+		async createCommunity(communityBody) {
+			await CommunitiesService.createCommunity(communityBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Institution Successfully Created", "is-success");
-					this.$refs.institutionList.fetchData();
+					Toast("Community Successfully Created", "is-success");
+					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Toast(`(Community) ${e}`, "is-danger");
 			});
 		},
 
-		async updateInstitution(id, institutionBody) {
-			await InstitutionsService.updateInstitution(id, institutionBody).then((response) => {
+		async updateCommunity(id, communityBody) {
+			await CommunitiesService.updateCommunity(id, communityBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Institution Successfully Updated", "is-success");
-					this.$refs.institutionList.fetchData();
+					Toast("Community Successfully Updated", "is-success");
+					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Toast(`(Community) ${e}`, "is-danger");
 			});
 		},
 
-		async removeInstitution(id) {
-			await InstitutionsService.deleteInstitution(id).then((response) => {
+		async removeCommunity(id) {
+			await CommunitiesService.deleteCommunity(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Institution Successfully Deleted", "is-success");
-					this.$refs.institutionList.fetchData();
+					Toast("Community Successfully Deleted", "is-success");
+					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Toast(`(Community) ${e}`, "is-danger");
 			});
 		},
 	},

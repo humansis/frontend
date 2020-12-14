@@ -33,7 +33,7 @@ import Modal from "@/components/Modal";
 import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizationsList";
 
 export default {
-	name: "MyOrganizations",
+	name: "MyOrganizationsPage",
 
 	components: {
 		MyOrganizationsList,

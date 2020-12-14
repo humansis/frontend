@@ -29,7 +29,7 @@ import ProjectReportList from "@/components/Reports/ProjectReportList";
 import DistributionReportList from "@/components/Reports/DistributionReportList";
 
 export default {
-	name: "Reports",
+	name: "ReportsPage",
 
 	components: {
 		CountryReportList,

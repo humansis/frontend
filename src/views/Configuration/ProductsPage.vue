@@ -44,7 +44,7 @@ import Modal from "@/components/Modal";
 import ProductsList from "@/components/Configuration/ProductsList";
 
 export default {
-	name: "Products",
+	name: "ProductsPage",
 
 	components: {
 		ProductsList,

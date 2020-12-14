@@ -40,7 +40,7 @@ import LanguagesForm from "@/components/AdministrativeSettings/LanguagesForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
 
 export default {
-	name: "Languages",
+	name: "LanguagesPage",
 
 	components: {
 		LanguagesList,

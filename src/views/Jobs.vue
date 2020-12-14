@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import Imports from "@/views/Jobs/Imports";
-import Vouchers from "@/views/Jobs/Vouchers";
+import Imports from "@/views/Jobs/ImportsPage";
+import Vouchers from "@/views/Jobs/VouchersPage";
 
 export default {
 	name: "Jobs",

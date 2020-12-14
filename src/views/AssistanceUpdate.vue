@@ -79,7 +79,7 @@
 
 <script>
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
-import AssistanceList from "@/components/Assistance/AssistanceList";
+import AssistanceList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
@@ -87,7 +87,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "AddAssistance",
+	name: "AddAssistanceUpdate",
 
 	components: {
 		AssistanceSummary,

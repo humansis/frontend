@@ -26,7 +26,7 @@ import VoucherForm from "@/components/Jobs/VoucherForm";
 import VoucherList from "@/components/Jobs/VoucherList";
 
 export default {
-	name: "Imports",
+	name: "VouchersPage",
 
 	components: {
 		VoucherList,

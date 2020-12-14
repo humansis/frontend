@@ -26,7 +26,7 @@ import ImportForm from "@/components/Jobs/ImportForm";
 import ImportList from "@/components/Jobs/ImportList";
 
 export default {
-	name: "Imports",
+	name: "ImportsPage",
 
 	components: {
 		ImportList,

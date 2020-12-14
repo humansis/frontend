@@ -43,7 +43,7 @@ import Modal from "@/components/Modal";
 import CountrySpecificsList from "@/components/Configuration/CountrySpecificsList";
 
 export default {
-	name: "CountrySpecifics",
+	name: "CountrySpecificsPage",
 
 	components: {
 		CountrySpecificsList,

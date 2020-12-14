@@ -35,7 +35,7 @@ import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "Currencies",
+	name: "CurrenciesList",
 
 	components: {
 		Search,
