@@ -8,7 +8,6 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
-			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -89,10 +88,6 @@ export default {
 			}).catch((e) => { Toast(e, "is-danger"); });
 
 			this.$store.commit("loading", false);
-		},
-
-		goToDetail() {
-			// TODO go to detail
 		},
 	},
 };

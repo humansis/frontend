@@ -241,6 +241,7 @@ export default {
 		},
 
 		showDetailWithId(id) {
+			// TODO Fix with connect locations
 			this.assistanceModel = this.table.data.find((item) => item.id === id);
 			this.assistanceModal = {
 				isOpened: true,
@@ -249,6 +250,7 @@ export default {
 		},
 
 		showEdit(id) {
+			// TODO Fix with connect locations
 			this.assistanceModel = this.table.data.find((item) => item.id === id);
 			this.assistanceModal = {
 				isOpened: true,

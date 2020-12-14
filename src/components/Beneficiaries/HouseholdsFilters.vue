@@ -72,25 +72,11 @@ export default {
 						{ code: "F", value: "Female" },
 					],
 				},
-				// TODO get from api
 				residencies: {
 					name: "Residence Status",
 					placeholder: "Select Residence",
 					multiple: true,
-					data: [
-						{
-							code: "refugee",
-							value: "Refugee",
-						},
-						{
-							code: "idp",
-							value: "IDP",
-						},
-						{
-							code: "resident",
-							value: "Resident",
-						},
-					],
+					data: [],
 				},
 				// TODO get from api
 				referrals: {
