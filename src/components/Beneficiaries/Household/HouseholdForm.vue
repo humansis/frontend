@@ -190,8 +190,8 @@ export default {
 	},
 
 	watch: {
-		detailOfHousehold() {
-			// TODO Map detailOfHousehold to formModel
+		detailOfHousehold(household) {
+			this.mapDetailOfHouseholdToFormModel(household);
 		},
 	},
 
@@ -270,6 +270,51 @@ export default {
 	},
 
 	methods: {
+		mapDetailOfHouseholdToFormModel(household) {
+			this.formModel = {
+				...this.formModel,
+				id: household.id,
+				currentLocation: {
+					...this.formModel.currentLocation,
+					// TODO map current location
+				},
+				residentLocation: {
+					...this.formModel.residentLocation,
+					// TODO map resident location
+				},
+				livelihood: {
+					...this.formModel.livelihood,
+					foodConsumptionScore: household.foodConsumptionScore,
+					// TODO map assets to code/value
+					assets: household.assets,
+					// TODO map livelihood to code/value
+					livelihood: [],
+					// TODO map incomeLevel to code/value
+					incomeLevel: [],
+					// TODO map debt level
+					debtLevel: 0,
+					copingStrategiesIndex: household.copingStrategiesIndex,
+				},
+				externalSupport: {
+					...this.formModel.externalSupport,
+					// TODO map supportReceivedTypes to code/value
+					externalSupportReceivedType: household.supportReceivedTypes,
+					supportDateReceived: new Date(household.supportDateReceived),
+					supportOrganization: household.supportOrganizationName,
+				},
+				countrySpecificOptions: {
+					...this.formModel.countrySpecificOptions,
+					// TODO map countrySpecificOptions
+					idPoorNo: "",
+					equityCardNo: "",
+					fields: "",
+				},
+				// TODO map shelterType to code/value
+				shelterType: [],
+				notes: household.notes,
+			};
+		},
+
 		async fetchData() {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then((result) => { this.options.livelihood = result.data; })
