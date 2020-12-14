@@ -1,5 +1,5 @@
 <template>
-	<b-tooltip :label="type" :active="type !== undefined">
+	<b-tooltip label="bug" :active="type !== undefined">
 		<b-icon :icon="icon" />
 	</b-tooltip>
 </template>
@@ -10,20 +10,21 @@ export default {
 	name: "CommodityColumn",
 
 	props: {
-		type: String,
+		type: Array,
 	},
 
 	computed: {
 		icon() {
-			switch (this.type) {
-				case "cash": return "money-bill";
-				case "mobileMoney": return "mobile";
-				case "smartcard": return "credit-card";
-				case "inKind": return "seeding";
-				case "vouchers": return "ticket-alt";
-				case "other": return "ellipsis-h";
-				default: return "bug";
-			}
+			return "bug";
+			// switch (this.type) {
+			// 	case "cash": return "money-bill";
+			// 	case "mobileMoney": return "mobile";
+			// 	case "smartcard": return "credit-card";
+			// 	case "inKind": return "seeding";
+			// 	case "vouchers": return "ticket-alt";
+			// 	case "other": return "ellipsis-h";
+			// 	default: return "bug";
+			// }
 		},
 	},
 };

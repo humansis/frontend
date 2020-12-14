@@ -41,7 +41,6 @@
 
 <script>
 import BookletsService from "@/services/BookletsService";
-import ProjectsService from "@/services/ProjectsService";
 import VoucherForm from "@/components/Voucher/VoucherForm";
 import { Toast } from "@/utils/UI";
 import Modal from "@/components/Modal";
@@ -92,20 +91,6 @@ export default {
 	},
 
 	methods: {
-		async getProjectNameForBooklets(data) {
-			const booklets = [];
-			data.forEach((booklet) => {
-				const preparedBooklet = booklet;
-				ProjectsService.getDetailOfProject(booklet.projectId).then((response) => {
-					preparedBooklet.project = response.data.name;
-					booklets.push(preparedBooklet);
-				}).catch((e) => {
-					Toast(`(Project Detail) ${e}`, "is-danger");
-				});
-			});
-			return booklets;
-		},
-
 		showDetail(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {

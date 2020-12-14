@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<b-tabs size="is-medium">
+		<b-tabs v-model="selectedTab" size="is-medium">
 			<b-tab-item
 				label="Users"
 				icon="user"
@@ -75,6 +75,12 @@ export default {
 		MyOrganizations,
 		Donors,
 		Users,
+	},
+
+	data() {
+		return {
+			selectedTab: 0,
+		};
 	},
 };
 </script>

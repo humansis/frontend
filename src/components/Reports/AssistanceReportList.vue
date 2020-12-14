@@ -13,20 +13,22 @@
 					placeholder="Search"
 					label="name"
 					track-by="id"
-					:options="projectsForFilter"
-					@input="fetchDistributions"
+					:loading="isProjectsLoading"
+					:options="projects"
+					@input="fetchAssistance"
 				/>
 			</div>
 			<div class="column is-half">
-				<label class="typo__label">Distributions</label>
+				<label class="typo__label">Assistance</label>
 				<MultiSelect
-					v-model="selectedDistributionForFilter"
+					v-model="selectedAssistanceForFilter"
 					tag-placeholder="Add this as new tag"
 					placeholder="Search"
 					label="name"
 					track-by="id"
-					:options="distributionsForFilter"
-					@input="fetchDistributionReports"
+					:loading="isAssistanceLoading"
+					:options="options.assistance"
+					@input="fetchAssistancesReports"
 				/>
 			</div>
 		</div>
@@ -35,6 +37,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -66,12 +69,12 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
-import DistributionReportService from "@/services/DistributionReportService";
+import AssistanceReportService from "@/services/AssistanceReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "DistributionReportList",
+	name: "AssistanceReportList",
 
 	components: {
 		ReportNavbar,
@@ -80,6 +83,10 @@ export default {
 	},
 
 	mixins: [grid],
+
+	props: {
+		projects: Array,
+	},
 
 	data() {
 		return {
@@ -100,34 +107,35 @@ export default {
 			},
 			selectedPeriod: null,
 			choosePeriod: null,
-			projectsForFilter: [],
-			distributionsForFilter: [],
+			options: {
+				assistance: [],
+			},
 			selectedProjectsForFilter: [],
-			selectedDistributionForFilter: [],
+			selectedAssistanceForFilter: [],
+			isProjectsLoading: false,
+			isAssistanceLoading: false,
 		};
 	},
 
 	watch: {
-		$route: "fetchDistributionReports",
+		$route: "fetchAssistancesReports",
 	},
 
 	mounted() {
-		this.fetchDistributionReports();
-		this.fetchProjects();
+		this.fetchAssistancesReports();
 	},
 
 	methods: {
-		async fetchDistributionReports() {
-			this.$store.commit("loading", true);
+		async fetchAssistancesReports() {
+			this.isLoadingList = true;
 
-			await DistributionReportService.getListOfDistributionReports(
+			await AssistanceReportService.getListOfAssistanceReports(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.selectedPeriod,
 				this.choosePeriod,
-				this.selectedProjectsForFilter,
-				this.selectedDistributionForFilter,
+				this.selectedAssistanceForFilter,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -135,53 +143,37 @@ export default {
 					this.table.visibleColumns,
 				);
 			}).catch((e) => {
-				Toast(`(Distribution Reports) ${e}`, "is-danger");
+				Toast(`(Assistance Reports) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		async fetchProjects() {
-			this.$store.commit("loading", true);
+			this.isProjectsLoading = true;
 
 			await ProjectsService.getListOfProjects()
 				.then((response) => {
-					response.data.forEach(({ name, id }) => {
-						this.projectsForFilter.push(
-							{
-								name,
-								id,
-							},
-						);
-					});
+					this.options.projects = response.data;
 				}).catch((e) => {
 					Toast(`(Projects) ${e}`, "is-danger");
 				});
 
-			this.$store.commit("loading", false);
+			this.isProjectsLoading = false;
 		},
 
-		async fetchDistributions() {
-			this.$store.commit("loading", true);
+		async fetchAssistance() {
+			this.isAssistanceLoading = true;
 
-			this.distributionsForFilter = [];
+			this.selectedAssistanceForFilter = [];
 			await AssistancesService.getListOfProjectAssistances(this.selectedProjectsForFilter.id)
 				.then((response) => {
-					response.data.forEach(({ name, id }) => {
-						this.distributionsForFilter.push(
-							{
-								name,
-								id,
-							},
-						);
-					});
+					this.options.assistance = response.data;
 				}).catch((e) => {
 					Toast(`(Project Assistances) ${e}`, "is-danger");
 				});
 
-			await this.fetchDistributionReports();
-
-			this.$store.commit("loading", false);
+			this.isAssistanceLoading = false;
 		},
 
 		goToDetail() {
@@ -190,12 +182,12 @@ export default {
 
 		onPeriodFilterChange(period) {
 			this.selectedPeriod = period;
-			this.fetchDistributionReports();
+			this.fetchAssistancesReports();
 		},
 
 		onChoosePeriodFilterChange(choosePeriod) {
 			this.choosePeriod = choosePeriod;
-			this.fetchDistributionReports();
+			this.fetchAssistancesReports();
 		},
 	},
 };

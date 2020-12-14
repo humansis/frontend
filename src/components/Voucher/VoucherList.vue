@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
 		<Table
 			:data="table.data"
@@ -53,6 +53,7 @@ import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "VoucherList",
@@ -63,6 +64,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -82,6 +85,7 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				searchPhrase: "",
 			},
 		};
 	},
@@ -107,14 +111,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
+		async fetchData() {
 			this.$store.commit("loading", true);
 
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.table.perPage,
 				"desc",
-				value,
+				this.table.searchPhrase,
 			).then((response) => {
 				this.getProjectNameForBooklets(response.data).then((data) => {
 					this.table.data = data;

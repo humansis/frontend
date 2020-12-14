@@ -14,7 +14,7 @@
 					label="name"
 					track-by="id"
 					multiple
-					:options="projectsForFilter"
+					:options="projects"
 					@input="fetchProjectReports"
 				/>
 			</div>
@@ -24,6 +24,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -51,7 +52,6 @@ import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ProjectsService from "@/services/ProjectsService";
 import ProjectReportService from "@/services/ProjectReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
 import grid from "@/mixins/grid";
@@ -66,6 +66,10 @@ export default {
 	},
 
 	mixins: [grid],
+
+	props: {
+		projects: Array,
+	},
 
 	data() {
 		return {
@@ -84,7 +88,6 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 			},
-			projectsForFilter: [],
 			selectedProjectsForFilter: [],
 			selectedPeriod: null,
 			choosePeriod: null,
@@ -97,12 +100,11 @@ export default {
 
 	mounted() {
 		this.fetchProjectReports();
-		this.fetchProjects();
 	},
 
 	methods: {
 		async fetchProjectReports() {
-			this.$store.commit("loading", true);
+			this.isLoadingList = true;
 
 			await ProjectReportService.getListOfProjectReports(
 				this.table.currentPage,
@@ -121,27 +123,7 @@ export default {
 				Toast(`(Project Reports) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
-		},
-
-		async fetchProjects() {
-			this.$store.commit("loading", true);
-
-			await ProjectsService.getListOfProjects()
-				.then((response) => {
-					response.data.forEach(({ name, id }) => {
-						this.projectsForFilter.push(
-							{
-								name,
-								id,
-							},
-						);
-					});
-				}).catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
-				});
-
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		goToDetail() {
