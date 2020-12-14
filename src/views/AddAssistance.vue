@@ -2,11 +2,14 @@
 	<div>
 		<div class="columns">
 			<div class="column">
-				<NewAssistanceForm ref="assistanceForm" @updatedData="fetchNewAssistanceForm" />
+				<NewAssistanceForm
+					@updatedData="fetchNewAssistanceForm"
+					@onTargetSelect="targetType = $event"
+				/>
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria
-					:target-type="this.$refs.assistanceForm ? this.$refs.assistanceForm.formModel.target : ''"
+					:target-type="targetType"
 					@updatedData="fetchSelectionCriteria"
 				/>
 				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
@@ -51,6 +54,7 @@ export default {
 				groups: [],
 				distributedCommodity: [],
 			},
+			targetType: "",
 		};
 	},
 

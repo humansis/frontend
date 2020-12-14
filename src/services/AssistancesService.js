@@ -23,8 +23,12 @@ export default {
 
 	async getListOfProjectAssistances(id, page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = page ? `&size=${size}` : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/assistances?page=${page}&size=${size}&sort=${sort + fulltext}`,
+			uri: `projects/${id}/assistances?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

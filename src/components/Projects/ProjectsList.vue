@@ -14,7 +14,7 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
+					:sortable="column.sortable"
 					v-bind="column"
 					:key="column.id"
 					v-slot="props"
@@ -90,18 +90,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "name" },
-					{
-						type: "count",
-						key: "donorIds",
-					},
-					{ key: "startDate" },
-					{ key: "endDate" },
-					{ key: "target" },
-					{
-						key: "numberOfHouseHolds",
-						width: "120",
-					},
+					{ key: "name", width: "434", sortable: true },
+					{ key: "donorIds", type: "count", width: "100" },
+					{ key: "startDate", type: "date", width: "120", sortable: true },
+					{ key: "endDate", type: "date", width: "120", sortable: true },
+					{ key: "target", width: "90" },
+					{ key: "numberOfHouseholds", width: "130", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
@@ -149,7 +143,7 @@ export default {
 			await ProjectsService.getListOfProjects(
 				this.table.currentPage,
 				this.table.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				value,
 			).then((response) => {
 				this.table.data = response.data;

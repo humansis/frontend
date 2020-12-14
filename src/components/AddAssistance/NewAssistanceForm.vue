@@ -26,6 +26,7 @@
 						v-model="formModel.target"
 						name="target"
 						native-value="Household"
+						@input="$emit('onTargetSelect', 'Household')"
 					>
 						Household
 					</b-radio>
@@ -33,6 +34,7 @@
 						v-model="formModel.target"
 						name="target"
 						native-value="Individual"
+						@input="$emit('onTargetSelect', 'Individual')"
 					>
 						Individual
 					</b-radio>

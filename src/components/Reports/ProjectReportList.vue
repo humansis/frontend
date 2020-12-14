@@ -127,22 +127,19 @@ export default {
 		async fetchProjects() {
 			this.$store.commit("loading", true);
 
-			await ProjectsService.getListOfProjects(
-				1,
-				15,
-				"desc",
-			).then((response) => {
-				response.data.forEach(({ name, id }) => {
-					this.projectsForFilter.push(
-						{
-							name,
-							id,
-						},
-					);
+			await ProjectsService.getListOfProjects()
+				.then((response) => {
+					response.data.forEach(({ name, id }) => {
+						this.projectsForFilter.push(
+							{
+								name,
+								id,
+							},
+						);
+					});
+				}).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
 				});
-			}).catch((e) => {
-				Toast(`(Projects) ${e}`, "is-danger");
-			});
 
 			this.$store.commit("loading", false);
 		},

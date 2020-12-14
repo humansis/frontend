@@ -47,9 +47,6 @@ export default {
 			});
 
 			await ProjectsService.getListOfProjects(
-				this.currentPage,
-				this.perPage,
-				"desc",
 			).then((response) => {
 				this.projectsSummary = response.data;
 			}).catch((e) => {

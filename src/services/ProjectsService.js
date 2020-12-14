@@ -10,7 +10,7 @@ export default {
 
 	async getListOfProjects(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = page ? `&size=${size}` : "";
 
