@@ -1,21 +1,12 @@
 <template>
 	<div>
-		<b-button
-			icon-left="file-download"
-			:size="size"
-			:type="type"
-			@click="exportData"
-		>
-			Export
-		</b-button>
 		<b-dropdown
 			v-model="currentFormat"
-			:class="spaceBetween ? 'ml-1' : ''"
 			aria-role="list"
 		>
-			<b-button slot="trigger" :size="size" type="is-default">
+			<b-button icon-left="file-download" slot="trigger" :size="size" :type="type">
 				<template>
-					<span>{{currentFormat.name}}</span>
+					<span>Export</span>
 				</template>
 				<b-icon icon="arrow-down" />
 			</b-button>
@@ -24,6 +15,7 @@
 				v-show="menu.disabled"
 				:key="index"
 				:value="menu"
+				@click="exportData(menu.name)"
 			>
 				<div class="media">
 					<div class="media-content">
@@ -48,7 +40,7 @@ export default {
 
 	data() {
 		return {
-			currentFormat: { name: ".xlsx" },
+			currentFormat: null,
 			formatMenu: [
 				{ name: ".xlsx", disabled: this.formats.xlsx },
 				{ name: ".csv", disabled: this.formats.csv },

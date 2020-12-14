@@ -54,7 +54,7 @@
 			<ExportButton
 				type="is-success"
 				size="is-default"
-				class="column is-2 is-offset-4"
+				class="column is-three-fifths"
 				space-between
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@exportData="exportHousehold"
