@@ -4,27 +4,27 @@
 			label="Imports"
 			icon="file-upload"
 		>
-			<Imports />
+			<ImportsPage />
 		</b-tab-item>
 		<b-tab-item
 			label="Vouchers"
 			icon="ticket-alt"
 		>
-			<Vouchers />
+			<VouchersPage />
 		</b-tab-item>
 	</b-tabs>
 </template>
 
 <script>
-import Imports from "@/views/Jobs/ImportsPage";
-import Vouchers from "@/views/Jobs/VouchersPage";
+import ImportsPage from "@/views/Jobs/ImportsPage";
+import VouchersPage from "@/views/Jobs/VouchersPage";
 
 export default {
 	name: "Jobs",
 
 	components: {
-		Vouchers,
-		Imports,
+		VouchersPage,
+		ImportsPage,
 	},
 };
 </script>

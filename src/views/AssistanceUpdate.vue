@@ -12,7 +12,7 @@
 				step="1"
 				label="Assistance List Of Beneficiaries"
 			>
-				<AssistanceList
+				<BeneficiariesList
 					export-button
 					add-button
 					:change-button="false"
@@ -79,7 +79,7 @@
 
 <script>
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
-import AssistanceList from "@/components/Assistance/BeneficiariesList";
+import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
@@ -91,7 +91,7 @@ export default {
 
 	components: {
 		AssistanceSummary,
-		AssistanceList,
+		BeneficiariesList,
 		ImportAndCompare,
 		ExportRandomSample,
 		ValidateAndLock,

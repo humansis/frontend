@@ -29,7 +29,7 @@
 			</div>
 			<div class="card-content">
 				<div class="content">
-					<HouseholdForm ref="member" :show-type-of-beneficiary="false" />
+					<HouseholdHeadForm ref="member" :show-type-of-beneficiary="false" />
 				</div>
 			</div>
 		</b-collapse>
@@ -46,13 +46,13 @@
 </template>
 
 <script>
-import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 
 export default {
 	name: "Members",
 
 	components: {
-		HouseholdForm,
+		HouseholdHeadForm,
 	},
 
 	props: {

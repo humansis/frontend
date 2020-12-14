@@ -7,12 +7,12 @@
 			has-navigation
 		>
 			<b-step-item step="1" label="Household">
-				<Household :detailOfHousehold="detailOfHousehold" ref="household" />
+				<HouseholdForm :detailOfHousehold="detailOfHousehold" ref="householdForm" />
 			</b-step-item>
 
 			<b-step-item step="2" label="Household Head">
-				<HouseholdForm
-					ref="householdHead"
+				<HouseholdHeadForm
+					ref="householdHeadForm"
 					show-type-of-beneficiary
 					:detailOfHousehold="detailOfHousehold"
 				/>
@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
-import Household from "@/components/Beneficiaries/Household/HouseholdForm";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -79,8 +79,8 @@ export default {
 	},
 
 	components: {
+		HouseholdHeadForm,
 		HouseholdForm,
-		Household,
 		Members,
 		Summary,
 	},
@@ -111,14 +111,14 @@ export default {
 		nextPage(next) {
 			switch (this.activeStep) {
 				case 0:
-					if (this.$refs.household.submit()) {
-						this.household = this.$refs.household.formModel;
+					if (this.$refs.householdForm.submit()) {
+						this.household = this.$refs.householdForm.formModel;
 						next.action();
 					}
 					break;
 				case 1:
-					if (this.$refs.householdHead.submit()) {
-						this.householdHead = this.$refs.householdHead.formModel;
+					if (this.$refs.householdHeadForm.submit()) {
+						this.householdHead = this.$refs.householdHeadForm.formModel;
 						next.action();
 					}
 					break;

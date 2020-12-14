@@ -1,5 +1,5 @@
 <template>
-	<AssistanceList
+	<BeneficiariesList
 		change-button
 		export-button
 		:add-button="false"
@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import AssistanceList from "@/components/Assistance/BeneficiariesList";
+import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 
 export default {
 	name: "ExportRandomSample",
 
 	components: {
-		AssistanceList,
+		BeneficiariesList,
 	},
 };
 </script>
