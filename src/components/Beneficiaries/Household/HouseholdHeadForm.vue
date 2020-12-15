@@ -174,8 +174,8 @@ export default {
 	},
 
 	watch: {
-		detailOfHousehold() {
-			// TODO Map detailOfHousehold to formModel
+		detailOfHousehold(household) {
+			this.mapDetailOfHouseholdToFormModel(household);
 		},
 	},
 
@@ -258,9 +258,8 @@ export default {
 	},
 
 	methods: {
-		submit() {
-			this.$v.$touch();
-			return !this.$v.$invalid;
+		mapDetailOfHouseholdToFormModel() {
+			// TODO map household param to formModel
 		},
 
 		async fetchNationalCardTypes() {
@@ -269,6 +268,11 @@ export default {
 				.catch((e) => {
 					Toast(`(National IDs) ${e}`, "is-danger");
 				});
+		},
+
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
 		},
 	},
 };

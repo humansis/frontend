@@ -56,12 +56,12 @@ export default {
 	},
 
 	props: {
-		detailOfHousehold: null || Object,
+		detailOfHousehold: Object,
 	},
 
 	watch: {
-		detailOfHousehold() {
-			// TODO Map detailOfHousehold to members
+		detailOfHousehold(household) {
+			this.mapDetailOfHouseholdToFormModel(household);
 		},
 	},
 
@@ -86,6 +86,10 @@ export default {
 			}
 		},
 
+		mapDetailOfHouseholdToFormModel() {
+			// TODO map household members to formModel and collapses
+		},
+
 		removeMember(index) {
 			this.collapses.splice(index, 1);
 			this.members.splice(index, 1);
@@ -94,7 +98,6 @@ export default {
 		submit() {
 			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
 				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
-
 				return true;
 			}
 

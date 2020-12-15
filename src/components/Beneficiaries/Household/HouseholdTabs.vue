@@ -166,8 +166,9 @@ export default {
 				shelterStatus: shelterType,
 				projectIds: [...this.selectedProjects],
 				notes,
-				// longitude: "string",
-				// latitude: "string",
+				// TODO Resolve longitude and latitude
+				longitude: "string",
+				latitude: "string",
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
@@ -175,11 +176,12 @@ export default {
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived,
+				supportDateReceived: new Date(supportDateReceived).toISOString(),
 				supportReceivedTypes: [...externalSupportReceivedType],
 				supportOrganizationName,
-				// incomeSpentOnFood: 0,
-				// houseIncome: 0,
+				// TODO Resolve incomeSpentOnFood and houseIncome
+				incomeSpentOnFood: 0,
+				houseIncome: 0,
 				householdLocations: [
 					{
 						number: addressNumber,
@@ -224,11 +226,15 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
+			this.$store.commit("loading", true);
+
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
 				Toast(`(Household) ${e}`, "is-danger");
 			});
+
+			this.$store.commit("loading", false);
 		},
 
 		prepareSummaryMembers(members) {
