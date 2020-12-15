@@ -62,6 +62,7 @@ export default {
 			},
 			projectModel: {
 				id: null,
+				iso3: "",
 				name: "",
 				internalId: "",
 				sectors: [],
@@ -127,6 +128,7 @@ export default {
 		submitProjectForm(projectForm) {
 			const {
 				id,
+				iso3,
 				name,
 				internalId,
 				selectedSectors,
@@ -138,7 +140,7 @@ export default {
 				notes,
 			} = projectForm;
 			const projectBody = {
-				iso3: "KHM",
+				iso3: iso3 || this.$store.state.country.iso3,
 				name,
 				internalId,
 				notes,
@@ -176,6 +178,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				iso3,
 				internalId,
 				name,
 				sectors,
@@ -189,6 +192,7 @@ export default {
 			this.projectModel = {
 				...this.projectModel,
 				id,
+				iso3,
 				name,
 				internalId,
 				selectedSectors: getArrayOfCodeListByKey(sectors, this.projectModel.sectors, "code"),

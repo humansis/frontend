@@ -189,8 +189,6 @@ export default {
 
 	methods: {
 		submitForm() {
-			// TODO change and fix selectedDonors for multiselect
-			this.formModel.selectedDonors = [{ id: 2, shortName: "Donor" }];
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

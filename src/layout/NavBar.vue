@@ -27,7 +27,7 @@
 				</a>
 				<b-dropdown-item
 					v-for="country in countries"
-					:key="country.iso3"
+					:key="country.name"
 					:value="country.iso3"
 					@click="handleChangeCountry(country)"
 				>

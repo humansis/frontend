@@ -61,6 +61,7 @@ export default {
 			},
 			productModel: {
 				id: null,
+				iso3: "",
 				name: "",
 				unit: "",
 				image: "",
@@ -95,6 +96,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				iso3,
 				name,
 				image,
 				unit,
@@ -103,6 +105,7 @@ export default {
 			this.productModel = {
 				...this.productModel,
 				id,
+				iso3,
 				name,
 				image,
 				unit,
@@ -141,6 +144,7 @@ export default {
 		submitProductForm(productForm) {
 			const {
 				id,
+				iso3,
 				name,
 				image,
 				unit,
@@ -150,7 +154,7 @@ export default {
 				name,
 				image,
 				unit,
-				iso3: "KHM",
+				iso3: iso3 || this.$store.state.country.iso3,
 			};
 
 			if (this.productModal.isEditing && id) {
