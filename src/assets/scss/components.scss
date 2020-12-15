@@ -3,6 +3,9 @@
         cursor: pointer;
     }
 }
+.loading-overlay{
+    z-index: 20;
+}
 
 .modal{
     z-index: 100;

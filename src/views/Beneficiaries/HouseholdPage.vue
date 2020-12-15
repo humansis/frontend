@@ -206,6 +206,7 @@ export default {
 
 			this.isLoadingList = true;
 
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
@@ -215,9 +216,6 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-				this.table.columns = generateColumns(
-					this.table.visibleColumns,
-				);
 			}).catch((e) => {
 				Toast(`(Households) ${e}`, "is-danger");
 			});

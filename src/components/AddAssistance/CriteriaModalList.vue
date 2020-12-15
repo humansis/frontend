@@ -74,9 +74,7 @@ export default {
 		async fetchData() {
 			this.$store.commit("loading", true);
 			// TODO get real data from API
-			this.table.columns = generateColumns(
-				this.table.visibleColumns,
-			);
+			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			this.$store.commit("loading", false);
 		},

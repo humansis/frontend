@@ -108,6 +108,7 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await VendorsService.getListOfVendors(
 				this.table.currentPage,
 				this.table.perPage,
@@ -117,9 +118,6 @@ export default {
 				this.buildLocationsForVendors(response.data).then((result) => {
 					this.table.data = result;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
 				});
 			}).catch((e) => {
 				Toast(`(Vendors) ${e}`, "is-danger");

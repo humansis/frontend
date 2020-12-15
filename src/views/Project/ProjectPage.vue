@@ -38,7 +38,7 @@
 
 <script>
 import { Toast } from "@/utils/UI.js";
-import { getArrayOfIdsByParam, getArrayOfCodeListByKey } from "@/utils/codeList";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 import ProjectsService from "@/services/ProjectsService";
 import Modal from "@/components/Modal";
 import ProjectForm from "@/components/Projects/ProjectForm";
@@ -115,6 +115,9 @@ export default {
 				id: null,
 				name: "",
 				internalId: "",
+				donorIds: [],
+				sectors: [],
+				targetTypes: [],
 				selectedSectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
@@ -194,12 +197,15 @@ export default {
 				id,
 				iso3,
 				name,
+				sectors,
+				donorIds,
 				internalId,
-				selectedSectors: getArrayOfCodeListByKey(sectors, this.projectModel.sectors, "code"),
 				startDate: new Date(startDate),
 				endDate: new Date(endDate),
-				selectedDonors: getArrayOfCodeListByKey(donorIds, this.projectModel.donors, "id"),
-				selectedTargetType: getArrayOfCodeListByKey([], this.projectModel.targetTypes, "code"),
+				targetType: [],
+				selectedSectors: [],
+				selectedDonors: [],
+				selectedTargetType: [],
 				totalTarget,
 				notes,
 			};
