@@ -38,7 +38,7 @@
 <script>
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import CountrySpecificsForm from "@/components/Configuration/CountrySpecificsForm";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import CountrySpecificsList from "@/components/Configuration/CountrySpecificsList";
 
@@ -149,7 +149,7 @@ export default {
 						this.$refs.countrySpecificList.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					Notification(`Country Specific Options ${e}`, "is-danger");
 				});
 		},
 
@@ -161,7 +161,7 @@ export default {
 						this.$refs.countrySpecificList.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					Notification(`Country Specific Options ${e}`, "is-danger");
 				});
 		},
 	},

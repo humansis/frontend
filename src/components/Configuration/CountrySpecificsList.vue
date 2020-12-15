@@ -56,7 +56,7 @@ import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsServ
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
@@ -116,7 +116,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Country Specific Options) ${e}`, "is-danger");
+				Notification(`Country Specific Options ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

@@ -37,7 +37,7 @@
 
 <script>
 import CommunitiesService from "@/services/CommunitiesService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import CommunityForm from "@/components/Beneficiaries/CommunityForm";
 import Modal from "@/components/Modal";
 import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
@@ -255,7 +255,7 @@ export default {
 					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Community) ${e}`, "is-danger");
+				Notification(`Community ${e}`, "is-danger");
 			});
 		},
 
@@ -266,7 +266,7 @@ export default {
 					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Community) ${e}`, "is-danger");
+				Notification(`Community ${e}`, "is-danger");
 			});
 		},
 
@@ -277,7 +277,7 @@ export default {
 					this.$refs.communitiesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Community) ${e}`, "is-danger");
+				Notification(`Community ${e}`, "is-danger");
 			});
 		},
 	},

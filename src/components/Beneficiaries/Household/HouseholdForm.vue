@@ -164,7 +164,7 @@ import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 const locationModel = {
 	adm1Id: "",
@@ -319,19 +319,19 @@ export default {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then((result) => { this.options.livelihood = result.data; })
 				.catch((e) => {
-					Toast(`(Livelihoods) ${e}`, "is-danger");
+					Notification(`Livelihoods ${e}`, "is-danger");
 				});
 
 			await BeneficiariesService.getListOfAssets()
 				.then((result) => { this.options.assets = result.data; })
 				.catch((e) => {
-					Toast(`(Assets) ${e}`, "is-danger");
+					Notification(`Assets ${e}`, "is-danger");
 				});
 
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then((result) => { this.options.shelterType = result.data; })
 				.catch((e) => {
-					Toast(`(Shelter Types) ${e}`, "is-danger");
+					Notification(`Shelter Types ${e}`, "is-danger");
 				});
 		},
 

@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import AssistancesService from "@/services/AssistancesService";
@@ -133,7 +133,7 @@ export default {
 			AssistancesService.getListOfTargetsForAssistances()
 				.then((response) => { this.targets = response.data; })
 				.catch((e) => {
-					Toast(`(Target Types) ${e}`, "is-danger");
+					Notification(`Target Types ${e}`, "is-danger");
 				});
 		},
 	},

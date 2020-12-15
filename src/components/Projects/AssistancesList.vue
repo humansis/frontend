@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
@@ -203,7 +203,9 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Notification(`Assistance ${e}`, "is-danger");
+			});
 
 			this.isLoadingList = false;
 		},
@@ -215,7 +217,7 @@ export default {
 					this.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Assistance) ${e}`, "is-danger");
+				Notification(`Assistance ${e}`, "is-danger");
 			});
 		},
 
@@ -225,7 +227,7 @@ export default {
 					Toast("Download starting", "is-success");
 				}
 			}).catch((e) => {
-				Toast(`(Assistance) ${e}`, "is-danger");
+				Notification(`Assistance ${e}`, "is-danger");
 			});
 		},
 
@@ -269,7 +271,7 @@ export default {
 					this.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Assistance) ${e}`, "is-danger");
+				Notification(`Assistance ${e}`, "is-danger");
 			});
 		},
 

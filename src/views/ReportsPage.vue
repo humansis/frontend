@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import CountryReportList from "@/components/Reports/CountryReportList";
 import ProjectsService from "@/services/ProjectsService";
 
@@ -55,7 +55,7 @@ export default {
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
 				.then((response) => { this.projects = response.data; }).catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
+					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 	},

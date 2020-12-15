@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
@@ -141,7 +141,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Assistance Reports) ${e}`, "is-danger");
+				Notification(`Assistance Reports ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -154,7 +154,7 @@ export default {
 				.then((response) => {
 					this.options.projects = response.data;
 				}).catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
+					Notification(`Projects ${e}`, "is-danger");
 				});
 
 			this.isProjectsLoading = false;
@@ -168,7 +168,7 @@ export default {
 				.then((response) => {
 					this.options.assistance = response.data;
 				}).catch((e) => {
-					Toast(`(Project Assistances) ${e}`, "is-danger");
+					Notification(`Project Assistances ${e}`, "is-danger");
 				});
 
 			this.isAssistanceLoading = false;

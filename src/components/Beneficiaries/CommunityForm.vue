@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { required, numeric } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LocationForm from "@/components/LocationForm";
@@ -246,7 +246,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then((response) => { this.nationalCardTypes = response.data; })
 				.catch((e) => {
-					Toast(`(National IDs) ${e}`, "is-danger");
+					Notification(`National IDs ${e}`, "is-danger");
 				});
 		},
 

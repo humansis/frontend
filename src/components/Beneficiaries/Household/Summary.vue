@@ -57,7 +57,7 @@ import Table from "@/components/DataGrid/Table";
 import ProjectsService from "@/services/ProjectsService";
 import Validation from "@/mixins/validation";
 import { required } from "vuelidate/lib/validators";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Summary",
@@ -70,7 +70,7 @@ export default {
 
 	props: {
 		members: Array,
-		detailOfHousehold: null || Object,
+		detailOfHousehold: Object,
 	},
 
 	watch: {
@@ -133,7 +133,7 @@ export default {
 					this.options.projects = response.data;
 				})
 				.catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
+					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 

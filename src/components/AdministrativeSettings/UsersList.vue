@@ -66,7 +66,7 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
@@ -127,7 +127,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Users) ${e}`, "is-danger");
+				Notification(`Users ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

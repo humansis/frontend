@@ -67,7 +67,7 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import TranslationService from "@/services/TranslationService";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -136,7 +136,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Translations) ${e}`, "is-danger");
+				Notification(`Translations ${e}`, "is-danger");
 			});
 
 			this.$store.commit("loading", false);
@@ -152,7 +152,7 @@ export default {
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Translations) ${e}`, "is-danger");
+					Notification(`Translations ${e}`, "is-danger");
 				});
 		},
 

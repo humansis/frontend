@@ -39,7 +39,7 @@ import CountriesService from "@/services/CountriesService";
 import CountryForm from "@/components/AdministrativeSettings/CountryForm";
 import Modal from "@/components/Modal";
 import CountriesList from "@/components/AdministrativeSettings/CountriesList";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "CountriesPage",
@@ -173,7 +173,7 @@ export default {
 					this.$refs.countriesList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Country) ${e}`, "is-danger");
+				Notification(`Country ${e}`, "is-danger");
 			});
 		},
 

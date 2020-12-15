@@ -11,7 +11,7 @@ export const Toast = (message, type) => {
 
 export const Notification = (message, type) => {
 	NotificationProgrammatic.open({
-		duration: 5000,
+		duration: 7000,
 		message,
 		position: "is-bottom-right",
 		hasIcon: true,

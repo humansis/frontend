@@ -46,7 +46,7 @@ import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import LanguagesService from "@/services/LanguagesService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -108,7 +108,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Languages) ${e}`, "is-danger");
+				Notification(`Languages ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

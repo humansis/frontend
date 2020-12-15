@@ -53,7 +53,7 @@ import CountriesService from "@/services/CountriesService";
 import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -118,7 +118,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Countries) ${e}`, "is-danger");
+				Notification(`Countries ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

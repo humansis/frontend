@@ -48,7 +48,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -105,7 +105,7 @@ export default {
 				this.table.data = this.prepareDataForTable(response.data);
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Organizations) ${e}`, "is-danger");
+				Notification(`Organizations ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = true;

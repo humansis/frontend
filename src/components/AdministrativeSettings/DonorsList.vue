@@ -65,7 +65,7 @@ import { generateColumns } from "@/utils/datagrid";
 import DonorsService from "@/services/DonorsService";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
@@ -141,7 +141,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Donors) ${e}`, "is-danger");
+				Notification(`Donors ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

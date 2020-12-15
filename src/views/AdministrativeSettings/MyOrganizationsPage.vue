@@ -27,7 +27,7 @@
 
 <script>
 import MyOrganizationsService from "@/services/MyOrganizationsService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizationForm";
 import Modal from "@/components/Modal";
 import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizationsList";
@@ -154,7 +154,7 @@ export default {
 					this.$refs.myOrganizationsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Organization) ${e}`, "is-danger");
+				Notification(`Organization ${e}`, "is-danger");
 			});
 		},
 
@@ -164,7 +164,7 @@ export default {
 					Toast("Your Download is starting", "is-success");
 				}
 			}).catch((e) => {
-				Toast(`(Organization) ${e}`, "is-danger");
+				Notification(`Organization ${e}`, "is-danger");
 			});
 		},
 	},

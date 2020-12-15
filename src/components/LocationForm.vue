@@ -71,7 +71,7 @@
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LocationsService from "@/services/LocationsService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "locationForm",
@@ -135,7 +135,7 @@ export default {
 			LocationsService.getListOfAdm1()
 				.then((result) => { this.provinces = result.data; })
 				.catch((e) => {
-					Toast(`(Adm1) ${e}`, "is-danger");
+					Notification(`Adm1 ${e}`, "is-danger");
 				});
 			this.provincesLoading = false;
 		},
@@ -145,7 +145,7 @@ export default {
 			LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.districts = result.data; })
 				.catch((e) => {
-					Toast(`(Adm2) ${e}`, "is-danger");
+					Notification(`Adm2 ${e}`, "is-danger");
 				});
 			this.districtsLoading = false;
 		},
@@ -155,7 +155,7 @@ export default {
 			LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.communes = result.data; })
 				.catch((e) => {
-					Toast(`(Adm3) ${e}`, "is-danger");
+					Notification(`Adm3 ${e}`, "is-danger");
 				});
 			this.communesLoading = false;
 		},
@@ -165,7 +165,7 @@ export default {
 			LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.villages = result.data; })
 				.catch((e) => {
-					Toast(`(Adm4) ${e}`, "is-danger");
+					Notification(`Adm4 ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
 		},

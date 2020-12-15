@@ -15,7 +15,7 @@
 <script>
 import { normalizeText } from "@/utils/datagrid";
 import ProjectsService from "@/services/ProjectsService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "ProjectsSummary",
@@ -50,7 +50,7 @@ export default {
 			).then((response) => {
 				this.projectsSummary = response.data;
 			}).catch((e) => {
-				Toast(`(Projects) ${e}`, "is-danger");
+				Notification(`Projects ${e}`, "is-danger");
 			});
 
 			loadingComponent.close();

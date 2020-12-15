@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { required, minValue } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
@@ -243,7 +243,7 @@ export default {
 			await SectorsService.getListOfSectors().then((response) => {
 				this.options.sectors = response.data;
 			}).catch((e) => {
-				Toast(`(Sectors) ${e}`, "is-danger");
+				Notification(`Sectors ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
@@ -254,7 +254,7 @@ export default {
 			await HomeService.getListOfDonors().then((response) => {
 				this.options.donors = response.data;
 			}).catch((e) => {
-				Toast(`(Donors) ${e}`, "is-danger");
+				Notification(`Donors ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedDonors = getArrayOfCodeListByKey(this.formModel.donorIds, this.options.donors, "id");
@@ -265,7 +265,7 @@ export default {
 			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
 				this.options.targetTypes = response.data;
 			}).catch((e) => {
-				Toast(`(Target Types) ${e}`, "is-danger");
+				Notification(`Target Types ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");

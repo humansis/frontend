@@ -51,7 +51,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -139,7 +139,7 @@ export default {
 						preparedBooklet.project = response.data.name;
 						booklets.push(preparedBooklet);
 					}).catch((e) => {
-						Toast(`(Project Detail) ${e}`, "is-danger");
+						Notification(`Project Detail ${e}`, "is-danger");
 					});
 			});
 			return booklets;

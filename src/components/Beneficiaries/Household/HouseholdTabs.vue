@@ -69,7 +69,7 @@ import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "HouseholdTabs",
@@ -211,7 +211,7 @@ export default {
 					Toast("Household Successfully Updated", "is-success");
 				}
 			}).catch((e) => {
-				Toast(`(Household) ${e}`, "is-danger");
+				Notification(`Household ${e}`, "is-danger");
 			});
 		},
 
@@ -221,7 +221,7 @@ export default {
 					Toast("Household Successfully Created", "is-success");
 				}
 			}).catch((e) => {
-				Toast(`(Household) ${e}`, "is-danger");
+				Notification(`Household ${e}`, "is-danger");
 			});
 		},
 
@@ -231,7 +231,7 @@ export default {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
-				Toast(`(Household) ${e}`, "is-danger");
+				Notification(`Household ${e}`, "is-danger");
 			});
 
 			this.$store.commit("loading", false);
