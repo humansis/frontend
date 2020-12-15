@@ -25,7 +25,7 @@
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
-					:options="types"
+					:options="options.types"
 					@select="validate('type')"
 				/>
 			</b-field>
@@ -42,7 +42,8 @@
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
-					:options="targets"
+					:options="options.targets"
+					:loading="loadingTargets"
 					@select="validate('target')"
 				/>
 			</b-field>
@@ -87,17 +88,20 @@ export default {
 
 	data() {
 		return {
-			types: [
-				{
-					code: "number",
-					value: "Number",
-				},
-				{
-					code: "text",
-					value: "Text",
-				},
-			],
-			targets: [],
+			options: {
+				types: [
+					{
+						code: "number",
+						value: "Number",
+					},
+					{
+						code: "text",
+						value: "Text",
+					},
+				],
+				targets: [],
+			},
+			loadingTargets: true,
 		};
 	},
 
@@ -111,9 +115,14 @@ export default {
 
 	mounted() {
 		this.fetchTargets();
+		this.mapSelects();
 	},
 
 	methods: {
+		mapSelects() {
+			this.formModel.type = this.options.types.find((item) => item.code === this.formModel.type);
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -129,12 +138,16 @@ export default {
 			this.$v.$reset();
 		},
 
-		fetchTargets() {
-			AssistancesService.getListOfTargetsForAssistances()
-				.then((response) => { this.targets = response.data; })
+		async fetchTargets() {
+			await AssistancesService.getListOfTargetsForAssistances()
+				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
 					Notification(`Target Types ${e}`, "is-danger");
 				});
+
+			this.formModel.target = this.options.targets
+				.find((item) => item.code === this.formModel.target);
+			this.loadingTargets = false;
 		},
 	},
 };
