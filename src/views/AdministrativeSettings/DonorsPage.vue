@@ -39,7 +39,7 @@ import DonorsService from "@/services/DonorsService";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import DonorsList from "@/components/AdministrativeSettings/DonorsList";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "DonorsPage",
@@ -172,7 +172,7 @@ export default {
 					this.$refs.donorsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Donor) ${e}`, "is-danger");
+				Notification(`Donor ${e}`, "is-danger");
 			});
 		},
 
@@ -183,7 +183,7 @@ export default {
 					this.$refs.donorsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Donor) ${e}`, "is-danger");
+				Notification(`Donor ${e}`, "is-danger");
 			});
 		},
 
@@ -195,7 +195,7 @@ export default {
 						this.$refs.donorsList.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Donor) ${e}`, "is-danger");
+					Notification(`Donor ${e}`, "is-danger");
 				});
 		},
 	},

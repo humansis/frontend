@@ -36,7 +36,7 @@
 
 <script>
 import UsersService from "@/services/UsersService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import UserForm from "@/components/AdministrativeSettings/UserForm";
 import Modal from "@/components/Modal";
 import UsersList from "@/components/AdministrativeSettings/UsersList";
@@ -208,7 +208,7 @@ export default {
 					this.$refs.usersList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(User) ${e}`, "is-danger");
+				Notification(`User ${e}`, "is-danger");
 			});
 		},
 
@@ -219,7 +219,7 @@ export default {
 					this.$refs.usersList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(User) ${e}`, "is-danger");
+				Notification(`User ${e}`, "is-danger");
 			});
 		},
 
@@ -230,7 +230,7 @@ export default {
 					this.$refs.usersList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(User) ${e}`, "is-danger");
+				Notification(`User ${e}`, "is-danger");
 			});
 		},
 	},

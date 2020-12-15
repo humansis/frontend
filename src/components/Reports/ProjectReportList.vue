@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
@@ -118,7 +118,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Project Reports) ${e}`, "is-danger");
+				Notification(`Project Reports ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

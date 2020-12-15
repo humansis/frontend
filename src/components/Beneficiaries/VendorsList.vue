@@ -57,7 +57,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -120,7 +120,7 @@ export default {
 					this.table.total = response.totalCount;
 				});
 			}).catch((e) => {
-				Toast(`(Vendors) ${e}`, "is-danger");
+				Notification(`Vendors ${e}`, "is-danger");
 			});
 			// TODO Edit - Loading closes after loads data and must wait for locations
 			this.isLoadingList = false;
@@ -138,7 +138,7 @@ export default {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
 						}).catch((e) => {
-							Toast(`(Adm4) ${e}`, "is-danger");
+							Notification(`Adm4 ${e}`, "is-danger");
 						});
 				} else if (vendor.adm3Id) {
 					LocationsService.getDetailOfAdm3(vendor.adm3Id)
@@ -146,7 +146,7 @@ export default {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
 						}).catch((e) => {
-							Toast(`(Adm3) ${e}`, "is-danger");
+							Notification(`Adm3 ${e}`, "is-danger");
 						});
 				} else if (vendor.adm2Id) {
 					LocationsService.getDetailOfAdm2(vendor.adm2Id)
@@ -154,7 +154,7 @@ export default {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
 						}).catch((e) => {
-							Toast(`(Adm2) ${e}`, "is-danger");
+							Notification(`Adm2 ${e}`, "is-danger");
 						});
 				} else if (vendor.adm1Id) {
 					LocationsService.getDetailOfAdm1(vendor.adm1Id)
@@ -162,7 +162,7 @@ export default {
 							preparedVendor.location = response.data.name;
 							preparedVendors.push(preparedVendor);
 						}).catch((e) => {
-							Toast(`(Adm1) ${e}`, "is-danger");
+							Notification(`Adm1 ${e}`, "is-danger");
 						});
 				}
 			});

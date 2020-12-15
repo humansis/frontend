@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI.js";
+import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import ProjectsService from "@/services/ProjectsService";
 import Modal from "@/components/Modal";
@@ -218,7 +218,7 @@ export default {
 					this.$refs.projectList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Project) ${e}`, "is-danger");
+				Notification(`Project ${e}`, "is-danger");
 			});
 		},
 
@@ -229,7 +229,7 @@ export default {
 					this.$refs.projectList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Project) ${e}`, "is-danger");
+				Notification(`Project ${e}`, "is-danger");
 			});
 		},
 
@@ -240,7 +240,7 @@ export default {
 					this.$refs.projectList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Project) ${e}`, "is-danger");
+				Notification(`Project ${e}`, "is-danger");
 			});
 		},
 	},

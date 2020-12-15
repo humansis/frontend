@@ -146,7 +146,7 @@ import Validation from "@/mixins/validation";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "userForm",
@@ -248,7 +248,7 @@ export default {
 				.then((response) => {
 					this.projects = response.data;
 				}).catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
+					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 
@@ -257,7 +257,7 @@ export default {
 				.then((response) => {
 					this.countries = response.data;
 				}).catch((e) => {
-					Toast(`(Countries) ${e}`, "is-danger");
+					Notification(`Countries ${e}`, "is-danger");
 				});
 		},
 
@@ -266,7 +266,7 @@ export default {
 				.then((response) => {
 					this.organizations = response.data;
 				}).catch((e) => {
-					Toast(`(Organizations) ${e}`, "is-danger");
+					Notification(`Organizations ${e}`, "is-danger");
 				});
 		},
 

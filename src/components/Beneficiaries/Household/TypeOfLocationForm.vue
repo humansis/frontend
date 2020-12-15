@@ -63,7 +63,7 @@
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -91,7 +91,7 @@ export default {
 			await BeneficiariesService.getListOfLocationsTypes()
 				.then((result) => { this.options.typeOfLocation = result.data; })
 				.catch((e) => {
-					Toast(`(Location Types) ${e}`, "is-danger");
+					Notification(`Location Types ${e}`, "is-danger");
 				});
 		},
 

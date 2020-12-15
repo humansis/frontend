@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
@@ -226,7 +226,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Households) ${e}`, "is-danger");
+				Notification(`Households ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

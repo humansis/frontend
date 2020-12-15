@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
@@ -217,7 +217,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Households) ${e}`, "is-danger");
+				Notification(`Households ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -254,7 +254,7 @@ export default {
 					this.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Household) ${e}`, "is-danger");
+				Notification(`Household ${e}`, "is-danger");
 			});
 		},
 

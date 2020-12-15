@@ -32,7 +32,7 @@ import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import VoucherService from "@/services/VoucherService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -90,7 +90,7 @@ export default {
 				.then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-				}).catch((e) => { Toast(e, "is-danger"); });
+				}).catch((e) => { Notification(e, "is-danger"); });
 
 			this.isLoadingList = false;
 		},

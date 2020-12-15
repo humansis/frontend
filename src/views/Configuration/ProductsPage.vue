@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import ProductsService from "@/services/ProductsService";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
@@ -174,7 +174,7 @@ export default {
 					this.$refs.productsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Product) ${e}`, "is-danger");
+				Notification(`Product ${e}`, "is-danger");
 			});
 		},
 
@@ -186,7 +186,7 @@ export default {
 					this.$refs.productsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Product) ${e}`, "is-danger");
+				Notification(`Product ${e}`, "is-danger");
 			});
 		},
 
@@ -197,7 +197,7 @@ export default {
 					this.$refs.productsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Product) ${e}`, "is-danger");
+				Notification(`Product ${e}`, "is-danger");
 			});
 		},
 	},

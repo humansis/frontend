@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -189,7 +189,7 @@ export default {
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Projects) ${e}`, "is-danger");
+					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 
@@ -200,7 +200,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Provinces) ${e}`, "is-danger");
+					Notification(`Provinces ${e}`, "is-danger");
 				});
 		},
 
@@ -212,7 +212,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Districts) ${e}`, "is-danger");
+					Notification(`Districts ${e}`, "is-danger");
 				});
 		},
 
@@ -224,7 +224,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Communes) ${e}`, "is-danger");
+					Notification(`Communes ${e}`, "is-danger");
 				});
 		},
 
@@ -236,7 +236,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Villages) ${e}`, "is-danger");
+					Notification(`Villages ${e}`, "is-danger");
 				});
 		},
 
@@ -247,7 +247,7 @@ export default {
 					this.filtersOptions.livelihoods.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Livelihoods) ${e}`, "is-danger");
+					Notification(`Livelihoods ${e}`, "is-danger");
 				});
 		},
 
@@ -258,7 +258,7 @@ export default {
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Vulnerability) ${e}`, "is-danger");
+					Notification(`Vulnerability ${e}`, "is-danger");
 				});
 		},
 
@@ -269,7 +269,7 @@ export default {
 					this.filtersOptions.residencies.loading = false;
 				})
 				.catch((e) => {
-					Toast(`(Residence Status) ${e}`, "is-danger");
+					Notification(`Residence Status ${e}`, "is-danger");
 				});
 		},
 	},

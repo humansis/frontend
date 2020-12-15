@@ -84,7 +84,7 @@ import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "AddAssistanceUpdate",
@@ -117,7 +117,7 @@ export default {
 					this.$router.go(-1);
 				}
 			}).catch((e) => {
-				Toast(`(Assistance) ${e}`, "is-danger");
+				Notification(`Assistance ${e}`, "is-danger");
 			});
 		},
 	},

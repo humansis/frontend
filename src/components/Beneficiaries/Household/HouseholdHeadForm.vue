@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 
@@ -266,7 +266,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then((response) => { this.idType = response.data; })
 				.catch((e) => {
-					Toast(`(National IDs) ${e}`, "is-danger");
+					Notification(`National IDs ${e}`, "is-danger");
 				});
 		},
 

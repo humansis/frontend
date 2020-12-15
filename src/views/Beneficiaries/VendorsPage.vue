@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsService from "@/services/VendorsService";
 import Modal from "@/components/Modal";
@@ -217,7 +217,7 @@ export default {
 					this.$refs.vendorsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Vendor) ${e}`, "is-danger");
+				Notification(`Vendor ${e}`, "is-danger");
 			});
 		},
 
@@ -228,7 +228,7 @@ export default {
 					this.$refs.vendorsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Vendor) ${e}`, "is-danger");
+				Notification(`Vendor ${e}`, "is-danger");
 			});
 		},
 
@@ -239,7 +239,7 @@ export default {
 					this.$refs.vendorsList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Vendor) ${e}`, "is-danger");
+				Notification(`Vendor ${e}`, "is-danger");
 			});
 		},
 	},

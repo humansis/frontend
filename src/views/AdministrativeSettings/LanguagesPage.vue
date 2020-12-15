@@ -34,7 +34,7 @@
 
 <script>
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import LanguagesForm from "@/components/AdministrativeSettings/LanguagesForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
@@ -140,7 +140,7 @@ export default {
 						this.$refs.languagesList.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Language) ${e}`, "is-danger");
+					Notification(`Language ${e}`, "is-danger");
 				});
 		},
 	},

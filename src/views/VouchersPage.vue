@@ -42,7 +42,7 @@
 <script>
 import BookletsService from "@/services/BookletsService";
 import VoucherForm from "@/components/Voucher/VoucherForm";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import VoucherList from "@/components/Voucher/VoucherList";
 import BatchList from "@/components/Voucher/BatchList";
@@ -181,7 +181,7 @@ export default {
 					this.$refs.voucherList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Booklet) ${e}`, "is-danger");
+				Notification(`Booklet ${e}`, "is-danger");
 			});
 		},
 
@@ -192,7 +192,7 @@ export default {
 					this.$refs.voucherList.fetchData();
 				}
 			}).catch((e) => {
-				Toast(`(Booklet) ${e}`, "is-danger");
+				Notification(`Booklet ${e}`, "is-danger");
 			});
 		},
 	},

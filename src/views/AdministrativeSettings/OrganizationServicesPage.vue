@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
@@ -130,7 +130,7 @@ export default {
 						this.$refs.organizationServicesList.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`(Organization) ${e}`, "is-danger");
+					Notification(`Organization ${e}`, "is-danger");
 				});
 		},
 	},

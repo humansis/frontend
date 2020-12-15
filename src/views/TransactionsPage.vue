@@ -49,7 +49,7 @@
 import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import TransactionService from "@/services/TransactionService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
@@ -122,7 +122,7 @@ export default {
 					this.table.visibleColumns,
 				);
 			}).catch((e) => {
-				Toast(`(Transactions) ${e}`, "is-danger");
+				Notification(`Transactions ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

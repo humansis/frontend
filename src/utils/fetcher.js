@@ -3,6 +3,19 @@ import CONST from "@/const";
 
 import state from "@/store/state";
 
+async function getErrorsFromResponse(data) {
+	let errors = "";
+
+	if (data.errors && data.errors.length) {
+		data.errors.forEach((error) => {
+			errors += `${error.message} (${error.source}), `;
+		});
+	}
+
+	return errors || "Something went wrong";
+}
+
+// TODO Correct process of response
 export const getResponseJSON = async (response) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
@@ -35,7 +48,7 @@ export const getResponseJSON = async (response) => {
 		return { data, status: response.status };
 	}
 
-	throw new Error(data.error.exception.pop().message || response.statusText || "Something went wrong");
+	throw new Error(await getErrorsFromResponse(data));
 };
 
 async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
