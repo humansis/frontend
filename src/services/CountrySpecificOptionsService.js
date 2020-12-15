@@ -3,10 +3,12 @@ import { fetcher } from "@/utils/fetcher";
 export default {
 	async getListOfCountrySpecificOptions(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `country-specifics?page=${page}&size=${size + sortText + fulltext}`,
+			uri: `country-specifics?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -18,6 +20,13 @@ export default {
 		return { data, status };
 	},
 
+	async updateCountrySpecificOption(id, body) {
+		const { data, status } = await fetcher({
+			uri: `country-specifics/${id}`, method: "PUT", body,
+		});
+		return { data, status };
+	},
+
 	async getDetailOfCountrySpecificOption(id) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `country-specifics/${id}`,
@@ -25,7 +34,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async deleteCountryOption(id) {
+	async deleteCountrySpecificOption(id) {
 		const { data, status } = await fetcher({
 			uri: `country-specifics/${id}`, method: "DELETE",
 		});
