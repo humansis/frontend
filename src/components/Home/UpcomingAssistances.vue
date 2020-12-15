@@ -1,5 +1,17 @@
 <template>
 	<div>
+		<Modal
+			can-cancel
+			header="Assistance Detail"
+			:active="assistanceModal.isOpened"
+			@close="closeAssistanceModal"
+		>
+			<AssistanceForm
+				close-button
+				:formModel="assistanceModel"
+				@formClosed="closeAssistanceModal"
+			/>
+		</Modal>
 		<h2 class="title">Upcoming assistances</h2>
 		<Table
 			ref="table"
@@ -7,7 +19,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
-			@clicked="goToDetail"
+			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -23,23 +35,31 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
-import AssistancesService from "@/services/AssistancesService";
-import Table from "@/components/DataGrid/Table";
 import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import Table from "@/components/DataGrid/Table";
+import Modal from "@/components/Modal";
+import AssistancesService from "@/services/AssistancesService";
+import AssistanceForm from "@/components/Assistance/AssistanceForm";
 
 export default {
 	name: "UpcomingAssistances",
 
 	components: {
+		AssistanceForm,
 		Table,
+		Modal,
 	},
 
 	mixins: [grid],
 
 	data() {
 		return {
+			assistanceModal: {
+				isOpened: false,
+			},
+			assistanceModel: {},
 			table: {
 				data: [],
 				columns: [],
@@ -105,8 +125,14 @@ export default {
 			loadingComponent.close();
 		},
 
-		goToDetail() {
-			// TODO go to detail
+		closeAssistanceModal() {
+			this.assistanceModal.isOpened = false;
+		},
+
+		showDetail(model) {
+			// TODO Fix with connect locations
+			this.assistanceModel = model;
+			this.assistanceModal.isOpened = true;
 		},
 	},
 };

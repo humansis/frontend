@@ -25,6 +25,7 @@
 			:per-page="perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
+			:loading="isLoading"
 			@cellclick="onClick"
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
@@ -48,6 +49,10 @@ export default {
 			default: true,
 		},
 		checkable: {
+			type: Boolean,
+			default: false,
+		},
+		isLoading: {
 			type: Boolean,
 			default: false,
 		},

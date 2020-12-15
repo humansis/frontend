@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="title">Transactions</h2>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 			<div class="column">
 				<button
 					class="button"
@@ -30,6 +30,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -48,10 +49,11 @@
 import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 import TransactionService from "@/services/TransactionService";
-import TransactionFilter from "@/components/Transactions/TransactionFilter";
 import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
 import grid from "@/mixins/grid";
+
+const TransactionFilter = () => import("@/components/Transactions/TransactionFilter");
 
 export default {
 	name: "TransactionsPage",
@@ -104,9 +106,8 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
-			this.searchPhrase = value;
-			this.$store.commit("loading", true);
+		async fetchData() {
+			this.isLoadingList = true;
 
 			await TransactionService.getListOfTransactions(
 				this.table.currentPage,
@@ -124,7 +125,7 @@ export default {
 				Toast(`(Transactions) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		filtersToggle() {
@@ -139,11 +140,11 @@ export default {
 						this.filters[key].push(value.id);
 					});
 				} else if (selectedFilters[key]) {
-					const date = new Date(selectedFilters[key]);
-					this.filters[key] = [`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`];
+					const date = this.$moment(selectedFilters[key]);
+					this.filters[key] = [date.format("YYYY-MM-DD")];
 				}
 			});
-			await this.fetchData(this.searchPhrase);
+			await this.fetchData();
 		},
 	},
 };

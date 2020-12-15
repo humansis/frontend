@@ -1,10 +1,10 @@
 // TODO implement after we know this data
 export default {
-	async getListOfDistributionReports() {
+	async getListOfAssistanceReports() {
 		return {
 			totalCount: 0,
 			data: [{
-				name: "DistributionReport",
+				name: "AssistanceReport",
 			}],
 		};
 	},

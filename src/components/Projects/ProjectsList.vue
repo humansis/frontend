@@ -1,13 +1,14 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchProjects" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
 		<Table
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -56,10 +57,7 @@
 import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import AssistancesService from "@/services/AssistancesService";
 import ProjectsService from "@/services/ProjectsService";
-import HomeService from "@/services/HomeService";
-import SectorsService from "@/services/SectorsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -91,7 +89,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "name", width: "434", sortable: true },
-					{ key: "donorIds", type: "count", width: "100" },
+					{ key: "donorIds", label: "Donors", type: "count", width: "100" },
 					{ key: "startDate", type: "date", width: "120", sortable: true },
 					{ key: "endDate", type: "date", width: "120", sortable: true },
 					{ key: "target", width: "90" },
@@ -102,6 +100,7 @@ export default {
 				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
+				searchPhrase: "",
 			},
 		};
 	},
@@ -116,35 +115,13 @@ export default {
 
 	methods: {
 		async fetchData() {
-			await this.fetchProjects();
-
-			await SectorsService.getListOfSectors().then((response) => {
-				this.projectModel.sectors = response.data;
-			}).catch((e) => {
-				Toast(`(Sectors) ${e}`, "is-danger");
-			});
-
-			await HomeService.getListOfDonors().then((response) => {
-				this.projectModel.donors = response.data;
-			}).catch((e) => {
-				Toast(`(Donors) ${e}`, "is-danger");
-			});
-
-			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
-				this.projectModel.targetTypes = response.data;
-			}).catch((e) => {
-				Toast(`(Target Types) ${e}`, "is-danger");
-			});
-		},
-
-		async fetchProjects(value) {
-			this.$store.commit("loading", true);
+			this.isLoadingList = true;
 
 			await ProjectsService.getListOfProjects(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				value,
+				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -153,7 +130,7 @@ export default {
 				Toast(`(Projects) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		mapToFormModel({

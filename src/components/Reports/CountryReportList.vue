@@ -9,6 +9,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -85,7 +86,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
+			this.isLoadingList = true;
 
 			await CountryReportService.getListOfCountryReports(
 				this.table.currentPage,
@@ -103,7 +104,7 @@ export default {
 				Toast(`(Country Reports) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		goToDetail() {

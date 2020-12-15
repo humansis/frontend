@@ -2,7 +2,7 @@
 	<div>
 		<div>
 			<b-button
-				class="mx-2"
+				class="m-2"
 				:active="selectedPeriod === 'year'"
 				@click="selectPeriod('year')"
 			>
@@ -10,7 +10,7 @@
 			</b-button>
 
 			<b-button
-				class="mx-2"
+				class="m-2"
 				:active="selectedPeriod === 'quarter'"
 				@click="selectPeriod('quarter')"
 			>
@@ -18,14 +18,14 @@
 			</b-button>
 
 			<b-button
-				class="mx-2"
+				class="m-2"
 				:active="selectedPeriod === 'month'"
 				@click="selectPeriod('month')"
 			>
 				Per Month
 			</b-button>
 
-			<b-button class="mx-2" @click="showChoosePeriod">
+			<b-button class="m-2" @click="showChoosePeriod">
 				Choose Period
 			</b-button>
 		</div>

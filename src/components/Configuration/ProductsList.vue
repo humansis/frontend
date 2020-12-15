@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 			<ExportButton
 				class="column"
 				type="is-success"
@@ -15,6 +15,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -99,6 +100,7 @@ export default {
 				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
+				searchPhrase: "",
 			},
 		};
 	},
@@ -126,14 +128,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
-			this.$store.commit("loading", true);
+		async fetchData() {
+			this.isLoadingList = true;
 
 			await ProductsService.getListOfProducts(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				value,
+				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -144,7 +146,7 @@ export default {
 				Toast(`(Products) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		showDetailWithId(id) {

@@ -123,7 +123,6 @@ export default {
 	},
 
 	updated() {
-		// TODO Emit only if table data length > 0
 		if (this.groups.length > 0) {
 			this.$emit("updatedData", this.groups, this.minimumSelectionScore);
 		}
@@ -163,7 +162,6 @@ export default {
 
 		showDetail(criteria) {
 			// TODO rename attribs
-			console.log(criteria);
 			this.criteriaGroupData = criteria;
 			this.detailModal.isOpened = true;
 		},

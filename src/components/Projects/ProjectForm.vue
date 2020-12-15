@@ -37,7 +37,7 @@
 					track-by="value"
 					multiple
 					:disabled="formDisabled"
-					:options="formModel.sectors"
+					:options="options.sectors"
 					@select="validate('selectedSectors')"
 				>
 					<template
@@ -95,7 +95,7 @@
 					track-by="id"
 					multiple
 					:disabled="formDisabled"
-					:options="formModel.donors"
+					:options="options.donors"
 					@select="validate('selectedDonors')"
 				>
 					<template
@@ -116,7 +116,7 @@
 					v-model="formModel.selectedTargetType"
 					label="code"
 					track-by="value"
-					:options="formModel.targetTypes"
+					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
 					@select="validate('selectedTargetType')"
@@ -159,8 +159,12 @@
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import { required, minLength } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import SectorsService from "@/services/SectorsService";
+import DonorsService from "@/services/DonorsService";
+import AssistancesService from "@/services/AssistancesService";
 
 export default {
 	name: "ProjectForm",
@@ -174,6 +178,16 @@ export default {
 		formDisabled: Boolean,
 	},
 
+	data() {
+		return {
+			options: {
+				sectors: [],
+				donors: [],
+				targetTypes: [],
+			},
+		};
+	},
+
 	validations: {
 		formModel: {
 			name: { required },
@@ -185,6 +199,12 @@ export default {
 			selectedTargetType: { required },
 			totalTarget: { required, minLength: minLength(0) },
 		},
+	},
+
+	mounted() {
+		this.fetchSectors();
+		this.fetchDonors();
+		this.fetchTargetTypes();
 	},
 
 	methods: {
@@ -203,6 +223,30 @@ export default {
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
+		},
+
+		async fetchSectors() {
+			await SectorsService.getListOfSectors().then((response) => {
+				this.options.sectors = response.data;
+			}).catch((e) => {
+				Toast(`(Sectors) ${e}`, "is-danger");
+			});
+		},
+
+		async fetchDonors() {
+			await DonorsService.getListOfDonors().then((response) => {
+				this.options.donors = response.data;
+			}).catch((e) => {
+				Toast(`(Donors) ${e}`, "is-danger");
+			});
+		},
+
+		async fetchTargetTypes() {
+			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
+				this.options.targetTypes = response.data;
+			}).catch((e) => {
+				Toast(`(Target Types) ${e}`, "is-danger");
+			});
 		},
 	},
 };

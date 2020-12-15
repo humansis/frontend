@@ -4,6 +4,7 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:per-page="table.perPage"
+		:is-loading="isLoadingList"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
@@ -106,7 +107,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
+			this.isLoadingList = true;
 
 			await CountriesService.getListOfCountries(
 				this.table.currentPage,
@@ -122,7 +123,7 @@ export default {
 				Toast(`(Countries) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		showDetailWithId(id) {

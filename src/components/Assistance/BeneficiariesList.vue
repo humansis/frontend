@@ -60,13 +60,14 @@
 			/>
 		</div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
 		<Table
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -176,6 +177,7 @@ export default {
 				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
+				searchPhrase: "",
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -210,15 +212,15 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
-			this.$store.commit("loading", true);
+		async fetchData() {
+			this.isLoadingList = true;
 
 			// TODO Get list of households by assistance id
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				value,
+				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
@@ -229,7 +231,7 @@ export default {
 				Toast(`(Households) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		exportAssistance(format) {

@@ -7,21 +7,21 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Sectors</p>
-					<p class="title">{{ projectSummary.sectorIds.length }}</p>
+					<p class="title">{{ projectSummary.sectors.length }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Start Date</p>
-					<p class="title">{{ projectSummary.startDate }}</p>
+					<p class="title">{{ $moment(projectSummary.startDate).format("DD-MM-YYYY") }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">End Date</p>
-					<p class="title">{{ projectSummary.endDate }}</p>
+					<p class="title">{{ $moment(projectSummary.endDate).format("DD-MM-YYYY") }}</p>
 				</div>
 			</div>
 
@@ -80,17 +80,11 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.projectSummary,
-			});
-
 			await ProjectsService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then((response) => {
 				this.projectSummary = response.data;
 			}).catch((e) => { Toast(e, "is-danger"); });
-
-			loadingComponent.close();
 		},
 	},
 };

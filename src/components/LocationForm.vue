@@ -10,6 +10,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="provinces"
 				@select="onProvinceSelect"
@@ -25,6 +26,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="districts"
 				@select="onDistrictSelect"
@@ -40,6 +42,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="communes"
 				@select="onCommuneSelect"
@@ -55,6 +58,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="villages"
 				@select="validate('adm4Id')"
@@ -85,6 +89,10 @@ export default {
 			districts: [],
 			communes: [],
 			villages: [],
+			provincesLoading: false,
+			districtsLoading: false,
+			communesLoading: false,
+			villagesLoading: false,
 		};
 	},
 
@@ -123,35 +131,43 @@ export default {
 		},
 
 		fetchProvinces() {
+			this.provincesLoading = true;
 			LocationsService.getListOfAdm1()
 				.then((result) => { this.provinces = result.data; })
 				.catch((e) => {
 					Toast(`(Adm1) ${e}`, "is-danger");
 				});
+			this.provincesLoading = false;
 		},
 
 		fetchDistricts(adm1Id) {
+			this.districtsLoading = true;
 			LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.districts = result.data; })
 				.catch((e) => {
 					Toast(`(Adm2) ${e}`, "is-danger");
 				});
+			this.districtsLoading = false;
 		},
 
 		fetchCommunes(adm2Id) {
+			this.communesLoading = true;
 			LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.communes = result.data; })
 				.catch((e) => {
 					Toast(`(Adm3) ${e}`, "is-danger");
 				});
+			this.communesLoading = false;
 		},
 
 		fetchVillages(adm3Id) {
+			this.villagesLoading = true;
 			LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.villages = result.data; })
 				.catch((e) => {
 					Toast(`(Adm4) ${e}`, "is-danger");
 				});
+			this.villagesLoading = false;
 		},
 	},
 };

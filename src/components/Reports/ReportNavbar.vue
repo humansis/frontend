@@ -7,7 +7,7 @@
 			@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
 		/>
 		<ExportButton
-			class="column"
+			class="column m-2"
 			type="is-success"
 			size="is-default"
 			space-between

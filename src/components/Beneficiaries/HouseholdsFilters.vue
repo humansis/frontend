@@ -1,5 +1,5 @@
 <template>
-	<div class="mb-5">
+	<div class="mb-5 box">
 		<div class="columns is-multiline">
 			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column is-half">
 				<b-field :label="options.name">
@@ -10,6 +10,7 @@
 						:track-by="options.trackBy || 'code'"
 						:multiple="options.multiple"
 						:placeholder="options.placeholder || 'Select ...'"
+						:loading="options.loading"
 						:options="options.data"
 						@input="filterChanged(filter)"
 					>
@@ -56,12 +57,14 @@ export default {
 					multiple: true,
 					trackBy: "id",
 					label: "name",
+					loading: true,
 					data: [],
 				},
 				vulnerabilities: {
 					name: "Vulnerability",
 					placeholder: "Select Vulnerability",
 					multiple: true,
+					loading: true,
 					data: [],
 				},
 				gender: {
@@ -72,31 +75,19 @@ export default {
 						{ code: "F", value: "Female" },
 					],
 				},
-				// TODO get from api
 				residencies: {
 					name: "Residence Status",
 					placeholder: "Select Residence",
 					multiple: true,
-					data: [
-						{
-							code: "refugee",
-							value: "Refugee",
-						},
-						{
-							code: "idp",
-							value: "IDP",
-						},
-						{
-							code: "resident",
-							value: "Resident",
-						},
-					],
+					loading: true,
+					data: [],
 				},
 				// TODO get from api
 				referrals: {
 					name: "Referral",
 					placeholder: "Select Referral",
 					multiple: true,
+					loading: true,
 					data: [
 						{
 							code: "health",
@@ -124,6 +115,7 @@ export default {
 					name: "Livelihood",
 					placeholder: "Select Livelihood",
 					multiple: true,
+					loading: true,
 					data: [],
 				},
 				adm1: {
@@ -131,6 +123,7 @@ export default {
 					placeholder: "Select Province",
 					trackBy: "id",
 					label: "name",
+					loading: true,
 					data: [],
 				},
 				adm2: {
@@ -171,12 +164,18 @@ export default {
 			switch (filter) {
 				case "adm1":
 					this.fetchDistricts(this.selectedFiltersOptions[filter].id);
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
 					break;
 				case "adm2":
 					this.fetchCommunes(this.selectedFiltersOptions[filter].id);
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
 					break;
 				case "adm3":
 					this.fetchVillages(this.selectedFiltersOptions[filter].id);
+					this.selectedFiltersOptions.adm4 = null;
 					break;
 				default: break;
 			}
@@ -185,7 +184,10 @@ export default {
 
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
-				.then((response) => { this.filtersOptions.projects.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.projects.data = response.data;
+					this.filtersOptions.projects.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Projects) ${e}`, "is-danger");
 				});
@@ -193,31 +195,46 @@ export default {
 
 		async fetchProvinces() {
 			await LocationsService.getListOfAdm1()
-				.then((response) => { this.filtersOptions.adm1.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.adm1.data = response.data;
+					this.filtersOptions.adm1.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Provinces) ${e}`, "is-danger");
 				});
 		},
 
 		async fetchDistricts(id) {
+			this.filtersOptions.adm2.loading = true;
 			await LocationsService.getListOfAdm2(id)
-				.then((response) => { this.filtersOptions.adm2.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.adm2.data = response.data;
+					this.filtersOptions.adm2.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Districts) ${e}`, "is-danger");
 				});
 		},
 
 		async fetchCommunes(id) {
+			this.filtersOptions.adm3.loading = true;
 			await LocationsService.getListOfAdm3(id)
-				.then((response) => { this.filtersOptions.adm3.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.adm3.data = response.data;
+					this.filtersOptions.adm3.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Communes) ${e}`, "is-danger");
 				});
 		},
 
 		async fetchVillages(id) {
+			this.filtersOptions.adm4.loading = true;
 			await LocationsService.getListOfAdm4(id)
-				.then((response) => { this.filtersOptions.adm4.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.adm4.data = response.data;
+					this.filtersOptions.adm4.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Villages) ${e}`, "is-danger");
 				});
@@ -225,7 +242,10 @@ export default {
 
 		async fetchLivelihoods() {
 			await BeneficiariesService.getListOfLivelihoods()
-				.then((response) => { this.filtersOptions.livelihoods.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.livelihoods.data = response.data;
+					this.filtersOptions.livelihoods.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Livelihoods) ${e}`, "is-danger");
 				});
@@ -233,7 +253,10 @@ export default {
 
 		async fetchVulnerabilities() {
 			await BeneficiariesService.getListOfVulnerabilities()
-				.then((response) => { this.filtersOptions.vulnerabilities.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.vulnerabilities.data = response.data;
+					this.filtersOptions.vulnerabilities.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Vulnerability) ${e}`, "is-danger");
 				});
@@ -241,7 +264,10 @@ export default {
 
 		async fetchResidenceStatuses() {
 			await BeneficiariesService.getListOfResidenceStatuses()
-				.then((response) => { this.filtersOptions.residencies.data = response.data; })
+				.then((response) => {
+					this.filtersOptions.residencies.data = response.data;
+					this.filtersOptions.residencies.loading = false;
+				})
 				.catch((e) => {
 					Toast(`(Residence Status) ${e}`, "is-danger");
 				});

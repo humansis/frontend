@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<b-tabs size="is-medium">
+		<b-tabs v-model="selectedTab" size="is-medium">
 			<b-tab-item
 				label="Country Report"
 				icon="th-large"
@@ -11,22 +11,25 @@
 				label="Project Report"
 				icon="clipboard"
 			>
-				<ProjectReportList />
+				<ProjectReportList :projects="projects" />
 			</b-tab-item>
 			<b-tab-item
-				label="Distribution Report"
+				label="Assistance Report"
 				icon="box"
 			>
-				<DistributionReportList />
+				<AssistanceReportList :projects="projects" />
 			</b-tab-item>
 		</b-tabs>
 	</div>
 </template>
 
 <script>
+import { Toast } from "@/utils/UI";
 import CountryReportList from "@/components/Reports/CountryReportList";
-import ProjectReportList from "@/components/Reports/ProjectReportList";
-import DistributionReportList from "@/components/Reports/DistributionReportList";
+import ProjectsService from "@/services/ProjectsService";
+
+const ProjectReportList = () => import("@/components/Reports/ProjectReportList");
+const AssistanceReportList = () => import("@/components/Reports/AssistanceReportList");
 
 export default {
 	name: "ReportsPage",
@@ -34,13 +37,27 @@ export default {
 	components: {
 		CountryReportList,
 		ProjectReportList,
-		DistributionReportList,
+		AssistanceReportList,
+	},
+
+	mounted() {
+		this.fetchProjects();
 	},
 
 	data() {
 		return {
-			selectedTab: CountryReportList,
+			selectedTab: 0,
+			projects: [],
 		};
+	},
+
+	methods: {
+		async fetchProjects() {
+			await ProjectsService.getListOfProjects()
+				.then((response) => { this.projects = response.data; }).catch((e) => {
+					Toast(`(Projects) ${e}`, "is-danger");
+				});
+		},
 	},
 
 };

@@ -5,6 +5,7 @@
 			placeholder="Search..."
 			type="search"
 			icon="search"
+			:loading="loading"
 			@keypress.enter.native="onSearch"
 		/>
 	</b-field>
@@ -18,6 +19,7 @@ export default {
 		return {
 			value: "",
 			timer: null,
+			loading: false,
 		};
 	},
 
@@ -30,11 +32,14 @@ export default {
 	methods: {
 		onSearch(event) {
 			clearTimeout(this.timer);
+			this.loading = true;
 			if (event) {
 				this.$emit("search", this.value);
+				this.loading = false;
 			} else {
 				this.timer = setTimeout(() => {
 					this.$emit("search", this.value);
+					this.loading = false;
 				}, 1000);
 			}
 		},

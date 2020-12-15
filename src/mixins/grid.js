@@ -1,4 +1,10 @@
 export default {
+	data() {
+		return {
+			isLoadingList: false,
+		};
+	},
+
 	methods: {
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
@@ -12,6 +18,11 @@ export default {
 				this.table.sortColumn = column;
 				this.table.sortDirection = "desc";
 			}
+			this.fetchData();
+		},
+
+		onSearch(value) {
+			this.searchPhrase = value;
 			this.fetchData();
 		},
 	},

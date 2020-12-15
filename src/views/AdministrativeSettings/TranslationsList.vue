@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 			<div class="column is-pulled-right">
 				<b-field>
 					<b-button
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+// TODO Fix translations and check all functionalities in table
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
@@ -108,6 +109,7 @@ export default {
 				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
+				searchPhrase: "",
 			},
 		};
 	},
@@ -121,14 +123,14 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
+		async fetchData() {
 			this.$store.commit("loading", true);
 
 			await TranslationService.getTranslations(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				value,
+				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;

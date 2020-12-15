@@ -60,16 +60,18 @@
 				@exportData="exportHousehold"
 			/>
 		</div>
-		<HouseholdsFilters
-			v-if="advancedSearchVisible"
-			@filtersChanged="onFiltersChange"
-		/>
+		<b-collapse v-model="advancedSearchVisible">
+			<HouseholdsFilters
+				@filtersChanged="onFiltersChange"
+			/>
+		</b-collapse>
 		<Table
 			ref="householdList"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			checkable
 			paginated
 			@clicked="goToSummaryDetail"
@@ -119,11 +121,12 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import HouseholdsFilters from "@/components/Beneficiaries/HouseholdsFilters";
 import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
 import SafeDelete from "@/components/SafeDelete";
+
+const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
 export default {
 	name: "HouseholdPage",
@@ -201,7 +204,7 @@ export default {
 		async fetchData(value) {
 			this.searchPhrase = value;
 
-			this.$store.commit("loading", true);
+			this.isLoadingList = true;
 
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
@@ -219,7 +222,7 @@ export default {
 				Toast(`(Households) ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.isLoadingList = false;
 		},
 
 		goToCreatePage() {

@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
 		<b-collapse
 			v-for="(batch, index) of getBatches"
@@ -74,6 +74,7 @@ import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "BatchList",
@@ -84,6 +85,8 @@ export default {
 		Table,
 		ActionButton,
 	},
+
+	mixins: [grid],
 
 	data() {
 		return {
@@ -107,6 +110,7 @@ export default {
 				total: 0,
 				currentPage: 1,
 				perPage: 15,
+				searchPhrase: "",
 			},
 		};
 	},
@@ -153,7 +157,7 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
+		async fetchData() {
 			try {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
@@ -162,7 +166,7 @@ export default {
 					this.table.currentPage,
 					this.table.perPage,
 					"desc",
-					value,
+					this.table.searchPhrase,
 				).then((response) => {
 					this.getProjectNameForBooklets(response.data).then((data) => {
 						this.table.data = data;
