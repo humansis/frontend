@@ -15,6 +15,7 @@ async function getErrorsFromResponse(data) {
 	return errors || "Something went wrong";
 }
 
+// TODO Correct process of response
 export const getResponseJSON = async (response) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
