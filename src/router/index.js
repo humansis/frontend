@@ -185,8 +185,8 @@ const routes = [
 					},
 					{
 						path: "country-specifics",
-						name: "CountrySpecifics",
-						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecifics" */ "@/views/Configuration/CountrySpecificsPage"),
+						name: "CountrySpecificOptions",
+						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptionPage"),
 						meta: {
 							breadcrumb: "Country Specifics",
 						},

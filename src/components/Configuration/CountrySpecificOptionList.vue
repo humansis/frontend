@@ -38,9 +38,14 @@
 						type="is-info"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
+					<ActionButton
+						icon="edit"
+						type="is-link"
+						@click.native="showEdit(props.row.id)"
+					/>
 					<SafeDelete
 						icon="trash"
-						entity="Country Specifics"
+						entity="Country Specific Option"
 						:id="props.row.id"
 						@submitted="onRemove"
 					/>
@@ -125,12 +130,17 @@ export default {
 		},
 
 		showDetailWithId(id) {
-			const countrySpecifics = this.table.data.find((item) => item.id === id);
-			this.showDetail(countrySpecifics);
+			const countrySpecificOption = this.table.data.find((item) => item.id === id);
+			this.showDetail(countrySpecificOption);
 		},
 
-		showDetail(countrySpecifics) {
-			this.$emit("onShowDetail", countrySpecifics);
+		showEdit(id) {
+			const countrySpecificOption = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowEdit", countrySpecificOption);
+		},
+
+		showDetail(countrySpecificOption) {
+			this.$emit("onShowDetail", countrySpecificOption);
 		},
 
 		onRemove(id) {
