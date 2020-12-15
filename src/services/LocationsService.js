@@ -42,26 +42,7 @@ export default {
 	},
 
 	async getListOfCountries() {
-		// const { data: { data, totalCount } } = await fetcher({ uri: "countries" });
-		const data = [
-			{
-				currency: "CZK",
-				iso3: "KHM",
-			},
-			{
-				currency: "CZK",
-				iso3: "SYR",
-			},
-			{
-				currency: "CZK",
-				iso3: "UKR",
-			},
-			{
-				currency: "CZK",
-				iso3: "ETH",
-			},
-		];
-		const totalCount = 4;
+		const { data: { data, totalCount } } = await fetcher({ uri: "countries" });
 		return { data, totalCount };
 	},
 

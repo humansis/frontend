@@ -30,6 +30,12 @@ export default {
 					countryFlag: "ukr",
 					availableCurrencies: ["RUB", "EUR"],
 				},
+				{
+					name: "Ethiopia",
+					iso3: "ETH",
+					countryFlag: "eth",
+					availableCurrencies: ["RUB", "EUR"],
+				},
 			],
 			totalCount: 3 };
 	},
