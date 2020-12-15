@@ -168,7 +168,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8087/api/basic/beneficiaries/vulnerability-criterias",
+							"raw": "http://localhost:8087/api/basic/beneficiaries/vulnerability-criteria",
 							"protocol": "http",
 							"host": [
 								"localhost"

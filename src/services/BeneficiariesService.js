@@ -47,7 +47,7 @@ export default {
 	},
 
 	async getListOfVulnerabilities() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/vulnerability-criterias" });
+		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/vulnerability-criteria" });
 		return { data, totalCount };
 	},
 
