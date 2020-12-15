@@ -114,6 +114,7 @@ export default {
 		async fetchData() {
 			this.$store.commit("loading", true);
 
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.table.perPage,
@@ -123,9 +124,6 @@ export default {
 				this.getProjectNameForBooklets(response.data).then((data) => {
 					this.table.data = data;
 					this.table.total = response.totalCount;
-					this.table.columns = generateColumns(
-						this.table.visibleColumns,
-					);
 				});
 			});
 

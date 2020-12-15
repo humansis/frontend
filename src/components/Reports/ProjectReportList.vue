@@ -106,6 +106,7 @@ export default {
 		async fetchProjectReports() {
 			this.isLoadingList = true;
 
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ProjectReportService.getListOfProjectReports(
 				this.table.currentPage,
 				this.table.perPage,
@@ -116,9 +117,6 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-				this.table.columns = generateColumns(
-					this.table.visibleColumns,
-				);
 			}).catch((e) => {
 				Toast(`(Project Reports) ${e}`, "is-danger");
 			});

@@ -38,6 +38,7 @@
 					multiple
 					:disabled="formDisabled"
 					:options="options.sectors"
+					:loading="sectorsLoading"
 					@select="validate('selectedSectors')"
 				>
 					<template
@@ -69,7 +70,10 @@
 			<b-field
 				label="End Date"
 				:type="validateType('endDate')"
-				:message="validateMsg('endDate', 'Required')"
+				:message="validateMsg(
+					'endDate',
+					`Required and must be greater than ${$moment().format('DD/MM/YYYY')} Date and Start Date`
+				)"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
@@ -96,6 +100,7 @@
 					multiple
 					:disabled="formDisabled"
 					:options="options.donors"
+					:loading="donorsLoading"
 					@select="validate('selectedDonors')"
 				>
 					<template
@@ -119,6 +124,7 @@
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
+					:loading="targetTypesLoading"
 					@select="validate('selectedTargetType')"
 				/>
 			</b-field>
@@ -126,7 +132,7 @@
 			<b-field
 				label="Total Target"
 				:type="validateType('totalTarget')"
-				:message="validateMsg('totalTarget', 'Required, min length is 0')"
+				:message="validateMsg('totalTarget', 'Required, min length is 1')"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
@@ -160,11 +166,15 @@
 
 <script>
 import { Toast } from "@/utils/UI";
-import { required, minLength } from "vuelidate/lib/validators";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { required, minValue } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import SectorsService from "@/services/SectorsService";
-import DonorsService from "@/services/DonorsService";
 import AssistancesService from "@/services/AssistancesService";
+import HomeService from "@/services/HomeService";
+
+const minDate = (endDate, formModel) => new Date(endDate) > new Date()
+	&& new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
@@ -185,6 +195,9 @@ export default {
 				donors: [],
 				targetTypes: [],
 			},
+			sectorsLoading: true,
+			donorsLoading: true,
+			targetTypesLoading: true,
 		};
 	},
 
@@ -194,10 +207,13 @@ export default {
 			internalId: { required },
 			selectedSectors: { required },
 			startDate: { required },
-			endDate: { required },
+			endDate: {
+				required,
+				minValue: minDate,
+			},
 			selectedDonors: { required },
 			selectedTargetType: { required },
-			totalTarget: { required, minLength: minLength(0) },
+			totalTarget: { required, minValue: minValue(1) },
 		},
 	},
 
@@ -229,14 +245,20 @@ export default {
 			}).catch((e) => {
 				Toast(`(Sectors) ${e}`, "is-danger");
 			});
+
+			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
+			this.sectorsLoading = false;
 		},
 
 		async fetchDonors() {
-			await DonorsService.getListOfDonors().then((response) => {
+			await HomeService.getListOfDonors().then((response) => {
 				this.options.donors = response.data;
 			}).catch((e) => {
 				Toast(`(Donors) ${e}`, "is-danger");
 			});
+
+			this.formModel.selectedDonors = getArrayOfCodeListByKey(this.formModel.donorIds, this.options.donors, "id");
+			this.donorsLoading = false;
 		},
 
 		async fetchTargetTypes() {
@@ -245,6 +267,9 @@ export default {
 			}).catch((e) => {
 				Toast(`(Target Types) ${e}`, "is-danger");
 			});
+
+			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");
+			this.targetTypesLoading = false;
 		},
 	},
 };

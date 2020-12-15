@@ -162,6 +162,7 @@ export default {
 				this.fetch.error = null;
 				const loadingComponent = this.$buefy.loading.open();
 
+				this.table.columns = generateColumns(this.table.visibleColumns);
 				await BookletsService.getListOfBooklets(
 					this.table.currentPage,
 					this.table.perPage,
@@ -171,9 +172,6 @@ export default {
 					this.getProjectNameForBooklets(response.data).then((data) => {
 						this.table.data = data;
 						this.table.total = response.totalCount;
-						this.table.columns = generateColumns(
-							this.table.visibleColumns,
-						);
 					});
 				});
 
