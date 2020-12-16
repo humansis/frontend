@@ -47,7 +47,7 @@
 						icon="trash"
 						entity="Country Specific Option"
 						:id="props.row.id"
-						@submitted="onRemove"
+						@submitted="remove"
 					/>
 				</div>
 			</b-table-column>

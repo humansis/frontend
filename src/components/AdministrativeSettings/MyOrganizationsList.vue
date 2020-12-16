@@ -134,7 +134,7 @@ export default {
 				Notification(`Organizations ${e}`, "is-danger");
 			});
 
-			this.isLoadingList = true;
+			this.isLoadingList = false;
 		},
 
 		print(id) {

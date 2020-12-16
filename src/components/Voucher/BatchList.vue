@@ -55,7 +55,7 @@
 								icon="trash"
 								entity="Voucher"
 								:id="props.row.id"
-								@submitted="onRemove"
+								@submitted="remove"
 							/>
 							<ActionButton icon="print" type="is-dark" />
 						</div>
