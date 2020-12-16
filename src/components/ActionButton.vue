@@ -1,6 +1,6 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive">
-		<button class="button is-light">
+		<button class="button is-light table-action">
 			<b-icon
 				:icon="icon"
 				:type="type"

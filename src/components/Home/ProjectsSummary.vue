@@ -1,8 +1,15 @@
 <template>
 	<div>
 		<h2 class="title">Projects summary</h2>
-		<div class="columns is-multiline" ref="projectsSummary">
-			<div v-for="{id, name, target} in projectsSummary" :key="id" class="column is-half">
+		<div
+			class="columns is-multiline projects-summary"
+			ref="projectsSummary"
+		>
+			<div
+				v-for="{id, name, target} in projectsSummary"
+				class="column is-3"
+				:key="id"
+			>
 				<div class="box">
 					<p class="title is-6">{{ normalizeText(name) }}</p>
 					<p class="subtitle is-4">{{ target }}</p>
@@ -22,6 +29,7 @@ export default {
 
 	data() {
 		return {
+			isLoading: true,
 			projectsSummary: [],
 			currentPage: 1,
 			perPage: 15,
@@ -62,5 +70,10 @@ export default {
 <style scoped>
 .columns {
 	margin-bottom: 20px;
+}
+
+.projects-summary {
+	min-height: 70px;
+	position: relative;
 }
 </style>
