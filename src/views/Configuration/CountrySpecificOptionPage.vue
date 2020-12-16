@@ -6,6 +6,7 @@
 			is-small
 			:active="countrySpecificOptionModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="countrySpecificOptionModal.isWaiting"
 			@close="closeCountrySpecificOptionModal"
 		>
 			<CountrySpecificOptionForm
@@ -58,6 +59,7 @@ export default {
 				isOpened: false,
 				isDetail: false,
 				isEditing: false,
+				isWaiting: false,
 			},
 			countrySpecificOptionModel: {
 				id: null,
@@ -90,6 +92,7 @@ export default {
 				isOpened: true,
 				isDetail: true,
 				isEditing: false,
+				isWaiting: false,
 			};
 		},
 
@@ -99,6 +102,7 @@ export default {
 				isOpened: true,
 				isDetail: false,
 				isEditing: true,
+				isWaiting: false,
 			};
 		},
 
@@ -129,6 +133,8 @@ export default {
 			this.countrySpecificOptionModal = {
 				isOpened: true,
 				isDetail: false,
+				isEditing: false,
+				isWaiting: false,
 			};
 
 			this.countrySpecificOptionModel = {
@@ -161,31 +167,37 @@ export default {
 			} else {
 				this.createCountrySpecificOption(countrySpecificOptionBody);
 			}
-
-			this.closeCountrySpecificOptionModal();
 		},
 
 		async createCountrySpecificOption(countrySpecificOptionBody) {
+			this.countrySpecificOptionModal.isWaiting = true;
+
 			await CountrySpecificOptionsService.createCountrySpecificOption(countrySpecificOptionBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Country Specific Option Successfully Created", "is-success");
 						this.$refs.countrySpecificOptionList.fetchData();
+						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
 					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
 
 		async updateCountrySpecificOption(id, countrySpecificOptionBody) {
+			this.countrySpecificOptionModal.isWaiting = true;
+
 			await CountrySpecificOptionsService.updateCountrySpecificOption(id, countrySpecificOptionBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Country Specific Option Successfully Updated", "is-success");
 						this.$refs.countrySpecificList.fetchData();
+						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
 					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
 
@@ -194,7 +206,7 @@ export default {
 				.then((response) => {
 					if (response.status === 204) {
 						Toast("Country Specific Option successfully removed", "is-success");
-						this.$refs.countrySpecificOptionList.fetchData();
+						this.$refs.countrySpecificOptionList.removeFromList(id);
 					}
 				}).catch((e) => {
 					Toast(`(Country Specific Options) ${e}`, "is-danger");

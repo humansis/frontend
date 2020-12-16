@@ -5,6 +5,7 @@
 			can-cancel
 			:active="institutionModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="institutionModal.isWaiting"
 			@close="closeInstitutionModal"
 		>
 			<InstitutionsForm
@@ -57,6 +58,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			institutionModel: {
 				id: null,
@@ -102,6 +104,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -110,6 +113,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.institutionModel = {
@@ -133,62 +137,6 @@ export default {
 				adm3Id: "",
 				adm4Id: "",
 			};
-		},
-
-		submitInstitutionForm(institutionForm) {
-			const {
-				id,
-				longitude,
-				latitude,
-				name,
-				contactGivenName,
-				contactFamilyName,
-				type,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				nationalCardNumber,
-				nationalCardType,
-				phonePrefix,
-				phoneNumber,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			} = institutionForm;
-
-			const institutionBody = {
-				name,
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
-				type,
-				address: {
-					street: addressStreet,
-					number: addressNumber,
-					postCode: addressPostCode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
-				},
-				nationalCard: {
-					idNumber: nationalCardNumber,
-					idType: nationalCardType,
-				},
-				phone: {
-					prefix: phonePrefix,
-					number: phoneNumber,
-				},
-			};
-			if (this.institutionModal.isEditing && id) {
-				this.updateInstitution(id, institutionBody);
-			} else {
-				this.createInstitution(institutionBody);
-			}
-
-			this.closeInstitutionModal();
 		},
 
 		closeInstitutionModal() {
@@ -255,25 +203,87 @@ export default {
 			};
 		},
 
+		submitInstitutionForm(institutionForm) {
+			const {
+				id,
+				longitude,
+				latitude,
+				name,
+				contactGivenName,
+				contactFamilyName,
+				type,
+				addressStreet,
+				addressNumber,
+				addressPostCode,
+				nationalCardNumber,
+				nationalCardType,
+				phonePrefix,
+				phoneNumber,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+			} = institutionForm;
+
+			const institutionBody = {
+				name,
+				longitude,
+				latitude,
+				contactGivenName,
+				contactFamilyName,
+				type,
+				address: {
+					street: addressStreet,
+					number: addressNumber,
+					postCode: addressPostCode,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
+				},
+				nationalCard: {
+					idNumber: nationalCardNumber,
+					idType: nationalCardType,
+				},
+				phone: {
+					prefix: phonePrefix,
+					number: phoneNumber,
+				},
+			};
+			if (this.institutionModal.isEditing && id) {
+				this.updateInstitution(id, institutionBody);
+			} else {
+				this.createInstitution(institutionBody);
+			}
+		},
+
 		async createInstitution(institutionBody) {
+			this.institutionModal.isWaiting = true;
+
 			await InstitutionsService.createInstitution(institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Created", "is-success");
 					this.$refs.institutionList.fetchData();
+					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
 				Toast(`(Institution) ${e}`, "is-danger");
+				this.institutionModal.isWaiting = false;
 			});
 		},
 
 		async updateInstitution(id, institutionBody) {
+			this.institutionModal.isWaiting = true;
+
 			await InstitutionsService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Updated", "is-success");
 					this.$refs.institutionList.fetchData();
+					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
 				Toast(`(Institution) ${e}`, "is-danger");
+				this.institutionModal.isWaiting = false;
 			});
 		},
 
@@ -281,7 +291,7 @@ export default {
 			await InstitutionsService.deleteInstitution(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Institution Successfully Deleted", "is-success");
-					this.$refs.institutionList.fetchData();
+					this.$refs.institutionList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`(Institution) ${e}`, "is-danger");

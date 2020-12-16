@@ -67,7 +67,7 @@ import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "CountrySpecificsList",
+	name: "CountrySpecificOptionList",
 
 	components: {
 		Search,
@@ -125,24 +125,6 @@ export default {
 			});
 
 			this.isLoadingList = false;
-		},
-
-		showDetailWithId(id) {
-			const countrySpecificOption = this.table.data.find((item) => item.id === id);
-			this.showDetail(countrySpecificOption);
-		},
-
-		showEdit(id) {
-			const countrySpecificOption = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", countrySpecificOption);
-		},
-
-		showDetail(countrySpecificOption) {
-			this.$emit("onShowDetail", countrySpecificOption);
-		},
-
-		onRemove(id) {
-			this.$emit("onRemove", id);
 		},
 	},
 };

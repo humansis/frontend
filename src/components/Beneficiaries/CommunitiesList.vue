@@ -125,24 +125,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showEdit(id) {
-			const community = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", community);
-		},
-
-		showDetailWithId(id) {
-			const community = this.table.data.find((item) => item.id === id);
-			this.showDetail(community);
-		},
-
-		showDetail(community) {
-			this.$emit("onShowDetail", community);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
-		},
 	},
 };
 </script>

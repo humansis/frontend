@@ -5,6 +5,7 @@
 			can-cancel
 			:active="projectModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="projectModal.isWaiting"
 			@close="closeProjectModal"
 		>
 			<ProjectForm
@@ -59,6 +60,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			projectModel: {
 				id: null,
@@ -99,6 +101,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 			this.mapToFormModel(project);
 		},
@@ -108,6 +111,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.projectModel = {
@@ -126,43 +130,6 @@ export default {
 				totalTarget: 0,
 				notes: "",
 			};
-		},
-
-		submitProjectForm(projectForm) {
-			const {
-				id,
-				iso3,
-				name,
-				internalId,
-				selectedSectors,
-				startDate,
-				endDate,
-				selectedDonors,
-				selectedTargetType: { code: targetType },
-				totalTarget: target,
-				notes,
-			} = projectForm;
-			const projectBody = {
-				iso3: iso3 || this.$store.state.country.iso3,
-				name,
-				internalId,
-				notes,
-				target,
-				targetType,
-				numberOfHouseholds: 0,
-				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
-				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
-				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
-				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
-			};
-
-			if (this.projectModal.isEditing && id) {
-				this.updateProject(id, projectBody);
-			} else {
-				this.createProject(projectBody);
-			}
-
-			this.closeProjectModal();
 		},
 
 		closeProjectModal() {
@@ -211,25 +178,68 @@ export default {
 			};
 		},
 
+		submitProjectForm(projectForm) {
+			const {
+				id,
+				iso3,
+				name,
+				internalId,
+				selectedSectors,
+				startDate,
+				endDate,
+				selectedDonors,
+				selectedTargetType: { code: targetType },
+				totalTarget: target,
+				notes,
+			} = projectForm;
+			const projectBody = {
+				iso3: iso3 || this.$store.state.country.iso3,
+				name,
+				internalId,
+				notes,
+				target,
+				targetType,
+				numberOfHouseholds: 0,
+				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
+				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
+				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
+				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
+			};
+
+			if (this.projectModal.isEditing && id) {
+				this.updateProject(id, projectBody);
+			} else {
+				this.createProject(projectBody);
+			}
+		},
+
 		async createProject(projectBody) {
+			this.projectModal.isWaiting = true;
+
 			await ProjectsService.createProject(projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Created", "is-success");
 					this.$refs.projectList.fetchData();
+					this.closeProjectModal();
 				}
 			}).catch((e) => {
 				Notification(`Project ${e}`, "is-danger");
+				this.projectModal.isWaiting = false;
 			});
 		},
 
 		async updateProject(id, projectBody) {
+			this.projectModal.isWaiting = true;
+
 			await ProjectsService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Updated", "is-success");
 					this.$refs.projectList.fetchData();
+					this.closeProjectModal();
 				}
 			}).catch((e) => {
 				Notification(`Project ${e}`, "is-danger");
+				this.projectModal.isWaiting = false;
 			});
 		},
 
@@ -237,7 +247,7 @@ export default {
 			await ProjectsService.deleteProject(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Project Successfully Deleted", "is-success");
-					this.$refs.projectList.fetchData();
+					this.$refs.projectList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`Project ${e}`, "is-danger");

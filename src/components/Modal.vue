@@ -6,10 +6,11 @@
 		aria-role="dialog"
 		destroy-on-hide
 		aria-modal
-		:can-cancel="canCancel"
+		:can-cancel="canCancel && !isWaiting"
 		@close="$emit('close')"
 	>
 		<div :class="modalCardClass">
+			<b-loading :is-full-page="false" :active="isWaiting" />
 			<header class="modal-card-head">
 				<p class="modal-card-title">{{ header }}</p>
 
@@ -37,6 +38,7 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		isWaiting: Boolean,
 	},
 
 	computed: {

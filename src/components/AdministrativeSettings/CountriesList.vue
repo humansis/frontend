@@ -123,24 +123,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showDetailWithId(id) {
-			const country = this.table.data.find((item) => item.id === id);
-			this.showDetail(country);
-		},
-
-		showDetail(country) {
-			this.$emit("onShowDetail", country);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
-		},
-
-		showEdit(id) {
-			const country = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", country);
-		},
 	},
 };
 </script>

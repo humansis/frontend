@@ -200,19 +200,6 @@ export default {
 			this.fetch.error = error.toString();
 		},
 
-		showDetailWithId(id) {
-			const booklet = this.table.data.find((item) => item.id === id);
-			this.showDetail(booklet);
-		},
-
-		showDetail(booklet) {
-			this.$emit("onShowDetail", booklet);
-		},
-
-		onRemove(id) {
-			this.$emit("onRemove", id);
-		},
-
 		onPageChange() {
 			// TODO on table page change
 		},

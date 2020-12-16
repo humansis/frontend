@@ -5,6 +5,7 @@
 			can-cancel
 			:active="productModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="productModal.isWaiting"
 			@close="closeProductModal"
 		>
 			<ProductForm
@@ -55,6 +56,7 @@ export default {
 	data() {
 		return {
 			productModal: {
+				isWaiting: false,
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
@@ -90,6 +92,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -121,6 +124,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 			this.mapToFormModel(product);
 		},
@@ -130,6 +134,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.productModel = {
@@ -162,31 +167,37 @@ export default {
 			} else {
 				this.createProduct(productBody);
 			}
-
-			this.closeProductModal();
 		},
 
 		// TODO Fix after we have image handler, crashes on image
 		async createProduct(productBody) {
+			this.productModal.isWaiting = true;
+
 			await ProductsService.createProduct(productBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Product Successfully Created", "is-success");
 					this.$refs.productsList.fetchData();
+					this.closeProductModal();
 				}
 			}).catch((e) => {
 				Notification(`Product ${e}`, "is-danger");
+				this.productModal.isWaiting = false;
 			});
 		},
 
 		// TODO Fix after we have image handler, crashes on image
 		async updateProduct(id, productBody) {
+			this.productModal.isWaiting = true;
+
 			await ProductsService.updateProduct(id, productBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Product Successfully Updated", "is-success");
 					this.$refs.productsList.fetchData();
+					this.closeProductModal();
 				}
 			}).catch((e) => {
 				Notification(`Product ${e}`, "is-danger");
+				this.productModal.isWaiting = false;
 			});
 		},
 
@@ -194,7 +205,7 @@ export default {
 			await ProductsService.removeProduct(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Product successfully removed", "is-success");
-					this.$refs.productsList.fetchData();
+					this.$refs.productsList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`Product ${e}`, "is-danger");

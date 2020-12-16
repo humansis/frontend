@@ -146,24 +146,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showDetailWithId(id) {
-			const donor = this.table.data.find((item) => item.id === id);
-			this.showDetail(donor);
-		},
-
-		showDetail(donor) {
-			this.$emit("onShowDetail", donor);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
-		},
-
-		showEdit(id) {
-			const donor = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", donor);
-		},
 	},
 };
 </script>

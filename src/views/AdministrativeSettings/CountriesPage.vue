@@ -4,6 +4,7 @@
 			:active="countryModal.isOpened"
 			:can-cancel="true"
 			:header="modalHeader"
+			:is-waiting="countryModal.isWaiting"
 			@close="closeCountryModal"
 		>
 			<CountryForm
@@ -56,6 +57,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			countryModel: {
 				id: null,
@@ -88,6 +90,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -120,6 +123,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -128,6 +132,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.countryModel = {
@@ -162,29 +167,35 @@ export default {
 			} else {
 				this.createCountry(countryBody);
 			}
-
-			this.closeCountryModal();
 		},
 
 		async createCountry(countryBody) {
+			this.countryModal.isWaiting = true;
+
 			await CountriesService.createCountry(countryBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Country Successfully Created", "is-success");
 					this.$refs.countriesList.fetchData();
+					this.closeCountryModal();
 				}
 			}).catch((e) => {
 				Notification(`Country ${e}`, "is-danger");
+				this.countryModal.isWaiting = false;
 			});
 		},
 
 		async updateCountry(id, countryBody) {
+			this.countryModal.isWaiting = true;
+
 			await CountriesService.updateCountry(id, countryBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Country Successfully Updated", "is-success");
 					this.$refs.countriesList.fetchData();
+					this.closeCountryModal();
 				}
 			}).catch((e) => {
 				Toast(`(Country) ${e}`, "is-danger");
+				this.countryModal.isWaiting = false;
 			});
 		},
 
@@ -192,7 +203,7 @@ export default {
 			await CountriesService.deleteCountry(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Country successfully removed", "is-success");
-					this.$refs.countriesList.fetchData();
+					this.$refs.countriesList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`(Country) ${e}`, "is-danger");

@@ -110,7 +110,7 @@ export default {
 	methods: {
 		submitForm() {
 			if (this.uploadedImage) {
-				// TODO uncomment and delete after implement image handler
+				// TODO uncomment and delete after upload image
 				// this.formModel.image = this.uploadedImage;
 				this.formModel.image = "https://www.hello.com/img_/hellowithwaves.png";
 			}

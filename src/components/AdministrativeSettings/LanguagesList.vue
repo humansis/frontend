@@ -113,15 +113,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showDetailWithId(id) {
-			const language = this.table.data.find((item) => item.id === id);
-			this.showDetail(language);
-		},
-
-		showDetail(language) {
-			this.$emit("onShowDetail", language);
-		},
 	},
 };
 </script>

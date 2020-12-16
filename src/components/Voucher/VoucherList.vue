@@ -145,19 +145,6 @@ export default {
 			return booklets;
 		},
 
-		showDetailWithId(id) {
-			const voucher = this.table.data.find((item) => item.id === id);
-			this.showDetail(voucher);
-		},
-
-		showDetail(voucher) {
-			this.$emit("onShowDetail", voucher);
-		},
-
-		onRemove(id) {
-			this.$emit("onRemove", id);
-		},
-
 		onPageChange() {
 			// TODO on table page change
 		},

@@ -120,20 +120,6 @@ export default {
 			return preparedData;
 		},
 
-		showDetailWithId(id) {
-			const organizationService = this.table.data.find((item) => item.id === id);
-			this.showDetail(organizationService);
-		},
-
-		showDetail(organizationService) {
-			this.$emit("onShowDetail", organizationService);
-		},
-
-		showEdit(id) {
-			const organizationService = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", organizationService);
-		},
-
 		mapToFormModel(
 			{
 				id,
