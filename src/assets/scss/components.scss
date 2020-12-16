@@ -53,3 +53,13 @@
 .vue2leaflet-map {
     z-index: 0;
 }
+
+.table-action {
+    &.button.is-light {
+        background-color: transparent;
+
+        &:hover, &:focus {
+            background-color: #eeeeee;
+        }
+    }
+}

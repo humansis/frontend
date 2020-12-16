@@ -14,20 +14,19 @@
 		</Modal>
 		<h2 class="title">Upcoming assistances</h2>
 		<Table
-			ref="table"
+			ref="upcomingAssistances"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:per-page="table.perPage"
+			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column v-bind="column" sortable :key="column.id" v-slot="props">
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 		</Table>
@@ -35,13 +34,14 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import Table from "@/components/DataGrid/Table";
 import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "UpcomingAssistances",
@@ -50,6 +50,7 @@ export default {
 		AssistanceForm,
 		Table,
 		Modal,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -73,15 +74,19 @@ export default {
 						key: "adm1Id",
 						label: "Location",
 					},
-					{ key: "beneficiaries" },
+					{
+						key: "beneficiaries",
+						label: "Beneficiaries",
+					},
 					{
 						key: "dateDistribution",
-						label: "Date of Distribution",
+						label: "Date Of Distribution",
 					},
 					{ key: "target" },
 					{
 						type: "commodity",
-						key: "commodity",
+						key: "commodityIds",
+						label: "Commodity",
 					},
 				],
 				total: 0,
@@ -103,10 +108,9 @@ export default {
 
 	methods: {
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.table,
-			});
+			this.isLoadingList = true;
 
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await AssistancesService.getListOfAssistances(
 				this.table.currentPage,
 				this.table.perPage,
@@ -115,14 +119,11 @@ export default {
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
-				this.table.columns = generateColumns(
-					this.table.visibleColumns,
-				);
 			}).catch((e) => {
-				Toast(`(Assistances) ${e}`, "is-danger");
+				Notification(`Upcoming Assistances ${e}`, "is-danger");
 			});
 
-			loadingComponent.close();
+			this.isLoadingList = false;
 		},
 
 		closeAssistanceModal() {

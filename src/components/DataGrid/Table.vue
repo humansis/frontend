@@ -4,7 +4,6 @@
 			striped
 			hoverable
 			scrollable
-			narrowed
 			backend-sorting
 			backend-pagination
 			selectable
