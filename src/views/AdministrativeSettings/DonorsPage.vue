@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import DonorsService from "@/services/DonorsService";
+import { Toast, Notification } from "@/utils/UI";
+import HomeService from "@/services/HomeService";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import DonorsList from "@/components/AdministrativeSettings/DonorsList";
-import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "DonorsPage",
@@ -61,8 +61,8 @@ export default {
 			},
 			donorModel: {
 				id: null,
-				fullName: "",
-				shortName: "",
+				fullname: "",
+				shortname: "",
 				logo: null,
 				notes: "",
 			},
@@ -97,8 +97,8 @@ export default {
 		mapToFormModel(
 			{
 				id,
-				fullName,
-				shortName,
+				fullname,
+				shortname,
 				logo,
 				notes,
 			},
@@ -106,8 +106,8 @@ export default {
 			this.donorModel = {
 				...this.donorModel,
 				id,
-				fullName,
-				shortName,
+				fullname,
+				shortname,
 				logo,
 				notes,
 			};
@@ -138,8 +138,8 @@ export default {
 			this.donorModel = {
 				...this.donorModel,
 				id: null,
-				fullName: "",
-				shortName: "",
+				fullname: "",
+				shortname: "",
 				logo: null,
 				notes: "",
 			};
@@ -148,15 +148,15 @@ export default {
 		submitDonorForm(donorForm) {
 			const {
 				id,
-				fullName,
-				shortName,
+				fullname,
+				shortname,
 				logo,
 				notes,
 			} = donorForm;
 
 			const donorBody = {
-				fullName,
-				shortName,
+				fullname,
+				shortname,
 				logo,
 				notes,
 			};
@@ -171,7 +171,7 @@ export default {
 		async createDonor(donorBody) {
 			this.donorModal.isWaiting = true;
 
-			await DonorsService.createDonor(donorBody).then((response) => {
+			await HomeService.createDonor(donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Created", "is-success");
 					this.$refs.donorsList.fetchData();
@@ -186,7 +186,7 @@ export default {
 		async updateDonor(id, donorBody) {
 			this.donorModal.isWaiting = true;
 
-			await DonorsService.updateDonor(id, donorBody).then((response) => {
+			await HomeService.updateDonor(id, donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Updated", "is-success");
 					this.$refs.donorsList.fetchData();
@@ -199,7 +199,7 @@ export default {
 		},
 
 		async removeDonor(id) {
-			await DonorsService.deleteDonor(id)
+			await HomeService.deleteDonor(id)
 				.then((response) => {
 					if (response.status === 204) {
 						Toast("Donor successfully removed", "is-success");

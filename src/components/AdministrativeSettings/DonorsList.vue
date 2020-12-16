@@ -62,7 +62,7 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import { generateColumns } from "@/utils/datagrid";
-import DonorsService from "@/services/DonorsService";
+import HomeService from "@/services/HomeService";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { Notification } from "@/utils/UI";
@@ -94,19 +94,23 @@ export default {
 						type: "text",
 						key: "fullname",
 						label: "Donor Name",
+						width: "500",
 					},
 					{
 						type: "text",
-						key: "shortName",
+						key: "shortname",
+						width: "200",
 					},
 					{
 						type: "image",
 						key: "logo",
 						label: "Organization Logo",
+						width: "200",
 					},
 					{
 						type: "text",
 						key: "notes",
+						width: "200",
 					},
 				],
 				total: 0,
@@ -132,7 +136,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await DonorsService.getListOfDonors(
+			await HomeService.getListOfDonors(
 				this.table.currentPage,
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",

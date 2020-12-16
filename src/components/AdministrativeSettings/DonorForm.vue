@@ -3,25 +3,25 @@
 		<section class="modal-card-body">
 			<b-field
 				label="Donor Name"
-				:type="validateType('fullName')"
-				:message="validateMsg('fullName', 'Required')"
+				:type="validateType('fullname')"
+				:message="validateMsg('fullname', 'Required')"
 			>
 				<b-input
-					v-model="formModel.fullName"
+					v-model="formModel.fullname"
 					:disabled="formDisabled"
-					@blur="validate('fullName')"
+					@blur="validate('fullname')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Short Name"
-				:type="validateType('shortName')"
-				:message="validateMsg('shortName', 'Required')"
+				:type="validateType('shortname')"
+				:message="validateMsg('shortname', 'Required')"
 			>
 				<b-input
-					v-model="formModel.shortName"
+					v-model="formModel.shortname"
 					:disabled="formDisabled"
-					@blur="validate('shortName')"
+					@blur="validate('shortname')"
 				/>
 			</b-field>
 
@@ -112,8 +112,8 @@ export default {
 
 	validations: {
 		formModel: {
-			fullName: { required },
-			shortName: { required },
+			fullname: { required },
+			shortname: {},
 			logo: {},
 			notes: {},
 		},
@@ -121,7 +121,9 @@ export default {
 
 	methods: {
 		submitForm() {
-			this.formModel.logo = this.uploadedImage;
+			if (this.uploadedImage) {
+				this.formModel.logo = this.uploadedImage;
+			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

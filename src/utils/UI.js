@@ -5,6 +5,7 @@ export const Toast = (message, type) => {
 		duration: 5000,
 		message,
 		position: "is-top",
+		queue: false,
 		type,
 	});
 };
@@ -15,6 +16,7 @@ export const Notification = (message, type) => {
 		message,
 		position: "is-bottom-right",
 		hasIcon: true,
+		queue: false,
 		type,
 	});
 };
