@@ -3,71 +3,79 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
-		<b-collapse
-			v-for="(batch, index) of getBatches"
-			class="panel"
-			animation="slide"
-			:key="index"
-			@open="isOpen = index"
-		>
-			<div
-				slot="trigger"
-				class="card-header"
-				role="button"
+		<div>
+			<b-collapse
+				v-for="(batch, index) of getBatches()"
+				class="panel"
+				animation="slide"
+				:key="index"
+				:open="false"
+				@open="isOpen = index"
 			>
-				<p class="card-header-title">
-					<b-tag type="is-primary mr-1">{{ index + 1 }}. Batch</b-tag>
-					<b-tag type="is-info mr-4">{{ batch.booklets.length }} x Booklets</b-tag>
-					{{ batch.code }}
-				</p>
-				<a class="card-header-icon">
-					<b-icon icon="arrow-down" />
-				</a>
-			</div>
-			<div class="card-content">
-				<Table
-					checkable
-					:data="batch.booklets"
-					@clicked="showDetail"
-					@pageChanged="onPageChange"
-					@sorted="onSort"
+				<div
+					slot="trigger"
+					class="card-header"
+					role="button"
 				>
-					<template v-for="column in table.columns">
-						<b-table-column v-bind="column" :key="column.id">
-							<template v-slot="props">
-								{{ props.row[column.field] }}
-							</template>
-						</b-table-column>
-					</template>
-					<b-table-column
-						v-slot="props"
-						label="Actions"
-						width="140"
-						centered
+					<p class="card-header-title">
+						<b-tag type="is-primary mr-1">{{ index + 1 }}. Batch</b-tag>
+						<b-tag type="is-info mr-4">{{ batch.booklets.length }} x Booklets</b-tag>
+						{{ batch.code }}
+					</p>
+					<div v-if="isLoadingList" class="card-header-icon">
+						<b-icon icon="spinner" custom-class="fa-spin" />
+					</div>
+					<a v-else class="card-header-icon">
+						<b-icon icon="arrow-down" />
+					</a>
+				</div>
+				<div class="card-content">
+					<Table
+						checkable
+						:data="batch.booklets"
+						:is-loading="isLoadingList"
+						@clicked="showDetail"
+						@pageChanged="onPageChange"
+						@sorted="onSort"
 					>
-						<div class="block">
-							<ActionButton
-								icon="search"
-								type="is-info"
-								@click.native="showDetailWithId(props.row.id)"
-							/>
-							<SafeDelete
-								icon="trash"
-								entity="Voucher"
-								:id="props.row.id"
-								@submitted="remove"
-							/>
-							<ActionButton icon="print" type="is-dark" />
-						</div>
-					</b-table-column>
-				</Table>
-			</div>
-		</b-collapse>
+						<template v-for="column in table.columns">
+							<b-table-column v-bind="column" :key="column.id">
+								<template v-slot="props">
+									{{ props.row[column.field] }}
+								</template>
+							</b-table-column>
+						</template>
+						<b-table-column
+							v-slot="props"
+							label="Actions"
+							width="140"
+							centered
+						>
+							<div class="block">
+								<ActionButton
+									icon="search"
+									type="is-info"
+									@click.native="showDetailWithId(props.row.id)"
+								/>
+								<SafeDelete
+									icon="trash"
+									entity="Voucher"
+									:id="props.row.id"
+									@submitted="remove"
+								/>
+								<ActionButton icon="print" type="is-dark" />
+							</div>
+						</b-table-column>
+					</Table>
+				</div>
+			</b-collapse>
+		</div>
 	</div>
 </template>
 
 <script>
 import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import BookletsService from "@/services/BookletsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
@@ -91,9 +99,6 @@ export default {
 	data() {
 		return {
 			batches: [],
-			fetch: {
-				error: null,
-			},
 			isOpen: 0,
 			table: {
 				data: [],
@@ -129,27 +134,6 @@ export default {
 			}
 			return result;
 		},
-
-		getBatches() {
-			const loadingComponent = this.$buefy.loading.open();
-
-			const batches = [];
-			this.table.data.forEach((item) => {
-				if (batches.length) {
-					if (batches[batches.length - 1].code === item.code) {
-						batches[batches.length - 1].booklets.push(item);
-					} else {
-						batches.push({ code: item.code, booklets: [item] });
-					}
-				} else {
-					batches.push({ code: item.code, booklets: [item] });
-				}
-			});
-
-			loadingComponent.close();
-
-			return batches;
-		},
 	},
 
 	mounted() {
@@ -158,27 +142,21 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open();
-
-				this.table.columns = generateColumns(this.table.visibleColumns);
-				await BookletsService.getListOfBooklets(
-					this.table.currentPage,
-					this.table.perPage,
-					"desc",
-					this.table.searchPhrase,
-				).then((response) => {
-					this.getProjectNameForBooklets(response.data).then((data) => {
-						this.table.data = data;
-						this.table.total = response.totalCount;
-					});
+			this.isLoadingList = true;
+			this.table.columns = generateColumns(this.table.visibleColumns);
+			await BookletsService.getListOfBooklets(
+				this.table.currentPage,
+				this.table.perPage,
+				"desc",
+				this.table.searchPhrase,
+			).then((response) => {
+				this.getProjectNameForBooklets(response.data).then((data) => {
+					this.table.data = data;
+					this.table.total = response.totalCount;
 				});
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			}).catch((e) => {
+				Notification(`Booklet ${e}`, "is-danger");
+			});
 		},
 
 		async getProjectNameForBooklets(data) {
@@ -194,10 +172,27 @@ export default {
 			return booklets;
 		},
 
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+		getBatches() {
+			const batches = [];
+			let bookletCounter = 0;
+			this.table.data.forEach((item) => {
+				if (batches.length) {
+					const batch = batches.find((value) => value.code === item.code);
+					if (batch) {
+						const index = batches.indexOf(batch);
+						batches[index].booklets.push(item);
+					} else {
+						batches.push({ code: item.code, booklets: [item] });
+					}
+				} else {
+					batches.push({ code: item.code, booklets: [item] });
+				}
+				bookletCounter += 1;
+			});
+			if (this.table.total === bookletCounter) {
+				this.isLoadingList = false;
+			}
+			return batches;
 		},
 
 		onPageChange() {
