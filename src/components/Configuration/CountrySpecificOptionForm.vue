@@ -75,7 +75,7 @@ import Validation from "@/mixins/validation";
 import AssistancesService from "@/services/AssistancesService";
 
 export default {
-	name: "CountrySpecificsForm",
+	name: "CountrySpecificOptionForm",
 
 	mixins: [Validation],
 

@@ -35,7 +35,7 @@
 						icon="trash"
 						entity="Voucher"
 						:id="props.row.id"
-						@submitted="onRemove"
+						@submitted="remove"
 					/>
 					<ActionButton icon="print" type="is-dark" />
 				</div>
@@ -143,19 +143,6 @@ export default {
 					});
 			});
 			return booklets;
-		},
-
-		showDetailWithId(id) {
-			const voucher = this.table.data.find((item) => item.id === id);
-			this.showDetail(voucher);
-		},
-
-		showDetail(voucher) {
-			this.$emit("onShowDetail", voucher);
-		},
-
-		onRemove(id) {
-			this.$emit("onRemove", id);
 		},
 
 		onPageChange() {

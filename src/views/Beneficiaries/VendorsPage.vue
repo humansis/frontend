@@ -5,6 +5,7 @@
 			can-cancel
 			:active="vendorModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="vendorModal.isWaiting"
 			@close="closeVendorModal"
 		>
 			<VendorForm
@@ -57,6 +58,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			vendorModel: {
 				creating: false,
@@ -97,6 +99,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -105,6 +108,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.vendorModel = {
@@ -123,44 +127,6 @@ export default {
 				adm3Id: "",
 				adm4Id: "",
 			};
-		},
-
-		submitVendorForm(vendorForm) {
-			const {
-				id,
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			} = vendorForm;
-
-			const vendorBody = {
-				username,
-				password,
-				name,
-				description,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			};
-			if (this.vendorModal.isEditing && id) {
-				this.updateVendor(id, vendorBody);
-			} else {
-				this.createVendor(vendorBody);
-			}
-
-			this.closeVendorModal();
 		},
 
 		closeVendorModal() {
@@ -210,33 +176,77 @@ export default {
 			};
 		},
 
+		submitVendorForm(vendorForm) {
+			const {
+				id,
+				username,
+				password,
+				name,
+				description,
+				addressStreet,
+				addressNumber,
+				addressPostCode,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+			} = vendorForm;
+
+			const vendorBody = {
+				username,
+				password,
+				name,
+				description,
+				addressStreet,
+				addressNumber,
+				addressPostCode,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+			};
+			if (this.vendorModal.isEditing && id) {
+				this.updateVendor(id, vendorBody);
+			} else {
+				this.createVendor(vendorBody);
+			}
+		},
+
 		async createVendor(vendorBody) {
 			await VendorsService.createVendor(vendorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Vendor Successfully Created", "is-success");
 					this.$refs.vendorsList.fetchData();
+					this.closeVendorModal();
 				}
 			}).catch((e) => {
 				Notification(`Vendor ${e}`, "is-danger");
+				this.vendorModal.isWaiting = false;
 			});
 		},
 
 		async updateVendor(id, vendorBody) {
+			this.vendorModal.isWaiting = true;
+
 			await VendorsService.updateVendor(id, vendorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Vendor Successfully Updated", "is-success");
 					this.$refs.vendorsList.fetchData();
+					this.closeVendorModal();
 				}
 			}).catch((e) => {
 				Notification(`Vendor ${e}`, "is-danger");
+				this.vendorModal.isWaiting = false;
 			});
 		},
 
 		async onVendorRemove(id) {
+			this.vendorModal.isWaiting = true;
+
 			await VendorsService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Vendor Successfully Deleted", "is-success");
-					this.$refs.vendorsList.fetchData();
+					this.$refs.vendorsList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`Vendor ${e}`, "is-danger");

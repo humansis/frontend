@@ -134,21 +134,7 @@ export default {
 				Notification(`Organizations ${e}`, "is-danger");
 			});
 
-			this.isLoadingList = true;
-		},
-
-		showDetailWithId(id) {
-			const myOrganization = this.table.data.find((item) => item.id === id);
-			this.showDetail(myOrganization);
-		},
-
-		showDetail(myOrganization) {
-			this.$emit("onShowDetail", myOrganization);
-		},
-
-		showEdit(id) {
-			const myOrganization = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", myOrganization);
+			this.isLoadingList = false;
 		},
 
 		print(id) {

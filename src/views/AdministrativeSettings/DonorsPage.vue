@@ -4,6 +4,7 @@
 			:active="donorModal.isOpened"
 			:can-cancel="true"
 			:header="modalHeader"
+			:is-waiting="donorModal.isWaiting"
 			@close="closeDonorModal"
 		>
 			<DonorForm
@@ -56,6 +57,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			donorModel: {
 				id: null,
@@ -88,6 +90,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -120,6 +123,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -128,6 +132,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.donorModel = {
@@ -161,29 +166,35 @@ export default {
 			} else {
 				this.createDonor(donorBody);
 			}
-
-			this.closeDonorModal();
 		},
 
 		async createDonor(donorBody) {
+			this.donorModal.isWaiting = true;
+
 			await DonorsService.createDonor(donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Created", "is-success");
 					this.$refs.donorsList.fetchData();
+					this.closeDonorModal();
 				}
 			}).catch((e) => {
 				Notification(`Donor ${e}`, "is-danger");
+				this.donorModal.isWaiting = false;
 			});
 		},
 
 		async updateDonor(id, donorBody) {
+			this.donorModal.isWaiting = true;
+
 			await DonorsService.updateDonor(id, donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Updated", "is-success");
 					this.$refs.donorsList.fetchData();
+					this.closeDonorModal();
 				}
 			}).catch((e) => {
 				Notification(`Donor ${e}`, "is-danger");
+				this.donorModal.isWaiting = false;
 			});
 		},
 
@@ -192,7 +203,7 @@ export default {
 				.then((response) => {
 					if (response.status === 204) {
 						Toast("Donor successfully removed", "is-success");
-						this.$refs.donorsList.fetchData();
+						this.$refs.donorsList.removeFromList(id);
 					}
 				}).catch((e) => {
 					Notification(`Donor ${e}`, "is-danger");

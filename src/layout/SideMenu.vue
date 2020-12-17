@@ -95,7 +95,7 @@
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'CountrySpecifics' }"
+								:to="{ name: 'CountrySpecificOptions' }"
 							/>
 						</b-menu-item>
 						<b-menu-item

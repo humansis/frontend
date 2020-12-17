@@ -5,6 +5,7 @@
 			can-cancel
 			:active="communityModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="communityModal.isWaiting"
 			@close="closeCommunityModal"
 		>
 			<CommunityForm
@@ -57,6 +58,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			communityModel: {
 				id: null,
@@ -101,6 +103,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -109,6 +112,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.communityModel = {
@@ -133,59 +137,6 @@ export default {
 			};
 		},
 
-		submitCommunityForm(communityForm) {
-			const {
-				id,
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				nationalCardNumber,
-				nationalCardType,
-				phonePrefix,
-				phoneNumber,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-			} = communityForm;
-
-			const communityBody = {
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
-				address: {
-					street: addressStreet,
-					number: addressNumber,
-					postCode: addressPostCode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
-				},
-				nationalCard: {
-					idNumber: nationalCardNumber,
-					idType: nationalCardType,
-				},
-				phone: {
-					prefix: phonePrefix,
-					number: phoneNumber,
-				},
-			};
-
-			if (this.communityModal.isEditing && id) {
-				this.updateCommunity(id, communityBody);
-			} else {
-				this.createCommunity(communityBody);
-			}
-
-			this.closeCommunityModal();
-		},
-
 		closeCommunityModal() {
 			this.communityModal.isOpened = false;
 		},
@@ -196,6 +147,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -248,25 +200,84 @@ export default {
 			};
 		},
 
+		submitCommunityForm(communityForm) {
+			const {
+				id,
+				longitude,
+				latitude,
+				contactGivenName,
+				contactFamilyName,
+				addressStreet,
+				addressNumber,
+				addressPostCode,
+				nationalCardNumber,
+				nationalCardType,
+				phonePrefix,
+				phoneNumber,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+			} = communityForm;
+
+			const communityBody = {
+				longitude,
+				latitude,
+				contactGivenName,
+				contactFamilyName,
+				address: {
+					street: addressStreet,
+					number: addressNumber,
+					postCode: addressPostCode,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
+				},
+				nationalCard: {
+					idNumber: nationalCardNumber,
+					idType: nationalCardType,
+				},
+				phone: {
+					prefix: phonePrefix,
+					number: phoneNumber,
+				},
+			};
+
+			if (this.communityModal.isEditing && id) {
+				this.updateCommunity(id, communityBody);
+			} else {
+				this.createCommunity(communityBody);
+			}
+		},
+
 		async createCommunity(communityBody) {
+			this.communityModal.isWaiting = true;
+
 			await CommunitiesService.createCommunity(communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Community Successfully Created", "is-success");
 					this.$refs.communitiesList.fetchData();
+					this.closeCommunityModal();
 				}
 			}).catch((e) => {
 				Notification(`Community ${e}`, "is-danger");
+				this.communityModal.isWaiting = false;
 			});
 		},
 
 		async updateCommunity(id, communityBody) {
+			this.communityModal.isWaiting = true;
+
 			await CommunitiesService.updateCommunity(id, communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Community Successfully Updated", "is-success");
 					this.$refs.communitiesList.fetchData();
+					this.closeCommunityModal();
 				}
 			}).catch((e) => {
 				Notification(`Community ${e}`, "is-danger");
+				this.communityModal.isWaiting = false;
 			});
 		},
 
@@ -274,7 +285,7 @@ export default {
 			await CommunitiesService.deleteCommunity(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Community Successfully Deleted", "is-success");
-					this.$refs.communitiesList.fetchData();
+					this.$refs.communitiesList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`Community ${e}`, "is-danger");

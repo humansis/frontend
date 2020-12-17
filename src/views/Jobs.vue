@@ -1,5 +1,5 @@
 <template>
-	<b-tabs size="is-medium">
+	<b-tabs v-model="selectedTab" size="is-medium">
 		<b-tab-item
 			label="Imports"
 			icon="file-upload"
@@ -25,6 +25,12 @@ export default {
 	components: {
 		VouchersPage,
 		ImportsPage,
+	},
+
+	data() {
+		return {
+			selectedTab: 0,
+		};
 	},
 };
 </script>

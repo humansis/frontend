@@ -5,6 +5,7 @@
 			can-cancel
 			:active="organizationServiceModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="organizationServiceModal.isWaiting"
 			@close="closeOrganizationServiceModal"
 		>
 			<OrganizationServiceForm
@@ -47,6 +48,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			organizationServiceModel: {
 				id: null,
@@ -81,6 +83,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -94,6 +97,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -118,19 +122,21 @@ export default {
 			};
 
 			this.updateOrganizationService(organizationServiceBody, id);
-
-			this.closeOrganizationServiceModal();
 		},
 
 		async updateOrganizationService(organizationServiceBody) {
+			this.organizationServiceModal.isWaiting = true;
+
 			await OrganizationServicesService.updateOrganizationService(organizationServiceBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Organization Service Successfully Created", "is-success");
 						this.$refs.organizationServicesList.fetchData();
+						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {
 					Notification(`Organization ${e}`, "is-danger");
+					this.organizationServiceModal.isWaiting = false;
 				});
 		},
 	},

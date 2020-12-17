@@ -4,6 +4,7 @@
 			can-cancel
 			:active="languageModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="languageModal.isWaiting"
 			@close="closeLanguageModal"
 		>
 			<LanguagesForm
@@ -33,11 +34,11 @@
 </template>
 
 <script>
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Toast, Notification } from "@/utils/UI";
 import Modal from "@/components/Modal";
 import LanguagesForm from "@/components/AdministrativeSettings/LanguagesForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
+import LanguagesService from "@/services/LanguagesService";
 
 export default {
 	name: "LanguagesPage",
@@ -53,6 +54,7 @@ export default {
 			languageModal: {
 				isOpened: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			languageModel: {
 				id: null,
@@ -80,6 +82,7 @@ export default {
 			this.languageModal = {
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -106,6 +109,7 @@ export default {
 			this.languageModal = {
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.languageModel = {
@@ -128,19 +132,21 @@ export default {
 			};
 
 			this.createLanguage(languageBody);
-
-			this.closeLanguageModal();
 		},
 
 		async createLanguage(languageBody) {
-			await CountrySpecificOptionsService.createCountrySpecificOption(languageBody)
+			this.languageModal.isWaiting = true;
+
+			await LanguagesService.createLanguage(languageBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Language Successfully Added", "is-success");
 						this.$refs.languagesList.fetchData();
+						this.closeLanguageModal();
 					}
 				}).catch((e) => {
 					Notification(`Language ${e}`, "is-danger");
+					this.languageModal.isWaiting = false;
 				});
 		},
 	},

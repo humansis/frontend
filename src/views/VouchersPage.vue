@@ -5,6 +5,7 @@
 			can-cancel
 			:active="voucherModal.isOpened"
 			:header="modalHeader"
+			:is-waiting="voucherModal.isWaiting"
 			@close="closeVoucherModal"
 		>
 			<VoucherForm
@@ -62,6 +63,7 @@ export default {
 			voucherModal: {
 				isOpened: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			voucherModel: {
 				id: null,
@@ -96,6 +98,7 @@ export default {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
 			};
 		},
 
@@ -134,6 +137,7 @@ export default {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.voucherModel = {
@@ -170,18 +174,20 @@ export default {
 			};
 
 			this.createVoucher(voucherBody);
-
-			this.closeVoucherModal();
 		},
 
 		async createVoucher(voucherBody) {
+			this.voucherModal.isWaiting = true;
+
 			await BookletsService.createBooklet(voucherBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Voucher Successfully Created", "is-success");
 					this.$refs.voucherList.fetchData();
+					this.closeVoucherModal();
 				}
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
+				this.voucherModal.isWaiting = false;
 			});
 		},
 
@@ -189,7 +195,7 @@ export default {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Voucher successfully removed", "is-success");
-					this.$refs.voucherList.fetchData();
+					this.$refs.voucherList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");

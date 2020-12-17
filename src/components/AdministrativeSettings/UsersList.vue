@@ -133,26 +133,8 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		showEdit(id) {
-			const user = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", user);
-		},
-
-		showDetailWithId(id) {
-			const user = this.table.data.find((item) => item.id === id);
-			this.showDetail(user);
-		},
-
-		showDetail(user) {
-			this.$emit("onShowDetail", user);
-		},
-
 		sendHistory(id) {
 			UsersService.sendHistory(id);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
 		},
 	},
 };

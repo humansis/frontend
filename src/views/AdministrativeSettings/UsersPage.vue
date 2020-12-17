@@ -4,6 +4,7 @@
 			:active="userModal.isOpened"
 			:can-cancel="true"
 			:header="modalHeader"
+			:is-waiting="userModal.isWaiting"
 			@close="closeUserModal"
 		>
 			<UserForm
@@ -56,6 +57,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 				isDetail: false,
+				isWaiting: false,
 			},
 			userModel: {
 				id: null,
@@ -94,6 +96,7 @@ export default {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 		},
 
@@ -102,6 +105,7 @@ export default {
 				isEditing: false,
 				isOpened: true,
 				isDetail: false,
+				isWaiting: false,
 			};
 
 			this.userModel = {
@@ -119,6 +123,20 @@ export default {
 				disabledCountry: true,
 				disabledProject: true,
 			};
+		},
+
+		showDetail(user) {
+			this.mapToFormModel(user);
+			this.userModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+				isWaiting: false,
+			};
+		},
+
+		closeUserModal() {
+			this.userModal.isOpened = false;
 		},
 
 		submitUserForm(userForm) {
@@ -151,21 +169,6 @@ export default {
 			} else {
 				this.createUser(userBody);
 			}
-
-			this.closeUserModal();
-		},
-
-		closeUserModal() {
-			this.userModal.isOpened = false;
-		},
-
-		showDetail(user) {
-			this.mapToFormModel(user);
-			this.userModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
 		},
 
 		mapToFormModel(
@@ -202,24 +205,32 @@ export default {
 		},
 
 		async createUser(userBody) {
+			this.userModal.isWaiting = true;
+
 			await UsersService.createUser(userBody).then((response) => {
 				if (response.status === 200) {
 					Toast("User Successfully Created", "is-success");
 					this.$refs.usersList.fetchData();
+					this.closeUserModal();
 				}
 			}).catch((e) => {
 				Notification(`User ${e}`, "is-danger");
+				this.userModal.isWaiting = false;
 			});
 		},
 
 		async updateUser(id, userBody) {
+			this.userModal.isWaiting = true;
+
 			await UsersService.updateUser(id, userBody).then((response) => {
 				if (response.status === 200) {
 					Toast("User Successfully Updated", "is-success");
 					this.$refs.usersList.fetchData();
+					this.closeUserModal();
 				}
 			}).catch((e) => {
 				Notification(`User ${e}`, "is-danger");
+				this.userModal.isWaiting = false;
 			});
 		},
 
@@ -227,7 +238,7 @@ export default {
 			await UsersService.deleteUser(id).then((response) => {
 				if (response.status === 204) {
 					Toast("User Successfully Deleted", "is-success");
-					this.$refs.usersList.fetchData();
+					this.$refs.usersList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Notification(`User ${e}`, "is-danger");

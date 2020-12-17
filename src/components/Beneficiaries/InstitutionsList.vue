@@ -129,24 +129,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showEdit(id) {
-			const institution = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", institution);
-		},
-
-		showDetailWithId(id) {
-			const institution = this.table.data.find((item) => item.id === id);
-			this.showDetail(institution);
-		},
-
-		showDetail(institution) {
-			this.$emit("onShowDetail", institution);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
-		},
 	},
 };
 </script>

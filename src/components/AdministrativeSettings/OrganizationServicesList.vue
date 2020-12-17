@@ -108,7 +108,7 @@ export default {
 				Notification(`Organizations ${e}`, "is-danger");
 			});
 
-			this.isLoadingList = true;
+			this.isLoadingList = false;
 		},
 
 		prepareDataForTable(data) {
@@ -118,20 +118,6 @@ export default {
 				preparedData.push(formModel);
 			});
 			return preparedData;
-		},
-
-		showDetailWithId(id) {
-			const organizationService = this.table.data.find((item) => item.id === id);
-			this.showDetail(organizationService);
-		},
-
-		showDetail(organizationService) {
-			this.$emit("onShowDetail", organizationService);
-		},
-
-		showEdit(id) {
-			const organizationService = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", organizationService);
 		},
 
 		mapToFormModel(

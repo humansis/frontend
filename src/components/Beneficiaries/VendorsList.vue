@@ -168,24 +168,6 @@ export default {
 			});
 			return preparedVendors;
 		},
-
-		showEdit(id) {
-			const vendor = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", vendor);
-		},
-
-		showDetailWithId(id) {
-			const vendor = this.table.data.find((item) => item.id === id);
-			this.showDetail(vendor);
-		},
-
-		showDetail(vendor) {
-			this.$emit("onShowDetail", vendor);
-		},
-
-		remove(id) {
-			this.$emit("onRemove", id);
-		},
 	},
 };
 </script>

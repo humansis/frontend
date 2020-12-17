@@ -94,10 +94,6 @@ export default {
 
 			this.isLoadingList = false;
 		},
-
-		showDetail(donor) {
-			this.$emit("onShowDetail", donor);
-		},
 	},
 };
 </script>
