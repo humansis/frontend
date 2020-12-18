@@ -88,6 +88,8 @@ export default {
 
 		mapDetailOfHouseholdToFormModel() {
 			// TODO map household members to formModel and collapses
+			// 1. For each beneficiary except householdHead create collapse
+			// 2. Insert into HouseholdHeadForm one beneficiary object
 		},
 
 		removeMember(index) {

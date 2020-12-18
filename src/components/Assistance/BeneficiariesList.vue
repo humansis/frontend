@@ -259,6 +259,7 @@ export default {
 		},
 
 		showDetail(beneficiary) {
+			// TODO Show detail of beneficiary
 			console.log(beneficiary.id);
 			this.editBeneficiaryModal.isOpened = true;
 		},

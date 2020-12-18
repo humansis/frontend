@@ -14,7 +14,7 @@ export default {
 			const validation = this.validationPropertyLevel(fieldName);
 
 			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
+			if (validation.$dirty) {
 				result = validation.$error ? "is-danger" : "is-success";
 			}
 
