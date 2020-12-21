@@ -53,6 +53,17 @@
     z-index: 0;
 }
 
+.vue-multiselect-error {
+    border: 1px solid #f14668;
+    border-radius: 5px;
+}
+
+.vue-multiselect-success {
+    padding-top: -50px;
+    border: 1px solid #48c774;
+    border-radius: 5px;
+}
+
 .table-action {
     &.button.is-light {
         background-color: transparent;

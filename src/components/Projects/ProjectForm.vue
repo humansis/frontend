@@ -39,6 +39,7 @@
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
+					:class="validateMultiselect('selectedSectors')"
 					@select="validate('selectedSectors')"
 				>
 					<template
@@ -96,6 +97,7 @@
 					label="shortname"
 					track-by="id"
 					multiple
+					:class="validateMultiselect('selectedDonors')"
 					:disabled="formDisabled"
 					:options="options.donors"
 					:loading="donorsLoading"
@@ -123,6 +125,7 @@
 					:searchable="false"
 					:disabled="formDisabled"
 					:loading="targetTypesLoading"
+					:class="validateMultiselect('selectedTargetType')"
 					@select="validate('selectedTargetType')"
 				/>
 			</b-field>

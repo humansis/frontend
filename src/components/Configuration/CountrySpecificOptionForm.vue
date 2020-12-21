@@ -26,6 +26,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.types"
+					:class="validateMultiselect('type')"
 					@select="validate('type')"
 				/>
 			</b-field>
@@ -44,6 +45,7 @@
 					:disabled="formDisabled"
 					:options="options.targets"
 					:loading="loadingTargets"
+					:class="validateMultiselect('target')"
 					@select="validate('target')"
 				/>
 			</b-field>

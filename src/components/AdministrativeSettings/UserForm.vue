@@ -40,6 +40,8 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="organizations"
+					:class="validateMultiselect('organization')"
+					@select="validate('organization')"
 				/>
 			</b-field>
 
@@ -55,6 +57,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="rights"
+					:class="validateMultiselect('rights')"
 					@select="onRightsSelect"
 				/>
 			</b-field>
@@ -73,6 +76,8 @@
 					:multiple="true"
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="projects"
+					:class="validateMultiselect('projects')"
+					@select="validate('projects')"
 				/>
 			</b-field>
 
@@ -90,6 +95,8 @@
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="countries"
+					:class="validateMultiselect('countries')"
+					@select="validate('countries')"
 				/>
 				<small v-if="onlyOneCountry" class="ml-2">
 					<strong>You can select only one country</strong>

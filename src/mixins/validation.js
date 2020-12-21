@@ -21,6 +21,17 @@ export default {
 			return result;
 		},
 
+		validateMultiselect(fieldName) {
+			const validation = this.validationPropertyLevel(fieldName);
+
+			let result = "";
+			if (validation.$dirty) {
+				result = validation.$error ? "vue-multiselect-error" : "vue-multiselect-success";
+			}
+			console.log(result);
+			return result;
+		},
+
 		validationPropertyLevel(fields) {
 			let result;
 			const fieldsLevel = fields.split(".");
