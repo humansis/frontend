@@ -159,7 +159,6 @@ export default {
 				iso3,
 				availableCountries,
 				countryFlag,
-
 			};
 
 			if (this.countryModal.isEditing && id) {

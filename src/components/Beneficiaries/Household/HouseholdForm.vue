@@ -45,7 +45,11 @@
 		<div class="columns is-multiline">
 			<div class="column is-one-third">
 				<h4 class="title is-4">Livelihood</h4>
-				<b-field label="Livelihood">
+				<b-field
+					label="Livelihood"
+					:type="validateType('livelihood.livelihood')"
+					:message="validateMsg('livelihood.livelihood', 'Required')"
+				>
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
@@ -53,10 +57,15 @@
 						track-by="code"
 						placeholder="Livelihood"
 						:options="options.livelihood"
+						@blur="validate('livelihood.livelihood')"
 					/>
 				</b-field>
 
-				<b-field label="Income Level">
+				<b-field
+					label="Income Level"
+					:type="validateType('livelihood.incomeLevel')"
+					:message="validateMsg('livelihood.incomeLevel', 'Required')"
+				>
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
 						searchable
@@ -64,16 +73,26 @@
 						track-by="id"
 						placeholder="Income Level"
 						:options="options.incomeLevel"
+						@blur="validate('livelihood.incomeLevel')"
 					/>
 				</b-field>
 
-				<b-field label="Debt Level">
+				<b-field
+					label="Debt Level"
+					:type="validateType('livelihood.debtLevel')"
+					:message="validateMsg('livelihood.debtLevel', 'Required')"
+				>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
+						@input="validate('livelihood.debtLevel')"
 					/>
 				</b-field>
 
-				<b-field label="Assets">
+				<b-field
+					label="Assets"
+					:type="validateType('livelihood.assets')"
+					:message="validateMsg('livelihood.assets', 'Required')"
+				>
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
 						searchable
@@ -82,24 +101,39 @@
 						track-by="code"
 						placeholder="Assets"
 						:options="options.assets"
+						@blur="validate('livelihood.assets')"
 					/>
 				</b-field>
 
-				<b-field label="Food Consumption Score">
+				<b-field
+					label="Food Consumption Score"
+					:type="validateType('livelihood.foodConsumptionScore')"
+					:message="validateMsg('livelihood.foodConsumptionScore', 'Required')"
+				>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
+						@input="validate('livelihood.foodConsumptionScore')"
 					/>
 				</b-field>
 
-				<b-field label="Coping Strategies Index">
+				<b-field
+					label="Coping Strategies Index"
+					:type="validateType('livelihood.copingStrategiesIndex')"
+					:message="validateMsg('livelihood.copingStrategiesIndex', 'Required')"
+				>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
+						@input="validate('livelihood.copingStrategiesIndex')"
 					/>
 				</b-field>
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">External Support</h4>
-				<b-field label="External Support Received Type">
+				<b-field
+					label="External Support Received Type"
+					:type="validateType('externalSupport.externalSupportReceivedType')"
+					:message="validateMsg('externalSupport.externalSupportReceivedType', 'Required')"
+				>
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
 						searchable
@@ -108,10 +142,15 @@
 						track-by="code"
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
+						@blur="validate('externalSupport.externalSupportReceivedType')"
 					/>
 				</b-field>
 
-				<b-field label="Support Date Received">
+				<b-field
+					label="Support Date Received"
+					:type="validateType('externalSupport.supportDateReceived')"
+					:message="validateMsg('externalSupport.supportDateReceived', 'Required')"
+				>
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
@@ -119,11 +158,19 @@
 						placeholder="Click to select..."
 						icon="calendar-day"
 						trap-focus
+						@input="validate('externalSupport.supportDateReceived')"
 					/>
 				</b-field>
 
-				<b-field label="Support Organization">
-					<b-input v-model="formModel.externalSupport.supportOrganization" />
+				<b-field
+					label="Support Organization"
+					:type="validateType('externalSupport.supportOrganization')"
+					:message="validateMsg('externalSupport.supportOrganization', 'Required')"
+				>
+					<b-input
+						v-model="formModel.externalSupport.supportOrganization"
+						@input="validate('externalSupport.supportOrganization')"
+					/>
 				</b-field>
 			</div>
 			<div class="column is-one-third">
@@ -142,7 +189,11 @@
 			</div>
 		</div>
 		<h4 class="title is-4">Household Status</h4>
-		<b-field label="Shelter Type">
+		<b-field
+			label="Shelter Type"
+			:type="validateType('shelterType')"
+			:message="validateMsg('shelterType', 'Required')"
+		>
 			<MultiSelect
 				v-model="formModel.shelterType"
 				searchable
@@ -150,6 +201,7 @@
 				track-by="code"
 				placeholder="Shelter Type"
 				:options="options.shelterType"
+				@blur="validate('shelterType')"
 			/>
 		</b-field>
 		<h4 class="title is-4">Notes</h4>
@@ -165,6 +217,7 @@ import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocat
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
+import { required } from "vuelidate/lib/validators";
 
 const locationModel = {
 	adm1Id: "",
@@ -201,7 +254,27 @@ export default {
 	},
 
 	validations: {
-		formModel: {},
+		formModel: {
+			livelihood: {
+				livelihood: { required },
+				incomeLevel: { required },
+				debtLevel: { required },
+				assets: { required },
+				foodConsumptionScore: { required },
+				copingStrategiesIndex: { required },
+			},
+			externalSupport: {
+				externalSupportReceivedType: { required },
+				supportDateReceived: { required },
+				supportOrganization: { required },
+			},
+			countrySpecificOptions: {
+				idPoorNo: {},
+				equityCardNo: {},
+				fields: {},
+			},
+			shelterType: { required },
+		},
 	},
 
 	data() {
@@ -336,6 +409,10 @@ export default {
 		},
 
 		submit() {
+			// TODO submit current or resident location forms
+			this.$refs.currentLocationForm.submitLocationForm();
+			this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
+
 			this.$v.$touch();
 			return !this.$v.$invalid;
 		},

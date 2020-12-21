@@ -1,6 +1,10 @@
 <template>
 	<section>
-		<b-field label="Type Of Location">
+		<b-field
+			label="Type Of Location"
+			:type="validateType('typeOfLocation')"
+			:message="validateMsg('typeOfLocation', 'Required')"
+		>
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
 				placeholder="Type Of Location"
@@ -8,6 +12,7 @@
 				track-by="code"
 				:options="options.typeOfLocation"
 				:searchable="false"
+				@blur="validate('typeOfLocation')"
 			/>
 		</b-field>
 		<div v-if="formModel.typeOfLocation === 'Camp'">
@@ -37,24 +42,39 @@
 			</b-field>
 		</div>
 		<div v-else>
-			<b-field label="Address Number">
+			<b-field
+				label="Address Number"
+				:type="validateType('addressNumber')"
+				:message="validateMsg('addressNumber', 'Required')"
+			>
 				<b-input
 					v-model="formModel.addressNumber"
 					placeholder="Address Number"
+					@input="validate('addressNumber')"
 				/>
 			</b-field>
 
-			<b-field label="Address Street">
+			<b-field
+				label="Address Street"
+				:type="validateType('addressStreet')"
+				:message="validateMsg('addressStreet', 'Required')"
+			>
 				<b-input
 					v-model="formModel.addressStreet"
 					placeholder="Address Street"
+					@input="validate('addressStreet')"
 				/>
 			</b-field>
 
-			<b-field label="Address Postcode">
+			<b-field
+				label="Address Postcode"
+				:type="validateType('addressPostcode')"
+				:message="validateMsg('addressPostcode', 'Required')"
+			>
 				<b-input
 					v-model="formModel.addressPostCode"
 					placeholder="Address Postcode"
+					@input="validate('addressPostcode')"
 				/>
 			</b-field>
 		</div>
@@ -63,7 +83,9 @@
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
+import Validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
+import { required } from "vuelidate/lib/validators";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -71,6 +93,8 @@ export default {
 	props: {
 		formModel: Object,
 	},
+
+	mixins: [Validation],
 
 	data() {
 		return {
@@ -80,6 +104,18 @@ export default {
 				camps: [],
 			},
 		};
+	},
+
+	validations: {
+		formModel: {
+			typeOfLocation: { required },
+			camp: {},
+			campName: {},
+			tentNumber: {},
+			addressNumber: { required },
+			addressStreet: { required },
+			addressPostcode: { required },
+		},
 	},
 
 	mounted() {
@@ -97,6 +133,7 @@ export default {
 
 		submitTypeOfLocationForm() {
 			this.$v.$touch();
+			return this.$v.$invalid;
 		},
 	},
 };
