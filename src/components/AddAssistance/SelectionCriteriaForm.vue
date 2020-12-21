@@ -38,7 +38,6 @@
 					v-if="formModel.criteria === 'Date Of Birth'"
 					v-model="formModel.value"
 					show-week-number
-					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus

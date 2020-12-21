@@ -16,7 +16,6 @@
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
-					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus

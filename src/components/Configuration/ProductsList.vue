@@ -90,9 +90,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "name", sortable: true },
-					{ key: "unit", sortable: true },
-					{ type: "image", key: "image" },
+					{ key: "name", width: "400", sortable: true },
+					{ key: "unit", width: "200", sortable: true },
+					{ type: "image", key: "image", width: "100" },
 				],
 				total: 0,
 				currentPage: 1,

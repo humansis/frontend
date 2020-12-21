@@ -140,8 +140,8 @@ export default {
 						this.filters[key].push(value.id);
 					});
 				} else if (selectedFilters[key]) {
-					const date = this.$moment(selectedFilters[key]);
-					this.filters[key] = [date.format("YYYY-MM-DD")];
+					const date = new Date(selectedFilters[key]);
+					this.filters[key] = [date.toISOString()];
 				}
 			});
 			await this.fetchData();
