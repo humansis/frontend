@@ -32,7 +32,7 @@
 			@onShowDetail="showDetail"
 		/>
 		<VoucherList
-			v-show="false"
+			v-if="false"
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"

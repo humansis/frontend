@@ -1,7 +1,7 @@
 import Vue from "vue";
 import CONST from "@/const";
 
-import state from "@/store/state";
+import store from "@/store/index";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
@@ -68,11 +68,7 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
 
-	let country = await state.country.iso3;
-	if (!country) {
-		country = localStorage.getItem("country");
-	}
-	headers.Country = country;
+	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
 
 	const config = { headers };
 
@@ -114,7 +110,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		headers.Authentication = localStorage.getItem("user-token");
 	}
 
-	headers.Country = state.country.iso3;
+	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
 
 	const config = { headers };
 

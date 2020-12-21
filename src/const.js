@@ -8,6 +8,8 @@ const API_HOST = "http://localhost:8087";
 const API_PREFIX = "/api/basic";
 const API = API_HOST + API_PREFIX;
 
+const DEFAULT_COUNTRY = "KHM";
+
 export default {
 	API_HOST,
 	API_HOST_MOCK,
@@ -16,4 +18,5 @@ export default {
 	API,
 	API_MOCK,
 	API_ON,
+	DEFAULT_COUNTRY,
 };

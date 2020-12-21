@@ -22,7 +22,6 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
 					v-bind="column"
 					:key="column.id"
 					v-slot="props"
@@ -33,7 +32,7 @@
 			<b-table-column
 				label="Actions"
 				v-slot="props"
-				width="140"
+				width="150"
 				centered
 			>
 				<div class="block">
@@ -91,8 +90,8 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "name" },
-					{ key: "unit" },
+					{ key: "name", sortable: true },
+					{ key: "unit", sortable: true },
 					{ type: "image", key: "image" },
 				],
 				total: 0,
