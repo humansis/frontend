@@ -72,7 +72,7 @@
 				:message="validateMsg('addressPostcode', 'Required')"
 			>
 				<b-input
-					v-model="formModel.addressPostCode"
+					v-model="formModel.addressPostcode"
 					placeholder="Address Postcode"
 					@input="validate('addressPostcode')"
 				/>
