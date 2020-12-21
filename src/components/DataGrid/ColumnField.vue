@@ -102,17 +102,17 @@ export default {
 				if (value.value) {
 					return value.value;
 				}
-				const newDate = this.$moment(this.data.row[this.column.field]);
+				const newDate = new Date(this.data.row[this.column.field]);
 				if (newDate.isValid()) {
-					return newDate.format("DD-MM-YYYY");
+					return newDate.toLocaleDateString();
 				}
 			}
 			return value;
 		},
 
 		formattedDate() {
-			const newDate = this.$moment(this.data.row[this.column.field]);
-			return newDate.format("DD-MM-YYYY");
+			const newDate = new Date(this.data.row[this.column.field]);
+			return newDate.toLocaleDateString();
 		},
 	},
 

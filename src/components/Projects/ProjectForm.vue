@@ -58,7 +58,6 @@
 				<b-datepicker
 					v-model="formModel.startDate"
 					show-week-number
-					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
@@ -72,13 +71,12 @@
 				:type="validateType('endDate')"
 				:message="validateMsg(
 					'endDate',
-					`Required and must be greater than ${$moment().format('DD/MM/YYYY')} Date and Start Date`
+					`Required and must be greater than ${new Date().toLocaleDateString()} Date and Start Date`
 				)"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
 					show-week-number
-					locale="en-GB"
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus

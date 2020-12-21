@@ -78,7 +78,7 @@ export default {
 		},
 
 		choosePeriod() {
-			this.$emit("choosePeriodChanged", { from: this.from, to: this.to });
+			this.$emit("choosePeriodChanged", { from: new Date(this.from).toISOString(), to: new Date(this.to).toISOString() });
 		},
 	},
 };

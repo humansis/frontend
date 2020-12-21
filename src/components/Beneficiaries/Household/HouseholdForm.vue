@@ -154,7 +154,6 @@
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
-						locale="en-US"
 						placeholder="Click to select..."
 						icon="calendar-day"
 						trap-focus

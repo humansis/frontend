@@ -59,7 +59,7 @@
 				v-slot="props"
 				label="Actions"
 				centered
-				width="220"
+				width="230"
 			>
 				<div class="block">
 					<ActionButton
@@ -151,6 +151,7 @@ export default {
 					{
 						key: "dateDistribution",
 						label: "Date Of Distribution",
+						type: "date",
 					},
 					{ key: "target" },
 					{

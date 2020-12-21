@@ -14,14 +14,14 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Start Date</p>
-					<p class="title">{{ $moment(projectSummary.startDate).format("DD-MM-YYYY") }}</p>
+					<p class="title">{{ new Date(projectSummary.startDate).toLocaleDateString() }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">End Date</p>
-					<p class="title">{{ $moment(projectSummary.endDate).format("DD-MM-YYYY") }}</p>
+					<p class="title">{{ new Date(projectSummary.endDate).toLocaleDateString() }}</p>
 				</div>
 			</div>
 

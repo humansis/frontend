@@ -82,7 +82,7 @@ export default {
 					adm2: formModel.adm2,
 					adm3: formModel.adm3,
 					adm4: formModel.adm4,
-					dateOfAssistance: formModel.dateOfAssistance,
+					dateOfAssistance: formModel.dateOfAssistance.toISOString(),
 					target: formModel.target,
 				};
 			}
