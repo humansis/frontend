@@ -130,9 +130,9 @@ export default {
 			this.fetchVillages(id);
 		},
 
-		fetchProvinces() {
+		async fetchProvinces() {
 			this.provincesLoading = true;
-			LocationsService.getListOfAdm1()
+			await LocationsService.getListOfAdm1()
 				.then((result) => { this.provinces = result.data; })
 				.catch((e) => {
 					Notification(`Adm1 ${e}`, "is-danger");
@@ -140,9 +140,9 @@ export default {
 			this.provincesLoading = false;
 		},
 
-		fetchDistricts(adm1Id) {
+		async fetchDistricts(adm1Id) {
 			this.districtsLoading = true;
-			LocationsService.getListOfAdm2(adm1Id)
+			await LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.districts = result.data; })
 				.catch((e) => {
 					Notification(`Adm2 ${e}`, "is-danger");
@@ -150,9 +150,9 @@ export default {
 			this.districtsLoading = false;
 		},
 
-		fetchCommunes(adm2Id) {
+		async fetchCommunes(adm2Id) {
 			this.communesLoading = true;
-			LocationsService.getListOfAdm3(adm2Id)
+			await LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.communes = result.data; })
 				.catch((e) => {
 					Notification(`Adm3 ${e}`, "is-danger");
@@ -160,9 +160,9 @@ export default {
 			this.communesLoading = false;
 		},
 
-		fetchVillages(adm3Id) {
+		async fetchVillages(adm3Id) {
 			this.villagesLoading = true;
-			LocationsService.getListOfAdm4(adm3Id)
+			await LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.villages = result.data; })
 				.catch((e) => {
 					Notification(`Adm4 ${e}`, "is-danger");

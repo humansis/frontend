@@ -66,6 +66,8 @@
 						<MultiSelect
 							v-model="formModel.residency.residencyStatus"
 							searchable
+							label="value"
+							track-by="code"
 							:options="options.residencyStatus"
 						/>
 					</b-field>
@@ -96,9 +98,13 @@
 						<MultiSelect
 							v-model="formModel.phone1.type"
 							searchable
+							selectLabel=""
+							deselectLabel=""
+							label="value"
+							track-by="code"
 							:options="options.phoneType"
 						/>
-						<b-checkbox v-model="formModel.phone1.proxy">
+						<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
 							Proxy
 						</b-checkbox>
 					</b-field>
@@ -106,13 +112,14 @@
 						<MultiSelect
 							v-model="formModel.phone1.ext"
 							searchable
-							label="name"
-							track-by="id"
+							label="value"
+							track-by="code"
 							:options="options.phonePrefixes"
 						/>
+					</b-field>
+					<b-field label="Phone No. 1">
 						<b-input
 							v-model="formModel.phone1.phoneNo"
-							placeholder="Phone No. 1"
 						/>
 					</b-field>
 				</div>
@@ -123,9 +130,13 @@
 						<MultiSelect
 							v-model="formModel.phone2.type"
 							searchable
+							selectLabel=""
+							deselectLabel=""
+							label="value"
+							track-by="code"
 							:options="options.phoneType"
 						/>
-						<b-checkbox v-model="formModel.phone2.proxy">
+						<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
 							Proxy
 						</b-checkbox>
 					</b-field>
@@ -133,13 +144,14 @@
 						<MultiSelect
 							v-model="formModel.phone2.ext"
 							searchable
-							label="name"
-							track-by="id"
+							label="value"
+							track-by="code"
 							:options="options.phonePrefixes"
 						/>
+					</b-field>
+					<b-field label="Phone No. 2">
 						<b-input
 							v-model="formModel.phone2.phoneNo"
-							placeholder="Phone No. 1"
 						/>
 					</b-field>
 				</div>
@@ -147,10 +159,10 @@
 			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
 					v-for="vulnerability of options.vulnerabilities"
-					v-model="formModel.vulnerabilities[vulnerability.id]"
-					:key="vulnerability.id"
+					v-model="formModel.vulnerabilities[vulnerability.code]"
+					:key="vulnerability.code"
 				>
-					{{ vulnerability.name }}
+					{{ prepareVulnerability(vulnerability.value) }}
 				</b-checkbox>
 			</div>
 		</form>
@@ -161,6 +173,7 @@
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -229,31 +242,25 @@ export default {
 					{ code: "F", value: "Female" },
 				],
 				idType: [],
-				// TODO get from API
-				residencyStatus: ["Refugee", "IDP", "Resident"],
+				residencyStatus: [],
 				// TODO get from API
 				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
-				// TODO get from API
-				phoneType: ["Landline", "Mobile"],
+				phoneType: [],
 				// TODO get from API
 				phonePrefixes: [
 					{ code: "+420", value: "CZ - +420" },
 					{ code: "+421", value: "SK - +421" },
 				],
-				// TODO get from API
-				vulnerabilities: [
-					{ code: "disabled", value: "Disabled" },
-					{ code: "soloParent", value: "Solo Parent" },
-					{ code: "lactating", value: "Lactating" },
-					{ code: "pregnant", value: "Pregnant" },
-					{ code: "chronically", value: "Chronically" },
-				],
+				vulnerabilities: [],
 			},
 		};
 	},
 
 	mounted() {
 		this.fetchNationalCardTypes();
+		this.fetchVulnerabilities();
+		this.fetchPhoneTypes();
+		this.fetchResidenceStatus();
 	},
 
 	methods: {
@@ -261,11 +268,39 @@ export default {
 			// TODO map household param to formModel
 		},
 
+		prepareVulnerability(name) {
+			return normalizeText(name);
+		},
+
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then((response) => { this.idType = response.data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
+				});
+		},
+
+		async fetchPhoneTypes() {
+			await BeneficiariesService.getListOfTypesOfPhones()
+				.then((response) => { this.options.phoneType = response.data; })
+				.catch((e) => {
+					Notification(`Phone types ${e}`, "is-danger");
+				});
+		},
+
+		async fetchVulnerabilities() {
+			await BeneficiariesService.getListOfVulnerabilities()
+				.then((response) => { this.options.vulnerabilities = response.data; })
+				.catch((e) => {
+					Notification(`Vulnerabilities ${e}`, "is-danger");
+				});
+		},
+
+		async fetchResidenceStatus() {
+			await BeneficiariesService.getListOfResidenceStatuses()
+				.then((response) => { this.options.residencyStatus = response.data; })
+				.catch((e) => {
+					Notification(`Residence Status ${e}`, "is-danger");
 				});
 		},
 
