@@ -48,7 +48,13 @@
 						</span>
 					</button>
 				</p>
-				<b-numberinput size="is-medium" placeholder="%" controls-position="compact" />
+				<b-numberinput
+					expanded
+					size="is-medium"
+					placeholder="%"
+					controls-position="compact"
+					controls-alignment="right"
+				/>
 			</b-field>
 			<ExportButton
 				v-if="exportButton"
@@ -71,6 +77,7 @@
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -89,11 +96,13 @@
 					<ActionButton
 						icon="edit"
 						type="is-link"
-						@click.native="showDetail(props.row)"
+						tooltip="Edit"
+						@click.native="showEdit(props.row)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Assistance"
+						tooltip="Delete"
 						:id="props.row.id"
 						@submitted="removeAssistance"
 					/>

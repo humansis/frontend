@@ -44,6 +44,7 @@
 			@clicked="goToValidateAndLock"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -63,16 +64,16 @@
 			>
 				<div class="block">
 					<ActionButton
+						icon="search"
+						type="is-info"
+						tooltip="Show Detail"
+						@click.native="showDetailWithId(props.row.id)"
+					/>
+					<ActionButton
 						icon="edit"
 						type="is-link"
 						tooltip="Edit"
 						@click.native="showEdit(props.row.id)"
-					/>
-					<ActionButton
-						icon="search"
-						type="is-link"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<ActionButton
 						icon="lock"

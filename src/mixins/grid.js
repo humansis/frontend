@@ -26,6 +26,11 @@ export default {
 			this.fetchData();
 		},
 
+		onChangePerPage(perPage) {
+			this.table.perPage = perPage;
+			this.fetchData();
+		},
+
 		removeFromList(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			const index = this.table.data.indexOf(entity);

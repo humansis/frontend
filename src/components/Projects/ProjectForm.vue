@@ -137,6 +137,9 @@
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					controls-alignment="right"
+					controls-position="compact"
+					expanded
 					:disabled="formDisabled"
 					@blur="validate('totalTarget')"
 				/>

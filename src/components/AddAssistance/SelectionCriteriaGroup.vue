@@ -39,6 +39,7 @@
 								icon="trash"
 								centered
 								type="is-danger"
+								tooltip="Delete"
 								@click.native="remove(props.index)"
 							/>
 						</b-table-column>

@@ -93,18 +93,21 @@
 			>
 				<div class="block">
 					<ActionButton
-						icon="edit"
-						type="is-link"
-						@click.native="editHousehold(props.row.id)"
-					/>
-					<ActionButton
 						icon="search"
 						type="is-info"
+						tooltip="Go To Detail"
 						@click.native="goToSummaryDetail(props.row.id)"
+					/>
+					<ActionButton
+						icon="edit"
+						type="is-link"
+						tooltip="Edit"
+						@click.native="editHousehold(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Household"
+						tooltip="Delete"
 						:id="props.row.id"
 						@submitted="remove"
 					/>

@@ -86,6 +86,9 @@
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
+						expanded
+						controls-alignment="right"
+						controls-position="compact"
 						@input="validate('livelihood.debtLevel')"
 					/>
 				</b-field>
@@ -115,6 +118,9 @@
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
+						expanded
+						controls-alignment="right"
+						controls-position="compact"
 						@input="validate('livelihood.foodConsumptionScore')"
 					/>
 				</b-field>
@@ -126,6 +132,9 @@
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
+						expanded
+						controls-alignment="right"
+						controls-position="compact"
 						@input="validate('livelihood.copingStrategiesIndex')"
 					/>
 				</b-field>
