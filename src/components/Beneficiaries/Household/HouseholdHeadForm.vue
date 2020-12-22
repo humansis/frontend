@@ -274,7 +274,7 @@ export default {
 
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.idType = response.data; })
+				.then((response) => { this.options.idType = response.data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});

@@ -115,9 +115,7 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import ProjectsService from "@/services/ProjectsService";
 import Validation from "@/mixins/validation";
-import { Notification } from "@/utils/UI";
 
 export default {
 	name: "OrganizationServiceForm",
@@ -144,10 +142,6 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchProjects();
-	},
-
 	methods: {
 		submitForm() {
 			this.$v.$touch();
@@ -162,18 +156,6 @@ export default {
 		closeForm() {
 			this.$v.$reset();
 			this.$emit("formClosed");
-		},
-
-		fetchProjects() {
-			ProjectsService.getListOfProjects(
-				1,
-				15,
-				"desc",
-			).then((response) => {
-				this.projects = response.data;
-			}).catch((e) => {
-				Notification(`Projects ${e}`, "is-danger");
-			});
 		},
 	},
 };

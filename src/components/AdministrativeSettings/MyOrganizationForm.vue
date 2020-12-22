@@ -62,9 +62,9 @@
 						<div class="option__desc">
 							<span
 								class="option__title"
-								:style="`font-family: ${props.option.name}, sans-serif`"
+								:style="`font-family: ${props.option.value}, sans-serif`"
 							>
-								{{ props.option.name }}
+								{{ props.option.value }}
 							</span>
 						</div>
 					</template>
@@ -72,9 +72,9 @@
 						<div class="option__desc">
 							<span
 								class="option__title"
-								:style="`font-family: ${props.option.name}, sans-serif`"
+								:style="`font-family: ${props.option.value}, sans-serif`"
 							>
-								{{ props.option.name }}
+								{{ props.option.value }}
 							</span>
 						</div>
 					</template>
