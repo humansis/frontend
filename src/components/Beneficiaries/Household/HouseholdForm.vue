@@ -57,6 +57,7 @@
 						track-by="code"
 						placeholder="Livelihood"
 						:options="options.livelihood"
+						:class="validateMultiselect('livelihood.livelihood')"
 						@blur="validate('livelihood.livelihood')"
 					/>
 				</b-field>
@@ -73,6 +74,7 @@
 						track-by="id"
 						placeholder="Income Level"
 						:options="options.incomeLevel"
+						:class="validateMultiselect('livelihood.incomeLevel')"
 						@blur="validate('livelihood.incomeLevel')"
 					/>
 				</b-field>
@@ -101,6 +103,7 @@
 						track-by="code"
 						placeholder="Assets"
 						:options="options.assets"
+						:class="validateMultiselect('livelihood.assets')"
 						@blur="validate('livelihood.assets')"
 					/>
 				</b-field>
@@ -142,6 +145,7 @@
 						track-by="code"
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
+						:class="validateMultiselect('externalSupport.externalSupportReceivedType')"
 						@blur="validate('externalSupport.externalSupportReceivedType')"
 					/>
 				</b-field>
@@ -200,6 +204,7 @@
 				track-by="code"
 				placeholder="Shelter Type"
 				:options="options.shelterType"
+				:class="validateMultiselect('shelterType')"
 				@blur="validate('shelterType')"
 			/>
 		</b-field>

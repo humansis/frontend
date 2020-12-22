@@ -36,7 +36,9 @@
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
+					:class="validateMultiselect('availableCurrencies')"
 					:options="currencies"
+					@select="validate('availableCurrencies')"
 				/>
 			</b-field>
 
@@ -52,6 +54,8 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="flags"
+					:class="validateMultiselect('countryFlag')"
+					@select="validate('countryFlag')"
 				>
 					<template slot="singleLabel" slot-scope="props">
 						<CountryFlag :country="props.option.id" size="normal" />

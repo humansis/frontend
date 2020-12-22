@@ -13,6 +13,7 @@
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="provinces"
+				:class="validateMultiselect('adm1Id')"
 				@select="onProvinceSelect"
 			/>
 		</b-field>
@@ -29,6 +30,7 @@
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="districts"
+				:class="validateMultiselect('adm2Id')"
 				@select="onDistrictSelect"
 			/>
 		</b-field>
@@ -45,6 +47,7 @@
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="communes"
+				:class="validateMultiselect('adm3Id')"
 				@select="onCommuneSelect"
 			/>
 		</b-field>
@@ -61,6 +64,7 @@
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="villages"
+				:class="validateMultiselect('adm4Id')"
 				@select="validate('adm4Id')"
 			/>
 		</b-field>

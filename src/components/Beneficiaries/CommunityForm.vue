@@ -39,6 +39,7 @@
 							track-by="code"
 							:disabled="formDisabled"
 							:options="phonePrefixes"
+							:class="validateMultiselect('phonePrefix')"
 							@select="validate('phonePrefix')"
 						/>
 					</b-field>
@@ -69,6 +70,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="nationalCardTypes"
+					:class="validateMultiselect('nationalCardType')"
 					@select="validate('nationalCardType')"
 				/>
 			</b-field>

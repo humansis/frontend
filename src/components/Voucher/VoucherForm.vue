@@ -15,6 +15,7 @@
 					track-by="id"
 					:disabled="formDisabled"
 					:options="projects"
+					:class="validateMultiselect('projectId')"
 					@select="validate('projectId')"
 				/>
 				<b-input
@@ -84,6 +85,7 @@
 					track-by="value"
 					:disabled="formDisabled"
 					:options="currencies"
+					:class="validateMultiselect('currency')"
 					@select="validate('currency')"
 				/>
 			</b-field>

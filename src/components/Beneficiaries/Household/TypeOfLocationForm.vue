@@ -12,6 +12,7 @@
 				track-by="code"
 				:options="options.typeOfLocation"
 				:searchable="false"
+				:class="validateMultiselect('typeOfLocation')"
 				@blur="validate('typeOfLocation')"
 			/>
 		</b-field>

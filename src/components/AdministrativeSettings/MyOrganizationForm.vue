@@ -55,6 +55,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="fonts"
+					:class="validateMultiselect('font')"
 					@blur="validate('font')"
 				>
 					<template slot="singleLabel" slot-scope="props">
