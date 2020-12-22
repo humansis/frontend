@@ -72,7 +72,7 @@
 				:type="validateType('endDate')"
 				:message="validateMsg(
 					'endDate',
-					`Required and must be greater than ${new Date().toLocaleDateString()} Date and Start Date`
+					`Required and must be greater than Start Date`
 				)"
 			>
 				<b-datepicker
@@ -174,8 +174,7 @@ import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
 import HomeService from "@/services/HomeService";
 
-const minDate = (endDate, formModel) => new Date(endDate) > new Date()
-	&& new Date(endDate) > new Date(formModel.startDate);
+const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
