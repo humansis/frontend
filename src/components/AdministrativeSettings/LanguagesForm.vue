@@ -20,7 +20,7 @@
 				<b-checkbox
 					v-model="formModel.published"
 					:disabled="formDisabled"
-					@select="validate('published')"
+					@input="validate('published')"
 				/>
 			</b-field>
 		</section>

@@ -13,7 +13,7 @@
 				:options="options.typeOfLocation"
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
-				@blur="validate('typeOfLocation')"
+				@select="validate('typeOfLocation')"
 			/>
 		</b-field>
 		<div v-if="formModel.typeOfLocation === 'Camp'">
@@ -51,7 +51,7 @@
 				<b-input
 					v-model="formModel.addressNumber"
 					placeholder="Address Number"
-					@input="validate('addressNumber')"
+					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
@@ -63,7 +63,7 @@
 				<b-input
 					v-model="formModel.addressStreet"
 					placeholder="Address Street"
-					@input="validate('addressStreet')"
+					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
@@ -75,7 +75,7 @@
 				<b-input
 					v-model="formModel.addressPostcode"
 					placeholder="Address Postcode"
-					@input="validate('addressPostcode')"
+					@blur="validate('addressPostcode')"
 				/>
 			</b-field>
 		</div>

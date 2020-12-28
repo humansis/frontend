@@ -38,7 +38,7 @@
 					controls-position="compact"
 					placeholder="Quantity Of Booklets"
 					:disabled="formDisabled"
-					@blur="validate('Quantity Of Booklets')"
+					@input="validate('Quantity Of Booklets')"
 				/>
 			</b-field>
 
@@ -55,7 +55,7 @@
 					controls-alignment="right"
 					controls-position="compact"
 					:disabled="formDisabled"
-					@blur="validate('quantityOfVouchers')"
+					@input="validate('quantityOfVouchers')"
 				/>
 			</b-field>
 

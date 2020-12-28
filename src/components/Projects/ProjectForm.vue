@@ -138,7 +138,7 @@
 				<b-numberinput
 					v-model="formModel.totalTarget"
 					:disabled="formDisabled"
-					@blur="validate('totalTarget')"
+					@input="validate('totalTarget')"
 				/>
 			</b-field>
 

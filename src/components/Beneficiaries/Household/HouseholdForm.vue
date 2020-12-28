@@ -104,7 +104,7 @@
 						placeholder="Assets"
 						:options="options.assets"
 						:class="validateMultiselect('livelihood.assets')"
-						@blur="validate('livelihood.assets')"
+						@select="validate('livelihood.assets')"
 					/>
 				</b-field>
 
@@ -146,7 +146,7 @@
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
 						:class="validateMultiselect('externalSupport.externalSupportReceivedType')"
-						@blur="validate('externalSupport.externalSupportReceivedType')"
+						@select="validate('externalSupport.externalSupportReceivedType')"
 					/>
 				</b-field>
 
@@ -172,7 +172,7 @@
 				>
 					<b-input
 						v-model="formModel.externalSupport.supportOrganization"
-						@input="validate('externalSupport.supportOrganization')"
+						@blur="validate('externalSupport.supportOrganization')"
 					/>
 				</b-field>
 			</div>
@@ -205,7 +205,7 @@
 				placeholder="Shelter Type"
 				:options="options.shelterType"
 				:class="validateMultiselect('shelterType')"
-				@blur="validate('shelterType')"
+				@select="validate('shelterType')"
 			/>
 		</b-field>
 		<h4 class="title is-4">Notes</h4>
