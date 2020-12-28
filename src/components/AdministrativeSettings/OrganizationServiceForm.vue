@@ -26,7 +26,7 @@
 				v-if="formModel.password"
 				label="Password"
 				:type="validateType('password')"
-				:message="validateMsg('password', 'Required')"
+				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -41,7 +41,7 @@
 				v-if="formModel.username"
 				label="Username"
 				:type="validateType('username')"
-				:message="validateMsg('username', 'Required')"
+				:message="validateMsg('username')"
 			>
 				<b-input
 					v-model="formModel.username"
@@ -54,7 +54,7 @@
 				v-if="formModel.email"
 				label="Email"
 				:type="validateType('email')"
-				:message="validateMsg('email', 'Required')"
+				:message="validateMsg('email')"
 			>
 				<b-input
 					v-model="formModel.email"
@@ -67,7 +67,7 @@
 				v-if="formModel.token"
 				label="Token"
 				:type="validateType('token')"
-				:message="validateMsg('token', 'Required')"
+				:message="validateMsg('token')"
 			>
 				<b-input
 					v-model="formModel.token"

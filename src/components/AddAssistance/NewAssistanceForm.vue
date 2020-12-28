@@ -18,7 +18,7 @@
 			<b-field
 				label="Target"
 				:type="validateType('target')"
-				:message="validateMsg('target', 'Target is Required')"
+				:message="validateMsg('target')"
 			>
 				<div class="block">
 					<b-radio

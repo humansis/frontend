@@ -4,7 +4,7 @@
 			<b-field
 				label="Username"
 				:type="validateType('username')"
-				:message="validateMsg('username', 'Required')"
+				:message="validateMsg('username')"
 			>
 				<b-input
 					v-model="formModel.username"
@@ -17,7 +17,7 @@
 				v-if="formModel.creating"
 				label="Password"
 				:type="validateType('password')"
-				:message="validateMsg('password', 'Required')"
+				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -31,7 +31,7 @@
 			<b-field
 				label="Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -43,7 +43,7 @@
 			<b-field
 				label="Description"
 				:type="validateType('description')"
-				:message="validateMsg('description', 'Required')"
+				:message="validateMsg('description')"
 			>
 				<b-input
 					v-model="formModel.description"
@@ -55,7 +55,7 @@
 			<b-field
 				label="Address Street"
 				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet', 'Required')"
+				:message="validateMsg('addressStreet')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
@@ -67,7 +67,7 @@
 			<b-field
 				label="Address Number"
 				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber', 'Required')"
+				:message="validateMsg('addressNumber')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
@@ -79,7 +79,7 @@
 			<b-field
 				label="Address Postcode"
 				:type="validateType('addressPostcode')"
-				:message="validateMsg('addressPostcode', 'Required')"
+				:message="validateMsg('addressPostcode')"
 			>
 				<b-input
 					v-model="formModel.addressPostcode"

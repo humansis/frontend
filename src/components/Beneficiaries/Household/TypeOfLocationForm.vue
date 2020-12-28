@@ -3,7 +3,7 @@
 		<b-field
 			label="Type Of Location"
 			:type="validateType('typeOfLocation')"
-			:message="validateMsg('typeOfLocation', 'Required')"
+			:message="validateMsg('typeOfLocation')"
 		>
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
@@ -46,7 +46,7 @@
 			<b-field
 				label="Address Number"
 				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber', 'Required')"
+				:message="validateMsg('addressNumber')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
@@ -58,7 +58,7 @@
 			<b-field
 				label="Address Street"
 				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet', 'Required')"
+				:message="validateMsg('addressStreet')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
@@ -70,7 +70,7 @@
 			<b-field
 				label="Address Postcode"
 				:type="validateType('addressPostcode')"
-				:message="validateMsg('addressPostcode', 'Required')"
+				:message="validateMsg('addressPostcode')"
 			>
 				<b-input
 					v-model="formModel.addressPostcode"

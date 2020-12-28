@@ -4,7 +4,7 @@
 			<b-field
 				label="Project"
 				:type="validateType('projectId')"
-				:message="validateMsg('projectId', 'Required')"
+				:message="validateMsg('projectId')"
 			>
 				<MultiSelect
 					v-model="formModel.projectId"
@@ -28,7 +28,7 @@
 			<b-field
 				label="Quantity Of Booklets"
 				:type="validateType('quantityOfBooklets')"
-				:message="validateMsg('quantityOfBooklets', 'Required')"
+				:message="validateMsg('quantityOfBooklets')"
 			>
 				<b-numberinput
 					v-model="formModel.quantityOfBooklets"
@@ -45,7 +45,7 @@
 			<b-field
 				label="Quantity Of Vouchers"
 				:type="validateType('quantityOfVouchers')"
-				:message="validateMsg('quantityOfVouchers', 'Required')"
+				:message="validateMsg('quantityOfVouchers')"
 			>
 				<b-numberinput
 					v-model="formModel.quantityOfVouchers"
@@ -62,7 +62,7 @@
 			<b-field
 				label="Individual Value"
 				:type="validateType('individualValue')"
-				:message="validateMsg('individualValue', 'Required')"
+				:message="validateMsg('individualValue')"
 			>
 				<b-input
 					v-model="formModel.individualValue"
@@ -75,7 +75,7 @@
 			<b-field
 				label="Currency"
 				:type="validateType('currency')"
-				:message="validateMsg('currency', 'Required')"
+				:message="validateMsg('currency')"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
@@ -103,7 +103,7 @@
 				v-if="formModel.defineAPassword || formDisabled"
 				label="Password"
 				:type="validateType('password')"
-				:message="validateMsg('password', 'Required')"
+				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"

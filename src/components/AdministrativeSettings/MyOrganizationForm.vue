@@ -4,7 +4,7 @@
 			<b-field
 				label="Organization Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"

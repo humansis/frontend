@@ -4,7 +4,7 @@
 			<b-field
 				label="Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -15,7 +15,7 @@
 			<b-field
 				label="Published"
 				:type="validateType('published')"
-				:message="validateMsg('published', 'Required')"
+				:message="validateMsg('published')"
 			>
 				<b-checkbox
 					v-model="formModel.published"

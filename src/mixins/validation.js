@@ -5,7 +5,7 @@ export default {
 			validation.$touch();
 		},
 
-		validateMsg(fieldName, message) {
+		validateMsg(fieldName, message = "Required") {
 			const validation = this.validationPropertyLevel(fieldName);
 			return validation.$error ? message : "";
 		},

@@ -17,7 +17,7 @@
 			<b-field
 				label="Password"
 				:type="validateType('password')"
-				:message="validateMsg('password', 'Required')"
+				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -31,7 +31,7 @@
 			<b-field
 				label="Organization"
 				:type="validateType('organization')"
-				:message="validateMsg('organization', 'Required')"
+				:message="validateMsg('organization')"
 			>
 				<MultiSelect
 					v-model="formModel.organization"
@@ -48,7 +48,7 @@
 			<b-field
 				label="Rights"
 				:type="validateType('rights')"
-				:message="validateMsg('rights', 'Required')"
+				:message="validateMsg('rights')"
 			>
 				<MultiSelect
 					v-model="formModel.rights"
@@ -66,7 +66,7 @@
 				v-show="!formModel.disabledProject"
 				label="Project"
 				:type="validateType('projects')"
-				:message="validateMsg('projects', 'Required')"
+				:message="validateMsg('projects')"
 			>
 				<MultiSelect
 					v-model="formModel.projects"
@@ -85,7 +85,7 @@
 				v-show="!formModel.disabledCountry"
 				label="Country"
 				:type="validateType('countries')"
-				:message="validateMsg('countries', 'Required')"
+				:message="validateMsg('countries')"
 			>
 				<MultiSelect
 					v-model="formModel.countries"

@@ -4,7 +4,7 @@
 			<b-field
 				label="Contact Name"
 				:type="validateType('contactGivenName')"
-				:message="validateMsg('contactGivenName', 'Required')"
+				:message="validateMsg('contactGivenName')"
 			>
 				<b-input
 					v-model="formModel.contactGivenName"
@@ -16,7 +16,7 @@
 			<b-field
 				label="Contact Family Name"
 				:type="validateType('contactFamilyName')"
-				:message="validateMsg('contactFamilyName', 'Required')"
+				:message="validateMsg('contactFamilyName')"
 			>
 				<b-input
 					v-model="formModel.contactFamilyName"
@@ -29,7 +29,7 @@
 				<b-field grouped>
 					<b-field
 						:type="validateType('phonePrefix')"
-						:message="validateMsg('phonePrefix', 'Required')"
+						:message="validateMsg('phonePrefix')"
 					>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
@@ -61,7 +61,7 @@
 			<b-field
 				label="Contact ID Type"
 				:type="validateType('nationalCardType')"
-				:message="validateMsg('nationalCardType', 'Required')"
+				:message="validateMsg('nationalCardType')"
 			>
 				<MultiSelect
 					v-model="formModel.nationalCardType"
@@ -97,7 +97,7 @@
 			<b-field
 				label="Address Number"
 				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber', 'Required')"
+				:message="validateMsg('addressNumber')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
@@ -109,7 +109,7 @@
 			<b-field
 				label="Address Street"
 				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet', 'Required')"
+				:message="validateMsg('addressStreet'"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
@@ -121,7 +121,7 @@
 			<b-field
 				label="Address Postcode"
 				:type="validateType('addressPostCode')"
-				:message="validateMsg('addressPostCode', 'Required')"
+				:message="validateMsg('addressPostCode')"
 			>
 				<b-input
 					v-model="formModel.addressPostCode"
@@ -134,7 +134,7 @@
 				<b-field
 					label="Latitude"
 					:type="validateType('latitude')"
-					:message="validateMsg('latitude', 'Required')"
+					:message="validateMsg('latitude')"
 				>
 					<b-input
 						v-model="formModel.latitude"
@@ -145,7 +145,7 @@
 				<b-field
 					label="Longitude"
 					:type="validateType('longitude')"
-					:message="validateMsg('longitude', 'Required')"
+					:message="validateMsg('longitude')"
 				>
 					<b-input
 						v-model="formModel.longitude"
