@@ -109,7 +109,7 @@
 			<b-field
 				label="Address Street"
 				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet'"
+				:message="validateMsg('addressStreet')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
