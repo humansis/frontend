@@ -1,12 +1,12 @@
 import Vue from "vue";
 import Buefy from "buefy";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeadphonesAlt } from "@fortawesome/free-solid-svg-icons";
+import { fas, faHeadphonesAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import "@/assets/scss/app.scss";
 
-library.add(faHeadphonesAlt);
+library.add(fas, faHeadphonesAlt);
 Vue.component("vue-fontawesome", FontAwesomeIcon);
 
 Vue.use(Buefy, {
