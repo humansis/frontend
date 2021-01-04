@@ -12,6 +12,7 @@
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" :key="column.id">
@@ -30,15 +31,17 @@
 					<ActionButton
 						icon="search"
 						type="is-info"
+						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Voucher"
+						tooltip="Delete"
 						:id="props.row.id"
 						@submitted="remove"
 					/>
-					<ActionButton icon="print" type="is-dark" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
 		</Table>
@@ -122,28 +125,24 @@ export default {
 				"desc",
 				this.table.searchPhrase,
 			).then((response) => {
-				this.getProjectNameForBooklets(response.data).then((data) => {
-					this.table.data = data;
-					this.table.total = response.totalCount;
-				});
+				this.getProjectNameForBooklets(response.data);
 			});
 
 			this.isLoadingList = false;
 		},
 
 		async getProjectNameForBooklets(data) {
-			const booklets = [];
 			data.forEach((booklet) => {
 				const preparedBooklet = booklet;
 				ProjectsService.getDetailOfProject(booklet.projectId)
 					.then((response) => {
 						preparedBooklet.project = response.data.name;
-						booklets.push(preparedBooklet);
+						this.table.data.push(preparedBooklet);
+						this.table.total += 1;
 					}).catch((e) => {
 						Notification(`Project Detail ${e}`, "is-danger");
 					});
 			});
-			return booklets;
 		},
 
 		onPageChange() {

@@ -28,6 +28,7 @@
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -38,9 +39,9 @@
 			</template>
 			<b-table-column label="Actions">
 				<div class="block">
-					<ActionButton icon="search" type="is-info" />
-					<ActionButton icon="trash" type="is-danger" />
-					<ActionButton icon="copy" type="is-dark" />
+					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
+					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
 		</Table>

@@ -3,6 +3,10 @@ export const normalizeText = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
+export const normalizeProjectName = (text = "") => text
+	.replace(/(_)/g, " ")
+	.replace(/^.| ./g, (str) => str.toUpperCase());
+
 export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
 	visibleColumns.forEach((column) => {
@@ -20,5 +24,6 @@ export const generateColumns = ((visibleColumns) => {
 
 export default {
 	normalizeText,
+	normalizeProjectName,
 	generateColumns,
 };

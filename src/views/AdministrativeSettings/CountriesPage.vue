@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Modal
+			is-small
 			:active="countryModal.isOpened"
 			:can-cancel="true"
 			:header="modalHeader"

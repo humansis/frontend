@@ -57,7 +57,12 @@
 			</b-notification>
 		</div>
 		<b-field label="Minimum Selection Score">
-			<b-numberinput v-model="minimumSelectionScore" />
+			<b-numberinput
+				v-model="minimumSelectionScore"
+				expanded
+				controls-alignment="right"
+				controls-position="compact"
+			/>
 		</b-field>
 
 		<b-field>

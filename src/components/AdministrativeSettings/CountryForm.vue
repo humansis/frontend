@@ -58,15 +58,15 @@
 					@select="validate('countryFlag')"
 				>
 					<template slot="singleLabel" slot-scope="props">
-						<CountryFlag :country="props.option.id" size="normal" />
+						<CountryFlag :country="props.option.code" size="normal" />
 						<span class="option__desc ml-2">
-							<span class="option__title">{{ props.option.name }}</span>
+							<span class="option__title">{{ props.option.value }}</span>
 						</span>
 					</template>
 					<template slot="option" slot-scope="props">
-						<CountryFlag :country="props.option.id" size="normal" />
+						<CountryFlag :country="props.option.code" size="normal" />
 						<div class="option__desc">
-							<span class="option__title">{{ props.option.name }}</span>
+							<span class="option__title">{{ props.option.value }}</span>
 						</div>
 					</template>
 				</MultiSelect>

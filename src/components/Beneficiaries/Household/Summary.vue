@@ -128,7 +128,7 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(1, 15, "desc")
+			await ProjectsService.getListOfProjects()
 				.then((response) => {
 					this.options.projects = response.data;
 				})

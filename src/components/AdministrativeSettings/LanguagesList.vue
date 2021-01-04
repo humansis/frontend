@@ -12,6 +12,7 @@
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -32,6 +33,7 @@
 					<ActionButton
 						icon="search"
 						type="is-link"
+						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
 				</div>

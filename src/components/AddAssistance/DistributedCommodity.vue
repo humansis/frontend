@@ -47,6 +47,7 @@
 					<ActionButton
 						icon="trash"
 						type="is-danger"
+						tooltip="Delete"
 						@click.native="removeCommodity(props.index)"
 					/>
 				</b-table-column>

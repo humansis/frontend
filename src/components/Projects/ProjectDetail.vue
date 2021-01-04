@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<GoBackButton />
 		<ProjectSummary />
 		<AssistancesList />
 	</div>
@@ -8,7 +7,6 @@
 
 <script>
 import ProjectSummary from "@/components/Projects/ProjectSummary";
-import GoBackButton from "@/components/GoBackButton";
 import AssistancesList from "@/components/Projects/AssistancesList";
 
 export default {
@@ -17,7 +15,6 @@ export default {
 	components: {
 		AssistancesList,
 		ProjectSummary,
-		GoBackButton,
 	},
 };
 </script>

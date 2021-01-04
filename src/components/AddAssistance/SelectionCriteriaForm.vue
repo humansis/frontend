@@ -63,7 +63,12 @@
 				:form-model="formModel"
 			/>
 			<b-field label="Score Weight">
-				<b-numberinput v-model="formModel.scoreWeight" />
+				<b-numberinput
+					v-model="formModel.scoreWeight"
+					expanded
+					controls-alignment="right"
+					controls-position="compact"
+				/>
 			</b-field>
 		</section>
 

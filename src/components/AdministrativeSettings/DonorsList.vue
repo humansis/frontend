@@ -19,6 +19,7 @@
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -40,17 +41,20 @@
 					<ActionButton
 						icon="search"
 						type="is-link"
+						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
 						type="is-link"
+						tooltip="Edit"
 						@click.native="showEdit(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
 						entity="Donor"
 						:id="props.row.id"
+						tooltip="Delete"
 						@submitted="remove"
 					/>
 				</div>

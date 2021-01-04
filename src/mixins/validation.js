@@ -28,7 +28,6 @@ export default {
 			if (validation.$dirty) {
 				result = validation.$error ? "vue-multiselect-error" : "vue-multiselect-success";
 			}
-			console.log(result);
 			return result;
 		},
 

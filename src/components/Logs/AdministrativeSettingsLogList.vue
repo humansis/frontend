@@ -11,6 +11,7 @@
 			:is-loading="isLoadingList"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">

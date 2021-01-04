@@ -30,6 +30,19 @@
 			@sort="$emit('sorted', $event)"
 		>
 			<slot />
+			<template v-if="paginated" slot="bottom-left">
+				<p style="width: 120px;">Per Page: </p>
+				<MultiSelect
+					v-model="perPageNumber"
+					hide-selected
+					deselect-label=""
+					select-label=""
+					selected-label=""
+					:options="options.perPageNumbers"
+					:allow-empty="false"
+					@input="changePerPage"
+				/>
+			</template>
 		</b-table>
 	</div>
 </template>
@@ -60,6 +73,10 @@ export default {
 	data() {
 		return {
 			checkedRows: [],
+			perPageNumber: this.perPage,
+			options: {
+				perPageNumbers: [5, 10, 15],
+			},
 		};
 	},
 
@@ -68,6 +85,10 @@ export default {
 			if (column.$options.propsData.label !== "Actions") {
 				this.$emit("clicked", row);
 			}
+		},
+
+		changePerPage() {
+			this.$emit("changePerPage", this.perPageNumber);
 		},
 	},
 };

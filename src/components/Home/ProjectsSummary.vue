@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
+import { normalizeProjectName } from "@/utils/datagrid";
 import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
 
@@ -46,7 +46,7 @@ export default {
 
 	methods: {
 		normalizeText(text) {
-			return normalizeText(text);
+			return normalizeProjectName(text);
 		},
 
 		async fetchData() {
