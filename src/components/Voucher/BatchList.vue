@@ -3,7 +3,7 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
-		<div>
+		<div class="batches-container" ref="batches">
 			<b-collapse
 				v-for="(batch, index) of getBatches()"
 				class="panel"
@@ -66,7 +66,7 @@
 									:id="props.row.id"
 									@submitted="remove"
 								/>
-								<ActionButton icon="print" type="is-dark" tooltip="Print"/>
+								<ActionButton icon="print" type="is-dark" tooltip="Print" />
 							</div>
 						</b-table-column>
 					</Table>
@@ -146,6 +146,10 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			const loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.batches,
+			});
+
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
@@ -159,6 +163,9 @@ export default {
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
 			});
+
+			this.isLoadingList = false;
+			loadingComponent.close();
 		},
 
 		async getProjectNameForBooklets(data) {
@@ -205,3 +212,10 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.batches-container {
+	min-height: 100px;
+	position: relative;
+}
+</style>
