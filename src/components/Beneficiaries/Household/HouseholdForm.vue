@@ -48,7 +48,7 @@
 				<b-field
 					label="Livelihood"
 					:type="validateType('livelihood.livelihood')"
-					:message="validateMsg('livelihood.livelihood', 'Required')"
+					:message="validateMsg('livelihood.livelihood')"
 				>
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
@@ -65,7 +65,7 @@
 				<b-field
 					label="Income Level"
 					:type="validateType('livelihood.incomeLevel')"
-					:message="validateMsg('livelihood.incomeLevel', 'Required')"
+					:message="validateMsg('livelihood.incomeLevel')"
 				>
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
@@ -82,7 +82,7 @@
 				<b-field
 					label="Debt Level"
 					:type="validateType('livelihood.debtLevel')"
-					:message="validateMsg('livelihood.debtLevel', 'Required')"
+					:message="validateMsg('livelihood.debtLevel')"
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
@@ -96,7 +96,7 @@
 				<b-field
 					label="Assets"
 					:type="validateType('livelihood.assets')"
-					:message="validateMsg('livelihood.assets', 'Required')"
+					:message="validateMsg('livelihood.assets')"
 				>
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
@@ -107,14 +107,14 @@
 						placeholder="Assets"
 						:options="options.assets"
 						:class="validateMultiselect('livelihood.assets')"
-						@blur="validate('livelihood.assets')"
+						@select="validate('livelihood.assets')"
 					/>
 				</b-field>
 
 				<b-field
 					label="Food Consumption Score"
 					:type="validateType('livelihood.foodConsumptionScore')"
-					:message="validateMsg('livelihood.foodConsumptionScore', 'Required')"
+					:message="validateMsg('livelihood.foodConsumptionScore')"
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
@@ -128,7 +128,7 @@
 				<b-field
 					label="Coping Strategies Index"
 					:type="validateType('livelihood.copingStrategiesIndex')"
-					:message="validateMsg('livelihood.copingStrategiesIndex', 'Required')"
+					:message="validateMsg('livelihood.copingStrategiesIndex')"
 				>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
@@ -144,7 +144,7 @@
 				<b-field
 					label="External Support Received Type"
 					:type="validateType('externalSupport.externalSupportReceivedType')"
-					:message="validateMsg('externalSupport.externalSupportReceivedType', 'Required')"
+					:message="validateMsg('externalSupport.externalSupportReceivedType')"
 				>
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
@@ -155,14 +155,14 @@
 						placeholder="External Support Received Type"
 						:options="options.externalSupportReceivedType"
 						:class="validateMultiselect('externalSupport.externalSupportReceivedType')"
-						@blur="validate('externalSupport.externalSupportReceivedType')"
+						@select="validate('externalSupport.externalSupportReceivedType')"
 					/>
 				</b-field>
 
 				<b-field
 					label="Support Date Received"
 					:type="validateType('externalSupport.supportDateReceived')"
-					:message="validateMsg('externalSupport.supportDateReceived', 'Required')"
+					:message="validateMsg('externalSupport.supportDateReceived')"
 				>
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
@@ -177,11 +177,11 @@
 				<b-field
 					label="Support Organization"
 					:type="validateType('externalSupport.supportOrganization')"
-					:message="validateMsg('externalSupport.supportOrganization', 'Required')"
+					:message="validateMsg('externalSupport.supportOrganization')"
 				>
 					<b-input
 						v-model="formModel.externalSupport.supportOrganization"
-						@input="validate('externalSupport.supportOrganization')"
+						@blur="validate('externalSupport.supportOrganization')"
 					/>
 				</b-field>
 			</div>
@@ -204,7 +204,7 @@
 		<b-field
 			label="Shelter Type"
 			:type="validateType('shelterType')"
-			:message="validateMsg('shelterType', 'Required')"
+			:message="validateMsg('shelterType')"
 		>
 			<MultiSelect
 				v-model="formModel.shelterType"
@@ -214,7 +214,7 @@
 				placeholder="Shelter Type"
 				:options="options.shelterType"
 				:class="validateMultiselect('shelterType')"
-				@blur="validate('shelterType')"
+				@select="validate('shelterType')"
 			/>
 		</b-field>
 		<h4 class="title is-4">Notes</h4>

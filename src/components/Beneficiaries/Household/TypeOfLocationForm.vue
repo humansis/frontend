@@ -3,7 +3,7 @@
 		<b-field
 			label="Type Of Location"
 			:type="validateType('typeOfLocation')"
-			:message="validateMsg('typeOfLocation', 'Required')"
+			:message="validateMsg('typeOfLocation')"
 		>
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
@@ -13,7 +13,7 @@
 				:options="options.typeOfLocation"
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
-				@blur="validate('typeOfLocation')"
+				@select="validate('typeOfLocation')"
 			/>
 		</b-field>
 		<div v-if="formModel.typeOfLocation === 'Camp'">
@@ -46,36 +46,36 @@
 			<b-field
 				label="Address Number"
 				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber', 'Required')"
+				:message="validateMsg('addressNumber')"
 			>
 				<b-input
 					v-model="formModel.addressNumber"
 					placeholder="Address Number"
-					@input="validate('addressNumber')"
+					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Street"
 				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet', 'Required')"
+				:message="validateMsg('addressStreet')"
 			>
 				<b-input
 					v-model="formModel.addressStreet"
 					placeholder="Address Street"
-					@input="validate('addressStreet')"
+					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Postcode"
 				:type="validateType('addressPostcode')"
-				:message="validateMsg('addressPostcode', 'Required')"
+				:message="validateMsg('addressPostcode')"
 			>
 				<b-input
 					v-model="formModel.addressPostcode"
 					placeholder="Address Postcode"
-					@input="validate('addressPostcode')"
+					@blur="validate('addressPostcode')"
 				/>
 			</b-field>
 		</div>

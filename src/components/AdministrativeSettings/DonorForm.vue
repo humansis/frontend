@@ -4,7 +4,7 @@
 			<b-field
 				label="Donor Name"
 				:type="validateType('fullname')"
-				:message="validateMsg('fullname', 'Required')"
+				:message="validateMsg('fullname')"
 			>
 				<b-input
 					v-model="formModel.fullname"
@@ -16,7 +16,7 @@
 			<b-field
 				label="Short Name"
 				:type="validateType('shortname')"
-				:message="validateMsg('shortname', 'Required')"
+				:message="validateMsg('shortname')"
 			>
 				<b-input
 					v-model="formModel.shortname"

@@ -4,7 +4,7 @@
 			<b-field
 				label="Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -27,7 +27,7 @@
 			<b-field
 				label="Image"
 				:type="validateType('image')"
-				:message="validateMsg('image', 'Required')"
+				:message="validateMsg('image')"
 			>
 				<b-field
 					v-if="!formDisabled"

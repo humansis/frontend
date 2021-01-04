@@ -4,7 +4,7 @@
 			<b-field
 				label="Project Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -28,7 +28,7 @@
 			<b-field
 				label="Sectors"
 				:type="validateType('selectedSectors')"
-				:message="validateMsg('selectedSectors', 'Required')"
+				:message="validateMsg('selectedSectors')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedSectors"
@@ -54,7 +54,7 @@
 			<b-field
 				label="Start date"
 				:type="validateType('startDate')"
-				:message="validateMsg('startDate', 'Required')"
+				:message="validateMsg('startDate')"
 			>
 				<b-datepicker
 					v-model="formModel.startDate"
@@ -89,7 +89,7 @@
 			<b-field
 				label="Donors"
 				:type="validateType('selectedDonors')"
-				:message="validateMsg('selectedDonors', 'Required')"
+				:message="validateMsg('selectedDonors')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedDonors"
@@ -115,7 +115,7 @@
 			<b-field
 				label="Target Type"
 				:type="validateType('selectedTargetType')"
-				:message="validateMsg('selectedTargetType', 'Required')"
+				:message="validateMsg('selectedTargetType')"
 			>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
@@ -141,7 +141,7 @@
 					controls-position="compact"
 					expanded
 					:disabled="formDisabled"
-					@blur="validate('totalTarget')"
+					@input="validate('totalTarget')"
 				/>
 			</b-field>
 

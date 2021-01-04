@@ -4,7 +4,7 @@
 			<b-field
 				label="Field"
 				:type="validateType('field')"
-				:message="validateMsg('field', 'Required')"
+				:message="validateMsg('field')"
 			>
 				<b-input
 					v-model="formModel.field"
@@ -16,7 +16,7 @@
 			<b-field
 				label="Type"
 				:type="validateType('type')"
-				:message="validateMsg('type', 'Required')"
+				:message="validateMsg('type')"
 			>
 				<MultiSelect
 					v-model="formModel.type"
@@ -34,7 +34,7 @@
 			<b-field
 				label="Target"
 				:type="validateType('target')"
-				:message="validateMsg('target', 'Required')"
+				:message="validateMsg('target')"
 			>
 				<MultiSelect
 					v-model="formModel.target"

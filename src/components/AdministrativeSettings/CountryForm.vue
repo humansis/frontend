@@ -4,7 +4,7 @@
 			<b-field
 				label="Name"
 				:type="validateType('name')"
-				:message="validateMsg('name', 'Required')"
+				:message="validateMsg('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -16,7 +16,7 @@
 			<b-field
 				label="Iso 3"
 				:type="validateType('iso3')"
-				:message="validateMsg('iso3', 'Required')"
+				:message="validateMsg('iso3')"
 			>
 				<b-input
 					v-model="formModel.iso3"
@@ -45,7 +45,7 @@
 			<b-field
 				label="Country Flag"
 				:type="validateType('countryFlag')"
-				:message="validateMsg('countryFlag', 'Required')"
+				:message="validateMsg('countryFlag')"
 			>
 				<MultiSelect
 					v-model="formModel.countryFlag"
