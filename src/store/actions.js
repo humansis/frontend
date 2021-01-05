@@ -8,4 +8,12 @@ export default {
 			commit("changeCountry", countryObj);
 		}
 	},
+
+	updateLanguage: ({ commit }, languages) => {
+		const language = localStorage.getItem("language") || CONST.DEFAULT_LANGUAGE;
+		const languageObj = languages.find((item) => item.name === language);
+		if (languageObj) {
+			commit("changeLanguage", languageObj);
+		}
+	},
 };
