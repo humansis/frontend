@@ -159,7 +159,8 @@
 			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
 					v-for="vulnerability of options.vulnerabilities"
-					v-model="formModel.vulnerabilities[vulnerability.code]"
+					v-model="formModel.vulnerabilities"
+					:native-value="vulnerability.code"
 					:key="vulnerability.code"
 				>
 					{{ prepareVulnerability(vulnerability.value) }}
