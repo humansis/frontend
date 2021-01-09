@@ -4,59 +4,111 @@
 			<div class="columns is-multiline">
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (Local)</h4>
-					<b-field label="Family Name">
-						<b-input v-model="formModel.nameLocal.familyName" />
+					<b-field
+						label="Family Name"
+						:type="validateType('nameLocal.familyName')"
+						:message="validateMsg('nameLocal.familyName')"
+					>
+						<b-input
+							v-model="formModel.nameLocal.familyName"
+							@blur="validate('nameLocal.familyName')"
+						/>
 					</b-field>
-					<b-field label="First Name">
-						<b-input v-model="formModel.nameLocal.firstName" />
+					<b-field
+						label="First Name"
+						:type="validateType('nameLocal.firstName')"
+						:message="validateMsg('nameLocal.firstName')"
+					>
+						<b-input
+							v-model="formModel.nameLocal.firstName"
+							@blur="validate('nameLocal.firstName')"
+						/>
 					</b-field>
 				</div>
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Name (English)</h4>
-					<b-field label="Family Name">
-						<b-input v-model="formModel.nameEnglish.familyName" />
+					<b-field
+						label="Family Name"
+						:type="validateType('nameEnglish.familyName')"
+						:message="validateMsg('nameEnglish.familyName')"
+					>
+						<b-input
+							v-model="formModel.nameEnglish.familyName"
+							@blur="validate('nameEnglish.familyName')"
+						/>
 					</b-field>
-					<b-field label="First Name">
-						<b-input v-model="formModel.nameEnglish.firstName" />
+					<b-field
+						label="First Name"
+						:type="validateType('nameEnglish.firstName')"
+						:message="validateMsg('nameEnglish.firstName')"
+					>
+						<b-input
+							v-model="formModel.nameEnglish.firstName"
+							@blur="validate('nameEnglish.firstName')"
+						/>
 					</b-field>
 				</div>
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Personal Information</h4>
-					<b-field label="Gender">
+					<b-field
+						label="Gender"
+						:type="validateType('personalInformation.gender')"
+						:message="validateMsg('personalInformation.gender')"
+					>
 						<MultiSelect
 							v-model="formModel.personalInformation.gender"
 							searchable
 							label="value"
 							track-by="code"
 							:options="options.gender"
+							:class="validateMultiselect('personalInformation.gender')"
+							@select="validate('personalInformation.gender')"
 						/>
 					</b-field>
-					<b-field label="Date Of Birth">
+					<b-field
+						label="Date Of Birth"
+						:type="validateType('personalInformation.dateOfBirth')"
+						:message="validateMsg('personalInformation.dateOfBirth')"
+					>
 						<b-datepicker
 							v-model="formModel.personalInformation.dateOfBirth"
 							show-week-number
 							placeholder="Click to select..."
 							icon="calendar-day"
 							trap-focus
+							@blur="validate('personalInformation.dateOfBirth')"
 						/>
 					</b-field>
 				</div>
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">ID</h4>
-					<b-field label="ID Type">
+					<b-field
+						label="ID Type"
+						:type="validateType('id.idType')"
+						:message="validateMsg('id.idType')"
+					>
 						<MultiSelect
 							v-model="formModel.id.idType"
 							label="value"
 							track-by="code"
 							searchable
 							:options="options.idType"
+							:class="validateMultiselect('id.idType')"
+							@select="validate('id.idType')"
 						/>
 					</b-field>
-					<b-field label="ID Number">
-						<b-input v-model="formModel.id.idNumber" />
+					<b-field
+						label="ID Number"
+						:type="validateType('id.idNumber')"
+						:message="validateMsg('id.idNumber')"
+					>
+						<b-input
+							v-model="formModel.id.idNumber"
+							@blur="validate('id.idNumber')"
+						/>
 					</b-field>
 				</div>
 
@@ -172,6 +224,7 @@
 
 <script>
 import { Notification } from "@/utils/UI";
+import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { normalizeText } from "@/utils/datagrid";
@@ -193,7 +246,24 @@ export default {
 	},
 
 	validations: {
-		formModel: {},
+		formModel: {
+			nameLocal: {
+				familyName: { required },
+				firstName: { required },
+			},
+			nameEnglish: {
+				familyName: { required },
+				firstName: { required },
+			},
+			personalInformation: {
+				gender: { required },
+				dateOfBirth: { required },
+			},
+			id: {
+				idType: { required },
+				idNumber: { required },
+			},
+		},
 	},
 
 	data() {
