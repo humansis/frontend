@@ -291,8 +291,7 @@ export default {
 						referralType: beneficiary.referral.referralType,
 						referralComment: beneficiary.referral.comment,
 						status: 0,
-						// TODO Get vulnerabilityCriteriaIds
-						vulnerabilityCriteriaIds: [],
+						vulnerabilityCriteriaIds: beneficiary.vulnerabilities,
 					});
 				});
 

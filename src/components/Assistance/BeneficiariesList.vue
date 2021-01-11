@@ -90,7 +90,7 @@
 				v-slot="props"
 				label="Actions"
 				centered
-				width="100"
+				width="110"
 			>
 				<div class="block">
 					<ActionButton

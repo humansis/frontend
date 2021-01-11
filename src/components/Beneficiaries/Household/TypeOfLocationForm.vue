@@ -10,6 +10,7 @@
 				placeholder="Type Of Location"
 				label="value"
 				track-by="code"
+				:loading="locationTypesLoading"
 				:options="options.typeOfLocation"
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
@@ -99,6 +100,7 @@ export default {
 
 	data() {
 		return {
+			locationTypesLoading: false,
 			createCamp: false,
 			options: {
 				typeOfLocation: [],
@@ -120,16 +122,18 @@ export default {
 	},
 
 	mounted() {
-		this.fetchData();
+		this.fetchLocationsTypes();
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchLocationsTypes() {
+			this.locationTypesLoading = true;
 			await BeneficiariesService.getListOfLocationsTypes()
 				.then((result) => { this.options.typeOfLocation = result.data; })
 				.catch((e) => {
 					Notification(`Location Types ${e}`, "is-danger");
 				});
+			this.locationTypesLoading = false;
 		},
 
 		submitTypeOfLocationForm() {

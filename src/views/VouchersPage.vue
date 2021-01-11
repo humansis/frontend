@@ -27,6 +27,7 @@
 		>
 			Add
 		</b-button>
+		<!-- switch between two styles of displaying Batches/Vouchers list -->
 		<BatchList
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"

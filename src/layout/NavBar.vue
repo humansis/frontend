@@ -35,6 +35,31 @@
 					{{ country.iso3 }}
 				</b-dropdown-item>
 			</b-dropdown>
+
+			<b-dropdown
+				v-model="country.iso3"
+				position="is-bottom-left"
+				append-to-body
+				aria-role="menu"
+			>
+				<a
+					class="navbar-item"
+					slot="trigger"
+					role="button"
+				>
+					<b-icon icon="language" size="is-medium" />
+				</a>
+				<b-dropdown-item
+					v-for="language in languages"
+					:key="language.name"
+					:value="language.name"
+					@click="handleChangeLanguage(language)"
+				>
+					<b-icon class="mr-1" icon="language" />
+					{{ language.name }}
+				</b-dropdown-item>
+			</b-dropdown>
+
 			<b-dropdown
 				position="is-bottom-left"
 				append-to-body
@@ -47,10 +72,6 @@
 				>
 					<b-icon icon="user" size="is-medium" />
 				</a>
-				<b-dropdown-item value="language">
-					<b-icon class="mr-1" icon="language" />
-					Language
-				</b-dropdown-item>
 				<router-link to="/profile">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
@@ -77,14 +98,20 @@ export default {
 	data() {
 		return {
 			countries: [],
+			languages: [],
 		};
 	},
 
 	methods: {
-		...mapActions(["updateCountry"]),
+		...mapActions(["updateCountry", "updateLanguage"]),
 
 		handleChangeCountry(country) {
 			localStorage.setItem("country", country.iso3);
+			this.$router.go();
+		},
+
+		handleChangeLanguage(language) {
+			localStorage.setItem("language", language.name);
 			this.$router.go();
 		},
 
@@ -97,14 +124,24 @@ export default {
 					Toast(`(Countries) ${e}`, "is-danger");
 				});
 		},
+
+		fetchLanguages() {
+			// TODO Get languages
+			this.languages = [
+				{ name: "EN" },
+				{ name: "CZ" },
+			];
+			this.updateLanguage(this.languages);
+		},
 	},
 
 	created() {
 		this.fetchCountries();
+		this.fetchLanguages();
 	},
 
 	computed: {
-		...mapState(["country"]),
+		...mapState(["country", "language"]),
 	},
 
 };

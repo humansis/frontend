@@ -56,6 +56,7 @@
 						label="value"
 						track-by="code"
 						placeholder="Livelihood"
+						:loading="livelihoodLoading"
 						:options="options.livelihood"
 						:class="validateMultiselect('livelihood.livelihood')"
 						@blur="validate('livelihood.livelihood')"
@@ -105,6 +106,7 @@
 						label="value"
 						track-by="code"
 						placeholder="Assets"
+						:loading="assetsLoading"
 						:options="options.assets"
 						:class="validateMultiselect('livelihood.assets')"
 						@select="validate('livelihood.assets')"
@@ -212,6 +214,7 @@
 				label="value"
 				track-by="code"
 				placeholder="Shelter Type"
+				:loading="shelterTypeLoading"
 				:options="options.shelterType"
 				:class="validateMultiselect('shelterType')"
 				@select="validate('shelterType')"
@@ -292,6 +295,9 @@ export default {
 
 	data() {
 		return {
+			shelterTypeLoading: false,
+			assetsLoading: false,
+			livelihoodLoading: false,
 			formModel: {
 				id: null,
 				currentLocation: {
@@ -352,7 +358,9 @@ export default {
 	},
 
 	mounted() {
-		this.fetchData();
+		this.fetchLivelihoods();
+		this.fetchAssets();
+		this.fetchShelterTypes();
 	},
 
 	methods: {
@@ -401,24 +409,36 @@ export default {
 			};
 		},
 
-		async fetchData() {
+		async fetchLivelihoods() {
+			this.livelihoodLoading = true;
 			await BeneficiariesService.getListOfLivelihoods()
-				.then((result) => { this.options.livelihood = result.data; })
+				.then((result) => {
+					this.options.livelihood = result.data;
+				})
 				.catch((e) => {
 					Notification(`Livelihoods ${e}`, "is-danger");
 				});
+			this.livelihoodLoading = false;
+		},
 
+		async fetchAssets() {
+			this.assetsLoading = true;
 			await BeneficiariesService.getListOfAssets()
 				.then((result) => { this.options.assets = result.data; })
 				.catch((e) => {
 					Notification(`Assets ${e}`, "is-danger");
 				});
+			this.assetsLoading = false;
+		},
 
+		async fetchShelterTypes() {
+			this.shelterTypeLoading = true;
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then((result) => { this.options.shelterType = result.data; })
 				.catch((e) => {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
+			this.shelterTypeLoading = false;
 		},
 
 		submit() {
