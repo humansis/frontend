@@ -49,6 +49,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="types"
+					placeholder="Click to select..."
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
 				/>
@@ -95,7 +96,7 @@
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					placeholder="Contact ID Type"
+					placeholder="Click to select..."
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"

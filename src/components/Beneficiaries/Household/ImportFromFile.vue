@@ -44,6 +44,7 @@
 								class="m-5"
 								track-by="id"
 								label="name"
+								placeholder="Click to select..."
 								:options="projects"
 							/>
 						</div>

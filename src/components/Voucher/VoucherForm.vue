@@ -10,7 +10,7 @@
 					v-model="formModel.projectId"
 					v-if="!formDisabled"
 					searchable
-					placeholder="Project"
+					placeholder="Click to select..."
 					label="name"
 					track-by="id"
 					:disabled="formDisabled"
@@ -80,7 +80,7 @@
 				<MultiSelect
 					v-model="formModel.currency"
 					searchable
-					placeholder="Currency"
+					placeholder="Click to select..."
 					label="code"
 					track-by="value"
 					:disabled="formDisabled"

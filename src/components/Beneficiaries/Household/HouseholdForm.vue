@@ -55,7 +55,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Livelihood"
+						placeholder="Click to select..."
 						:loading="livelihoodLoading"
 						:options="options.livelihood"
 						:class="validateMultiselect('livelihood.livelihood')"
@@ -73,7 +73,7 @@
 						searchable
 						label="value"
 						track-by="id"
-						placeholder="Income Level"
+						placeholder="Click to select..."
 						:options="options.incomeLevel"
 						:class="validateMultiselect('livelihood.incomeLevel')"
 						@blur="validate('livelihood.incomeLevel')"
@@ -105,7 +105,7 @@
 						multiple
 						label="value"
 						track-by="code"
-						placeholder="Assets"
+						placeholder="Click to select..."
 						:loading="assetsLoading"
 						:options="options.assets"
 						:class="validateMultiselect('livelihood.assets')"
@@ -154,7 +154,7 @@
 						multiple
 						label="value"
 						track-by="code"
-						placeholder="External Support Received Type"
+						placeholder="Click to select..."
 						:options="options.externalSupportReceivedType"
 						:class="validateMultiselect('externalSupport.externalSupportReceivedType')"
 						@select="validate('externalSupport.externalSupportReceivedType')"
@@ -213,7 +213,7 @@
 				searchable
 				label="value"
 				track-by="code"
-				placeholder="Shelter Type"
+				placeholder="Click to select..."
 				:loading="shelterTypeLoading"
 				:options="options.shelterType"
 				:class="validateMultiselect('shelterType')"

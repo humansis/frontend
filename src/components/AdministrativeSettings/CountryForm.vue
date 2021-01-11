@@ -35,6 +35,7 @@
 					searchable
 					label="value"
 					track-by="code"
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:class="validateMultiselect('availableCurrencies')"
 					:options="currencies"
@@ -52,6 +53,7 @@
 					searchable
 					label="value"
 					track-by="code"
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="flags"
 					:class="validateMultiselect('countryFlag')"

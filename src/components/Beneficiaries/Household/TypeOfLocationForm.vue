@@ -7,9 +7,9 @@
 		>
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
-				placeholder="Type Of Location"
 				label="value"
 				track-by="code"
+				placeholder="Click to select..."
 				:loading="locationTypesLoading"
 				:options="options.typeOfLocation"
 				:searchable="false"
@@ -21,7 +21,7 @@
 			<b-field label="Camp">
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
-					placeholder="Camp"
+					placeholder="Click to select..."
 					:options="options.camps"
 					:searchable="false"
 				/>
