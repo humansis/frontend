@@ -15,6 +15,16 @@
 						/>
 					</b-field>
 					<b-field
+						label="Parents Name"
+						:type="validateType('nameLocal.parentsName')"
+						:message="validateMsg('nameLocal.parentsName')"
+					>
+						<b-input
+							v-model="formModel.nameLocal.parentsName"
+							@blur="validate('nameLocal.parentsName')"
+						/>
+					</b-field>
+					<b-field
 						label="First Name"
 						:type="validateType('nameLocal.firstName')"
 						:message="validateMsg('nameLocal.firstName')"
@@ -36,6 +46,16 @@
 						<b-input
 							v-model="formModel.nameEnglish.familyName"
 							@blur="validate('nameEnglish.familyName')"
+						/>
+					</b-field>
+					<b-field
+						label="Parents Name"
+						:type="validateType('nameEnglish.parentsName')"
+						:message="validateMsg('nameEnglish.parentsName')"
+					>
+						<b-input
+							v-model="formModel.nameEnglish.parentsName"
+							@blur="validate('nameEnglish.parentsName')"
 						/>
 					</b-field>
 					<b-field
@@ -250,10 +270,12 @@ export default {
 			nameLocal: {
 				familyName: { required },
 				firstName: { required },
+				parentsName: { required },
 			},
 			nameEnglish: {
 				familyName: { required },
 				firstName: { required },
+				parentsName: { required },
 			},
 			personalInformation: {
 				gender: { required },
@@ -272,10 +294,12 @@ export default {
 				nameLocal: {
 					familyName: "",
 					firstName: "",
+					parentsName: "",
 				},
 				nameEnglish: {
 					familyName: "",
 					firstName: "",
+					parentsName: "",
 				},
 				personalInformation: {
 					gender: "",

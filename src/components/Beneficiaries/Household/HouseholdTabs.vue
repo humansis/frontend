@@ -245,6 +245,7 @@ export default {
 					membersData.push({
 						firstName: member.nameLocal.firstName,
 						familyName: member.nameLocal.familyName,
+						parentsName: member.nameLocal.parentsName,
 						gender: member.personalInformation.gender,
 						dateBirth: member.personalInformation.dateOfBirth,
 						phone: `${member.phone1.ext} ${member.phone1.phoneNo}`,
@@ -265,8 +266,10 @@ export default {
 						dateOfBirth: new Date(beneficiary.personalInformation.dateOfBirth).toISOString(),
 						localFamilyName: beneficiary.nameLocal.familyName,
 						localGivenName: beneficiary.nameLocal.firstName,
+						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
 						enlGivenName: beneficiary.nameEnglish.firstName,
+						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender,
 						nationalIdCards: [
 							{
