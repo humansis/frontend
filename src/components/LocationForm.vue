@@ -3,7 +3,7 @@
 		<b-field
 			label="Province"
 			:type="validateType('adm1Id')"
-			:message="validateMsg('adm1Id', 'Province is Required')"
+			:message="validateMsg('adm1Id', 'Required')"
 		>
 			<MultiSelect
 				v-model="formModel.adm1Id"

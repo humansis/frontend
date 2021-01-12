@@ -143,7 +143,9 @@
 					controls-alignment="right"
 					controls-position="compact"
 					expanded
+					min="0"
 					:disabled="formDisabled"
+					:controls="!formDisabled"
 					@input="validate('totalTarget')"
 				/>
 			</b-field>
