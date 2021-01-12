@@ -40,11 +40,10 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Description"
-				:type="validateType('description')"
-				:message="validateMsg('description')"
-			>
+			<b-field>
+				<template #label>
+					Description<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.description"
 					:disabled="formDisabled"
@@ -52,11 +51,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Street"
-				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet')"
-			>
+			<b-field>
+				<template #label>
+					Address Street
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressStreet"
 					:disabled="formDisabled"
@@ -64,11 +63,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Number"
-				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber')"
-			>
+			<b-field>
+				<template #label>
+					Address Number
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressNumber"
 					:disabled="formDisabled"
@@ -76,11 +75,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Postcode"
-				:type="validateType('addressPostcode')"
-				:message="validateMsg('addressPostcode')"
-			>
+			<b-field>
+				<template #label>
+					Address Postcode
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressPostcode"
 					:disabled="formDisabled"

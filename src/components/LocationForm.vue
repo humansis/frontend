@@ -18,10 +18,10 @@
 			/>
 		</b-field>
 
-		<b-field
-			label="District"
-			:type="validateType('adm2Id')"
-		>
+		<b-field>
+			<template #label>
+				District<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<MultiSelect
 				v-model="formModel.adm2Id"
 				searchable
@@ -30,15 +30,14 @@
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="districts"
-				:class="validateMultiselect('adm2Id')"
 				@select="onDistrictSelect"
 			/>
 		</b-field>
 
-		<b-field
-			label="Commune"
-			:type="validateType('adm3Id')"
-		>
+		<b-field>
+			<template #label>
+				Commune<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<MultiSelect
 				v-model="formModel.adm3Id"
 				searchable
@@ -47,15 +46,14 @@
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="communes"
-				:class="validateMultiselect('adm3Id')"
 				@select="onCommuneSelect"
 			/>
 		</b-field>
 
-		<b-field
-			label="Village"
-			:type="validateType('adm4Id')"
-		>
+		<b-field>
+			<template #label>
+				Village<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<MultiSelect
 				v-model="formModel.adm4Id"
 				searchable
@@ -64,7 +62,6 @@
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="villages"
-				:class="validateMultiselect('adm4Id')"
 				@select="validate('adm4Id')"
 			/>
 		</b-field>

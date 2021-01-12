@@ -15,9 +15,12 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Organizational Logo"
 				:type="validateType('logo')"
 			>
+				<template #label>
+					Organizational Logo
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-field class="file">
 					<b-upload
 						v-model="formModel.uploadedImage"
@@ -44,10 +47,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Font To Apply To The Pdf"
-				:type="validateType('font')"
-			>
+			<b-field>
+				<template #label>
+					Font To Apply To The Pdf
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
@@ -55,7 +59,6 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="fonts"
-					:class="validateMultiselect('font')"
 					@blur="validate('font')"
 				>
 					<template slot="singleLabel" slot-scope="props">
@@ -81,10 +84,11 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field
-				label="Organization Primary Color"
-				:type="validateType('primaryColor')"
-			>
+			<b-field>
+				<template #label>
+					Organization Primary Color
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<VSwatches
 					v-model="formModel.primaryColor"
 					popover-x="right"
@@ -95,10 +99,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Organization Secondary Color"
-				:type="validateType('secondaryColor')"
-			>
+			<b-field>
+				<template #label>
+					Organization Secondary Color
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<VSwatches
 					v-model="formModel.secondaryColor"
 					row-lenght="6"
