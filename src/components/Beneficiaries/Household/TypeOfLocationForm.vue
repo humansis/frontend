@@ -18,7 +18,10 @@
 			/>
 		</b-field>
 		<div v-if="formModel.typeOfLocation === 'Camp'">
-			<b-field label="Camp">
+			<b-field>
+				<template #label>
+					Camp<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
 					placeholder="Click to select..."
@@ -27,7 +30,10 @@
 				/>
 			</b-field>
 
-			<b-field label="Camp" grouped>
+			<b-field grouped>
+				<template #label>
+					Camp Name<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-checkbox v-model="createCamp">Create A Camp</b-checkbox>
 				<b-input
 					v-if="createCamp"
@@ -36,7 +42,10 @@
 				/>
 			</b-field>
 
-			<b-field label="Tent Number">
+			<b-field>
+				<template #label>
+					Tent Number<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.tentNumber"
 					placeholder="Tent Number"

@@ -114,10 +114,10 @@
 				<b-checkbox v-model="formModel.updatePasswordOnNextLogin" />
 			</b-field>
 
-			<b-field
-				label="Prefix"
-				:type="validateType('prefix')"
-			>
+			<b-field>
+				<template #label>
+					Prefix<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.prefix"
 					:disabled="formDisabled"
@@ -125,10 +125,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Phone Number"
-				:type="validateType('phoneNumber')"
-			>
+			<b-field>
+				<template #label>
+					Phone Number
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.phoneNumber"
 					:disabled="formDisabled"

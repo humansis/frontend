@@ -13,11 +13,10 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Short Name"
-				:type="validateType('shortname')"
-				:message="validateMsg('shortname')"
-			>
+			<b-field>
+				<template #label>
+					Short Name<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.shortname"
 					:disabled="formDisabled"
@@ -27,9 +26,11 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Image"
 				:type="validateType('logo')"
 			>
+				<template #label>
+					Image<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-field class="file">
 					<b-upload
 						v-model="formModel.uploadedImage"
@@ -57,10 +58,10 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Notes"
-				:type="validateType('notes')"
-			>
+			<b-field>
+				<template #label>
+					Notes<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.notes"
 					:disabled="formDisabled"

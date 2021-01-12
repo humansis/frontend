@@ -189,15 +189,27 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
-				<b-field label="ID Poor No">
+				<b-field>
+					<template #label>
+						ID Poor no
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
 				</b-field>
 
-				<b-field label="Equity Card No">
+				<b-field>
+					<template #label>
+						Equity Card No
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
 				</b-field>
 
-				<b-field label="Fields">
+				<b-field>
+					<template #label>
+						Fields
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input v-model="formModel.countrySpecificOptions.fields" />
 				</b-field>
 			</div>
@@ -220,8 +232,11 @@
 				@select="validate('shelterType')"
 			/>
 		</b-field>
-		<h4 class="title is-4">Notes</h4>
 		<b-field>
+			<template #label>
+				<span class="is-size-5">Notes</span>
+				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<b-input v-model="formModel.notes" type="textarea" />
 		</b-field>
 	</form>

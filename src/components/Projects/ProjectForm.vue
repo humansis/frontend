@@ -148,7 +148,10 @@
 				/>
 			</b-field>
 
-			<b-field label="Notes">
+			<b-field>
+				<template #label>
+					Notes<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.notes"
 					type="textarea"

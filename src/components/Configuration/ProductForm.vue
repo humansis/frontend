@@ -13,10 +13,10 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Unit"
-				:type="validateType('unit')"
-			>
+			<b-field>
+				<template #label>
+					Unit<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.unit"
 					:disabled="formDisabled"
