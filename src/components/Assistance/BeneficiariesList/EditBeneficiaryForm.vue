@@ -33,6 +33,7 @@
 				<MultiSelect
 					v-model="formModel.referralType"
 					searchable
+					placeholder="Click to select..."
 					:options="options.referralType"
 				/>
 			</b-field>

@@ -53,6 +53,7 @@
 					searchable
 					label="value"
 					track-by="code"
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="fonts"
 					:class="validateMultiselect('font')"

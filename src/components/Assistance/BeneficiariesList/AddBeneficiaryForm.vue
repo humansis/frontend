@@ -5,6 +5,7 @@
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="options.beneficiaries"
 				/>

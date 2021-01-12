@@ -16,6 +16,7 @@
 						track-by="id"
 						label="name"
 						multiple
+						placeholder="Click to select..."
 						:options="options.projects"
 					/>
 				</b-field>

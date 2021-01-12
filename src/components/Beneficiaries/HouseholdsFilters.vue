@@ -9,7 +9,7 @@
 						:label="options.label || 'value'"
 						:track-by="options.trackBy || 'code'"
 						:multiple="options.multiple"
-						:placeholder="options.placeholder || 'Select ...'"
+						:placeholder="options.placeholder || 'Click to select...'"
 						:loading="options.loading"
 						:options="options.data"
 						@input="filterChanged(filter)"

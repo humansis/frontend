@@ -10,6 +10,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				placeholder="Click to select..."
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="provinces"
@@ -27,6 +28,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				placeholder="Click to select..."
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="districts"
@@ -44,6 +46,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				placeholder="Click to select..."
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="communes"
@@ -61,6 +64,7 @@
 				searchable
 				label="name"
 				track-by="id"
+				placeholder="Click to select..."
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="villages"

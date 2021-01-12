@@ -38,6 +38,7 @@
 					searchable
 					label="value"
 					track-by="code"
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="organizations"
 					:class="validateMultiselect('organization')"
@@ -55,6 +56,7 @@
 					searchable
 					label="value"
 					track-by="code"
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="rights"
 					:class="validateMultiselect('rights')"
@@ -73,6 +75,7 @@
 					searchable
 					label="name"
 					track-by="id"
+					placeholder="Click to select..."
 					:multiple="true"
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="projects"
@@ -92,6 +95,7 @@
 					searchable
 					label="name"
 					track-by="iso3"
+					placeholder="Click to select..."
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="countries"

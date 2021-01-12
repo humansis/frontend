@@ -36,6 +36,7 @@
 					label="code"
 					track-by="value"
 					multiple
+					placeholder="Click to select..."
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
@@ -97,6 +98,7 @@
 					label="shortname"
 					track-by="id"
 					multiple
+					placeholder="Click to select..."
 					:class="validateMultiselect('selectedDonors')"
 					:disabled="formDisabled"
 					:options="options.donors"
@@ -121,6 +123,7 @@
 					v-model="formModel.selectedTargetType"
 					label="code"
 					track-by="value"
+					placeholder="Click to select..."
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
