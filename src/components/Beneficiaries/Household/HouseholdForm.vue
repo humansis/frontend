@@ -88,6 +88,7 @@
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
 						expanded
+						min="0"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.debtLevel')"
@@ -121,6 +122,7 @@
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
 						expanded
+						min="0"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.foodConsumptionScore')"
@@ -135,6 +137,7 @@
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
 						expanded
+						min="0"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.copingStrategiesIndex')"
@@ -458,11 +461,11 @@ export default {
 
 		submit() {
 			// TODO submit current or resident location forms
-			this.$refs.currentLocationForm.submitLocationForm();
-			this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
+			const locationValid = this.$refs.currentLocationForm.submitLocationForm();
+			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
 
 			this.$v.$touch();
-			return !this.$v.$invalid;
+			return !this.$v.$invalid && !locationValid && !typeOfLocationValid;
 		},
 	},
 };

@@ -38,7 +38,8 @@
 					controls-position="compact"
 					placeholder="Quantity Of Booklets"
 					:disabled="formDisabled"
-					@input="validate('Quantity Of Booklets')"
+					:controls="!formDisabled"
+					@input="validate('quantityOfBooklets')"
 				/>
 			</b-field>
 
@@ -55,6 +56,7 @@
 					controls-alignment="right"
 					controls-position="compact"
 					:disabled="formDisabled"
+					:controls="!formDisabled"
 					@input="validate('quantityOfVouchers')"
 				/>
 			</b-field>

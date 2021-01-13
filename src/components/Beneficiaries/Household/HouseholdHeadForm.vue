@@ -136,7 +136,11 @@
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Residency</h4>
-					<b-field label="Residency Status">
+					<b-field>
+						<template #label>
+							Residency Status
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
 						<MultiSelect
 							v-model="formModel.residency.residencyStatus"
 							searchable
@@ -169,7 +173,12 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Phone 1</h4>
+					<div class="mb-5">
+						<span class="title is-4">Phone 1</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- Optional
+						</span>
+					</div>
 					<b-field label="Type" grouped>
 						<MultiSelect
 							v-model="formModel.phone1.type"
@@ -203,7 +212,12 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Phone 2</h4>
+					<div class="mb-5">
+						<span class="title is-4">Phone 2</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- Optional
+						</span>
+					</div>
 					<b-field label="Type" grouped>
 						<MultiSelect
 							v-model="formModel.phone2.type"
