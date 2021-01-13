@@ -1,4 +1,5 @@
 import CONST from "@/const";
+import i18n from "@/plugins/i18n";
 
 export default {
 	updateCountry: ({ commit }, countries) => {
@@ -14,6 +15,7 @@ export default {
 		const languageObj = languages.find((item) => item.name === language);
 		if (languageObj) {
 			commit("changeLanguage", languageObj);
+			i18n.locale = languageObj.name;
 		}
 	},
 };

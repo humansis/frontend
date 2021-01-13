@@ -37,7 +37,7 @@
 			</b-dropdown>
 
 			<b-dropdown
-				v-model="country.iso3"
+				v-model="language.name"
 				position="is-bottom-left"
 				append-to-body
 				aria-role="menu"
@@ -51,7 +51,7 @@
 				</a>
 				<b-dropdown-item
 					v-for="language in languages"
-					:key="language.name"
+					:key="language.key"
 					:value="language.name"
 					@click="handleChangeLanguage(language)"
 				>
@@ -128,8 +128,8 @@ export default {
 		fetchLanguages() {
 			// TODO Get languages
 			this.languages = [
-				{ name: "EN" },
-				{ name: "CZ" },
+				{ name: "EN", key: "en" },
+				{ name: "CZ", key: "cz" },
 			];
 			this.updateLanguage(this.languages);
 		},
