@@ -195,8 +195,6 @@ export default {
 			},
 			checkedRows: [],
 			filters: {},
-			waiting: 0,
-			preparedData: [],
 		};
 	},
 
@@ -221,90 +219,83 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.searchPhrase,
 				this.filters,
-			).then(({ totalCount, data }) => {
+			).then(async ({ totalCount, data }) => {
 				this.table.total = totalCount;
-				this.preparedData = data;
-				this.prepareDataForTable(this.preparedData);
+				this.table.data = await this.prepareDataForTable(data);
+				this.isLoadingList = false;
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
 			});
 		},
 
 		async prepareDataForTable(data) {
-			this.waiting = 0;
-			data.map(async (item, key) => {
-				/* eslint-disable */
-				data[key].members = data[key].beneficiaryIds.length;
-				data[key] = await this.prepareProjects(data[key]);
-				data[key] = await this.prepareBeneficiaries(data[key]);
-				data[key] = await this.prepareLocations(data[key]);
-				/* eslint-enable */
+			const filledData = [];
+			const promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].members = data[key].beneficiaryIds.length;
+				filledData[key].projects = await this.prepareProjects(data[key]);
+				const { givenName, familyName } = await this.prepareBeneficiaries(data[key]);
+				filledData[key].givenName = givenName;
+				filledData[key].familyName = familyName;
+				filledData[key].currentLocation = await this.prepareLocations(data[key]);
 			});
+			await Promise.all(promise);
+
+			return filledData;
 		},
 
 		async prepareBeneficiaries(item) {
-			const preparedItem = item;
-			preparedItem.familyName = "";
-			preparedItem.givenName = "";
-			BeneficiariesService.getBeneficiary(preparedItem.beneficiaryIds[0])
+			const result = {
+				familyName: "",
+				givenName: "",
+			};
+			await BeneficiariesService.getBeneficiary(item.beneficiaryIds[0])
 				.then(async (response) => {
-					preparedItem.familyName = response.localFamilyName;
+					result.familyName = response.localFamilyName;
 					if (response.enFamilyName) {
-						preparedItem.familyName += ` (${response.enFamilyName})`;
+						result.familyName += ` (${response.enFamilyName})`;
 					}
-					preparedItem.givenName = response.localGivenName;
+					result.givenName = response.localGivenName;
 					if (response.enGivenName) {
-						preparedItem.givenName += ` (${response.enGivenName})`;
+						result.givenName += ` (${response.enGivenName})`;
 					}
 				});
-			this.isLast();
-			return preparedItem;
+			return result;
 		},
 
 		async prepareLocations(item) {
-			const preparedItem = item;
-			preparedItem.currentLocation = "";
-			const locationId = preparedItem.temporarySettlementAddressId
-				|| preparedItem.campAddressId
-				|| preparedItem.residenceAddressId;
-			return LocationsService.getLocation(locationId)
+			let result = "";
+			const locationId = item.temporarySettlementAddressId
+				|| item.campAddressId
+				|| item.residenceAddressId;
+			await LocationsService.getLocation(locationId)
 				.then(async (location) => {
 					if (location.data) {
-						preparedItem.currentLocation = location.data.name;
+						result = location.data.name;
 					}
-					this.isLast();
-					return preparedItem;
 				});
-		},
-
-		isLast() {
-			// Wait for all data to be loaded and then show them in table
-			this.waiting += 1;
-			if (this.waiting === this.table.perPage * 3) {
-				this.table.data = this.preparedData;
-				this.isLoadingList = false;
-			}
+			return result;
 		},
 
 		async prepareProjects(item) {
-			const preparedItem = item;
-			preparedItem.projects = "";
-			preparedItem.projectIds.forEach((id, index) => {
-				ProjectsService.getDetailOfProject(id)
-					.then(async ({ data }) => {
-						if (data.name !== undefined) {
-							if (preparedItem.projects === "") {
-								preparedItem.projects = data.name;
+			let result = "";
+			const promises = [];
+			await item.projectIds.forEach((id) => {
+				const promise = ProjectsService.getDetailOfProject(id)
+					.then(({ data }) => {
+						if (data.name) {
+							if (result === "") {
+								result = data.name;
 							} else {
-								preparedItem.projects += ` ,${data.name}`;
+								result += ` ,${data.name}`;
 							}
 						}
-						if (preparedItem.projectIds.length - 1 === index) {
-							this.isLast();
-						}
 					});
+				promises.push(promise);
 			});
-			return preparedItem;
+			await Promise.all(promises);
+
+			return result;
 		},
 
 		goToCreatePage() {
