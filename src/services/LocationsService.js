@@ -50,4 +50,9 @@ export default {
 		const { data: { data, totalCount } } = await fetcher({ uri: `countries/${iso3}` });
 		return { data, totalCount };
 	},
+
+	async getLocation(id) {
+		const { data } = await fetcher({ uri: `locations/${id}` });
+		return { data };
+	},
 };

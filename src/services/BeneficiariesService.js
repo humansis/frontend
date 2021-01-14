@@ -80,4 +80,11 @@ export default {
 		const { data: { data, totalCount } } = await fetcher({ uri: "households/locations/types" });
 		return { data, totalCount };
 	},
+
+	async getBeneficiary(id) {
+		const { data } = await fetcher({
+			uri: `beneficiaries/${id}`,
+		});
+		return data;
+	},
 };
