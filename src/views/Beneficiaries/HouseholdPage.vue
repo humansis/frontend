@@ -77,6 +77,7 @@
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" :key="column.id" sortable>
@@ -119,9 +120,11 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import LocationsService from "@/services/LocationsService";
+import ProjectsService from "@/services/ProjectsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import Search from "@/components/Search";
@@ -158,11 +161,11 @@ export default {
 						label: "Household ID",
 					},
 					{
-						key: "contactFamilyName",
+						key: "familyName",
 						label: "Family Name",
 					},
 					{
-						key: "contactGivenName",
+						key: "givenName",
 						label: "First Name",
 					},
 					{
@@ -176,11 +179,11 @@ export default {
 						label: "ID Number",
 					},
 					{
-						key: "projectIds",
+						key: "projects",
 						label: "Projects",
 					},
 					{
-						key: "location",
+						key: "currentLocation",
 						label: "Current Location",
 					},
 				],
@@ -192,6 +195,8 @@ export default {
 			},
 			checkedRows: [],
 			filters: {},
+			waiting: 0,
+			preparedData: [],
 		};
 	},
 
@@ -216,14 +221,90 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.searchPhrase,
 				this.filters,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ totalCount, data }) => {
+				this.table.total = totalCount;
+				this.preparedData = data;
+				this.prepareDataForTable(this.preparedData);
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
 			});
+		},
 
-			this.isLoadingList = false;
+		async prepareDataForTable(data) {
+			this.waiting = 0;
+			data.map(async (item, key) => {
+				/* eslint-disable */
+				data[key].members = data[key].beneficiaryIds.length;
+				data[key] = await this.prepareProjects(data[key]);
+				data[key] = await this.prepareBeneficiaries(data[key]);
+				data[key] = await this.prepareLocations(data[key]);
+				/* eslint-enable */
+			});
+		},
+
+		async prepareBeneficiaries(item) {
+			const preparedItem = item;
+			preparedItem.familyName = "";
+			preparedItem.givenName = "";
+			BeneficiariesService.getBeneficiary(preparedItem.beneficiaryIds[0])
+				.then(async (response) => {
+					preparedItem.familyName = response.localFamilyName;
+					if (response.enFamilyName) {
+						preparedItem.familyName += ` (${response.enFamilyName})`;
+					}
+					preparedItem.givenName = response.localGivenName;
+					if (response.enGivenName) {
+						preparedItem.givenName += ` (${response.enGivenName})`;
+					}
+				});
+			this.isLast();
+			return preparedItem;
+		},
+
+		async prepareLocations(item) {
+			const preparedItem = item;
+			preparedItem.currentLocation = "";
+			const locationId = preparedItem.temporarySettlementAddressId
+				|| preparedItem.campAddressId
+				|| preparedItem.residenceAddressId;
+			return LocationsService.getLocation(locationId)
+				.then(async (location) => {
+					if (location.data) {
+						preparedItem.currentLocation = location.data.name;
+					}
+					this.isLast();
+					return preparedItem;
+				});
+		},
+
+		isLast() {
+			// Wait for all data to be loaded and then show them in table
+			this.waiting += 1;
+			if (this.waiting === this.table.perPage * 3) {
+				this.table.data = this.preparedData;
+				this.isLoadingList = false;
+			}
+		},
+
+		async prepareProjects(item) {
+			const preparedItem = item;
+			preparedItem.projects = "";
+			preparedItem.projectIds.forEach((id, index) => {
+				ProjectsService.getDetailOfProject(id)
+					.then(async ({ data }) => {
+						if (data.name !== undefined) {
+							if (preparedItem.projects === "") {
+								preparedItem.projects = data.name;
+							} else {
+								preparedItem.projects += ` ,${data.name}`;
+							}
+						}
+						if (preparedItem.projectIds.length - 1 === index) {
+							this.isLast();
+						}
+					});
+			});
+			return preparedItem;
 		},
 
 		goToCreatePage() {
