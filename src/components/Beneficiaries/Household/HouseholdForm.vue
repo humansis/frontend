@@ -7,6 +7,8 @@
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
+					:location-object="currentLocation"
+					:is-editing="true"
 				/>
 			</div>
 			<div class="column is-half">
@@ -14,31 +16,9 @@
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
-				/>
-			</div>
-		</div>
-		<div class="field">
-			<b-checkbox v-model="formModel.isCurrentLocationOtherThanAddress">
-				Is your current location different than your address?
-			</b-checkbox>
-		</div>
-		<div
-			v-if="formModel.isCurrentLocationOtherThanAddress"
-			class="columns is-multiline"
-		>
-			<div class="column is-half">
-				<h4 class="title is-4">Resident Location</h4>
-				<LocationForm
-					ref="residentLocationForm"
-					:form-model="formModel"
-					:form-disabled="false"
-				/>
-			</div>
-			<div class="column is-half">
-				<h4 class="title is-4">Type Of Location</h4>
-				<TypeOfLocationForm
-					ref="residentTypeOfLocationForm"
-					:form-model="formModel.residentLocation"
+					:location-object="currentLocation"
+					:type-of-location="typeOfLocation"
+					:is-editing="true"
 				/>
 			</div>
 		</div>
@@ -220,19 +200,19 @@
 		<h4 class="title is-4">Household Status</h4>
 		<b-field
 			label="Shelter Type"
-			:type="validateType('shelterType')"
-			:message="validateMsg('shelterType')"
+			:type="validateType('shelterStatus')"
+			:message="validateMsg('shelterStatus')"
 		>
 			<MultiSelect
-				v-model="formModel.shelterType"
+				v-model="formModel.shelterStatus"
 				searchable
 				label="value"
 				track-by="code"
 				placeholder="Click to select..."
-				:loading="shelterTypeLoading"
-				:options="options.shelterType"
-				:class="validateMultiselect('shelterType')"
-				@select="validate('shelterType')"
+				:loading="shelterStatusLoading"
+				:options="options.shelterStatuses"
+				:class="validateMultiselect('shelterStatus')"
+				@select="validate('shelterStatus')"
 			/>
 		</b-field>
 		<b-field>
@@ -252,6 +232,8 @@ import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import AddressService from "@/services/AddressService";
 
 const locationModel = {
 	adm1Id: "",
@@ -274,12 +256,6 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		detailOfHousehold(household) {
-			this.mapDetailOfHouseholdToFormModel(household);
-		},
 	},
 
 	components: {
@@ -307,13 +283,13 @@ export default {
 				equityCardNo: {},
 				fields: {},
 			},
-			shelterType: { required },
+			shelterStatus: { required },
 		},
 	},
 
 	data() {
 		return {
-			shelterTypeLoading: false,
+			shelterStatusLoading: false,
 			assetsLoading: false,
 			livelihoodLoading: false,
 			formModel: {
@@ -322,9 +298,6 @@ export default {
 					...locationModel,
 				},
 				isCurrentLocationOtherThanAddress: false,
-				residentLocation: {
-					...locationModel,
-				},
 				livelihood: {
 					livelihood: [],
 					incomeLevel: [],
@@ -343,7 +316,7 @@ export default {
 					equityCardNo: "",
 					fields: "",
 				},
-				shelterType: [],
+				shelterStatus: [],
 				notes: "",
 			},
 			options: {
@@ -370,49 +343,73 @@ export default {
 					{ code: 10, value: "None" },
 					{ code: 11, value: "Other" },
 				],
-				shelterType: [],
+				shelterStatuses: [],
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchLivelihoods();
-		this.fetchAssets();
-		this.fetchShelterTypes();
+	async mounted() {
+		await this.fetchLivelihoods();
+		await this.fetchAssets();
+		await this.fetchShelterStatuses();
+		this.mapDetailOfHouseholdToFormModel();
+	},
+
+	computed: {
+		locationId() {
+			if (this.detailOfHousehold) {
+				return this.detailOfHousehold.temporarySettlementAddressId
+					|| this.detailOfHousehold.residenceAddressId
+					|| this.detailOfHousehold.campAddressId;
+			}
+			return null;
+		},
+		typeOfLocation() {
+			if (this.detailOfHousehold) {
+				if (this.detailOfHousehold.temporarySettlementAddressId) return "temporary_settlement";
+				if (this.detailOfHousehold.residenceAddressId) return "residence";
+				if (this.detailOfHousehold.campAddressId) return "camp";
+			}
+			return null;
+		},
+		currentLocation() {
+			switch (this.typeOfLocation) {
+				case "camp":
+					return AddressService.getCampAddress(this.locationId);
+				case "residence":
+					return AddressService.getResidenceAddress(this.locationId);
+				case "temporary_settlement":
+					return AddressService.getTemporarySettlementAddress(this.locationId);
+				default:
+					return null;
+			}
+		},
 	},
 
 	methods: {
-		mapDetailOfHouseholdToFormModel(household) {
+		mapDetailOfHouseholdToFormModel() {
 			this.formModel = {
 				...this.formModel,
-				id: household.id,
+				id: this.detailOfHousehold.id,
 				currentLocation: {
 					...this.formModel.currentLocation,
 					// TODO map current location
 				},
-				residentLocation: {
-					...this.formModel.residentLocation,
-					// TODO map resident location
-				},
 				livelihood: {
 					...this.formModel.livelihood,
-					foodConsumptionScore: household.foodConsumptionScore,
-					// TODO map assets to code/value
-					assets: household.assets,
-					// TODO map livelihood to code/value
-					livelihood: [],
-					// TODO map incomeLevel to code/value
-					incomeLevel: [],
-					// TODO map debt level
-					debtLevel: 0,
-					copingStrategiesIndex: household.copingStrategiesIndex,
+					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
+					assets: getArrayOfCodeListByKey([this.detailOfHousehold.assets], this.options.assets, "code"),
+					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
+					incomeLevel: getArrayOfCodeListByKey([this.detailOfHousehold.incomeLevel], this.options.incomeLevel, "code"),
+					debtLevel: this.detailOfHousehold.debtLevel,
+					copingStrategiesIndex: this.detailOfHousehold.copingStrategiesIndex,
 				},
 				externalSupport: {
 					...this.formModel.externalSupport,
 					// TODO map supportReceivedTypes to code/value
-					externalSupportReceivedType: household.supportReceivedTypes,
-					supportDateReceived: new Date(household.supportDateReceived),
-					supportOrganization: household.supportOrganizationName,
+					externalSupportReceivedType: getArrayOfCodeListByKey([this.detailOfHousehold.supportReceivedTypes], this.options.externalSupportReceivedType, "code"),
+					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
+					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
 				countrySpecificOptions: {
 					...this.formModel.countrySpecificOptions,
@@ -421,9 +418,8 @@ export default {
 					equityCardNo: "",
 					fields: "",
 				},
-				// TODO map shelterType to code/value
-				shelterType: [],
-				notes: household.notes,
+				shelterStatus: getArrayOfCodeListByKey([this.detailOfHousehold.shelterStatus], this.options.shelterStatuses, "code"),
+				notes: this.detailOfHousehold.notes,
 			};
 		},
 
@@ -449,14 +445,14 @@ export default {
 			this.assetsLoading = false;
 		},
 
-		async fetchShelterTypes() {
-			this.shelterTypeLoading = true;
+		async fetchShelterStatuses() {
+			this.shelterStatusesLoading = true;
 			await BeneficiariesService.getListOfShelterStatuses()
-				.then((result) => { this.options.shelterType = result.data; })
+				.then((result) => { this.options.shelterStatuses = result.data; })
 				.catch((e) => {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
-			this.shelterTypeLoading = false;
+			this.shelterStatusesLoading = false;
 		},
 
 		submit() {

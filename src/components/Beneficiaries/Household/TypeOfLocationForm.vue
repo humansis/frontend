@@ -103,6 +103,11 @@ export default {
 
 	props: {
 		formModel: Object,
+		locationObject: Promise,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	mixins: [Validation],
@@ -130,8 +135,21 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchLocationsTypes();
+	async mounted() {
+		await this.fetchLocationsTypes();
+		await Promise.all([this.locationObject]);
+		this.locationObject.then((location) => {
+			if (this.isEditing) {
+				this.formModel.typeOfLocation = this.options.typeOfLocation
+					.find((item) => item.code === location.type);
+				this.formModel.camp = location.camp;
+				this.formModel.campName = location.name;
+				this.formModel.tentNumber = location.tentNumber;
+				this.formModel.addressNumber = location.number;
+				this.formModel.addressStreet = location.street;
+				this.formModel.addressPostcode = location.postcode;
+			}
+		});
 	},
 
 	methods: {

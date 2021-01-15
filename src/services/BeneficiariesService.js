@@ -87,4 +87,11 @@ export default {
 		});
 		return data;
 	},
+
+	async getPhone(id) {
+		const { data } = await fetcher({
+			uri: `beneficiaries/phones/${id}`,
+		});
+		return data;
+	},
 };

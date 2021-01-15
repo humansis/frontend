@@ -43,10 +43,12 @@
 			:total="table.total"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 		</Table>
@@ -59,6 +61,8 @@ import ProjectsService from "@/services/ProjectsService";
 import Validation from "@/mixins/validation";
 import { required } from "vuelidate/lib/validators";
 import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "Summary",
@@ -67,6 +71,7 @@ export default {
 
 	components: {
 		Table,
+		ColumnField,
 	},
 
 	props: {
@@ -75,8 +80,8 @@ export default {
 	},
 
 	watch: {
-		detailOfHousehold() {
-			// TODO Map detailOfHousehold to formModel
+		async detailOfHousehold() {
+			await this.mapProjects();
 		},
 	},
 
@@ -104,10 +109,14 @@ export default {
 						field: "familyName",
 						label: "Family Name (Local)",
 					},
-					{ field: "gender" },
+					{
+						field: "gender",
+						type: "object",
+					},
 					{
 						field: "dateBirth",
 						label: "Date Of Birth",
+						type: "date",
 					},
 					{ field: "phone" },
 					{ field: "nationalId" },
@@ -117,8 +126,9 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.fetchProjects();
+	async mounted() {
+		await this.fetchProjects();
+		await this.mapProjects();
 	},
 
 	computed: {
@@ -128,6 +138,11 @@ export default {
 	},
 
 	methods: {
+		mapProjects() {
+			// TODO Map location and address on page
+			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+		},
+
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
 				.then((response) => {

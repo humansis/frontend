@@ -270,6 +270,7 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { normalizeText } from "@/utils/datagrid";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -279,12 +280,11 @@ export default {
 	props: {
 		showTypeOfBeneficiary: Boolean,
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		detailOfHousehold(household) {
-			this.mapDetailOfHouseholdToFormModel(household);
+		isEditing: {
+			type: Boolean,
+			default: false,
 		},
+		beneficiary: Object,
 	},
 
 	validations: {
@@ -373,20 +373,107 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.fetchNationalCardTypes();
-		this.fetchVulnerabilities();
-		this.fetchPhoneTypes();
-		this.fetchResidenceStatus();
+	async mounted() {
+		await this.fetchNationalCardTypes();
+		await this.fetchVulnerabilities();
+		await this.fetchPhoneTypes();
+		await this.fetchResidenceStatus();
+		if (this.isEditing) {
+			if (this.beneficiary) {
+				await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
+			} else {
+				const data = await BeneficiariesService
+					.getBeneficiary(this.detailOfHousehold.householdHeadId);
+				await this.mapDetailOfHouseholdToFormModel(data);
+			}
+		}
 	},
 
 	methods: {
-		mapDetailOfHouseholdToFormModel() {
-			// TODO map household param to formModel
+		async mapDetailOfHouseholdToFormModel(beneficiary) {
+			const {
+				dateOfBirth,
+				enFamilyName,
+				enGivenName,
+				enParentsName,
+				gender,
+				localFamilyName,
+				localGivenName,
+				localParentsName,
+				nationalIds: {
+					idType,
+					idNumber,
+				},
+				phoneIds,
+				referralComment,
+				referralType,
+				vulnerabilityCriteria,
+			} = beneficiary;
+			if (referralComment || referralType) {
+				this.formModel.addAReferral = true;
+			}
+			const { phone1, phone2 } = await this.getPhones(phoneIds);
+			this.formModel = {
+				...this.formModel,
+				nameLocal: {
+					familyName: localFamilyName,
+					firstName: localGivenName,
+					parentsName: localParentsName,
+				},
+				nameEnglish: {
+					familyName: enFamilyName,
+					firstName: enGivenName,
+					parentsName: enParentsName,
+				},
+				personalInformation: {
+					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
+					dateOfBirth: new Date(dateOfBirth),
+				},
+				id: {
+					// TODO map idType to select
+					idType,
+					idNumber,
+				},
+				residency: {
+					// TODO
+					residencyStatus: "",
+				},
+				referral: {
+					// TODO
+					referralType,
+					comment: referralComment,
+				},
+				phone1,
+				phone2,
+				// TODO check
+				vulnerabilities: getArrayOfCodeListByKey(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
+			};
 		},
 
 		prepareVulnerability(name) {
 			return normalizeText(name);
+		},
+
+		async getPhones(ids) {
+			const phones = {
+				phone1: this.formModel.phone1,
+				phone2: this.formModel.phone2,
+			};
+			const promises = [];
+			await ids.forEach((id, key) => {
+				const promise = BeneficiariesService.getPhone(id)
+					.then((data) => {
+						phones[`phone${key + 1}`] = {
+							type: getArrayOfCodeListByKey([data.type], this.options.phoneType, "code"),
+							proxy: data.proxy,
+							ext: data.prefix,
+							phoneNo: data.number,
+						};
+					});
+				promises.push(promise);
+			});
+			await Promise.all(promises);
+			return phones;
 		},
 
 		async fetchNationalCardTypes() {
