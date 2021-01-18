@@ -5,6 +5,7 @@
 				<Breadcrumbs />
 			</b-navbar-item>
 		</template>
+
 		<template slot="end">
 			<b-navbar-item>
 				<b-icon
@@ -12,6 +13,7 @@
 					size="is-medium"
 				/>
 			</b-navbar-item>
+
 			<b-dropdown
 				v-model="country.iso3"
 				position="is-bottom-left"
@@ -25,6 +27,7 @@
 				>
 					<b-icon icon="globe-africa" size="is-medium" />
 				</a>
+
 				<b-dropdown-item
 					v-for="country in countries"
 					:key="country.name"
@@ -49,6 +52,7 @@
 				>
 					<b-icon icon="language" size="is-medium" />
 				</a>
+
 				<b-dropdown-item
 					v-for="language in languages"
 					:key="language.key"
@@ -72,16 +76,20 @@
 				>
 					<b-icon icon="user" size="is-medium" />
 				</a>
-				<router-link to="/profile">
+
+				<router-link :to="{ name: 'Profile' }">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
 						Profile
 					</b-dropdown-item>
 				</router-link>
-				<b-dropdown-item value="logout">
-					<b-icon class="mr-1" icon="sign-out-alt" />
-					Log out
-				</b-dropdown-item>
+
+				<router-link :to="{ name: 'Logout' }">
+					<b-dropdown-item value="logout">
+						<b-icon class="mr-1" icon="sign-out-alt" />
+						Log out
+					</b-dropdown-item>
+				</router-link>
 			</b-dropdown>
 		</template>
 	</b-navbar>

@@ -3,21 +3,42 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+// https://blog.sqreen.com/authentication-best-practices-vue/
+// eslint-disable-next-line max-len
+// https://www.digitalocean.com/community/tutorials/how-to-set-up-vue-js-authentication-and-route-handling-using-vue-router
+// const ifAuthenticated = (to, from, next) => {
+// 	next(); // FIXME
+//	 if (store.getters.isAuthenticated) {
+//	 	next()
+//	 	return
+//	 }
+//	 next('/login')
+// };
+
+// const ifNotAuthenticated = (to, from, next) => {
+// 	next(); // FIXME
+//	 if (!store.getters.isAuthenticated) {
+//	 	next()
+//	 	return
+//	 }
+//	 next('/')
+// };
+
 const routes = [
-	// {
-	// 	path: "/login",
-	// 	name: "Login",
-	// 	component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
-	// },
-	// {
-	// 	path: "/logout",
-	// 	name: "Logout",
-	// 	beforeEnter: ({ query }, from, next) => {
-	// 		localStorage.removeItem("user");
-	// 		localStorage.removeItem("user-token");
-	// 		next({ name: "Login", query });
-	// 	},
-	// },
+	{
+		path: "/login",
+		name: "Login",
+		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
+		// beforeEnter: ifNotAuthenticated,
+	},
+	{
+		path: "/logout",
+		name: "Logout",
+		beforeEnter: ({ query }, from, next) => {
+			localStorage.removeItem("user");
+			next({ name: "Login", query });
+		},
+	},
 	{
 		path: "",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
@@ -250,6 +271,16 @@ const router = new VueRouter({
 	mode: "history",
 	base: process.env.BASE_URL,
 	routes,
+});
+
+router.beforeEach((to, from, next) => {
+	// eslint-disable-next-line
+	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !localStorage.getItem("user")) {
+		const redirect = to.query?.redirect || to.fullPath;
+		next({ name: "Logout", query: { redirect } });
+	} else {
+		next();
+	}
 });
 
 export default router;

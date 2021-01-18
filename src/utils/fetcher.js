@@ -51,7 +51,7 @@ export const getResponseJSON = async (response) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
+const fetchFromHumansisApi = async ({ uri, auth, method, body, contentType }) => {
 	// TODO Remove second mockUrl after removing swagger api
 	const url = `${CONST.API}/${uri}`;
 	const mockUrl = `${CONST.API_MOCK}/${uri}`;
@@ -63,7 +63,12 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 	};
 
 	if (auth) {
-		headers.Authentication = localStorage.getItem("user-token");
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		if (user?.authdata) {
+			headers.Authentication = `Basic ${user.authdata}`;
+		}
+
 		// TODO Remove after implement authorization layer
 		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
@@ -91,12 +96,12 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 		return getResponseJSON(newResponse);
 	}
 	return getResponseJSON(response);
-}
+};
 
 export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
 	// TODO Fix after remove swagger api
 	if (CONST.API_ON) {
-		return fetchFromHumansisApi(uri, auth, method, body, contentType);
+		return fetchFromHumansisApi({ uri, auth, method, body, contentType });
 	}
 	const mockUrl = `${CONST.API_MOCK}/${uri}`;
 
@@ -107,7 +112,14 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	};
 
 	if (auth) {
-		headers.Authentication = localStorage.getItem("user-token");
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		if (user?.authdata) {
+			headers.Authentication = `Basic ${user.authdata}`;
+		}
+
+		// TODO Remove after implement authorization layer
+		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
 
 	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
