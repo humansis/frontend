@@ -136,18 +136,20 @@
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Residency</h4>
-					<b-field>
-						<template #label>
-							Residency Status
-							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-						</template>
+					<b-field
+						label="Residency Status"
+						:type="validateType('residencyStatus')"
+						:message="validateMsg('residencyStatus')"
+					>
 						<MultiSelect
-							v-model="formModel.residency.residencyStatus"
+							v-model="formModel.residencyStatus"
 							searchable
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
 							:options="options.residencyStatus"
+							:class="validateMultiselect('residencyStatus')"
+							@select="validate('residencyStatus')"
 						/>
 					</b-field>
 				</div>
@@ -163,6 +165,8 @@
 						<MultiSelect
 							v-model="formModel.referral.referralType"
 							searchable
+							label="value"
+							track-by="code"
 							placeholder="Click to select..."
 							:options="options.referralType"
 						/>
@@ -253,7 +257,7 @@
 			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
 					v-for="vulnerability of options.vulnerabilities"
-					v-model="formModel.vulnerabilities"
+					v-model="formModel.vulnerabilities[vulnerability.code]"
 					:native-value="vulnerability.code"
 					:key="vulnerability.code"
 				>
@@ -270,7 +274,7 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { normalizeText } from "@/utils/datagrid";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -307,6 +311,7 @@ export default {
 				idType: { required },
 				idNumber: { required },
 			},
+			residencyStatus: { required },
 		},
 	},
 
@@ -331,9 +336,7 @@ export default {
 					idType: "",
 					idNumber: "",
 				},
-				residency: {
-					residencyStatus: "",
-				},
+				residencyStatus: "",
 				addAReferral: false,
 				referral: {
 					referralType: "",
@@ -352,6 +355,7 @@ export default {
 					phoneNo: "",
 				},
 				vulnerabilities: [],
+				isHead: false,
 			},
 			options: {
 				gender: [
@@ -361,7 +365,13 @@ export default {
 				idType: [],
 				residencyStatus: [],
 				// TODO get from API
-				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
+				referralType: [
+					{ code: 1, value: "Health" },
+					{ code: 2, value: "Protection" },
+					{ code: 3, value: "Shelter" },
+					{ code: 4, value: "Nutrition" },
+					{ code: 5, value: "Other" },
+				],
 				phoneType: [],
 				// TODO get from API
 				phonePrefixes: [
@@ -400,19 +410,18 @@ export default {
 				localFamilyName,
 				localGivenName,
 				localParentsName,
-				nationalIds: {
-					idType,
-					idNumber,
-				},
+				nationalIds,
 				phoneIds,
 				referralComment,
 				referralType,
 				vulnerabilityCriteria,
+				isHead,
 			} = beneficiary;
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
+			const id = await this.getNationalIdCard(nationalIds[0]);
 			this.formModel = {
 				...this.formModel,
 				nameLocal: {
@@ -426,18 +435,11 @@ export default {
 					parentsName: enParentsName,
 				},
 				personalInformation: {
-					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
+					gender: gender.code,
 					dateOfBirth: new Date(dateOfBirth),
 				},
-				id: {
-					// TODO map idType to select
-					idType,
-					idNumber,
-				},
-				residency: {
-					// TODO
-					residencyStatus: "",
-				},
+				id,
+				residencyStatus: "",
 				referral: {
 					// TODO
 					referralType,
@@ -445,8 +447,8 @@ export default {
 				},
 				phone1,
 				phone2,
-				// TODO check
-				vulnerabilities: getArrayOfCodeListByKey(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
+				isHead,
+				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
 			};
 		},
 
@@ -462,18 +464,33 @@ export default {
 			const promises = [];
 			await ids.forEach((id, key) => {
 				const promise = BeneficiariesService.getPhone(id)
-					.then((data) => {
+					.then(({ type, proxy, prefix, number }) => {
 						phones[`phone${key + 1}`] = {
-							type: getArrayOfCodeListByKey([data.type], this.options.phoneType, "code"),
-							proxy: data.proxy,
-							ext: data.prefix,
-							phoneNo: data.number,
+							type: getArrayOfCodeListByKey([type], this.options.phoneType, "code"),
+							proxy,
+							ext: prefix,
+							phoneNo: number,
 						};
 					});
 				promises.push(promise);
 			});
 			await Promise.all(promises);
 			return phones;
+		},
+
+		async getNationalIdCard(id) {
+			const nationalIdCard = {
+				idType: this.formModel.id.idNumber,
+				idNumber: this.formModel.id.idType,
+			};
+			if (id) {
+				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
+					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "id");
+					nationalIdCard.idNumber = number;
+				});
+			}
+
+			return nationalIdCard;
 		},
 
 		async fetchNationalCardTypes() {

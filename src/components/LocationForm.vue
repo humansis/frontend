@@ -121,18 +121,17 @@ export default {
 
 	async mounted() {
 		await this.fetchProvinces();
-		await Promise.all([this.locationObject]);
 		this.locationObject.then(async (location) => {
 			if (this.isEditing || this.formDisabled) {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([location.adm1], this.options.provinces, "code");
+				await this.fetchDistricts(location.adm1);
 				if (location.adm2) {
-					await this.fetchDistricts(location.adm1);
 					this.formModel.adm2Id = getArrayOfCodeListByKey([location.adm2], this.options.districts, "code");
+					await this.fetchCommunes(location.adm2);
 					if (location.adm3) {
-						await this.fetchCommunes(location.adm2);
 						this.formModel.adm3Id = getArrayOfCodeListByKey([location.adm3], this.options.communes, "code");
+						await this.fetchVillages(location.adm3);
 						if (location.adm4) {
-							await this.fetchVillages(location.adm3);
 							this.formModel.adm4Id = getArrayOfCodeListByKey([location.adm4], this.options.villages, "code");
 						}
 					}
@@ -149,16 +148,19 @@ export default {
 
 		onProvinceSelect({ id }) {
 			this.validate("adm1Id");
+			this.eraseData("adm1");
 			this.fetchDistricts(id);
 		},
 
 		onDistrictSelect({ id }) {
 			this.validate("adm2Id");
+			this.eraseData("adm2");
 			this.fetchCommunes(id);
 		},
 
 		onCommuneSelect({ id }) {
 			this.validate("adm3Id");
+			this.eraseData("adm3");
 			this.fetchVillages(id);
 		},
 
@@ -200,6 +202,25 @@ export default {
 					Notification(`Adm4 ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
+		},
+
+		eraseData(type) {
+			switch (type) {
+				case "adm1":
+					this.formModel.adm2Id = null;
+					this.formModel.adm3Id = null;
+					this.formModel.adm4Id = null;
+					break;
+				case "adm2":
+					this.formModel.adm3Id = null;
+					this.formModel.adm4Id = null;
+					break;
+				case "adm3":
+					this.formModel.adm4Id = null;
+					break;
+				default:
+					break;
+			}
 		},
 	},
 };

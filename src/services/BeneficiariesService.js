@@ -94,4 +94,11 @@ export default {
 		});
 		return data;
 	},
+
+	async getNationalId(id) {
+		const { data } = await fetcher({
+			uri: `beneficiaries/national-ids/${id}`,
+		});
+		return data;
+	},
 };

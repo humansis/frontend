@@ -27,13 +27,13 @@
 			<div class="column is-half">
 				<div class="box">
 					<p class="title is-6">Current Address</p>
-					<p class="subtitle is-4">address</p>
+					<p class="subtitle is-4">{{ address }}</p>
 				</div>
 			</div>
 			<div class="column is-half">
 				<div class="box">
 					<p class="title is-6">Current Location</p>
-					<p class="subtitle is-4">location</p>
+					<p class="subtitle is-4">{{ location }}</p>
 				</div>
 			</div>
 		</div>
@@ -41,6 +41,7 @@
 		<Table
 			:data="membersData"
 			:total="table.total"
+			:paginated="false"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -77,12 +78,8 @@ export default {
 	props: {
 		members: Array,
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		async detailOfHousehold() {
-			await this.mapProjects();
-		},
+		location: String,
+		address: String,
 	},
 
 	validations: {
@@ -111,6 +108,7 @@ export default {
 					},
 					{
 						field: "gender",
+						label: "Gender",
 						type: "object",
 					},
 					{
@@ -118,8 +116,8 @@ export default {
 						label: "Date Of Birth",
 						type: "date",
 					},
-					{ field: "phone" },
-					{ field: "nationalId" },
+					{ field: "phone", label: "Phone" },
+					{ field: "nationalId", label: "National ID" },
 				],
 				total: 0,
 			},
@@ -139,7 +137,6 @@ export default {
 
 	methods: {
 		mapProjects() {
-			// TODO Map location and address on page
 			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
 		},
 
