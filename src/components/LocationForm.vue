@@ -13,7 +13,7 @@
 				placeholder="Click to select..."
 				:loading="provincesLoading"
 				:disabled="formDisabled"
-				:options="provinces"
+				:options="options.provinces"
 				:class="validateMultiselect('adm1Id')"
 				@select="onProvinceSelect"
 			/>
@@ -31,7 +31,7 @@
 				placeholder="Click to select..."
 				:loading="districtsLoading"
 				:disabled="formDisabled"
-				:options="districts"
+				:options="options.districts"
 				@select="onDistrictSelect"
 			/>
 		</b-field>
@@ -48,7 +48,7 @@
 				placeholder="Click to select..."
 				:loading="communesLoading"
 				:disabled="formDisabled"
-				:options="communes"
+				:options="options.communes"
 				@select="onCommuneSelect"
 			/>
 		</b-field>
@@ -65,7 +65,7 @@
 				placeholder="Click to select..."
 				:loading="villagesLoading"
 				:disabled="formDisabled"
-				:options="villages"
+				:options="options.villages"
 				@select="validate('adm4Id')"
 			/>
 		</b-field>
@@ -77,6 +77,8 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
+// import { resolveLocations } from "@/utils/LocationResolver";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 
 export default {
 	name: "locationForm",
@@ -86,14 +88,21 @@ export default {
 	props: {
 		formModel: Object,
 		formDisabled: Boolean,
+		locationObject: Promise,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
-			provinces: [],
-			districts: [],
-			communes: [],
-			villages: [],
+			options: {
+				provinces: [],
+				districts: [],
+				communes: [],
+				villages: [],
+			},
 			provincesLoading: false,
 			districtsLoading: false,
 			communesLoading: false,
@@ -110,8 +119,25 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchProvinces();
+	async mounted() {
+		await this.fetchProvinces();
+		this.locationObject.then(async (location) => {
+			if (this.isEditing || this.formDisabled) {
+				this.formModel.adm1Id = getArrayOfCodeListByKey([location.adm1], this.options.provinces, "code");
+				await this.fetchDistricts(location.adm1);
+				if (location.adm2) {
+					this.formModel.adm2Id = getArrayOfCodeListByKey([location.adm2], this.options.districts, "code");
+					await this.fetchCommunes(location.adm2);
+					if (location.adm3) {
+						this.formModel.adm3Id = getArrayOfCodeListByKey([location.adm3], this.options.communes, "code");
+						await this.fetchVillages(location.adm3);
+						if (location.adm4) {
+							this.formModel.adm4Id = getArrayOfCodeListByKey([location.adm4], this.options.villages, "code");
+						}
+					}
+				}
+			}
+		});
 	},
 
 	methods: {
@@ -122,23 +148,26 @@ export default {
 
 		onProvinceSelect({ id }) {
 			this.validate("adm1Id");
+			this.eraseData("adm1");
 			this.fetchDistricts(id);
 		},
 
 		onDistrictSelect({ id }) {
 			this.validate("adm2Id");
+			this.eraseData("adm2");
 			this.fetchCommunes(id);
 		},
 
 		onCommuneSelect({ id }) {
 			this.validate("adm3Id");
+			this.eraseData("adm3");
 			this.fetchVillages(id);
 		},
 
 		async fetchProvinces() {
 			this.provincesLoading = true;
 			await LocationsService.getListOfAdm1()
-				.then((result) => { this.provinces = result.data; })
+				.then((result) => { this.options.provinces = result.data; })
 				.catch((e) => {
 					Notification(`Adm1 ${e}`, "is-danger");
 				});
@@ -148,7 +177,7 @@ export default {
 		async fetchDistricts(adm1Id) {
 			this.districtsLoading = true;
 			await LocationsService.getListOfAdm2(adm1Id)
-				.then((result) => { this.districts = result.data; })
+				.then((result) => { this.options.districts = result.data; })
 				.catch((e) => {
 					Notification(`Adm2 ${e}`, "is-danger");
 				});
@@ -158,7 +187,7 @@ export default {
 		async fetchCommunes(adm2Id) {
 			this.communesLoading = true;
 			await LocationsService.getListOfAdm3(adm2Id)
-				.then((result) => { this.communes = result.data; })
+				.then((result) => { this.options.communes = result.data; })
 				.catch((e) => {
 					Notification(`Adm3 ${e}`, "is-danger");
 				});
@@ -168,11 +197,30 @@ export default {
 		async fetchVillages(adm3Id) {
 			this.villagesLoading = true;
 			await LocationsService.getListOfAdm4(adm3Id)
-				.then((result) => { this.villages = result.data; })
+				.then((result) => { this.options.villages = result.data; })
 				.catch((e) => {
 					Notification(`Adm4 ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
+		},
+
+		eraseData(type) {
+			switch (type) {
+				case "adm1":
+					this.formModel.adm2Id = null;
+					this.formModel.adm3Id = null;
+					this.formModel.adm4Id = null;
+					break;
+				case "adm2":
+					this.formModel.adm3Id = null;
+					this.formModel.adm4Id = null;
+					break;
+				case "adm3":
+					this.formModel.adm4Id = null;
+					break;
+				default:
+					break;
+			}
 		},
 	},
 };

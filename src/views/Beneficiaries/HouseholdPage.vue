@@ -80,10 +80,12 @@
 			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id" sortable>
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -131,6 +133,7 @@ import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
 import SafeDelete from "@/components/SafeDelete";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -144,6 +147,7 @@ export default {
 		ActionButton,
 		HouseholdsFilters,
 		SafeDelete,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -159,32 +163,40 @@ export default {
 					{
 						key: "id",
 						label: "Household ID",
+						width: "30",
 					},
 					{
 						key: "familyName",
 						label: "Family Name",
+						width: "30",
 					},
 					{
 						key: "givenName",
 						label: "First Name",
+						width: "30",
 					},
 					{
 						key: "members",
+						width: "30",
 					},
 					{
 						key: "vulnerabilities",
+						width: "30",
 					},
 					{
 						key: "idNumber",
 						label: "ID Number",
+						width: "30",
 					},
 					{
 						key: "projects",
 						label: "Projects",
+						width: "30",
 					},
 					{
 						key: "currentLocation",
 						label: "Current Location",
+						width: "30",
 					},
 				],
 				total: 0,
@@ -249,7 +261,7 @@ export default {
 				familyName: "",
 				givenName: "",
 			};
-			await BeneficiariesService.getBeneficiary(item.beneficiaryIds[0])
+			await BeneficiariesService.getBeneficiary(item.householdHeadId)
 				.then(async (response) => {
 					result.familyName = response.localFamilyName;
 					if (response.enFamilyName) {

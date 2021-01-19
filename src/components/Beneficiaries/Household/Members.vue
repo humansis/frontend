@@ -29,7 +29,12 @@
 			</div>
 			<div class="card-content">
 				<div class="content">
-					<HouseholdHeadForm ref="member" :show-type-of-beneficiary="false" />
+					<HouseholdHeadForm
+						ref="member"
+						:show-type-of-beneficiary="false"
+						:is-editing="!!preparedMembers[index]"
+						:beneficiary="preparedMembers[index]"
+					/>
 				</div>
 			</div>
 		</b-collapse>
@@ -47,6 +52,7 @@
 
 <script>
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "Members",
@@ -70,6 +76,7 @@ export default {
 			isOpen: 0,
 			collapses: [],
 			members: [],
+			preparedMembers: [],
 		};
 	},
 
@@ -86,10 +93,18 @@ export default {
 			}
 		},
 
-		mapDetailOfHouseholdToFormModel() {
-			// TODO map household members to formModel and collapses
-			// 1. For each beneficiary except householdHead create collapse
-			// 2. Insert into HouseholdHeadForm one beneficiary object
+		async mapDetailOfHouseholdToFormModel() {
+			const promises = [];
+			await this.detailOfHousehold.beneficiaryIds.forEach((id) => {
+				if (this.detailOfHousehold.householdHeadId !== id) {
+					const promise = BeneficiariesService.getBeneficiary(id).then((data) => {
+						this.preparedMembers[this.collapses.length] = data;
+						this.collapses.push(this.collapses.length);
+					});
+					promises.push(promise);
+				}
+			});
+			await Promise.all(promises);
 		},
 
 		removeMember(index) {
@@ -98,8 +113,17 @@ export default {
 		},
 
 		submit() {
-			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
-				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
+			this.members = [];
+			let result = 0;
+			this.$refs.member.forEach((form) => {
+				if (form.submit()) {
+					result += 1;
+				}
+			});
+			if (result === this.$refs.member.length) {
+				this.$refs.member.forEach((form) => {
+					this.members.push(form.formModel);
+				});
 				return true;
 			}
 

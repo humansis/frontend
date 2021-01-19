@@ -21,6 +21,7 @@
     "vue-2-breadcrumbs": "^0.7.10",
     "vue-country-flag": "^2.0.2",
     "vue-i18n": "^8.22.3",
+    "vue-moment": "^4.1.0",
     "vue-multiselect": "^2.1.6",
     "vue-router": "^3.4.6",
     "vue-swatches": "^2.1.0",
