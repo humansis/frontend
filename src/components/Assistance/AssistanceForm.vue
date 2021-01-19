@@ -14,7 +14,7 @@
 
 			<b-field label="Date of Assistance">
 				<b-datepicker
-					v-model="formModel.dateOfAssistance"
+					v-model="formModel.dateDistribution"
 					show-week-number
 					placeholder="Click to select..."
 					icon="calendar-day"

@@ -7,7 +7,6 @@
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
-					:location-object="currentLocation"
 					:is-editing="true"
 				/>
 			</div>
@@ -16,8 +15,6 @@
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
-					:location-object="currentLocation"
-					:type-of-location="typeOfLocation"
 					:is-editing="true"
 				/>
 			</div>
@@ -235,20 +232,6 @@ import { required } from "vuelidate/lib/validators";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import AddressService from "@/services/AddressService";
 
-const locationModel = {
-	adm1Id: "",
-	adm2Id: "",
-	adm3Id: "",
-	adm4Id: "",
-	typeOfLocation: "",
-	camp: "",
-	campName: "",
-	tentNumber: "",
-	addressNumber: "",
-	addressStreet: "",
-	addressPostcode: "",
-};
-
 export default {
 	name: "HouseholdForm",
 
@@ -294,9 +277,7 @@ export default {
 			livelihoodLoading: false,
 			formModel: {
 				id: null,
-				currentLocation: {
-					...locationModel,
-				},
+				currentLocation: {},
 				isCurrentLocationOtherThanAddress: false,
 				livelihood: {
 					livelihood: [],
@@ -353,48 +334,47 @@ export default {
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
 		this.mapDetailOfHouseholdToFormModel();
-	},
-
-	computed: {
-		locationId() {
-			if (this.detailOfHousehold) {
-				return this.detailOfHousehold.temporarySettlementAddressId
-					|| this.detailOfHousehold.residenceAddressId
-					|| this.detailOfHousehold.campAddressId;
-			}
-			return null;
-		},
-		typeOfLocation() {
-			if (this.detailOfHousehold) {
-				if (this.detailOfHousehold.temporarySettlementAddressId) return "temporary_settlement";
-				if (this.detailOfHousehold.residenceAddressId) return "residence";
-				if (this.detailOfHousehold.campAddressId) return "camp";
-			}
-			return null;
-		},
-		currentLocation() {
-			switch (this.typeOfLocation) {
-				case "camp":
-					return AddressService.getCampAddress(this.locationId);
-				case "residence":
-					return AddressService.getResidenceAddress(this.locationId);
-				case "temporary_settlement":
-					return AddressService.getTemporarySettlementAddress(this.locationId);
-				default:
-					return null;
-			}
-		},
+		await this.mapCurrentLocation().then((response) => {
+			this.formModel.currentLocation = response;
+		});
 	},
 
 	methods: {
+		getAddressTypeAndId() {
+			const {
+				temporarySettlementAddressId,
+				residenceAddressId,
+				campAddressId,
+			} = this.detailOfHousehold;
+			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
+			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
+			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			return "";
+		},
+
+		mapCurrentLocation() {
+			if (this.detailOfHousehold) {
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId();
+
+				switch (typeOfLocation) {
+					case "camp":
+						return AddressService.getCampAddress(addressId);
+					case "residence":
+						return AddressService.getResidenceAddress(addressId);
+					case "temporary_settlement":
+						return AddressService.getTemporarySettlementAddress(addressId);
+					default:
+						return null;
+				}
+			}
+			return null;
+		},
+
 		mapDetailOfHouseholdToFormModel() {
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
-				currentLocation: {
-					...this.formModel.currentLocation,
-					// TODO map current location
-				},
+				currentLocation: {},
 				livelihood: {
 					...this.formModel.livelihood,
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
