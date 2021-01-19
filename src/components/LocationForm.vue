@@ -77,7 +77,6 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
-// import { resolveLocations } from "@/utils/LocationResolver";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 
 export default {

@@ -22,7 +22,7 @@ export default {
 		},
 
 		onSearch(value) {
-			this.searchPhrase = value;
+			this.table.searchPhrase = value;
 			this.fetchData();
 		},
 
