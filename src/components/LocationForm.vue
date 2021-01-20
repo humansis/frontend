@@ -87,7 +87,6 @@ export default {
 	props: {
 		formModel: Object,
 		formDisabled: Boolean,
-		locationObject: Promise,
 		isEditing: {
 			type: Boolean,
 			default: false,
@@ -118,25 +117,15 @@ export default {
 		},
 	},
 
+	watch: {
+		formModel: "mapLocations",
+	},
+
 	async mounted() {
 		await this.fetchProvinces();
-		this.locationObject.then(async (location) => {
-			if (this.isEditing || this.formDisabled) {
-				this.formModel.adm1Id = getArrayOfCodeListByKey([location.adm1], this.options.provinces, "code");
-				await this.fetchDistricts(location.adm1);
-				if (location.adm2) {
-					this.formModel.adm2Id = getArrayOfCodeListByKey([location.adm2], this.options.districts, "code");
-					await this.fetchCommunes(location.adm2);
-					if (location.adm3) {
-						this.formModel.adm3Id = getArrayOfCodeListByKey([location.adm3], this.options.communes, "code");
-						await this.fetchVillages(location.adm3);
-						if (location.adm4) {
-							this.formModel.adm4Id = getArrayOfCodeListByKey([location.adm4], this.options.villages, "code");
-						}
-					}
-				}
-			}
-		});
+		if (this.formModel) {
+			await this.mapLocations();
+		}
 	},
 
 	methods: {
@@ -201,6 +190,25 @@ export default {
 					Notification(`Adm4 ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
+		},
+
+		async mapLocations() {
+			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
+			if (adm1Id) {
+				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
+				await this.fetchDistricts(adm1Id);
+			}
+			if (adm2Id) {
+				this.formModel.adm2Id = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
+				await this.fetchCommunes(adm2Id);
+			}
+			if (adm3Id) {
+				this.formModel.adm3Id = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
+				await this.fetchVillages(adm3Id);
+			}
+			if (adm4Id) {
+				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
+			}
 		},
 
 		eraseData(type) {

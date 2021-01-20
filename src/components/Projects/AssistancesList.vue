@@ -177,7 +177,7 @@ export default {
 				adm2: [],
 				adm3: [],
 				adm4: [],
-				dateOfAssistance: new Date(),
+				dateDistribution: new Date(),
 				target: "",
 			},
 		};
@@ -245,8 +245,7 @@ export default {
 		},
 
 		showDetailWithId(id) {
-			// TODO Fix with connect locations
-			this.assistanceModel = this.table.data.find((item) => item.id === id);
+			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: false,
@@ -254,11 +253,41 @@ export default {
 		},
 
 		showEdit(id) {
-			// TODO Fix with connect locations
-			this.assistanceModel = this.table.data.find((item) => item.id === id);
+			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
+			};
+		},
+
+		// TODO edit after BE resolve naming of adm's
+		mapToFormModel(
+			{
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				id,
+				commodityIds,
+				dateDistribution,
+				name,
+				projectId,
+				target,
+				type,
+			},
+		) {
+			return {
+				adm1Id: adm1,
+				adm2Id: adm2,
+				adm3Id: adm3,
+				adm4Id: adm4,
+				dateDistribution: new Date(dateDistribution),
+				target,
+				id,
+				commodityIds,
+				name,
+				projectId,
+				type,
 			};
 		},
 

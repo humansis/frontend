@@ -134,6 +134,7 @@ import ExportButton from "@/components/ExportButton";
 import grid from "@/mixins/grid";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import AddressService from "@/services/AddressService";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -276,17 +277,42 @@ export default {
 		},
 
 		async prepareLocations(item) {
-			let result = "";
-			const locationId = item.temporarySettlementAddressId
-				|| item.campAddressId
-				|| item.residenceAddressId;
-			await LocationsService.getLocation(locationId)
-				.then(async (location) => {
-					if (location.data) {
-						result = location.data.name;
-					}
+			// TODO fix after BE fix Internal Server Error on this endpoint
+			// TODO fix after BE fix addresses, check if locationId is Correct
+			return "";
+			// eslint-disable-next-line no-unreachable
+			return this.getAddress(item)
+				.then(async ({ locationId }) => {
+					await LocationsService.getLocation(locationId)
+						.then(({ data }) => (data ? data.name : ""));
 				});
-			return result;
+		},
+
+		getAddressTypeAndId(
+			{
+				temporarySettlementAddressId,
+				residenceAddressId,
+				campAddressId,
+			},
+		) {
+			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
+			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
+			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			return "";
+		},
+
+		getAddress(item) {
+			const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+			switch (typeOfLocation) {
+				case "camp":
+					return AddressService.getCampAddress(addressId);
+				case "residence":
+					return AddressService.getResidenceAddress(addressId);
+				case "temporary_settlement":
+					return AddressService.getTemporarySettlementAddress(addressId);
+				default:
+					return null;
+			}
 		},
 
 		async prepareProjects(item) {
