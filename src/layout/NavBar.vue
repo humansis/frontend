@@ -7,10 +7,12 @@
 		</template>
 		<template slot="end">
 			<b-navbar-item>
-				<b-icon
-					icon="question"
-					size="is-medium"
-				/>
+				<b-tooltip :label="tooltip" position="is-bottom" active>
+					<b-icon
+						icon="question"
+						size="is-medium"
+					/>
+				</b-tooltip>
 			</b-navbar-item>
 			<b-dropdown
 				v-model="country.iso3"
@@ -99,7 +101,16 @@ export default {
 		return {
 			countries: [],
 			languages: [],
+			tooltip: "",
 		};
+	},
+
+	watch: {
+		$route: "setTooltip",
+	},
+
+	mounted() {
+		this.setTooltip();
 	},
 
 	methods: {
@@ -123,6 +134,11 @@ export default {
 				}).catch((e) => {
 					Toast(`(Countries) ${e}`, "is-danger");
 				});
+		},
+
+		setTooltip() {
+			// TODO edit tooltip on some hint
+			this.tooltip = this.$route.name;
 		},
 
 		fetchLanguages() {
