@@ -478,6 +478,8 @@ export default {
 							ext: prefix,
 							phoneNo: number,
 						};
+					}).catch((e) => {
+						Notification(`Phone ${key + 1} ${e}`, "is-danger");
 					});
 				promises.push(promise);
 			});
@@ -494,6 +496,8 @@ export default {
 				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "id");
 					nationalIdCard.idNumber = number;
+				}).catch((e) => {
+					Notification(`National ID ${e}`, "is-danger");
 				});
 			}
 

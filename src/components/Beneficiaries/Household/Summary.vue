@@ -126,7 +126,6 @@ export default {
 
 	async mounted() {
 		await this.fetchProjects();
-		await this.mapProjects();
 	},
 
 	computed: {
@@ -136,10 +135,6 @@ export default {
 	},
 
 	methods: {
-		mapProjects() {
-			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
-		},
-
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
 				.then((response) => {
@@ -148,6 +143,8 @@ export default {
 				.catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
+
+			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
 		},
 
 		submit() {
