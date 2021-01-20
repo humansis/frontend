@@ -117,6 +117,7 @@
 							track-by="code"
 							searchable
 							placeholder="Click to select..."
+							:loading="idTypeLoading"
 							:options="options.idType"
 							:class="validateMultiselect('id.idType')"
 							@select="validate('id.idType')"
@@ -147,6 +148,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="residenceStatusesLoading"
 							:options="options.residencyStatus"
 							:class="validateMultiselect('residencyStatus')"
 							@select="validate('residencyStatus')"
@@ -192,6 +194,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="phoneTypesLoading"
 							:options="options.phoneType"
 						/>
 						<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
@@ -231,6 +234,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="phoneTypesLoading"
 							:options="options.phoneType"
 						/>
 						<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
@@ -380,6 +384,9 @@ export default {
 				],
 				vulnerabilities: [],
 			},
+			idTypeLoading: true,
+			residenceStatusesLoading: true,
+			phoneTypesLoading: true,
 		};
 	},
 
@@ -495,23 +502,27 @@ export default {
 
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.options.idType = response.data; })
+				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});
+
+			this.idTypeLoading = false;
 		},
 
 		async fetchPhoneTypes() {
 			await BeneficiariesService.getListOfTypesOfPhones()
-				.then((response) => { this.options.phoneType = response.data; })
+				.then(({ data }) => { this.options.phoneType = data; })
 				.catch((e) => {
 					Notification(`Phone types ${e}`, "is-danger");
 				});
+
+			this.phoneTypesLoading = false;
 		},
 
 		async fetchVulnerabilities() {
 			await BeneficiariesService.getListOfVulnerabilities()
-				.then((response) => { this.options.vulnerabilities = response.data; })
+				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
 					Notification(`Vulnerabilities ${e}`, "is-danger");
 				});
@@ -519,10 +530,12 @@ export default {
 
 		async fetchResidenceStatus() {
 			await BeneficiariesService.getListOfResidenceStatuses()
-				.then((response) => { this.options.residencyStatus = response.data; })
+				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
 					Notification(`Residence Status ${e}`, "is-danger");
 				});
+
+			this.residenceStatusesLoading = false;
 		},
 
 		submit() {

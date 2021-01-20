@@ -272,9 +272,9 @@ export default {
 
 	data() {
 		return {
-			shelterStatusLoading: false,
-			assetsLoading: false,
-			livelihoodLoading: false,
+			shelterStatusLoading: true,
+			assetsLoading: true,
+			livelihoodLoading: true,
 			formModel: {
 				id: null,
 				currentLocation: {},
@@ -404,11 +404,8 @@ export default {
 		},
 
 		async fetchLivelihoods() {
-			this.livelihoodLoading = true;
 			await BeneficiariesService.getListOfLivelihoods()
-				.then((result) => {
-					this.options.livelihood = result.data;
-				})
+				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
 					Notification(`Livelihoods ${e}`, "is-danger");
 				});
@@ -416,9 +413,8 @@ export default {
 		},
 
 		async fetchAssets() {
-			this.assetsLoading = true;
 			await BeneficiariesService.getListOfAssets()
-				.then((result) => { this.options.assets = result.data; })
+				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
 					Notification(`Assets ${e}`, "is-danger");
 				});
@@ -426,13 +422,12 @@ export default {
 		},
 
 		async fetchShelterStatuses() {
-			this.shelterStatusesLoading = true;
 			await BeneficiariesService.getListOfShelterStatuses()
-				.then((result) => { this.options.shelterStatuses = result.data; })
+				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
-			this.shelterStatusesLoading = false;
+			this.shelterStatusLoading = false;
 		},
 
 		submit() {
