@@ -170,6 +170,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="referralTypeLoading"
 							:options="options.referralType"
 						/>
 					</b-field>
@@ -368,14 +369,7 @@ export default {
 				],
 				idType: [],
 				residencyStatus: [],
-				// TODO get from API
-				referralType: [
-					{ code: 1, value: "Health" },
-					{ code: 2, value: "Protection" },
-					{ code: 3, value: "Shelter" },
-					{ code: 4, value: "Nutrition" },
-					{ code: 5, value: "Other" },
-				],
+				referralType: [],
 				phoneType: [],
 				// TODO get from API
 				phonePrefixes: [
@@ -387,6 +381,7 @@ export default {
 			idTypeLoading: true,
 			residenceStatusesLoading: true,
 			phoneTypesLoading: true,
+			referralTypeLoading: true,
 		};
 	},
 
@@ -395,6 +390,7 @@ export default {
 		await this.fetchVulnerabilities();
 		await this.fetchPhoneTypes();
 		await this.fetchResidenceStatus();
+		await this.fetchReferralTypes();
 		if (this.isEditing) {
 			if (this.beneficiary) {
 				await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
@@ -540,6 +536,16 @@ export default {
 				});
 
 			this.residenceStatusesLoading = false;
+		},
+
+		async fetchReferralTypes() {
+			await BeneficiariesService.getListOfReferralTypes()
+				.then(({ data }) => { this.options.referralType = data; })
+				.catch((e) => {
+					Notification(`Residence Status ${e}`, "is-danger");
+				});
+
+			this.referralTypeLoading = false;
 		},
 
 		submit() {
