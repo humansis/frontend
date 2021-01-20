@@ -4,7 +4,10 @@
 			<b-field label="Criteria Target">
 				<MultiSelect
 					v-model="formModel.criteriaTarget"
+					label="value"
+					track-by="code"
 					placeholder="Click to select..."
+					:loading="criteriaTargetLoading"
 					:options="options.criteriaTarget"
 					:searchable="false"
 					@select="onCriteriaTargetSelect"
@@ -88,6 +91,8 @@
 
 <script>
 import LocationForm from "@/components/LocationForm";
+import AssistancesService from "@/services/AssistancesService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "SelectionCriteriaForm",
@@ -103,7 +108,7 @@ export default {
 	data() {
 		return {
 			options: {
-				criteriaTarget: ["Beneficiary", "Head", "Household"],
+				criteriaTarget: [],
 				criteria: [],
 				condition: [">", "<", ">=", "<=", "=", "!="],
 				gender: [
@@ -113,6 +118,7 @@ export default {
 			},
 			showValueInput: true,
 			showLocation: false,
+			criteriaTargetLoading: true,
 		};
 	},
 
@@ -120,6 +126,10 @@ export default {
 		criteria() {
 			return this.options.criteria;
 		},
+	},
+
+	async mounted() {
+		await this.fetchCriteriaTargets();
 	},
 
 	methods: {
@@ -186,6 +196,15 @@ export default {
 					break;
 				default: break;
 			}
+		},
+
+		async fetchCriteriaTargets() {
+			await AssistancesService.getListOfTargetsForAssistances()
+				.then(({ data }) => { this.options.criteriaTarget = data; })
+				.catch((e) => {
+					Notification(`Criteria Target ${e}`, "is-danger");
+				});
+			this.criteriaTargetLoading = false;
 		},
 
 		submitForm() {
