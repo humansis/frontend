@@ -202,7 +202,7 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
+				perPage: 10,
 				sortColumn: "",
 				sortDirection: "desc",
 			},
@@ -247,20 +247,52 @@ export default {
 				filledData[key] = item;
 				filledData[key].members = data[key].beneficiaryIds.length;
 				filledData[key].projects = await this.prepareProjects(data[key]);
-				const { givenName, familyName } = await this.prepareBeneficiaries(data[key]);
+				filledData[key].currentLocation = await this.prepareLocations(data[key]);
+				const {
+					givenName,
+					familyName,
+					nationalIds,
+					vulnerabilities,
+				} = await this.prepareBeneficiaries(data[key]);
+				filledData[key].idNumber = await this.prepareNationalId(nationalIds);
+				filledData[key].vulnerabilities	= await this
+					.prepareVulnerabilities(vulnerabilities);
 				filledData[key].givenName = givenName;
 				filledData[key].familyName = familyName;
-				filledData[key].currentLocation = await this.prepareLocations(data[key]);
 			});
 			await Promise.all(promise);
 
 			return filledData;
 		},
 
+		async prepareNationalId(ids) {
+			if (ids.length > 0) {
+				return BeneficiariesService.getNationalId(ids[0])
+					.then(({ number }) => number);
+			}
+			return "none";
+		},
+
+		async prepareVulnerabilities(vulnerabilities) {
+			let result = "none";
+			if (vulnerabilities) {
+				await vulnerabilities.forEach((item) => {
+					if (result === "none") {
+						result = normalizeText(item);
+					} else {
+						result += `, ${normalizeText(item)}`;
+					}
+				});
+			}
+			return result;
+		},
+
 		async prepareBeneficiaries(item) {
 			const result = {
 				familyName: "",
 				givenName: "",
+				nationalIds: [],
+				vulnerabilities: [],
 			};
 			await BeneficiariesService.getBeneficiary(item.householdHeadId)
 				.then(async (response) => {
@@ -272,6 +304,10 @@ export default {
 					if (response.enGivenName) {
 						result.givenName += ` (${response.enGivenName})`;
 					}
+					result.nationalIds = response.nationalIds;
+					result.vulnerabilities = response.vulnerabilityCriteria;
+				}).catch((e) => {
+					Notification(`Beneficiary for ${item.id} ${e}`, "is-danger");
 				});
 			return result;
 		},
@@ -279,12 +315,12 @@ export default {
 		async prepareLocations(item) {
 			// TODO fix after BE fix Internal Server Error on this endpoint
 			// TODO fix after BE fix addresses, check if locationId is Correct
-			return "";
-			// eslint-disable-next-line no-unreachable
 			return this.getAddress(item)
 				.then(async ({ locationId }) => {
 					await LocationsService.getLocation(locationId)
 						.then(({ data }) => (data ? data.name : ""));
+				}).catch((e) => {
+					Notification(`Location for ${item.id} ${e}`, "is-danger");
 				});
 		},
 
@@ -328,6 +364,8 @@ export default {
 								result += ` ,${data.name}`;
 							}
 						}
+					}).catch((e) => {
+						Notification(`Project for ${item.id} ${e}`, "is-danger");
 					});
 				promises.push(promise);
 			});

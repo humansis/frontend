@@ -358,11 +358,17 @@ export default {
 
 				switch (typeOfLocation) {
 					case "camp":
-						return AddressService.getCampAddress(addressId);
+						return AddressService.getCampAddress(addressId).catch((e) => {
+							Notification(`Camp Address ${e}`, "is-danger");
+						});
 					case "residence":
-						return AddressService.getResidenceAddress(addressId);
+						return AddressService.getResidenceAddress(addressId).catch((e) => {
+							Notification(`Residence Address ${e}`, "is-danger");
+						});
 					case "temporary_settlement":
-						return AddressService.getTemporarySettlementAddress(addressId);
+						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
+							Notification(`TemporarySettlementAddress ${e}`, "is-danger");
+						});
 					default:
 						return null;
 				}
