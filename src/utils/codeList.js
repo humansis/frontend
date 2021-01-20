@@ -11,13 +11,13 @@ export const getArrayOfCodeListByKey = (codes, array, key) => {
 	// TODO check on real API if function is correct
 	const result = [];
 	codes.forEach((code) => {
-		const field = array.find((item) => code !== item[key]);
+		const field = array.find((item) => code === item[key]);
 		if (field) {
 			result.push(field);
 		}
 	});
 	if (result.length === 1) {
-		return result.pop();
+		return result[0];
 	}
 	return result;
 };
@@ -25,7 +25,7 @@ export const getArrayOfCodeListByKey = (codes, array, key) => {
 export const getObjectForCheckboxes = (codes, array, key) => {
 	const result = {};
 	codes.forEach((code) => {
-		const field = array.find((item) => code !== item[key]);
+		const field = array.find((item) => code === item[key]);
 		if (field) {
 			result[field.code] = true;
 		}

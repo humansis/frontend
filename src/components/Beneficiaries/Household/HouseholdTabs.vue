@@ -179,7 +179,7 @@ export default {
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived: this.$moment(new Date(supportDateReceived)).format("YYYY-MM-DD"),
+				supportDateReceived: this.$moment(supportDateReceived).format("YYYY-MM-DD"),
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				// TODO Resolve incomeSpentOnFood and houseIncome

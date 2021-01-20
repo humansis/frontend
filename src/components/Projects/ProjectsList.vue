@@ -60,7 +60,6 @@
 <script>
 import { Toast } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import ProjectsService from "@/services/ProjectsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
@@ -135,29 +134,6 @@ export default {
 			});
 
 			this.isLoadingList = false;
-		},
-
-		mapToFormModel({
-			id,
-			name,
-			sectorIds,
-			donorIds,
-			target: totalTarget,
-			notes,
-		}) {
-			this.projectModel = {
-				...this.projectModel,
-				id,
-				name,
-				internalId: id,
-				selectedSectors: getArrayOfCodeListByKey(sectorIds, this.projectModel.sectors, "code"),
-				startDate: new Date("10.10.2020"),
-				endDate: new Date("10.10.2020"),
-				selectedDonors: getArrayOfCodeListByKey(donorIds, this.projectModel.donors, "id"),
-				selectedTargetType: getArrayOfCodeListByKey([], this.projectModel.targetTypes, "code"),
-				totalTarget,
-				notes,
-			};
 		},
 
 		goToDetail(project) {
