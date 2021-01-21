@@ -12,9 +12,9 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
-import { mapState } from "vuex";
 
 export default {
 	name: "MainContainer",

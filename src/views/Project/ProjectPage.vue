@@ -38,12 +38,12 @@
 </template>
 
 <script>
+import ProjectsList from "@/components/Projects/ProjectsList";
+import ProjectForm from "@/components/Projects/ProjectForm";
+import Modal from "@/components/Modal";
+import ProjectsService from "@/services/ProjectsService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import ProjectsService from "@/services/ProjectsService";
-import Modal from "@/components/Modal";
-import ProjectForm from "@/components/Projects/ProjectForm";
-import ProjectsList from "@/components/Projects/ProjectsList";
 
 export default {
 	name: "ProjectPage",

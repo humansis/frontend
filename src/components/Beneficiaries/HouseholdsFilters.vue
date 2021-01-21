@@ -28,10 +28,10 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "HouseholdsFilters",

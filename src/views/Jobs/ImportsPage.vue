@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import Modal from "@/components/Modal";
 import ImportForm from "@/components/Jobs/ImportForm";
 import ImportList from "@/components/Jobs/ImportList";
+import Modal from "@/components/Modal";
 
 export default {
 	name: "ImportsPage",

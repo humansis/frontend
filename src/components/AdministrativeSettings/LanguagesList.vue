@@ -45,11 +45,11 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import LanguagesService from "@/services/LanguagesService";
-import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
+import LanguagesService from "@/services/LanguagesService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {

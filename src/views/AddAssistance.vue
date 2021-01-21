@@ -23,11 +23,11 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
-import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import SelectionCriteriaPage from "@/components/AddAssistance/SelectionCriteriaPage";
 import DistributedCommodity from "@/components/AddAssistance/DistributedCommodity";
+import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AddAssistance",

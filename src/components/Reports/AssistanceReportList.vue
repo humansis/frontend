@@ -64,14 +64,14 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
+import ReportNavbar from "@/components/Reports/ReportNavbar";
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import AssistanceReportService from "@/services/AssistanceReportService";
-import ReportNavbar from "@/components/Reports/ReportNavbar";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {

@@ -1,6 +1,5 @@
 import Vue from "vue";
 import CONST from "@/const";
-
 import store from "@/store/index";
 
 async function getErrorsFromResponse(data) {

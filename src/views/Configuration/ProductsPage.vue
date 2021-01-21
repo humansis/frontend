@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import ProductsService from "@/services/ProductsService";
+import ProductsList from "@/components/Configuration/ProductsList";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
-import ProductsList from "@/components/Configuration/ProductsList";
+import ProductsService from "@/services/ProductsService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "ProductsPage",

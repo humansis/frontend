@@ -26,10 +26,10 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import { generateColumns } from "@/utils/datagrid";
-import LogsService from "@/services/LogsService";
-import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
+import LogsService from "@/services/LogsService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {

@@ -42,12 +42,12 @@
 </template>
 
 <script>
-import BookletsService from "@/services/BookletsService";
-import VoucherForm from "@/components/Voucher/VoucherForm";
-import { Toast, Notification } from "@/utils/UI";
-import Modal from "@/components/Modal";
 import VoucherList from "@/components/Voucher/VoucherList";
+import VoucherForm from "@/components/Voucher/VoucherForm";
 import BatchList from "@/components/Voucher/BatchList";
+import Modal from "@/components/Modal";
+import BookletsService from "@/services/BookletsService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "VouchersPage",

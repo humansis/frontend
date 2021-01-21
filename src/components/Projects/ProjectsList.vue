@@ -58,14 +58,14 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
-import ProjectsService from "@/services/ProjectsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import ProjectsService from "@/services/ProjectsService";
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {

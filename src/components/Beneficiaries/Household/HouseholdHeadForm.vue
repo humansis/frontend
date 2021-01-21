@@ -274,12 +274,12 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { normalizeText } from "@/utils/datagrid";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
+import { normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "HouseholdHeadForm",

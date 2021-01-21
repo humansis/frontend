@@ -113,17 +113,17 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ExportButton from "@/components/ExportButton";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
