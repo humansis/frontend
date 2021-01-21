@@ -50,7 +50,7 @@
 		</Table>
 		<b-button
 			class="mb-5"
-			size="is-medium"
+			size="is-normal"
 			type="is-danger"
 			icon-left="save"
 			@click="submit"
