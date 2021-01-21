@@ -154,11 +154,11 @@
 
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
-import ProjectsService from "@/services/ProjectsService";
-import LocationsService from "@/services/LocationsService";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
+import LocationsService from "@/services/LocationsService";
+import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "userForm",

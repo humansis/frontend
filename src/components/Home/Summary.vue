@@ -31,9 +31,9 @@
 </template>
 
 <script>
+import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import HomeService from "@/services/HomeService";
 
 export default {
 	name: "Summary",

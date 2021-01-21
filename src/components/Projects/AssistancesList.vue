@@ -101,17 +101,17 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
-import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
-import AssistancesService from "@/services/AssistancesService";
+import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import Search from "@/components/Search";
+import AssistancesService from "@/services/AssistancesService";
+import { Toast, Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {

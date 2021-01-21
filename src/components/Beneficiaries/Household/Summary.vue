@@ -57,13 +57,13 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ProjectsService from "@/services/ProjectsService";
-import Validation from "@/mixins/validation";
 import { required } from "vuelidate/lib/validators";
+import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import ColumnField from "@/components/DataGrid/ColumnField";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "Summary",

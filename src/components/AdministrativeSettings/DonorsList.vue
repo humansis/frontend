@@ -66,13 +66,13 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumns } from "@/utils/datagrid";
-import HomeService from "@/services/HomeService";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import { Notification } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
 import Search from "@/components/Search";
+import HomeService from "@/services/HomeService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {

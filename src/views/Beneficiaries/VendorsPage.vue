@@ -37,11 +37,11 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import VendorForm from "@/components/Beneficiaries/VendorForm";
-import VendorsService from "@/services/VendorsService";
-import Modal from "@/components/Modal";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
+import VendorForm from "@/components/Beneficiaries/VendorForm";
+import Modal from "@/components/Modal";
+import VendorsService from "@/services/VendorsService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "VendorsPage",

@@ -55,14 +55,14 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
+import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import ActionButton from "@/components/ActionButton";
 import VendorsService from "@/services/VendorsService";
 import LocationsService from "@/services/LocationsService";
+import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import Search from "@/components/Search";
 import grid from "@/mixins/grid";
 
 export default {

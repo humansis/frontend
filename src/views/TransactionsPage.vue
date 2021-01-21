@@ -47,10 +47,10 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import { generateColumns } from "@/utils/datagrid";
-import TransactionService from "@/services/TransactionService";
-import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
+import TransactionService from "@/services/TransactionService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 const TransactionFilter = () => import("@/components/Transactions/TransactionFilter");

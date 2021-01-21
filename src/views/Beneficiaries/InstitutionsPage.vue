@@ -37,11 +37,11 @@
 </template>
 
 <script>
+import InstitutionsForm from "@/components/Beneficiaries/InstitutionsForm";
+import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
+import Modal from "@/components/Modal";
 import InstitutionsService from "@/services/InstitutionsService";
 import { Toast } from "@/utils/UI";
-import InstitutionsForm from "@/components/Beneficiaries/InstitutionsForm";
-import Modal from "@/components/Modal";
-import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
 
 export default {
 	name: "InstitutionsPage",

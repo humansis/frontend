@@ -34,11 +34,11 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import Modal from "@/components/Modal";
 import LanguagesForm from "@/components/AdministrativeSettings/LanguagesForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
+import Modal from "@/components/Modal";
 import LanguagesService from "@/services/LanguagesService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "LanguagesPage",
