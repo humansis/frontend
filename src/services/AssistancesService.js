@@ -38,6 +38,25 @@ export default {
 		return { data, status };
 	},
 
+	async getAssistanceCommodities(id) {
+		const { data: { data }, totalCount } = await fetcher({
+			uri: `assistances/${id}/commodities`,
+		});
+		return { data, totalCount };
+	},
+
+	async getListOfBeneficiaries(id, page, size, sort, search = null) {
+		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = page ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${id}/beneficiaries?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
+
 	async removeAssistance(id) {
 		console.log(id);
 		return { data: {}, status: 204 };

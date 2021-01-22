@@ -313,13 +313,9 @@ export default {
 		},
 
 		async prepareLocations(item) {
-			// TODO fix after BE fix Internal Server Error on this endpoint
-			// TODO fix after BE fix addresses, check if locationId is Correct
 			return this.getAddress(item)
-				.then(async ({ locationId }) => {
-					await LocationsService.getLocation(locationId)
-						.then(({ data }) => (data ? data.name : ""));
-				}).catch((e) => {
+				.then(async (address) => LocationsService.getLocation(address.locationId)
+					.then(({ data }) => (data ? data.name : ""))).catch((e) => {
 					Notification(`Location for ${item.id} ${e}`, "is-danger");
 				});
 		},

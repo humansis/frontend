@@ -82,8 +82,8 @@ export default {
 		async fetchData() {
 			await ProjectsService.getDetailOfProject(
 				this.$route.params.projectId,
-			).then((response) => {
-				this.projectSummary = response.data;
+			).then(({ data }) => {
+				this.projectSummary = data;
 			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},

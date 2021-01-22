@@ -18,4 +18,14 @@ export default {
 			i18n.locale = languageObj.name;
 		}
 	},
+
+	addAssistanceToState: ({ commit }, assistance) => {
+		if (assistance) {
+			commit("updateAssistance", assistance);
+		}
+	},
+
+	removeAssistanceFromState: ({ commit }) => {
+		commit("updateAssistance", {});
+	},
 };

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<AssistanceSummary />
+		<AssistanceSummary :assistance="assistance" :beneficiaries="beneficiaries" />
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -16,6 +16,8 @@
 					export-button
 					add-button
 					:change-button="false"
+					@beneficiariesCounted="beneficiaries = $event"
+					@onBeneficiaryListChange="beneficiaryListChanged"
 				/>
 			</b-step-item>
 
@@ -85,6 +87,7 @@ import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
+import { mapActions } from "vuex";
 
 export default {
 	name: "AddAssistanceUpdate",
@@ -100,12 +103,27 @@ export default {
 	data() {
 		return {
 			activeStep: 0,
+			target: "",
+			assistance: {},
+			beneficiaries: 0,
+			changedBeneficiaryList: false,
 		};
 	},
 
+	mounted() {
+		// TODO If method with persisted state was accepted. Create method for refresh and erase state
+		this.assistance = this.$store.state.assistance;
+		this.target = this.assistance.target;
+	},
+
 	methods: {
+		...mapActions(["removeAssistanceFromState"]),
+
 		nextPage(next) {
 			// TODO checkForms
+			if (this.changedBeneficiaryList) {
+				// TODO reload beneficiaries???
+			}
 			next.action();
 		},
 
@@ -119,6 +137,10 @@ export default {
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
+		},
+
+		beneficiaryListChanged() {
+			this.changedBeneficiaryList = true;
 		},
 	},
 };

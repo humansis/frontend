@@ -353,7 +353,7 @@ export default {
 						localGivenName: beneficiary.nameLocal.firstName,
 						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
-						enlGivenName: beneficiary.nameEnglish.firstName,
+						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender.code,
 						nationalIdCards: [

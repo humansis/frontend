@@ -10,4 +10,8 @@ export default {
 	loading(state, boolean) {
 		state.isLoading = boolean;
 	},
+
+	updateAssistance: (state, assistance) => {
+		state.assistance = assistance;
+	},
 };

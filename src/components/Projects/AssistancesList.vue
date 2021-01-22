@@ -110,9 +110,11 @@ import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import Search from "@/components/Search";
 import AssistancesService from "@/services/AssistancesService";
+import LocationsService from "@/services/LocationsService";
 import { Toast, Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import { mapActions } from "vuex";
 
 export default {
 	name: "AssistancesList",
@@ -142,7 +144,7 @@ export default {
 					},
 					{ key: "name" },
 					{
-						key: "adm1Id",
+						key: "location",
 						label: "Location",
 					},
 					{
@@ -192,6 +194,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["addAssistanceToState"]),
+
 		async fetchData() {
 			this.isLoadingList = true;
 
@@ -202,14 +206,36 @@ export default {
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(async ({ data, totalCount }) => {
+				this.table.data = await this.prepareDataForTable(data);
+				this.table.total = totalCount;
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			const filledData = [];
+			const promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].location = await this.prepareLocation(item.locationId);
+				filledData[key].commodity = await this.prepareCommodity(item.id);
+				filledData[key].target = normalizeText(item.target);
+			});
+
+			await Promise.all(promise);
+			return filledData;
+		},
+
+		async prepareLocation(id) {
+			return LocationsService.getLocation(id).then(({ data: { name } }) => name);
+		},
+
+		async prepareCommodity(id) {
+			return AssistancesService.getAssistanceCommodities(id)
+				.then(({ data: [a] }) => a.modalityType);
 		},
 
 		async removeAssistance(id) {
@@ -237,11 +263,13 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		goToValidateAndLock(id) {
+		goToValidateAndLock(assistance) {
+			this.addAssistanceToState(assistance);
 			this.$router.push({ name: "Assistance",
 				params: {
-					assistanceId: id,
-				} });
+					assistanceId: assistance.id,
+				},
+			});
 		},
 
 		showDetailWithId(id) {
@@ -260,13 +288,12 @@ export default {
 			};
 		},
 
-		// TODO edit after BE resolve naming of adm's
 		mapToFormModel(
 			{
-				adm1,
-				adm2,
-				adm3,
-				adm4,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 				id,
 				commodityIds,
 				dateDistribution,
@@ -277,10 +304,10 @@ export default {
 			},
 		) {
 			return {
-				adm1Id: adm1,
-				adm2Id: adm2,
-				adm3Id: adm3,
-				adm4Id: adm4,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 				dateDistribution: new Date(dateDistribution),
 				target,
 				id,
