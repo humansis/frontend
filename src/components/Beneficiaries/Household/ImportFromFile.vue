@@ -17,7 +17,6 @@
 												<b-icon
 													icon="upload"
 													size="is-large"
-													custom-size="fa-3x"
 												/>
 											</p>
 											<p>{{ uploadText }}</p>
@@ -37,7 +36,6 @@
 								class="m-5"
 								icon="clipboard-list"
 								size="is-large"
-								custom-size="fa-4x"
 							/>
 							<MultiSelect
 								v-model="selectedProject"
@@ -54,13 +52,14 @@
 		</div>
 		<div class="is-pulled-left">
 			<b-button
-				icon-left="todo"
+				icon-left="sync-alt"
 				class="m-2"
 				@click="convertFile"
 			>
 				Convert File
 			</b-button>
 			<b-button
+				icon-left="download"
 				class="mt-2"
 				@click="downloadTemplate"
 			>
@@ -93,7 +92,7 @@
 		<div class="is-pulled-right">
 			<b-button
 				class="is-success"
-				icon-left="import"
+				icon-left="file-import"
 				@click="importFile"
 			>
 				Import
@@ -136,13 +135,10 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(
-				1,
-				15,
-				"desc",
-			).then((response) => {
-				this.projects = response.data;
-			});
+			await ProjectsService.getListOfProjects()
+				.then(({ data }) => {
+					this.projects = data;
+				});
 		},
 
 		downloadTemplate() {

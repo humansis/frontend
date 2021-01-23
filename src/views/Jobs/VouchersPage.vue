@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import Modal from "@/components/Modal";
 import VoucherForm from "@/components/Jobs/VoucherForm";
 import VoucherList from "@/components/Jobs/VoucherList";
+import Modal from "@/components/Modal";
 
 export default {
 	name: "VouchersPage",

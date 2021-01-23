@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "CriteriaModalList",

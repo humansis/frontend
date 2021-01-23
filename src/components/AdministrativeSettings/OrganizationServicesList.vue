@@ -47,12 +47,12 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumns } from "@/utils/datagrid";
-import OrganizationServicesService from "@/services/OrganizationServicesService";
-import { Notification } from "@/utils/UI";
+import Table from "@/components/DataGrid/Table";
 import Search from "@/components/Search";
+import OrganizationServicesService from "@/services/OrganizationServicesService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {

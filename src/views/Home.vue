@@ -14,10 +14,10 @@
 </template>
 
 <script>
-import DistributionMap from "@/components/Home/DistributionMap";
-import Summary from "@/components/Home/Summary";
-import ProjectsSummary from "@/components/Home/ProjectsSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
+import DistributionMap from "@/components/Home/DistributionMap";
+import ProjectsSummary from "@/components/Home/ProjectsSummary";
+import Summary from "@/components/Home/Summary";
 
 export default {
 	name: "Home",

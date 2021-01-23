@@ -6,6 +6,9 @@
 .loading-overlay{
     z-index: 20;
 }
+.menu-list a {
+    white-space: nowrap;
+}
 
 .modal{
     z-index: 100;

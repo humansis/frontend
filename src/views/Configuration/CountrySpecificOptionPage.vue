@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import CountrySpecificOptionForm from "@/components/Configuration/CountrySpecificOptionForm";
-import Modal from "@/components/Modal";
 import CountrySpecificOptionList from "@/components/Configuration/CountrySpecificOptionList";
+import Modal from "@/components/Modal";
+import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CountrySpecificOptionPage",

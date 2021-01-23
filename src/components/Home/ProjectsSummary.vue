@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import { normalizeProjectName } from "@/utils/datagrid";
 import ProjectsService from "@/services/ProjectsService";
+import { normalizeProjectName } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
 export default {

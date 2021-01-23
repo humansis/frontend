@@ -34,14 +34,14 @@
 </template>
 
 <script>
+import Modal from "@/components/Modal";
+import Table from "@/components/DataGrid/Table";
+import AssistanceForm from "@/components/Assistance/AssistanceForm";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import Table from "@/components/DataGrid/Table";
-import Modal from "@/components/Modal";
-import AssistancesService from "@/services/AssistancesService";
-import AssistanceForm from "@/components/Assistance/AssistanceForm";
-import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "UpcomingAssistances",

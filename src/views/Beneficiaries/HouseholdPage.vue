@@ -122,19 +122,19 @@
 </template>
 
 <script>
-import { Notification, Toast } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import ExportButton from "@/components/ExportButton";
+import ActionButton from "@/components/ActionButton";
+import SafeDelete from "@/components/SafeDelete";
+import Table from "@/components/DataGrid/Table";
+import Search from "@/components/Search";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import LocationsService from "@/services/LocationsService";
 import ProjectsService from "@/services/ProjectsService";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import Search from "@/components/Search";
-import ExportButton from "@/components/ExportButton";
-import grid from "@/mixins/grid";
-import SafeDelete from "@/components/SafeDelete";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import AddressService from "@/services/AddressService";
+import { Notification, Toast } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import grid from "@/mixins/grid";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 

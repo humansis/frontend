@@ -49,12 +49,12 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ProjectReportService from "@/services/ProjectReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
+import ProjectReportService from "@/services/ProjectReportService";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {

@@ -223,14 +223,14 @@
 </template>
 
 <script>
+import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
-import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
-import { required } from "vuelidate/lib/validators";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import AddressService from "@/services/AddressService";
+import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "HouseholdForm",

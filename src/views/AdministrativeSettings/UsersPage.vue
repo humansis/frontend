@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import UsersService from "@/services/UsersService";
-import { Toast, Notification } from "@/utils/UI";
+import UsersList from "@/components/AdministrativeSettings/UsersList";
 import UserForm from "@/components/AdministrativeSettings/UserForm";
 import Modal from "@/components/Modal";
-import UsersList from "@/components/AdministrativeSettings/UsersList";
+import UsersService from "@/services/UsersService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "UsersPage",

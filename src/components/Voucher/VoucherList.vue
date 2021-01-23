@@ -49,14 +49,14 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
-import BookletsService from "@/services/BookletsService";
+import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import ProjectsService from "@/services/ProjectsService";
-import SafeDelete from "@/components/SafeDelete";
+import BookletsService from "@/services/BookletsService";
 import { Notification } from "@/utils/UI";
-import Search from "@/components/Search";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {

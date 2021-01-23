@@ -37,11 +37,11 @@
 </template>
 
 <script>
-import CommunitiesService from "@/services/CommunitiesService";
-import { Toast, Notification } from "@/utils/UI";
+import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
 import CommunityForm from "@/components/Beneficiaries/CommunityForm";
 import Modal from "@/components/Modal";
-import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
+import CommunitiesService from "@/services/CommunitiesService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "CommunitiesPage",
