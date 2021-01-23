@@ -7,7 +7,12 @@ export default {
 		state.language = languageToChange;
 	},
 
-	loading(state, boolean) {
-		state.isLoading = boolean;
+	fullPageLoading: (state, boolean) => {
+		state.isFullPageLoading = boolean;
+	},
+
+	setPermissions: (state, { storedPermissions }) => {
+		// TODO: decode storedPermissions and replace state.auth with it
+		state.auth = { ...storedPermissions };
 	},
 };
