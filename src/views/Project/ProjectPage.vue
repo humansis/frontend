@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ProjectsList from "@/components/Projects/ProjectsList";
 import ProjectForm from "@/components/Projects/ProjectForm";
 import Modal from "@/components/Modal";
@@ -93,6 +94,8 @@ export default {
 			}
 			return result;
 		},
+
+		...mapState(["country"]),
 	},
 
 	methods: {
@@ -193,7 +196,7 @@ export default {
 				notes,
 			} = projectForm;
 			const projectBody = {
-				iso3: iso3 || this.$store.state.country.iso3,
+				iso3: iso3 || this.country.iso3,
 				name,
 				internalId,
 				notes,

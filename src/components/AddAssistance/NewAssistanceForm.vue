@@ -37,6 +37,22 @@
 					>
 						Individual
 					</b-radio>
+					<b-radio
+						v-model="formModel.target"
+						name="target"
+						native-value="Community"
+						@input="$emit('onTargetSelect', 'Community')"
+					>
+						Community
+					</b-radio>
+					<b-radio
+						v-model="formModel.target"
+						name="target"
+						native-value="Institution"
+						@input="$emit('onTargetSelect', 'Institution')"
+					>
+						Institution
+					</b-radio>
 				</div>
 			</b-field>
 		</form>

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<AssistanceSummary />
+		<AssistanceSummary :beneficiaries="beneficiaries" @assistanceLoaded="assistanceLoaded" />
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -16,6 +16,8 @@
 					export-button
 					add-button
 					:change-button="false"
+					@beneficiariesCounted="beneficiaries = $event"
+					@onBeneficiaryListChange="beneficiaryListChanged"
 				/>
 			</b-step-item>
 
@@ -100,12 +102,18 @@ export default {
 	data() {
 		return {
 			activeStep: 0,
+			target: "",
+			beneficiaries: 0,
+			changedBeneficiaryList: false,
 		};
 	},
 
 	methods: {
 		nextPage(next) {
 			// TODO checkForms
+			if (this.changedBeneficiaryList) {
+				// TODO reload beneficiaries???
+			}
 			next.action();
 		},
 
@@ -119,6 +127,14 @@ export default {
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
+		},
+
+		assistanceLoaded(assistance) {
+			this.target = assistance.target;
+		},
+
+		beneficiaryListChanged() {
+			this.changedBeneficiaryList = true;
 		},
 	},
 };

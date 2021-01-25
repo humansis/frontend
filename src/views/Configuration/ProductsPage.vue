@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ProductsList from "@/components/Configuration/ProductsList";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
@@ -83,6 +84,8 @@ export default {
 			}
 			return result;
 		},
+
+		...mapState(["country"]),
 	},
 
 	methods: {
@@ -159,7 +162,7 @@ export default {
 				name,
 				image,
 				unit,
-				iso3: iso3 || this.$store.state.country.iso3,
+				iso3: iso3 || this.country.iso3,
 			};
 
 			if (this.productModal.isEditing && id) {

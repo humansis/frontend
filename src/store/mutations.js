@@ -10,4 +10,12 @@ export default {
 	loading(state, boolean) {
 		state.isLoading = boolean;
 	},
+
+	updateAssistance: (state, assistance) => {
+		state.temporaryAssistance = assistance;
+	},
+
+	updateProject: (state, project) => {
+		state.temporaryProject = project;
+	},
 };

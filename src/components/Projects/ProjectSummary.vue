@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ProjectsService from "@/services/ProjectsService";
 import { Toast } from "@/utils/UI";
 
@@ -70,20 +71,24 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
+	computed: {
+		...mapState(["temporaryProject"]),
 	},
 
-	mounted() {
-		this.fetchData();
+	async mounted() {
+		if (this.temporaryProject) {
+			this.projectSummary = this.temporaryProject;
+		} else {
+			await this.fetchData();
+		}
 	},
 
 	methods: {
 		async fetchData() {
 			await ProjectsService.getDetailOfProject(
 				this.$route.params.projectId,
-			).then((response) => {
-				this.projectSummary = response.data;
+			).then(({ data }) => {
+				this.projectSummary = data;
 			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},

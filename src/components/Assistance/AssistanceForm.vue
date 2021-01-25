@@ -23,7 +23,7 @@
 				/>
 			</b-field>
 
-			<b-field label="target">
+			<b-field label="Target">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
 			<footer class="modal-card-foot">
