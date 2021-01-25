@@ -14,4 +14,8 @@ export default {
 	updateAssistance: (state, assistance) => {
 		state.assistance = assistance;
 	},
+
+	updateProject: (state, project) => {
+		state.project = project;
+	},
 };

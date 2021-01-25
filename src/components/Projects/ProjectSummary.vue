@@ -70,12 +70,12 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
-	mounted() {
-		this.fetchData();
+	async mounted() {
+		if (this.$store.state.project) {
+			this.projectSummary = this.$store.state.project;
+		} else {
+			await this.fetchData();
+		}
 	},
 
 	methods: {

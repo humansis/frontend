@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
@@ -114,7 +115,6 @@ import LocationsService from "@/services/LocationsService";
 import { Toast, Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import { mapActions } from "vuex";
 
 export default {
 	name: "AssistancesList",
@@ -222,6 +222,7 @@ export default {
 				filledData[key] = item;
 				filledData[key].location = await this.prepareLocation(item.locationId);
 				filledData[key].commodity = await this.prepareCommodity(item.id);
+				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
 				filledData[key].target = normalizeText(item.target);
 			});
 
@@ -236,6 +237,11 @@ export default {
 		async prepareCommodity(id) {
 			return AssistancesService.getAssistanceCommodities(id)
 				.then(({ data: [a] }) => a.modalityType);
+		},
+
+		async prepareBeneficiaries(id) {
+			return AssistancesService.getListOfBeneficiaries(id)
+				.then(({ totalCount }) => totalCount);
 		},
 
 		async removeAssistance(id) {

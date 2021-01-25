@@ -1,51 +1,57 @@
 <template>
-	<div ref="assistanceSummary">
+	<div v-if="assistance" ref="assistanceSummary">
 		<h2 class="title has-text-centered">
 			{{ assistance.name }}
 		</h2>
 		<h3 class="subtitle has-text-centered">
-			Last Modified : 12-05-1909 07:55
+			<Loading type="bubbles" />
 		</h3>
 		<nav class="level is-mobile">
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Province</p>
-					<p class="title">{{ provinceName }}</p>
+					<p v-if="provinceName" class="title">{{ provinceName }}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Beneficiaries</p>
-					<p class="title">{{ beneficiaries }}</p>
+					<p v-if="beneficiaries" class="title">{{ beneficiaries }}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Date Of Distribution</p>
-					<p class="title">{{ assistance.dateDistribution}}</p>
+					<p v-if="assistance.dateDistribution" class="title">{{ assistance.dateDistribution}}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Project</p>
-					<p class="title">{{ projectName }}</p>
+					<p v-if="projectName" class="title">{{ projectName }}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Target</p>
-					<p class="title">{{ assistanceTarget }}</p>
+					<p v-if="assistanceTarget" class="title">{{ assistanceTarget }}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Commodity</p>
-					<p class="title">{{ commodityName }}</p>
+					<p v-if="assistance.commodity" class="title">{{ assistance.commodity }}</p>
+					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 		</nav>
@@ -54,6 +60,7 @@
 </template>
 
 <script>
+import Loading from "@/components/Loading";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import AssistancesService from "@/services/AssistancesService";
@@ -62,21 +69,35 @@ import { normalizeText } from "@/utils/datagrid";
 export default {
 	name: "ProjectSummary",
 
+	components: {
+		Loading,
+	},
+
 	props: {
-		assistance: Object,
 		beneficiaries: Number,
 	},
+
 	data() {
 		return {
 			project: null,
 			province: null,
 			commodity: null,
+			assistance: null,
 		};
 	},
 
 	async mounted() {
-		await this.fetchCommodity();
-		await this.fetchProject();
+		// TODO check after BE implements /assistances/:id endpoint
+		if (this.$store.state.assistance) {
+			this.assistance = this.$store.state.assistance;
+		} else {
+			await this.fetchAssistance();
+		}
+		if (this.$store.state.project) {
+			this.project = this.$store.state.project;
+		} else {
+			await this.fetchProject();
+		}
 		await this.fetchLocation();
 	},
 
@@ -98,13 +119,6 @@ export default {
 			}
 			return "";
 		},
-
-		commodityName() {
-			if (this.commodity) {
-				return this.commodity.modalityType;
-			}
-			return "";
-		},
 	},
 
 	methods: {
@@ -120,12 +134,10 @@ export default {
 			).then(({ data }) => { this.province = data; });
 		},
 
-		async fetchCommodity() {
-			await AssistancesService.getAssistanceCommodities(
+		async fetchAssistance() {
+			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
-			).then(({ data: [a] }) => {
-				this.commodity = a;
-			});
+			).then(({ data }) => { this.assistance = data; });
 		},
 	},
 };

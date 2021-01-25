@@ -25,7 +25,17 @@ export default {
 		}
 	},
 
+	addProjectToState: ({ commit }, project) => {
+		if (project) {
+			commit("updateProject", project);
+		}
+	},
+
 	removeAssistanceFromState: ({ commit }) => {
-		commit("updateAssistance", {});
+		commit("updateAssistance", null);
+	},
+
+	removeProjectFromState: ({ commit }) => {
+		commit("updateProject", null);
 	},
 };

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<AssistanceSummary :assistance="assistance" :beneficiaries="beneficiaries" />
+		<AssistanceSummary :beneficiaries="beneficiaries" />
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
@@ -87,7 +88,6 @@ import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
-import { mapActions } from "vuex";
 
 export default {
 	name: "AddAssistanceUpdate",

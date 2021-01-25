@@ -33,6 +33,13 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getDetailOfAssistance(id) {
+		const { data } = await fetcher({
+			uri: `assistances/${id}`,
+		});
+		return data;
+	},
+
 	async createAssistance(body) {
 		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
 		return { data, status };
