@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ProjectsService from "@/services/ProjectsService";
 import { Toast } from "@/utils/UI";
 
@@ -70,9 +71,13 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["temporaryProject"]),
+	},
+
 	async mounted() {
-		if (this.$store.state.project) {
-			this.projectSummary = this.$store.state.project;
+		if (this.temporaryProject) {
+			this.projectSummary = this.temporaryProject;
 		} else {
 			await this.fetchData();
 		}

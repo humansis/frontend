@@ -2,6 +2,6 @@ export default {
 	country: {},
 	language: {},
 	isLoading: false,
-	assistance: null,
-	project: null,
+	temporaryAssistance: null,
+	temporaryProject: null,
 };

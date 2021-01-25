@@ -12,10 +12,10 @@ export default {
 	},
 
 	updateAssistance: (state, assistance) => {
-		state.assistance = assistance;
+		state.temporaryAssistance = assistance;
 	},
 
 	updateProject: (state, project) => {
-		state.project = project;
+		state.temporaryProject = project;
 	},
 };

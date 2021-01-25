@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Loading from "@/components/Loading";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
@@ -88,13 +89,14 @@ export default {
 
 	async mounted() {
 		// TODO check after BE implements /assistances/:id endpoint
-		if (this.$store.state.assistance) {
-			this.assistance = this.$store.state.assistance;
+		if (this.temporaryAssistance) {
+			this.assistance = this.temporaryAssistance;
 		} else {
 			await this.fetchAssistance();
 		}
-		if (this.$store.state.project) {
-			this.project = this.$store.state.project;
+		this.$emit("assistanceLoaded", this.assistance);
+		if (this.temporaryProject) {
+			this.project = this.temporaryProject;
 		} else {
 			await this.fetchProject();
 		}
@@ -102,6 +104,8 @@ export default {
 	},
 
 	computed: {
+		...mapState(["temporaryAssistance", "temporaryProject"]),
+
 		assistanceTarget() {
 			return normalizeText(this.assistance.target);
 		},

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<AssistanceSummary :beneficiaries="beneficiaries" />
+		<AssistanceSummary :beneficiaries="beneficiaries" @assistanceLoaded="assistanceLoaded" />
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
@@ -104,21 +103,12 @@ export default {
 		return {
 			activeStep: 0,
 			target: "",
-			assistance: {},
 			beneficiaries: 0,
 			changedBeneficiaryList: false,
 		};
 	},
 
-	mounted() {
-		// TODO If method with persisted state was accepted. Create method for refresh and erase state
-		this.assistance = this.$store.state.assistance;
-		this.target = this.assistance.target;
-	},
-
 	methods: {
-		...mapActions(["removeAssistanceFromState"]),
-
 		nextPage(next) {
 			// TODO checkForms
 			if (this.changedBeneficiaryList) {
@@ -137,6 +127,10 @@ export default {
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
+		},
+
+		assistanceLoaded(assistance) {
+			this.target = assistance.target;
 		},
 
 		beneficiaryListChanged() {
