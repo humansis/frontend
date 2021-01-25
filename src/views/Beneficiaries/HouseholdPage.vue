@@ -243,26 +243,55 @@ export default {
 
 		async prepareDataForTable(data) {
 			const filledData = [];
-			const promise = data.map(async (item, key) => {
+			const projectIds = [];
+			const beneficiaryIds = [];
+			const locationIds = [];
+			let promise = data.map(async (item, key) => {
+				projectIds.push(...data[key].projectIds);
+				beneficiaryIds.push(data[key].householdHeadId);
 				filledData[key] = item;
 				filledData[key].members = data[key].beneficiaryIds.length;
-				filledData[key].projects = await this.prepareProjects(data[key]);
-				filledData[key].currentLocation = await this.prepareLocations(data[key]);
+				filledData[key].locationId = await this.getLocationId(data[key]);
+				locationIds.push(filledData[key].locationId);
+			});
+			await Promise.all(promise);
+
+			const locations = await this.getLocations([...new Set(locationIds)]);
+			const projects = await this.getProjects([...new Set(projectIds)]);
+			const beneficiaries = await this.getBeneficiaries([...new Set(beneficiaryIds)]);
+
+			promise = await data.map(async (item, key) => {
+				filledData[key].projects = await this.prepareProjects(item, projects);
+				filledData[key].currentLocation = await this.prepareLocations(item.locationId, locations);
 				const {
 					givenName,
 					familyName,
-					nationalIds,
+					idNumber,
 					vulnerabilities,
-				} = await this.prepareBeneficiaries(data[key]);
-				filledData[key].idNumber = await this.prepareNationalId(nationalIds);
-				filledData[key].vulnerabilities	= await this
-					.prepareVulnerabilities(vulnerabilities);
+				} = await this.prepareBeneficiaries(data[key].householdHeadId, beneficiaries);
+				filledData[key].idNumber = idNumber;
+				filledData[key].vulnerabilities	= vulnerabilities;
 				filledData[key].givenName = givenName;
 				filledData[key].familyName = familyName;
 			});
 			await Promise.all(promise);
 
 			return filledData;
+		},
+
+		async getProjects(ids) {
+			return ProjectsService.getListOfProjects(null, null, null, null, ids)
+				.then(({ data }) => data);
+		},
+
+		async getBeneficiaries(ids) {
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data);
+		},
+
+		async getLocations(ids) {
+			return LocationsService.getLocations(ids)
+				.then(({ data }) => data);
 		},
 
 		async prepareNationalId(ids) {
@@ -273,10 +302,10 @@ export default {
 			return "none";
 		},
 
-		async prepareVulnerabilities(vulnerabilities) {
+		prepareVulnerabilities(vulnerabilities) {
 			let result = "none";
 			if (vulnerabilities) {
-				await vulnerabilities.forEach((item) => {
+				vulnerabilities.forEach((item) => {
 					if (result === "none") {
 						result = normalizeText(item);
 					} else {
@@ -287,35 +316,34 @@ export default {
 			return result;
 		},
 
-		async prepareBeneficiaries(item) {
+		async prepareBeneficiaries(id, beneficiaries) {
 			const result = {
 				familyName: "",
 				givenName: "",
-				nationalIds: [],
-				vulnerabilities: [],
+				idNumber: "",
+				vulnerabilities: "",
 			};
-			await BeneficiariesService.getBeneficiary(item.householdHeadId)
-				.then(async (response) => {
-					result.familyName = response.localFamilyName;
-					if (response.enFamilyName) {
-						result.familyName += ` (${response.enFamilyName})`;
-					}
-					result.givenName = response.localGivenName;
-					if (response.enGivenName) {
-						result.givenName += ` (${response.enGivenName})`;
-					}
-					result.nationalIds = response.nationalIds;
-					result.vulnerabilities = response.vulnerabilityCriteria;
-				}).catch((e) => {
-					Notification(`Beneficiary for ${item.id} ${e}`, "is-danger");
-				});
+			const foundBeneficiary = beneficiaries.find((beneficiary) => beneficiary.id === id);
+			if (foundBeneficiary) {
+				result.familyName = foundBeneficiary.localFamilyName;
+				if (foundBeneficiary.enFamilyName) {
+					result.familyName += ` (${foundBeneficiary.enFamilyName})`;
+				}
+				result.givenName = foundBeneficiary.localGivenName;
+				if (foundBeneficiary.enGivenName) {
+					result.givenName += ` (${foundBeneficiary.enGivenName})`;
+				}
+				result.idNumber = await this.prepareNationalId(foundBeneficiary.nationalIds);
+				result.vulnerabilities = this
+					.prepareVulnerabilities(foundBeneficiary.vulnerabilityCriteria);
+			}
 			return result;
 		},
 
-		async prepareLocations(item) {
+		async getLocationId(item) {
 			return this.getAddress(item)
-				.then(async (address) => LocationsService.getLocation(address.locationId)
-					.then(({ data }) => (data ? data.name : ""))).catch((e) => {
+				.then(({ locationId }) => locationId)
+				.catch((e) => {
 					Notification(`Location for ${item.id} ${e}`, "is-danger");
 				});
 		},
@@ -347,27 +375,29 @@ export default {
 			}
 		},
 
-		async prepareProjects(item) {
+		async prepareProjects(item, projects) {
 			let result = "";
-			const promises = [];
+
 			await item.projectIds.forEach((id) => {
-				const promise = ProjectsService.getDetailOfProject(id)
-					.then(({ data }) => {
-						if (data.name) {
-							if (result === "") {
-								result = data.name;
-							} else {
-								result += ` ,${data.name}`;
-							}
-						}
-					}).catch((e) => {
-						Notification(`Project for ${item.id} ${e}`, "is-danger");
-					});
-				promises.push(promise);
+				const foundProject = projects.find((project) => project.id === id);
+				if (foundProject) {
+					if (result === "") {
+						result = foundProject.name;
+					} else {
+						result += `, ${foundProject.name}`;
+					}
+				}
 			});
-			await Promise.all(promises);
 
 			return result;
+		},
+
+		async prepareLocations(id, locations) {
+			const foundLocation = locations.find((location) => location.id === id);
+			if (foundLocation) {
+				return foundLocation.adm.name;
+			}
+			return "";
 		},
 
 		goToCreatePage() {

@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
@@ -102,6 +102,15 @@ export default {
 	async getBeneficiary(id) {
 		const { data } = await fetcher({
 			uri: `beneficiaries/${id}`,
+		});
+		return data;
+	},
+
+	async getBeneficiaries(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries?${idsText}`,
 		});
 		return data;
 	},

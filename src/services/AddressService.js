@@ -1,5 +1,5 @@
 import { fetcher } from "@/utils/fetcher";
-// TODO fix after BE resolve naming in addresses
+
 export default {
 
 	async getCampAddress(id) {

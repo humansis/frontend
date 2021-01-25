@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfAdm1() {
@@ -54,5 +54,12 @@ export default {
 	async getLocation(id) {
 		const { data } = await fetcher({ uri: `locations/${id}` });
 		return { data };
+	},
+
+	async getLocations(ids) {
+		const params = idsToUri(ids);
+
+		const { data } = await fetcher({ uri: `locations?${params}` });
+		return data;
 	},
 };
