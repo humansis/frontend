@@ -1,6 +1,6 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive">
-		<button class="button is-light table-action" @click="confirmDelete">
+		<button :disabled="disabled" class="button is-light table-action" @click="confirmDelete">
 			<b-icon
 				:icon="icon"
 				type="is-danger"
@@ -20,6 +20,10 @@ export default {
 		tooltip: String,
 		id: Number,
 		hasConfirmMessage: Boolean,
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	computed: {
