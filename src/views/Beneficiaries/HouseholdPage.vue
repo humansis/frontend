@@ -65,6 +65,7 @@
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			ref="householdList"
 			:data="table.data"
@@ -205,6 +206,7 @@ export default {
 				perPage: 10,
 				sortColumn: "",
 				sortDirection: "desc",
+				progress: null,
 			},
 			checkedRows: [],
 			filters: {},
@@ -225,6 +227,8 @@ export default {
 
 			this.isLoadingList = true;
 
+			this.table.progress = null;
+
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
@@ -233,6 +237,7 @@ export default {
 				this.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
+				this.table.progress = 0;
 				this.table.total = totalCount;
 				this.table.data = await this.prepareDataForTable(data);
 				this.isLoadingList = false;
@@ -242,6 +247,7 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
+			this.table.progress = 5;
 			const filledData = [];
 			const projectIds = [];
 			const beneficiaryIds = [];
@@ -275,31 +281,55 @@ export default {
 				filledData[key].familyName = familyName;
 			});
 			await Promise.all(promise);
+			this.table.progress = 100;
 
 			return filledData;
 		},
 
 		async getProjects(ids) {
 			return ProjectsService.getListOfProjects(null, null, null, null, ids)
-				.then(({ data }) => data);
+				.then(({ data }) => {
+					this.table.progress += 10;
+					return data;
+				});
 		},
 
 		async getBeneficiaries(ids) {
 			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data);
+				.then(({ data }) => {
+					this.table.progress += 10;
+					return data;
+				});
 		},
 
 		async getLocations(ids) {
 			return LocationsService.getLocations(ids)
-				.then(({ data }) => data);
+				.then(({ data }) => {
+					this.table.progress += 10;
+					return data;
+				});
 		},
 
 		async prepareNationalId(ids) {
 			if (ids.length > 0) {
 				return BeneficiariesService.getNationalId(ids[0])
-					.then(({ number }) => number);
+					.then(({ number }) => {
+						this.table.progress += 1;
+						return number;
+					});
 			}
 			return "none";
+		},
+
+		async getLocationId(item) {
+			return this.getAddress(item)
+				.then(({ locationId }) => {
+					this.table.progress += 1;
+					return locationId;
+				})
+				.catch((e) => {
+					Notification(`Location for ${item.id} ${e}`, "is-danger");
+				});
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
@@ -338,14 +368,6 @@ export default {
 					.prepareVulnerabilities(foundBeneficiary.vulnerabilityCriteria);
 			}
 			return result;
-		},
-
-		async getLocationId(item) {
-			return this.getAddress(item)
-				.then(({ locationId }) => locationId)
-				.catch((e) => {
-					Notification(`Location for ${item.id} ${e}`, "is-danger");
-				});
 		},
 
 		getAddressTypeAndId(
