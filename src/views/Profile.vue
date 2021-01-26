@@ -41,15 +41,17 @@
 					<form @submit.prevent="submitTelephoneForm">
 						<p class="is-size-4 my-5">Change Phone Number</p>
 						<b-field grouped>
-							<b-field>
-								<b-field label="Prefix">
-									<b-select
-										v-model="telephoneForm.prefix"
-									>
-										<option>CZ - +420</option>
-										<option>SK - +421</option>
-									</b-select>
-								</b-field>
+							<b-field
+								label="Phone Ext"
+							>
+								<MultiSelect
+									v-model="telephoneForm.prefix"
+									searchable
+									placeholder="Phone Ext"
+									label="value"
+									track-by="code"
+									:options="options.phonePrefixes"
+								/>
 							</b-field>
 							<b-field label="Phone Number" expanded>
 								<b-input
@@ -88,6 +90,8 @@
 </template>
 
 <script>
+import PhoneCodes from "@/utils/phoneCodes";
+
 export default {
 	name: "Profile",
 
@@ -106,6 +110,9 @@ export default {
 				telephoneNumber: "",
 			},
 			twoFactorEnabled: false,
+			options: {
+				phonePrefixes: PhoneCodes,
+			},
 		};
 	},
 

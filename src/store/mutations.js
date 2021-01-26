@@ -15,4 +15,12 @@ export default {
 		// TODO: decode storedPermissions and replace state.auth with it
 		state.auth = { ...storedPermissions };
 	},
+
+	updateAssistance: (state, assistance) => {
+		state.temporaryAssistance = assistance;
+	},
+
+	updateProject: (state, project) => {
+		state.temporaryProject = project;
+	},
 };

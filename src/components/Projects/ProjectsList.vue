@@ -47,6 +47,7 @@
 						icon="trash"
 						entity="Project"
 						tooltip="Delete"
+						:disabled="!props.row.deletable"
 						:id="props.row.id"
 						@submitted="onDelete"
 					/>
@@ -58,6 +59,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -117,6 +119,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["addProjectToState"]),
+
 		async fetchData() {
 			this.isLoadingList = true;
 
@@ -126,9 +130,9 @@ export default {
 				this.table.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.data = data;
+				this.table.total = totalCount;
 			}).catch((e) => {
 				Toast(`(Projects) ${e}`, "is-danger");
 			});
@@ -137,6 +141,7 @@ export default {
 		},
 
 		goToDetail(project) {
+			this.addProjectToState(project);
 			this.$router.push({ name: "ProjectDetail", params: { projectId: project.id } });
 		},
 

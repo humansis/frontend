@@ -18,4 +18,24 @@ export default {
 			i18n.locale = languageObj.name;
 		}
 	},
+
+	addAssistanceToState: ({ commit }, assistance) => {
+		if (assistance) {
+			commit("updateAssistance", assistance);
+		}
+	},
+
+	addProjectToState: ({ commit }, project) => {
+		if (project) {
+			commit("updateProject", project);
+		}
+	},
+
+	removeAssistanceFromState: ({ commit }) => {
+		commit("updateAssistance", null);
+	},
+
+	removeProjectFromState: ({ commit }) => {
+		commit("updateProject", null);
+	},
 };

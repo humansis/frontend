@@ -279,6 +279,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
+import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -371,11 +372,7 @@ export default {
 				residencyStatus: [],
 				referralType: [],
 				phoneType: [],
-				// TODO get from API
-				phonePrefixes: [
-					{ code: "+420", value: "CZ - +420" },
-					{ code: "+421", value: "SK - +421" },
-				],
+				phonePrefixes: PhoneCodes,
 				vulnerabilities: [],
 			},
 			idTypeLoading: true,
@@ -471,7 +468,7 @@ export default {
 						phones[`phone${key + 1}`] = {
 							type: getArrayOfCodeListByKey([type], this.options.phoneType, "code"),
 							proxy,
-							ext: prefix,
+							ext: getArrayOfCodeListByKey([prefix], this.options.phonePrefixes, "code"),
 							phoneNo: number,
 						};
 					}).catch((e) => {

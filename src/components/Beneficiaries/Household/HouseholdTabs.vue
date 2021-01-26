@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
@@ -101,6 +102,10 @@ export default {
 			location: "",
 			address: "",
 		};
+	},
+
+	computed: {
+		...mapState(["country"]),
 	},
 
 	created() {
@@ -163,7 +168,7 @@ export default {
 				currentLocation,
 			} = this.household;
 			const householdBody = {
-				iso3: this.$store.state.country.iso3,
+				iso3: this.country.iso3,
 				livelihood: livelihood.code,
 				assets: getArrayOfIdsByParam(assets, "code"),
 				shelterStatus: parseInt(shelterStatus.code, 10),
@@ -353,7 +358,7 @@ export default {
 						localGivenName: beneficiary.nameLocal.firstName,
 						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
-						enlGivenName: beneficiary.nameEnglish.firstName,
+						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender.code,
 						nationalIdCards: [
@@ -373,7 +378,7 @@ export default {
 					if (beneficiary.phone1.phoneNo !== "") {
 						preparedBeneficiary.phones = [];
 						preparedBeneficiary.phones.push({
-							prefix: beneficiary.phone1.ext,
+							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
 							type: beneficiary.phone1.type.code,
 							proxy: beneficiary.phone1.proxy,
@@ -381,7 +386,7 @@ export default {
 					}
 					if (beneficiary.phone2.phoneNo !== "") {
 						const phone2 = {
-							prefix: beneficiary.phone2.ext,
+							prefix: beneficiary.phone2.ext.code,
 							number: beneficiary.phone2.phoneNo,
 							type: beneficiary.phone2.type.code,
 							proxy: beneficiary.phone2.proxy,

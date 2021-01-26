@@ -4,9 +4,11 @@ export default {
 	async getListOfBooklets(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `booklets?page=${page}&size=${size + sortText + fulltext}`,
+			uri: `booklets?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
