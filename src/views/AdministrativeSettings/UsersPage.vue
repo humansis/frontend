@@ -5,6 +5,7 @@
 			:can-cancel="true"
 			:header="modalHeader"
 			:is-waiting="userModal.isWaiting"
+			is-small
 			@close="closeUserModal"
 		>
 			<UserForm

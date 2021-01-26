@@ -378,7 +378,7 @@ export default {
 					if (beneficiary.phone1.phoneNo !== "") {
 						preparedBeneficiary.phones = [];
 						preparedBeneficiary.phones.push({
-							prefix: beneficiary.phone1.ext,
+							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
 							type: beneficiary.phone1.type.code,
 							proxy: beneficiary.phone1.proxy,
@@ -386,7 +386,7 @@ export default {
 					}
 					if (beneficiary.phone2.phoneNo !== "") {
 						const phone2 = {
-							prefix: beneficiary.phone2.ext,
+							prefix: beneficiary.phone2.ext.code,
 							number: beneficiary.phone2.phoneNo,
 							type: beneficiary.phone2.type.code,
 							proxy: beneficiary.phone2.proxy,
