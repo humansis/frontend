@@ -251,31 +251,40 @@ export default {
 			const filledData = [];
 			const projectIds = [];
 			const beneficiaryIds = [];
-			const locationIds = [];
+			const addressIds = {
+				camp: [],
+				residence: [],
+				temporary_settlement: [],
+			};
 			let promise = data.map(async (item, key) => {
 				projectIds.push(...data[key].projectIds);
 				beneficiaryIds.push(data[key].householdHeadId);
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+				addressIds[typeOfLocation].push(addressId);
 				filledData[key] = item;
+				filledData[key].addressId = addressId;
 				filledData[key].members = data[key].beneficiaryIds.length;
-				filledData[key].locationId = await this.getLocationId(data[key]);
-				locationIds.push(filledData[key].locationId);
 			});
 			await Promise.all(promise);
 
-			const locations = await this.getLocations([...new Set(locationIds)]);
+			const addresses = await this.getAddresses(addressIds);
+			const locations = await this.getLocations(addresses);
+			const mappedAddresses = this.mapLocationOnAddress(locations, addresses);
 			const projects = await this.getProjects([...new Set(projectIds)]);
 			const beneficiaries = await this.getBeneficiaries([...new Set(beneficiaryIds)]);
+			const nationalIds = await this.getNationalIds(beneficiaries);
 
 			promise = await data.map(async (item, key) => {
-				filledData[key].projects = await this.prepareProjects(item, projects);
-				filledData[key].currentLocation = await this.prepareLocations(item.locationId, locations);
+				filledData[key].projects = this.prepareProjects(item, projects);
+				filledData[key]
+					.currentLocation = this.prepareLocations(item.addressId, mappedAddresses);
 				const {
 					givenName,
 					familyName,
-					idNumber,
+					nationalId,
 					vulnerabilities,
-				} = await this.prepareBeneficiaries(data[key].householdHeadId, beneficiaries);
-				filledData[key].idNumber = idNumber;
+				} = this.prepareBeneficiaries(data[key].householdHeadId, beneficiaries);
+				filledData[key].idNumber = this.prepareNationalId(nationalId, nationalIds);
 				filledData[key].vulnerabilities	= vulnerabilities;
 				filledData[key].givenName = givenName;
 				filledData[key].familyName = familyName;
@@ -286,50 +295,100 @@ export default {
 			return filledData;
 		},
 
+		mapLocationOnAddress(locations, addresses) {
+			const addressesMapped = [];
+			addresses.forEach((address) => {
+				const location = locations.find((item) => item.adm.locationId === address.locationId);
+				if (location) {
+					const addressMapped = address;
+					addressMapped.locationName = location.adm.name;
+					addressesMapped.push(addressMapped);
+				}
+			});
+			return addressesMapped;
+		},
+
+		async getNationalIds(beneficiaries) {
+			return BeneficiariesService.getNationalIds(beneficiaries, "nationalIds")
+				.then(({ data }) => {
+					this.table.progress += 15;
+					return data;
+				}).catch((e) => {
+					Notification(`NationalIds ${e}`, "is-danger");
+				});
+		},
+
+		async getAddresses(ids) {
+			const addresses = [];
+			if (ids.camp.length) {
+				await AddressService.getCampAddresses(ids.camp)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "camp" });
+						});
+					}).catch((e) => {
+						Notification(`Camp Address ${e}`, "is-danger");
+					});
+			}
+			if (ids.residence.length) {
+				await AddressService.getResidenceAddresses(ids.residence)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "residence" });
+						});
+					}).catch((e) => {
+						Notification(`Residence Address ${e}`, "is-danger");
+					});
+			}
+			if (ids.temporary_settlement.length) {
+				await AddressService.getTemporarySettlementAddresses(ids.temporary_settlement)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "temporary_settlement" });
+						});
+					}).catch((e) => {
+						Notification(`Temporary Settlement Address ${e}`, "is-danger");
+					});
+			}
+			this.table.progress += 15;
+			return addresses;
+		},
+
 		async getProjects(ids) {
 			return ProjectsService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => {
-					this.table.progress += 10;
+					this.table.progress += 15;
 					return data;
+				}).catch((e) => {
+					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 
 		async getBeneficiaries(ids) {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => {
-					this.table.progress += 10;
+					this.table.progress += 15;
 					return data;
+				}).catch((e) => {
+					Notification(`Beneficiaries ${e}`, "is-danger");
 				});
 		},
 
-		async getLocations(ids) {
-			return LocationsService.getLocations(ids)
+		async getLocations(addresses) {
+			return LocationsService.getLocations(addresses, "locationId")
 				.then(({ data }) => {
-					this.table.progress += 10;
+					this.table.progress += 15;
 					return data;
+				}).catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
 				});
 		},
 
-		async prepareNationalId(ids) {
-			if (ids.length > 0) {
-				return BeneficiariesService.getNationalId(ids[0])
-					.then(({ number }) => {
-						this.table.progress += 1;
-						return number;
-					});
-			}
-			return "none";
-		},
-
-		async getLocationId(item) {
-			return this.getAddress(item)
-				.then(({ locationId }) => {
-					this.table.progress += 1;
-					return locationId;
-				})
-				.catch((e) => {
-					Notification(`Location for ${item.id} ${e}`, "is-danger");
-				});
+		prepareNationalId(id, nationalIds) {
+			if (!nationalIds) return "none";
+			const nationalId = nationalIds.find((item) => item.id === id);
+			this.table.progress += 5;
+			return nationalId ? nationalId.number : "none";
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
@@ -343,31 +402,62 @@ export default {
 					}
 				});
 			}
+
+			this.table.progress += 5;
 			return result;
 		},
 
-		async prepareBeneficiaries(id, beneficiaries) {
+		prepareBeneficiaries(id, beneficiaries) {
+			if (!beneficiaries) return "";
 			const result = {
 				familyName: "",
 				givenName: "",
-				idNumber: "",
+				nationalId: "",
 				vulnerabilities: "",
 			};
-			const foundBeneficiary = beneficiaries.find((beneficiary) => beneficiary.id === id);
-			if (foundBeneficiary) {
-				result.familyName = foundBeneficiary.localFamilyName;
-				if (foundBeneficiary.enFamilyName) {
-					result.familyName += ` (${foundBeneficiary.enFamilyName})`;
+			const beneficiary = beneficiaries.find((item) => item.id === id);
+			if (beneficiary) {
+				result.familyName = beneficiary.localFamilyName;
+				if (beneficiary.enFamilyName) {
+					result.familyName += ` (${beneficiary.enFamilyName})`;
 				}
-				result.givenName = foundBeneficiary.localGivenName;
-				if (foundBeneficiary.enGivenName) {
-					result.givenName += ` (${foundBeneficiary.enGivenName})`;
+				result.givenName = beneficiary.localGivenName;
+				if (beneficiary.enGivenName) {
+					result.givenName += ` (${beneficiary.enGivenName})`;
 				}
-				result.idNumber = await this.prepareNationalId(foundBeneficiary.nationalIds);
+				const [nationalId] = beneficiary.nationalIds;
+				result.nationalId = nationalId;
 				result.vulnerabilities = this
-					.prepareVulnerabilities(foundBeneficiary.vulnerabilityCriteria);
+					.prepareVulnerabilities(beneficiary.vulnerabilityCriteria);
 			}
+
+			this.table.progress += 5;
 			return result;
+		},
+
+		prepareProjects(item, projects) {
+			let result = "";
+
+			item.projectIds.forEach((id) => {
+				const foundProject = projects.find((project) => project.id === id);
+				if (foundProject) {
+					if (result === "") {
+						result = foundProject.name;
+					} else {
+						result += `, ${foundProject.name}`;
+					}
+				}
+			});
+
+			this.table.progress += 5;
+			return result;
+		},
+
+		prepareLocations(id, addresses) {
+			if (!addresses) return "";
+			const location = addresses.find((address) => address.id === id);
+			this.table.progress += 5;
+			return location ? location.locationName : "";
 		},
 
 		getAddressTypeAndId(
@@ -380,45 +470,6 @@ export default {
 			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
 			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
 			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
-			return "";
-		},
-
-		getAddress(item) {
-			const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
-			switch (typeOfLocation) {
-				case "camp":
-					return AddressService.getCampAddress(addressId);
-				case "residence":
-					return AddressService.getResidenceAddress(addressId);
-				case "temporary_settlement":
-					return AddressService.getTemporarySettlementAddress(addressId);
-				default:
-					return null;
-			}
-		},
-
-		async prepareProjects(item, projects) {
-			let result = "";
-
-			await item.projectIds.forEach((id) => {
-				const foundProject = projects.find((project) => project.id === id);
-				if (foundProject) {
-					if (result === "") {
-						result = foundProject.name;
-					} else {
-						result += `, ${foundProject.name}`;
-					}
-				}
-			});
-
-			return result;
-		},
-
-		async prepareLocations(id, locations) {
-			const foundLocation = locations.find((location) => location.id === id);
-			if (foundLocation) {
-				return foundLocation.adm.name;
-			}
 			return "";
 		},
 

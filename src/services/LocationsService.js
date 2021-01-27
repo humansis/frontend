@@ -56,10 +56,10 @@ export default {
 		return { data };
 	},
 
-	async getLocations(ids) {
-		const params = idsToUri(ids);
+	async getLocations(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
 
-		const { data } = await fetcher({ uri: `locations?${params}` });
+		const { data } = await fetcher({ uri: `locations?${idsText}` });
 		return data;
 	},
 };

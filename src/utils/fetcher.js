@@ -138,10 +138,14 @@ export const filtersToUri = (filters) => {
 	return query;
 };
 
-export const idsToUri = (ids) => {
+export const idsToUri = (ids, param = null) => {
 	let query = "";
 	ids.forEach((item) => {
-		query += `&filter[id][]=${item}`;
+		if (param) {
+			query += `&filter[id][]=${item[param]}`;
+		} else {
+			query += `&filter[id][]=${item}`;
+		}
 	});
 	return query;
 };

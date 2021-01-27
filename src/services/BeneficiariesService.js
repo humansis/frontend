@@ -129,6 +129,15 @@ export default {
 		return data;
 	},
 
+	async getNationalIds(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries/national-ids?${idsText}`,
+		});
+		return data;
+	},
+
 	async getListOfReferralTypes() {
 		const { data } = await fetcher({
 			uri: "households/referrals/types",
