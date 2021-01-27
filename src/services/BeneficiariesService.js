@@ -138,6 +138,15 @@ export default {
 		return data;
 	},
 
+	async getPhones(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries/phones?${idsText}`,
+		});
+		return data;
+	},
+
 	async getListOfReferralTypes() {
 		const { data } = await fetcher({
 			uri: "households/referrals/types",

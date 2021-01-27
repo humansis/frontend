@@ -35,6 +35,7 @@
 				@exportData="exportAssistance"
 			/>
 		</div>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -167,6 +168,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
 			assistanceModal: {
 				isOpened: false,
@@ -196,6 +198,7 @@ export default {
 
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await AssistancesService.getListOfProjectAssistances(
@@ -205,8 +208,11 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
-				this.table.data = await this.prepareDataForTable(data);
+				this.table.progress = 0;
 				this.table.total = totalCount;
+				if (totalCount !== 0) {
+					this.table.data = await this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
@@ -216,30 +222,62 @@ export default {
 
 		async prepareDataForTable(data) {
 			const filledData = [];
-			const promise = data.map(async (item, key) => {
+			const locationIds = [];
+			const assistanceIds = [];
+			let promise = data.map(async (item, key) => {
 				filledData[key] = item;
-				filledData[key].location = await this.prepareLocation(item.locationId);
+				filledData[key].target = normalizeText(item.target);
+				locationIds.push(item.locationId);
+				assistanceIds.push(item.id);
+			});
+			// TODO Commodities and Beneficiaries and set progress bar
+			const locations = await this.getLocations(locationIds);
+
+			await Promise.all(promise);
+			promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].location = await this.prepareLocation(item.locationId, locations);
 				filledData[key].commodity = await this.prepareCommodity(item.id);
 				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
 				filledData[key].target = normalizeText(item.target);
 			});
 
 			await Promise.all(promise);
+			this.table.progress = 100;
 			return filledData;
 		},
 
-		async prepareLocation(id) {
-			return LocationsService.getLocation(id).then(({ data: { name } }) => name);
+		async getLocations(ids) {
+			return LocationsService.getLocations(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
+				});
+		},
+
+		async prepareLocation(id, locations) {
+			const location = locations.find((item) => item.id === id);
+			this.table.progress += 1;
+			return location ? location.adm.name : "";
 		},
 
 		async prepareCommodity(id) {
 			return AssistancesService.getAssistanceCommodities(id)
-				.then(({ data: [a] }) => a.modalityType);
+				.then(({ data: [a] }) => {
+					this.table.progress += 2;
+					return a.modalityType;
+				});
 		},
 
 		async prepareBeneficiaries(id) {
 			return AssistancesService.getListOfBeneficiaries(id)
-				.then(({ totalCount }) => totalCount);
+				.then(({ totalCount }) => {
+					this.table.progress += 2;
+					return totalCount;
+				});
 		},
 
 		async removeAssistance(id) {

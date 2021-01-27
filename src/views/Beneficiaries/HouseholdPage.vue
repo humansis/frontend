@@ -237,7 +237,9 @@ export default {
 			).then(async ({ totalCount, data }) => {
 				this.table.progress = 0;
 				this.table.total = totalCount;
-				this.table.data = await this.prepareDataForTable(data);
+				if (totalCount !== 0) {
+					this.table.data = await this.prepareDataForTable(data);
+				}
 				this.isLoadingList = false;
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");

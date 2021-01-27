@@ -56,7 +56,7 @@ export default {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${id}/beneficiaries?${pageText + sizeText + sortText + fulltext}`,
