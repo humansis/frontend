@@ -41,16 +41,6 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfCountries() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "countries" });
-		return { data, totalCount };
-	},
-
-	async getDetailOfCountry(iso3) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `countries/${iso3}` });
-		return { data, totalCount };
-	},
-
 	async getLocation(id) {
 		const { data } = await fetcher({ uri: `locations/${id}` });
 		return { data };

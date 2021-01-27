@@ -67,7 +67,7 @@ async function fetchFromHumansisApi(uri, auth, method, body, contentType) {
 		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
 
-	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
+	headers.Country = localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
 
 	const config = { headers };
 
