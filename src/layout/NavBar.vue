@@ -135,8 +135,8 @@ export default {
 		},
 
 		setTooltip() {
-			this.tooltip.active = !!this.$route.meta.helpTooltip;
-			this.tooltip.label = this.$route.meta.helpTooltip;
+			this.tooltip.active = !!this.$route.meta.description;
+			this.tooltip.label = this.$route.meta.description;
 		},
 
 		async fetchCountries() {
