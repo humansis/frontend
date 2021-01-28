@@ -7,7 +7,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
@@ -62,7 +61,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -85,7 +83,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ImportService.getListOfImports(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {

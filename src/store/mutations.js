@@ -23,4 +23,8 @@ export default {
 	updateProject: (state, project) => {
 		state.temporaryProject = project;
 	},
+
+	updatePerPage: (state, perPage) => {
+		state.perPage = perPage;
+	},
 };
