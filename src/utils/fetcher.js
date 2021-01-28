@@ -137,3 +137,15 @@ export const filtersToUri = (filters) => {
 	});
 	return query;
 };
+
+export const idsToUri = (ids, param = null) => {
+	let query = "";
+	ids.forEach((item) => {
+		if (param) {
+			query += `&filter[id][]=${item[param]}`;
+		} else {
+			query += `&filter[id][]=${item}`;
+		}
+	});
+	return query;
+};

@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
@@ -106,6 +106,15 @@ export default {
 		return data;
 	},
 
+	async getBeneficiaries(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries?${idsText}`,
+		});
+		return data;
+	},
+
 	async getPhone(id) {
 		const { data } = await fetcher({
 			uri: `beneficiaries/phones/${id}`,
@@ -116,6 +125,15 @@ export default {
 	async getNationalId(id) {
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids/${id}`,
+		});
+		return data;
+	},
+
+	async getNationalIds(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries/national-ids?${idsText}`,
 		});
 		return data;
 	},
