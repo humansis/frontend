@@ -77,7 +77,7 @@
 				<router-link to="/profile">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
-						Profile
+						Profile {{ $t('activity_amount_completed') }}
 					</b-dropdown-item>
 				</router-link>
 				<b-dropdown-item value="logout">
@@ -122,6 +122,7 @@ export default {
 		},
 
 		handleChangeLanguage(language) {
+			sessionStorage.removeItem("translations");
 			localStorage.setItem("language", language.name);
 			this.$router.go();
 		},
