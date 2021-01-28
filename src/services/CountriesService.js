@@ -1,8 +1,10 @@
 // TODO uncomment methods after implementing this endpoint
 
+import { fetcher } from "@/utils/fetcher";
+
 export default {
 	// eslint-disable-next-line no-unused-vars
-	async getListOfCountries(page, size, sort, search = null) {
+	async getListOfCountriesForTable(page, size, sort, search = null) {
 		// const fulltext = search ? `&fulltext=${search}` : "";
 		// const sortText = sort ? `&sort=${sort}` : "";
 		//
@@ -48,15 +50,6 @@ export default {
 	},
 
 	// eslint-disable-next-line no-unused-vars
-	async getDetailOfCountry(id) {
-		// const { data: { data } } = await fetcher({
-		// 	uri: `users/${id}`,
-		// });
-		// return { data };
-		return { data: {}, totalCount: 0 };
-	},
-
-	// eslint-disable-next-line no-unused-vars
 	async updateCountry(id, body) {
 		// const { data, status } = await fetcher({
 		// 	uri: `users/${id}`, method: "PUT", body,
@@ -72,6 +65,16 @@ export default {
 		// });
 		// return { data, status };
 		return { data: {}, status: 204 };
+	},
+
+	async getListOfCountries() {
+		const { data: { data, totalCount } } = await fetcher({ uri: "countries" });
+		return { data, totalCount };
+	},
+
+	async getDetailOfCountry(iso3) {
+		const { data: { data, totalCount } } = await fetcher({ uri: `countries/${iso3}` });
+		return { data, totalCount };
 	},
 
 };

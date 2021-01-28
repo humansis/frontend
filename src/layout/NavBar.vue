@@ -91,7 +91,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import LocationsService from "@/services/LocationsService";
+import CountriesService from "@/services/CountriesService";
 import { Toast } from "@/utils/UI";
 
 export default {
@@ -126,22 +126,23 @@ export default {
 			this.$router.go();
 		},
 
-		fetchCountries() {
-			LocationsService.getListOfCountries()
-				.then((response) => {
-					this.countries = response.data;
-					this.updateCountry(this.countries);
-				}).catch((e) => {
-					Toast(`(Countries) ${e}`, "is-danger");
-				});
-		},
-
 		setTooltip() {
 			// TODO edit tooltip on some hint
 			this.tooltip = this.$route.name;
 		},
 
-		fetchLanguages() {
+		async fetchCountries() {
+			await CountriesService.getListOfCountries()
+				.then(({ data }) => {
+					this.countries = data;
+					this.updateCountry(this.countries);
+				})
+				.catch((e) => {
+					Toast(`(Countries) ${e}`, "is-danger");
+				});
+		},
+
+		async fetchLanguages() {
 			// TODO Get languages
 			this.languages = [
 				{ name: "EN", key: "en" },
@@ -151,9 +152,9 @@ export default {
 		},
 	},
 
-	created() {
-		this.fetchCountries();
-		this.fetchLanguages();
+	async created() {
+		await this.fetchCountries();
+		await this.fetchLanguages();
 	},
 
 	computed: {
