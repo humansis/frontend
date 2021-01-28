@@ -1,7 +1,10 @@
+import permissions from "@/permissions";
+
 export default {
+	auth: { ...permissions },
 	country: {},
 	language: {},
-	isLoading: false,
 	temporaryAssistance: null,
 	temporaryProject: null,
+	isFullPageLoading: false,
 };
