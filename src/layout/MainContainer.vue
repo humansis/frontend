@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<b-loading v-model="isLoading" />
+		<b-loading v-model="isFullPageLoading" />
 		<SideMenu />
 		<section class="main-content is-fullheight">
 			<div class="container">
@@ -25,7 +25,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["isLoading"]),
+		...mapState(["isFullPageLoading"]),
 	},
 };
 </script>
