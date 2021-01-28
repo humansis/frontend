@@ -79,7 +79,7 @@
 						icon="lock"
 						type="is-danger"
 						tooltip="Lock"
-						@click.native="goToValidateAndLock(props.row.id)"
+						@click.native="goToValidateAndLockWithId(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
@@ -267,6 +267,11 @@ export default {
 
 		goToAddAssistance() {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
+		},
+
+		goToValidateAndLockWithId(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+			this.goToValidateAndLock(assistance);
 		},
 
 		goToValidateAndLock(assistance) {

@@ -28,6 +28,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				meta: {
 					breadcrumb: "Home",
+					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's distributions and a summary of the last ones.",
 				},
 			},
 			{
@@ -41,6 +42,9 @@ const routes = [
 						path: "",
 						name: "Projects",
 						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectPage"),
+						meta: {
+							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
+						},
 					},
 					{
 						path: "/project/:projectId",
@@ -53,6 +57,9 @@ const routes = [
 								path: "",
 								name: "ProjectDetail",
 								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectDetail"),
+								meta: {
+									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
+								},
 							},
 							{
 								path: "assistance/:assistanceId",
@@ -60,6 +67,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceUpdate"),
 								meta: {
 									breadcrumb: "Assistance",
+									description: "",
 								},
 							},
 							{
@@ -68,6 +76,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
 								meta: {
 									breadcrumb: "Add Assistance",
+									description: "This page is a form to add a new distribution to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
 								},
 							},
@@ -92,6 +101,9 @@ const routes = [
 								path: "",
 								name: "Households",
 								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdPage"),
+								meta: {
+									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
+								},
 							},
 							{
 								path: "add",
@@ -99,6 +111,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsAddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								meta: {
 									breadcrumb: "Add Household",
+									description: "This page is a form to add a new household to the platform.",
 								},
 							},
 							{
@@ -107,6 +120,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
 								meta: {
 									breadcrumb: "Import Household",
+									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
 								},
 							},
 							{
@@ -115,6 +129,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsEditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								meta: {
 									breadcrumb: "Edit Household",
+									description: "",
 								},
 							},
 							{
@@ -123,6 +138,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								meta: {
 									breadcrumb: "Household Information Summary",
+									description: "",
 									parent: "Households",
 								},
 							},
@@ -134,6 +150,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunitiesPage"),
 						meta: {
 							breadcrumb: "Communities",
+							description: "",
 						},
 					},
 					{
@@ -142,6 +159,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/InstitutionsPage"),
 						meta: {
 							breadcrumb: "Institutions",
+							description: "",
 						},
 					},
 					{
@@ -150,6 +168,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorsPage"),
 						meta: {
 							breadcrumb: "Vendors",
+							description: "",
 						},
 					},
 				],
@@ -160,6 +179,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Reports" */ "@/views/ReportsPage"),
 				meta: {
 					breadcrumb: "Reports",
+					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions...",
 				},
 			},
 			{
@@ -168,6 +188,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/VouchersPage"),
 				meta: {
 					breadcrumb: "Vouchers",
+					description: "This page is where you can create, edit, assign and print vouchers booklets",
 				},
 			},
 			{
@@ -181,6 +202,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductsPage"),
 						meta: {
 							breadcrumb: "Products",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},
 					},
 					{
@@ -189,6 +211,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptionPage"),
 						meta: {
 							breadcrumb: "Country Specifics",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},
 					},
 				],
@@ -199,6 +222,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettingsPage"),
 				meta: {
 					breadcrumb: "Administrative Settings",
+					description: "This page is where you can manage users, donors and your organization's specifics",
 				},
 			},
 			{
@@ -207,6 +231,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/TransactionsPage"),
 				meta: {
 					breadcrumb: "Transactions",
+					description: "",
 				},
 			},
 			{
@@ -215,6 +240,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Jobs" */ "@/views/Jobs"),
 				meta: {
 					breadcrumb: "Jobs",
+					description: "",
 				},
 			},
 			{
@@ -223,6 +249,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
 				meta: {
 					breadcrumb: "Logs",
+					description: "",
 				},
 			},
 			{
@@ -231,6 +258,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				meta: {
 					breadcrumb: "Profile",
+					description: "This page is where you can change your password",
 				},
 			},
 		],
