@@ -109,7 +109,9 @@ export default {
 		$route: "setTooltip",
 	},
 
-	mounted() {
+	async mounted() {
+		await this.fetchCountries();
+		await this.fetchLanguages();
 		this.setTooltip();
 	},
 
@@ -117,12 +119,12 @@ export default {
 		...mapActions(["updateCountry", "updateLanguage"]),
 
 		handleChangeCountry(country) {
-			localStorage.setItem("country", country.iso3);
+			this.updateCountry(country);
 			this.$router.go();
 		},
 
 		handleChangeLanguage(language) {
-			localStorage.setItem("language", language.name);
+			this.updateLanguage(language);
 			this.$router.go();
 		},
 
@@ -135,7 +137,6 @@ export default {
 			await CountriesService.getListOfCountries()
 				.then(({ data }) => {
 					this.countries = data;
-					this.updateCountry(this.countries);
 				})
 				.catch((e) => {
 					Toast(`(Countries) ${e}`, "is-danger");
@@ -148,13 +149,7 @@ export default {
 				{ name: "EN", key: "en" },
 				{ name: "CZ", key: "cz" },
 			];
-			this.updateLanguage(this.languages);
 		},
-	},
-
-	async created() {
-		await this.fetchCountries();
-		await this.fetchLanguages();
 	},
 
 	computed: {

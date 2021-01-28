@@ -31,8 +31,6 @@ export default {
 		return {
 			isLoading: true,
 			projectsSummary: [],
-			currentPage: 1,
-			perPage: 15,
 		};
 	},
 

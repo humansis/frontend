@@ -21,7 +21,6 @@
 			:checkable="checkable"
 			:data="data"
 			:total="total"
-			:per-page="perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
@@ -33,14 +32,14 @@
 			<template v-if="paginated" slot="bottom-left">
 				<p style="width: 120px;">Per Page: </p>
 				<MultiSelect
-					v-model="perPageNumber"
 					hide-selected
 					deselect-label=""
 					select-label=""
 					selected-label=""
+					:value="perPage"
 					:options="options.perPageNumbers"
 					:allow-empty="false"
-					@input="changePerPage"
+					@input="onChangePerPage"
 				/>
 			</template>
 		</b-table>
@@ -48,6 +47,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 export default {
 	name: "Table",
 
@@ -55,7 +56,6 @@ export default {
 		data: Array,
 		total: Number,
 		currentPage: Number,
-		perPage: Number,
 		paginated: {
 			type: Boolean,
 			default: true,
@@ -73,22 +73,28 @@ export default {
 	data() {
 		return {
 			checkedRows: [],
-			perPageNumber: this.perPage,
 			options: {
 				perPageNumbers: [5, 10, 15],
 			},
 		};
 	},
 
+	computed: {
+		...mapState(["perPage"]),
+	},
+
 	methods: {
+		...mapActions(["changePerPage"]),
+
 		onClick(row, column) {
 			if (column.$options.propsData.label !== "Actions") {
 				this.$emit("clicked", row);
 			}
 		},
 
-		changePerPage() {
-			this.$emit("changePerPage", this.perPageNumber);
+		onChangePerPage(value) {
+			this.changePerPage(value);
+			this.$emit("changePerPage");
 		},
 	},
 };
