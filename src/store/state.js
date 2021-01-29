@@ -3,7 +3,6 @@ import CONST from "@/const";
 
 export default {
 	isAppLoading: false,
-	isPageLoading: false,
 	auth: { ...permissions },
 	country: {
 		iso3: CONST.DEFAULT_COUNTRY,

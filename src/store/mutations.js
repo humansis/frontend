@@ -7,10 +7,6 @@ export default {
 		state.language = languageToChange;
 	},
 
-	pageLoading: (state, boolean) => {
-		state.isPageLoading = boolean;
-	},
-
 	appLoading: (state, boolean) => {
 		state.isAppLoading = boolean;
 	},

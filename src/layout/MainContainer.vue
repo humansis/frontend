@@ -1,9 +1,9 @@
 <template>
 	<div>
 		<b-loading
-			:active="isAppLoading || isPageLoading"
+			is-full-page
+			:active="isAppLoading"
 			:can-cancel="false"
-			:is-full-page="isAppLoading"
 		/>
 		<SideMenu />
 		<section class="main-content is-fullheight">
@@ -29,7 +29,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["isAppLoading", "isPageLoading"]),
+		...mapState(["isAppLoading"]),
 	},
 };
 </script>
