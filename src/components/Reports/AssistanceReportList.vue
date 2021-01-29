@@ -36,7 +36,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
@@ -102,7 +101,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 			},
@@ -133,7 +131,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await AssistanceReportService.getListOfAssistanceReports(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.selectedPeriod,
 				this.choosePeriod,

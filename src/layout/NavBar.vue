@@ -7,7 +7,12 @@
 		</template>
 		<template slot="end">
 			<b-navbar-item>
-				<b-tooltip :label="tooltip" position="is-bottom" active>
+				<b-tooltip
+					multilined
+					position="is-bottom"
+					:label="tooltip.label"
+					:active="tooltip.active"
+				>
 					<b-icon
 						icon="question"
 						size="is-medium"
@@ -102,7 +107,10 @@ export default {
 		return {
 			countries: [],
 			languages: [],
-			tooltip: "",
+			tooltip: {
+				label: "",
+				active: false,
+			},
 		};
 	},
 
@@ -110,7 +118,9 @@ export default {
 		$route: "setTooltip",
 	},
 
-	mounted() {
+	async mounted() {
+		await this.fetchCountries();
+		await this.fetchLanguages();
 		this.setTooltip();
 	},
 
@@ -142,8 +152,8 @@ export default {
 		},
 
 		setTooltip() {
-			// TODO edit tooltip on some hint
-			this.tooltip = this.$route.name;
+			this.tooltip.active = !!this.$route.meta.description;
+			this.tooltip.label = this.$route.meta.description;
 		},
 
 		async fetchCountries() {

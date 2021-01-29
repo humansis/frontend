@@ -71,7 +71,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			checkable
 			paginated
@@ -203,7 +202,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 10,
 				sortColumn: "",
 				sortDirection: "desc",
 				progress: null,
@@ -232,7 +230,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.searchPhrase,
 				this.filters,
@@ -296,6 +294,7 @@ export default {
 		},
 
 		mapLocationOnAddress(locations, addresses) {
+			if (!locations.length) return [];
 			const addressesMapped = [];
 			addresses.forEach((address) => {
 				const location = locations.find((item) => item.adm.locationId === address.locationId);
@@ -375,6 +374,7 @@ export default {
 		},
 
 		async getLocations(addresses) {
+			if (!addresses.length) return [];
 			return LocationsService.getLocations(addresses, "locationId")
 				.then(({ data }) => {
 					this.table.progress += 15;
@@ -385,7 +385,7 @@ export default {
 		},
 
 		prepareNationalId(id, nationalIds) {
-			if (!nationalIds) return "none";
+			if (!nationalIds.length) return "none";
 			const nationalId = nationalIds.find((item) => item.id === id);
 			this.table.progress += 5;
 			return nationalId ? nationalId.number : "none";
@@ -408,7 +408,7 @@ export default {
 		},
 
 		prepareBeneficiaries(id, beneficiaries) {
-			if (!beneficiaries) return "";
+			if (!beneficiaries.length) return "";
 			const result = {
 				familyName: "",
 				givenName: "",

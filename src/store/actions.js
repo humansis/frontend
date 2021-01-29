@@ -7,6 +7,12 @@ export default {
 		commit("changeLanguage", language);
 	},
 
+	changePerPage: ({ commit }, perPage) => {
+		if (perPage) {
+			commit("updatePerPage", perPage);
+		}
+	},
+
 	addAssistanceToState: ({ commit }, assistance) => {
 		if (assistance) {
 			commit("updateAssistance", assistance);

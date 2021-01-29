@@ -39,7 +39,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="goToValidateAndLock"
 			@pageChanged="onPageChange"
@@ -79,7 +78,7 @@
 						icon="lock"
 						type="is-danger"
 						tooltip="Lock"
-						@click.native="goToValidateAndLock(props.row.id)"
+						@click.native="goToValidateAndLockWithId(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
@@ -165,7 +164,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -203,7 +201,7 @@ export default {
 			await AssistancesService.getListOfProjectAssistances(
 				this.$route.params.projectId,
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
@@ -267,6 +265,11 @@ export default {
 
 		goToAddAssistance() {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
+		},
+
+		goToValidateAndLockWithId(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+			this.goToValidateAndLock(assistance);
 		},
 
 		goToValidateAndLock(assistance) {
