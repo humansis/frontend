@@ -53,7 +53,7 @@
 				</a>
 				<b-dropdown-item
 					v-for="language in languages"
-					:key="language.key"
+					:key="language.name"
 					:value="language.name"
 					@click="handleChangeLanguage(language)"
 				>
@@ -77,7 +77,7 @@
 				<router-link to="/profile">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
-						Profile {{ $t('activity_amount_completed') }}
+						Profile
 					</b-dropdown-item>
 				</router-link>
 				<b-dropdown-item value="logout">
@@ -92,7 +92,8 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
+import TranslationService from "@/services/TranslationService";
 
 export default {
 	name: "NavBar",
@@ -118,13 +119,26 @@ export default {
 
 		handleChangeCountry(country) {
 			localStorage.setItem("country", country.iso3);
+			this.updateCountry(country);
 			this.$router.go();
 		},
 
-		handleChangeLanguage(language) {
-			sessionStorage.removeItem("translations");
-			localStorage.setItem("language", language.name);
-			this.$router.go();
+		async handleChangeLanguage(language) {
+			this.$store.commit("fullPageLoading", true);
+
+			await TranslationService.getTranslations(language.name).then((response) => {
+				this.updateLanguage(language);
+				localStorage.setItem("language", language.name);
+				sessionStorage.setItem("translations", JSON.stringify(response.data) || {});
+				this.$i18n.locale = language.name;
+				this.$i18n.fallbackLocale = language.name;
+				this.$root.$i18n.setLocaleMessage(language.name, response.data);
+			}).catch((e) => {
+				Notification(`Translations ${e}`, "is-danger");
+				this.$store.commit("fullPageLoading", false);
+			});
+
+			this.$store.commit("fullPageLoading", false);
 		},
 
 		setTooltip() {
@@ -133,29 +147,39 @@ export default {
 		},
 
 		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.countries = data;
-					this.updateCountry(this.countries);
-				})
-				.catch((e) => {
-					Toast(`(Countries) ${e}`, "is-danger");
-				});
+			if (!sessionStorage.getItem("countries")) {
+				await CountriesService.getListOfCountries()
+					.then(({ data }) => {
+						this.countries = data;
+						sessionStorage.setItem("countries", JSON.stringify(data));
+					})
+					.catch((e) => {
+						Toast(`(Countries) ${e}`, "is-danger");
+					});
+			} else {
+				this.countries = JSON.parse(sessionStorage.getItem("countries"));
+			}
 		},
 
 		async fetchLanguages() {
-			// TODO Get languages
-			this.languages = [
-				{ name: "EN", key: "en" },
-				{ name: "CZ", key: "cz" },
-			];
-			this.updateLanguage(this.languages);
+			if (!sessionStorage.getItem("languages")) {
+				// TODO Get languages from API
+				const languages = [
+					{ name: "EN", key: "en" },
+					{ name: "AR", key: "ar" },
+					{ name: "RU", key: "ru" },
+				];
+				this.languages = languages;
+				sessionStorage.setItem("languages", JSON.stringify(languages));
+			} else {
+				this.languages = JSON.parse(sessionStorage.getItem("languages"));
+			}
 		},
 	},
 
 	async created() {
-		await this.fetchCountries();
 		await this.fetchLanguages();
+		await this.fetchCountries();
 	},
 
 	computed: {

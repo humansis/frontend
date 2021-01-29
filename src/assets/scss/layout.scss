@@ -31,6 +31,14 @@
     overflow-x: scroll;
 }
 
+.loading-overlay.is-active.is-full-page {
+    z-index: 200;
+
+    .loading-background {
+       background: #ffffff;
+    }
+}
+
 .b-sidebar{
     .sidebar-content {
         z-index: 50;

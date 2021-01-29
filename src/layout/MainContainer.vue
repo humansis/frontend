@@ -1,6 +1,10 @@
 <template>
 	<div>
-		<b-loading v-model="isFullPageLoading" />
+		<b-loading
+			v-model="isFullPageLoading"
+			:can-cancel="false"
+			is-full-page
+		/>
 		<SideMenu />
 		<section class="main-content is-fullheight">
 			<div class="container">
