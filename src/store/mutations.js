@@ -8,7 +8,7 @@ export default {
 	},
 
 	pageLoading: (state, boolean) => {
-		state.pageLoading = boolean;
+		state.isPageLoading = boolean;
 	},
 
 	appLoading: (state, boolean) => {
