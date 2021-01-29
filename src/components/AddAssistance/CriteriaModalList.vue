@@ -72,7 +72,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
+			this.$store.commit("pageLoading", true);
 			// TODO get real data from API
 			this.table.columns = generateColumns(this.table.visibleColumns);
 

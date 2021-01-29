@@ -134,6 +134,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
+				this.$store.commit("pageLoading", false);
 				Notification(`Translations ${e}`, "is-danger");
 			});
 

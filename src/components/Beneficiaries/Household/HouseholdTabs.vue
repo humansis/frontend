@@ -228,6 +228,7 @@ export default {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
+				this.$store.commit("pageLoading", false);
 				Notification(`Household ${e}`, "is-danger");
 			});
 
