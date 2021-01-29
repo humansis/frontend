@@ -1,9 +1,9 @@
 <template>
 	<div>
 		<b-loading
-			v-model="isFullPageLoading"
+			:active="isAppLoading || isPageLoading"
 			:can-cancel="false"
-			is-full-page
+			:is-full-page="isAppLoading"
 		/>
 		<SideMenu />
 		<section class="main-content is-fullheight">
@@ -29,7 +29,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["isFullPageLoading"]),
+		...mapState(["isAppLoading", "isPageLoading"]),
 	},
 };
 </script>

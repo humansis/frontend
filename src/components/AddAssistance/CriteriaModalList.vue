@@ -76,7 +76,7 @@ export default {
 			// TODO get real data from API
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
-			this.$store.commit("fullPageLoading", false);
+			this.$store.commit("pageLoading", false);
 		},
 
 		onSearch(value) {

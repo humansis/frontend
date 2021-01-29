@@ -7,8 +7,12 @@ export default {
 		state.language = languageToChange;
 	},
 
-	fullPageLoading: (state, boolean) => {
-		state.isFullPageLoading = boolean;
+	pageLoading: (state, boolean) => {
+		state.pageLoading = boolean;
+	},
+
+	appLoading: (state, boolean) => {
+		state.isAppLoading = boolean;
 	},
 
 	setPermissions: (state, { storedPermissions }) => {

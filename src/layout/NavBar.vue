@@ -134,7 +134,7 @@ export default {
 		},
 
 		async handleChangeLanguage(language) {
-			this.$store.commit("fullPageLoading", true);
+			this.$store.commit("appLoading", true);
 
 			await TranslationService.getTranslations(language.name).then((response) => {
 				this.updateLanguage(language);
@@ -145,10 +145,10 @@ export default {
 				this.$root.$i18n.setLocaleMessage(language.name, response.data);
 			}).catch((e) => {
 				Notification(`Translations ${e}`, "is-danger");
-				this.$store.commit("fullPageLoading", false);
+				this.$store.commit("appLoading", false);
 			});
 
-			this.$store.commit("fullPageLoading", false);
+			this.$store.commit("appLoading", false);
 		},
 
 		setTooltip() {

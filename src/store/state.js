@@ -2,6 +2,8 @@ import permissions from "@/permissions";
 import CONST from "@/const";
 
 export default {
+	isAppLoading: false,
+	isPageLoading: false,
 	auth: { ...permissions },
 	country: {
 		iso3: CONST.DEFAULT_COUNTRY,
@@ -11,6 +13,5 @@ export default {
 	},
 	temporaryAssistance: null,
 	temporaryProject: null,
-	isFullPageLoading: false,
 	perPage: 10,
 };

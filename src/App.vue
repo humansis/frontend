@@ -25,17 +25,17 @@ export default {
 			localStorage.setItem("language", language);
 
 			if (!sessionStorage.getItem("translations")) {
-				this.$store.commit("fullPageLoading", true);
+				this.$store.commit("appLoading", true);
 
 				await TranslationService.getTranslations(language).then((response) => {
 					sessionStorage.setItem("translations", JSON.stringify(response.data) || {});
 					this.$root.$i18n.setLocaleMessage(language, response.data);
 				}).catch((e) => {
 					Notification(`Translations ${e}`, "is-danger");
-					this.$store.commit("fullPageLoading", false);
+					this.$store.commit("appLoading", false);
 				});
 
-				this.$store.commit("fullPageLoading", false);
+				this.$store.commit("appLoading", false);
 			} else {
 				this.$root.$i18n.setLocaleMessage(language, JSON.parse(
 					sessionStorage.getItem("translations"),

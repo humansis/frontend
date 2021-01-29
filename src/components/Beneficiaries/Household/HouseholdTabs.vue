@@ -223,7 +223,7 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
-			this.$store.commit("fullPageLoading", true);
+			this.$store.commit("pageLoading", true);
 
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
@@ -231,7 +231,7 @@ export default {
 				Notification(`Household ${e}`, "is-danger");
 			});
 
-			this.$store.commit("fullPageLoading", false);
+			this.$store.commit("pageLoading", false);
 		},
 
 		prepareSummaryMembers(members) {
