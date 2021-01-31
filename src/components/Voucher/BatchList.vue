@@ -63,6 +63,7 @@
 									icon="trash"
 									entity="Voucher"
 									tooltip="Delete"
+									:disabled="!props.row.deletable"
 									:id="props.row.id"
 									@submitted="remove"
 								/>
@@ -77,14 +78,14 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import BookletsService from "@/services/BookletsService";
-import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ProjectsService from "@/services/ProjectsService";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import Table from "@/components/DataGrid/Table";
+import BookletsService from "@/services/BookletsService";
+import ProjectsService from "@/services/ProjectsService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -117,7 +118,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				searchPhrase: "",
 			},
 		};
@@ -152,14 +152,9 @@ export default {
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
-				this.table.currentPage,
-				this.table.perPage,
-				"desc",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.getProjectNameForBooklets(response.data).then(() => {
-					this.table.total = response.totalCount;
-				});
+			).then(async ({ data, totalCount }) => {
+				await this.getProjectNameForBooklets(data);
+				this.table.total = totalCount;
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
 			});

@@ -38,12 +38,13 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import ProjectsList from "@/components/Projects/ProjectsList";
+import ProjectForm from "@/components/Projects/ProjectForm";
+import Modal from "@/components/Modal";
+import ProjectsService from "@/services/ProjectsService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import ProjectsService from "@/services/ProjectsService";
-import Modal from "@/components/Modal";
-import ProjectForm from "@/components/Projects/ProjectForm";
-import ProjectsList from "@/components/Projects/ProjectsList";
 
 export default {
 	name: "ProjectPage",
@@ -93,6 +94,8 @@ export default {
 			}
 			return result;
 		},
+
+		...mapState(["country"]),
 	},
 
 	methods: {
@@ -193,15 +196,15 @@ export default {
 				notes,
 			} = projectForm;
 			const projectBody = {
-				iso3: iso3 || this.$store.state.country.iso3,
+				iso3: iso3 || this.country.iso3,
 				name,
 				internalId,
 				notes,
 				target,
 				targetType,
 				numberOfHouseholds: 0,
-				startDate: new Date(startDate).toISOString(),
-				endDate: new Date(endDate).toISOString(),
+				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
+				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
 				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};

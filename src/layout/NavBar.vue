@@ -8,10 +8,17 @@
 
 		<template slot="end">
 			<b-navbar-item>
-				<b-icon
-					icon="question"
-					size="is-medium"
-				/>
+				<b-tooltip
+					multilined
+					position="is-bottom"
+					:label="tooltip.label"
+					:active="tooltip.active"
+				>
+					<b-icon
+						icon="question"
+						size="is-medium"
+					/>
+				</b-tooltip>
 			</b-navbar-item>
 
 			<b-dropdown
@@ -97,7 +104,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import LocationsService from "@/services/LocationsService";
+import CountriesService from "@/services/CountriesService";
 import { Toast } from "@/utils/UI";
 
 export default {
@@ -107,45 +114,58 @@ export default {
 		return {
 			countries: [],
 			languages: [],
+			tooltip: {
+				label: "",
+				active: false,
+			},
 		};
+	},
+
+	watch: {
+		$route: "setTooltip",
+	},
+
+	async mounted() {
+		await this.fetchCountries();
+		await this.fetchLanguages();
+		this.setTooltip();
 	},
 
 	methods: {
 		...mapActions(["updateCountry", "updateLanguage"]),
 
 		handleChangeCountry(country) {
-			localStorage.setItem("country", country.iso3);
+			this.updateCountry(country);
 			this.$router.go();
 		},
 
 		handleChangeLanguage(language) {
-			localStorage.setItem("language", language.name);
+			this.updateLanguage(language);
 			this.$router.go();
 		},
 
-		fetchCountries() {
-			LocationsService.getListOfCountries()
-				.then((response) => {
-					this.countries = response.data;
-					this.updateCountry(this.countries);
-				}).catch((e) => {
+		setTooltip() {
+			this.tooltip.active = !!this.$route.meta.description;
+			this.tooltip.label = this.$route.meta.description;
+		},
+
+		async fetchCountries() {
+			await CountriesService.getListOfCountries()
+				.then(({ data }) => {
+					this.countries = data;
+				})
+				.catch((e) => {
 					Toast(`(Countries) ${e}`, "is-danger");
 				});
 		},
 
-		fetchLanguages() {
+		async fetchLanguages() {
 			// TODO Get languages
 			this.languages = [
 				{ name: "EN", key: "en" },
 				{ name: "CZ", key: "cz" },
 			];
-			this.updateLanguage(this.languages);
 		},
-	},
-
-	created() {
-		this.fetchCountries();
-		this.fetchLanguages();
 	},
 
 	computed: {

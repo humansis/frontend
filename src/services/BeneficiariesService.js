@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
@@ -14,7 +14,11 @@ export default {
 	},
 
 	async createHousehold(body) {
-		const { data, status } = await fetcher({ uri: "households", method: "POST", body });
+		const { data, status } = await fetcher({
+			uri: "households",
+			method: "POST",
+			body,
+		});
 		return { data, status };
 	},
 
@@ -47,43 +51,96 @@ export default {
 	},
 
 	async getListOfVulnerabilities() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/vulnerability-criteria" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "beneficiaries/vulnerability-criteria",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfResidenceStatuses() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/residency-statuses" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "beneficiaries/residency-statuses",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfTypesOfPhones() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "beneficiaries/phones/types" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "beneficiaries/phones/types",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfLivelihoods() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "households/livelihoods" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "households/livelihoods",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfAssets() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "households/assets" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "households/assets",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfShelterStatuses() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "households/shelter-statuses" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "households/shelter-statuses",
+		});
 		return { data, totalCount };
 	},
 
 	async getListOfLocationsTypes() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "households/locations/types" });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "households/locations/types",
+		});
 		return { data, totalCount };
 	},
 
 	async getBeneficiary(id) {
 		const { data } = await fetcher({
 			uri: `beneficiaries/${id}`,
+		});
+		return data;
+	},
+
+	async getBeneficiaries(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries?${idsText}`,
+		});
+		return data;
+	},
+
+	async getPhone(id) {
+		const { data } = await fetcher({
+			uri: `beneficiaries/phones/${id}`,
+		});
+		return data;
+	},
+
+	async getNationalId(id) {
+		const { data } = await fetcher({
+			uri: `beneficiaries/national-ids/${id}`,
+		});
+		return data;
+	},
+
+	async getNationalIds(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({
+			uri: `beneficiaries/national-ids?${idsText}`,
+		});
+		return data;
+	},
+
+	async getListOfReferralTypes() {
+		const { data } = await fetcher({
+			uri: "households/referrals/types",
 		});
 		return data;
 	},

@@ -72,7 +72,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
@@ -80,10 +79,13 @@
 			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					sortable
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -113,17 +115,19 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ExportButton from "@/components/ExportButton";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
@@ -144,6 +148,7 @@ export default {
 		ActionButton,
 		Modal,
 		ExportButton,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -157,33 +162,37 @@ export default {
 				visibleColumns: [
 					{
 						key: "id",
+						label: "Beneficiary ID",
 					},
 					{
-						key: "shelterStatus",
+						key: "transactionId",
+						label: "Transaction ID",
 					},
 					{
-						key: "notes",
+						key: "givenName",
+						label: "First Name",
 					},
 					{
-						key: "longitude",
-						width: "50",
+						key: "familyName",
+						label: "Family Name",
 					},
 					{
-						key: "latitude",
-						width: "50",
+						key: "phone",
+						label: "Phone",
 					},
 					{
-						key: "incomeLevel",
-						width: "140",
+						key: "nationalId",
+						label: "National ID",
 					},
 					{
-						key: "deptLevel",
-						width: "130",
+						key: "status",
+					},
+					{
+						key: "value",
 					},
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -225,20 +234,58 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			// TODO Get list of households by assistance id
-			await BeneficiariesService.getListOfHouseholds(
+			await AssistancesService.getListOfBeneficiaries(
+				this.$route.params.assistanceId,
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(async ({ data, totalCount }) => {
+				this.$emit("beneficiariesCounted", totalCount);
+				this.table.total = totalCount;
+				this.table.data = await this.prepareDataForTable(data);
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			const filledData = [];
+			const promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
+				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
+				filledData[key].phone = await this.preparePhone(item.phoneIds);
+				filledData[key].nationalId = await this.prepareNationalId(item.nationalIds);
+			});
+			await Promise.all(promise);
+			return filledData;
+		},
+
+		async preparePhone(phoneIds) {
+			if (phoneIds.length > 0) {
+				return BeneficiariesService.getPhone(phoneIds[0])
+					.then(({ number }) => number);
+			}
+			return "";
+		},
+
+		async prepareNationalId(nationalIds) {
+			if (nationalIds.length > 0) {
+				return BeneficiariesService.getNationalId(nationalIds[0])
+					.then(({ number }) => number);
+			}
+			return "";
+		},
+
+		prepareName(localName, enName) {
+			let preparedName = localName;
+			if (enName) {
+				preparedName += ` (${enName})`;
+			}
+			return preparedName;
 		},
 
 		exportAssistance(format) {
@@ -256,6 +303,7 @@ export default {
 		submitAddBeneficiaryForm() {
 			// TODO Add Beneficiaries to Assistances
 			this.addBeneficiaryModal.isOpened = false;
+			this.$emit("onBeneficiaryListChange");
 		},
 
 		closeEditBeneficiaryModal() {
@@ -265,6 +313,7 @@ export default {
 		submitEditBeneficiaryForm() {
 			// TODO Update Beneficiary in thi assistance
 			this.editBeneficiaryModal.isOpened = false;
+			this.$emit("onBeneficiaryListChange");
 		},
 
 		showDetail(beneficiary) {

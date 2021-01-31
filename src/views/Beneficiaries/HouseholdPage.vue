@@ -65,12 +65,12 @@
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			ref="householdList"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			checkable
 			paginated
@@ -80,10 +80,12 @@
 			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id" sortable>
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -120,17 +122,19 @@
 </template>
 
 <script>
-import { Notification, Toast } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import ExportButton from "@/components/ExportButton";
+import ActionButton from "@/components/ActionButton";
+import SafeDelete from "@/components/SafeDelete";
+import Table from "@/components/DataGrid/Table";
+import Search from "@/components/Search";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import LocationsService from "@/services/LocationsService";
 import ProjectsService from "@/services/ProjectsService";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import Search from "@/components/Search";
-import ExportButton from "@/components/ExportButton";
+import AddressService from "@/services/AddressService";
+import { Notification, Toast } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import SafeDelete from "@/components/SafeDelete";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -144,6 +148,7 @@ export default {
 		ActionButton,
 		HouseholdsFilters,
 		SafeDelete,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -159,39 +164,47 @@ export default {
 					{
 						key: "id",
 						label: "Household ID",
+						width: "30",
 					},
 					{
 						key: "familyName",
 						label: "Family Name",
+						width: "30",
 					},
 					{
 						key: "givenName",
 						label: "First Name",
+						width: "30",
 					},
 					{
 						key: "members",
+						width: "30",
 					},
 					{
 						key: "vulnerabilities",
+						width: "30",
 					},
 					{
 						key: "idNumber",
 						label: "ID Number",
+						width: "30",
 					},
 					{
 						key: "projects",
 						label: "Projects",
+						width: "30",
 					},
 					{
 						key: "currentLocation",
 						label: "Current Location",
+						width: "30",
 					},
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortColumn: "",
 				sortDirection: "desc",
+				progress: null,
 			},
 			checkedRows: [],
 			filters: {},
@@ -212,14 +225,17 @@ export default {
 
 			this.isLoadingList = true;
 
+			this.table.progress = null;
+
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
+				this.table.progress = 0;
 				this.table.total = totalCount;
 				this.table.data = await this.prepareDataForTable(data);
 				this.isLoadingList = false;
@@ -229,73 +245,232 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
+			this.table.progress = 5;
 			const filledData = [];
-			const promise = data.map(async (item, key) => {
+			const projectIds = [];
+			const beneficiaryIds = [];
+			const addressIds = {
+				camp: [],
+				residence: [],
+				temporary_settlement: [],
+			};
+			let promise = data.map(async (item, key) => {
+				projectIds.push(...data[key].projectIds);
+				beneficiaryIds.push(data[key].householdHeadId);
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+				addressIds[typeOfLocation].push(addressId);
 				filledData[key] = item;
+				filledData[key].addressId = addressId;
 				filledData[key].members = data[key].beneficiaryIds.length;
-				filledData[key].projects = await this.prepareProjects(data[key]);
-				const { givenName, familyName } = await this.prepareBeneficiaries(data[key]);
-				filledData[key].givenName = givenName;
-				filledData[key].familyName = familyName;
-				filledData[key].currentLocation = await this.prepareLocations(data[key]);
 			});
 			await Promise.all(promise);
+
+			const addresses = await this.getAddresses(addressIds);
+			const locations = await this.getLocations(addresses);
+			const mappedAddresses = this.mapLocationOnAddress(locations, addresses);
+			const projects = await this.getProjects([...new Set(projectIds)]);
+			const beneficiaries = await this.getBeneficiaries([...new Set(beneficiaryIds)]);
+			const nationalIds = await this.getNationalIds(beneficiaries);
+
+			promise = await data.map(async (item, key) => {
+				filledData[key].projects = this.prepareProjects(item, projects);
+				filledData[key]
+					.currentLocation = this.prepareLocations(item.addressId, mappedAddresses);
+				const {
+					givenName,
+					familyName,
+					nationalId,
+					vulnerabilities,
+				} = this.prepareBeneficiaries(data[key].householdHeadId, beneficiaries);
+				filledData[key].idNumber = this.prepareNationalId(nationalId, nationalIds);
+				filledData[key].vulnerabilities	= vulnerabilities;
+				filledData[key].givenName = givenName;
+				filledData[key].familyName = familyName;
+			});
+			await Promise.all(promise);
+			this.table.progress = 100;
 
 			return filledData;
 		},
 
-		async prepareBeneficiaries(item) {
+		mapLocationOnAddress(locations, addresses) {
+			if (!locations.length) return [];
+			const addressesMapped = [];
+			addresses.forEach((address) => {
+				const location = locations.find((item) => item.adm.locationId === address.locationId);
+				if (location) {
+					const addressMapped = address;
+					addressMapped.locationName = location.adm.name;
+					addressesMapped.push(addressMapped);
+				}
+			});
+			return addressesMapped;
+		},
+
+		async getNationalIds(beneficiaries) {
+			return BeneficiariesService.getNationalIds(beneficiaries, "nationalIds")
+				.then(({ data }) => {
+					this.table.progress += 15;
+					return data;
+				}).catch((e) => {
+					Notification(`NationalIds ${e}`, "is-danger");
+				});
+		},
+
+		async getAddresses(ids) {
+			const addresses = [];
+			if (ids.camp.length) {
+				await AddressService.getCampAddresses(ids.camp)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "camp" });
+						});
+					}).catch((e) => {
+						Notification(`Camp Address ${e}`, "is-danger");
+					});
+			}
+			if (ids.residence.length) {
+				await AddressService.getResidenceAddresses(ids.residence)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "residence" });
+						});
+					}).catch((e) => {
+						Notification(`Residence Address ${e}`, "is-danger");
+					});
+			}
+			if (ids.temporary_settlement.length) {
+				await AddressService.getTemporarySettlementAddresses(ids.temporary_settlement)
+					.then(({ data }) => {
+						data.forEach(({ locationId, id }) => {
+							addresses.push({ locationId, id, type: "temporary_settlement" });
+						});
+					}).catch((e) => {
+						Notification(`Temporary Settlement Address ${e}`, "is-danger");
+					});
+			}
+			this.table.progress += 15;
+			return addresses;
+		},
+
+		async getProjects(ids) {
+			return ProjectsService.getListOfProjects(null, null, null, null, ids)
+				.then(({ data }) => {
+					this.table.progress += 15;
+					return data;
+				}).catch((e) => {
+					Notification(`Projects ${e}`, "is-danger");
+				});
+		},
+
+		async getBeneficiaries(ids) {
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => {
+					this.table.progress += 15;
+					return data;
+				}).catch((e) => {
+					Notification(`Beneficiaries ${e}`, "is-danger");
+				});
+		},
+
+		async getLocations(addresses) {
+			if (!addresses.length) return [];
+			return LocationsService.getLocations(addresses, "locationId")
+				.then(({ data }) => {
+					this.table.progress += 15;
+					return data;
+				}).catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
+				});
+		},
+
+		prepareNationalId(id, nationalIds) {
+			if (!nationalIds.length) return "none";
+			const nationalId = nationalIds.find((item) => item.id === id);
+			this.table.progress += 5;
+			return nationalId ? nationalId.number : "none";
+		},
+
+		prepareVulnerabilities(vulnerabilities) {
+			let result = "none";
+			if (vulnerabilities) {
+				vulnerabilities.forEach((item) => {
+					if (result === "none") {
+						result = normalizeText(item);
+					} else {
+						result += `, ${normalizeText(item)}`;
+					}
+				});
+			}
+
+			this.table.progress += 5;
+			return result;
+		},
+
+		prepareBeneficiaries(id, beneficiaries) {
+			if (!beneficiaries.length) return "";
 			const result = {
 				familyName: "",
 				givenName: "",
+				nationalId: "",
+				vulnerabilities: "",
 			};
-			await BeneficiariesService.getBeneficiary(item.beneficiaryIds[0])
-				.then(async (response) => {
-					result.familyName = response.localFamilyName;
-					if (response.enFamilyName) {
-						result.familyName += ` (${response.enFamilyName})`;
-					}
-					result.givenName = response.localGivenName;
-					if (response.enGivenName) {
-						result.givenName += ` (${response.enGivenName})`;
-					}
-				});
+			const beneficiary = beneficiaries.find((item) => item.id === id);
+			if (beneficiary) {
+				result.familyName = beneficiary.localFamilyName;
+				if (beneficiary.enFamilyName) {
+					result.familyName += ` (${beneficiary.enFamilyName})`;
+				}
+				result.givenName = beneficiary.localGivenName;
+				if (beneficiary.enGivenName) {
+					result.givenName += ` (${beneficiary.enGivenName})`;
+				}
+				const [nationalId] = beneficiary.nationalIds;
+				result.nationalId = nationalId;
+				result.vulnerabilities = this
+					.prepareVulnerabilities(beneficiary.vulnerabilityCriteria);
+			}
+
+			this.table.progress += 5;
 			return result;
 		},
 
-		async prepareLocations(item) {
+		prepareProjects(item, projects) {
 			let result = "";
-			const locationId = item.temporarySettlementAddressId
-				|| item.campAddressId
-				|| item.residenceAddressId;
-			await LocationsService.getLocation(locationId)
-				.then(async (location) => {
-					if (location.data) {
-						result = location.data.name;
-					}
-				});
-			return result;
-		},
 
-		async prepareProjects(item) {
-			let result = "";
-			const promises = [];
-			await item.projectIds.forEach((id) => {
-				const promise = ProjectsService.getDetailOfProject(id)
-					.then(({ data }) => {
-						if (data.name) {
-							if (result === "") {
-								result = data.name;
-							} else {
-								result += ` ,${data.name}`;
-							}
-						}
-					});
-				promises.push(promise);
+			item.projectIds.forEach((id) => {
+				const foundProject = projects.find((project) => project.id === id);
+				if (foundProject) {
+					if (result === "") {
+						result = foundProject.name;
+					} else {
+						result += `, ${foundProject.name}`;
+					}
+				}
 			});
-			await Promise.all(promises);
 
+			this.table.progress += 5;
 			return result;
+		},
+
+		prepareLocations(id, addresses) {
+			if (!addresses) return "";
+			const location = addresses.find((address) => address.id === id);
+			this.table.progress += 5;
+			return location ? location.locationName : "";
+		},
+
+		getAddressTypeAndId(
+			{
+				temporarySettlementAddressId,
+				residenceAddressId,
+				campAddressId,
+			},
+		) {
+			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
+			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
+			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			return "";
 		},
 
 		goToCreatePage() {

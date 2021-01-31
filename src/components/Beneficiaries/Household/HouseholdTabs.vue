@@ -14,6 +14,7 @@
 				<HouseholdHeadForm
 					ref="householdHeadForm"
 					show-type-of-beneficiary
+					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
 				/>
 			</b-step-item>
@@ -27,6 +28,8 @@
 					ref="householdSummary"
 					:detailOfHousehold="detailOfHousehold"
 					:members="summaryMembers"
+					:address="address"
+					:location="location"
 				/>
 			</b-step-item>
 			<template
@@ -64,12 +67,14 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Toast, Notification } from "@/utils/UI";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	name: "HouseholdTabs",
@@ -94,7 +99,13 @@ export default {
 			householdMembers: [],
 			summaryMembers: [],
 			selectedProjects: [],
+			location: "",
+			address: "",
 		};
+	},
+
+	computed: {
+		...mapState(["country"]),
 	},
 
 	created() {
@@ -128,6 +139,8 @@ export default {
 						this.prepareSummaryMembers(
 							[this.householdHead, ...this.$refs.householdMembers.members],
 						);
+						this.address = this.prepareAddressForSummary();
+						this.location = this.prepareLocationForSummary();
 						next.action();
 					}
 					break;
@@ -141,7 +154,7 @@ export default {
 		save() {
 			// TODO Mapping form models to householdBody
 			const {
-				shelterType,
+				shelterStatus,
 				livelihood: {
 					livelihood, assets, incomeLevel, debtLevel,
 					foodConsumptionScore, copingStrategiesIndex,
@@ -152,19 +165,14 @@ export default {
 					supportOrganization: supportOrganizationName,
 				},
 				notes,
-				currentLocation: {
-					addressNumber, addressPostCode, addressStreet,
-					adm1Id: { id: adm1Id }, adm2Id: { id: adm2Id },
-					adm3Id: { id: adm3Id }, adm4Id: { id: adm4Id },
-					campName, tentNumber,
-				},
+				currentLocation,
 			} = this.household;
-
 			const householdBody = {
-				livelihood,
-				assets: [...assets],
-				shelterStatus: shelterType,
-				projectIds: [...this.selectedProjects],
+				iso3: this.country.iso3,
+				livelihood: livelihood.code,
+				assets: getArrayOfIdsByParam(assets, "code"),
+				shelterStatus: parseInt(shelterStatus.code, 10),
+				projectIds: getArrayOfIdsByParam(this.selectedProjects, "code"),
 				notes,
 				// TODO Resolve longitude and latitude
 				longitude: "string",
@@ -172,28 +180,17 @@ export default {
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel,
+				incomeLevel: incomeLevel.code,
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived: new Date(supportDateReceived).toISOString(),
-				supportReceivedTypes: [...externalSupportReceivedType],
+				supportDateReceived: this.$moment(supportDateReceived).format("YYYY-MM-DD"),
+				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				// TODO Resolve incomeSpentOnFood and houseIncome
 				incomeSpentOnFood: 0,
 				houseIncome: 0,
-				householdLocations: [
-					{
-						number: addressNumber,
-						street: addressStreet,
-						postcode: addressPostCode,
-						adm1Id,
-						adm2Id,
-						adm3Id,
-						adm4Id,
-					},
-					this.mapCampResidenceForBody({ campName, tentNumber }),
-				],
+				...this.prepareAddressForHousehold(currentLocation),
 			};
 
 			if (this.$refs.householdSummary.submit()) {
@@ -226,7 +223,7 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
-			this.$store.commit("loading", true);
+			this.$store.commit("fullPageLoading", true);
 
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
@@ -234,7 +231,7 @@ export default {
 				Notification(`Household ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.$store.commit("fullPageLoading", false);
 		},
 
 		prepareSummaryMembers(members) {
@@ -257,45 +254,151 @@ export default {
 			this.summaryMembers = [...membersData];
 		},
 
+		prepareAddressForSummary() {
+			const {
+				typeOfLocation,
+				campName,
+				tentNumber,
+				addressNumber,
+				addressStreet,
+				addressPostcode,
+			} = this.household.currentLocation;
+			if (typeOfLocation.code === "camp") {
+				return `${campName}, ${tentNumber}`;
+			}
+			return `${addressNumber}, ${addressStreet}, ${addressPostcode}`;
+		},
+
+		prepareLocationForSummary() {
+			const {
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+			} = this.household.currentLocation;
+			let preparedLocation = adm1Id.name;
+			if (adm2Id) {
+				preparedLocation += `, ${adm2Id.name}`;
+				if (adm3Id) {
+					preparedLocation += `, ${adm3Id.name}`;
+					if (adm4Id) {
+						preparedLocation += `, ${adm4Id.name}`;
+					}
+				}
+			}
+			return preparedLocation;
+		},
+
+		prepareAddressForHousehold(
+			{
+				typeOfLocation,
+				addressNumber,
+				addressPostcode,
+				addressStreet,
+				adm1Id: { id: adm1Id },
+				adm2Id: { id: adm2Id },
+				adm3Id: { id: adm3Id },
+				adm4Id: { id: adm4Id },
+				campName,
+				tentNumber,
+				locationId,
+			},
+		) {
+			const address = {};
+			if (typeOfLocation.code === "camp") {
+				address.campAddress = {
+					type: typeOfLocation.code,
+					locationGroup: "current",
+					name: campName,
+					tentNumber,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
+					locationId,
+				};
+			} else if (typeOfLocation.code === "residence") {
+				address.residenceAddress = {
+					type: typeOfLocation.code,
+					locationGroup: "current",
+					number: addressNumber,
+					street: addressStreet,
+					postCode: addressPostcode,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
+					locationId,
+				};
+			} else if (typeOfLocation.code === "temporary_settlement") {
+				address.temporarySettlementAddress = {
+					type: typeOfLocation.code,
+					locationGroup: "current",
+					number: addressNumber,
+					street: addressStreet,
+					postCode: addressPostcode,
+					adm1Id,
+					adm2Id,
+					adm3Id,
+					adm4Id,
+					locationId,
+				};
+			}
+			return address;
+		},
+
 		mapBeneficiariesForBody(beneficiaries) {
 			const beneficiariesData = [];
 
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
-					beneficiariesData.push({
-						dateOfBirth: new Date(beneficiary.personalInformation.dateOfBirth).toISOString(),
+					const preparedBeneficiary = {
+						dateOfBirth: this.$moment(beneficiary.personalInformation.dateOfBirth).format("YYYY-MM-DD"),
 						localFamilyName: beneficiary.nameLocal.familyName,
 						localGivenName: beneficiary.nameLocal.firstName,
 						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
-						enlGivenName: beneficiary.nameEnglish.firstName,
+						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
-						gender: beneficiary.personalInformation.gender,
+						gender: beneficiary.personalInformation.gender.code,
 						nationalIdCards: [
 							{
-								idNumber: beneficiary.id.idNumber,
-								idType: beneficiary.id.idType,
+								number: beneficiary.id.idNumber,
+								type: beneficiary.id.idType.code,
 							},
 						],
-						phones: [
-							{
-								prefix: beneficiary.phone1.ext,
-								number: beneficiary.phone1.phoneNo,
-								type: beneficiary.phone1.type,
-								proxy: beneficiary.phone1.proxy,
-							},
-							{
-								prefix: beneficiary.phone2.ext,
-								number: beneficiary.phone2.phoneNo,
-								type: beneficiary.phone2.type,
-								proxy: beneficiary.phone2.proxy,
-							},
-						],
-						referralType: beneficiary.referral.referralType,
-						referralComment: beneficiary.referral.comment,
-						status: 0,
-						vulnerabilityCriteriaIds: beneficiary.vulnerabilities,
-					});
+						residencyStatus: beneficiary.residencyStatus.code,
+						isHead: beneficiary.isHead,
+						vulnerabilityCriteriaIds: this.mapVulnerabilities(beneficiary.vulnerabilities),
+					};
+					if (beneficiary.addAReferral) {
+						preparedBeneficiary.referralType = beneficiary.referral.referralType.code;
+						preparedBeneficiary.referralComment = beneficiary.referral.comment;
+					}
+					if (beneficiary.phone1.phoneNo !== "") {
+						preparedBeneficiary.phones = [];
+						preparedBeneficiary.phones.push({
+							prefix: beneficiary.phone1.ext.code,
+							number: beneficiary.phone1.phoneNo,
+							type: beneficiary.phone1.type.code,
+							proxy: beneficiary.phone1.proxy,
+						});
+					}
+					if (beneficiary.phone2.phoneNo !== "") {
+						const phone2 = {
+							prefix: beneficiary.phone2.ext.code,
+							number: beneficiary.phone2.phoneNo,
+							type: beneficiary.phone2.type.code,
+							proxy: beneficiary.phone2.proxy,
+						};
+						if (preparedBeneficiary.phones.length !== 0) {
+							preparedBeneficiary.phones.push(phone2);
+						} else {
+							preparedBeneficiary.phones = [];
+							preparedBeneficiary.phones.push(phone2);
+						}
+					}
+					beneficiariesData.push(preparedBeneficiary);
 				});
 
 				beneficiariesData[0].status = 1;
@@ -304,17 +407,14 @@ export default {
 			return beneficiariesData;
 		},
 
-		mapCampResidenceForBody({ campName, tentNumber }) {
-			return {
-				tentNumber,
-				camp: {
-					name: campName,
-					adm1Id: 0,
-					adm2Id: 0,
-					adm3Id: 0,
-					adm4Id: 0,
-				},
-			};
+		mapVulnerabilities(vulnerabilities) {
+			const result = [];
+			Object.keys(vulnerabilities).forEach((key) => {
+				if (vulnerabilities[key]) {
+					result.push(key);
+				}
+			});
+			return result;
 		},
 	},
 };

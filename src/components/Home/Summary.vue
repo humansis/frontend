@@ -20,7 +20,8 @@
 						<div class="media-content">
 							<div class="content">
 								<p class="title is-6 mb-5">{{ normalizeText(code) }}</p>
-								<p class="subtitle is-4">{{ value }}</p>
+								<p v-if="value" class="subtitle is-4 p-0 ml-0">{{ value }}</p>
+								<Loading v-else type="bubbles" is-small class="subtitle p-0 ml-0" />
 							</div>
 						</div>
 					</article>
@@ -31,12 +32,18 @@
 </template>
 
 <script>
+import Loading from "@/components/Loading";
+import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import HomeService from "@/services/HomeService";
 
 export default {
 	name: "Summary",
+
+	components: {
+		// eslint-disable-next-line vue/no-unused-components
+		Loading,
+	},
 
 	data() {
 		return {
@@ -80,12 +87,6 @@ export default {
 		},
 
 		async fetchData() {
-			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.summary,
-			});
-
-			let countOfSummaries = this.summaryCodes.length;
-
 			this.summaryCodes.forEach((item, index) => {
 				this.summary.push({
 					id: index,
@@ -102,12 +103,6 @@ export default {
 							);
 
 							this.summary[summaryIndex].value = response.data[0].value;
-
-							countOfSummaries -= 1;
-
-							if (countOfSummaries === 0) {
-								loadingComponent.close();
-							}
 						}
 					}).catch((e) => {
 						Notification(`Summaries ${e}`, "is-danger");

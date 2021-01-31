@@ -1,7 +1,7 @@
 import consts from "@/store/const";
 
 export default {
-	[consts.COUNTRY_CHANGE]: (state, countryToChange) => {
+	changeCountry: (state, countryToChange) => {
 		state.country = countryToChange;
 	},
 
@@ -9,8 +9,25 @@ export default {
 		state.language = languageToChange;
 	},
 
-	loading: (state, boolean) => {
-		state.isLoading = boolean;
+	fullPageLoading: (state, boolean) => {
+		state.isFullPageLoading = boolean;
+	},
+
+	setPermissions: (state, { storedPermissions }) => {
+		// TODO: decode storedPermissions and replace state.auth with it
+		state.auth = { ...storedPermissions };
+	},
+
+	updateAssistance: (state, assistance) => {
+		state.temporaryAssistance = assistance;
+	},
+
+	updateProject: (state, project) => {
+		state.temporaryProject = project;
+	},
+
+	updatePerPage: (state, perPage) => {
+		state.perPage = perPage;
 	},
 
 	[consts.LOGIN_STARTED]: (state) => {

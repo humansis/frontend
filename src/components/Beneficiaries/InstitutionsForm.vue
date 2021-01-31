@@ -48,7 +48,7 @@
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
-					:options="types"
+					:options="options.types"
 					placeholder="Click to select..."
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
@@ -68,7 +68,7 @@
 							label="value"
 							track-by="code"
 							:disabled="formDisabled"
-							:options="phonePrefixes"
+							:options="options.phonePrefixes"
 							:class="validateMultiselect('phonePrefix')"
 							@select="validate('phonePrefix')"
 						/>
@@ -100,7 +100,7 @@
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
-					:options="nationalCardTypes"
+					:options="options.nationalCardTypes"
 					:class="validateMultiselect('nationalCardType')"
 					@select="validate('nationalCardType')"
 				/>
@@ -209,11 +209,12 @@
 
 <script>
 import { required, numeric } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
-import InstitutionsService from "@/services/InstitutionsService";
 import locationForm from "@/components/LocationForm";
-import { Notification } from "@/utils/UI";
+import InstitutionsService from "@/services/InstitutionsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+import PhoneCodes from "@/utils/phoneCodes";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "InstitutionForm",
@@ -253,19 +254,12 @@ export default {
 
 	data() {
 		return {
-			types: [],
-			nationalCardTypes: [],
-			// TODO get from API
-			phonePrefixes: [
-				{
-					code: "+420",
-					value: "CZ - +420",
-				},
-				{
-					code: "+421",
-					value: "SK - +421",
-				},
-			],
+			options: {
+				types: [],
+				nationalCardTypes: [],
+				phonePrefixes: PhoneCodes,
+			},
+
 		};
 	},
 
@@ -293,7 +287,7 @@ export default {
 
 		fetchTypes() {
 			InstitutionsService.getListOfInstitutionTypes()
-				.then((result) => { this.types = result.data; })
+				.then(({ data }) => { this.options.types = data; })
 				.catch((e) => {
 					Notification(`Institution Types ${e}`, "is-danger");
 				});
@@ -301,7 +295,7 @@ export default {
 
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.nationalCardTypes = response.data; })
+				.then(({ data }) => { this.options.nationalCardTypes = data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});

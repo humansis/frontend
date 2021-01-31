@@ -40,7 +40,7 @@
 					track-by="code"
 					placeholder="Click to select..."
 					:disabled="formDisabled"
-					:options="organizations"
+					:options="options.organizations"
 					:class="validateMultiselect('organization')"
 					@select="validate('organization')"
 				/>
@@ -58,7 +58,7 @@
 					track-by="code"
 					placeholder="Click to select..."
 					:disabled="formDisabled"
-					:options="rights"
+					:options="options.rights"
 					:class="validateMultiselect('rights')"
 					@select="onRightsSelect"
 				/>
@@ -78,7 +78,7 @@
 					placeholder="Click to select..."
 					:multiple="true"
 					:disabled="formDisabled || formModel.disabledProject"
-					:options="projects"
+					:options="options.projects"
 					:class="validateMultiselect('projects')"
 					@select="validate('projects')"
 				/>
@@ -98,7 +98,7 @@
 					placeholder="Click to select..."
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
-					:options="countries"
+					:options="options.countries"
 					:class="validateMultiselect('countries')"
 					@select="validate('countries')"
 				/>
@@ -118,10 +118,16 @@
 				<template #label>
 					Prefix<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 				</template>
-				<b-input
+				<MultiSelect
 					v-model="formModel.prefix"
+					searchable
+					placeholder="Phone Ext"
+					label="value"
+					track-by="code"
 					:disabled="formDisabled"
-					@blur="validate('prefix')"
+					:options="options.phonePrefixes"
+					:class="validateMultiselect('prefix')"
+					@select="validate('prefix')"
 				/>
 			</b-field>
 
@@ -154,11 +160,12 @@
 
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
-import ProjectsService from "@/services/ProjectsService";
-import LocationsService from "@/services/LocationsService";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
+import CountriesService from "@/services/CountriesService";
+import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
+import PhoneCodes from "@/utils/phoneCodes";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "userForm",
@@ -188,40 +195,43 @@ export default {
 
 	data() {
 		return {
-			// TODO fix after implementing real api or roleService or something like that
-			rights: [
-				{
-					code: 0,
-					value: "Administrator",
-				},
-				{
-					code: 1,
-					value: "Field Officer",
-				},
-				{
-					code: 2,
-					value: "Project Officer",
-				},
-				{
-					code: 3,
-					value: "Project Manager",
-				},
-				{
-					value: "Country Manager",
-					code: 4,
-				},
-				{
-					value: "Regional Manager",
-					code: 5,
-				},
-				{
-					value: "Enumerator",
-					code: 6,
-				},
-			],
-			projects: [],
-			countries: [],
-			organizations: [],
+			options: {
+				// TODO fix after implementing real api or roleService or something like that
+				rights: [
+					{
+						code: 0,
+						value: "Administrator",
+					},
+					{
+						code: 1,
+						value: "Field Officer",
+					},
+					{
+						code: 2,
+						value: "Project Officer",
+					},
+					{
+						code: 3,
+						value: "Project Manager",
+					},
+					{
+						value: "Country Manager",
+						code: 4,
+					},
+					{
+						value: "Regional Manager",
+						code: 5,
+					},
+					{
+						value: "Enumerator",
+						code: 6,
+					},
+				],
+				projects: [],
+				countries: [],
+				organizations: [],
+				phonePrefixes: PhoneCodes,
+			},
 			onlyOneCountry: false,
 		};
 	},
@@ -257,17 +267,17 @@ export default {
 
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects(1, 15, "desc")
-				.then((response) => {
-					this.projects = response.data;
+				.then(({ data }) => {
+					this.options.projects = data;
 				}).catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 
 		async fetchCountries() {
-			await LocationsService.getListOfCountries()
-				.then((response) => {
-					this.countries = response.data;
+			await CountriesService.getListOfCountries()
+				.then(({ data }) => {
+					this.options.countries = data;
 				}).catch((e) => {
 					Notification(`Countries ${e}`, "is-danger");
 				});
@@ -275,8 +285,8 @@ export default {
 
 		async fetchOrganizations() {
 			await MyOrganizationsService.getListOfMyOrganizations()
-				.then((response) => {
-					this.organizations = response.data;
+				.then(({ data }) => {
+					this.options.organizations = data;
 				}).catch((e) => {
 					Notification(`Organizations ${e}`, "is-danger");
 				});

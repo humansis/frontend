@@ -3,7 +3,6 @@
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
-		:per-page="table.perPage"
 		:is-loading="isLoadingList"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
@@ -53,10 +52,10 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import CountriesService from "@/services/CountriesService";
-import { generateColumns } from "@/utils/datagrid";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import CountriesService from "@/services/CountriesService";
+import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
@@ -94,7 +93,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 			},
@@ -114,9 +112,9 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await CountriesService.getListOfCountries(
+			await CountriesService.getListOfCountriesForTable(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 			).then((response) => {
 				this.table.data = response.data;

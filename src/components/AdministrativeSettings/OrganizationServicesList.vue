@@ -8,7 +8,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
@@ -47,12 +46,12 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import { generateColumns } from "@/utils/datagrid";
-import OrganizationServicesService from "@/services/OrganizationServicesService";
-import { Notification } from "@/utils/UI";
+import Table from "@/components/DataGrid/Table";
 import Search from "@/components/Search";
+import OrganizationServicesService from "@/services/OrganizationServicesService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -78,7 +77,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -101,7 +99,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await OrganizationServicesService.getListOfOrganizationServices(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {

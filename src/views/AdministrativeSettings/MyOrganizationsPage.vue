@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import MyOrganizationsService from "@/services/MyOrganizationsService";
-import { Toast, Notification } from "@/utils/UI";
+import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizationsList";
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizationForm";
 import Modal from "@/components/Modal";
-import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizationsList";
+import MyOrganizationsService from "@/services/MyOrganizationsService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "MyOrganizationsPage",

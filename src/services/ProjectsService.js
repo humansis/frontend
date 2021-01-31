@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getSummariesForProject(id, code) {
@@ -8,14 +8,15 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfProjects(page, size, sort, search = null) {
+	async getListOfProjects(page, size, sort, search = null, ids) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const idsText = ids ? idsToUri(ids) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects?${pageText + sizeText + sortText + fulltext}`,
+			uri: `projects?${pageText + sizeText + sortText + fulltext + idsText}`,
 		});
 		return { data, totalCount };
 	},

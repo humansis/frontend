@@ -1,7 +1,7 @@
 import Vue from "vue";
 import CONST from "@/const";
-
 import store from "@/store/index";
+import getters from "@/store/getters";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
@@ -72,8 +72,8 @@ const fetchFromHumansisApi = async ({ uri, auth, method, body, contentType }) =>
 		// TODO Remove after implement authorization layer
 		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
 	}
-
-	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
+	const country = getters.getCountryFromLocalStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
 
 	const config = { headers };
 
@@ -146,6 +146,18 @@ export const filtersToUri = (filters) => {
 			filters[key].forEach((item) => {
 				query += `&${key}[]=${item}`;
 			});
+		}
+	});
+	return query;
+};
+
+export const idsToUri = (ids, param = null) => {
+	let query = "";
+	ids.forEach((item) => {
+		if (param) {
+			query += `&filter[id][]=${item[param]}`;
+		} else {
+			query += `&filter[id][]=${item}`;
 		}
 	});
 	return query;

@@ -7,7 +7,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -29,11 +28,11 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import { generateColumns } from "@/utils/datagrid";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import CurrencyService from "@/services/CurrencyService";
-import { Notification } from "@/utils/UI";
 import Search from "@/components/Search";
+import CurrencyService from "@/services/CurrencyService";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -60,7 +59,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -83,7 +81,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await CurrencyService.getListOfCurrencies(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {

@@ -1,24 +1,46 @@
-import { DEFAULT_COUNTRY, DEFAULT_LANGUAGE } from "@/const";
+import CONST from "@/const";
 import i18n from "@/plugins/i18n";
 import consts from "@/store/const";
 import { fetcher } from "@/utils/fetcher";
 
 export default {
-	updateCountry: ({ commit }, countries) => {
-		const country = localStorage.getItem("country") || DEFAULT_COUNTRY;
-		const countryObj = countries.find((item) => item.iso3 === country);
-		if (countryObj) {
-			commit(consts.COUNTRY_CHANGE, countryObj);
+	updateCountry: ({ commit }, country) => {
+		if (country) {
+			commit("changeCountry", country);
 		}
 	},
 
-	updateLanguage: ({ commit }, languages) => {
-		const language = localStorage.getItem("language") || DEFAULT_LANGUAGE;
-		const languageObj = languages.find((item) => item.name === language);
-		if (languageObj) {
-			commit("changeLanguage", languageObj);
-			i18n.locale = languageObj.name;
+	updateLanguage: ({ commit }, language) => {
+		if (language) {
+			commit("changeLanguage", language);
+			i18n.locale = language.name;
 		}
+	},
+
+	changePerPage: ({ commit }, perPage) => {
+		if (perPage) {
+			commit("updatePerPage", perPage);
+		}
+	},
+
+	addAssistanceToState: ({ commit }, assistance) => {
+		if (assistance) {
+			commit("updateAssistance", assistance);
+		}
+	},
+
+	addProjectToState: ({ commit }, project) => {
+		if (project) {
+			commit("updateProject", project);
+		}
+	},
+
+	removeAssistanceFromState: ({ commit }) => {
+		commit("updateAssistance", null);
+	},
+
+	removeProjectFromState: ({ commit }) => {
+		commit("updateProject", null);
 	},
 
 	logUserIn: async ({ commit }, credentials) => {

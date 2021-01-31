@@ -17,75 +17,83 @@
 				@select="validate('typeOfLocation')"
 			/>
 		</b-field>
-		<div v-if="formModel.typeOfLocation === 'Camp'">
-			<b-field>
-				<template #label>
-					Camp<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-				</template>
+		<div v-if="formModel.type && formModel.type === 'camp'">
+			<b-field
+				label="Camp"
+				:type="validateType('camp')"
+				:message="validateMsg('camp')"
+			>
 				<MultiSelect
-					v-model="formModel.selectedTargetType"
+					v-model="formModel.camp"
 					placeholder="Click to select..."
 					:options="options.camps"
 					:searchable="false"
+					:class="validateMultiselect('camp')"
+					@select="validate('camp')"
 				/>
 			</b-field>
 
-			<b-field grouped>
-				<template #label>
-					Camp Name<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-				</template>
+			<b-field
+				grouped
+				label="Camp Name"
+				:type="validateType('campName')"
+				:message="validateMsg('campName')"
+			>
 				<b-checkbox v-model="createCamp">Create A Camp</b-checkbox>
 				<b-input
 					v-if="createCamp"
 					v-model="formModel.campName"
 					placeholder="Camp name"
+					@blur="validate('campName')"
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					Tent Number<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-				</template>
+			<b-field
+				label="Tent Number"
+				:type="validateType('tentNumber')"
+				:message="validateMsg('tentNumber')"
+			>
 				<b-input
 					v-model="formModel.tentNumber"
 					placeholder="Tent Number"
+					@blur="validate('tentNumber')"
 				/>
 			</b-field>
 		</div>
 		<div v-else>
 			<b-field
 				label="Address Number"
-				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber')"
+				:type="validateType('number')"
+				:message="validateMsg('number')"
 			>
 				<b-input
-					v-model="formModel.addressNumber"
+					v-model="formModel.number"
 					placeholder="Address Number"
-					@blur="validate('addressNumber')"
+					@blur="validate('number')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Street"
-				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet')"
+				:type="validateType('street')"
+				:message="validateMsg('street')"
 			>
 				<b-input
-					v-model="formModel.addressStreet"
+					v-model="formModel.street"
 					placeholder="Address Street"
-					@blur="validate('addressStreet')"
+					@blur="validate('street')"
 				/>
 			</b-field>
 
 			<b-field
 				label="Address Postcode"
-				:type="validateType('addressPostcode')"
-				:message="validateMsg('addressPostcode')"
+				:type="validateType('postcode')"
+				:message="validateMsg('postcode')"
 			>
 				<b-input
-					v-model="formModel.addressPostcode"
+					v-model="formModel.postcode"
 					placeholder="Address Postcode"
-					@blur="validate('addressPostcode')"
+					@blur="validate('postcode')"
 				/>
 			</b-field>
 		</div>
@@ -93,19 +101,27 @@
 </template>
 
 <script>
+import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import Validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
-import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "TypeOfLocationForm",
 
 	props: {
 		formModel: Object,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	mixins: [Validation],
+
+	watch: {
+		formModel: "mapLocations",
+	},
 
 	data() {
 		return {
@@ -113,6 +129,7 @@ export default {
 			createCamp: false,
 			options: {
 				typeOfLocation: [],
+				// TODO camps
 				camps: [],
 			},
 		};
@@ -121,17 +138,17 @@ export default {
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: {},
-			campName: {},
-			tentNumber: {},
-			addressNumber: { required },
-			addressStreet: { required },
-			addressPostcode: { required },
+			camp: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
+			campName: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
+			tentNumber: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
+			number: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
+			street: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
+			postcode: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
 		},
 	},
 
-	mounted() {
-		this.fetchLocationsTypes();
+	async mounted() {
+		await this.fetchLocationsTypes();
 	},
 
 	methods: {
@@ -143,6 +160,13 @@ export default {
 					Notification(`Location Types ${e}`, "is-danger");
 				});
 			this.locationTypesLoading = false;
+		},
+
+		mapLocations() {
+			if (this.formModel.type) {
+				this.formModel.typeOfLocation = this.options.typeOfLocation
+					.find((item) => this.formModel.type === item.code);
+			}
 		},
 
 		submitTypeOfLocationForm() {

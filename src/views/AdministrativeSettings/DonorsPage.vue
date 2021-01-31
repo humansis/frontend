@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import HomeService from "@/services/HomeService";
+import DonorsList from "@/components/AdministrativeSettings/DonorsList";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
-import DonorsList from "@/components/AdministrativeSettings/DonorsList";
+import HomeService from "@/services/HomeService";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "DonorsPage",

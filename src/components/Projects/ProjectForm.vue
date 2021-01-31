@@ -114,11 +114,10 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field
-				label="Target Type"
-				:type="validateType('selectedTargetType')"
-				:message="validateMsg('selectedTargetType')"
-			>
+			<b-field>
+				<template #label>
+					Target Type<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
 					label="code"
@@ -128,8 +127,6 @@
 					:searchable="false"
 					:disabled="formDisabled"
 					:loading="targetTypesLoading"
-					:class="validateMultiselect('selectedTargetType')"
-					@select="validate('selectedTargetType')"
 				/>
 			</b-field>
 
@@ -177,13 +174,13 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { required, minValue } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import HomeService from "@/services/HomeService";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
-import HomeService from "@/services/HomeService";
+import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import Validation from "@/mixins/validation";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
@@ -223,7 +220,7 @@ export default {
 				minValue: minDate,
 			},
 			selectedDonors: { required },
-			selectedTargetType: { required },
+			selectedTargetType: {},
 			totalTarget: { required, minValue: minValue(1) },
 		},
 	},

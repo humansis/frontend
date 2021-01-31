@@ -27,13 +27,13 @@
 			<div class="column is-half">
 				<div class="box">
 					<p class="title is-6">Current Address</p>
-					<p class="subtitle is-4">address</p>
+					<p class="subtitle is-4">{{ address }}</p>
 				</div>
 			</div>
 			<div class="column is-half">
 				<div class="box">
 					<p class="title is-6">Current Location</p>
-					<p class="subtitle is-4">location</p>
+					<p class="subtitle is-4">{{ location }}</p>
 				</div>
 			</div>
 		</div>
@@ -41,12 +41,15 @@
 		<Table
 			:data="membersData"
 			:total="table.total"
+			:paginated="false"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 		</Table>
@@ -54,11 +57,13 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ProjectsService from "@/services/ProjectsService";
-import Validation from "@/mixins/validation";
 import { required } from "vuelidate/lib/validators";
+import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "Summary",
@@ -67,17 +72,14 @@ export default {
 
 	components: {
 		Table,
+		ColumnField,
 	},
 
 	props: {
 		members: Array,
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		detailOfHousehold() {
-			// TODO Map detailOfHousehold to formModel
-		},
+		location: String,
+		address: String,
 	},
 
 	validations: {
@@ -104,21 +106,26 @@ export default {
 						field: "familyName",
 						label: "Family Name (Local)",
 					},
-					{ field: "gender" },
+					{
+						field: "gender",
+						label: "Gender",
+						type: "object",
+					},
 					{
 						field: "dateBirth",
 						label: "Date Of Birth",
+						type: "date",
 					},
-					{ field: "phone" },
-					{ field: "nationalId" },
+					{ field: "phone", label: "Phone" },
+					{ field: "nationalId", label: "National ID" },
 				],
 				total: 0,
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchProjects();
+	async mounted() {
+		await this.fetchProjects();
 	},
 
 	computed: {
@@ -136,6 +143,8 @@ export default {
 				.catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
+
+			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
 		},
 
 		submit() {

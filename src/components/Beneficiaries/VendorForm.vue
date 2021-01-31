@@ -110,8 +110,8 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
 import locationForm from "@/components/LocationForm";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "vendorForm",

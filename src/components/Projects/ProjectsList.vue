@@ -7,7 +7,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
@@ -47,6 +46,7 @@
 						icon="trash"
 						entity="Project"
 						tooltip="Delete"
+						:disabled="!props.row.deletable"
 						:id="props.row.id"
 						@submitted="onDelete"
 					/>
@@ -58,15 +58,15 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import ProjectsService from "@/services/ProjectsService";
+import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import ProjectsService from "@/services/ProjectsService";
+import { Toast } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
@@ -101,7 +101,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -118,18 +117,20 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["addProjectToState"]),
+
 		async fetchData() {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ProjectsService.getListOfProjects(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.data = data;
+				this.table.total = totalCount;
 			}).catch((e) => {
 				Toast(`(Projects) ${e}`, "is-danger");
 			});
@@ -137,30 +138,8 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		mapToFormModel({
-			id,
-			name,
-			sectorIds,
-			donorIds,
-			target: totalTarget,
-			notes,
-		}) {
-			this.projectModel = {
-				...this.projectModel,
-				id,
-				name,
-				internalId: id,
-				selectedSectors: getArrayOfCodeListByKey(sectorIds, this.projectModel.sectors, "code"),
-				startDate: new Date("10.10.2020"),
-				endDate: new Date("10.10.2020"),
-				selectedDonors: getArrayOfCodeListByKey(donorIds, this.projectModel.donors, "id"),
-				selectedTargetType: getArrayOfCodeListByKey([], this.projectModel.targetTypes, "code"),
-				totalTarget,
-				notes,
-			};
-		},
-
 		goToDetail(project) {
+			this.addProjectToState(project);
 			this.$router.push({ name: "ProjectDetail", params: { projectId: project.id } });
 		},
 

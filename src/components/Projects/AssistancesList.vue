@@ -39,7 +39,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="goToValidateAndLock"
 			@pageChanged="onPageChange"
@@ -79,7 +78,7 @@
 						icon="lock"
 						type="is-danger"
 						tooltip="Lock"
-						@click.native="goToValidateAndLock(props.row.id)"
+						@click.native="goToValidateAndLockWithId(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
@@ -101,17 +100,19 @@
 </template>
 
 <script>
-import { Toast, Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
-import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
-import AssistancesService from "@/services/AssistancesService";
+import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import Search from "@/components/Search";
+import AssistancesService from "@/services/AssistancesService";
+import LocationsService from "@/services/LocationsService";
+import { Toast, Notification } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
@@ -142,7 +143,7 @@ export default {
 					},
 					{ key: "name" },
 					{
-						key: "adm1Id",
+						key: "location",
 						label: "Location",
 					},
 					{
@@ -163,7 +164,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -177,7 +177,7 @@ export default {
 				adm2: [],
 				adm3: [],
 				adm4: [],
-				dateOfAssistance: new Date(),
+				dateDistribution: new Date(),
 				target: "",
 			},
 		};
@@ -192,6 +192,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["addAssistanceToState"]),
+
 		async fetchData() {
 			this.isLoadingList = true;
 
@@ -199,17 +201,45 @@ export default {
 			await AssistancesService.getListOfProjectAssistances(
 				this.$route.params.projectId,
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(async ({ data, totalCount }) => {
+				this.table.data = await this.prepareDataForTable(data);
+				this.table.total = totalCount;
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			const filledData = [];
+			const promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].location = await this.prepareLocation(item.locationId);
+				filledData[key].commodity = await this.prepareCommodity(item.id);
+				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
+				filledData[key].target = normalizeText(item.target);
+			});
+
+			await Promise.all(promise);
+			return filledData;
+		},
+
+		async prepareLocation(id) {
+			return LocationsService.getLocation(id).then(({ data: { name } }) => name);
+		},
+
+		async prepareCommodity(id) {
+			return AssistancesService.getAssistanceCommodities(id)
+				.then(({ data: [a] }) => a.modalityType);
+		},
+
+		async prepareBeneficiaries(id) {
+			return AssistancesService.getListOfBeneficiaries(id)
+				.then(({ totalCount }) => totalCount);
 		},
 
 		async removeAssistance(id) {
@@ -237,16 +267,22 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		goToValidateAndLock(id) {
+		goToValidateAndLockWithId(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+			this.goToValidateAndLock(assistance);
+		},
+
+		goToValidateAndLock(assistance) {
+			this.addAssistanceToState(assistance);
 			this.$router.push({ name: "Assistance",
 				params: {
-					assistanceId: id,
-				} });
+					assistanceId: assistance.id,
+				},
+			});
 		},
 
 		showDetailWithId(id) {
-			// TODO Fix with connect locations
-			this.assistanceModel = this.table.data.find((item) => item.id === id);
+			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: false,
@@ -254,11 +290,40 @@ export default {
 		},
 
 		showEdit(id) {
-			// TODO Fix with connect locations
-			this.assistanceModel = this.table.data.find((item) => item.id === id);
+			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
+			};
+		},
+
+		mapToFormModel(
+			{
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+				id,
+				commodityIds,
+				dateDistribution,
+				name,
+				projectId,
+				target,
+				type,
+			},
+		) {
+			return {
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
+				dateDistribution: new Date(dateDistribution),
+				target,
+				id,
+				commodityIds,
+				name,
+				projectId,
+				type,
 			};
 		},
 

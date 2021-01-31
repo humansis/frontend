@@ -8,7 +8,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="goToDetail"
 			@pageChanged="onPageChange"
@@ -36,12 +35,12 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import CountryReportService from "@/services/CountryReportService";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
+import CountryReportService from "@/services/CountryReportService";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
@@ -68,7 +67,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 			},
@@ -92,7 +90,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await CountryReportService.getListOfCountryReports(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.period,
 				this.choosePeriod,

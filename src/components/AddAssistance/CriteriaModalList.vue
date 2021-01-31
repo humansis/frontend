@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
+import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "CriteriaModalList",
@@ -76,7 +76,7 @@ export default {
 			// TODO get real data from API
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
-			this.$store.commit("loading", false);
+			this.$store.commit("fullPageLoading", false);
 		},
 
 		onSearch(value) {

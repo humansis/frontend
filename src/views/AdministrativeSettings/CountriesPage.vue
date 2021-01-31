@@ -37,10 +37,10 @@
 </template>
 
 <script>
-import CountriesService from "@/services/CountriesService";
+import CountriesList from "@/components/AdministrativeSettings/CountriesList";
 import CountryForm from "@/components/AdministrativeSettings/CountryForm";
 import Modal from "@/components/Modal";
-import CountriesList from "@/components/AdministrativeSettings/CountriesList";
+import CountriesService from "@/services/CountriesService";
 import { Toast, Notification } from "@/utils/UI";
 
 export default {

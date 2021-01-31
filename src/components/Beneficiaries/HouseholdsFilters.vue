@@ -28,10 +28,10 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "HouseholdsFilters",
@@ -82,34 +82,12 @@ export default {
 					loading: true,
 					data: [],
 				},
-				// TODO get from api
 				referrals: {
 					name: "Referral",
 					placeholder: "Select Referral",
 					multiple: true,
 					loading: true,
-					data: [
-						{
-							code: "health",
-							value: "Health",
-						},
-						{
-							code: "protection",
-							value: "Protection",
-						},
-						{
-							code: "shelter",
-							value: "Shelter",
-						},
-						{
-							code: "nutrition",
-							value: "Nutrition",
-						},
-						{
-							code: "other",
-							value: "Other",
-						},
-					],
+					data: [],
 				},
 				livelihoods: {
 					name: "Livelihood",
@@ -157,6 +135,7 @@ export default {
 		this.fetchLivelihoods();
 		this.fetchVulnerabilities();
 		this.fetchResidenceStatuses();
+		this.fetchReferralTypes();
 	},
 
 	methods: {
@@ -184,8 +163,8 @@ export default {
 
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
-				.then((response) => {
-					this.filtersOptions.projects.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.projects.data = data;
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
@@ -195,8 +174,8 @@ export default {
 
 		async fetchProvinces() {
 			await LocationsService.getListOfAdm1()
-				.then((response) => {
-					this.filtersOptions.adm1.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.adm1.data = data;
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
@@ -207,8 +186,8 @@ export default {
 		async fetchDistricts(id) {
 			this.filtersOptions.adm2.loading = true;
 			await LocationsService.getListOfAdm2(id)
-				.then((response) => {
-					this.filtersOptions.adm2.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.adm2.data = data;
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
@@ -219,8 +198,8 @@ export default {
 		async fetchCommunes(id) {
 			this.filtersOptions.adm3.loading = true;
 			await LocationsService.getListOfAdm3(id)
-				.then((response) => {
-					this.filtersOptions.adm3.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.adm3.data = data;
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
@@ -231,8 +210,8 @@ export default {
 		async fetchVillages(id) {
 			this.filtersOptions.adm4.loading = true;
 			await LocationsService.getListOfAdm4(id)
-				.then((response) => {
-					this.filtersOptions.adm4.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.adm4.data = data;
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
@@ -242,8 +221,8 @@ export default {
 
 		async fetchLivelihoods() {
 			await BeneficiariesService.getListOfLivelihoods()
-				.then((response) => {
-					this.filtersOptions.livelihoods.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.livelihoods.data = data;
 					this.filtersOptions.livelihoods.loading = false;
 				})
 				.catch((e) => {
@@ -253,8 +232,8 @@ export default {
 
 		async fetchVulnerabilities() {
 			await BeneficiariesService.getListOfVulnerabilities()
-				.then((response) => {
-					this.filtersOptions.vulnerabilities.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.vulnerabilities.data = data;
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
@@ -264,12 +243,23 @@ export default {
 
 		async fetchResidenceStatuses() {
 			await BeneficiariesService.getListOfResidenceStatuses()
-				.then((response) => {
-					this.filtersOptions.residencies.data = response.data;
+				.then(({ data }) => {
+					this.filtersOptions.residencies.data = data;
 					this.filtersOptions.residencies.loading = false;
 				})
 				.catch((e) => {
 					Notification(`Residence Status ${e}`, "is-danger");
+				});
+		},
+
+		async fetchReferralTypes() {
+			await BeneficiariesService.getListOfReferralTypes()
+				.then(({ data }) => {
+					this.filtersOptions.referrals.loading = false;
+					this.filtersOptions.referrals.data = data;
+				})
+				.catch((e) => {
+					Notification(`Referral Types ${e}`, "is-danger");
 				});
 		},
 	},

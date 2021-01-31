@@ -18,7 +18,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 		>
@@ -50,7 +49,7 @@
 		</Table>
 		<b-button
 			class="mb-5"
-			size="is-medium"
+			size="is-normal"
 			type="is-danger"
 			icon-left="save"
 			@click="submit"
@@ -63,12 +62,12 @@
 <script>
 // TODO Fix translations and check all functionalities in table
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import { generateColumns } from "@/utils/datagrid";
-import TranslationService from "@/services/TranslationService";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast, Notification } from "@/utils/UI";
+import Table from "@/components/DataGrid/Table";
 import Search from "@/components/Search";
+import TranslationService from "@/services/TranslationService";
+import { generateColumns } from "@/utils/datagrid";
+import { Toast, Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -106,7 +105,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -124,12 +122,12 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
+			this.$store.commit("fullPageLoading", true);
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {
@@ -139,7 +137,7 @@ export default {
 				Notification(`Translations ${e}`, "is-danger");
 			});
 
-			this.$store.commit("loading", false);
+			this.$store.commit("fullPageLoading", false);
 		},
 
 		async submit() {

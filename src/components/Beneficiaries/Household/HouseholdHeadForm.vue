@@ -117,6 +117,7 @@
 							track-by="code"
 							searchable
 							placeholder="Click to select..."
+							:loading="idTypeLoading"
 							:options="options.idType"
 							:class="validateMultiselect('id.idType')"
 							@select="validate('id.idType')"
@@ -136,18 +137,21 @@
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-4">Residency</h4>
-					<b-field>
-						<template #label>
-							Residency Status
-							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-						</template>
+					<b-field
+						label="Residency Status"
+						:type="validateType('residencyStatus')"
+						:message="validateMsg('residencyStatus')"
+					>
 						<MultiSelect
-							v-model="formModel.residency.residencyStatus"
+							v-model="formModel.residencyStatus"
 							searchable
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="residenceStatusesLoading"
 							:options="options.residencyStatus"
+							:class="validateMultiselect('residencyStatus')"
+							@select="validate('residencyStatus')"
 						/>
 					</b-field>
 				</div>
@@ -163,7 +167,10 @@
 						<MultiSelect
 							v-model="formModel.referral.referralType"
 							searchable
+							label="value"
+							track-by="code"
 							placeholder="Click to select..."
+							:loading="referralTypeLoading"
 							:options="options.referralType"
 						/>
 					</b-field>
@@ -188,6 +195,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="phoneTypesLoading"
 							:options="options.phoneType"
 						/>
 						<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
@@ -227,6 +235,7 @@
 							label="value"
 							track-by="code"
 							placeholder="Click to select..."
+							:loading="phoneTypesLoading"
 							:options="options.phoneType"
 						/>
 						<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
@@ -253,7 +262,7 @@
 			<div v-if="showTypeOfBeneficiary" class="field">
 				<b-checkbox
 					v-for="vulnerability of options.vulnerabilities"
-					v-model="formModel.vulnerabilities"
+					v-model="formModel.vulnerabilities[vulnerability.code]"
 					:native-value="vulnerability.code"
 					:key="vulnerability.code"
 				>
@@ -265,11 +274,13 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import PhoneCodes from "@/utils/phoneCodes";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -279,12 +290,11 @@ export default {
 	props: {
 		showTypeOfBeneficiary: Boolean,
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		detailOfHousehold(household) {
-			this.mapDetailOfHouseholdToFormModel(household);
+		isEditing: {
+			type: Boolean,
+			default: false,
 		},
+		beneficiary: Object,
 	},
 
 	validations: {
@@ -307,6 +317,7 @@ export default {
 				idType: { required },
 				idNumber: { required },
 			},
+			residencyStatus: { required },
 		},
 	},
 
@@ -331,9 +342,7 @@ export default {
 					idType: "",
 					idNumber: "",
 				},
-				residency: {
-					residencyStatus: "",
-				},
+				residencyStatus: "",
 				addAReferral: false,
 				referral: {
 					referralType: "",
@@ -352,6 +361,7 @@ export default {
 					phoneNo: "",
 				},
 				vulnerabilities: [],
+				isHead: false,
 			},
 			options: {
 				gender: [
@@ -360,54 +370,156 @@ export default {
 				],
 				idType: [],
 				residencyStatus: [],
-				// TODO get from API
-				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
+				referralType: [],
 				phoneType: [],
-				// TODO get from API
-				phonePrefixes: [
-					{ code: "+420", value: "CZ - +420" },
-					{ code: "+421", value: "SK - +421" },
-				],
+				phonePrefixes: PhoneCodes,
 				vulnerabilities: [],
 			},
+			idTypeLoading: true,
+			residenceStatusesLoading: true,
+			phoneTypesLoading: true,
+			referralTypeLoading: true,
 		};
 	},
 
-	mounted() {
-		this.fetchNationalCardTypes();
-		this.fetchVulnerabilities();
-		this.fetchPhoneTypes();
-		this.fetchResidenceStatus();
+	async mounted() {
+		await this.fetchNationalCardTypes();
+		await this.fetchVulnerabilities();
+		await this.fetchPhoneTypes();
+		await this.fetchResidenceStatus();
+		await this.fetchReferralTypes();
+		if (this.isEditing) {
+			if (this.beneficiary) {
+				await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
+			} else {
+				const data = await BeneficiariesService
+					.getBeneficiary(this.detailOfHousehold.householdHeadId);
+				await this.mapDetailOfHouseholdToFormModel(data);
+			}
+		}
 	},
 
 	methods: {
-		mapDetailOfHouseholdToFormModel() {
-			// TODO map household param to formModel
+		async mapDetailOfHouseholdToFormModel(beneficiary) {
+			const {
+				dateOfBirth,
+				enFamilyName,
+				enGivenName,
+				enParentsName,
+				gender,
+				localFamilyName,
+				localGivenName,
+				localParentsName,
+				nationalIds,
+				phoneIds,
+				referralComment,
+				referralType,
+				vulnerabilityCriteria,
+				isHead,
+			} = beneficiary;
+			if (referralComment || referralType) {
+				this.formModel.addAReferral = true;
+			}
+			const { phone1, phone2 } = await this.getPhones(phoneIds);
+			const id = await this.getNationalIdCard(nationalIds[0]);
+			this.formModel = {
+				...this.formModel,
+				nameLocal: {
+					familyName: localFamilyName,
+					firstName: localGivenName,
+					parentsName: localParentsName,
+				},
+				nameEnglish: {
+					familyName: enFamilyName,
+					firstName: enGivenName,
+					parentsName: enParentsName,
+				},
+				personalInformation: {
+					gender: gender.code,
+					dateOfBirth: new Date(dateOfBirth),
+				},
+				id,
+				residencyStatus: "",
+				referral: {
+					// TODO
+					referralType,
+					comment: referralComment,
+				},
+				phone1,
+				phone2,
+				isHead,
+				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
+			};
 		},
 
 		prepareVulnerability(name) {
 			return normalizeText(name);
 		},
 
+		async getPhones(ids) {
+			const phones = {
+				phone1: this.formModel.phone1,
+				phone2: this.formModel.phone2,
+			};
+			const promises = [];
+			await ids.forEach((id, key) => {
+				const promise = BeneficiariesService.getPhone(id)
+					.then(({ type, proxy, prefix, number }) => {
+						phones[`phone${key + 1}`] = {
+							type: getArrayOfCodeListByKey([type], this.options.phoneType, "code"),
+							proxy,
+							ext: getArrayOfCodeListByKey([prefix], this.options.phonePrefixes, "code"),
+							phoneNo: number,
+						};
+					}).catch((e) => {
+						Notification(`Phone ${key + 1} ${e}`, "is-danger");
+					});
+				promises.push(promise);
+			});
+			await Promise.all(promises);
+			return phones;
+		},
+
+		async getNationalIdCard(id) {
+			const nationalIdCard = {
+				idType: this.formModel.id.idNumber,
+				idNumber: this.formModel.id.idType,
+			};
+			if (id) {
+				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
+					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "id");
+					nationalIdCard.idNumber = number;
+				}).catch((e) => {
+					Notification(`National ID ${e}`, "is-danger");
+				});
+			}
+
+			return nationalIdCard;
+		},
+
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.options.idType = response.data; })
+				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});
+
+			this.idTypeLoading = false;
 		},
 
 		async fetchPhoneTypes() {
 			await BeneficiariesService.getListOfTypesOfPhones()
-				.then((response) => { this.options.phoneType = response.data; })
+				.then(({ data }) => { this.options.phoneType = data; })
 				.catch((e) => {
 					Notification(`Phone types ${e}`, "is-danger");
 				});
+
+			this.phoneTypesLoading = false;
 		},
 
 		async fetchVulnerabilities() {
 			await BeneficiariesService.getListOfVulnerabilities()
-				.then((response) => { this.options.vulnerabilities = response.data; })
+				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
 					Notification(`Vulnerabilities ${e}`, "is-danger");
 				});
@@ -415,10 +527,22 @@ export default {
 
 		async fetchResidenceStatus() {
 			await BeneficiariesService.getListOfResidenceStatuses()
-				.then((response) => { this.options.residencyStatus = response.data; })
+				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
 					Notification(`Residence Status ${e}`, "is-danger");
 				});
+
+			this.residenceStatusesLoading = false;
+		},
+
+		async fetchReferralTypes() {
+			await BeneficiariesService.getListOfReferralTypes()
+				.then(({ data }) => { this.options.referralType = data; })
+				.catch((e) => {
+					Notification(`Residence Status ${e}`, "is-danger");
+				});
+
+			this.referralTypeLoading = false;
 		},
 
 		submit() {

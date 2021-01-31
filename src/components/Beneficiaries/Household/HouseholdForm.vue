@@ -7,6 +7,7 @@
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
+					:is-editing="true"
 				/>
 			</div>
 			<div class="column is-half">
@@ -14,31 +15,7 @@
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
-				/>
-			</div>
-		</div>
-		<div class="field">
-			<b-checkbox v-model="formModel.isCurrentLocationOtherThanAddress">
-				Is your current location different than your address?
-			</b-checkbox>
-		</div>
-		<div
-			v-if="formModel.isCurrentLocationOtherThanAddress"
-			class="columns is-multiline"
-		>
-			<div class="column is-half">
-				<h4 class="title is-4">Resident Location</h4>
-				<LocationForm
-					ref="residentLocationForm"
-					:form-model="formModel"
-					:form-disabled="false"
-				/>
-			</div>
-			<div class="column is-half">
-				<h4 class="title is-4">Type Of Location</h4>
-				<TypeOfLocationForm
-					ref="residentTypeOfLocationForm"
-					:form-model="formModel.residentLocation"
+					:is-editing="true"
 				/>
 			</div>
 		</div>
@@ -220,19 +197,19 @@
 		<h4 class="title is-4">Household Status</h4>
 		<b-field
 			label="Shelter Type"
-			:type="validateType('shelterType')"
-			:message="validateMsg('shelterType')"
+			:type="validateType('shelterStatus')"
+			:message="validateMsg('shelterStatus')"
 		>
 			<MultiSelect
-				v-model="formModel.shelterType"
+				v-model="formModel.shelterStatus"
 				searchable
 				label="value"
 				track-by="code"
 				placeholder="Click to select..."
-				:loading="shelterTypeLoading"
-				:options="options.shelterType"
-				:class="validateMultiselect('shelterType')"
-				@select="validate('shelterType')"
+				:loading="shelterStatusLoading"
+				:options="options.shelterStatuses"
+				:class="validateMultiselect('shelterStatus')"
+				@select="validate('shelterStatus')"
 			/>
 		</b-field>
 		<b-field>
@@ -246,26 +223,14 @@
 </template>
 
 <script>
+import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
-import Validation from "@/mixins/validation";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
-import { required } from "vuelidate/lib/validators";
-
-const locationModel = {
-	adm1Id: "",
-	adm2Id: "",
-	adm3Id: "",
-	adm4Id: "",
-	typeOfLocation: "",
-	camp: "",
-	campName: "",
-	tentNumber: "",
-	addressNumber: "",
-	addressStreet: "",
-	addressPostcode: "",
-};
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "HouseholdForm",
@@ -274,12 +239,6 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
-	},
-
-	watch: {
-		detailOfHousehold(household) {
-			this.mapDetailOfHouseholdToFormModel(household);
-		},
 	},
 
 	components: {
@@ -307,24 +266,19 @@ export default {
 				equityCardNo: {},
 				fields: {},
 			},
-			shelterType: { required },
+			shelterStatus: { required },
 		},
 	},
 
 	data() {
 		return {
-			shelterTypeLoading: false,
-			assetsLoading: false,
-			livelihoodLoading: false,
+			shelterStatusLoading: true,
+			assetsLoading: true,
+			livelihoodLoading: true,
 			formModel: {
 				id: null,
-				currentLocation: {
-					...locationModel,
-				},
+				currentLocation: {},
 				isCurrentLocationOtherThanAddress: false,
-				residentLocation: {
-					...locationModel,
-				},
 				livelihood: {
 					livelihood: [],
 					incomeLevel: [],
@@ -343,7 +297,7 @@ export default {
 					equityCardNo: "",
 					fields: "",
 				},
-				shelterType: [],
+				shelterStatus: [],
 				notes: "",
 			},
 			options: {
@@ -370,49 +324,78 @@ export default {
 					{ code: 10, value: "None" },
 					{ code: 11, value: "Other" },
 				],
-				shelterType: [],
+				shelterStatuses: [],
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchLivelihoods();
-		this.fetchAssets();
-		this.fetchShelterTypes();
+	async mounted() {
+		await this.fetchLivelihoods();
+		await this.fetchAssets();
+		await this.fetchShelterStatuses();
+		this.mapDetailOfHouseholdToFormModel();
+		await this.mapCurrentLocation().then((response) => {
+			this.formModel.currentLocation = response;
+		});
 	},
 
 	methods: {
-		mapDetailOfHouseholdToFormModel(household) {
+		getAddressTypeAndId() {
+			const {
+				temporarySettlementAddressId,
+				residenceAddressId,
+				campAddressId,
+			} = this.detailOfHousehold;
+			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
+			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
+			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			return "";
+		},
+
+		mapCurrentLocation() {
+			if (this.detailOfHousehold) {
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId();
+
+				switch (typeOfLocation) {
+					case "camp":
+						return AddressService.getCampAddress(addressId).catch((e) => {
+							Notification(`Camp Address ${e}`, "is-danger");
+						});
+					case "residence":
+						return AddressService.getResidenceAddress(addressId).catch((e) => {
+							Notification(`Residence Address ${e}`, "is-danger");
+						});
+					case "temporary_settlement":
+						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
+							Notification(`TemporarySettlementAddress ${e}`, "is-danger");
+						});
+					default:
+						return null;
+				}
+			}
+			return null;
+		},
+
+		mapDetailOfHouseholdToFormModel() {
 			this.formModel = {
 				...this.formModel,
-				id: household.id,
-				currentLocation: {
-					...this.formModel.currentLocation,
-					// TODO map current location
-				},
-				residentLocation: {
-					...this.formModel.residentLocation,
-					// TODO map resident location
-				},
+				id: this.detailOfHousehold.id,
+				currentLocation: {},
 				livelihood: {
 					...this.formModel.livelihood,
-					foodConsumptionScore: household.foodConsumptionScore,
-					// TODO map assets to code/value
-					assets: household.assets,
-					// TODO map livelihood to code/value
-					livelihood: [],
-					// TODO map incomeLevel to code/value
-					incomeLevel: [],
-					// TODO map debt level
-					debtLevel: 0,
-					copingStrategiesIndex: household.copingStrategiesIndex,
+					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
+					assets: getArrayOfCodeListByKey([this.detailOfHousehold.assets], this.options.assets, "code"),
+					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
+					incomeLevel: getArrayOfCodeListByKey([this.detailOfHousehold.incomeLevel], this.options.incomeLevel, "code"),
+					debtLevel: this.detailOfHousehold.debtLevel,
+					copingStrategiesIndex: this.detailOfHousehold.copingStrategiesIndex,
 				},
 				externalSupport: {
 					...this.formModel.externalSupport,
 					// TODO map supportReceivedTypes to code/value
-					externalSupportReceivedType: household.supportReceivedTypes,
-					supportDateReceived: new Date(household.supportDateReceived),
-					supportOrganization: household.supportOrganizationName,
+					externalSupportReceivedType: getArrayOfCodeListByKey([this.detailOfHousehold.supportReceivedTypes], this.options.externalSupportReceivedType, "code"),
+					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
+					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
 				countrySpecificOptions: {
 					...this.formModel.countrySpecificOptions,
@@ -421,18 +404,14 @@ export default {
 					equityCardNo: "",
 					fields: "",
 				},
-				// TODO map shelterType to code/value
-				shelterType: [],
-				notes: household.notes,
+				shelterStatus: getArrayOfCodeListByKey([this.detailOfHousehold.shelterStatus], this.options.shelterStatuses, "code"),
+				notes: this.detailOfHousehold.notes,
 			};
 		},
 
 		async fetchLivelihoods() {
-			this.livelihoodLoading = true;
 			await BeneficiariesService.getListOfLivelihoods()
-				.then((result) => {
-					this.options.livelihood = result.data;
-				})
+				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
 					Notification(`Livelihoods ${e}`, "is-danger");
 				});
@@ -440,23 +419,21 @@ export default {
 		},
 
 		async fetchAssets() {
-			this.assetsLoading = true;
 			await BeneficiariesService.getListOfAssets()
-				.then((result) => { this.options.assets = result.data; })
+				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
 					Notification(`Assets ${e}`, "is-danger");
 				});
 			this.assetsLoading = false;
 		},
 
-		async fetchShelterTypes() {
-			this.shelterTypeLoading = true;
+		async fetchShelterStatuses() {
 			await BeneficiariesService.getListOfShelterStatuses()
-				.then((result) => { this.options.shelterType = result.data; })
+				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
-			this.shelterTypeLoading = false;
+			this.shelterStatusLoading = false;
 		},
 
 		submit() {

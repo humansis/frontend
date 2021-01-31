@@ -7,7 +7,6 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
-			:per-page="table.perPage"
 			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
@@ -55,13 +54,13 @@
 </template>
 
 <script>
-import { generateColumns } from "@/utils/datagrid";
-import InstitutionsService from "@/services/InstitutionsService";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import { Toast } from "@/utils/UI";
 import Search from "@/components/Search";
+import InstitutionsService from "@/services/InstitutionsService";
+import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -98,7 +97,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				perPage: 15,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
@@ -121,7 +119,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await InstitutionsService.getListOfInstitutions(
 				this.table.currentPage,
-				this.table.perPage,
+				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {

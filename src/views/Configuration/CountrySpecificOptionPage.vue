@@ -38,11 +38,12 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import { mapState } from "vuex";
 import CountrySpecificOptionForm from "@/components/Configuration/CountrySpecificOptionForm";
-import Modal from "@/components/Modal";
 import CountrySpecificOptionList from "@/components/Configuration/CountrySpecificOptionList";
+import Modal from "@/components/Modal";
+import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CountrySpecificOptionPage",
@@ -72,6 +73,8 @@ export default {
 	},
 
 	computed: {
+		...mapState(["country"]),
+
 		modalHeader() {
 			let result = "";
 			if (this.countrySpecificOptionModal.isDetail) {
@@ -159,7 +162,7 @@ export default {
 				field,
 				type: type.code,
 				target: target.code,
-				iso3: iso3 || this.$store.state.country.iso3,
+				iso3: iso3 || this.country.iso3,
 			};
 
 			if (this.countrySpecificOptionModal.isEditing && id) {

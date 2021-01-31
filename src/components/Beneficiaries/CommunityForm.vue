@@ -38,7 +38,7 @@
 							label="value"
 							track-by="code"
 							:disabled="formDisabled"
-							:options="phonePrefixes"
+							:options="options.phonePrefixes"
 							:class="validateMultiselect('phonePrefix')"
 							@select="validate('phonePrefix')"
 						/>
@@ -70,7 +70,7 @@
 					track-by="code"
 					placeholder="Click to select..."
 					:disabled="formDisabled"
-					:options="nationalCardTypes"
+					:options="options.nationalCardTypes"
 					:class="validateMultiselect('nationalCardType')"
 					@select="validate('nationalCardType')"
 				/>
@@ -172,11 +172,12 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import { required, numeric } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+import Validation from "@/mixins/validation";
+import PhoneCodes from "@/utils/phoneCodes";
 
 export default {
 	name: "CommunityForm",
@@ -214,18 +215,10 @@ export default {
 
 	data() {
 		return {
-			nationalCardTypes: [],
-			// TODO get from API
-			phonePrefixes: [
-				{
-					code: "+420",
-					value: "CZ - +420",
-				},
-				{
-					code: "+421",
-					value: "SK - +421",
-				},
-			],
+			options: {
+				nationalCardTypes: [],
+				phonePrefixes: PhoneCodes,
+			},
 		};
 	},
 
@@ -247,7 +240,7 @@ export default {
 
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then((response) => { this.nationalCardTypes = response.data; })
+				.then(({ data }) => { this.options.nationalCardTypes = data; })
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});

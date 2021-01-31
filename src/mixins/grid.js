@@ -1,3 +1,5 @@
+import { mapActions } from "vuex";
+
 export default {
 	data() {
 		return {
@@ -6,6 +8,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["changePerPage"]),
+
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
 			this.fetchData();
@@ -22,12 +26,11 @@ export default {
 		},
 
 		onSearch(value) {
-			this.searchPhrase = value;
+			this.table.searchPhrase = value;
 			this.fetchData();
 		},
 
-		onChangePerPage(perPage) {
-			this.table.perPage = perPage;
+		onChangePerPage() {
 			this.fetchData();
 		},
 
