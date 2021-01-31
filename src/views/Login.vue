@@ -16,27 +16,27 @@
 							<b-field
 								label="Username"
 								label-position="inside"
-								:type="getValidationType('login')"
-								:message="getValidationMessage('login', 'Required')"
+								:type="validateType('login')"
+								:message="validateMsg('login', 'Required')"
 							>
 								<b-input
 									v-model="formModel.login"
 									autofocus
-									@blur="validateInput('login')"
+									@blur="validate('login')"
 								/>
 							</b-field>
 
 							<b-field
 								label="Password"
 								label-position="inside"
-								:type="getValidationType('password')"
-								:message="getValidationMessage('password', 'Required')"
+								:type="validateType('password')"
+								:message="validateMsg('password', 'Required')"
 							>
 								<b-input
 									type="password"
 									v-model="formModel.password"
 									password-reveal
-									@blur="validateInput('password')"
+									@blur="validate('password')"
 								/>
 							</b-field>
 
@@ -44,11 +44,11 @@
 								<b-button
 									type="is-primary"
 									native-type="submit"
-									:disabled="fetch.loading === true"
+									:disabled="loading === true"
 								>
-									<span :class="{ 'is-invisible': fetch.loading }">Login</span>
+									<span :class="{ 'is-invisible': loading }">Login</span>
 									<b-loading
-										v-model="fetch.loading"
+										v-model="loading"
 										:is-full-page="false"
 									/>
 								</b-button>
@@ -64,9 +64,14 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
+import LoginService from "@/services/LoginService";
 
 export default {
 	name: "Login",
+
+	mixins: [Validation],
 
 	data() {
 		return {
@@ -74,9 +79,7 @@ export default {
 				login: "",
 				password: "",
 			},
-			fetch: {
-				loading: false,
-			},
+			loading: false,
 		};
 	},
 
@@ -93,7 +96,6 @@ export default {
 
 	computed: {
 		...mapState({
-			login: (state) => state.login,
 			version: (state) => `v${state.packageVersion}`,
 		}),
 	},
@@ -103,48 +105,29 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["logUserIn"]),
-
+		...mapActions(["storeUser"]),
 		async submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;
 			}
 
-			this.fetch.loading = true;
+			this.loading = true;
+			await LoginService.logUserIn(this.formModel).then((response) => {
+				if (response.status === 200) {
+					const { data: user } = response;
 
-			const { successful } = await this.logUserIn(this.formModel);
+					user.authdata = window.btoa(`${this.formModel.username}:${this.formModel.password}`);
+					localStorage.setItem("user", JSON.stringify(user));
+					this.storeUser(user);
 
-			if (successful) {
-				await this.$router.push(this.$route.query.redirect?.toString() || "/");
-			} else {
-				this.fetch.loading = false;
-
-				this.$buefy.toast.open({
-					duration: 5000,
-					message: "Login has failed",
-					position: "is-bottom",
-					type: "is-danger",
-				});
-
+					this.$router.push(this.$route.query.redirect?.toString() || "/");
+				}
+			}).catch((e) => {
+				Notification(`Login ${e}`, "is-danger");
+				this.loading = false;
 				this.$v.$reset();
-			}
-		},
-
-		validateInput(fieldName) {
-			this.$v.formModel[fieldName].$touch();
-		},
-
-		getValidationMessage(fieldName, message) {
-			return this.$v.formModel[fieldName].$error ? message : "";
-		},
-
-		getValidationType(fieldName) {
-			let result = "";
-			if (this.$v.formModel[fieldName].$dirty) {
-				result = this.$v.formModel[fieldName].$error ? "is-danger" : "is-success";
-			}
-			return result;
+			});
 		},
 	},
 };

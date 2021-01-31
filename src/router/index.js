@@ -302,7 +302,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	// eslint-disable-next-line
 	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !localStorage.getItem("user")) {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Logout", query: { redirect } });

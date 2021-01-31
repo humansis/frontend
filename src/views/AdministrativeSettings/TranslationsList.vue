@@ -122,8 +122,6 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("fullPageLoading", true);
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
 				this.table.currentPage,
@@ -136,8 +134,6 @@ export default {
 			}).catch((e) => {
 				Notification(`Translations ${e}`, "is-danger");
 			});
-
-			this.$store.commit("fullPageLoading", false);
 		},
 
 		async submit() {
