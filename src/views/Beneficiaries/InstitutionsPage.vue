@@ -39,6 +39,8 @@
 <script>
 import InstitutionsForm from "@/components/Beneficiaries/InstitutionsForm";
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
+import AddressService from "@/services/AddressService";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
 import InstitutionsService from "@/services/InstitutionsService";
 import { Toast } from "@/utils/UI";
@@ -152,7 +154,7 @@ export default {
 			};
 		},
 
-		mapToFormModel(
+		async mapToFormModel(
 			{
 				id,
 				name,
@@ -161,25 +163,15 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				phone: {
-					prefix: phonePrefix,
-					number: phoneNumber,
-				},
-				address: {
-					street: addressStreet,
-					number: addressNumber,
-					postcode: addressPostCode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
-				},
-				nationalIdCard: {
-					number: nationalCardNumber,
-					type: nationalCardType,
-				},
+				phoneId,
+				addressId,
+				nationalId,
 			},
 		) {
+			const phone = await BeneficiariesService.getPhone(phoneId);
+			const address = await AddressService.getAddress(addressId);
+			const nationalIdCard = await BeneficiariesService.getNationalId(nationalId || 5);
+
 			this.institutionModel = {
 				...this.institutionModel,
 				id,
@@ -189,17 +181,19 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				addressStreet,
-				addressNumber,
-				addressPostCode,
-				nationalCardNumber,
-				nationalCardType,
-				phonePrefix,
-				phoneNumber,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				addressStreet: address.street,
+				addressNumber: address.number,
+				addressPostCode: address.postcode,
+				nationalCardNumber: nationalIdCard.number,
+				nationalCardType: nationalIdCard.type,
+				phonePrefix: phone.prefix,
+				phoneNumber: phone.number,
+				phoneType: phone.type,
+				phoneProxy: phone.proxy,
+				adm1Id: address.adm1Id,
+				adm2Id: address.adm2Id,
+				adm3Id: address.adm3Id,
+				adm4Id: address.adm4Id,
 			};
 		},
 
@@ -219,35 +213,45 @@ export default {
 				nationalCardType,
 				phonePrefix,
 				phoneNumber,
+				phoneType,
+				phoneProxy,
 				adm1Id,
 				adm2Id,
 				adm3Id,
 				adm4Id,
 			} = institutionForm;
-
+			let locationId = null;
+			if (adm4Id) {
+				locationId = adm4Id.locationId;
+			} else if (adm3Id) {
+				locationId = adm3Id.locationId;
+			} else if (adm2Id) {
+				locationId = adm2Id.locationId;
+			} else if (adm1Id) {
+				locationId = adm1Id.locationId;
+			}
 			const institutionBody = {
 				name,
 				longitude,
 				latitude,
 				contactGivenName,
 				contactFamilyName,
-				type,
+				type: type?.code,
 				address: {
 					street: addressStreet,
 					number: addressNumber,
 					postCode: addressPostCode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
+					locationId,
 				},
 				nationalCard: {
 					idNumber: nationalCardNumber,
-					idType: nationalCardType,
+					idType: nationalCardType?.code,
 				},
 				phone: {
-					prefix: phonePrefix,
+					prefix: phonePrefix?.code,
 					number: phoneNumber,
+					type: phoneType?.code,
+					proxy: phoneProxy,
 				},
 			};
 			if (this.institutionModal.isEditing && id) {

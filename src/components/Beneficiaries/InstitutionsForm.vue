@@ -73,6 +73,23 @@
 							@select="validate('phonePrefix')"
 						/>
 					</b-field>
+					<b-field grouped>
+						<MultiSelect
+							v-model="formModel.phoneType"
+							searchable
+							selectLabel=""
+							deselectLabel=""
+							label="value"
+							track-by="code"
+							placeholder="Phone Type"
+							:disabled="formDisabled"
+							:loading="phoneTypesLoading"
+							:options="options.phoneTypes"
+							:class="validateMultiselect('phoneType')"
+							@select="validate('phoneType')"
+						/>
+
+					</b-field>
 					<b-field
 						expanded
 						:type="validateType('phoneNumber')"
@@ -87,7 +104,9 @@
 					</b-field>
 				</b-field>
 			</b-field>
-
+			<b-checkbox v-model="formModel.phoneProxy" class="mb-4" :disabled="formDisabled">
+				Proxy
+			</b-checkbox>
 			<b-field
 				label="Contact ID Type"
 				:type="validateType('nationalCardType')"
@@ -109,7 +128,7 @@
 			<b-field
 				label="Contact ID Number"
 				:type="validateType('nationalCardNumber')"
-				:message="validateMsg('nationalCardNumber', 'Required number')"
+				:message="validateMsg('nationalCardNumber')"
 			>
 				<b-input
 					v-model="formModel.nationalCardNumber"
@@ -239,11 +258,13 @@ export default {
 			contactFamilyName: { required },
 			phonePrefix: { required },
 			phoneNumber: { required, numeric },
+			phoneProxy: { required },
+			phoneType: { required },
 			type: { required },
 			addressStreet: { required },
 			addressNumber: { required },
 			addressPostCode: { required },
-			nationalCardNumber: { required, numeric },
+			nationalCardNumber: { required },
 			nationalCardType: { required },
 			adm1Id: { required },
 			adm2Id: {},
@@ -258,17 +279,33 @@ export default {
 				types: [],
 				nationalCardTypes: [],
 				phonePrefixes: PhoneCodes,
+				phoneTypes: [],
 			},
-
+			phoneTypesLoading: true,
+			institutionTypesLoading: true,
+			nationalCardTypesLoading: true,
 		};
 	},
 
-	mounted() {
-		this.fetchTypes();
-		this.fetchNationalCardTypes();
+	async mounted() {
+		await this.fetchTypes();
+		await this.fetchNationalCardTypes();
+		await this.fetchPhoneTypes();
+		this.mapSelects();
 	},
 
 	methods: {
+		mapSelects() {
+			this.formModel.phonePrefix = PhoneCodes
+				.find((item) => item.code === this.formModel.phonePrefix);
+			this.formModel.type = this.options.types
+				.find((item) => item.code === this.formModel.type);
+			this.formModel.nationalCardType = this.options.nationalCardTypes
+				.find((item) => item.code === this.formModel.nationalCardType);
+			this.formModel.phoneType = this.options.phoneTypes
+				.find((item) => item.code === this.formModel.phoneType);
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			this.$refs.locationForm.submitLocationForm();
@@ -285,20 +322,40 @@ export default {
 			this.$v.$reset();
 		},
 
-		fetchTypes() {
-			InstitutionsService.getListOfInstitutionTypes()
-				.then(({ data }) => { this.options.types = data; })
+		async fetchTypes() {
+			await InstitutionsService.getListOfInstitutionTypes()
+				.then(({ data }) => {
+					this.options.types = data;
+				})
 				.catch((e) => {
 					Notification(`Institution Types ${e}`, "is-danger");
 				});
+
+			this.institutionTypesLoading = false;
 		},
 
 		async fetchNationalCardTypes() {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.nationalCardTypes = data; })
+				.then(({ data }) => {
+					this.options.nationalCardTypes = data;
+				})
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});
+
+			this.nationalCardTypesLoading = false;
+		},
+
+		async fetchPhoneTypes() {
+			await BeneficiariesService.getListOfTypesOfPhones()
+				.then(({ data }) => {
+					this.options.phoneTypes = data;
+				})
+				.catch((e) => {
+					Notification(`Phone types ${e}`, "is-danger");
+				});
+
+			this.phoneTypesLoading = false;
 		},
 	},
 };
