@@ -37,4 +37,20 @@ export default {
 		const { data } = await fetcher({ uri: `beneficiaries/addresses/temporary-settlement?${idsText}` });
 		return data;
 	},
+
+	async getAddress(id) {
+		// TODO Finish after BE prepare address endpoint
+		// const { data } = await fetcher({ uri: `beneficiaries/addresses/${id}` });
+		return {
+			id,
+			number: "1234",
+			street: "Stara",
+			postcode: "512 34",
+			locationId: 59,
+			adm1Id: 1,
+			adm2Id: 1,
+			adm3Id: 4,
+			adm4Id: 53,
+		};
+	},
 };

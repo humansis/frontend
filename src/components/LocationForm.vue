@@ -194,19 +194,19 @@ export default {
 
 		async mapLocations() {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
-			if (adm1Id) {
+			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
 				await this.fetchDistricts(adm1Id);
 			}
-			if (adm2Id) {
+			if (adm2Id && typeof adm2Id !== "object") {
 				this.formModel.adm2Id = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
 				await this.fetchCommunes(adm2Id);
 			}
-			if (adm3Id) {
+			if (adm3Id && typeof adm3Id !== "object") {
 				this.formModel.adm3Id = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
 				await this.fetchVillages(adm3Id);
 			}
-			if (adm4Id) {
+			if (adm4Id && typeof adm4Id !== "object") {
 				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
 			}
 		},
