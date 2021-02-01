@@ -3,6 +3,7 @@
 		<h2 class="title">Vouchers</h2>
 		<Modal
 			can-cancel
+			is-small
 			:active="voucherModal.isOpened"
 			:header="modalHeader"
 			:is-waiting="voucherModal.isWaiting"
@@ -29,11 +30,13 @@
 		</b-button>
 		<!-- switch between two styles of displaying Batches/Vouchers list -->
 		<BatchList
+			v-if="true"
+			ref="batchList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
 		/>
 		<VoucherList
-			v-if="false"
+			v-else
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
@@ -42,6 +45,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import VoucherList from "@/components/Voucher/VoucherList";
 import VoucherForm from "@/components/Voucher/VoucherForm";
 import BatchList from "@/components/Voucher/BatchList";
@@ -91,6 +95,8 @@ export default {
 			}
 			return result;
 		},
+
+		...mapState(["country"]),
 	},
 
 	methods: {
@@ -109,11 +115,12 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValue,
+				totalValue,
 				projectId,
 				password,
 				status,
 				code,
+				currency,
 			},
 		) {
 			this.voucherModel = {
@@ -122,11 +129,12 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValue,
+				individualValue: totalValue,
 				projectId,
 				password,
 				status,
 				code,
+				currency,
 			};
 		},
 
@@ -146,7 +154,7 @@ export default {
 				id: null,
 				quantityOfBooklets: 1,
 				quantityOfVouchers: 1,
-				individualValue: "",
+				individualValue: 0,
 				projectId: null,
 				project: "",
 				password: "",
@@ -163,15 +171,17 @@ export default {
 				individualValue,
 				projectId,
 				password,
+				currency,
 			} = voucherForm;
 
 			const voucherBody = {
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValue,
-				projectId,
+				individualValues: [individualValue],
+				projectId: projectId.id,
 				password,
-				status: 0,
+				iso3: this.country.iso3,
+				currency: currency.code,
 			};
 
 			this.createVoucher(voucherBody);
@@ -181,9 +191,15 @@ export default {
 			this.voucherModal.isWaiting = true;
 
 			await BookletsService.createBooklet(voucherBody).then((response) => {
-				if (response.status === 200) {
+				if (response.status === 204) {
 					Toast("Voucher Successfully Created", "is-success");
-					this.$refs.voucherList.fetchData();
+					if (this.$refs.voucherList) {
+						this.$refs.voucherList.fetchData();
+					} else if (this.$refs.batchList) {
+						this.$refs.batchList.fetchData();
+					} else {
+						this.$router.go();
+					}
 					this.closeVoucherModal();
 				}
 			}).catch((e) => {

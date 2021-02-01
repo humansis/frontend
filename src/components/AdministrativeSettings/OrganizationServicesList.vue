@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ActionButton from "@/components/ActionButton";
 import Table from "@/components/DataGrid/Table";
 import Search from "@/components/Search";
@@ -86,6 +87,10 @@ export default {
 
 	watch: {
 		$route: "fetchData",
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	mounted() {

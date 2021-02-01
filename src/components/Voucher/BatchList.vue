@@ -78,12 +78,13 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import { prepareDataForTable } from "@/mappers/voucherMapper";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
 import BookletsService from "@/services/BookletsService";
-import ProjectsService from "@/services/ProjectsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
@@ -110,8 +111,9 @@ export default {
 				visibleColumns: [
 					{ key: "project" },
 					{ key: "code" },
-					{ key: "quantityOfVouchers" },
-					{ key: "individualValue" },
+					{ key: "numberVouchers", label: "Quantity Of Vouchers" },
+					{ key: "value", label: "Individual Value" },
+					{ key: "currency" },
 					{ key: "status" },
 					{ key: "beneficiary" },
 					{ key: "distribution" },
@@ -128,6 +130,8 @@ export default {
 	},
 
 	computed: {
+		...mapState(["perPage"]),
+
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {
@@ -146,6 +150,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+
 			const loadingComponent = this.$buefy.loading.open({
 				container: this.$refs.batches,
 			});
@@ -153,7 +158,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
 			).then(async ({ data, totalCount }) => {
-				await this.getProjectNameForBooklets(data);
+				this.table.data = await prepareDataForTable(data);
 				this.table.total = totalCount;
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
@@ -161,17 +166,6 @@ export default {
 
 			this.isLoadingList = false;
 			loadingComponent.close();
-		},
-
-		async getProjectNameForBooklets(data) {
-			data.forEach((booklet) => {
-				const preparedBooklet = booklet;
-				ProjectsService.getDetailOfProject(booklet.projectId)
-					.then((response) => {
-						preparedBooklet.project = response.data.name;
-						this.table.data.push(preparedBooklet);
-					});
-			});
 		},
 
 		getBatches() {

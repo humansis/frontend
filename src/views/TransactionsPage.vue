@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import Search from "@/components/Search";
 import TransactionService from "@/services/TransactionService";
@@ -101,6 +102,10 @@ export default {
 
 	mounted() {
 		this.fetchData();
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
@@ -122,6 +123,8 @@ export default {
 			}
 			return result;
 		},
+
+		...mapState(["perPage"]),
 	},
 
 	mounted() {

@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
@@ -99,6 +100,10 @@ export default {
 
 	mounted() {
 		this.fetchProjectReports();
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

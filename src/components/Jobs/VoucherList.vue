@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import Search from "@/components/Search";
@@ -73,6 +74,10 @@ export default {
 
 	mounted() {
 		this.fetchData();
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

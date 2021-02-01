@@ -122,6 +122,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
@@ -217,6 +218,10 @@ export default {
 
 	mounted() {
 		this.fetchData();
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

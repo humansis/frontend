@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -128,6 +129,10 @@ export default {
 
 	watch: {
 		$route: "fetchData",
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	mounted() {

@@ -61,6 +61,7 @@
 
 <script>
 // TODO Fix translations and check all functionalities in table
+import { mapState } from "vuex";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
@@ -118,6 +119,10 @@ export default {
 
 	mounted() {
 		this.fetchData();
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

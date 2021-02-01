@@ -26,6 +26,7 @@
 			</b-field>
 
 			<b-field
+				v-if="!formDisabled"
 				label="Quantity Of Booklets"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
@@ -66,9 +67,10 @@
 				:type="validateType('individualValue')"
 				:message="validateMsg('individualValue')"
 			>
-				<b-input
+				<b-numberinput
 					v-model="formModel.individualValue"
 					placeholder="Individual Value"
+					:controls="false"
 					:disabled="formDisabled"
 					@blur="validate('individualValue')"
 				/>
@@ -102,7 +104,7 @@
 			</b-field>
 
 			<b-field
-				v-if="formModel.defineAPassword || formDisabled"
+				v-if="formModel.defineAPassword && !formDisabled"
 				label="Password"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
@@ -141,6 +143,7 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -158,25 +161,7 @@ export default {
 	data() {
 		return {
 			projects: [],
-			// TODO fill currencies
-			currencies: [
-				{
-					code: "CZK",
-					value: "CZK",
-				},
-				{
-					code: "USD",
-					value: "USD",
-				},
-				{
-					code: "GBP",
-					value: "GBP",
-				},
-				{
-					code: "EUR",
-					value: "EUR",
-				},
-			],
+			currencies: [],
 		};
 	},
 
@@ -192,8 +177,9 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchProjects();
+	async mounted() {
+		await this.fetchProjects();
+		await this.fetchCurrencies();
 	},
 
 	methods: {
@@ -214,11 +200,38 @@ export default {
 
 		async fetchProjects() {
 			await ProjectsService.getListOfProjects()
-				.then((response) => {
-					this.projects = response.data;
+				.then(({ data }) => {
+					this.projects = data;
 				}).catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
+		},
+
+		async fetchCurrencies() {
+			// TODO fill currencies
+			this.currencies = [
+				{
+					code: "CZK",
+					value: "CZK",
+				},
+				{
+					code: "USD",
+					value: "USD",
+				},
+				{
+					code: "GBP",
+					value: "GBP",
+				},
+				{
+					code: "EUR",
+					value: "EUR",
+				},
+				{
+					code: "KHR",
+					value: "KHR",
+				},
+			];
+			this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], this.currencies, "code");
 		},
 	},
 };
