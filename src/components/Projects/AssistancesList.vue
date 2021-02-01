@@ -158,8 +158,7 @@ export default {
 					},
 					{ key: "target" },
 					{
-						type: "commodity",
-						key: "commodityIds",
+						key: "commodity",
 						label: "Commodity",
 					},
 				],
@@ -224,21 +223,24 @@ export default {
 			const filledData = [];
 			const locationIds = [];
 			const assistanceIds = [];
+			const commodityIds = [];
 			let promise = data.map(async (item, key) => {
 				filledData[key] = item;
 				filledData[key].target = normalizeText(item.target);
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
+				commodityIds.push(item.commodityIds);
 			});
-			// TODO Commodities and Beneficiaries and set progress bar
 			const locations = await this.getLocations(locationIds);
+			const commodities = await this.getCommodities(assistanceIds);
+			const statistics = await this.getStatistics(assistanceIds);
 
 			await Promise.all(promise);
 			promise = data.map(async (item, key) => {
 				filledData[key] = item;
 				filledData[key].location = await this.prepareLocation(item.locationId, locations);
-				filledData[key].commodity = await this.prepareCommodity(item.id);
-				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
+				filledData[key].commodity = await this.prepareCommodity(item.id, commodities);
+				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id, statistics);
 				filledData[key].target = normalizeText(item.target);
 			});
 
@@ -258,26 +260,47 @@ export default {
 				});
 		},
 
+		async getCommodities(ids) {
+			return AssistancesService.getCommodities(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
+		},
+
+		async getStatistics(ids) {
+			return AssistancesService.getStatistics(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
+		},
+
 		async prepareLocation(id, locations) {
-			const location = locations.find((item) => item.id === id);
+			if (!locations) return "";
+			const location = await locations.find((item) => item.id === id);
 			this.table.progress += 1;
 			return location ? location.adm.name : "";
 		},
 
-		async prepareCommodity(id) {
-			return AssistancesService.getAssistanceCommodities(id)
-				.then(({ data: [a] }) => {
-					this.table.progress += 2;
-					return a.modalityType;
-				});
+		async prepareCommodity(id, commodities) {
+			if (!commodities) return "";
+			const commodity = await commodities.find((item) => item.id === id);
+			this.table.progress += 1;
+			return commodity ? commodity.modalityType : "";
 		},
 
-		async prepareBeneficiaries(id) {
-			return AssistancesService.getListOfBeneficiaries(id)
-				.then(({ totalCount }) => {
-					this.table.progress += 2;
-					return totalCount;
-				});
+		async prepareBeneficiaries(id, statistics) {
+			if (!statistics) return "";
+			const assistanceStatistic = await statistics.find((item) => item.id === id);
+			this.table.progress += 1;
+			return assistanceStatistic ? assistanceStatistic.numberOfBeneficiaries : 0;
 		},
 
 		async removeAssistance(id) {

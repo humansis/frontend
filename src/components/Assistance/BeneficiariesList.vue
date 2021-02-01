@@ -265,10 +265,13 @@ export default {
 				filledData[key] = item;
 				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				phoneIds.push(item.phoneIds);
-				nationalIdIds.push(item.nationalIds);
+				if (item.nationalIds.length) {
+					nationalIdIds.push(item.nationalIds);
+				}
+				if (item.phoneIds.length) {
+					phoneIds.push(item.phoneIds);
+				}
 			});
-			// TODO check phone after BE implement multi get on it
 			const phones = await this.getPhones(phoneIds);
 			const nationalIds = await this.getNationalIds(nationalIdIds);
 
@@ -277,8 +280,8 @@ export default {
 				filledData[key] = item;
 				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				filledData[key].phone = await this.preparePhone(item.phoneIds[0], phones);
-				filledData[key].nationalId = await this.prepareNationalId(item.nationalIds[0], nationalIds);
+				filledData[key].phone = !item.phoneIds.length ? "none" : await this.preparePhone(item.phoneIds[0], phones);
+				filledData[key].nationalId = !item.nationalIds.length ? "none" : await this.prepareNationalId(item.nationalIds[0], nationalIds);
 			});
 			await Promise.all(promise);
 			this.table.progress = 100;
@@ -286,6 +289,7 @@ export default {
 		},
 
 		async getNationalIds(ids) {
+			if (!ids.length) return [];
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => {
 					this.table.progress += 20;
@@ -297,6 +301,7 @@ export default {
 		},
 
 		async getPhones(ids) {
+			if (!ids.length) return [];
 			return BeneficiariesService.getPhones(ids)
 				.then(({ data }) => {
 					this.table.progress += 20;

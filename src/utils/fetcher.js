@@ -140,12 +140,17 @@ export const filtersToUri = (filters) => {
 };
 
 export const idsToUri = (ids, param = null) => {
+	if (!ids.length) return "";
 	let query = "";
 	ids.forEach((item) => {
 		if (param) {
-			query += `&filter[id][]=${item[param]}`;
+			if (Array.isArray(item[param])) {
+				query += item[param].length ? `&filter[id][]=${item[param]}` : "";
+			} else {
+				query += item[param] ? `&filter[id][]=${item[param]}` : "";
+			}
 		} else {
-			query += `&filter[id][]=${item}`;
+			query += item ? `&filter[id][]=${item}` : "";
 		}
 	});
 	return query;

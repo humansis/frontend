@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfAssistances(page, size, sort, upcoming, search = null) {
@@ -48,6 +48,24 @@ export default {
 	async getAssistanceCommodities(id) {
 		const { data: { data }, totalCount } = await fetcher({
 			uri: `assistances/${id}/commodities`,
+		});
+		return { data, totalCount };
+	},
+
+	async getCommodities(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data: { data }, totalCount } = await fetcher({
+			uri: `assistances/commodities?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getStatistics(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data: { data }, totalCount } = await fetcher({
+			uri: `assistances/statistics?${idsText}`,
 		});
 		return { data, totalCount };
 	},
