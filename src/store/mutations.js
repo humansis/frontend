@@ -1,10 +1,10 @@
 export default {
 	changeCountry: (state, countryToChange) => {
-		state.country = countryToChange;
+		state.country = { ...countryToChange };
 	},
 
 	changeLanguage: (state, languageToChange) => {
-		state.language = languageToChange;
+		state.language = { ...languageToChange };
 	},
 
 	appLoading: (state, boolean) => {

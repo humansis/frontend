@@ -58,7 +58,7 @@
 				</a>
 				<b-dropdown-item
 					v-for="language in languages"
-					:key="language.name"
+					:key="language.key"
 					:value="language.name"
 					@click="handleChangeLanguage(language)"
 				>
@@ -128,7 +128,6 @@ export default {
 		...mapActions(["updateCountry", "updateLanguage"]),
 
 		handleChangeCountry(country) {
-			localStorage.setItem("country", country.iso3);
 			this.updateCountry(country);
 			this.$router.go();
 		},
@@ -136,13 +135,14 @@ export default {
 		async handleChangeLanguage(language) {
 			this.$store.commit("appLoading", true);
 
-			await TranslationService.getTranslations(language.name).then((response) => {
-				this.updateLanguage(language);
-				localStorage.setItem("language", language.name);
-				sessionStorage.setItem("translations", JSON.stringify(response.data) || {});
-				this.$i18n.locale = language.name;
-				this.$i18n.fallbackLocale = language.name;
-				this.$root.$i18n.setLocaleMessage(language.name, response.data);
+			await TranslationService.getTranslations(language.key).then((response) => {
+				if (response.status === 200) {
+					this.$i18n.locale = language.key;
+					this.$i18n.fallbackLocale = language.key;
+					this.$root.$i18n.setLocaleMessage(language.key, response.data);
+					this.updateLanguage(language);
+					sessionStorage.setItem("translations", JSON.stringify(response.data));
+				}
 			}).catch((e) => {
 				Notification(`Translations ${e}`, "is-danger");
 				this.$store.commit("appLoading", false);
