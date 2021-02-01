@@ -1,14 +1,14 @@
 export default {
 	changeCountry: (state, countryToChange) => {
-		state.country = countryToChange;
+		state.country = { ...countryToChange };
 	},
 
 	changeLanguage: (state, languageToChange) => {
-		state.language = languageToChange;
+		state.language = { ...languageToChange };
 	},
 
-	fullPageLoading: (state, boolean) => {
-		state.isFullPageLoading = boolean;
+	appLoading: (state, boolean) => {
+		state.isAppLoading = boolean;
 	},
 
 	setPermissions: (state, { storedPermissions }) => {

@@ -1,17 +1,10 @@
-import i18n from "@/plugins/i18n";
-
 export default {
 	updateCountry: ({ commit }, country) => {
-		if (country) {
-			commit("changeCountry", country);
-		}
+		commit("changeCountry", country);
 	},
 
 	updateLanguage: ({ commit }, language) => {
-		if (language) {
-			commit("changeLanguage", language);
-			i18n.locale = language.name;
-		}
+		commit("changeLanguage", language);
 	},
 
 	changePerPage: ({ commit }, perPage) => {

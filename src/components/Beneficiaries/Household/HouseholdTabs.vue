@@ -223,15 +223,13 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
-			this.$store.commit("fullPageLoading", true);
+			// TODO Loading on data container
 
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
 				Notification(`Household ${e}`, "is-danger");
 			});
-
-			this.$store.commit("fullPageLoading", false);
 		},
 
 		prepareSummaryMembers(members) {

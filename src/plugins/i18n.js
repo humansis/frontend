@@ -1,19 +1,13 @@
 import Vue from "vue";
 import VueI18n from "vue-i18n";
+import consts from "@/const";
 
 Vue.use(VueI18n);
 
-const messages = {
-};
-
-function loadMessages() {
-	// TODO get locales from API
-	console.log("Loading locales ...");
-	return messages;
-}
+const language = localStorage.getItem("language") || consts.DEFAULT_LANGUAGE;
 
 export default new VueI18n({
-	locale: "EN",
-	fallbackLocale: "EN",
-	messages: loadMessages(),
+	locale: language,
+	fallbackLocale: language,
+	messages: {},
 });

@@ -122,7 +122,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("fullPageLoading", true);
+			// TODO Loading on data container
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
@@ -136,8 +136,6 @@ export default {
 			}).catch((e) => {
 				Notification(`Translations ${e}`, "is-danger");
 			});
-
-			this.$store.commit("fullPageLoading", false);
 		},
 
 		async submit() {
