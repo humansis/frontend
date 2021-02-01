@@ -35,6 +35,7 @@
 				@exportData="exportAssistance"
 			/>
 		</div>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -157,8 +158,7 @@ export default {
 					},
 					{ key: "target" },
 					{
-						type: "commodity",
-						key: "commodityIds",
+						key: "commodity",
 						label: "Commodity",
 					},
 				],
@@ -167,6 +167,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
 			assistanceModal: {
 				isOpened: false,
@@ -196,6 +197,7 @@ export default {
 
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await AssistancesService.getListOfProjectAssistances(
@@ -205,8 +207,11 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
-				this.table.data = await this.prepareDataForTable(data);
+				this.table.progress = 0;
 				this.table.total = totalCount;
+				if (totalCount !== 0) {
+					this.table.data = await this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
@@ -216,30 +221,86 @@ export default {
 
 		async prepareDataForTable(data) {
 			const filledData = [];
-			const promise = data.map(async (item, key) => {
+			const locationIds = [];
+			const assistanceIds = [];
+			const commodityIds = [];
+			let promise = data.map(async (item, key) => {
 				filledData[key] = item;
-				filledData[key].location = await this.prepareLocation(item.locationId);
-				filledData[key].commodity = await this.prepareCommodity(item.id);
-				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
+				filledData[key].target = normalizeText(item.target);
+				locationIds.push(item.locationId);
+				assistanceIds.push(item.id);
+				commodityIds.push(item.commodityIds);
+			});
+			const locations = await this.getLocations(locationIds);
+			const commodities = await this.getCommodities(assistanceIds);
+			const statistics = await this.getStatistics(assistanceIds);
+
+			await Promise.all(promise);
+			promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].location = await this.prepareLocation(item.locationId, locations);
+				filledData[key].commodity = await this.prepareCommodity(item.id, commodities);
+				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id, statistics);
 				filledData[key].target = normalizeText(item.target);
 			});
 
 			await Promise.all(promise);
+			this.table.progress = 100;
 			return filledData;
 		},
 
-		async prepareLocation(id) {
-			return LocationsService.getLocation(id).then(({ data: { name } }) => name);
+		async getLocations(ids) {
+			return LocationsService.getLocations(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
+				});
 		},
 
-		async prepareCommodity(id) {
-			return AssistancesService.getAssistanceCommodities(id)
-				.then(({ data: [a] }) => a.modalityType);
+		async getCommodities(ids) {
+			return AssistancesService.getCommodities(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
 		},
 
-		async prepareBeneficiaries(id) {
-			return AssistancesService.getListOfBeneficiaries(id)
-				.then(({ totalCount }) => totalCount);
+		async getStatistics(ids) {
+			return AssistancesService.getStatistics(ids)
+				.then(({ data }) => {
+					this.table.progress += 5;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
+		},
+
+		async prepareLocation(id, locations) {
+			if (!locations) return "";
+			const location = await locations.find((item) => item.id === id);
+			this.table.progress += 1;
+			return location ? location.adm.name : "";
+		},
+
+		async prepareCommodity(id, commodities) {
+			if (!commodities) return "";
+			const commodity = await commodities.find((item) => item.id === id);
+			this.table.progress += 1;
+			return commodity ? commodity.modalityType : "";
+		},
+
+		async prepareBeneficiaries(id, statistics) {
+			if (!statistics) return "";
+			const assistanceStatistic = await statistics.find((item) => item.id === id);
+			this.table.progress += 1;
+			return assistanceStatistic ? assistanceStatistic.numberOfBeneficiaries : 0;
 		},
 
 		async removeAssistance(id) {
