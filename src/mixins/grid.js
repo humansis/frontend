@@ -1,10 +1,14 @@
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
 	data() {
 		return {
 			isLoadingList: false,
 		};
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	methods: {

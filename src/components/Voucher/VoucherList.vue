@@ -14,10 +14,12 @@
 			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -37,6 +39,7 @@
 						icon="trash"
 						entity="Voucher"
 						tooltip="Delete"
+						:disabled="!props.row.deletable"
 						:id="props.row.id"
 						@submitted="remove"
 					/>
@@ -48,13 +51,13 @@
 </template>
 
 <script>
+import { prepareDataForTable } from "@/mappers/voucherMapper";
 import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
-import ProjectsService from "@/services/ProjectsService";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
-import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
@@ -66,6 +69,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -77,17 +81,19 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "project" },
-					{ key: "code" },
-					{ key: "quantityOfVouchers" },
-					{ key: "individualValue" },
-					{ key: "currency" },
-					{ key: "status" },
-					{ key: "beneficiary" },
-					{ key: "distribution" },
+					{ key: "code", sortable: true },
+					{ key: "numberVouchers", label: "Quantity Of Vouchers", sortable: true },
+					{ key: "value", label: "Total Value", sortable: true, attribute: "totalValue", type: "different" },
+					{ key: "currency", sortable: true },
+					{ key: "status", sortable: true },
+					{ key: "beneficiary", sortable: true },
+					{ key: "assistance", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
 				searchPhrase: "",
+				sortColumn: "",
+				sortDirection: "",
 			},
 		};
 	},
@@ -120,35 +126,14 @@ export default {
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.perPage,
-				"desc",
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.getProjectNameForBooklets(response.data);
+			).then(async ({ data, totalCount }) => {
+				this.table.data = await prepareDataForTable(data);
+				this.table.total = totalCount;
 			});
 
 			this.isLoadingList = false;
-		},
-
-		async getProjectNameForBooklets(data) {
-			data.forEach((booklet) => {
-				const preparedBooklet = booklet;
-				ProjectsService.getDetailOfProject(booklet.projectId)
-					.then((response) => {
-						preparedBooklet.project = response.data.name;
-						this.table.data.push(preparedBooklet);
-						this.table.total += 1;
-					}).catch((e) => {
-						Notification(`Project Detail ${e}`, "is-danger");
-					});
-			});
-		},
-
-		onPageChange() {
-			// TODO on table page change
-		},
-
-		onSort() {
-			// TODO on table sort
 		},
 	},
 };

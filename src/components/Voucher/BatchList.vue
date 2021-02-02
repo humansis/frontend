@@ -40,10 +40,12 @@
 						@changePerPage="onChangePerPage"
 					>
 						<template v-for="column in table.columns">
-							<b-table-column v-bind="column" :key="column.id">
-								<template v-slot="props">
-									{{ props.row[column.field] }}
-								</template>
+							<b-table-column
+								v-bind="column"
+								:key="column.id"
+								v-slot="props"
+							>
+								<ColumnField :data="props" :column="column" />
 							</b-table-column>
 						</template>
 						<b-table-column
@@ -78,12 +80,13 @@
 </template>
 
 <script>
+import { prepareDataForTable } from "@/mappers/voucherMapper";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
-import ProjectsService from "@/services/ProjectsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
@@ -96,6 +99,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -110,8 +114,9 @@ export default {
 				visibleColumns: [
 					{ key: "project" },
 					{ key: "code" },
-					{ key: "quantityOfVouchers" },
-					{ key: "individualValue" },
+					{ key: "numberVouchers", label: "Quantity Of Vouchers" },
+					{ key: "value", label: "Total Value", attribute: "totalValue", type: "different" },
+					{ key: "currency" },
 					{ key: "status" },
 					{ key: "beneficiary" },
 					{ key: "distribution" },
@@ -146,6 +151,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+
 			const loadingComponent = this.$buefy.loading.open({
 				container: this.$refs.batches,
 			});
@@ -153,7 +159,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
 			).then(async ({ data, totalCount }) => {
-				await this.getProjectNameForBooklets(data);
+				this.table.data = await prepareDataForTable(data);
 				this.table.total = totalCount;
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
@@ -161,17 +167,6 @@ export default {
 
 			this.isLoadingList = false;
 			loadingComponent.close();
-		},
-
-		async getProjectNameForBooklets(data) {
-			data.forEach((booklet) => {
-				const preparedBooklet = booklet;
-				ProjectsService.getDetailOfProject(booklet.projectId)
-					.then((response) => {
-						preparedBooklet.project = response.data.name;
-						this.table.data.push(preparedBooklet);
-					});
-			});
 		},
 
 		getBatches() {

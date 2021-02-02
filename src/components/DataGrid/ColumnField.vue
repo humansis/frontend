@@ -5,6 +5,11 @@
 			{{ data.row[column.field] }}
 		</template>
 
+		<!-- Different attrbiute Text -->
+		<template v-if="column.type === 'different'">
+			{{ data.row[column.attribute] }}
+		</template>
+
 		<!-- Count array items -->
 		<template v-if="column.type === 'count'">
 			<p v-if="data.row[column.field].length">
