@@ -3,7 +3,7 @@ import { fetcher } from "@/utils/fetcher";
 export default {
 	async getListOfBooklets(page, size, sort, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
 
@@ -15,7 +15,7 @@ export default {
 
 	async createBooklet(body) {
 		const { data, status } = await fetcher({
-			uri: "booklets", method: "POST", body,
+			uri: "booklets/batches", method: "POST", body,
 		});
 		return { data, status };
 	},

@@ -11,6 +11,15 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistances(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
 	async getListOfTargetsForAssistances() {
 		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/targets" });
 		return { data, totalCount };
