@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { prepareDataForTable } from "@/mappers/voucherMapper";
 import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
@@ -113,8 +112,6 @@ export default {
 			}
 			return result;
 		},
-
-		...mapState(["perPage"]),
 	},
 
 	mounted() {

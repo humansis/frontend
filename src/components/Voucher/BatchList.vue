@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { prepareDataForTable } from "@/mappers/voucherMapper";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -134,8 +133,6 @@ export default {
 	},
 
 	computed: {
-		...mapState(["perPage"]),
-
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {

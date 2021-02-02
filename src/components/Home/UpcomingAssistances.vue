@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
@@ -103,10 +102,6 @@ export default {
 
 	mounted() {
 		this.fetchData();
-	},
-
-	computed: {
-		...mapState(["perPage"]),
 	},
 
 	methods: {

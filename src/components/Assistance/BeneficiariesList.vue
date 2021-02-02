@@ -116,7 +116,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ExportButton from "@/components/ExportButton";
@@ -230,10 +229,6 @@ export default {
 
 	mounted() {
 		this.fetchData();
-	},
-
-	computed: {
-		...mapState(["perPage"]),
 	},
 
 	methods: {

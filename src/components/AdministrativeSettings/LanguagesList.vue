@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
@@ -85,10 +84,6 @@ export default {
 				searchPhrase: "",
 			},
 		};
-	},
-
-	computed: {
-		...mapState(["perPage"]),
 	},
 
 	watch: {
