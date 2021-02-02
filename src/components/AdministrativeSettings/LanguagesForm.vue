@@ -1,0 +1,87 @@
+<template>
+	<form @submit.prevent="submitForm">
+		<section class="modal-card-body">
+			<b-field
+				label="Name"
+				:type="validateType('name')"
+				:message="validateMsg('name')"
+			>
+				<b-input
+					v-model="formModel.name"
+					:disabled="formDisabled"
+					@blur="validate('name')"
+				/>
+			</b-field>
+			<b-field
+				label="Published"
+				:type="validateType('published')"
+				:message="validateMsg('published')"
+			>
+				<b-checkbox
+					v-model="formModel.published"
+					:disabled="formDisabled"
+					@input="validate('published')"
+				/>
+			</b-field>
+		</section>
+		<footer class="modal-card-foot">
+			<button
+				v-if="closeButton"
+				class="button"
+				type="button"
+				@click="closeForm"
+			>
+				Close
+			</button>
+			<b-button
+				v-if="!formDisabled"
+				tag="input"
+				class="is-success"
+				native-type="submit"
+				:value="submitButtonLabel"
+			/>
+		</footer>
+	</form>
+</template>
+
+<script>
+import { required } from "vuelidate/lib/validators";
+import Validation from "@/mixins/validation";
+
+export default {
+	name: "LanguagesForm",
+
+	mixins: [Validation],
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+	},
+
+	validations: {
+		formModel: {
+			name: { required },
+			published: { required },
+		},
+	},
+
+	methods: {
+		submitForm() {
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				return;
+			}
+
+			this.$emit("formSubmitted", this.formModel);
+			this.$v.$reset();
+		},
+
+		closeForm() {
+			this.$emit("formClosed");
+			this.$v.$reset();
+		},
+	},
+};
+</script>

@@ -1,118 +1,96 @@
 <template>
-	<div>
-		<div v-if="projectSummary" ref="projectSummary">
-			<h2 class="title has-text-centered">
-				{{ projectSummary.name }}
-			</h2>
-			<nav class="level is-mobile">
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Sectors</p>
-						<p class="title">{{ projectSummary.sectorIds.length }}</p>
-					</div>
+	<div v-if="projectSummary" ref="projectSummary">
+		<h2 class="title has-text-centered">
+			{{ projectSummary.name }}
+		</h2>
+		<nav class="level is-mobile">
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Sectors</p>
+					<p class="title">{{ projectSummary.sectors.length }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Start Date</p>
-						<p class="title">{{ projectSummary.startDate }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Start Date</p>
+					<p class="title">{{ new Date(projectSummary.startDate).toLocaleDateString() }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">End Date</p>
-						<p class="title">{{ projectSummary.endDate }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">End Date</p>
+					<p class="title">{{ new Date(projectSummary.endDate).toLocaleDateString() }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Number of households</p>
-						<p class="title">{{ projectSummary.numberOfHouseholds }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Number of households</p>
+					<p class="title">{{ projectSummary.numberOfHouseholds }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Donors</p>
-						<p class="title">{{ projectSummary.donorIds.length }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Donors</p>
+					<p class="title">{{ projectSummary.donorIds.length }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Total target beneficiaries</p>
-						<p class="title">{{ projectSummary.target }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Total target beneficiaries</p>
+					<p class="title">{{ projectSummary.target }}</p>
 				</div>
-				<div class="level-item has-text-centered">
-					<div class="box">
-						<p class="heading">Beneficiaries reached</p>
-						<p class="title">{{ projectSummary.target }}</p>
-					</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">Beneficiaries reached</p>
+					<p class="title">{{ projectSummary.target }}</p>
 				</div>
-			</nav>
-			<hr />
-		</div>
+			</div>
+		</nav>
+		<hr>
 	</div>
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
-import { normalizeText } from "@/utils/datagrid";
+import { mapState } from "vuex";
+import ProjectsService from "@/services/ProjectsService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProjectSummary",
 
 	data() {
 		return {
-			fetch: {
-				error: null,
-			},
 			projectSummary: null,
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
+	computed: {
+		...mapState(["temporaryProject"]),
 	},
 
-	mounted() {
-		this.fetchData();
+	async mounted() {
+		if (this.temporaryProject) {
+			this.projectSummary = this.temporaryProject;
+		} else {
+			await this.fetchData();
+		}
 	},
 
 	methods: {
-		normalizeText(text) {
-			return normalizeText(text);
-		},
-
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectSummary,
-				});
-
-				this.projectSummary = [];
-
-				const uri = `projects/${this.$route.params.projectId}`;
-
-				const { data } = await fetcher({ uri, auth: true });
+			await ProjectsService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then(({ data }) => {
 				this.projectSummary = data;
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
-		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+			}).catch((e) => { Toast(e, "is-danger"); });
 		},
 	},
 };
 </script>
-
-<style scoped>
-	.columns {
-		margin-bottom: 20px;
-	}
-</style>

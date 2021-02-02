@@ -8,7 +8,8 @@
 			:fullwidth="false"
 			:overlay="false"
 			:right="false"
-			:can-cancel="false">
+			:can-cancel="false"
+		>
 			<div class="m-2">
 				<span class="icon">
 					<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
@@ -36,24 +37,31 @@
 						>
 							<b-menu-item
 								label="Households"
-								icon="arrow"
+								icon="home"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
 							/>
 							<b-menu-item
 								label="Institutions"
-								icon="arrow"
+								icon="building"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
 							/>
 							<b-menu-item
 								label="Communities"
-								icon="arrow"
+								icon="users"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
+							/>
+							<b-menu-item
+								label="Vendors"
+								icon="store"
+								exact-active-class="is-active"
+								tag="router-link"
+								:to="{ name: 'Vendors' }"
 							/>
 						</b-menu-item>
 						<b-menu-item
@@ -76,25 +84,18 @@
 							class="to-dropdown-item"
 						>
 							<b-menu-item
-								label="Vendors"
-								icon="arrow"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Vendors' }"
-							/>
-							<b-menu-item
 								label="Products"
-								icon="arrow"
+								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Products' }"
 							/>
 							<b-menu-item
-								label="Country options"
-								icon="arrow"
+								label="Country specifics"
+								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'CountryOptions' }"
+								:to="{ name: 'CountrySpecificOptions' }"
 							/>
 						</b-menu-item>
 						<b-menu-item
@@ -103,6 +104,20 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Administrative Settings' }"
+						/>
+						<b-menu-item
+							label="Transactions"
+							icon="credit-card"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Transactions' }"
+						/>
+						<b-menu-item
+							label="Jobs"
+							icon="briefcase"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Jobs' }"
 						/>
 						<b-menu-item
 							label="Logs"
@@ -115,7 +130,6 @@
 				</b-menu>
 			</div>
 		</b-sidebar>
-
 	</aside>
 </template>
 

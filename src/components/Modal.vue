@@ -1,23 +1,27 @@
 <template>
 	<b-modal
+		:active="active"
+		has-modal-card
 		trap-focus
 		aria-role="dialog"
-		scroll="keep"
+		destroy-on-hide
 		aria-modal
-		:active="active"
-		:can-cancel="canCancel"
-		:destroy-on-hide="false"
+		:can-cancel="canCancel && !isWaiting"
+		@close="$emit('close')"
 	>
-		<div class="modal-card">
+		<div :class="modalCardClass">
+			<b-loading :is-full-page="false" :active="isWaiting" />
 			<header class="modal-card-head">
 				<p class="modal-card-title">{{ header }}</p>
+
 				<button
 					type="button"
 					class="delete"
 					@click="$emit('close')"
 				/>
 			</header>
-			<slot/>
+
+			<slot />
 		</div>
 	</b-modal>
 </template>
@@ -30,12 +34,17 @@ export default {
 		active: Boolean,
 		header: String,
 		canCancel: Boolean,
+		isSmall: {
+			type: Boolean,
+			default: false,
+		},
+		isWaiting: Boolean,
 	},
 
-	data() {
-		return {
-			isModalActive: false,
-		};
+	computed: {
+		modalCardClass() {
+			return this.isSmall ? "modal-card small-modal" : "modal-card";
+		},
 	},
 };
 </script>

@@ -1,97 +1,102 @@
 <template>
 	<div>
-		<h2 class="title">Communities</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-		>
-			Add
-		</b-button>
 		<div class="columns">
-			<div class="column is-two-fifths">
-				<b-field>
-					<b-input placeholder="Search..."
-						type="search"
-						icon="search"
-					/>
-				</b-field>
-			</div>
+			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
-
-		<b-table
-			striped
-			hoverable
-			paginated
-			selectable
-			default-sort="id"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
-			per-page="15"
-			pagination-position="bottom"
-			default-sort-direction="asc"
-			sort-icon="arrow-up"
-			sort-icon-size="is-small"
-			:data="tableData"
-			:current-page="1"
-			:pagination-simple="false"
-			@select="goToDetail"
+		<Table
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:is-loading="isLoadingList"
+			@clicked="showDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
+			@changePerPage="onChangePerPage"
 		>
-			<template v-for="column in tableColumns">
-				<b-table-column :key="column.id" v-bind="column">
+			<template v-for="column in table.columns">
+				<b-table-column v-bind="column" sortable :key="column.id">
 					<template v-slot="props">
 						{{ props.row[column.field] }}
 					</template>
 				</b-table-column>
 			</template>
-
 			<b-table-column
+				v-slot="props"
 				label="Actions"
+				width="150"
+				centered
 			>
 				<div class="block">
-					<b-icon
+					<ActionButton
+						icon="search"
+						type="is-link"
+						tooltip="Show Detail"
+						@click.native="showDetailWithId(props.row.id)"
+					/>
+					<ActionButton
 						icon="edit"
 						type="is-link"
-						size="is-medium">
-					</b-icon>
-					<b-icon
-						icon="search"
-						type="is-info"
-						size="is-medium">
-					</b-icon>
-					<b-icon
+						tooltip="Edit"
+						@click.native="showEdit(props.row.id)"
+					/>
+					<SafeDelete
 						icon="trash"
-						type="is-danger"
-						size="is-medium">
-					</b-icon>
-					<b-icon
-						icon="print"
-						type="is-dark"
-						size="is-medium">
-					</b-icon>
+						entity="Community"
+						tooltip="Delete"
+						:id="props.row.id"
+						@submitted="remove"
+					/>
 				</div>
 			</b-table-column>
-		</b-table>
+		</Table>
 	</div>
 </template>
 
 <script>
-import { fetcher } from "@/utils/fetcher";
-import { generateColumnsFromData } from "@/utils/datagrid";
+import SafeDelete from "@/components/SafeDelete";
+import Table from "@/components/DataGrid/Table";
+import ActionButton from "@/components/ActionButton";
+import Search from "@/components/Search";
+import CommunitiesService from "@/services/CommunitiesService";
+import { generateColumns } from "@/utils/datagrid";
+import { Toast } from "@/utils/UI";
+import grid from "@/mixins/grid";
 
 export default {
-	name: "CommunitionsList",
+	name: "CommunitiesList",
+
+	components: {
+		Search,
+		SafeDelete,
+		Table,
+		ActionButton,
+	},
+
+	mixins: [grid],
 
 	data() {
 		return {
-			fetch: {
-				error: null,
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					{
+						key: "name",
+					},
+					{
+						key: "contactGivenName",
+						label: "Contact Name",
+					},
+					{
+						key: "contactFamilyName",
+					},
+				],
+				total: 0,
+				currentPage: 1,
+				sortDirection: "",
+				sortColumn: "",
+				searchPhrase: "",
 			},
-			tableData: [],
-			tableColumns: [],
 		};
 	},
 
@@ -105,37 +110,23 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.projectsList,
-				});
+			this.isLoadingList = true;
 
-				this.tableData = [];
-				this.tableColumns = [];
+			this.table.columns = generateColumns(this.table.visibleColumns);
+			await CommunitiesService.getListOfCommunities(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.searchPhrase,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+			}).catch((e) => {
+				Toast(`(Communities) ${e}`, "is-danger");
+			});
 
-				const uri = "communities?page=1&size=15&sort=asc";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data);
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.isLoadingList = false;
 		},
-
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
-		},
-
-		goToDetail() {
-			// TODO go to institution detail
-		},
-
 	},
 };
 </script>

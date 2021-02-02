@@ -1,6 +1,6 @@
 .container {
-    max-width: initial;
-    padding: .2rem 1.2rem 1.2rem;
+    max-width: 100% !important;
+    padding: .2rem 1.8rem 1.8rem;
 }
 
 .breadcrumb {
@@ -31,9 +31,17 @@
     overflow-x: scroll;
 }
 
+.loading-overlay.is-active.is-full-page {
+    z-index: 200;
+
+    .loading-background {
+       background: #ffffff;
+    }
+}
+
 .b-sidebar{
     .sidebar-content {
-        z-index: 1001;
+        z-index: 50;
         padding: 1rem 0.5rem 0.5rem;
         background: #132e30;
 
@@ -58,7 +66,7 @@
         }
 
         &.is-mini {
-            width: 58px;
+            width: 70px;
 
             &:not(.is-mini-expand),
             &.is-mini-expand:not(:hover) {

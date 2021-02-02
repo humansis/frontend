@@ -19,6 +19,9 @@ module.exports = {
 		"no-tabs": "off",
 		"object-curly-newline": "off",
 		quotes: ["warn", "double", { avoidEscape: true, allowTemplateLiterals: true }],
+		"vue/html-closing-bracket-newline": "warn",
+		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
+		"vue/html-self-closing": "warn",
 	},
 };

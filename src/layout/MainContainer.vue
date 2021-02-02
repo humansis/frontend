@@ -1,5 +1,10 @@
 <template>
 	<div>
+		<b-loading
+			is-full-page
+			:active="isAppLoading"
+			:can-cancel="false"
+		/>
 		<SideMenu />
 		<section class="main-content is-fullheight">
 			<div class="container">
@@ -11,6 +16,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
 
@@ -21,11 +27,15 @@ export default {
 		SideMenu,
 		NavBar,
 	},
+
+	computed: {
+		...mapState(["isAppLoading"]),
+	},
 };
 </script>
 
-<style lang="scss" scoped>
-	.main-content {
-		margin-left: 60px;
-	}
+<style scoped>
+.main-content {
+	margin-left: 60px;
+}
 </style>

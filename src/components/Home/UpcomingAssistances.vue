@@ -1,55 +1,98 @@
 <template>
 	<div>
-		<h2 class="title">Upcoming assistances</h2>
-		<b-table
-			:data="tableData"
-			:paginated="true"
-			:per-page="'15'"
-			:current-page="1"
-			:pagination-simple="false"
-			:pagination-position="'bottom'"
-			:default-sort-direction="'asc'"
-			:sort-icon="'arrow-up'"
-			:sort-icon-size="'is-small'"
-			:striped="true"
-			default-sort="date"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
+		<Modal
+			can-cancel
+			header="Assistance Detail"
+			:active="assistanceModal.isOpened"
+			@close="closeAssistanceModal"
 		>
-			<template v-for="column in tableColumns">
-				<b-table-column :key="column.id" v-bind="column">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+			<AssistanceForm
+				close-button
+				:formModel="assistanceModel"
+				@formClosed="closeAssistanceModal"
+			/>
+		</Modal>
+		<h2 class="title">Upcoming assistances</h2>
+		<Table
+			ref="upcomingAssistances"
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:is-loading="isLoadingList"
+			@clicked="showDetail"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
+		>
+			<template v-for="column in table.columns">
+				<b-table-column v-bind="column" sortable :key="column.id" v-slot="props">
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
-		</b-table>
+		</Table>
 	</div>
 </template>
+
 <script>
-import { fetcher } from "@/utils/fetcher";
-import { generateColumnsFromData } from "@/utils/datagrid";
+import Modal from "@/components/Modal";
+import Table from "@/components/DataGrid/Table";
+import AssistanceForm from "@/components/Assistance/AssistanceForm";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import AssistancesService from "@/services/AssistancesService";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "UpcomingAssistances",
 
+	components: {
+		AssistanceForm,
+		Table,
+		Modal,
+		ColumnField,
+	},
+
+	mixins: [grid],
+
 	data() {
 		return {
-			fetch: {
-				error: null,
+			assistanceModal: {
+				isOpened: false,
 			},
-			tableData: [],
-			tableColumns: [],
-			visibleColumns: [
-				"id",
-				"name",
-				"adm1Id",
-				"dateDistribution",
-				"target",
-				"type",
-			],
+			assistanceModel: {},
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					{
+						key: "id",
+						label: "Assistance ID",
+					},
+					{ key: "name" },
+					{
+						key: "adm1Id",
+						label: "Location",
+					},
+					{
+						key: "beneficiaries",
+						label: "Beneficiaries",
+					},
+					{
+						key: "dateDistribution",
+						label: "Date Of Distribution",
+					},
+					{ key: "target" },
+					{
+						type: "commodity",
+						key: "commodityIds",
+						label: "Commodity",
+					},
+				],
+				total: 0,
+				currentPage: 1,
+				sortDirection: "",
+				sortColumn: "",
+			},
 		};
 	},
 
@@ -63,31 +106,32 @@ export default {
 
 	methods: {
 		async fetchData() {
-			try {
-				this.fetch.error = null;
-				const loadingComponent = this.$buefy.loading.open({
-					container: this.$refs.table,
-				});
+			this.isLoadingList = true;
 
-				this.tableData = [];
-				this.tableColumns = [];
+			this.table.columns = generateColumns(this.table.visibleColumns);
+			await AssistancesService.getListOfAssistances(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				true,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+			}).catch((e) => {
+				Notification(`Upcoming Assistances ${e}`, "is-danger");
+			});
 
-				const uri = "assistances?page=1&size=15&sort=asc&upcoming=true";
-				const { data: { data } } = await fetcher({ uri, auth: true });
-
-				this.tableData = data;
-				this.tableColumns = generateColumnsFromData(data, this.visibleColumns);
-
-				loadingComponent.close();
-			} catch (error) {
-				this.handleError(error);
-			}
+			this.isLoadingList = false;
 		},
 
-		handleError(error) {
-			console.error(error);
-			this.fetch.loading = false;
-			this.fetch.error = error.toString();
+		closeAssistanceModal() {
+			this.assistanceModal.isOpened = false;
+		},
+
+		showDetail(model) {
+			// TODO Fix with connect locations
+			this.assistanceModel = model;
+			this.assistanceModal.isOpened = true;
 		},
 	},
 };

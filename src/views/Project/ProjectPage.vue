@@ -1,0 +1,261 @@
+<template>
+	<div>
+		<h2 class="title">Projects</h2>
+		<Modal
+			can-cancel
+			:active="projectModal.isOpened"
+			:header="modalHeader"
+			:is-waiting="projectModal.isWaiting"
+			@close="closeProjectModal"
+		>
+			<ProjectForm
+				close-button
+				class="modal-card"
+				:formModel="projectModel"
+				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="projectModal.isDetail"
+				@formSubmitted="submitProjectForm"
+				@formClosed="closeProjectModal"
+			/>
+		</Modal>
+		<b-button
+			class="mb-5"
+			size="is-medium"
+			type="is-danger"
+			icon-left="plus"
+			@click="addNewProject"
+		>
+			New
+		</b-button>
+		<ProjectsList
+			ref="projectList"
+			:project-model="projectModel"
+			@onShowDetail="showDetail"
+			@onEdit="editProject"
+			@onDelete="onProjectDelete"
+		/>
+	</div>
+</template>
+
+<script>
+import { mapState } from "vuex";
+import ProjectsList from "@/components/Projects/ProjectsList";
+import ProjectForm from "@/components/Projects/ProjectForm";
+import Modal from "@/components/Modal";
+import ProjectsService from "@/services/ProjectsService";
+import { Toast, Notification } from "@/utils/UI.js";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+
+export default {
+	name: "ProjectPage",
+
+	components: {
+		ProjectsList,
+		Modal,
+		ProjectForm,
+	},
+
+	data() {
+		return {
+			projectModal: {
+				isOpened: false,
+				isEditing: false,
+				isDetail: false,
+				isWaiting: false,
+			},
+			projectModel: {
+				id: null,
+				iso3: "",
+				name: "",
+				internalId: "",
+				sectors: [],
+				selectedSectors: [],
+				startDate: new Date(),
+				endDate: new Date(),
+				donors: [],
+				selectedDonors: [],
+				targetTypes: [],
+				selectedTargetType: [],
+				totalTarget: 0,
+				notes: "",
+			},
+		};
+	},
+
+	computed: {
+		modalHeader() {
+			let result = "";
+			if (this.projectModal.isDetail) {
+				result = "Detail of Project";
+			} else if (this.projectModal.isEditing) {
+				result = "Edit Project";
+			} else {
+				result = "Create new Project";
+			}
+			return result;
+		},
+
+		...mapState(["country"]),
+	},
+
+	methods: {
+		editProject(project) {
+			this.projectModal = {
+				isEditing: true,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+			this.mapToFormModel(project);
+		},
+
+		addNewProject() {
+			this.projectModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.projectModel = {
+				...this.projectModel,
+				id: null,
+				name: "",
+				internalId: "",
+				donorIds: [],
+				sectors: [],
+				targetTypes: [],
+				selectedSectors: [],
+				startDate: new Date(),
+				endDate: new Date(),
+				selectedDonors: [],
+				selectedTargetType: [],
+				totalTarget: 0,
+				notes: "",
+			};
+		},
+
+		closeProjectModal() {
+			this.projectModal.isOpened = false;
+		},
+
+		showDetail(project) {
+			this.mapToFormModel(project);
+			this.projectModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+			};
+		},
+
+		mapToFormModel(
+			{
+				id,
+				iso3,
+				internalId,
+				name,
+				sectors,
+				donorIds,
+				target: totalTarget,
+				notes,
+				startDate,
+				endDate,
+			},
+		) {
+			this.projectModel = {
+				...this.projectModel,
+				id,
+				iso3,
+				name,
+				sectors,
+				donorIds,
+				internalId,
+				startDate: new Date(startDate),
+				endDate: new Date(endDate),
+				targetType: [],
+				selectedSectors: [],
+				selectedDonors: [],
+				selectedTargetType: [],
+				totalTarget,
+				notes,
+			};
+		},
+
+		submitProjectForm(projectForm) {
+			const {
+				id,
+				iso3,
+				name,
+				internalId,
+				selectedSectors,
+				startDate,
+				endDate,
+				selectedDonors,
+				selectedTargetType: { code: targetType },
+				totalTarget: target,
+				notes,
+			} = projectForm;
+			const projectBody = {
+				iso3: iso3 || this.country.iso3,
+				name,
+				internalId,
+				notes,
+				target,
+				targetType,
+				numberOfHouseholds: 0,
+				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
+				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
+				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
+				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
+			};
+
+			if (this.projectModal.isEditing && id) {
+				this.updateProject(id, projectBody);
+			} else {
+				this.createProject(projectBody);
+			}
+		},
+
+		async createProject(projectBody) {
+			this.projectModal.isWaiting = true;
+
+			await ProjectsService.createProject(projectBody).then((response) => {
+				if (response.status === 200) {
+					Toast("Project Successfully Created", "is-success");
+					this.$refs.projectList.fetchData();
+					this.closeProjectModal();
+				}
+			}).catch((e) => {
+				Notification(`Project ${e}`, "is-danger");
+				this.projectModal.isWaiting = false;
+			});
+		},
+
+		async updateProject(id, projectBody) {
+			this.projectModal.isWaiting = true;
+
+			await ProjectsService.updateProject(id, projectBody).then((response) => {
+				if (response.status === 200) {
+					Toast("Project Successfully Updated", "is-success");
+					this.$refs.projectList.fetchData();
+					this.closeProjectModal();
+				}
+			}).catch((e) => {
+				Notification(`Project ${e}`, "is-danger");
+				this.projectModal.isWaiting = false;
+			});
+		},
+
+		async onProjectDelete(id) {
+			await ProjectsService.deleteProject(id).then((response) => {
+				if (response.status === 204) {
+					Toast("Project Successfully Deleted", "is-success");
+					this.$refs.projectList.removeFromList(id);
+				}
+			}).catch((e) => {
+				Notification(`Project ${e}`, "is-danger");
+			});
+		},
+	},
+};
+</script>
