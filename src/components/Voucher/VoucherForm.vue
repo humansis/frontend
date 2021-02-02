@@ -64,15 +64,14 @@
 
 			<b-field
 				label="Individual Value"
-				:type="validateType('individualValue')"
-				:message="validateMsg('individualValue')"
+				:type="validateType('values')"
+				:message="validateMsg('values')"
 			>
-				<b-numberinput
-					v-model="formModel.individualValue"
-					placeholder="Individual Value"
-					:controls="false"
+				<b-taginput
+					v-model="formModel.values"
+					placeholder="Values"
 					:disabled="formDisabled"
-					@blur="validate('individualValue')"
+					@blur="validate('values')"
 				/>
 			</b-field>
 
@@ -169,7 +168,7 @@ export default {
 		formModel: {
 			quantityOfBooklets: { required },
 			quantityOfVouchers: { required },
-			individualValue: { required },
+			values: { required },
 			projectId: { required },
 			password: { required: requiredIf((form) => form.defineAPassword) },
 			status: {},

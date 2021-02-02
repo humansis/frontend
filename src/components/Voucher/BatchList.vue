@@ -40,10 +40,12 @@
 						@changePerPage="onChangePerPage"
 					>
 						<template v-for="column in table.columns">
-							<b-table-column v-bind="column" :key="column.id">
-								<template v-slot="props">
-									{{ props.row[column.field] }}
-								</template>
+							<b-table-column
+								v-bind="column"
+								:key="column.id"
+								v-slot="props"
+							>
+								<ColumnField :data="props" :column="column" />
 							</b-table-column>
 						</template>
 						<b-table-column
@@ -84,6 +86,7 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -97,6 +100,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -112,7 +116,7 @@ export default {
 					{ key: "project" },
 					{ key: "code" },
 					{ key: "numberVouchers", label: "Quantity Of Vouchers" },
-					{ key: "value", label: "Individual Value" },
+					{ key: "value", label: "Total Value", attribute: "totalValue", type: "different" },
 					{ key: "currency" },
 					{ key: "status" },
 					{ key: "beneficiary" },

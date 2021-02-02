@@ -154,7 +154,7 @@ export default {
 				id: null,
 				quantityOfBooklets: 1,
 				quantityOfVouchers: 1,
-				individualValue: 0,
+				values: [],
 				projectId: null,
 				project: "",
 				password: "",
@@ -168,16 +168,19 @@ export default {
 			const {
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValue,
+				values,
 				projectId,
 				password,
 				currency,
 			} = voucherForm;
-
+			const preparedValues = [];
+			values.forEach((item) => {
+				preparedValues.push(parseInt(item, 10));
+			});
 			const voucherBody = {
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValues: [individualValue],
+				values: preparedValues,
 				projectId: projectId.id,
 				password,
 				iso3: this.country.iso3,

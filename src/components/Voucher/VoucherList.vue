@@ -14,10 +14,12 @@
 			@changePerPage="onChangePerPage"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -55,6 +57,7 @@ import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
@@ -67,6 +70,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	mixins: [grid],
@@ -80,11 +84,11 @@ export default {
 					{ key: "project" },
 					{ key: "code", sortable: true },
 					{ key: "numberVouchers", label: "Quantity Of Vouchers", sortable: true },
-					{ key: "value", label: "Individual Value", sortable: true },
+					{ key: "value", label: "Total Value", sortable: true, attribute: "totalValue", type: "different" },
 					{ key: "currency", sortable: true },
 					{ key: "status", sortable: true },
 					{ key: "beneficiary", sortable: true },
-					{ key: "distribution", sortable: true },
+					{ key: "assistance", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
