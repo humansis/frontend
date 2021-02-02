@@ -1,5 +1,5 @@
 // TODO remove unnecessary host and prefix and API_ON
-const API_ON = false;
+const API_ON = true;
 const API_HOST_MOCK = process.env.VUE_APP_API_HOST || "http://localhost:8091";
 const API_PREFIX_MOCK = process.env.VUE_APP_API_PREFIX || "/api/v2";
 const API_MOCK = API_HOST_MOCK + API_PREFIX_MOCK;
