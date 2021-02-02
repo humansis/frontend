@@ -3,10 +3,13 @@ import { fetcher, idsToUri } from "@/utils/fetcher";
 export default {
 	async getListOfAssistances(page, size, sort, upcoming, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = page ? `&size=${size}` : "";
+		const upcomingText = page ? `&upcoming=${upcoming}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?page=${page}&size=${size}&upcoming=${upcoming + sortText + fulltext}`,
+			uri: `assistances?${pageText + sizeText + upcomingText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},

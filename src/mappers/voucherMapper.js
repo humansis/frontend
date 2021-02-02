@@ -1,7 +1,7 @@
 import ProjectsService from "@/services/ProjectsService";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import BaseMapper from "@/mappers/baseMapper";
+import { prepareEntityForTable } from "@/mappers/baseMapper";
 import { Notification } from "@/utils/UI";
 
 async function getProjects(ids) {
@@ -58,9 +58,9 @@ export const prepareDataForTable = async (data) => {
 	const beneficiaries = await getBeneficiaries([...new Set(beneficiaryIds)]);
 
 	promise = await data.map(async (item, key) => {
-		filledData[key].project = await BaseMapper.prepareEntityForTable(item.projectId, projects, "name");
-		filledData[key].beneficiary = await BaseMapper.prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName");
-		filledData[key].assistance = await BaseMapper.prepareEntityForTable(item.assistanceId, assistances, "name");
+		filledData[key].project = await prepareEntityForTable(item.projectId, projects, "name", "none");
+		filledData[key].beneficiary = await prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName", "none");
+		filledData[key].assistance = await prepareEntityForTable(item.assistanceId, assistances, "name", "none");
 	});
 
 	await Promise.all([promise]);
