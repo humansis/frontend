@@ -5,7 +5,7 @@
 <script>
 import { mapActions } from "vuex";
 import TranslationService from "@/services/TranslationService";
-import { Notification } from "@/utils/UI";
+// import { Notification } from "@/utils/UI";
 import getters from "@/store/getters";
 import CONST from "@/const";
 
@@ -49,8 +49,9 @@ export default {
 						sessionStorage.setItem("translations", JSON.stringify(response.data) || {});
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
-				}).catch((e) => {
-					Notification(`Translations ${e}`, "is-danger");
+				}).catch(() => {
+					// TODO Uncomment this after translations will be loaded after login
+					// Notification(`Translations ${e}`, "is-danger");
 					this.$store.dispatch("appLoading", false);
 				});
 

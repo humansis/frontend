@@ -152,8 +152,7 @@ export default {
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
 				}
 			}).catch(() => {
-				// TODO Uncomment this after translations will be loaded after login
-				// Notification(`Translations ${e}`, "is-danger");
+				Notification(`Translations ${e}`, "is-danger");
 				this.$store.dispatch("appLoading", false);
 			});
 
