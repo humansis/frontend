@@ -151,7 +151,7 @@ export default {
 					this.updateLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
 				}
-			}).catch(() => {
+			}).catch((e) => {
 				Notification(`Translations ${e}`, "is-danger");
 				this.$store.dispatch("appLoading", false);
 			});
