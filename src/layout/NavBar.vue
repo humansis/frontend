@@ -105,7 +105,8 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
+import TranslationService from "@/services/TranslationService";
 
 export default {
 	name: "NavBar",
@@ -139,9 +140,23 @@ export default {
 			this.$router.go();
 		},
 
-		handleChangeLanguage(language) {
-			this.updateLanguage(language);
-			this.$router.go();
+		async handleChangeLanguage(language) {
+			this.$store.commit("appLoading", true);
+
+			await TranslationService.getTranslations(language.key).then((response) => {
+				if (response.status === 200) {
+					this.$i18n.locale = language.key;
+					this.$i18n.fallbackLocale = language.key;
+					this.$root.$i18n.setLocaleMessage(language.key, response.data);
+					this.updateLanguage(language);
+					sessionStorage.setItem("translations", JSON.stringify(response.data));
+				}
+			}).catch((e) => {
+				Notification(`Translations ${e}`, "is-danger");
+				this.$store.commit("appLoading", false);
+			});
+
+			this.$store.commit("appLoading", false);
 		},
 
 		setTooltip() {
@@ -150,22 +165,39 @@ export default {
 		},
 
 		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.countries = data;
-				})
-				.catch((e) => {
-					Toast(`(Countries) ${e}`, "is-danger");
-				});
+			if (!sessionStorage.getItem("countries")) {
+				await CountriesService.getListOfCountries()
+					.then(({ data }) => {
+						this.countries = data;
+						sessionStorage.setItem("countries", JSON.stringify(data));
+					})
+					.catch((e) => {
+						Toast(`(Countries) ${e}`, "is-danger");
+					});
+			} else {
+				this.countries = JSON.parse(sessionStorage.getItem("countries"));
+			}
 		},
 
 		async fetchLanguages() {
-			// TODO Get languages
-			this.languages = [
-				{ name: "EN", key: "en" },
-				{ name: "CZ", key: "cz" },
-			];
+			if (!sessionStorage.getItem("languages")) {
+				// TODO Get languages from API
+				const languages = [
+					{ name: "EN", key: "en" },
+					{ name: "AR", key: "ar" },
+					{ name: "RU", key: "ru" },
+				];
+				this.languages = languages;
+				sessionStorage.setItem("languages", JSON.stringify(languages));
+			} else {
+				this.languages = JSON.parse(sessionStorage.getItem("languages"));
+			}
 		},
+	},
+
+	async created() {
+		await this.fetchLanguages();
+		await this.fetchCountries();
 	},
 
 	computed: {

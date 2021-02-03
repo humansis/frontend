@@ -1,19 +1,10 @@
+import { fetcher } from "@/utils/fetcher";
+
 export default {
-	async getTranslations() {
-		return {
-			data: [
-				{
-					key: "hello",
-					en: "Hello",
-					de: "Hallo",
-				},
-				{
-					key: "world",
-					en: "World",
-					de: "Welt",
-				},
-			],
-			totalCount: 2 };
+	async getTranslations(language) {
+		return fetcher({
+			uri: `translations/${language}`,
+		});
 	},
 
 	async saveTranslation() {

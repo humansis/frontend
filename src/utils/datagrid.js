@@ -17,6 +17,7 @@ export const generateColumns = ((visibleColumns) => {
 			width: column.width,
 			centered: true,
 			sortable: column.sortable,
+			attribute: column.attribute,
 		});
 	});
 	return preparedColumns;

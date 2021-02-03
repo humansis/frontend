@@ -72,7 +72,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.$store.commit("loading", true);
+			// TODO Loading on data container
 			// TODO get real data from API
 			this.table.columns = generateColumns(this.table.visibleColumns);
 		},

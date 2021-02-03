@@ -223,6 +223,8 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
+			// TODO Loading on data container
+
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {

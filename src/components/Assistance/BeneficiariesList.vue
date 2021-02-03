@@ -68,6 +68,7 @@
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
 		</div>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -196,6 +197,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -232,6 +234,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await AssistancesService.getListOfBeneficiaries(
@@ -241,9 +244,12 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
+				this.table.progress = 0;
 				this.$emit("beneficiariesCounted", totalCount);
 				this.table.total = totalCount;
-				this.table.data = await this.prepareDataForTable(data);
+				if (totalCount !== 0) {
+					this.table.data = await this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
 			});
@@ -253,31 +259,71 @@ export default {
 
 		async prepareDataForTable(data) {
 			const filledData = [];
-			const promise = data.map(async (item, key) => {
+			const phoneIds = [];
+			const nationalIdIds = [];
+			let promise = data.map(async (item, key) => {
 				filledData[key] = item;
 				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				filledData[key].phone = await this.preparePhone(item.phoneIds);
-				filledData[key].nationalId = await this.prepareNationalId(item.nationalIds);
+				if (item.nationalIds.length) {
+					nationalIdIds.push(item.nationalIds);
+				}
+				if (item.phoneIds.length) {
+					phoneIds.push(item.phoneIds);
+				}
+			});
+			const phones = await this.getPhones(phoneIds);
+			const nationalIds = await this.getNationalIds(nationalIdIds);
+
+			await Promise.all(promise);
+			promise = data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
+				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
+				filledData[key].phone = !item.phoneIds.length ? "none" : await this.preparePhone(item.phoneIds[0], phones);
+				filledData[key].nationalId = !item.nationalIds.length ? "none" : await this.prepareNationalId(item.nationalIds[0], nationalIds);
 			});
 			await Promise.all(promise);
+			this.table.progress = 100;
 			return filledData;
 		},
 
-		async preparePhone(phoneIds) {
-			if (phoneIds.length > 0) {
-				return BeneficiariesService.getPhone(phoneIds[0])
-					.then(({ number }) => number);
-			}
-			return "";
+		async getNationalIds(ids) {
+			if (!ids.length) return [];
+			return BeneficiariesService.getNationalIds(ids)
+				.then(({ data }) => {
+					this.table.progress += 20;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`NationalIds ${e}`, "is-danger");
+				});
 		},
 
-		async prepareNationalId(nationalIds) {
-			if (nationalIds.length > 0) {
-				return BeneficiariesService.getNationalId(nationalIds[0])
-					.then(({ number }) => number);
-			}
-			return "";
+		async getPhones(ids) {
+			if (!ids.length) return [];
+			return BeneficiariesService.getPhones(ids)
+				.then(({ data }) => {
+					this.table.progress += 20;
+					return data;
+				})
+				.catch((e) => {
+					Notification(`Phones ${e}`, "is-danger");
+				});
+		},
+
+		async preparePhone(id, phones) {
+			if (!phones) return "none";
+			const phone = phones.find((item) => item.id === id);
+			this.table.progress += 1;
+			return phone ? phone.number : "none";
+		},
+
+		async prepareNationalId(id, nationalIds) {
+			if (!nationalIds) return "none";
+			const nationalId = nationalIds.find((item) => item.id === id);
+			this.table.progress += 1;
+			return nationalId ? nationalId.number : "none";
 		},
 
 		prepareName(localName, enName) {
@@ -285,6 +331,7 @@ export default {
 			if (enName) {
 				preparedName += ` (${enName})`;
 			}
+			this.table.progress += 1;
 			return preparedName;
 		},
 
@@ -301,7 +348,7 @@ export default {
 		},
 
 		submitAddBeneficiaryForm() {
-			// TODO Add Beneficiaries to Assistances
+			// TODO Add Beneficiaries to Assistance
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
 		},

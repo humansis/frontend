@@ -1,30 +1,6 @@
 <template>
 	<div>
-		<Modal
-			can-cancel
-			header="Assistance Detail"
-			:active="assistanceModal.isOpened"
-			@close="closeAssistanceModal"
-		>
-			<AssistanceForm
-				close-button
-				:formModel="assistanceModel"
-				:editing="assistanceModal.isEditing"
-				@formClosed="closeAssistanceModal"
-				@formSubmitted="editAssistance"
-			/>
-		</Modal>
-		<h2 class="title">Project assistances</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="goToAddAssistance"
-		>
-			New
-		</b-button>
-		<div class="columns">
+		<div v-if="!upcoming" class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
 			<ExportButton
 				class="column"
@@ -35,12 +11,13 @@
 				@exportData="exportAssistance"
 			/>
 		</div>
+		<b-progress :value="table.progress" format="percent" />
 		<Table
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
-			@clicked="goToValidateAndLock"
+			@clicked="onRowClick"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
@@ -56,6 +33,7 @@
 				</b-table-column>
 			</template>
 			<b-table-column
+				v-if="!upcoming"
 				v-slot="props"
 				label="Actions"
 				centered
@@ -82,16 +60,16 @@
 					/>
 					<SafeDelete
 						icon="trash"
-						entity="Project"
+						entity="Assistance"
 						tooltip="Delete"
 						:id="props.row.id"
-						@submitted="removeAssistance"
+						@submitted="$emit('onRemove', $event)"
 					/>
 					<ActionButton
 						icon="copy"
 						type="is-dark"
 						tooltip="Print"
-						@click.native="printAssistance(props.row.id)"
+						@click.native="$emit('onPrint', props.row.id)"
 					/>
 				</div>
 			</b-table-column>
@@ -106,13 +84,11 @@ import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import AssistanceForm from "@/components/Assistance/AssistanceForm";
-import Modal from "@/components/Modal";
 import Search from "@/components/Search";
 import AssistancesService from "@/services/AssistancesService";
-import LocationsService from "@/services/LocationsService";
-import { Toast, Notification } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
+import { prepareDataForTable } from "@/mappers/assistanceMapper";
 import grid from "@/mixins/grid";
 
 export default {
@@ -120,13 +96,15 @@ export default {
 
 	components: {
 		Search,
-		AssistanceForm,
 		Table,
 		ActionButton,
 		SafeDelete,
 		ColumnField,
 		ExportButton,
-		Modal,
+	},
+
+	props: {
+		upcoming: Boolean,
 	},
 
 	mixins: [grid],
@@ -157,8 +135,7 @@ export default {
 					},
 					{ key: "target" },
 					{
-						type: "commodity",
-						key: "commodityIds",
+						key: "commodity",
 						label: "Commodity",
 					},
 				],
@@ -167,18 +144,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
-			},
-			assistanceModal: {
-				isOpened: false,
-				isEditing: false,
-			},
-			assistanceModel: {
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				dateDistribution: new Date(),
-				target: "",
+				progress: null,
 			},
 		};
 	},
@@ -191,13 +157,29 @@ export default {
 		this.fetchData();
 	},
 
+	computed: {
+		title() {
+			return this.upcoming ? "Upcoming Assistances" : "Project Assistances";
+		},
+	},
+
 	methods: {
 		...mapActions(["addAssistanceToState"]),
 
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			if (this.upcoming) {
+				await this.fetchUpcomingAssistances();
+			} else {
+				await this.fetchProjectAssistances();
+			}
+			this.isLoadingList = false;
+		},
+
+		async fetchProjectAssistances() {
 			await AssistancesService.getListOfProjectAssistances(
 				this.$route.params.projectId,
 				this.table.currentPage,
@@ -205,141 +187,46 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
-				this.table.data = await this.prepareDataForTable(data);
+				this.table.progress = 0;
 				this.table.total = totalCount;
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
-
-			this.isLoadingList = false;
-		},
-
-		async prepareDataForTable(data) {
-			const filledData = [];
-			const promise = data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].location = await this.prepareLocation(item.locationId);
-				filledData[key].commodity = await this.prepareCommodity(item.id);
-				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id);
-				filledData[key].target = normalizeText(item.target);
-			});
-
-			await Promise.all(promise);
-			return filledData;
-		},
-
-		async prepareLocation(id) {
-			return LocationsService.getLocation(id).then(({ data: { name } }) => name);
-		},
-
-		async prepareCommodity(id) {
-			return AssistancesService.getAssistanceCommodities(id)
-				.then(({ data: [a] }) => a.modalityType);
-		},
-
-		async prepareBeneficiaries(id) {
-			return AssistancesService.getListOfBeneficiaries(id)
-				.then(({ totalCount }) => totalCount);
-		},
-
-		async removeAssistance(id) {
-			await AssistancesService.removeAssistance(id).then((response) => {
-				if (response.status === 204) {
-					Toast("Assistance Successfully Deleted", "is-success");
-					this.fetchData();
+				if (totalCount !== 0) {
+					this.table.data = await prepareDataForTable(data);
 				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
 			});
 		},
 
-		async printAssistance(id) {
-			await AssistancesService.printAssistance(id).then((response) => {
-				if (response.status === 200) {
-					Toast("Download starting", "is-success");
-				}
+		async fetchUpcomingAssistances() {
+			await AssistancesService.getListOfAssistances(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				true,
+			).then(async ({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = await prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
+				Notification(`Upcoming Assistances ${e}`, "is-danger");
 			});
-		},
-
-		goToAddAssistance() {
-			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
 		goToValidateAndLockWithId(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
-			this.goToValidateAndLock(assistance);
+			this.onRowClick(assistance);
 		},
 
-		goToValidateAndLock(assistance) {
-			this.addAssistanceToState(assistance);
-			this.$router.push({ name: "Assistance",
-				params: {
-					assistanceId: assistance.id,
-				},
-			});
-		},
-
-		showDetailWithId(id) {
-			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: false,
-			};
-		},
-
-		showEdit(id) {
-			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: true,
-			};
-		},
-
-		mapToFormModel(
-			{
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-				id,
-				commodityIds,
-				dateDistribution,
-				name,
-				projectId,
-				target,
-				type,
-			},
-		) {
-			return {
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-				dateDistribution: new Date(dateDistribution),
-				target,
-				id,
-				commodityIds,
-				name,
-				projectId,
-				type,
-			};
-		},
-
-		closeAssistanceModal() {
-			this.assistanceModal.isOpened = false;
-		},
-
-		async editAssistance(body) {
-			await AssistancesService.updateAssistance(body.id, body).then((response) => {
-				if (response.status === 200) {
-					Toast("Assistance Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
+		onRowClick(assistance) {
+			if (this.upcoming) {
+				this.showDetail(assistance);
+			} else {
+				this.addAssistanceToState(assistance);
+				this.$router.push({ name: "Assistance",
+					params: {
+						assistanceId: assistance.id,
+					},
+				});
+			}
 		},
 
 		exportAssistance(format) {

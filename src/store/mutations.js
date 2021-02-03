@@ -2,16 +2,20 @@ import consts from "@/store/const";
 
 export default {
 	[consts.CHANGE_COUNTRY]: (state, countryToChange) => {
-		state.country = countryToChange;
+		state.country = { ...countryToChange };
 	},
 
 	[consts.CHANGE_LANGUAGE]: (state, languageToChange) => {
-		state.language = languageToChange;
+		state.language = { ...languageToChange };
 	},
 
 	[consts.SET_PERMISSIONS]: (state, { storedPermissions }) => {
 		// TODO: decode storedPermissions and replace state.auth with it
 		state.auth = { ...storedPermissions };
+	},
+
+	appLoading: (state, boolean) => {
+		state.isAppLoading = boolean;
 	},
 
 	[consts.UPDATE_ASSISTANCE]: (state, assistance) => {

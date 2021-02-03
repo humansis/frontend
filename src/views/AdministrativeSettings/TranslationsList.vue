@@ -122,6 +122,8 @@ export default {
 
 	methods: {
 		async fetchData() {
+			// TODO Loading on data container
+
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
 				this.table.currentPage,

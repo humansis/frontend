@@ -1,4 +1,3 @@
-import i18n from "@/plugins/i18n";
 import consts from "@/store/const";
 
 export default {
@@ -15,7 +14,6 @@ export default {
 	updateLanguage: ({ commit }, language) => {
 		if (language) {
 			commit(consts.CHANGE_LANGUAGE, language);
-			i18n.locale = language.name;
 		}
 	},
 

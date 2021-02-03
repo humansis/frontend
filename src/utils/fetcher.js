@@ -51,10 +51,8 @@ export const getResponseJSON = async (response) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-const fetchFromHumansisApi = async ({ uri, auth, method, body, contentType }) => {
-	// TODO Remove second mockUrl after removing swagger api
+export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
 	const url = `${CONST.API}/${uri}`;
-	const mockUrl = `${CONST.API_MOCK}/${uri}`;
 
 	let headers = {};
 
@@ -92,50 +90,9 @@ const fetchFromHumansisApi = async ({ uri, auth, method, body, contentType }) =>
 	// TODO Remove this after removing swagger api and use commented lines above
 	const response = await fetch(url, config);
 	if (response.status >= 400 && !(method === "POST" || method === "PUT" || method === "DELETE")) {
-		const newResponse = await fetch(mockUrl, config);
+		const newResponse = await fetch(url, config);
 		return getResponseJSON(newResponse);
 	}
-	return getResponseJSON(response);
-};
-
-export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
-	// TODO Fix after remove swagger api
-	if (CONST.API_ON) {
-		return fetchFromHumansisApi({ uri, auth, method, body, contentType });
-	}
-	const mockUrl = `${CONST.API_MOCK}/${uri}`;
-
-	let headers = {};
-
-	headers = {
-		"Content-Type": contentType || "application/json;charset=utf-8",
-	};
-
-	if (auth) {
-		const user = JSON.parse(localStorage.getItem("user"));
-
-		if (user?.authdata) {
-			headers.Authentication = `Basic ${user.authdata}`;
-		}
-
-		// TODO Remove after implement authorization layer
-		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
-	}
-
-	headers.Country = store.state.country.iso3 || localStorage.getItem("country") || CONST.DEFAULT_COUNTRY;
-
-	const config = { headers };
-
-	if (method) {
-		config.method = method;
-	}
-
-	if (body) {
-		config.body = JSON.stringify(body);
-	}
-
-	const response = await fetch(mockUrl, config);
-
 	return getResponseJSON(response);
 };
 
@@ -152,12 +109,17 @@ export const filtersToUri = (filters) => {
 };
 
 export const idsToUri = (ids, param = null) => {
+	if (!ids.length) return "";
 	let query = "";
 	ids.forEach((item) => {
 		if (param) {
-			query += `&filter[id][]=${item[param]}`;
+			if (Array.isArray(item[param])) {
+				query += item[param].length ? `&filter[id][]=${item[param]}` : "";
+			} else {
+				query += item[param] ? `&filter[id][]=${item[param]}` : "";
+			}
 		} else {
-			query += `&filter[id][]=${item}`;
+			query += item ? `&filter[id][]=${item}` : "";
 		}
 	});
 	return query;
