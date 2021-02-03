@@ -2,7 +2,13 @@ import consts from "@/store/const";
 
 export default {
 	storeUser: ({ commit }, user) => {
-		commit(consts.LOGIN_SUCCEEDED, user);
+		if (user) {
+			commit(consts.LOGIN_SUCCEEDED, user);
+		}
+	},
+
+	appLoading: ({ commit }, boolean) => {
+		commit(consts.APP_LOADING, boolean);
 	},
 
 	updateCountry: ({ commit }, country) => {

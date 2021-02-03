@@ -42,7 +42,7 @@ export default {
 			|| this.this.defaultLanguage;
 
 			if (!sessionStorage.getItem("translations")) {
-				this.$store.commit("appLoading", true);
+				this.$store.dispatch("appLoading", true);
 
 				await TranslationService.getTranslations(languageKey).then((response) => {
 					if (response.status === 200) {
@@ -51,10 +51,10 @@ export default {
 					}
 				}).catch((e) => {
 					Notification(`Translations ${e}`, "is-danger");
-					this.$store.commit("appLoading", false);
+					this.$store.dispatch("appLoading", false);
 				});
 
-				this.$store.commit("appLoading", false);
+				this.$store.dispatch("appLoading", false);
 			} else {
 				this.$root.$i18n.setLocaleMessage(languageKey, JSON.parse(
 					sessionStorage.getItem("translations"),

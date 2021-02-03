@@ -14,7 +14,7 @@ export default {
 		state.auth = { ...storedPermissions };
 	},
 
-	appLoading: (state, boolean) => {
+	[consts.APP_LOADING]: (state, boolean) => {
 		state.isAppLoading = boolean;
 	},
 

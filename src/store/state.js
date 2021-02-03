@@ -3,9 +3,8 @@ import { version } from "../../package.json";
 
 export default {
 	packageVersion: version || "0.0.0",
-	isLoading: false,
-	user: null,
 	isAppLoading: false,
+	user: null,
 	auth: { ...permissions },
 	country: null,
 	language: null,

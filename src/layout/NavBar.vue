@@ -141,7 +141,7 @@ export default {
 		},
 
 		async handleChangeLanguage(language) {
-			this.$store.commit("appLoading", true);
+			this.$store.dispatch("appLoading", true);
 
 			await TranslationService.getTranslations(language.key).then((response) => {
 				if (response.status === 200) {
@@ -151,12 +151,13 @@ export default {
 					this.updateLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
 				}
-			}).catch((e) => {
-				Notification(`Translations ${e}`, "is-danger");
-				this.$store.commit("appLoading", false);
+			}).catch(() => {
+				// TODO Uncomment this after translations will be loaded after login
+				// Notification(`Translations ${e}`, "is-danger");
+				this.$store.dispatch("appLoading", false);
 			});
 
-			this.$store.commit("appLoading", false);
+			this.$store.dispatch("appLoading", false);
 		},
 
 		setTooltip() {

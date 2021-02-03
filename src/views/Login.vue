@@ -65,8 +65,6 @@
 import { mapState, mapActions } from "vuex";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
-import { Notification } from "@/utils/UI";
-import LoginService from "@/services/LoginService";
 
 export default {
 	name: "Login",
@@ -112,22 +110,24 @@ export default {
 				return;
 			}
 
+			// TODO Uncomment bellow after Login service on BE will be DONE
 			this.loading = true;
-			await LoginService.logUserIn(this.formModel).then((response) => {
-				if (response.status === 200) {
-					const { data: user } = response;
+			// await LoginService.logUserIn(this.formModel).then((response) => {
+			// if (response.status === 200) {
+			// const { data: user } = response;
+			const user = {};
+			// TODO Different usage of window.btoa with credentials
+			user.authdata = window.btoa(`${this.formModel.username}:${this.formModel.password}`);
+			localStorage.setItem("user", JSON.stringify(user));
+			this.storeUser(user);
 
-					user.authdata = window.btoa(`${this.formModel.username}:${this.formModel.password}`);
-					localStorage.setItem("user", JSON.stringify(user));
-					this.storeUser(user);
-
-					this.$router.push(this.$route.query.redirect?.toString() || "/");
-				}
-			}).catch((e) => {
-				Notification(`Login ${e}`, "is-danger");
-				this.loading = false;
-				this.$v.$reset();
-			});
+			this.$router.push(this.$route.query.redirect?.toString() || "/");
+			// }
+			// }).catch((e) => {
+			// Notification(`Login ${e}`, "is-danger");
+			// this.loading = false;
+			// this.$v.$reset();
+			// });
 		},
 	},
 };
