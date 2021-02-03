@@ -1,35 +1,51 @@
+import consts from "@/store/const";
+
 export default {
+	storeUser: ({ commit }, user) => {
+		if (user) {
+			commit(consts.LOGIN_SUCCEEDED, user);
+		}
+	},
+
+	appLoading: ({ commit }, boolean) => {
+		commit(consts.APP_LOADING, boolean);
+	},
+
 	updateCountry: ({ commit }, country) => {
-		commit("changeCountry", country);
+		if (country) {
+			commit(consts.CHANGE_COUNTRY, country);
+		}
 	},
 
 	updateLanguage: ({ commit }, language) => {
-		commit("changeLanguage", language);
+		if (language) {
+			commit(consts.CHANGE_LANGUAGE, language);
+		}
 	},
 
 	changePerPage: ({ commit }, perPage) => {
 		if (perPage) {
-			commit("updatePerPage", perPage);
+			commit(consts.UPDATE_PER_PAGE, perPage);
 		}
 	},
 
 	addAssistanceToState: ({ commit }, assistance) => {
 		if (assistance) {
-			commit("updateAssistance", assistance);
+			commit(consts.UPDATE_ASSISTANCE, assistance);
 		}
 	},
 
 	addProjectToState: ({ commit }, project) => {
 		if (project) {
-			commit("updateProject", project);
+			commit(consts.UPDATE_PROJECT, project);
 		}
 	},
 
 	removeAssistanceFromState: ({ commit }) => {
-		commit("updateAssistance", null);
+		commit(consts.UPDATE_ASSISTANCE, null);
 	},
 
 	removeProjectFromState: ({ commit }) => {
-		commit("updateProject", null);
+		commit(consts.UPDATE_PROJECT, null);
 	},
 };

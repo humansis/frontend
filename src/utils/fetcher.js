@@ -15,7 +15,6 @@ async function getErrorsFromResponse(data) {
 	return errors || "Something went wrong";
 }
 
-// TODO Correct process of response
 export const getResponseJSON = async (response) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
@@ -61,10 +60,15 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	};
 
 	if (auth) {
-		headers.Authentication = localStorage.getItem("user-token");
-		// TODO Remove after implement authorization layer
-		headers.Authorization = "Basic amFtZXMuaGFwcGVsbEBwZW9wbGVpbm5lZWQuY3o6cGluMTIzNA==";
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		if (user?.authdata) {
+			// headers.Authorization = `Basic ${user.authdata}`;
+			// TODO Remove after Authorization will work correctly
+			headers.Authorization = "Basic YWRtaW5AZXhhbXBsZS5vcmc6cGluMTIzNA==";
+		}
 	}
+
 	const country = getters.getCountryFromLocalStorage();
 	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
 
@@ -78,16 +82,8 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		config.body = JSON.stringify(body);
 	}
 
-	// const response = await fetch(url, config);
-
-	// return getResponseJSON(response);
-
-	// TODO Remove this after removing swagger api and use commented lines above
 	const response = await fetch(url, config);
-	if (response.status >= 400 && !(method === "POST" || method === "PUT" || method === "DELETE")) {
-		const newResponse = await fetch(url, config);
-		return getResponseJSON(newResponse);
-	}
+
 	return getResponseJSON(response);
 };
 
@@ -106,6 +102,7 @@ export const filtersToUri = (filters) => {
 export const idsToUri = (ids, param = null) => {
 	if (!ids.length) return "";
 	let query = "";
+
 	ids.forEach((item) => {
 		if (param) {
 			if (Array.isArray(item[param])) {
@@ -117,5 +114,6 @@ export const idsToUri = (ids, param = null) => {
 			query += item ? `&filter[id][]=${item}` : "";
 		}
 	});
+
 	return query;
 };
