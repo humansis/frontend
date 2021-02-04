@@ -31,7 +31,7 @@ import OrganizationServicesList from "@/components/AdministrativeSettings/Organi
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
 import Modal from "@/components/Modal";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "OrganizationServicesPage",
@@ -135,7 +135,7 @@ export default {
 						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {
-					Notification(`Organization ${e}`, "is-danger");
+					Toast(`Organization ${e}`, "is-danger");
 					this.organizationServiceModal.isWaiting = false;
 				});
 		},

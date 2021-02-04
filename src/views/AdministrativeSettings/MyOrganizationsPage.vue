@@ -31,7 +31,7 @@ import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizat
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizationForm";
 import Modal from "@/components/Modal";
 import MyOrganizationsService from "@/services/MyOrganizationsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "MyOrganizationsPage",
@@ -159,7 +159,7 @@ export default {
 					this.closeMyOrganizationModal();
 				}
 			}).catch((e) => {
-				Notification(`Organization ${e}`, "is-danger");
+				Toast(`Organization ${e}`, "is-danger");
 				this.myOrganizationModal.isWaiting = false;
 			});
 		},
@@ -170,7 +170,7 @@ export default {
 					Toast("Your Download is starting", "is-success");
 				}
 			}).catch((e) => {
-				Notification(`Organization ${e}`, "is-danger");
+				Toast(`Organization ${e}`, "is-danger");
 			});
 		},
 	},

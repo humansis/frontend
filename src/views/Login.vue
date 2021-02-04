@@ -124,7 +124,7 @@ export default {
 			this.$router.push(this.$route.query.redirect?.toString() || "/");
 			// }
 			// }).catch((e) => {
-			// Toast(`Login ${e}`, "is-danger");
+			// Notification(`Login ${e}`, "is-danger");
 			// this.loading = false;
 			// this.$v.$reset();
 			// });

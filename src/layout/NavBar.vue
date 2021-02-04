@@ -105,7 +105,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
 
 export default {
@@ -172,7 +172,7 @@ export default {
 						sessionStorage.setItem("countries", JSON.stringify(data));
 					})
 					.catch((e) => {
-						Toast(`(Countries) ${e}`, "is-danger");
+						Notification(`Countries ${e}`, "is-danger");
 					});
 			} else {
 				this.countries = JSON.parse(sessionStorage.getItem("countries"));

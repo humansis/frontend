@@ -60,7 +60,7 @@
 <script>
 import { mapState } from "vuex";
 import ProjectsService from "@/services/ProjectsService";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "ProjectSummary",
@@ -89,7 +89,9 @@ export default {
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.projectSummary = data;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Notification(`Detail Of Project ${e}`, "is-danger");
+			});
 		},
 	},
 };

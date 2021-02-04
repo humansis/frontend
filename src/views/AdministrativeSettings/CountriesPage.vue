@@ -41,7 +41,7 @@ import CountriesList from "@/components/AdministrativeSettings/CountriesList";
 import CountryForm from "@/components/AdministrativeSettings/CountryForm";
 import Modal from "@/components/Modal";
 import CountriesService from "@/services/CountriesService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CountriesPage",
@@ -179,7 +179,7 @@ export default {
 					this.closeCountryModal();
 				}
 			}).catch((e) => {
-				Notification(`Country ${e}`, "is-danger");
+				Toast(`Country ${e}`, "is-danger");
 				this.countryModal.isWaiting = false;
 			});
 		},
@@ -194,7 +194,7 @@ export default {
 					this.closeCountryModal();
 				}
 			}).catch((e) => {
-				Toast(`(Country) ${e}`, "is-danger");
+				Toast(`Country ${e}`, "is-danger");
 				this.countryModal.isWaiting = false;
 			});
 		},
@@ -206,7 +206,7 @@ export default {
 					this.$refs.countriesList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`(Country) ${e}`, "is-danger");
+				Toast(`Country ${e}`, "is-danger");
 			});
 		},
 	},

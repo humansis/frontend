@@ -41,7 +41,7 @@ import UsersList from "@/components/AdministrativeSettings/UsersList";
 import UserForm from "@/components/AdministrativeSettings/UserForm";
 import Modal from "@/components/Modal";
 import UsersService from "@/services/UsersService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "UsersPage",
@@ -215,7 +215,7 @@ export default {
 					this.closeUserModal();
 				}
 			}).catch((e) => {
-				Notification(`User ${e}`, "is-danger");
+				Toast(`User ${e}`, "is-danger");
 				this.userModal.isWaiting = false;
 			});
 		},
@@ -230,7 +230,7 @@ export default {
 					this.closeUserModal();
 				}
 			}).catch((e) => {
-				Notification(`User ${e}`, "is-danger");
+				Toast(`User ${e}`, "is-danger");
 				this.userModal.isWaiting = false;
 			});
 		},
@@ -242,7 +242,7 @@ export default {
 					this.$refs.usersList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`User ${e}`, "is-danger");
+				Toast(`User ${e}`, "is-danger");
 			});
 		},
 	},
