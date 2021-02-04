@@ -117,14 +117,14 @@ export default {
 			// const { data: user } = response;
 			const user = {};
 			// TODO Different usage of window.btoa with credentials
-			user.authdata = window.btoa(`${this.formModel.username}:${this.formModel.password}`);
+			user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
 			localStorage.setItem("user", JSON.stringify(user));
 			this.storeUser(user);
 
 			this.$router.push(this.$route.query.redirect?.toString() || "/");
 			// }
 			// }).catch((e) => {
-			// Notification(`Login ${e}`, "is-danger");
+			// Toast(`Login ${e}`, "is-danger");
 			// this.loading = false;
 			// this.$v.$reset();
 			// });

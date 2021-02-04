@@ -63,9 +63,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 		const user = JSON.parse(localStorage.getItem("user"));
 
 		if (user?.authdata) {
-			// headers.Authorization = `Basic ${user.authdata}`;
-			// TODO Remove after Authorization will work correctly
-			headers.Authorization = "Basic YWRtaW5AZXhhbXBsZS5vcmc6cGluMTIzNA==";
+			headers.Authorization = `Basic ${user.authdata}`;
 		}
 	}
 
