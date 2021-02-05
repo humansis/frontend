@@ -41,7 +41,7 @@ import VendorsList from "@/components/Beneficiaries/VendorsList";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import Modal from "@/components/Modal";
 import VendorsService from "@/services/VendorsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VendorsPage",
