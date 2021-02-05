@@ -60,7 +60,7 @@ import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
 import InstitutionsService from "@/services/InstitutionsService";
 import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -126,7 +126,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Institutions) ${e}`, "is-danger");
+				Notification(`Institutions ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

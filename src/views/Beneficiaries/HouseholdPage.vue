@@ -506,7 +506,7 @@ export default {
 					this.fetchData();
 				}
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Toast(`Household ${e}`, "is-danger");
 			});
 		},
 

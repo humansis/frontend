@@ -41,7 +41,7 @@ import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
 import CommunityForm from "@/components/Beneficiaries/CommunityForm";
 import Modal from "@/components/Modal";
 import CommunitiesService from "@/services/CommunitiesService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CommunitiesPage",
@@ -261,7 +261,7 @@ export default {
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
-				Notification(`Community ${e}`, "is-danger");
+				Toast(`Community ${e}`, "is-danger");
 				this.communityModal.isWaiting = false;
 			});
 		},
@@ -276,7 +276,7 @@ export default {
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
-				Notification(`Community ${e}`, "is-danger");
+				Toast(`Community ${e}`, "is-danger");
 				this.communityModal.isWaiting = false;
 			});
 		},
@@ -288,7 +288,7 @@ export default {
 					this.$refs.communitiesList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`Community ${e}`, "is-danger");
+				Toast(`Community ${e}`, "is-danger");
 			});
 		},
 	},

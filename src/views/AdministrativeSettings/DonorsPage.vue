@@ -40,7 +40,7 @@ import DonorsList from "@/components/AdministrativeSettings/DonorsList";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import HomeService from "@/services/HomeService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DonorsPage",
@@ -178,7 +178,7 @@ export default {
 					this.closeDonorModal();
 				}
 			}).catch((e) => {
-				Notification(`Donor ${e}`, "is-danger");
+				Toast(`Donor ${e}`, "is-danger");
 				this.donorModal.isWaiting = false;
 			});
 		},
@@ -193,7 +193,7 @@ export default {
 					this.closeDonorModal();
 				}
 			}).catch((e) => {
-				Notification(`Donor ${e}`, "is-danger");
+				Toast(`Donor ${e}`, "is-danger");
 				this.donorModal.isWaiting = false;
 			});
 		},
@@ -206,7 +206,7 @@ export default {
 						this.$refs.donorsList.removeFromList(id);
 					}
 				}).catch((e) => {
-					Notification(`Donor ${e}`, "is-danger");
+					Toast(`Donor ${e}`, "is-danger");
 				});
 		},
 	},

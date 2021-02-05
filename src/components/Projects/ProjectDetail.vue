@@ -40,7 +40,7 @@ import AssistancesList from "@/components/Projects/AssistancesList";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "ProjectDetail",

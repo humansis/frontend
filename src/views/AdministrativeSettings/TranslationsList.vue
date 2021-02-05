@@ -148,7 +148,7 @@ export default {
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`Translations ${e}`, "is-danger");
+					Toast(`Translations ${e}`, "is-danger");
 				});
 		},
 

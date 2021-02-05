@@ -59,7 +59,7 @@ import ActionButton from "@/components/ActionButton";
 import Search from "@/components/Search";
 import CommunitiesService from "@/services/CommunitiesService";
 import { generateColumns } from "@/utils/datagrid";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
@@ -122,7 +122,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Toast(`(Communities) ${e}`, "is-danger");
+				Notification(`Communities ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

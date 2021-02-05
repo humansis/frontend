@@ -183,7 +183,7 @@ export default {
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
-					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					Toast(`Country Specific Options ${e}`, "is-danger");
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -199,7 +199,7 @@ export default {
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
-					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					Toast(`Country Specific Options ${e}`, "is-danger");
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -212,7 +212,7 @@ export default {
 						this.$refs.countrySpecificOptionList.removeFromList(id);
 					}
 				}).catch((e) => {
-					Toast(`(Country Specific Options) ${e}`, "is-danger");
+					Toast(`Country Specific Options ${e}`, "is-danger");
 				});
 		},
 	},

@@ -41,7 +41,7 @@ import VendorsList from "@/components/Beneficiaries/VendorsList";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import Modal from "@/components/Modal";
 import VendorsService from "@/services/VendorsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "VendorsPage",
@@ -220,7 +220,7 @@ export default {
 					this.closeVendorModal();
 				}
 			}).catch((e) => {
-				Notification(`Vendor ${e}`, "is-danger");
+				Toast(`Vendor ${e}`, "is-danger");
 				this.vendorModal.isWaiting = false;
 			});
 		},
@@ -235,7 +235,7 @@ export default {
 					this.closeVendorModal();
 				}
 			}).catch((e) => {
-				Notification(`Vendor ${e}`, "is-danger");
+				Toast(`Vendor ${e}`, "is-danger");
 				this.vendorModal.isWaiting = false;
 			});
 		},
@@ -249,7 +249,7 @@ export default {
 					this.$refs.vendorsList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`Vendor ${e}`, "is-danger");
+				Toast(`Vendor ${e}`, "is-danger");
 			});
 		},
 	},

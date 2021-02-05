@@ -43,7 +43,7 @@ import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
 import InstitutionsService from "@/services/InstitutionsService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "InstitutionsPage",
@@ -271,7 +271,7 @@ export default {
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Notification(`Institution ${e}`, "is-danger");
 				this.institutionModal.isWaiting = false;
 			});
 		},
@@ -286,7 +286,7 @@ export default {
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Notification(`Institution ${e}`, "is-danger");
 				this.institutionModal.isWaiting = false;
 			});
 		},
@@ -298,7 +298,7 @@ export default {
 					this.$refs.institutionList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`(Institution) ${e}`, "is-danger");
+				Notification(`(Institution) ${e}`, "is-danger");
 			});
 		},
 	},
