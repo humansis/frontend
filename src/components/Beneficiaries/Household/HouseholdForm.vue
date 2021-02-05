@@ -239,6 +239,10 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	components: {
@@ -333,10 +337,12 @@ export default {
 		await this.fetchLivelihoods();
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
-		this.mapDetailOfHouseholdToFormModel();
-		await this.mapCurrentLocation().then((response) => {
-			this.formModel.currentLocation = response;
-		});
+		if (this.isEditing) {
+			this.mapDetailOfHouseholdToFormModel();
+			await this.mapCurrentLocation().then((response) => {
+				this.formModel.currentLocation = response;
+			});
+		}
 	},
 
 	methods: {

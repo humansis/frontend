@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if="!loading">
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -7,7 +7,11 @@
 			has-navigation
 		>
 			<b-step-item step="1" label="Household">
-				<HouseholdForm :detailOfHousehold="detailOfHousehold" ref="householdForm" />
+				<HouseholdForm
+					ref="householdForm"
+					:is-editing="isEditing"
+					:detailOfHousehold="detailOfHousehold"
+				/>
 			</b-step-item>
 
 			<b-step-item step="2" label="Household Head">
@@ -30,6 +34,7 @@
 					:members="summaryMembers"
 					:address="address"
 					:location="location"
+					:is-editing="isEditing"
 				/>
 			</b-step-item>
 			<template
@@ -67,7 +72,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
@@ -101,20 +106,26 @@ export default {
 			selectedProjects: [],
 			location: "",
 			address: "",
+			loading: true,
 		};
 	},
 
 	computed: {
-		...mapState(["country"]),
+		...mapState(["country", "isAppLoading"]),
 	},
 
-	created() {
+	async created() {
+		this.appLoading(true);
 		if (this.isEditing) {
-			this.getDetailOfHousehold(this.$route.params.householdId);
+			await this.getDetailOfHousehold(this.$route.params.householdId);
 		}
+		this.loading = false;
+		this.appLoading(false);
 	},
 
 	methods: {
+		...mapActions(["appLoading"]),
+
 		close() {
 			this.$router.go(-1);
 		},
@@ -234,16 +245,17 @@ export default {
 
 		prepareSummaryMembers(members) {
 			const membersData = [];
-
+			console.log(members);
 			if (members.length) {
 				members.forEach((member) => {
+					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : "none";
 					membersData.push({
 						firstName: member.nameLocal.firstName,
 						familyName: member.nameLocal.familyName,
 						parentsName: member.nameLocal.parentsName,
 						gender: member.personalInformation.gender,
 						dateBirth: member.personalInformation.dateOfBirth,
-						phone: `${member.phone1.ext} ${member.phone1.phoneNo}`,
+						phone,
 						nationalId: member.id.idNumber,
 					});
 				});
@@ -257,14 +269,14 @@ export default {
 				typeOfLocation,
 				campName,
 				tentNumber,
-				addressNumber,
-				addressStreet,
-				addressPostcode,
+				number,
+				street,
+				postcode,
 			} = this.household.currentLocation;
 			if (typeOfLocation.code === "camp") {
 				return `${campName}, ${tentNumber}`;
 			}
-			return `${addressNumber}, ${addressStreet}, ${addressPostcode}`;
+			return `${number}, ${street}, ${postcode}`;
 		},
 
 		prepareLocationForSummary() {

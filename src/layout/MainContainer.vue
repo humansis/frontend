@@ -2,7 +2,7 @@
 	<div>
 		<b-loading
 			is-full-page
-			:active="isAppLoading"
+			:active="this.isAppLoading"
 			:can-cancel="false"
 		/>
 		<SideMenu />
