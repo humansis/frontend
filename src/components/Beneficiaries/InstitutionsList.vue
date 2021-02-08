@@ -2,7 +2,25 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
+			<div class="column">
+				<button
+					class="button"
+					slot="trigger"
+					@click="filtersToggle"
+				>
+					<span>Advanced search</span>
+					<b-icon
+						size="is-small"
+						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					/>
+				</button>
+			</div>
 		</div>
+		<b-collapse v-model="advancedSearchVisible">
+			<InstitutionsFilter
+				@filtersChanged="onFiltersChange"
+			/>
+		</b-collapse>
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -62,11 +80,13 @@ import InstitutionsService from "@/services/InstitutionsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
 
 export default {
 	name: "InstitutionsList",
 
 	components: {
+		InstitutionsFilter,
 		Search,
 		SafeDelete,
 		Table,
@@ -77,6 +97,8 @@ export default {
 
 	data() {
 		return {
+			advancedSearchVisible: false,
+			filter: [],
 			table: {
 				data: [],
 				columns: [],
@@ -122,6 +144,7 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
 				this.table.data = data;
@@ -130,6 +153,15 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			await this.fetchData();
 		},
 	},
 };
