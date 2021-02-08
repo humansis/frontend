@@ -32,7 +32,7 @@ import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-
+// TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "HouseholdsFilters",
 
@@ -158,7 +158,19 @@ export default {
 					break;
 				default: break;
 			}
-			this.$emit("filtersChanged", this.selectedFiltersOptions);
+			const filters = {};
+			Object.keys(this.selectedFiltersOptions).forEach((key) => {
+				const select = this.filtersOptions[key].trackBy || "code";
+				if (Array.isArray(this.selectedFiltersOptions[key])) {
+					filters[key] = [];
+					this.selectedFiltersOptions[key].forEach((value) => {
+						filters[key].push(value[select]);
+					});
+				} else if (this.selectedFiltersOptions[key]) {
+					filters[key] = [this.selectedFiltersOptions[key][select]];
+				}
+			});
+			this.$emit("filtersChanged", filters);
 		},
 
 		async fetchProjects() {
