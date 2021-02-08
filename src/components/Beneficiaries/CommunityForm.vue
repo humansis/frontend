@@ -43,10 +43,27 @@
 							@select="validate('phonePrefix')"
 						/>
 					</b-field>
+					<b-field grouped>
+						<MultiSelect
+							v-model="formModel.phoneType"
+							searchable
+							selectLabel=""
+							deselectLabel=""
+							label="value"
+							track-by="code"
+							placeholder="Phone Type"
+							:disabled="formDisabled"
+							:loading="phoneTypesLoading"
+							:options="options.phoneTypes"
+							:class="validateMultiselect('phoneType')"
+							@select="validate('phoneType')"
+						/>
+
+					</b-field>
 					<b-field
 						expanded
 						:type="validateType('phoneNumber')"
-						:message="validateMsg('phoneNumber', 'Required number')"
+						:message="validateMsg('phoneNumber')"
 					>
 						<b-input
 							v-model="formModel.phoneNumber"
@@ -57,6 +74,9 @@
 					</b-field>
 				</b-field>
 			</b-field>
+			<b-checkbox v-model="formModel.phoneProxy" class="mb-4" :disabled="formDisabled">
+				Proxy
+			</b-checkbox>
 
 			<b-field
 				label="Contact ID Type"
@@ -69,6 +89,7 @@
 					label="value"
 					track-by="code"
 					placeholder="Click to select..."
+					:loading="nationalCardTypesLoading"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
 					:class="validateMultiselect('nationalCardType')"
@@ -172,7 +193,7 @@
 </template>
 
 <script>
-import { required, numeric } from "vuelidate/lib/validators";
+import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
@@ -200,11 +221,13 @@ export default {
 			contactGivenName: { required },
 			contactFamilyName: { required },
 			phonePrefix: { required },
-			phoneNumber: { required, numeric },
+			phoneNumber: { required },
+			phoneType: { required },
+			phoneProxy: { required },
 			addressStreet: { required },
 			addressNumber: { required },
 			addressPostCode: { required },
-			nationalCardNumber: { required, numeric },
+			nationalCardNumber: { required },
 			nationalCardType: { required },
 			adm1Id: { required },
 			adm2Id: {},
@@ -215,18 +238,42 @@ export default {
 
 	data() {
 		return {
+			phoneTypesLoading: true,
+			nationalCardTypesLoading: true,
 			options: {
 				nationalCardTypes: [],
 				phonePrefixes: PhoneCodes,
+				phoneTypes: [],
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchNationalCardTypes();
+	watch: {
+		formModel: "mapSelects",
+	},
+
+	async mounted() {
+		await this.fetchNationalCardTypes();
+		await this.fetchPhoneTypes();
 	},
 
 	methods: {
+		async mapSelects() {
+			const { phonePrefix, nationalCardType, phoneType } = this.formModel;
+			if (phonePrefix && typeof phonePrefix !== "object") {
+				this.formModel.phonePrefix = await PhoneCodes
+					.find((item) => item.code === phonePrefix);
+			}
+			if (nationalCardType && typeof nationalCardType !== "object") {
+				this.formModel.nationalCardType = await this.options.nationalCardTypes
+					.find((item) => item.code === nationalCardType);
+			}
+			if (phoneType && typeof phoneType !== "object") {
+				this.formModel.phoneType = await this.options.phoneTypes
+					.find((item) => item.code === phoneType);
+			}
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			this.$refs.locationForm.submitLocationForm();
@@ -244,11 +291,25 @@ export default {
 				.catch((e) => {
 					Notification(`National IDs ${e}`, "is-danger");
 				});
+
+			this.nationalCardTypesLoading = false;
 		},
 
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
+		},
+
+		async fetchPhoneTypes() {
+			await BeneficiariesService.getListOfTypesOfPhones()
+				.then(({ data }) => {
+					this.options.phoneTypes = data;
+				})
+				.catch((e) => {
+					Notification(`Phone types ${e}`, "is-danger");
+				});
+
+			this.phoneTypesLoading = false;
 		},
 	},
 };

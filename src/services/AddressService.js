@@ -53,4 +53,28 @@ export default {
 			adm4Id: 53,
 		};
 	},
+
+	async getAddresses(ids) {
+		// TODO Finish after BE prepare address endpoint
+		// const idsText = ids.length ? idsToUri(ids) : "";
+
+		// const { data } = await fetcher({ uri: `beneficiaries/addresses?${idsText}` });
+		// return data;
+		return {
+			totalCount: 1,
+			data: [
+				{
+					id: ids[0],
+					number: "1234",
+					street: "Stara",
+					postcode: "512 34",
+					locationId: 59,
+					adm1Id: 1,
+					adm2Id: 1,
+					adm3Id: 4,
+					adm4Id: 53,
+				},
+			],
+		};
+	},
 };

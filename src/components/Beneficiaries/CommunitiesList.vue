@@ -59,6 +59,7 @@ import ActionButton from "@/components/ActionButton";
 import Search from "@/components/Search";
 import CommunitiesService from "@/services/CommunitiesService";
 import { generateColumns } from "@/utils/datagrid";
+import { getPreparedLocations } from "@/mappers/addressMapper";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
@@ -118,14 +119,36 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(async ({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = await this.prepareDataForTable(data);
 			}).catch((e) => {
 				Notification(`Communities ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			const filledData = [];
+			const addressIds = [];
+			data.map(async (item, key) => {
+				filledData[key] = item;
+				addressIds.push((item.addressId));
+			});
+			const mappedAddresses = await getPreparedLocations(addressIds);
+
+			data.forEach((item, key) => {
+				filledData[key].name = this.prepareLocations(item.addressId, mappedAddresses);
+			});
+
+			return filledData;
+		},
+
+		prepareLocations(id, addresses) {
+			if (!addresses) return "";
+			const location = addresses.find((address) => address.id === id);
+			return location ? location.locationName : "";
 		},
 	},
 };

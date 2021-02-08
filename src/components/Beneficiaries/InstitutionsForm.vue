@@ -287,23 +287,35 @@ export default {
 		};
 	},
 
-	async mounted() {
+	async created() {
 		await this.fetchTypes();
 		await this.fetchNationalCardTypes();
 		await this.fetchPhoneTypes();
-		this.mapSelects();
+	},
+
+	watch: {
+		formModel: "mapSelects",
 	},
 
 	methods: {
-		mapSelects() {
-			this.formModel.phonePrefix = PhoneCodes
-				.find((item) => item.code === this.formModel.phonePrefix);
-			this.formModel.type = this.options.types
-				.find((item) => item.code === this.formModel.type);
-			this.formModel.nationalCardType = this.options.nationalCardTypes
-				.find((item) => item.code === this.formModel.nationalCardType);
-			this.formModel.phoneType = this.options.phoneTypes
-				.find((item) => item.code === this.formModel.phoneType);
+		async mapSelects() {
+			const { phonePrefix, type, nationalCardType, phoneType } = this.formModel;
+			if (phonePrefix && typeof phonePrefix !== "object") {
+				this.formModel.phonePrefix = await PhoneCodes
+					.find((item) => item.code === phonePrefix);
+			}
+			if (type && typeof type !== "object") {
+				this.formModel.type = await this.options.types
+					.find((item) => item.code === type);
+			}
+			if (nationalCardType && typeof nationalCardType !== "object") {
+				this.formModel.nationalCardType = await this.options.nationalCardTypes
+					.find((item) => item.code === nationalCardType);
+			}
+			if (phoneType && typeof phoneType !== "object") {
+				this.formModel.phoneType = await this.options.phoneTypes
+					.find((item) => item.code === phoneType);
+			}
 		},
 
 		submitForm() {
