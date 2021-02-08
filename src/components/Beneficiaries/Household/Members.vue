@@ -115,15 +115,19 @@ export default {
 		submit() {
 			this.members = [];
 			let result = 0;
-			this.$refs.member.forEach((form) => {
-				if (form.submit()) {
-					result += 1;
-				}
-			});
-			if (result === this.$refs.member.length) {
+			if (this.$refs.member) {
 				this.$refs.member.forEach((form) => {
-					this.members.push(form.formModel);
+					if (form.submit()) {
+						result += 1;
+					}
 				});
+				if (result === this.$refs.member.length) {
+					this.$refs.member.forEach((form) => {
+						this.members.push(form.formModel);
+					});
+					return true;
+				}
+			} else {
 				return true;
 			}
 

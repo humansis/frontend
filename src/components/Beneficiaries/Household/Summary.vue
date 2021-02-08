@@ -80,6 +80,10 @@ export default {
 		detailOfHousehold: Object,
 		location: String,
 		address: String,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	validations: {
@@ -144,7 +148,9 @@ export default {
 					Notification(`Projects ${e}`, "is-danger");
 				});
 
-			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+			if (this.isEditing) {
+				this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+			}
 		},
 
 		submit() {

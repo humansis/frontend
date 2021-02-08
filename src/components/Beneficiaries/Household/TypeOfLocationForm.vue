@@ -14,10 +14,10 @@
 				:options="options.typeOfLocation"
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
-				@select="validate('typeOfLocation')"
+				@select="selectTypeOfLocation"
 			/>
 		</b-field>
-		<div v-if="formModel.type && formModel.type === 'camp'">
+		<div v-if="campSelected">
 			<b-field
 				label="Camp"
 				:type="validateType('camp')"
@@ -127,6 +127,7 @@ export default {
 		return {
 			locationTypesLoading: false,
 			createCamp: false,
+			campSelected: false,
 			options: {
 				typeOfLocation: [],
 				// TODO camps
@@ -164,9 +165,15 @@ export default {
 
 		mapLocations() {
 			if (this.formModel.type) {
+				this.campSelected = this.formModel.type === "camp";
 				this.formModel.typeOfLocation = this.options.typeOfLocation
 					.find((item) => this.formModel.type === item.code);
 			}
+		},
+
+		selectTypeOfLocation(value) {
+			this.campSelected = value.code === "camp";
+			this.validate("typeOfLocation");
 		},
 
 		submitTypeOfLocationForm() {
