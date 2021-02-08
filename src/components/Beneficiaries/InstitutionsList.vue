@@ -122,9 +122,9 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = data;
 			}).catch((e) => {
 				Notification(`Institutions ${e}`, "is-danger");
 			});

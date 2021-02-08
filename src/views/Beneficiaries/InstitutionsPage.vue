@@ -77,6 +77,8 @@ export default {
 				nationalCardType: "",
 				phonePrefix: "",
 				phoneNumber: "",
+				phoneType: "",
+				phoneProxy: false,
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
@@ -134,6 +136,8 @@ export default {
 				nationalCardType: "",
 				phonePrefix: "",
 				phoneNumber: "",
+				phoneType: "",
+				phoneProxy: false,
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
@@ -170,7 +174,7 @@ export default {
 		) {
 			const phone = await BeneficiariesService.getPhone(phoneId);
 			const address = await AddressService.getAddress(addressId);
-			const nationalIdCard = await BeneficiariesService.getNationalId(nationalId || 5);
+			const nationalIdCard = await BeneficiariesService.getNationalId(nationalId);
 
 			this.institutionModel = {
 				...this.institutionModel,
