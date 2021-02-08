@@ -516,16 +516,7 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
-			Object.keys(selectedFilters).forEach((key) => {
-				if (Array.isArray(selectedFilters[key])) {
-					this.filters[key] = [];
-					selectedFilters[key].forEach((value) => {
-						this.filters[key].push(value.id);
-					});
-				} else if (selectedFilters[key]) {
-					this.filters[key] = [selectedFilters[key].id];
-				}
-			});
+			this.filters = selectedFilters;
 			await this.fetchData(this.searchPhrase);
 		},
 	},

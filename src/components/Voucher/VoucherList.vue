@@ -2,7 +2,25 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
+			<div class="column">
+				<button
+					class="button"
+					slot="trigger"
+					@click="filtersToggle"
+				>
+					<span>Advanced search</span>
+					<b-icon
+						size="is-small"
+						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					/>
+				</button>
+			</div>
 		</div>
+		<b-collapse v-model="advancedSearchVisible">
+			<VoucherFilters
+				@filtersChanged="onFiltersChange"
+			/>
+		</b-collapse>
 		<Table
 			:data="table.data"
 			:total="table.total"
@@ -60,11 +78,13 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import VoucherFilters from "@/components/Voucher/VoucherFilters";
 
 export default {
 	name: "VoucherList",
 
 	components: {
+		VoucherFilters,
 		Search,
 		SafeDelete,
 		Table,
@@ -76,6 +96,8 @@ export default {
 
 	data() {
 		return {
+			advancedSearchVisible: false,
+			filters: [],
 			table: {
 				data: [],
 				columns: [],
@@ -128,12 +150,22 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				this.filters,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = await prepareDataForTable(data);
 				this.table.total = totalCount;
 			});
 
 			this.isLoadingList = false;
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			await this.fetchData();
 		},
 	},
 };

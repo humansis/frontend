@@ -2,7 +2,25 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
+			<div class="column">
+				<button
+					class="button"
+					slot="trigger"
+					@click="filtersToggle"
+				>
+					<span>Advanced search</span>
+					<b-icon
+						size="is-small"
+						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					/>
+				</button>
+			</div>
 		</div>
+		<b-collapse v-model="advancedSearchVisible">
+			<VoucherFilters
+				@filtersChanged="onFiltersChange"
+			/>
+		</b-collapse>
 		<div class="batches-container" ref="batches">
 			<b-collapse
 				v-for="(batch, index) of getBatches()"
@@ -90,11 +108,13 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import VoucherFilters from "@/components/Voucher/VoucherFilters";
 
 export default {
 	name: "BatchList",
 
 	components: {
+		VoucherFilters,
 		Search,
 		SafeDelete,
 		Table,
@@ -108,6 +128,8 @@ export default {
 		return {
 			batches: [],
 			isOpen: 0,
+			advancedSearchVisible: false,
+			filters: {},
 			table: {
 				data: [],
 				columns: [],
@@ -158,6 +180,11 @@ export default {
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
+				null,
+				null,
+				null,
+				this.table.searchPhrase,
+				this.filters,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = await prepareDataForTable(data);
 				this.table.total = totalCount;
@@ -198,6 +225,15 @@ export default {
 
 		onSort() {
 			// TODO on table sort
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			await this.fetchData();
 		},
 	},
 };
