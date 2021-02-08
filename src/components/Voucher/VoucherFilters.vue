@@ -31,6 +31,7 @@
 import CurrencyService from "@/services/CurrencyService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "VoucherFilters",
@@ -41,6 +42,7 @@ export default {
 				currencies: [],
 				statuses: [],
 				assistances: [],
+				beneficiaries: [],
 			},
 			filtersOptions: {
 				currencies: {
@@ -56,15 +58,24 @@ export default {
 					placeholder: "Select Status",
 					multiple: true,
 					data: [
-						{ code: 0, value: "Unassigned" },
-						{ code: 1, value: "Distributed" },
-						{ code: 2, value: "Used" },
-						{ code: 4, value: "Deactivated" },
+						{ code: "unassigned", value: "Unassigned" },
+						{ code: "distributed", value: "Distributed" },
+						{ code: "used", value: "Used" },
+						{ code: "deactivated", value: "Deactivated" },
 					],
 				},
 				assistances: {
 					name: "Assistance",
 					placeholder: "Select Assistance",
+					trackBy: "id",
+					label: "name",
+					multiple: true,
+					loading: true,
+					data: [],
+				},
+				beneficiaries: {
+					name: "Beneficiary",
+					placeholder: "Select Beneficiary",
 					trackBy: "id",
 					label: "name",
 					multiple: true,
@@ -77,6 +88,7 @@ export default {
 
 	mounted() {
 		this.fetchAssistances();
+		this.fetchBeneficiaries();
 		this.fetchCurrencies();
 	},
 
@@ -119,6 +131,18 @@ export default {
 				});
 
 			this.filtersOptions.currencies.loading = false;
+		},
+
+		async fetchBeneficiaries() {
+			await BeneficiariesService.getBeneficiaries()
+				.then(({ data }) => {
+					this.filtersOptions.beneficiaries.data = data;
+				})
+				.catch((e) => {
+					Notification(`Beneficiaries ${e}`, "is-danger");
+				});
+
+			this.filtersOptions.beneficiaries.loading = false;
 		},
 	},
 };
