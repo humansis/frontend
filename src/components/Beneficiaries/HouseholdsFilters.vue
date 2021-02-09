@@ -1,33 +1,14 @@
 <template>
-	<div class="mb-5 box">
-		<div class="columns is-multiline">
-			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column is-half">
-				<b-field :label="options.name">
-					<MultiSelect
-						v-model="selectedFiltersOptions[filter]"
-						searchable
-						:label="options.label || 'value'"
-						:track-by="options.trackBy || 'code'"
-						:multiple="options.multiple"
-						:placeholder="options.placeholder || 'Click to select...'"
-						:loading="options.loading"
-						:options="options.data"
-						@input="filterChanged(filter)"
-					>
-						<template
-							slot="singleLabel"
-							slot-scope="options"
-						>
-							{{ options.option.name }}
-						</template>
-					</MultiSelect>
-				</b-field>
-			</div>
-		</div>
-	</div>
+	<AdvancedFilter
+		multiline
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		@filtersChanged="filterChanged"
+	/>
 </template>
 
 <script>
+import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectsService from "@/services/ProjectsService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -35,6 +16,10 @@ import { Notification } from "@/utils/UI";
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "HouseholdsFilters",
+
+	components: {
+		AdvancedFilter,
+	},
 
 	data() {
 		return {
@@ -139,37 +124,25 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filter) {
-			switch (filter) {
+		filterChanged(filters, filterName) {
+			switch (filterName) {
 				case "adm1":
-					this.fetchDistricts(this.selectedFiltersOptions[filter].id);
+					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm2 = null;
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
 					break;
 				case "adm2":
-					this.fetchCommunes(this.selectedFiltersOptions[filter].id);
+					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
 					break;
 				case "adm3":
-					this.fetchVillages(this.selectedFiltersOptions[filter].id);
+					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm4 = null;
 					break;
 				default: break;
 			}
-			const filters = {};
-			Object.keys(this.selectedFiltersOptions).forEach((key) => {
-				const select = this.filtersOptions[key].trackBy || "code";
-				if (Array.isArray(this.selectedFiltersOptions[key])) {
-					filters[key] = [];
-					this.selectedFiltersOptions[key].forEach((value) => {
-						filters[key].push(value[select]);
-					});
-				} else if (this.selectedFiltersOptions[key]) {
-					filters[key] = [this.selectedFiltersOptions[key][select]];
-				}
-			});
 			this.$emit("filtersChanged", filters);
 		},
 

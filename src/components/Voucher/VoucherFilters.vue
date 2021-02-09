@@ -1,33 +1,13 @@
 <template>
-	<div class="mb-5 box">
-		<div class="columns is-multiline">
-			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column">
-				<b-field :label="options.name">
-					<MultiSelect
-						v-model="selectedFiltersOptions[filter]"
-						searchable
-						:label="options.label || 'value'"
-						:track-by="options.trackBy || 'code'"
-						:multiple="options.multiple"
-						:placeholder="options.placeholder || 'Click to select...'"
-						:loading="options.loading"
-						:options="options.data"
-						@input="filterChanged(filter)"
-					>
-						<template
-							slot="singleLabel"
-							slot-scope="options"
-						>
-							{{ options.option.name }}
-						</template>
-					</MultiSelect>
-				</b-field>
-			</div>
-		</div>
-	</div>
+	<AdvancedFilter
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		@filtersChanged="filterChanged"
+	/>
 </template>
 
 <script>
+import AdvancedFilter from "@/components/AdvancedFilter";
 import CurrencyService from "@/services/CurrencyService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
@@ -35,6 +15,10 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "VoucherFilters",
+
+	components: {
+		AdvancedFilter,
+	},
 
 	data() {
 		return {
@@ -93,19 +77,7 @@ export default {
 	},
 
 	methods: {
-		filterChanged() {
-			const filters = {};
-			Object.keys(this.selectedFiltersOptions).forEach((key) => {
-				if (Array.isArray(this.selectedFiltersOptions[key])) {
-					filters[key] = [];
-					this.selectedFiltersOptions[key].forEach((value) => {
-						const select = this.filtersOptions[key].trackBy || "code";
-						filters[key].push(value[select]);
-					});
-				} else if (this.selectedFiltersOptions[key]) {
-					filters[key] = [this.selectedFiltersOptions[key].id];
-				}
-			});
+		filterChanged(filters) {
 			this.$emit("filtersChanged", filters);
 		},
 
