@@ -30,13 +30,12 @@
 		</b-button>
 		<!-- switch between two styles of displaying Batches/Vouchers list -->
 		<BatchList
-			v-if="true"
+			v-if="false"
 			ref="batchList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
 		/>
 		<VoucherList
-			v-else
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
