@@ -21,6 +21,7 @@
 			:checkable="checkable"
 			:data="data"
 			:total="total"
+			:per-page="perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
