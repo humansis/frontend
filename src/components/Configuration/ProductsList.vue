@@ -1,16 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-			/>
-		</div>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -19,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -57,6 +52,16 @@
 					/>
 				</div>
 			</b-table-column>
+			<template slot="export">
+				<div class="column">
+					<ExportButton
+						type="is-success"
+						size="is-default"
+						space-between
+						:formats="{ xlsx: true, csv: true, ods: true}"
+					/>
+				</div>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -67,7 +72,6 @@ import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Search from "@/components/Search";
 import ProductsService from "@/services/ProductsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -77,7 +81,6 @@ export default {
 	name: "ProductsList",
 
 	components: {
-		Search,
 		ExportButton,
 		ColumnField,
 		SafeDelete,

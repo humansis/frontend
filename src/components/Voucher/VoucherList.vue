@@ -1,27 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column">
-				<button
-					class="button"
-					slot="trigger"
-					@click="filtersToggle"
-				>
-					<span>Advanced search</span>
-					<b-icon
-						size="is-small"
-						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					/>
-				</button>
-			</div>
-		</div>
-		<b-collapse v-model="advancedSearchVisible">
-			<VoucherFilters
-				@filtersChanged="onFiltersChange"
-			/>
-		</b-collapse>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -30,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -64,13 +48,34 @@
 					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
+			<template slot="filterButton">
+				<div class="column">
+					<button
+						class="button"
+						slot="trigger"
+						@click="filtersToggle"
+					>
+						<span>Advanced search</span>
+						<b-icon
+							size="is-small"
+							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+						/>
+					</button>
+				</div>
+			</template>
+			<template slot="filter">
+				<b-collapse v-model="advancedSearchVisible">
+					<VoucherFilters
+						@filtersChanged="onFiltersChange"
+					/>
+				</b-collapse>
+			</template>
 		</Table>
 	</div>
 </template>
 
 <script>
 import { prepareDataForTable } from "@/mappers/voucherMapper";
-import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
@@ -85,7 +90,6 @@ export default {
 
 	components: {
 		VoucherFilters,
-		Search,
 		SafeDelete,
 		Table,
 		ActionButton,

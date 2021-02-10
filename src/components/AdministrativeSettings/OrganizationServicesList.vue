@@ -1,10 +1,10 @@
 <!-- TODO edit after real api-->
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-		</div>
 		<Table
+			has-search
+			has-reset-sort
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -13,6 +13,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -48,7 +50,6 @@
 <script>
 import ActionButton from "@/components/ActionButton";
 import Table from "@/components/DataGrid/Table";
-import Search from "@/components/Search";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -58,7 +59,6 @@ export default {
 	name: "OrganizationServicesList",
 
 	components: {
-		Search,
 		Table,
 		ActionButton,
 	},

@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-		</div>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -12,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -54,7 +56,6 @@
 </template>
 
 <script>
-import Search from "@/components/Search";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
@@ -68,7 +69,6 @@ export default {
 	name: "VendorsList",
 
 	components: {
-		Search,
 		SafeDelete,
 		Table,
 		ActionButton,

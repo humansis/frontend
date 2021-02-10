@@ -4,6 +4,7 @@ export default {
 	data() {
 		return {
 			isLoadingList: false,
+			resetSortKey: 0,
 		};
 	},
 
@@ -60,6 +61,15 @@ export default {
 
 		remove(id) {
 			this.$emit("onRemove", id);
+		},
+
+		resetSort() {
+			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
+				this.table.sortColumn = "";
+				this.table.sortDirection = "";
+				this.resetSortKey += 1;
+				this.fetchData();
+			}
 		},
 	},
 };

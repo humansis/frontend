@@ -1,5 +1,28 @@
 <template>
 	<div>
+		<slot name="table-header">
+			<div class="columns">
+				<slot name="search">
+					<Search v-if="hasSearch" class="column is-two-fifths" @search="$emit('search', $event)" />
+				</slot>
+				<slot name="filterButton" />
+				<slot name="export" />
+				<slot name="resetSort">
+					<div class="column">
+						<b-button
+							v-if="hasResetSort"
+							icon-left="eraser"
+							class="is-pulled-right reset-sort-button is-small is-light mt-2"
+							@click="$emit('resetSort')"
+						>
+							Reset Sort
+						</b-button>
+					</div>
+				</slot>
+			</div>
+		</slot>
+		<slot name="filter" />
+		<slot name="progress" />
 		<b-table
 			striped
 			hoverable
@@ -49,9 +72,14 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import Search from "@/components/Search";
 
 export default {
 	name: "Table",
+
+	components: {
+		Search,
+	},
 
 	props: {
 		data: Array,
@@ -66,6 +94,14 @@ export default {
 			default: false,
 		},
 		isLoading: {
+			type: Boolean,
+			default: false,
+		},
+		hasResetSort: {
+			type: Boolean,
+			default: false,
+		},
+		hasSearch: {
 			type: Boolean,
 			default: false,
 		},

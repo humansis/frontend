@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-		</div>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -12,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -63,7 +65,6 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Search from "@/components/Search";
 import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
@@ -79,7 +80,6 @@ export default {
 	mixins: [grid],
 
 	components: {
-		Search,
 		SafeDelete,
 		Table,
 		ActionButton,

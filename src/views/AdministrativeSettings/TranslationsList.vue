@@ -1,25 +1,16 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column is-pulled-right">
-				<b-field>
-					<b-button
-						type="is-success"
-						icon-left="plus"
-						@click="addTranslation"
-					>
-						Add Translation
-					</b-button>
-				</b-field>
-			</div>
-		</div>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -46,6 +37,19 @@
 					/>
 				</div>
 			</b-table-column>
+			<template slot="export">
+				<div class="column">
+					<b-field>
+						<b-button
+							type="is-success"
+							icon-left="plus"
+							@click="addTranslation"
+						>
+							Add Translation
+						</b-button>
+					</b-field>
+				</div>
+			</template>
 		</Table>
 		<b-button
 			class="mb-5"
@@ -64,7 +68,6 @@
 import ColumnField from "@/components/DataGrid/ColumnField";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
-import Search from "@/components/Search";
 import TranslationService from "@/services/TranslationService";
 import { generateColumns } from "@/utils/datagrid";
 import { Toast, Notification } from "@/utils/UI";
@@ -74,7 +77,6 @@ export default {
 	name: "TranslationsList",
 
 	components: {
-		Search,
 		SafeDelete,
 		Table,
 		ColumnField,

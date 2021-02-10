@@ -1,27 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column">
-				<button
-					class="button"
-					slot="trigger"
-					@click="filtersToggle"
-				>
-					<span>Advanced search</span>
-					<b-icon
-						size="is-small"
-						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					/>
-				</button>
-			</div>
-		</div>
-		<b-collapse v-model="advancedSearchVisible">
-			<CommunitiesFilter
-				@filtersChanged="onFiltersChange"
-			/>
-		</b-collapse>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -30,6 +12,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -66,6 +49,28 @@
 					/>
 				</div>
 			</b-table-column>
+			<template slot="filterButton">
+				<div class="column">
+					<button
+						class="button"
+						slot="trigger"
+						@click="filtersToggle"
+					>
+						<span>Advanced search</span>
+						<b-icon
+							size="is-small"
+							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+						/>
+					</button>
+				</div>
+			</template>
+			<template slot="filter">
+				<b-collapse v-model="advancedSearchVisible">
+					<CommunitiesFilter
+						@filtersChanged="onFiltersChange"
+					/>
+				</b-collapse>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -74,7 +79,6 @@
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import Search from "@/components/Search";
 import CommunitiesService from "@/services/CommunitiesService";
 import { generateColumns } from "@/utils/datagrid";
 import { getPreparedLocations } from "@/mappers/addressMapper";
@@ -87,7 +91,6 @@ export default {
 
 	components: {
 		CommunitiesFilter,
-		Search,
 		SafeDelete,
 		Table,
 		ActionButton,
