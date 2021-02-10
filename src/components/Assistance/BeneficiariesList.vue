@@ -163,36 +163,14 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "id",
-						label: "Beneficiary ID",
-					},
-					{
-						key: "transactionId",
-						label: "Transaction ID",
-					},
-					{
-						key: "givenName",
-						label: "First Name",
-					},
-					{
-						key: "familyName",
-						label: "Family Name",
-					},
-					{
-						key: "phone",
-						label: "Phone",
-					},
-					{
-						key: "nationalId",
-						label: "National ID",
-					},
-					{
-						key: "status",
-					},
-					{
-						key: "value",
-					},
+					{ key: "id", label: "Beneficiary ID" },
+					{ key: "transactionId", label: "Transaction ID" },
+					{ key: "givenName", label: "First Name" },
+					{ key: "familyName", label: "Family Name" },
+					{ key: "phone", label: "Phone" },
+					{ key: "nationalId", label: "National ID" },
+					{ key: "status" },
+					{ key: "value" },
 				],
 				total: 0,
 				currentPage: 1,

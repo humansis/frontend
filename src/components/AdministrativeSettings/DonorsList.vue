@@ -97,28 +97,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						type: "text",
-						key: "fullname",
-						label: "Donor Name",
-						width: "500",
-					},
-					{
-						type: "text",
-						key: "shortname",
-						width: "200",
-					},
-					{
-						type: "image",
-						key: "logo",
-						label: "Organization Logo",
-						width: "200",
-					},
-					{
-						type: "text",
-						key: "notes",
-						width: "200",
-					},
+					{ type: "text", key: "fullname", label: "Donor Name", width: "500" },
+					{ type: "text", key: "shortname", width: "200" },
+					{ type: "image", key: "logo", label: "Organization Logo", width: "200" },
+					{ type: "text", key: "notes", width: "200" },
 				],
 				total: 0,
 				currentPage: 1,

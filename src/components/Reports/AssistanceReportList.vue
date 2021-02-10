@@ -99,10 +99,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Name",
-					},
+					{ key: "name", label: "Name" },
 				],
 				total: 0,
 				currentPage: 1,

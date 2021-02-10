@@ -77,18 +77,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "beneficiary",
-					},
-					{
-						key: "type",
-					},
-					{
-						key: "item",
-					},
-					{
-						key: "value",
-					},
+					{ key: "beneficiary" },
+					{ key: "type" },
+					{ key: "item" },
+					{ key: "value" },
 				],
 				total: 0,
 				currentPage: 1,
