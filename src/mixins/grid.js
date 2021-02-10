@@ -21,10 +21,13 @@ export default {
 		},
 
 		onSort(column) {
-			if (this.table.sortColumn === column) {
+			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
+			const sortKey = currentColumn.sortKey || column;
+
+			if (this.table.sortColumn === sortKey) {
 				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
 			} else {
-				this.table.sortColumn = column;
+				this.table.sortColumn = sortKey;
 				this.table.sortDirection = "desc";
 			}
 			this.fetchData();
