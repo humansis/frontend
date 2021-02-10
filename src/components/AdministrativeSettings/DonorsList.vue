@@ -1,16 +1,10 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-			/>
-		</div>
 		<Table
+			has-search
+			has-reset-sort
+			has-export
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -19,6 +13,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -58,6 +53,16 @@
 					/>
 				</div>
 			</b-table-column>
+			<template slot="export">
+				<div class="column">
+					<ExportButton
+						type="is-success"
+						size="is-default"
+						space-between
+						:formats="{ xlsx: true, csv: true, ods: true}"
+					/>
+				</div>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -67,19 +72,17 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ExportButton from "@/components/ExportButton";
-import Search from "@/components/Search";
 import HomeService from "@/services/HomeService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "DonorsList",
 
 	components: {
 		ExportButton,
-		Search,
 		ColumnField,
 		SafeDelete,
 		Table,

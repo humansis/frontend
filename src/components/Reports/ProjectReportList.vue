@@ -4,22 +4,9 @@
 			@periodChanged="onPeriodFilterChange"
 			@choosePeriodChanged="onChoosePeriodFilterChange"
 		/>
-		<div class="columns">
-			<div class="box column is-four-fifths ml-4" style="width: 78%">
-				<label class="typo__label">Projects</label>
-				<MultiSelect
-					v-model="selectedProjectsForFilter"
-					tag-placeholder="Add this as new tag"
-					placeholder="Search"
-					label="name"
-					track-by="id"
-					multiple
-					:options="projects"
-					@input="fetchProjectReports"
-				/>
-			</div>
-		</div>
 		<Table
+			has-reset-sort
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -28,6 +15,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -43,6 +31,21 @@
 					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
+			<template slot="filterButton">
+				<div class="box column is-four-fifths ml-4" style="width: 78%">
+					<label class="typo__label">Projects</label>
+					<MultiSelect
+						v-model="selectedProjectsForFilter"
+						tag-placeholder="Add this as new tag"
+						placeholder="Search"
+						label="name"
+						track-by="id"
+						multiple
+						:options="projects"
+						@input="fetchProjectReports"
+					/>
+				</div>
+			</template>
 		</Table>
 	</div>
 </template>

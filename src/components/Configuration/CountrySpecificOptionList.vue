@@ -1,16 +1,9 @@
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-			/>
-		</div>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -19,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -54,6 +49,16 @@
 					/>
 				</div>
 			</b-table-column>
+			<template slot="export">
+				<div class="column">
+					<ExportButton
+						type="is-success"
+						size="is-default"
+						space-between
+						:formats="{ xlsx: true, csv: true, ods: true}"
+					/>
+				</div>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -62,7 +67,6 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import Search from "@/components/Search";
 import ExportButton from "@/components/ExportButton";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Notification } from "@/utils/UI";
@@ -73,7 +77,6 @@ export default {
 	name: "CountrySpecificOptionList",
 
 	components: {
-		Search,
 		ExportButton,
 		SafeDelete,
 		Table,

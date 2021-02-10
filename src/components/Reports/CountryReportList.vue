@@ -5,6 +5,8 @@
 			@choosePeriodChanged="onChoosePeriodFilterChange"
 		/>
 		<Table
+			has-reset-sort
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -13,6 +15,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">

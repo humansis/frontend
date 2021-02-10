@@ -1,37 +1,18 @@
 <template>
 	<div>
 		<h2 class="title">Transactions</h2>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column">
-				<button
-					class="button"
-					slot="trigger"
-					@click="filtersToggle"
-				>
-					<span>Advanced search</span>
-					<b-icon
-						size="is-small"
-						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					/>
-				</button>
-			</div>
-		</div>
-		<b-collapse
-			:open="advancedSearchVisible"
-			animation="slide"
-		>
-			<TransactionFilter
-				@filtersChanged="onFiltersChange"
-			/>
-		</b-collapse>
 		<Table
+			has-reset-sort
+			has-search
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -40,13 +21,37 @@
 					</template>
 				</b-table-column>
 			</template>
+			<template slot="filterButton">
+				<div class="column">
+					<button
+						class="button"
+						slot="trigger"
+						@click="filtersToggle"
+					>
+						<span>Advanced search</span>
+						<b-icon
+							size="is-small"
+							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+						/>
+					</button>
+				</div>
+			</template>
+			<template slot="filter">
+				<b-collapse
+					:open="advancedSearchVisible"
+					animation="slide"
+				>
+					<TransactionFilter
+						@filtersChanged="onFiltersChange"
+					/>
+				</b-collapse>
+			</template>
 		</Table>
 	</div>
 </template>
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import Search from "@/components/Search";
 import TransactionService from "@/services/TransactionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -58,7 +63,6 @@ export default {
 	name: "TransactionsPage",
 
 	components: {
-		Search,
 		TransactionFilter,
 		Table,
 	},

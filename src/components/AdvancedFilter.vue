@@ -29,7 +29,7 @@
 
 <script>
 export default {
-	name: "CommunitiesFilter",
+	name: "AdvancedFilter",
 
 	props: {
 		selectedFiltersOptions: Object,

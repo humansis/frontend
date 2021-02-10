@@ -36,48 +36,22 @@
 				</div>
 			</b-dropdown-item>
 		</b-dropdown>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="fetchData" />
-			<div class="column">
-				<button
-					class="button"
-					slot="trigger"
-					@click="filtersToggle"
-				>
-					<span>Advanced search</span>
-					<b-icon
-						size="is-small"
-						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					/>
-				</button>
-			</div>
-			<ExportButton
-				type="is-success"
-				size="is-default"
-				class="column is-three-fifths"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@exportData="exportHousehold"
-			/>
-		</div>
-		<b-collapse v-model="advancedSearchVisible">
-			<HouseholdsFilters
-				@filtersChanged="onFiltersChange"
-			/>
-		</b-collapse>
-		<b-progress :value="table.progress" format="percent" />
 		<Table
 			ref="householdList"
+			has-reset-sort
+			has-search
+			checkable
+			paginated
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
-			checkable
-			paginated
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -116,18 +90,51 @@
 					/>
 				</div>
 			</b-table-column>
-
+			<template slot="filterButton">
+				<div class="column">
+					<button
+						class="button"
+						slot="trigger"
+						@click="filtersToggle"
+					>
+						<span>Advanced search</span>
+						<b-icon
+							size="is-small"
+							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+						/>
+					</button>
+				</div>
+			</template>
+			<template slot="export">
+				<div class="column is-two-fifths">
+					<ExportButton
+						type="is-success"
+						size="is-default"
+						space-between
+						:formats="{ xlsx: true, csv: true, ods: true}"
+						@exportData="exportHousehold"
+					/>
+				</div>
+			</template>
+			<template slot="filter">
+				<b-collapse v-model="advancedSearchVisible">
+					<HouseholdsFilters
+						@filtersChanged="onFiltersChange"
+					/>
+				</b-collapse>
+			</template>
+			<template slot="progress">
+				<b-progress :value="table.progress" format="percent" />
+			</template>
 		</Table>
 	</div>
 </template>
 
 <script>
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
-import Search from "@/components/Search";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import LocationsService from "@/services/LocationsService";
 import ProjectsService from "@/services/ProjectsService";
@@ -135,6 +142,7 @@ import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import ExportButton from "@/components/ExportButton";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -142,7 +150,6 @@ export default {
 	name: "HouseholdPage",
 
 	components: {
-		Search,
 		ExportButton,
 		Table,
 		ActionButton,

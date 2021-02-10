@@ -1,18 +1,9 @@
 <template>
 	<div>
-		<div v-if="!upcoming" class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@exportData="exportAssistance"
-			/>
-		</div>
-		<b-progress :value="table.progress" format="percent" />
 		<Table
+			has-reset-sort
+			:has-search="!upcoming"
+			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -21,6 +12,8 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -73,6 +66,20 @@
 					/>
 				</div>
 			</b-table-column>
+			<template v-if="!upcoming" slot="export">
+				<div class="column is-two-fifths">
+					<ExportButton
+						type="is-success"
+						size="is-default"
+						space-between
+						:formats="{ xlsx: true, csv: true, ods: true}"
+						@exportData="exportAssistance"
+					/>
+				</div>
+			</template>
+			<template slot="progress">
+				<b-progress :value="table.progress" format="percent" />
+			</template>
 		</Table>
 	</div>
 </template>
@@ -84,7 +91,6 @@ import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Search from "@/components/Search";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
@@ -95,7 +101,6 @@ export default {
 	name: "AssistancesList",
 
 	components: {
-		Search,
 		Table,
 		ActionButton,
 		SafeDelete,

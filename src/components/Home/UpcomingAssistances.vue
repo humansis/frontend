@@ -23,7 +23,6 @@
 <script>
 import Modal from "@/components/Modal";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
-import grid from "@/mixins/grid";
 import AssistancesList from "@/components/Projects/AssistancesList";
 
 export default {
@@ -34,8 +33,6 @@ export default {
 		AssistanceForm,
 		Modal,
 	},
-
-	mixins: [grid],
 
 	data() {
 		return {
