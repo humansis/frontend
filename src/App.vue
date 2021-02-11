@@ -29,7 +29,6 @@ export default {
 					iso3: CONST.DEFAULT_COUNTRY,
 				});
 
-				console.log(CONST.DEFAULT_COUNTRY);
 				this.updateLanguage(this.defaultLanguage);
 			}
 		},
