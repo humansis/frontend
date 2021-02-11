@@ -106,16 +106,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
-					{
-						key: "contactGivenName",
-						label: "Contact Name",
-					},
-					{
-						key: "contactFamilyName",
-					},
+					{ key: "name" },
+					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactFamilyName" },
 				],
 				total: 0,
 				currentPage: 1,

@@ -48,14 +48,8 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id" },
-					{
-						key: "familyName",
-						label: "Family Name [English]",
-					},
-					{
-						key: "familyGivenName",
-						label: "First Name [English]",
-					},
+					{ key: "familyName", label: "Family Name [English]" },
+					{ key: "familyGivenName", label: "First Name [English]" },
 				],
 				total: 0,
 			},

@@ -90,20 +90,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						type: "editable",
-						key: "key",
-					},
-					{
-						type: "editable",
-						key: "en",
-						label: "English",
-					},
-					{
-						type: "editable",
-						key: "de",
-						label: "Deutsch",
-					},
+					{ type: "editable", key: "key" },
+					{ type: "editable", key: "en", label: "English" },
+					{ type: "editable", key: "de", label: "Deutsch" },
 				],
 				total: 0,
 				currentPage: 1,

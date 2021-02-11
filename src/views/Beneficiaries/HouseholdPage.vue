@@ -168,44 +168,14 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "id",
-						label: "Household ID",
-						width: "30",
-					},
-					{
-						key: "familyName",
-						label: "Family Name",
-						width: "30",
-					},
-					{
-						key: "givenName",
-						label: "First Name",
-						width: "30",
-					},
-					{
-						key: "members",
-						width: "30",
-					},
-					{
-						key: "vulnerabilities",
-						width: "30",
-					},
-					{
-						key: "idNumber",
-						label: "ID Number",
-						width: "30",
-					},
-					{
-						key: "projects",
-						label: "Projects",
-						width: "30",
-					},
-					{
-						key: "currentLocation",
-						label: "Current Location",
-						width: "30",
-					},
+					{ key: "id", label: "Household ID", width: "30" },
+					{ key: "familyName", label: "Family Name", width: "30" },
+					{ key: "givenName", label: "First Name", width: "30" },
+					{ key: "members", width: "30" },
+					{ key: "vulnerabilities", width: "30" },
+					{ key: "idNumber", label: "ID Number", width: "30" },
+					{ key: "projects", label: "Projects", width: "30" },
+					{ key: "currentLocation", label: "Current Location", width: "30" },
 				],
 				total: 0,
 				currentPage: 1,

@@ -91,31 +91,12 @@ export default {
 		return {
 			table: {
 				columns: [
-					{
-						field: "criteriaTarget",
-						label: "Criteria Target",
-					},
-					{
-						field: "criteria",
-						label: "Criteria",
-					},
-					{
-						field: "condition",
-						label: "Condition",
-					},
-					{
-						field: "value",
-						label: "Value",
-						type: "customValue",
-					},
-					{
-						field: "scoreWeight",
-						label: "Score Weight",
-					},
-					{
-						field: "action",
-						label: "Action",
-					},
+					{ field: "criteriaTarget", label: "Criteria Target" },
+					{ field: "criteria", label: "Criteria" },
+					{ field: "condition", label: "Condition" },
+					{ field: "value", label: "Value", type: "customValue" },
+					{ field: "scoreWeight", label: "Score Weight" },
+					{ field: "action", label: "Action" },
 				],
 			},
 		};

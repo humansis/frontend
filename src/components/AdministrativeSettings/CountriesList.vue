@@ -80,19 +80,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
-					{
-						key: "iso3",
-					},
-					{
-						key: "availableCurrencies",
-					},
-					{
-						type: "flag",
-						key: "countryFlag",
-					},
+					{ key: "name" },
+					{ key: "iso3" },
+					{ key: "availableCurrencies" },
+					{ type: "flag", key: "countryFlag" },
 				],
 				total: 0,
 				currentPage: 1,

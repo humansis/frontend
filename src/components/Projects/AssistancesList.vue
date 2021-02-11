@@ -120,29 +120,13 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "id",
-						label: "Assistance ID",
-					},
+					{ key: "id", label: "Assistance ID" },
 					{ key: "name" },
-					{
-						key: "location",
-						label: "Location",
-					},
-					{
-						key: "beneficiaries",
-						label: "Beneficiaries",
-					},
-					{
-						key: "dateDistribution",
-						label: "Date Of Distribution",
-						type: "date",
-					},
+					{ key: "location", label: "Location" },
+					{ key: "beneficiaries", label: "Beneficiaries" },
+					{ key: "dateDistribution", label: "Date Of Distribution", type: "date" },
 					{ key: "target" },
-					{
-						key: "commodity",
-						label: "Commodity",
-					},
+					{ key: "commodity", label: "Commodity" },
 				],
 				total: 0,
 				currentPage: 1,
