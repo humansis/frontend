@@ -92,6 +92,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "id", width: "90", sortable: true },
 					{ key: "name", width: "434", sortable: true },
 					{ key: "donorIds", label: "Donors", type: "count", width: "100" },
 					{ key: "startDate", type: "date", width: "120", sortable: true },
