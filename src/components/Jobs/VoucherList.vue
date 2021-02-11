@@ -3,6 +3,7 @@
 		<Table
 			has-reset-sort
 			has-search
+			checkable
 			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
