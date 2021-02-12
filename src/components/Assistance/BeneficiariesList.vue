@@ -82,8 +82,8 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
 					v-bind="column"
+					:sortable="column.sortable"
 					:key="column.id"
 					v-slot="props"
 				>
@@ -163,12 +163,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Beneficiary ID" },
+					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "transactionId", label: "Transaction ID" },
-					{ key: "givenName", label: "First Name" },
-					{ key: "familyName", label: "Family Name" },
+					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
 					{ key: "phone", label: "Phone" },
-					{ key: "nationalId", label: "National ID" },
+					{ key: "nationalId", label: "National ID", sortable: true },
 					{ key: "status" },
 					{ key: "value" },
 				],

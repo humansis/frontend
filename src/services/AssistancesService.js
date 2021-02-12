@@ -83,7 +83,7 @@ export default {
 	},
 
 	async getListOfBeneficiaries(id, page, size, sort, search = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
