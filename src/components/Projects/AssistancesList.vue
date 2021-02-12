@@ -17,8 +17,8 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
 					v-bind="column"
+					:sortable="column.sortable"
 					:key="column.id"
 					v-slot="props"
 				>
@@ -26,11 +26,11 @@
 				</b-table-column>
 			</template>
 			<b-table-column
-				v-if="!upcoming"
 				v-slot="props"
 				label="Actions"
 				centered
 				width="230"
+				:visible="!upcoming"
 			>
 				<div class="block">
 					<ActionButton
@@ -94,6 +94,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import EventBus from "@/utils/EventBus";
 import { prepareDataForTable } from "@/mappers/assistanceMapper";
 import grid from "@/mixins/grid";
 
@@ -120,12 +121,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Assistance ID" },
-					{ key: "name" },
-					{ key: "location", label: "Location" },
-					{ key: "beneficiaries", label: "Beneficiaries" },
-					{ key: "dateDistribution", label: "Date Of Distribution", type: "date" },
-					{ key: "target" },
+					{ key: "id", label: "Assistance ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "location", label: "Location", sortable: true },
+					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
+					{ key: "dateDistribution", label: "Date Of Distribution", type: "date", sortable: true, sortKey: "date" },
+					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity" },
 				],
 				total: 0,
@@ -143,13 +144,8 @@ export default {
 	},
 
 	mounted() {
+		EventBus.$on("progress", this.addProgress);
 		this.fetchData();
-	},
-
-	computed: {
-		title() {
-			return this.upcoming ? "Upcoming Assistances" : "Project Assistances";
-		},
 	},
 
 	methods: {
@@ -165,6 +161,7 @@ export default {
 			} else {
 				await this.fetchProjectAssistances();
 			}
+			this.table.progress = 100;
 			this.isLoadingList = false;
 		},
 
@@ -203,6 +200,10 @@ export default {
 		goToValidateAndLockWithId(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 			this.onRowClick(assistance);
+		},
+
+		addProgress(value) {
+			this.table.progress += value;
 		},
 
 		onRowClick(assistance) {
