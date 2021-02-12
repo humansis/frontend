@@ -50,12 +50,14 @@
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@search="onSearch"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
+					sortable
 					:key="column.id"
 					v-slot="props"
 				>
@@ -163,25 +165,25 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			searchPhrase: "",
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
 					{ key: "id", label: "Household ID", width: "30" },
-					{ key: "familyName", label: "Family Name", width: "30" },
-					{ key: "givenName", label: "First Name", width: "30" },
-					{ key: "members", width: "30" },
+					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
+					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
+					{ key: "members", width: "30", sortKey: "dependents" },
 					{ key: "vulnerabilities", width: "30" },
-					{ key: "idNumber", label: "ID Number", width: "30" },
+					{ key: "idNumber", label: "ID Number", width: "30", sortKey: "nationalId" },
 					{ key: "projects", label: "Projects", width: "30" },
-					{ key: "currentLocation", label: "Current Location", width: "30" },
+					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
 				],
 				total: 0,
 				currentPage: 1,
 				sortColumn: "",
 				sortDirection: "desc",
 				progress: null,
+				searchPhrase: "",
 			},
 			checkedRows: [],
 			filters: {},
@@ -197,9 +199,7 @@ export default {
 	},
 
 	methods: {
-		async fetchData(value) {
-			this.searchPhrase = value;
-
+		async fetchData() {
 			this.isLoadingList = true;
 
 			this.table.progress = null;
@@ -209,13 +209,15 @@ export default {
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.searchPhrase,
+				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
 				this.table.progress = 0;
 				this.table.total = totalCount;
-				if (totalCount !== 0) {
+				if (totalCount > 0) {
 					this.table.data = await this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
 				}
 				this.isLoadingList = false;
 			}).catch((e) => {
@@ -273,7 +275,7 @@ export default {
 		},
 
 		mapLocationOnAddress(locations, addresses) {
-			if (!locations.length) return [];
+			if (!locations?.length) return [];
 			const addressesMapped = [];
 			addresses.forEach((address) => {
 				const location = locations.find((item) => item.adm.locationId === address.locationId);
@@ -353,7 +355,7 @@ export default {
 		},
 
 		async getLocations(addresses) {
-			if (!addresses.length) return [];
+			if (!addresses?.length) return [];
 			return LocationsService.getLocations(addresses, "locationId")
 				.then(({ data }) => {
 					this.table.progress += 15;
@@ -364,7 +366,7 @@ export default {
 		},
 
 		prepareNationalId(id, nationalIds) {
-			if (!nationalIds.length) return "none";
+			if (!nationalIds?.length) return "none";
 			const nationalId = nationalIds.find((item) => item.id === id);
 			this.table.progress += 5;
 			return nationalId ? nationalId.number : "none";
@@ -387,7 +389,7 @@ export default {
 		},
 
 		prepareBeneficiaries(id, beneficiaries) {
-			if (!beneficiaries.length) return "";
+			if (!beneficiaries?.length) return "";
 			const result = {
 				familyName: "",
 				givenName: "",
@@ -494,7 +496,7 @@ export default {
 
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
-			await this.fetchData(this.searchPhrase);
+			await this.fetchData();
 		},
 	},
 };

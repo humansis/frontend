@@ -88,10 +88,12 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 export const filtersToUri = (filters) => {
 	let query = "";
 	Object.keys(filters).forEach((key) => {
-		if (filters[key].length) {
+		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
 				query += `&filter[${key}][]=${item}`;
 			});
+		} else if (typeof filters[key] === "string") {
+			query += `&filter[${key}]=${filters[key]}`;
 		}
 	});
 	return query;

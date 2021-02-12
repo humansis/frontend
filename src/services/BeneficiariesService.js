@@ -2,12 +2,14 @@ import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?page=${page}&size=${size + sortText + fulltext + filtersUri}`,
+			uri: `households?${pageText + sizeText + sortText + fulltext + filtersUri}`,
 		});
 
 		return { data, totalCount };
@@ -131,6 +133,8 @@ export default {
 
 	async getNationalIds(ids, param = null) {
 		const idsText = ids ? idsToUri(ids, param) : "";
+
+		if (!idsText) return [];
 
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids?${idsText}`,
