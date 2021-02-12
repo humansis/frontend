@@ -90,7 +90,7 @@ export const filtersToUri = (filters) => {
 	Object.keys(filters).forEach((key) => {
 		if (filters[key].length) {
 			filters[key].forEach((item) => {
-				query += `&${key}[]=${item}`;
+				query += `&filter[${key}][]=${item}`;
 			});
 		}
 	});

@@ -238,9 +238,9 @@ export default {
 					postCode: addressPostCode,
 					locationId,
 				},
-				nationalCard: {
-					idNumber: nationalCardNumber,
-					idType: nationalCardType.code,
+				nationalIdCard: {
+					number: nationalCardNumber,
+					type: nationalCardType.code,
 				},
 				phone: {
 					prefix: phonePrefix.code,
