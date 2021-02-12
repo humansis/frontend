@@ -47,14 +47,16 @@ export default {
 		filterChanged(filterName) {
 			const filters = {};
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {
+				const filterKey = this.filtersOptions[key]?.filterKey || key;
 				if (Array.isArray(this.selectedFiltersOptions[key])) {
-					filters[key] = [];
+					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
-						const select = this.filtersOptions[key].trackBy || "code";
-						filters[key].push(value[select]);
+						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
+						filters[filterKey].push(value[select]);
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					filters[key] = [this.selectedFiltersOptions[key].id];
+					const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
+					filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 				}
 			});
 			this.$emit("filtersChanged", filters, filterName);

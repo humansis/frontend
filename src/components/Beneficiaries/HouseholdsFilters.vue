@@ -27,13 +27,14 @@ export default {
 				projects: [],
 				vulnerabilities: [],
 				gender: [],
-				residencies: [],
-				referrals: [],
+				residencyStatuses: [],
+				referralTypes: [],
 				livelihoods: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
 				adm4: [],
+				locations: [],
 			},
 			filtersOptions: {
 				projects: {
@@ -60,14 +61,14 @@ export default {
 						{ code: "F", value: "Female" },
 					],
 				},
-				residencies: {
+				residencyStatuses: {
 					name: "Residence Status",
 					placeholder: "Select Residence",
 					multiple: true,
 					loading: true,
 					data: [],
 				},
-				referrals: {
+				referralTypes: {
 					name: "Referral",
 					placeholder: "Select Referral",
 					multiple: true,
@@ -88,6 +89,8 @@ export default {
 					label: "name",
 					loading: true,
 					data: [],
+					selectValue: "locationId",
+					filterForSend: "locations",
 				},
 				adm2: {
 					name: "District",
@@ -95,6 +98,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 				adm3: {
 					name: "Commune",
@@ -102,6 +106,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 				adm4: {
 					name: "Village",
@@ -109,6 +114,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 			},
 		};
@@ -127,23 +133,54 @@ export default {
 		filterChanged(filters, filterName) {
 			switch (filterName) {
 				case "adm1":
-					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm2 = null;
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
 					break;
 				case "adm2":
-					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
 					break;
 				case "adm3":
-					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
+					break;
+				case "adm4":
+					if (!this.selectedFiltersOptions[filterName]) break;
 					break;
 				default: break;
 			}
-			this.$emit("filtersChanged", filters);
+			let location = null;
+			if (this.selectedFiltersOptions.adm4) {
+				const [a] = filters.adm4;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm3) {
+				const [a] = filters.adm3;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm2) {
+				const [a] = filters.adm2;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm1) {
+				const [a] = filters.adm1;
+				location = a;
+			}
+			this.$emit("filtersChanged", {
+				projects: filters.projects,
+				vulnerabilities: filters.vulnerabilities,
+				gender: filters.gender ? filters.gender[0] : null,
+				residencyStatuses: filters.residencyStatuses,
+				referralTypes: filters.referralTypes,
+				livelihoods: filters.livelihoods,
+				locations: location ? [location] : [],
+			});
 		},
 
 		async fetchProjects() {
@@ -229,8 +266,8 @@ export default {
 		async fetchResidenceStatuses() {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => {
-					this.filtersOptions.residencies.data = data;
-					this.filtersOptions.residencies.loading = false;
+					this.filtersOptions.residencyStatuses.data = data;
+					this.filtersOptions.residencyStatuses.loading = false;
 				})
 				.catch((e) => {
 					Notification(`Residence Status ${e}`, "is-danger");
@@ -240,8 +277,8 @@ export default {
 		async fetchReferralTypes() {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => {
-					this.filtersOptions.referrals.loading = false;
-					this.filtersOptions.referrals.data = data;
+					this.filtersOptions.referralTypes.loading = false;
+					this.filtersOptions.referralTypes.data = data;
 				})
 				.catch((e) => {
 					Notification(`Referral Types ${e}`, "is-danger");
