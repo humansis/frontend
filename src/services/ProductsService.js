@@ -2,11 +2,13 @@ import { fetcher } from "@/utils/fetcher";
 
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = page ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `products?page=${page}&size=${size + sortText + fulltext}`,
+			uri: `products?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
