@@ -2,12 +2,14 @@ import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfInstitutions(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = page ? `&size=${size}` : "";
 		const filtersText = filters ? filtersToUri(filters) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `institutions?page=${page}&size[]=${size + sortText + fulltext + filtersText}`,
+			uri: `institutions?${pageText + sizeText + sortText + fulltext + filtersText}`,
 		});
 		return { data, totalCount };
 	},
