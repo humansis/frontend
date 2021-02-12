@@ -109,7 +109,7 @@ export default {
 					{ key: "project" },
 					{ key: "code", sortable: true },
 					{ key: "numberVouchers", label: "Quantity Of Vouchers", sortable: true },
-					{ key: "value", label: "Total Value", sortable: true },
+					{ key: "totalValue", label: "Total Value", sortable: true, sortKey: "value" },
 					{ key: "currency", sortable: true },
 					{ key: "status", sortable: true },
 					{ key: "beneficiary", sortable: true },
