@@ -3,6 +3,7 @@ import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import AssistancesService from "@/services/AssistancesService";
 import { prepareEntityForTable } from "@/mappers/baseMapper";
+import EventBus from "@/utils/EventBus";
 
 async function getLocations(ids) {
 	return LocationsService.getLocations(ids)
@@ -29,6 +30,7 @@ async function getStatistics(ids) {
 }
 
 export const prepareDataForTable = async (data) => {
+	EventBus.$emit("progress", 10);
 	const filledData = [];
 	const locationIds = [];
 	const assistanceIds = [];
@@ -38,9 +40,13 @@ export const prepareDataForTable = async (data) => {
 		locationIds.push(item.locationId);
 		assistanceIds.push(item.id);
 	});
+	EventBus.$emit("progress", 15);
 	const locations = await getLocations(locationIds);
+	EventBus.$emit("progress", 15);
 	const commodities = await getCommodities(assistanceIds);
+	EventBus.$emit("progress", 15);
 	const statistics = await getStatistics(assistanceIds);
+	EventBus.$emit("progress", 15);
 
 	await Promise.all(promise);
 	promise = data.map(async (item, key) => {
@@ -50,8 +56,10 @@ export const prepareDataForTable = async (data) => {
 		filledData[key].beneficiaries = await prepareEntityForTable(item.id, statistics, "numberOfBeneficiaries", 0);
 		filledData[key].target = normalizeText(item.target);
 	});
+	EventBus.$emit("progress", 10);
 
 	await Promise.all(promise);
+	EventBus.$emit("progress", 10);
 	return filledData;
 };
 
