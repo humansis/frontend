@@ -175,7 +175,7 @@
 
 <script>
 import { required, minValue } from "vuelidate/lib/validators";
-import HomeService from "@/services/HomeService";
+import DonorService from "@/services/DonorService";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
@@ -259,7 +259,7 @@ export default {
 		},
 
 		async fetchDonors() {
-			await HomeService.getListOfDonors().then((response) => {
+			await DonorService.getListOfDonors().then((response) => {
 				this.options.donors = response.data;
 			}).catch((e) => {
 				Notification(`Donors ${e}`, "is-danger");

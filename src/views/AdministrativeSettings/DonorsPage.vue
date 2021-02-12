@@ -39,7 +39,7 @@
 import DonorsList from "@/components/AdministrativeSettings/DonorsList";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
-import HomeService from "@/services/HomeService";
+import DonorService from "@/services/DonorService";
 import { Toast } from "@/utils/UI";
 
 export default {
@@ -171,7 +171,7 @@ export default {
 		async createDonor(donorBody) {
 			this.donorModal.isWaiting = true;
 
-			await HomeService.createDonor(donorBody).then((response) => {
+			await DonorService.createDonor(donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Created", "is-success");
 					this.$refs.donorsList.fetchData();
@@ -186,7 +186,7 @@ export default {
 		async updateDonor(id, donorBody) {
 			this.donorModal.isWaiting = true;
 
-			await HomeService.updateDonor(id, donorBody).then((response) => {
+			await DonorService.updateDonor(id, donorBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Donor Successfully Updated", "is-success");
 					this.$refs.donorsList.fetchData();
@@ -199,7 +199,7 @@ export default {
 		},
 
 		async removeDonor(id) {
-			await HomeService.deleteDonor(id)
+			await DonorService.deleteDonor(id)
 				.then((response) => {
 					if (response.status === 204) {
 						Toast("Donor successfully removed", "is-success");

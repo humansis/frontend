@@ -17,9 +17,9 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
 					v-bind="column"
 					v-slot="props"
+					:sortable="column.sortable"
 					:key="column.id"
 				>
 					<ColumnField :column="column" :data="props" />
@@ -72,7 +72,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import HomeService from "@/services/HomeService";
+import DonorService from "@/services/DonorService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
@@ -97,8 +97,8 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ type: "text", key: "fullname", label: "Donor Name", width: "500" },
-					{ type: "text", key: "shortname", width: "200" },
+					{ type: "text", key: "fullname", label: "Donor Name", width: "500", sortable: true },
+					{ type: "text", key: "shortname", width: "200", sortable: true },
 					{ type: "image", key: "logo", label: "Organization Logo", width: "200" },
 					{ type: "text", key: "notes", width: "200" },
 				],
@@ -124,7 +124,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await HomeService.getListOfDonors(
+			await DonorService.getListOfDonors(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
