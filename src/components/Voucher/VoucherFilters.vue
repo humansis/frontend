@@ -42,10 +42,10 @@ export default {
 					placeholder: "Select Status",
 					multiple: true,
 					data: [
-						{ code: "unassigned", value: "Unassigned" },
-						{ code: "distributed", value: "Distributed" },
-						{ code: "used", value: "Used" },
-						{ code: "deactivated", value: "Deactivated" },
+						{ code: 0, value: "Unassigned" },
+						{ code: 1, value: "Distributed" },
+						{ code: 2, value: "Used" },
+						{ code: 3, value: "Deactivated" },
 					],
 				},
 				assistances: {
@@ -56,6 +56,7 @@ export default {
 					multiple: true,
 					loading: true,
 					data: [],
+					filterKey: "distributions",
 				},
 				beneficiaries: {
 					name: "Beneficiary",
