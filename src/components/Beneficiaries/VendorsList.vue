@@ -116,59 +116,41 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.buildLocationsForVendors(response.data).then((result) => {
-					this.table.data = result;
-					this.table.total = response.totalCount;
-				});
+			).then(async ({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = await this.prepareDataForTable(data);
 			}).catch((e) => {
 				Notification(`Vendors ${e}`, "is-danger");
 			});
-			// TODO Edit - Loading closes after loads data and must wait for locations
 			this.isLoadingList = false;
 		},
 
-		async buildLocationsForVendors(data) {
-			// TODO fix after implement Location endpoint
-			const preparedVendors = [];
+		async prepareDataForTable(data) {
+			const locations = await this.getLocations(data);
 
-			data.forEach((vendor) => {
-				const preparedVendor = vendor;
-				if (vendor.adm4Id) {
-					LocationsService.getDetailOfAdm4(vendor.adm4Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm4 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm3Id) {
-					LocationsService.getDetailOfAdm3(vendor.adm3Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm3 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm2Id) {
-					LocationsService.getDetailOfAdm2(vendor.adm2Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm2 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm1Id) {
-					LocationsService.getDetailOfAdm1(vendor.adm1Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm1 ${e}`, "is-danger");
-						});
-				}
+			const filledData = [];
+			const promise = await data.map(async (item, key) => {
+				filledData[key] = item;
+				filledData[key].location = this.prepareLocations(item.locationId, locations);
 			});
-			return preparedVendors;
+
+			await Promise.all(promise);
+
+			return filledData;
+		},
+
+		prepareLocations(id, locations) {
+			if (!locations?.length) return "";
+			const foundLocation = locations.find((location) => location.id === id);
+			return foundLocation ? foundLocation.adm.name : "";
+		},
+
+		async getLocations(vendors) {
+			if (!vendors?.length) return [];
+			return LocationsService.getLocations(vendors, "locationId")
+				.then(({ data }) => data).catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
+				});
 		},
 	},
 };
