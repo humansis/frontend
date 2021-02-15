@@ -13,6 +13,7 @@
 				class="modal-card"
 				:formModel="userModel"
 				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
+				:is-editing="userModal.isEditing"
 				:form-disabled="userModal.isDetail"
 				@formSubmitted="submitUserForm"
 				@formClosed="closeUserModal"
@@ -42,6 +43,7 @@ import UserForm from "@/components/AdministrativeSettings/UserForm";
 import Modal from "@/components/Modal";
 import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	name: "UsersPage",
@@ -64,14 +66,15 @@ export default {
 				id: null,
 				email: "",
 				password: "",
-				rights: "",
-				projects: "",
-				countries: "",
-				prefix: "",
+				rights: [],
+				projectIds: [],
+				countries: [],
+				phonePrefix: [],
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
 				disabledCountry: true,
 				disabledProject: true,
+				newUser: false,
 			},
 		};
 	},
@@ -114,15 +117,15 @@ export default {
 				id: null,
 				email: "",
 				password: "",
-				rights: "",
-				organization: "",
-				projects: "",
-				countries: "",
-				prefix: "",
+				rights: [],
+				projectIds: [],
+				countries: [],
+				phonePrefix: null,
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
 				disabledCountry: true,
 				disabledProject: true,
+				newUser: true,
 			};
 		},
 
@@ -145,25 +148,27 @@ export default {
 				id,
 				email,
 				password,
+				// TODO Map roles to body
+				// eslint-disable-next-line no-unused-vars
 				rights,
-				organization,
-				projects,
+				projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
 			} = userForm;
 
 			const userBody = {
+				username: email,
 				email,
 				password,
-				rights,
-				organization,
-				projects,
-				countries,
-				prefix,
+				roles: ["ROLE_USER"],
+				projectIds: getArrayOfIdsByParam(projectIds, "id"),
+				countries: getArrayOfIdsByParam(countries, "iso3"),
+				phonePrefix: phonePrefix.code,
 				phoneNumber,
-				updatePasswordOnNextLogin,
+				language: "EN",
+				changePassword: updatePasswordOnNextLogin,
 			};
 			if (this.userModal.isEditing && id) {
 				this.updateUser(id, userBody);
@@ -178,10 +183,9 @@ export default {
 				email,
 				password,
 				rights,
-				organization,
-				projects,
+				projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
 			},
@@ -192,10 +196,9 @@ export default {
 				email,
 				password,
 				rights,
-				organization,
-				projects,
+				projects: projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
 			};

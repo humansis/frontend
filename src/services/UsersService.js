@@ -1,59 +1,49 @@
-// TODO uncomment methods after implementing this endpoint
+import { fetcher } from "@/utils/fetcher";
 
 export default {
-	// eslint-disable-next-line no-unused-vars
 	async getListOfUsers(page, size, sort, search = null) {
-		// const fulltext = search ? `&fulltext=${search}` : "";
-		// const sortText = sort ? `&sort=${sort}` : "";
-		//
-		// const { data: { data, totalCount } } = await fetcher({
-		// 	uri: `users?page=${page}&size=${size + sortText + fulltext}`,
-		// });
-		// return { data, totalCount };
-		return { data: [], totalCount: 0 };
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `users?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async createUser(body) {
-		// const { data, status } = await fetcher({ uri: "users", method: "POST", body });
-		// return { data, status };
-		return { data: [], status: 200 };
+		const { data, status } = await fetcher({ uri: "users", method: "POST", body });
+		return { data, status };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async getDetailOfUser(id) {
-		// const { data: { data } } = await fetcher({
-		// 	uri: `users/${id}`,
-		// });
-		// return { data };
-		return { data: {}, totalCount: 0 };
+		const { data: { data } } = await fetcher({
+			uri: `users/${id}`,
+		});
+		return { data };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async updateUser(id, body) {
-		// const { data, status } = await fetcher({
-		// 	uri: `users/${id}`, method: "PUT", body,
-		// });
-		// return { data, status };
-		return { data: {}, status: 200 };
+		const { data, status } = await fetcher({
+			uri: `users/${id}`, method: "PUT", body,
+		});
+		return { data, status };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async deleteUser(id) {
-		// const { data, status } = await fetcher({
-		// 	uri: `users/${id}`, method: "DELETE",
-		// });
-		// return { data, status };
-		return { data: {}, status: 204 };
+		const { data, status } = await fetcher({
+			uri: `users/${id}`, method: "DELETE",
+		});
+		return { data, status };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async sendHistory(id) {
-		// const { data: { data } } = await fetcher({
-		// 	uri: `users/${id}/logs`,
-		// });
-		// return { data };
-		return { data: {} };
+		const { data: { data } } = await fetcher({
+			uri: `users/${id}/logs`,
+		});
+		return { data };
 	},
 
 };
