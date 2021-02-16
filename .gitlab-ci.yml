@@ -10,6 +10,7 @@ stages:
  - lint
  - deploy_dev
  - deploy_test
+ - deploy_test3
  - deploy_stage
  - deploy_prod
 
@@ -55,6 +56,18 @@ deploy test:
     - /^develop$/
   except:
     - tags
+
+deploy test3:
+  stage: deploy_test3
+  environment:
+    name: test3
+    url: https://test3.humansis.org
+  <<: *prepare_aws
+  script:
+    - ./build-deploy.sh test3
+  only:
+    - branches
+  when: manual
 
 deploy stage:
   stage: deploy_stage

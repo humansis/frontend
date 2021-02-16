@@ -11,6 +11,8 @@ if [[ $1 == "prod" ]]; then
     mv .env.prod .env
 elif [[ $1 == "test" ]]; then
     mv .env.testing .env
+elif [[ $1 == "test3" ]]; then
+    mv .env.testing .env
 elif [[ $1 == "dev" ]]; then
     mv .env.development .env
 elif [[ $1 == "stage" ]]; then
@@ -61,6 +63,10 @@ elif [[ $1 == "test" ]]; then
     aws s3 rm s3://test2.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://test2.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3RKOVT9Z18TQC --paths '/*'
+elif [[ $1 == "test3" ]]; then
+    aws s3 rm s3://test3.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://test3.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E3UIKQJ6I7SYO4 --paths '/*'
 elif [[ $1 == "dev" ]]; then
     echo "Not supported yet."
     # aws s3 rm s3://dev.humansis.org --recursive
