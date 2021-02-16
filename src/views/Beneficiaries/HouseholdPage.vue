@@ -145,6 +145,7 @@ import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import { prepareEntityForTable, prepareName } from "@/mappers/baseMapper";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -215,7 +216,7 @@ export default {
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
-					this.table.data = await this.prepareDataForTable(data);
+					await this.prepareDataForTable(data);
 				} else {
 					this.table.data = [];
 				}
@@ -225,9 +226,8 @@ export default {
 			});
 		},
 
-		async prepareDataForTable(data) {
+		prepareDataForTable(data) {
 			this.table.progress = 5;
-			const filledData = [];
 			const projectIds = [];
 			const beneficiaryIds = [];
 			const addressIds = {
@@ -235,43 +235,72 @@ export default {
 				residence: [],
 				temporary_settlement: [],
 			};
-			let promise = data.map(async (item, key) => {
-				projectIds.push(...data[key].projectIds);
-				beneficiaryIds.push(data[key].householdHeadId);
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+				projectIds.push(...item.projectIds);
+				beneficiaryIds.push(item.householdHeadId);
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
 				addressIds[typeOfLocation].push(addressId);
-				filledData[key] = item;
-				filledData[key].addressId = addressId;
-				filledData[key].members = data[key].beneficiaryIds.length;
+				this.table.data[key].addressId = addressId;
+				this.table.data[key].members = item.beneficiaryIds.length;
 			});
-			await Promise.all(promise);
 
-			const addresses = await this.getAddresses(addressIds);
-			const locations = await this.getLocations(addresses);
-			const mappedAddresses = this.mapLocationOnAddress(locations, addresses);
-			const projects = await this.getProjects([...new Set(projectIds)]);
-			const beneficiaries = await this.getBeneficiaries([...new Set(beneficiaryIds)]);
-			const nationalIds = await this.getNationalIds(beneficiaries);
+			this.prepareProjectForTable([...new Set(projectIds)]);
 
-			promise = await data.map(async (item, key) => {
-				filledData[key].projects = this.prepareProjects(item, projects);
-				filledData[key]
-					.currentLocation = this.prepareLocations(item.addressId, mappedAddresses);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
+
+			this.prepareAddressForTable(addressIds);
+
+			this.table.progress = 100;
+		},
+
+		async prepareBeneficiaryForTable(beneficiaryIds) {
+			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+			this.table.progress += 10;
+			const nationalIdIds = [];
+			this.table.data.forEach((item, key) => {
 				const {
 					givenName,
 					familyName,
 					nationalId,
 					vulnerabilities,
-				} = this.prepareBeneficiaries(data[key].householdHeadId, beneficiaries);
-				filledData[key].idNumber = this.prepareNationalId(nationalId, nationalIds);
-				filledData[key].vulnerabilities	= vulnerabilities;
-				filledData[key].givenName = givenName;
-				filledData[key].familyName = familyName;
+				} = this.prepareBeneficiaries(item.householdHeadId, beneficiaries);
+				this.table.data[key].vulnerabilities = vulnerabilities;
+				this.table.data[key].givenName = givenName;
+				this.table.data[key].familyName = familyName;
+				this.table.data[key].nationalId = nationalId;
+				nationalIdIds.push(nationalId);
 			});
-			await Promise.all(promise);
-			this.table.progress = 100;
+			this.table.progress += 5;
+			this.getNationalIds(nationalIdIds)
+				.then((nationalIdResult) => {
+					this.table.progress += 5;
+					this.table.data.forEach((item, key) => {
+						this.table.data[key]
+							.idNumber = prepareEntityForTable(item.nationalId, nationalIdResult, "number", "none");
+					});
+				});
+		},
 
-			return filledData;
+		async prepareAddressForTable(addressIds) {
+			const addresses = await this.getAddresses(addressIds);
+			this.table.progress += 10;
+			const locations = await this.getLocations(addresses);
+			this.table.progress += 10;
+			const mappedLocations = this.mapLocationOnAddress(locations, addresses);
+			this.table.data.map(async (item, key) => {
+				this.table.data[key]
+					.currentLocation = (prepareEntityForTable(item.addressId, mappedLocations, "locationName"));
+			});
+			this.table.progress += 5;
+		},
+
+		async prepareProjectForTable(projectIds) {
+			const projects = await this.getProjects(projectIds);
+			this.table.progress += 10;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].projects = this.prepareProjects(item, projects);
+			});
 		},
 
 		mapLocationOnAddress(locations, addresses) {
@@ -288,12 +317,9 @@ export default {
 			return addressesMapped;
 		},
 
-		async getNationalIds(beneficiaries) {
-			return BeneficiariesService.getNationalIds(beneficiaries, "nationalIds")
-				.then(({ data }) => {
-					this.table.progress += 15;
-					return data;
-				}).catch((e) => {
+		async getNationalIds(ids) {
+			return BeneficiariesService.getNationalIds(ids)
+				.then(({ data }) => data).catch((e) => {
 					Notification(`NationalIds ${e}`, "is-danger");
 				});
 		},
@@ -330,26 +356,21 @@ export default {
 						Notification(`Temporary Settlement Address ${e}`, "is-danger");
 					});
 			}
-			this.table.progress += 15;
 			return addresses;
 		},
 
 		async getProjects(ids) {
 			return ProjectsService.getListOfProjects(null, null, null, null, ids)
-				.then(({ data }) => {
-					this.table.progress += 15;
-					return data;
-				}).catch((e) => {
+				.then(({ data }) => data)
+				.catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 
 		async getBeneficiaries(ids) {
 			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => {
-					this.table.progress += 15;
-					return data;
-				}).catch((e) => {
+				.then(({ data }) => data)
+				.catch((e) => {
 					Notification(`Beneficiaries ${e}`, "is-danger");
 				});
 		},
@@ -357,19 +378,10 @@ export default {
 		async getLocations(addresses) {
 			if (!addresses?.length) return [];
 			return LocationsService.getLocations(addresses, "locationId")
-				.then(({ data }) => {
-					this.table.progress += 15;
-					return data;
-				}).catch((e) => {
+				.then(({ data }) => data)
+				.catch((e) => {
 					Notification(`Locations ${e}`, "is-danger");
 				});
-		},
-
-		prepareNationalId(id, nationalIds) {
-			if (!nationalIds?.length) return "none";
-			const nationalId = nationalIds.find((item) => item.id === id);
-			this.table.progress += 5;
-			return nationalId ? nationalId.number : "none";
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
@@ -384,7 +396,6 @@ export default {
 				});
 			}
 
-			this.table.progress += 5;
 			return result;
 		},
 
@@ -398,21 +409,14 @@ export default {
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
-				result.familyName = beneficiary.localFamilyName;
-				if (beneficiary.enFamilyName) {
-					result.familyName += ` (${beneficiary.enFamilyName})`;
-				}
-				result.givenName = beneficiary.localGivenName;
-				if (beneficiary.enGivenName) {
-					result.givenName += ` (${beneficiary.enGivenName})`;
-				}
+				result.familyName = prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
+				result.givenName = prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
 				result.vulnerabilities = this
 					.prepareVulnerabilities(beneficiary.vulnerabilityCriteria);
 			}
 
-			this.table.progress += 5;
 			return result;
 		},
 
@@ -430,15 +434,7 @@ export default {
 				}
 			});
 
-			this.table.progress += 5;
 			return result;
-		},
-
-		prepareLocations(id, addresses) {
-			if (!addresses) return "";
-			const location = addresses.find((address) => address.id === id);
-			this.table.progress += 5;
-			return location ? location.locationName : "";
 		},
 
 		getAddressTypeAndId(

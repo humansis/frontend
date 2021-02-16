@@ -108,8 +108,8 @@ export default {
 		return data;
 	},
 
-	async getBeneficiaries(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
+	async getBeneficiaries(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
 
 		const { data } = await fetcher({
 			uri: `beneficiaries?${idsText}`,
