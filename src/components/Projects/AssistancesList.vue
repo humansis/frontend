@@ -93,10 +93,10 @@ import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
-import EventBus from "@/utils/EventBus";
-import { prepareDataForTable } from "@/mappers/assistanceMapper";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { getCommodities, getLocations, getStatistics } from "@/mappers/assistanceMapper";
 import grid from "@/mixins/grid";
+import { prepareEntityForTable } from "@/mappers/baseMapper";
 
 export default {
 	name: "AssistancesList",
@@ -144,7 +144,6 @@ export default {
 	},
 
 	mounted() {
-		EventBus.$on("progress", this.addProgress);
 		this.fetchData();
 	},
 
@@ -161,7 +160,6 @@ export default {
 			} else {
 				await this.fetchProjectAssistances();
 			}
-			this.table.progress = 100;
 			this.isLoadingList = false;
 		},
 
@@ -176,7 +174,9 @@ export default {
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount !== 0) {
-					this.table.data = await prepareDataForTable(data);
+					await this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
@@ -189,21 +189,70 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				true,
-			).then(async ({ data, totalCount }) => {
+			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
-				this.table.data = await prepareDataForTable(data);
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
 			}).catch((e) => {
 				Notification(`Upcoming Assistances ${e}`, "is-danger");
 			});
 		},
 
+		prepareDataForTable(data) {
+			this.table.progress += 15;
+			const locationIds = [];
+			const assistanceIds = [];
+			data.forEach((item, key) => {
+				locationIds.push(item.locationId);
+				assistanceIds.push(item.id);
+				this.table.data[key] = item;
+				this.table.data[key].target = normalizeText(item.target);
+			});
+			this.table.progress += 10;
+
+			this.prepareLocationForTable(locationIds);
+
+			this.prepareCommodityForTable(assistanceIds);
+
+			this.prepareStatisticsForTable(assistanceIds);
+		},
+
+		async prepareStatisticsForTable(assistanceIds) {
+			const statistics = await getStatistics(assistanceIds);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].beneficiaries = prepareEntityForTable(item.id, statistics, "numberOfBeneficiaries", 0);
+			});
+			this.table.progress += 10;
+			this.resetSortKey += 1;
+		},
+
+		async prepareCommodityForTable(assistanceIds) {
+			const commodities = await getCommodities(assistanceIds);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].commodity = prepareEntityForTable(item.id, commodities, "modalityType");
+			});
+			this.table.progress += 10;
+			this.resetSortKey += 1;
+		},
+
+		async prepareLocationForTable(locationIds) {
+			const locations = await getLocations(locationIds);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].location = (prepareEntityForTable(item.locationId, locations, "adm")).name;
+			});
+			this.table.progress += 10;
+			this.resetSortKey += 1;
+		},
+
 		goToValidateAndLockWithId(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 			this.onRowClick(assistance);
-		},
-
-		addProgress(value) {
-			this.table.progress += value;
 		},
 
 		onRowClick(assistance) {

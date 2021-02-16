@@ -20,7 +20,7 @@
 						<div class="media-content">
 							<div class="content">
 								<p class="title is-6 mb-5">{{ normalizeText(code) }}</p>
-								<p v-if="value" class="subtitle is-4 p-0 ml-0">{{ value }}</p>
+								<p v-if="value || value === 0" class="subtitle is-4 p-0 ml-0">{{ value }}</p>
 								<Loading v-else type="bubbles" is-small class="subtitle p-0 ml-0" />
 							</div>
 						</div>
@@ -41,7 +41,6 @@ export default {
 	name: "Summary",
 
 	components: {
-		// eslint-disable-next-line vue/no-unused-components
 		Loading,
 	},
 

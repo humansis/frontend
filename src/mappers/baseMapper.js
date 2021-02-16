@@ -1,6 +1,6 @@
-export const prepareEntityForTable = async (id, entities, param = null, emptyValue = "") => {
+export const prepareEntityForTable = (id, entities, param = null, emptyValue = "") => {
 	if (!entities.length) return emptyValue;
-	const entity = await entities.find((item) => item.id === id);
+	const entity = entities.find((item) => item.id === id);
 	if (!entity) {
 		return emptyValue;
 	}
@@ -10,6 +10,15 @@ export const prepareEntityForTable = async (id, entities, param = null, emptyVal
 	return entity;
 };
 
+export const prepareName = (localName, enName) => {
+	let preparedName = localName;
+	if (enName) {
+		preparedName += ` (${enName})`;
+	}
+	return preparedName;
+};
+
 export default {
 	prepareEntityForTable,
+	prepareName,
 };

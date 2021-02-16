@@ -132,6 +132,7 @@ import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import { prepareEntityForTable, prepareName } from "@/mappers/baseMapper";
 import grid from "@/mixins/grid";
 
 export default {
@@ -228,7 +229,9 @@ export default {
 				this.$emit("beneficiariesCounted", totalCount);
 				this.table.total = totalCount;
 				if (totalCount !== 0) {
-					this.table.data = await this.prepareDataForTable(data);
+					await this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
@@ -237,14 +240,14 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async prepareDataForTable(data) {
-			const filledData = [];
+		prepareDataForTable(data) {
+			this.table.progress += 15;
 			const phoneIds = [];
 			const nationalIdIds = [];
-			let promise = data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
-				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+				this.table.data[key].givenName = prepareName(item.localGivenName, item.enGivenName);
+				this.table.data[key].familyName = prepareName(item.localFamilyName, item.enFamilyName);
 				if (item.nationalIds.length) {
 					nationalIdIds.push(item.nationalIds);
 				}
@@ -252,29 +255,39 @@ export default {
 					phoneIds.push(item.phoneIds);
 				}
 			});
-			const phones = await this.getPhones(phoneIds);
-			const nationalIds = await this.getNationalIds(nationalIdIds);
+			this.table.progress += 15;
 
-			await Promise.all(promise);
-			promise = data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
-				filledData[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				filledData[key].phone = !item.phoneIds.length ? "none" : await this.preparePhone(item.phoneIds[0], phones);
-				filledData[key].nationalId = !item.nationalIds.length ? "none" : await this.prepareNationalId(item.nationalIds[0], nationalIds);
+			this.preparePhoneForTable(phoneIds);
+
+			this.prepareNationalIdForTable(nationalIdIds);
+		},
+
+		async preparePhoneForTable(phoneIds) {
+			const phones = await this.getPhones(phoneIds);
+			this.table.progress += 20;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].phone = !item.phoneIds.length
+					? "none"
+					: prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
 			});
-			await Promise.all(promise);
-			this.table.progress = 100;
-			return filledData;
+			this.table.progress += 15;
+		},
+
+		async prepareNationalIdForTable(ids) {
+			const nationalIds = await this.getNationalIds(ids);
+			this.table.progress += 20;
+			this.table.data.map(async (item, key) => {
+				this.table.data[key].nationalId = !item.nationalIds.length
+					? "none"
+					: prepareEntityForTable(item.nationalIds[0], nationalIds, "number", "none");
+			});
+			this.table.progress += 15;
 		},
 
 		async getNationalIds(ids) {
 			if (!ids.length) return [];
 			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => {
-					this.table.progress += 20;
-					return data;
-				})
+				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`NationalIds ${e}`, "is-danger");
 				});
@@ -283,36 +296,10 @@ export default {
 		async getPhones(ids) {
 			if (!ids.length) return [];
 			return BeneficiariesService.getPhones(ids)
-				.then(({ data }) => {
-					this.table.progress += 20;
-					return data;
-				})
+				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`Phones ${e}`, "is-danger");
 				});
-		},
-
-		async preparePhone(id, phones) {
-			if (!phones) return "none";
-			const phone = phones.find((item) => item.id === id);
-			this.table.progress += 1;
-			return phone ? phone.number : "none";
-		},
-
-		async prepareNationalId(id, nationalIds) {
-			if (!nationalIds) return "none";
-			const nationalId = nationalIds.find((item) => item.id === id);
-			this.table.progress += 1;
-			return nationalId ? nationalId.number : "none";
-		},
-
-		prepareName(localName, enName) {
-			let preparedName = localName;
-			if (enName) {
-				preparedName += ` (${enName})`;
-			}
-			this.table.progress += 1;
-			return preparedName;
 		},
 
 		exportAssistance(format) {
