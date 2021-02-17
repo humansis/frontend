@@ -8,7 +8,6 @@ export const getArrayOfIdsByParam = (items, param) => {
 };
 
 export const getArrayOfCodeListByKey = (codes, array, key) => {
-	// TODO check on real API if function is correct
 	const result = [];
 	codes.forEach((code) => {
 		const field = array.find((item) => code === item[key]);
@@ -16,6 +15,27 @@ export const getArrayOfCodeListByKey = (codes, array, key) => {
 			result.push(field);
 		}
 	});
+	if (result.length === 1) {
+		return result[0];
+	}
+	return result;
+};
+
+export const getArrayOfCodeListByParams = (codes, array, codeParam, keyParam) => {
+	const result = [];
+	if (codes.length) {
+		codes.forEach((code) => {
+			const field = array.find((item) => code[codeParam] === item[keyParam]);
+			if (field) {
+				result.push(field);
+			}
+		});
+	} else {
+		const field = array.find((item) => codes[codeParam] === item[keyParam]);
+		if (field) {
+			result.push(field);
+		}
+	}
 	if (result.length === 1) {
 		return result[0];
 	}
