@@ -199,7 +199,7 @@ export default {
 		},
 
 		async fetchCriteriaTargets() {
-			await AssistancesService.getListOfTargetsForAssistances()
+			await AssistancesService.getTargetTypes()
 				.then(({ data }) => { this.options.criteriaTarget = data; })
 				.catch((e) => {
 					Notification(`Criteria Target ${e}`, "is-danger");

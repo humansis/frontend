@@ -5,14 +5,27 @@
 				<NewAssistanceForm
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetType = $event"
+					@showComponent="onShowComponent"
 				/>
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria
+					v-if="visibleComponents.selectionCriteria"
 					:target-type="targetType"
 					@updatedData="fetchSelectionCriteria"
 				/>
-				<DistributedCommodity @updatedData="fetchDistributedCommodity" />
+				<DistributedCommodity
+					v-if="visibleComponents.distributedCommodity"
+					@updatedData="fetchDistributedCommodity"
+				/>
+				<ActivityDetails
+					v-if="visibleComponents.activityDescription
+						|| visibleComponents.householdTargeted
+						|| visibleComponents.individualsTargeted"
+				/>
+				<TargetTypeSelect
+					v-if="visibleComponents.communities || visibleComponents.institutions"
+				/>
 			</div>
 		</div>
 		<div class="buttons">
@@ -28,11 +41,15 @@ import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/Dist
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
+import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
+import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 
 export default {
 	name: "AddAssistance",
 
 	components: {
+		TargetTypeSelect,
+		ActivityDetails,
 		NewAssistanceForm,
 		SelectionCriteria,
 		DistributedCommodity,
@@ -43,6 +60,15 @@ export default {
 			newAssistanceForm: null,
 			selectionCriteria: null,
 			distributedCommodity: null,
+			visibleComponents: {
+				selectionCriteria: false,
+				distributedCommodity: false,
+				communities: false,
+				institutions: false,
+				activityDescription: false,
+				householdTargeted: false,
+				individualsTargeted: false,
+			},
 			assistanceBody: {
 				adm1: null,
 				adm2: null,
@@ -67,6 +93,13 @@ export default {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
 				}
+			});
+		},
+
+		onShowComponent(components) {
+			Object.keys(this.visibleComponents).forEach((item) => {
+				this.visibleComponents[item] = components
+					.find((component) => item === component);
 			});
 		},
 
