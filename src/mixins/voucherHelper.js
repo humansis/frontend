@@ -1,10 +1,12 @@
-import { prepareEntityForTable } from "@/mappers/baseMapper";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import ProjectsService from "@/services/ProjectsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
+	mixins: [baseHelper],
+
 	methods: {
 		prepareDataForTable(data) {
 			this.table.progress += 20;
@@ -38,7 +40,7 @@ export default {
 			this.table.progress += 20;
 			if (!beneficiaries.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].beneficiary = prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName", "none");
+				this.table.data[key].beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName", "none");
 			});
 			this.table.progress += 15;
 			this.resetSortKey += 1;
@@ -49,7 +51,7 @@ export default {
 			this.table.progress += 20;
 			if (!projects.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = prepareEntityForTable(item.projectId, projects, "name", "none");
+				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "none");
 			});
 			this.table.progress += 15;
 			this.resetSortKey += 1;
@@ -60,7 +62,7 @@ export default {
 			this.table.progress += 20;
 			if (!assistances.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].assistance = prepareEntityForTable(item.assistanceId, assistances, "name", "none");
+				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "none");
 			});
 			this.resetSortKey += 1;
 			this.table.progress += 15;

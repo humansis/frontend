@@ -132,8 +132,8 @@ import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import { prepareEntityForTable, prepareName } from "@/mappers/baseMapper";
 import grid from "@/mixins/grid";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
 	name: "BeneficiariesList",
@@ -155,7 +155,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -246,8 +246,8 @@ export default {
 			const nationalIdIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].givenName = prepareName(item.localGivenName, item.enGivenName);
-				this.table.data[key].familyName = prepareName(item.localFamilyName, item.enFamilyName);
+				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
+				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
 				if (item.nationalIds.length) {
 					nationalIdIds.push(item.nationalIds);
 				}
@@ -268,7 +268,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
 					? "none"
-					: prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
+					: this.prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
 			});
 			this.table.progress += 15;
 		},
@@ -279,7 +279,7 @@ export default {
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? "none"
-					: prepareEntityForTable(item.nationalIds[0], nationalIds, "number", "none");
+					: this.prepareEntityForTable(item.nationalIds[0], nationalIds, "number", "none");
 			});
 			this.table.progress += 15;
 		},

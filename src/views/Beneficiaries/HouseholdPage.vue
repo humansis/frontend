@@ -138,14 +138,13 @@ import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import LocationsService from "@/services/LocationsService";
 import ProjectsService from "@/services/ProjectsService";
 import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
-import { prepareEntityForTable, prepareName } from "@/mappers/baseMapper";
+import addressHelper from "@/mixins/addressHelper";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -161,7 +160,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, addressHelper],
 
 	data() {
 		return {
@@ -277,20 +276,16 @@ export default {
 					this.table.progress += 5;
 					this.table.data.forEach((item, key) => {
 						this.table.data[key]
-							.idNumber = prepareEntityForTable(item.nationalId, nationalIdResult, "number", "none");
+							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "none");
 					});
 				});
 		},
 
 		async prepareAddressForTable(addressIds) {
-			const addresses = await this.getAddresses(addressIds);
-			this.table.progress += 10;
-			const locations = await this.getLocations(addresses);
-			this.table.progress += 10;
-			const mappedLocations = this.mapLocationOnAddress(locations, addresses);
+			const mappedLocations = await this.getPreparedLocations(addressIds);
 			this.table.data.map(async (item, key) => {
 				this.table.data[key]
-					.currentLocation = (prepareEntityForTable(item.addressId, mappedLocations, "locationName"));
+					.currentLocation = (this.prepareEntityForTable(item.addressId, mappedLocations, "locationName"));
 			});
 			this.table.progress += 5;
 		},
@@ -303,20 +298,6 @@ export default {
 			});
 		},
 
-		mapLocationOnAddress(locations, addresses) {
-			if (!locations?.length) return [];
-			const addressesMapped = [];
-			addresses.forEach((address) => {
-				const location = locations.find((item) => item.adm.locationId === address.locationId);
-				if (location) {
-					const addressMapped = address;
-					addressMapped.locationName = location.adm.name;
-					addressesMapped.push(addressMapped);
-				}
-			});
-			return addressesMapped;
-		},
-
 		async getNationalIds(ids) {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data).catch((e) => {
@@ -324,6 +305,7 @@ export default {
 				});
 		},
 
+		// Replaces method from addressHelper
 		async getAddresses(ids) {
 			const addresses = [];
 			if (ids.camp.length) {
@@ -375,15 +357,6 @@ export default {
 				});
 		},
 
-		async getLocations(addresses) {
-			if (!addresses?.length) return [];
-			return LocationsService.getLocations(addresses, "locationId")
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`Locations ${e}`, "is-danger");
-				});
-		},
-
 		prepareVulnerabilities(vulnerabilities) {
 			let result = "none";
 			if (vulnerabilities) {
@@ -409,8 +382,8 @@ export default {
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
-				result.familyName = prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-				result.givenName = prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
+				result.familyName = this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
+				result.givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
 				result.vulnerabilities = this
