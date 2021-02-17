@@ -82,10 +82,10 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import CommunitiesService from "@/services/CommunitiesService";
 import { generateColumns } from "@/utils/datagrid";
-import { getPreparedLocations } from "@/mappers/addressMapper";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import CommunitiesFilter from "@/components/Beneficiaries/CommunitiesFilter";
+import addressHelper from "@/mixins/addressHelper";
 
 export default {
 	name: "CommunitiesList",
@@ -97,7 +97,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, addressHelper],
 
 	data() {
 		return {
@@ -156,7 +156,7 @@ export default {
 				filledData[key] = item;
 				addressIds.push((item.addressId));
 			});
-			const mappedAddresses = await getPreparedLocations(addressIds);
+			const mappedAddresses = await this.getPreparedLocations(addressIds);
 
 			data.forEach((item, key) => {
 				filledData[key].name = this.prepareLocations(item.addressId, mappedAddresses);
