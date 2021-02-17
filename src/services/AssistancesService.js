@@ -23,12 +23,12 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfTargetsForAssistances() {
+	async getTargetTypes() {
 		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/targets" });
 		return { data, totalCount };
 	},
 
-	async getListOfTargetTypesForAssistances() {
+	async getAssistanceTypes() {
 		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/types" });
 		return { data, totalCount };
 	},

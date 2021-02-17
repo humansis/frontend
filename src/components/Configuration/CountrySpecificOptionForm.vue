@@ -143,7 +143,7 @@ export default {
 		},
 
 		async fetchTargets() {
-			await AssistancesService.getListOfTargetsForAssistances()
+			await AssistancesService.getTargetTypes()
 				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
 					Notification(`Target Types ${e}`, "is-danger");
