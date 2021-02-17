@@ -8,7 +8,7 @@
 				/>
 			</div>
 			<div class="column is-three-fifths">
-				<SelectionCriteriaPage
+				<SelectionCriteria
 					:target-type="targetType"
 					@updatedData="fetchSelectionCriteria"
 				/>
@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import SelectionCriteriaPage from "@/components/AddAssistance/SelectionCriteriaPage";
-import DistributedCommodity from "@/components/AddAssistance/DistributedCommodity";
+import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
+import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
@@ -34,7 +34,7 @@ export default {
 
 	components: {
 		NewAssistanceForm,
-		SelectionCriteriaPage,
+		SelectionCriteria,
 		DistributedCommodity,
 	},
 
