@@ -21,6 +21,7 @@
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
+		<b-progress :value="table.progress" format="percent" />
 		<div class="batches-container" ref="batches">
 			<b-collapse
 				v-for="(batch, index) of getBatches()"
@@ -50,6 +51,7 @@
 				<div class="card-content">
 					<Table
 						checkable
+						:key="resetSortKey"
 						:data="batch.booklets"
 						:is-loading="isLoadingList"
 						@clicked="showDetail"
@@ -98,7 +100,6 @@
 </template>
 
 <script>
-import { prepareDataForTable } from "@/mappers/voucherMapper";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
@@ -109,6 +110,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import VoucherFilters from "@/components/Voucher/VoucherFilters";
+import voucherHelper from "@/mixins/voucherHelper";
 
 export default {
 	name: "BatchList",
@@ -122,7 +124,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, voucherHelper],
 
 	data() {
 		return {
@@ -146,6 +148,7 @@ export default {
 				total: 0,
 				currentPage: 1,
 				searchPhrase: "",
+				progress: null,
 			},
 		};
 	},
@@ -173,6 +176,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			const loadingComponent = this.$buefy.loading.open({
 				container: this.$refs.batches,
@@ -186,8 +190,13 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
-				this.table.data = await prepareDataForTable(data);
+				this.table.progress = 0;
 				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
 			});

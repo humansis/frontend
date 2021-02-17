@@ -12,6 +12,9 @@
 						:placeholder="options.placeholder || 'Click to select...'"
 						:loading="options.loading"
 						:options="options.data"
+						selectLabel="Select"
+						deselectLabel="Remove"
+						:closeOnSelect="false"
 						@input="filterChanged(filter)"
 					>
 						<template

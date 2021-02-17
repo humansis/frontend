@@ -63,6 +63,9 @@
 					</button>
 				</div>
 			</template>
+			<template slot="progress">
+				<b-progress :value="table.progress" format="percent" />
+			</template>
 			<template slot="filter">
 				<b-collapse v-model="advancedSearchVisible">
 					<VoucherFilters
@@ -75,7 +78,6 @@
 </template>
 
 <script>
-import { prepareDataForTable } from "@/mappers/voucherMapper";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
@@ -84,6 +86,7 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import VoucherFilters from "@/components/Voucher/VoucherFilters";
+import voucherHelper from "@/mixins/voucherHelper";
 
 export default {
 	name: "VoucherList",
@@ -96,7 +99,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, voucherHelper],
 
 	data() {
 		return {
@@ -120,6 +123,7 @@ export default {
 				searchPhrase: "",
 				sortColumn: "",
 				sortDirection: "",
+				progress: null,
 			},
 		};
 	},
@@ -147,6 +151,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
@@ -155,9 +160,14 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 				this.filters,
-			).then(async ({ data, totalCount }) => {
-				this.table.data = await prepareDataForTable(data);
+			).then(({ data, totalCount }) => {
+				this.table.progress = 0;
 				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
 			});
 
 			this.isLoadingList = false;

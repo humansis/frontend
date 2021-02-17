@@ -11,7 +11,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import CurrencyService from "@/services/CurrencyService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import BeneficiariesService from "@/services/BeneficiariesService";
+import { getArrayOfCodeListByParams } from "@/utils/codeList";
 
 export default {
 	name: "VoucherFilters",
@@ -62,9 +62,9 @@ export default {
 					name: "Beneficiary",
 					placeholder: "Select Beneficiary",
 					trackBy: "id",
-					label: "name",
+					label: "localFamilyName",
 					multiple: true,
-					loading: true,
+					loading: false,
 					data: [],
 				},
 			},
@@ -73,12 +73,14 @@ export default {
 
 	mounted() {
 		this.fetchAssistances();
-		this.fetchBeneficiaries();
 		this.fetchCurrencies();
 	},
 
 	methods: {
-		filterChanged(filters) {
+		filterChanged(filters, filtername) {
+			if (filtername === "assistances") {
+				this.fetchBeneficiaries(filters.distributions);
+			}
 			this.$emit("filtersChanged", filters);
 		},
 
@@ -106,16 +108,30 @@ export default {
 			this.filtersOptions.currencies.loading = false;
 		},
 
-		async fetchBeneficiaries() {
-			await BeneficiariesService.getBeneficiaries()
-				.then(({ data }) => {
-					this.filtersOptions.beneficiaries.data = data;
-				})
-				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
+		async fetchBeneficiaries(ids) {
+			if (ids?.length) {
+				this.filtersOptions.beneficiaries.loading = true;
+				this.filtersOptions.beneficiaries.data = [];
+				const promise = ids.map(async (id) => {
+					await AssistancesService.getListOfBeneficiaries(id)
+						.then(({ data }) => {
+							data.forEach((item) => {
+								if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
+									this.filtersOptions.beneficiaries.data.push(item);
+								}
+							});
+						})
+						.catch((e) => {
+							Notification(`Beneficiaries ${e}`, "is-danger");
+						});
 				});
-
-			this.filtersOptions.beneficiaries.loading = false;
+				await Promise.all(promise);
+				this.selectedFiltersOptions
+					.beneficiaries = getArrayOfCodeListByParams(this.selectedFiltersOptions.beneficiaries, this.filtersOptions.beneficiaries.data, "id", "id");
+				this.filtersOptions.beneficiaries.loading = false;
+			} else {
+				this.selectedFiltersOptions.beneficiaries = [];
+			}
 		},
 	},
 };
