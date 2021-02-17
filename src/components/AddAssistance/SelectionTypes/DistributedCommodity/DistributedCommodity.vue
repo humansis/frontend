@@ -64,7 +64,7 @@ import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import DistributedCommodityForm from "@/components/AddAssistance/DistributedCommodityForm";
+import DistributedCommodityForm from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodityForm";
 
 export default {
 	name: "DistributedCommodity",

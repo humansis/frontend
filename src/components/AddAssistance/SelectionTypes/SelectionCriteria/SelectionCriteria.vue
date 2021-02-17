@@ -87,9 +87,9 @@
 
 <script>
 import Modal from "@/components/Modal";
-import SelectionCriteriaForm from "@/components/AddAssistance/SelectionCriteriaForm";
-import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionCriteriaGroup";
-import CriteriaModalList from "@/components/AddAssistance/CriteriaModalList";
+import SelectionCriteriaForm from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaForm";
+import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaGroup";
+import CriteriaModalList from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/CriteriaModalList";
 
 export default {
 	name: "SelectionCriteriaPage",
