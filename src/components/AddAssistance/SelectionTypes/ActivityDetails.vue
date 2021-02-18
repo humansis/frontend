@@ -58,11 +58,7 @@ export default {
 
 	props: {
 		formModel: Object,
-		visible: {
-			activityDescription: false,
-			householdsTargeted: false,
-			individualsTargeted: false,
-		},
+		visible: Object,
 	},
 
 	validations: {
