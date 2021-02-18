@@ -2,12 +2,14 @@ import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfCommunities(page, size, sort, search = null, filters = null) {
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const filtersText = filters ? filtersToUri(filters) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `communities?page=${page}&size=${size + sortText + fulltext + filtersText}`,
+			uri: `communities?${pageText + sizeText + sortText + fulltext + filtersText}`,
 		});
 		return { data, totalCount };
 	},

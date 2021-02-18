@@ -18,15 +18,17 @@
 					v-if="visibleComponents.distributedCommodity"
 					@updatedData="fetchDistributedCommodity"
 				/>
-				<TargetTypeSelect
-					v-if="visibleComponents.communities || visibleComponents.institutions"
-				/>
 				<ActivityDetails
 					v-if="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
-					:form-model="activityDetails"
+					:form-model="activityDetailsForm"
 					:visible="visibleActivityDetails"
+				/>
+				<TargetTypeSelect
+					v-if="visibleComponents.communities || visibleComponents.institutions"
+					:form-model="targetTypesForm"
+					:visible="targetTypeSelectVisible"
 				/>
 			</div>
 		</div>
@@ -62,10 +64,14 @@ export default {
 			newAssistanceForm: null,
 			selectionCriteria: null,
 			distributedCommodity: null,
-			activityDetails: {
+			activityDetailsForm: {
 				activityDescription: "",
 				householdsTargeted: 0,
 				individualsTargeted: 0,
+			},
+			targetTypesForm: {
+				communities: [],
+				institutions: [],
 			},
 			visibleComponents: {
 				selectionCriteria: false,
@@ -99,7 +105,14 @@ export default {
 				individualsTargeted: this.visibleComponents.individualsTargeted,
 			};
 		},
+        targetTypeSelectVisible() {
+			return {
+				communities: this.visibleComponents.communities,
+				institutions: this.visibleComponents.institutions,
+			};
+		},
 	},
+
 
 	methods: {
 		async submitAddingAssistance() {
