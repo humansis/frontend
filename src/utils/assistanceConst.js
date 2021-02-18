@@ -11,7 +11,7 @@ const DISTRIBUTED_COMMODITY = "distributedCommodity";
 const COMMUNITIES = "communities";
 const INSTITUTIONS = "institutions";
 const ACTIVITY_DESCRIPTION = "activityDescription";
-const HOUSEHOLD_TARGETED = "householdTargeted";
+const HOUSEHOLD_TARGETED = "householdsTargeted";
 const INDIVIDUALS_TARGETED = "individualsTargeted";
 
 export default {
