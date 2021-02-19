@@ -140,7 +140,7 @@ export default {
 				id,
 				name,
 				logo: uploadedImage,
-				font,
+				font: font.code,
 				primaryColor,
 				secondaryColor,
 				footerContent,

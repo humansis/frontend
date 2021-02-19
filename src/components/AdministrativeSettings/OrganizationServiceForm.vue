@@ -1,10 +1,8 @@
-<!-- TODO edit after real api-->
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
 				label="Service Name"
-				:type="validateType('name')"
 			>
 				<b-input
 					v-model="formModel.name"
@@ -14,75 +12,10 @@
 
 			<b-field
 				label="Country"
-				:type="validateType('country')"
 			>
 				<b-input
-					v-model="formModel.country"
+					v-model="formModel.iso3"
 					disabled
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.password"
-				label="Password"
-				:type="validateType('password')"
-				:message="validateMsg('password')"
-			>
-				<b-input
-					v-model="formModel.password"
-					type="password"
-					password-reveal
-					:disabled="formDisabled"
-					@blur="validate('password')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.username"
-				label="Username"
-				:type="validateType('username')"
-				:message="validateMsg('username')"
-			>
-				<b-input
-					v-model="formModel.username"
-					:disabled="formDisabled"
-					@blur="validate('username')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.email"
-				label="Email"
-				:type="validateType('email')"
-				:message="validateMsg('email')"
-			>
-				<b-input
-					v-model="formModel.email"
-					:disabled="formDisabled"
-					@blur="validate('email')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.token"
-				label="Token"
-				:type="validateType('token')"
-				:message="validateMsg('token')"
-			>
-				<b-input
-					v-model="formModel.token"
-					:disabled="formDisabled"
-					@blur="validate('token')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.production !== null"
-				label="Production"
-			>
-				<b-checkbox
-					v-model="formModel.production"
-					:disabled="formDisabled"
 				/>
 			</b-field>
 
@@ -131,14 +64,7 @@ export default {
 
 	validations: {
 		formModel: {
-			name: { required },
-			country: { required },
 			enabled: { required },
-			password: {},
-			username: {},
-			token: {},
-			email: {},
-			production: {},
 		},
 	},
 

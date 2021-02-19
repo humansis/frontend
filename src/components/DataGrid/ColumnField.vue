@@ -5,6 +5,11 @@
 			{{ data.row[column.field] }}
 		</template>
 
+		<!-- Simple Text -->
+		<template v-if="column.type === 'textOrNone'">
+			{{ data.row[column.field] || "none" }}
+		</template>
+
 		<!-- Count array items -->
 		<template v-if="column.type === 'count'">
 			<p v-if="data.row[column.field].length">
