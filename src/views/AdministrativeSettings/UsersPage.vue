@@ -64,11 +64,13 @@ export default {
 			},
 			userModel: {
 				id: null,
+				username: "",
 				email: "",
 				password: "",
 				rights: [],
 				projectIds: [],
 				countries: [],
+				language: null,
 				phonePrefix: [],
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
@@ -115,11 +117,13 @@ export default {
 			this.userModel = {
 				...this.userModel,
 				id: null,
+				username: "",
 				email: "",
 				password: "",
 				rights: [],
 				projectIds: [],
 				countries: [],
+				language: null,
 				phonePrefix: null,
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
@@ -146,6 +150,7 @@ export default {
 		submitUserForm(userForm) {
 			const {
 				id,
+				username,
 				email,
 				password,
 				// TODO Map roles to body
@@ -156,18 +161,19 @@ export default {
 				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
+				language,
 			} = userForm;
 
 			const userBody = {
-				username: email,
+				username,
 				email,
 				password,
 				roles: ["ROLE_USER"],
 				projectIds: getArrayOfIdsByParam(projectIds, "id"),
 				countries: getArrayOfIdsByParam(countries, "iso3"),
-				phonePrefix: phonePrefix.code,
+				phonePrefix: phonePrefix?.code,
 				phoneNumber,
-				language: "EN",
+				language: language?.code || null,
 				changePassword: updatePasswordOnNextLogin,
 			};
 			if (this.userModal.isEditing && id) {
@@ -180,6 +186,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				username,
 				email,
 				password,
 				rights,
@@ -193,6 +200,7 @@ export default {
 			this.userModel = {
 				...this.userModel,
 				id,
+				username,
 				email,
 				password,
 				rights,

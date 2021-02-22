@@ -13,6 +13,17 @@
 				/>
 			</b-field>
 
+			<b-field
+				label="Username"
+				:type="validateType('username')"
+			>
+				<b-input
+					v-model="formModel.username"
+					:disabled="formDisabled || isEditing"
+					@blur="validate('username')"
+				/>
+			</b-field>
+
 			<!-- TODO add rules to password -->
 			<b-field
 				label="Password"
@@ -87,6 +98,21 @@
 				<small v-if="onlyOneCountry" class="ml-2">
 					<strong>You can select only one country</strong>
 				</small>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					Language<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
+				<MultiSelect
+					v-model="formModel.language"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:disabled="formDisabled"
+					:options="options.languages"
+				/>
 			</b-field>
 
 			<b-field
@@ -165,8 +191,10 @@ export default {
 	validations: {
 		formModel: {
 			email: { required, email },
-			password: { required: requiredIf((form) => form.newUser) },
+			username: { required },
+			password: { required: requiredIf((form) => !form.newUser) },
 			rights: { required },
+			language: {},
 			projectIds: { required: requiredIf((form) => !form.disabledProject) },
 			countries: { required: requiredIf((form) => !form.disabledCountry) },
 			phoneNumber: {},
@@ -212,6 +240,11 @@ export default {
 				projects: [],
 				countries: [],
 				phonePrefixes: PhoneCodes,
+				languages: [
+					{ value: "EN", code: "en" },
+					{ value: "AR", code: "ar" },
+					{ value: "RU", code: "ru" },
+				],
 			},
 			onlyOneCountry: false,
 		};
@@ -275,6 +308,10 @@ export default {
 		mapSelects() {
 			if (typeof this.formModel.phonePrefix !== "object") {
 				this.formModel.phonePrefix = getArrayOfCodeListByKey([this.formModel.phonePrefix], this.options.phonePrefixes, "code");
+			}
+			if (typeof this.formModel.language !== "object") {
+				this.formModel.language = this.options.languages
+					.find((item) => item.code === this.formModel.language);
 			}
 			// TODO map Rights on select after add permissions
 			this.mapRights(this.formModel.rights);
