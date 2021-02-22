@@ -1,7 +1,7 @@
 export default {
 	methods: {
 		prepareEntityForTable(id, entities, param = null, emptyValue = "") {
-			if (!entities.length) return emptyValue;
+			if (!entities?.length) return emptyValue;
 			const entity = entities.find((item) => item.id === id);
 			if (!entity) {
 				return emptyValue;

@@ -64,6 +64,8 @@ import LocationsService from "@/services/LocationsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import UsersService from "@/services/UsersService";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
 	name: "VendorsList",
@@ -74,7 +76,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -116,9 +118,13 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
+			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
-				this.table.data = await this.prepareDataForTable(data);
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
 			}).catch((e) => {
 				Notification(`Vendors ${e}`, "is-danger");
 			});
@@ -126,23 +132,23 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
-			const locations = await this.getLocations(data);
-
-			const filledData = [];
-			const promise = await data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].location = this.prepareLocations(item.locationId, locations);
-			});
-
-			await Promise.all(promise);
-
-			return filledData;
-		},
-
-		prepareLocations(id, locations) {
-			if (!locations?.length) return "";
-			const foundLocation = locations.find((location) => location.id === id);
-			return foundLocation ? foundLocation.adm.name : "";
+			this.table.data = data;
+			this.getUsers(data)
+				.then((users) => {
+					this.table.data.map(async (item, key) => {
+						this.table.data[key] = item;
+						this.table.data[key].user = this.prepareEntityForTable(item.userId, users, "username");
+					});
+					this.resetSortKey += 1;
+				});
+			this.getLocations(data)
+				.then((locations) => {
+					this.table.data.map(async (item, key) => {
+						this.table.data[key] = item;
+						this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
+					});
+					this.resetSortKey += 1;
+				});
 		},
 
 		async getLocations(vendors) {
@@ -150,6 +156,14 @@ export default {
 			return LocationsService.getLocations(vendors, "locationId")
 				.then(({ data }) => data).catch((e) => {
 					Notification(`Locations ${e}`, "is-danger");
+				});
+		},
+
+		async getUsers(vendors) {
+			if (!vendors?.length) return [];
+			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
+				.then(({ data }) => data).catch((e) => {
+					Notification(`Users ${e}`, "is-danger");
 				});
 		},
 	},

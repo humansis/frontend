@@ -42,6 +42,7 @@ import VendorForm from "@/components/Beneficiaries/VendorForm";
 import Modal from "@/components/Modal";
 import VendorsService from "@/services/VendorsService";
 import { Toast } from "@/utils/UI";
+import UsersService from "@/services/UsersService";
 
 export default {
 	name: "VendorsPage",
@@ -64,16 +65,18 @@ export default {
 				creating: false,
 				id: null,
 				username: "",
+				email: "",
 				password: "",
 				name: "",
-				description: "",
+				shop: "",
 				addressStreet: "",
 				addressNumber: "",
-				addressPostCode: "",
+				addressPostcode: "",
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				userId: null,
 			},
 		};
 	},
@@ -116,16 +119,18 @@ export default {
 				creating: true,
 				id: null,
 				username: "",
+				email: "",
 				password: "",
+				shop: "",
 				name: "",
-				description: "",
 				addressStreet: "",
 				addressNumber: "",
-				addressPostCode: "",
+				addressPostcode: "",
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				userId: null,
 			};
 		},
 
@@ -142,37 +147,39 @@ export default {
 			};
 		},
 
-		mapToFormModel(
+		async mapToFormModel(
 			{
 				id,
-				username,
-				password,
+				shop,
 				name,
-				description,
 				addressStreet,
 				addressNumber,
-				addressPostCode,
+				addressPostcode,
 				adm1Id,
 				adm2Id,
 				adm3Id,
 				adm4Id,
+				userId,
 			},
 		) {
+			const { data } = await UsersService.getDetailOfUser(userId);
 			this.vendorModel = {
 				...this.vendorModel,
 				creating: !this.vendorModal.isEditing && !this.vendorModal.isDetail,
 				id,
-				username,
-				password,
+				shop,
+				username: data.username,
+				email: data.email,
 				name,
-				description,
 				addressStreet,
 				addressNumber,
-				addressPostCode,
+				addressPostcode,
 				adm1Id,
 				adm2Id,
 				adm3Id,
 				adm4Id,
+				userId,
+				user: data,
 			};
 		},
 
@@ -180,16 +187,18 @@ export default {
 			const {
 				id,
 				username,
+				shop,
+				email,
 				password,
 				name,
-				description,
 				addressStreet,
 				addressNumber,
-				addressPostCode,
+				addressPostcode,
 				adm1Id,
 				adm2Id,
 				adm3Id,
 				adm4Id,
+				user,
 			} = vendorForm;
 			let locationId = null;
 			if (adm4Id) {
@@ -202,49 +211,77 @@ export default {
 				locationId = adm1Id.locationId;
 			}
 			const vendorBody = {
-				username,
-				password,
 				name,
-				description,
 				addressStreet,
 				addressNumber,
-				addressPostCode,
+				addressPostcode,
 				locationId,
+				shop,
+				userId: user.id,
 			};
-			// TODO add functionality for salt password
+			const userBody = {
+				...user,
+				username,
+				password,
+				email,
+				phoneNumber: "",
+				// TODO edit after permissions
+				roles: ["ROLE_VENDOR"],
+				changePassword: false,
+			};
 			if (this.vendorModal.isEditing && id) {
-				this.updateVendor(id, vendorBody);
+				this.updateVendor(id, userBody, vendorBody);
 			} else {
-				this.createVendor(vendorBody);
+				this.createVendor(userBody, vendorBody);
 			}
 		},
 
-		async createVendor(vendorBody) {
-			await VendorsService.createVendor(vendorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Vendor Successfully Created", "is-success");
-					this.$refs.vendorsList.fetchData();
-					this.closeVendorModal();
-				}
-			}).catch((e) => {
-				Toast(`Vendor ${e}`, "is-danger");
-				this.vendorModal.isWaiting = false;
-			});
+		async createVendor(userBody, vendorBody) {
+			await UsersService.createUser(userBody)
+				.then(async (userResponse) => {
+					if (userResponse.status === 200) {
+						const body = vendorBody;
+						body.userId = userResponse.data.id;
+						await VendorsService.createVendor(body)
+							.then((vendorResponse) => {
+								if (vendorResponse.status === 200) {
+									Toast("Vendor Successfully Created", "is-success");
+									this.$refs.vendorsList.fetchData();
+									this.closeVendorModal();
+								}
+							}).catch((e) => {
+								Toast(`Vendor ${e}`, "is-danger");
+								this.vendorModal.isWaiting = false;
+							});
+					}
+				})
+				.catch((e) => {
+					Toast(`User ${e}`, "is-danger");
+					this.vendorModal.isWaiting = false;
+				});
 		},
 
-		async updateVendor(id, vendorBody) {
+		async updateVendor(id, userBody, vendorBody) {
 			this.vendorModal.isWaiting = true;
 
-			await VendorsService.updateVendor(id, vendorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Vendor Successfully Updated", "is-success");
-					this.$refs.vendorsList.fetchData();
-					this.closeVendorModal();
-				}
-			}).catch((e) => {
-				Toast(`Vendor ${e}`, "is-danger");
-				this.vendorModal.isWaiting = false;
-			});
+			await UsersService.updateUser(userBody.id, userBody)
+				.then(async (userResponse) => {
+					if (userResponse.status === 200) {
+						await VendorsService.updateVendor(id, vendorBody).then((vendorResponse) => {
+							if (vendorResponse.status === 200) {
+								Toast("Vendor Successfully Updated", "is-success");
+								this.$refs.vendorsList.fetchData();
+								this.closeVendorModal();
+							}
+						}).catch((e) => {
+							Toast(`Vendor ${e}`, "is-danger");
+							this.vendorModal.isWaiting = false;
+						});
+					}
+				}).catch((e) => {
+					Toast(`User ${e}`, "is-danger");
+					this.vendorModal.isWaiting = false;
+				});
 		},
 
 		async onVendorRemove(id) {

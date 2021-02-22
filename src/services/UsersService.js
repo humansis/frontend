@@ -1,16 +1,17 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 import { Toast } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
-	async getListOfUsers(page, size, sort, search = null) {
+	async getListOfUsers(page, size, sort, search = null, ids = null, param = null) {
+		const fulltext = search ? `&fulltext=${search}` : "";
+		const sortText = sort ? `&sort=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
+		const idsText = ids ? idsToUri(ids, param) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `users?${pageText + sizeText + sortText + fulltext}`,
+			uri: `users?${pageText + sizeText + sortText + fulltext + idsText}`,
 		});
 		return { data, totalCount };
 	},
@@ -52,10 +53,10 @@ export default {
 	},
 
 	async getDetailOfUser(id) {
-		const { data: { data } } = await fetcher({
+		const { data, status } = await fetcher({
 			uri: `users/${id}`,
 		});
-		return { data };
+		return { data, status };
 	},
 
 	async updateUser(id, body) {
