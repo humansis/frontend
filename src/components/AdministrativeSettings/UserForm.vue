@@ -8,8 +8,19 @@
 				<b-input
 					v-model="formModel.email"
 					type="email"
-					:disabled="formDisabled"
+					:disabled="formDisabled || isEditing"
 					@blur="validate('email')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Username"
+				:type="validateType('username')"
+			>
+				<b-input
+					v-model="formModel.username"
+					:disabled="formDisabled || isEditing"
+					@blur="validate('username')"
 				/>
 			</b-field>
 
@@ -25,24 +36,6 @@
 					password-reveal
 					:disabled="formDisabled"
 					@blur="validate('password')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Organization"
-				:type="validateType('organization')"
-				:message="validateMsg('organization')"
-			>
-				<MultiSelect
-					v-model="formModel.organization"
-					searchable
-					label="value"
-					track-by="code"
-					placeholder="Click to select..."
-					:disabled="formDisabled"
-					:options="options.organizations"
-					:class="validateMultiselect('organization')"
-					@select="validate('organization')"
 				/>
 			</b-field>
 
@@ -67,11 +60,11 @@
 			<b-field
 				v-show="!formModel.disabledProject"
 				label="Project"
-				:type="validateType('projects')"
-				:message="validateMsg('projects')"
+				:type="validateType('projectIds')"
+				:message="validateMsg('projectIds')"
 			>
 				<MultiSelect
-					v-model="formModel.projects"
+					v-model="formModel.projectIds"
 					searchable
 					label="name"
 					track-by="id"
@@ -79,8 +72,8 @@
 					:multiple="true"
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="options.projects"
-					:class="validateMultiselect('projects')"
-					@select="validate('projects')"
+					:class="validateMultiselect('projectIds')"
+					@select="validate('projectIds')"
 				/>
 			</b-field>
 
@@ -107,6 +100,21 @@
 				</small>
 			</b-field>
 
+			<b-field>
+				<template #label>
+					Language<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
+				<MultiSelect
+					v-model="formModel.language"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:disabled="formDisabled"
+					:options="options.languages"
+				/>
+			</b-field>
+
 			<b-field
 				v-if="!formDisabled"
 				label="Update Password On Next Login"
@@ -119,15 +127,15 @@
 					Prefix<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 				</template>
 				<MultiSelect
-					v-model="formModel.prefix"
+					v-model="formModel.phonePrefix"
 					searchable
 					placeholder="Phone Ext"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.phonePrefixes"
-					:class="validateMultiselect('prefix')"
-					@select="validate('prefix')"
+					:class="validateMultiselect('phonePrefix')"
+					@select="validate('phonePrefix')"
 				/>
 			</b-field>
 
@@ -160,11 +168,11 @@
 
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
-import MyOrganizationsService from "@/services/MyOrganizationsService";
 import CountriesService from "@/services/CountriesService";
 import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -177,18 +185,20 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
 	},
 
 	validations: {
 		formModel: {
 			email: { required, email },
-			password: { required },
+			username: { required },
+			password: { required: requiredIf((form) => !form.newUser) },
 			rights: { required },
-			organization: { required },
-			projects: { required: requiredIf((form) => !form.disabledProject) },
+			language: {},
+			projectIds: { required: requiredIf((form) => !form.disabledProject) },
 			countries: { required: requiredIf((form) => !form.disabledCountry) },
 			phoneNumber: {},
-			prefix: {},
+			phonePrefix: {},
 			updatePasswordOnNextLogin: {},
 		},
 	},
@@ -229,15 +239,19 @@ export default {
 				],
 				projects: [],
 				countries: [],
-				organizations: [],
 				phonePrefixes: PhoneCodes,
+				languages: [
+					{ value: "EN", code: "en" },
+					{ value: "AR", code: "ar" },
+					{ value: "RU", code: "ru" },
+				],
 			},
 			onlyOneCountry: false,
 		};
 	},
 
 	mounted() {
-		this.fetchOrganizations();
+		this.mapSelects();
 	},
 
 	methods: {
@@ -251,8 +265,12 @@ export default {
 			this.$v.$reset();
 		},
 
-		onRightsSelect({ code }) {
+		onRightsSelect(right) {
 			this.validate("rights");
+			this.mapRights(right);
+		},
+
+		mapRights({ code }) {
 			if (code === 1 || code === 2 || code === 3 || code === 6) {
 				this.fetchProjects();
 				this.formModel.disabledProject = false;
@@ -266,12 +284,14 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(1, 15, "desc")
+			await ProjectsService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
+
+			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
 		},
 
 		async fetchCountries() {
@@ -281,15 +301,20 @@ export default {
 				}).catch((e) => {
 					Notification(`Countries ${e}`, "is-danger");
 				});
+
+			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
 		},
 
-		async fetchOrganizations() {
-			await MyOrganizationsService.getListOfMyOrganizations()
-				.then(({ data }) => {
-					this.options.organizations = data;
-				}).catch((e) => {
-					Notification(`Organizations ${e}`, "is-danger");
-				});
+		mapSelects() {
+			if (typeof this.formModel.phonePrefix !== "object") {
+				this.formModel.phonePrefix = getArrayOfCodeListByKey([this.formModel.phonePrefix], this.options.phonePrefixes, "code");
+			}
+			if (typeof this.formModel.language !== "object") {
+				this.formModel.language = this.options.languages
+					.find((item) => item.code === this.formModel.language);
+			}
+			// TODO map Rights on select after add permissions
+			this.mapRights(this.formModel.rights);
 		},
 
 		closeForm() {

@@ -13,6 +13,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@search="onSearch"
 			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
@@ -99,8 +100,8 @@ export default {
 				visibleColumns: [
 					{ key: "email" },
 					{ key: "rights" },
-					{ key: "prefix" },
-					{ key: "phoneNumber" },
+					{ key: "phonePrefix", label: "Prefix", sortKey: "prefix" },
+					{ key: "phoneNumber", sortKey: "phone" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -129,14 +130,29 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = this.prepareDataForTable(data);
 			}).catch((e) => {
 				Notification(`Users ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		prepareDataForTable(data) {
+			const filledData = [];
+			data.forEach((item, key) => {
+				filledData[key] = item;
+				filledData[key].rights = this.prepareRights(item.roles);
+			});
+			return filledData;
+		},
+
+		// eslint-disable-next-line no-unused-vars
+		prepareRights(rights) {
+			// TODO prepare rights for table
+			return "Officer Manager";
 		},
 
 		sendHistory(id) {

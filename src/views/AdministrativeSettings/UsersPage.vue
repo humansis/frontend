@@ -13,6 +13,7 @@
 				class="modal-card"
 				:formModel="userModel"
 				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
+				:is-editing="userModal.isEditing"
 				:form-disabled="userModal.isDetail"
 				@formSubmitted="submitUserForm"
 				@formClosed="closeUserModal"
@@ -42,6 +43,7 @@ import UserForm from "@/components/AdministrativeSettings/UserForm";
 import Modal from "@/components/Modal";
 import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	name: "UsersPage",
@@ -62,16 +64,19 @@ export default {
 			},
 			userModel: {
 				id: null,
+				username: "",
 				email: "",
 				password: "",
-				rights: "",
-				projects: "",
-				countries: "",
-				prefix: "",
+				rights: [],
+				projectIds: [],
+				countries: [],
+				language: null,
+				phonePrefix: [],
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
 				disabledCountry: true,
 				disabledProject: true,
+				newUser: false,
 			},
 		};
 	},
@@ -112,17 +117,19 @@ export default {
 			this.userModel = {
 				...this.userModel,
 				id: null,
+				username: "",
 				email: "",
 				password: "",
-				rights: "",
-				organization: "",
-				projects: "",
-				countries: "",
-				prefix: "",
+				rights: [],
+				projectIds: [],
+				countries: [],
+				language: null,
+				phonePrefix: null,
 				phoneNumber: "",
 				updatePasswordOnNextLogin: false,
 				disabledCountry: true,
 				disabledProject: true,
+				newUser: true,
 			};
 		},
 
@@ -143,27 +150,31 @@ export default {
 		submitUserForm(userForm) {
 			const {
 				id,
+				username,
 				email,
 				password,
+				// TODO Map roles to body
+				// eslint-disable-next-line no-unused-vars
 				rights,
-				organization,
-				projects,
+				projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
+				language,
 			} = userForm;
 
 			const userBody = {
+				username,
 				email,
 				password,
-				rights,
-				organization,
-				projects,
-				countries,
-				prefix,
+				roles: ["ROLE_USER"],
+				projectIds: getArrayOfIdsByParam(projectIds, "id"),
+				countries: getArrayOfIdsByParam(countries, "iso3"),
+				phonePrefix: phonePrefix?.code,
 				phoneNumber,
-				updatePasswordOnNextLogin,
+				language: language?.code || null,
+				changePassword: updatePasswordOnNextLogin,
 			};
 			if (this.userModal.isEditing && id) {
 				this.updateUser(id, userBody);
@@ -175,13 +186,13 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				username,
 				email,
 				password,
 				rights,
-				organization,
-				projects,
+				projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
 			},
@@ -189,13 +200,13 @@ export default {
 			this.userModel = {
 				...this.userModel,
 				id,
+				username,
 				email,
 				password,
 				rights,
-				organization,
-				projects,
+				projects: projectIds,
 				countries,
-				prefix,
+				phonePrefix,
 				phoneNumber,
 				updatePasswordOnNextLogin,
 			};
