@@ -59,6 +59,7 @@
 			</template>
 			<MultiSelect
 				v-model="formModel.adm4Id"
+				:key="componentKey"
 				searchable
 				label="name"
 				track-by="id"
@@ -66,7 +67,7 @@
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="options.villages"
-				@select="validate('adm4Id')"
+				@select="onVillageSelect"
 			/>
 		</b-field>
 	</section>
@@ -95,6 +96,7 @@ export default {
 
 	data() {
 		return {
+			componentKey: 0,
 			options: {
 				provinces: [],
 				districts: [],
@@ -122,7 +124,8 @@ export default {
 	},
 
 	async mounted() {
-		await this.fetchProvinces();
+		const promise = this.fetchProvinces();
+		await Promise.all([promise]);
 		if (this.formModel) {
 			await this.mapLocations();
 		}
@@ -150,6 +153,11 @@ export default {
 			this.validate("adm3Id");
 			this.eraseData("adm3");
 			this.fetchVillages(id);
+		},
+
+		onVillageSelect() {
+			this.validate("adm4Id");
+			this.componentKey += 1;
 		},
 
 		async fetchProvinces() {
@@ -194,6 +202,8 @@ export default {
 
 		async mapLocations() {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
+			console.log(this.options.provinces);
+			console.log(this.options.provinces.find((item) => item.id === adm1Id));
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
 				await this.fetchDistricts(adm1Id);

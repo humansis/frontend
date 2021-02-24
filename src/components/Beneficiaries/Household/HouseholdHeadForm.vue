@@ -295,6 +295,10 @@ export default {
 			default: false,
 		},
 		beneficiary: Object,
+		isHouseholdHead: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	validations: {
@@ -361,7 +365,7 @@ export default {
 					phoneNo: "",
 				},
 				vulnerabilities: [],
-				isHead: false,
+				isHead: this.isHouseholdHead,
 			},
 			options: {
 				gender: [

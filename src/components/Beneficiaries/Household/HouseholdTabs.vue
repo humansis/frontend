@@ -20,6 +20,7 @@
 					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					:is-household-head="true"
 				/>
 			</b-step-item>
 
@@ -178,6 +179,7 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
+			console.log(this.household);
 			const householdBody = {
 				iso3: this.country.iso3,
 				livelihood: livelihood.code,
@@ -201,6 +203,7 @@ export default {
 				// TODO Resolve incomeSpentOnFood and houseIncome
 				incomeSpentOnFood: 0,
 				houseIncome: 0,
+				countrySpecificAnswers: [],
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -245,7 +248,6 @@ export default {
 
 		prepareSummaryMembers(members) {
 			const membersData = [];
-			console.log(members);
 			if (members.length) {
 				members.forEach((member) => {
 					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : "none";
@@ -302,18 +304,27 @@ export default {
 		prepareAddressForHousehold(
 			{
 				typeOfLocation,
-				addressNumber,
-				addressPostcode,
-				addressStreet,
-				adm1Id: { id: adm1Id },
-				adm2Id: { id: adm2Id },
-				adm3Id: { id: adm3Id },
-				adm4Id: { id: adm4Id },
+				number,
+				postcode,
+				street,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 				campName,
 				tentNumber,
-				locationId,
 			},
 		) {
+			let locationId = null;
+			if (adm4Id) {
+				locationId = adm4Id.locationId;
+			} else if (adm3Id) {
+				locationId = adm3Id.locationId;
+			} else if (adm2Id) {
+				locationId = adm2Id.locationId;
+			} else if (adm1Id) {
+				locationId = adm1Id.locationId;
+			}
 			const address = {};
 			if (typeOfLocation.code === "camp") {
 				address.campAddress = {
@@ -321,36 +332,24 @@ export default {
 					locationGroup: "current",
 					name: campName,
 					tentNumber,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
 					locationId,
 				};
 			} else if (typeOfLocation.code === "residence") {
 				address.residenceAddress = {
 					type: typeOfLocation.code,
 					locationGroup: "current",
-					number: addressNumber,
-					street: addressStreet,
-					postCode: addressPostcode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
+					number,
+					street,
+					postcode,
 					locationId,
 				};
 			} else if (typeOfLocation.code === "temporary_settlement") {
 				address.temporarySettlementAddress = {
 					type: typeOfLocation.code,
 					locationGroup: "current",
-					number: addressNumber,
-					street: addressStreet,
-					postCode: addressPostcode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
+					number,
+					street,
+					postcode,
 					locationId,
 				};
 			}
@@ -377,6 +376,7 @@ export default {
 								type: beneficiary.id.idType.code,
 							},
 						],
+						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteriaIds: this.mapVulnerabilities(beneficiary.vulnerabilities),
@@ -386,7 +386,6 @@ export default {
 						preparedBeneficiary.referralComment = beneficiary.referral.comment;
 					}
 					if (beneficiary.phone1.phoneNo !== "") {
-						preparedBeneficiary.phones = [];
 						preparedBeneficiary.phones.push({
 							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
@@ -401,12 +400,7 @@ export default {
 							type: beneficiary.phone2.type.code,
 							proxy: beneficiary.phone2.proxy,
 						};
-						if (preparedBeneficiary.phones.length !== 0) {
-							preparedBeneficiary.phones.push(phone2);
-						} else {
-							preparedBeneficiary.phones = [];
-							preparedBeneficiary.phones.push(phone2);
-						}
+						preparedBeneficiary.phones.push(phone2);
 					}
 					beneficiariesData.push(preparedBeneficiary);
 				});
@@ -421,7 +415,7 @@ export default {
 			const result = [];
 			Object.keys(vulnerabilities).forEach((key) => {
 				if (vulnerabilities[key]) {
-					result.push(key);
+					result.push(Number(key));
 				}
 			});
 			return result;
