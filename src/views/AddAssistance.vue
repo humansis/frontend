@@ -105,14 +105,13 @@ export default {
 				individualsTargeted: this.visibleComponents.individualsTargeted,
 			};
 		},
-        targetTypeSelectVisible() {
+		targetTypeSelectVisible() {
 			return {
 				communities: this.visibleComponents.communities,
 				institutions: this.visibleComponents.institutions,
 			};
 		},
 	},
-
 
 	methods: {
 		async submitAddingAssistance() {
