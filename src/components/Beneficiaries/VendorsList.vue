@@ -64,6 +64,8 @@ import LocationsService from "@/services/LocationsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import UsersService from "@/services/UsersService";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
 	name: "VendorsList",
@@ -74,7 +76,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -116,59 +118,53 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.buildLocationsForVendors(response.data).then((result) => {
-					this.table.data = result;
-					this.table.total = response.totalCount;
-				});
+			).then(({ data, totalCount }) => {
+				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
 			}).catch((e) => {
 				Notification(`Vendors ${e}`, "is-danger");
 			});
-			// TODO Edit - Loading closes after loads data and must wait for locations
 			this.isLoadingList = false;
 		},
 
-		async buildLocationsForVendors(data) {
-			// TODO fix after implement Location endpoint
-			const preparedVendors = [];
+		async prepareDataForTable(data) {
+			this.table.data = data;
+			this.getUsers(data)
+				.then((users) => {
+					this.table.data.map(async (item, key) => {
+						this.table.data[key] = item;
+						this.table.data[key].user = this.prepareEntityForTable(item.userId, users, "username");
+					});
+					this.resetSortKey += 1;
+				});
+			this.getLocations(data)
+				.then((locations) => {
+					this.table.data.map(async (item, key) => {
+						this.table.data[key] = item;
+						this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
+					});
+					this.resetSortKey += 1;
+				});
+		},
 
-			data.forEach((vendor) => {
-				const preparedVendor = vendor;
-				if (vendor.adm4Id) {
-					LocationsService.getDetailOfAdm4(vendor.adm4Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm4 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm3Id) {
-					LocationsService.getDetailOfAdm3(vendor.adm3Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm3 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm2Id) {
-					LocationsService.getDetailOfAdm2(vendor.adm2Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm2 ${e}`, "is-danger");
-						});
-				} else if (vendor.adm1Id) {
-					LocationsService.getDetailOfAdm1(vendor.adm1Id)
-						.then((response) => {
-							preparedVendor.location = response.data.name;
-							preparedVendors.push(preparedVendor);
-						}).catch((e) => {
-							Notification(`Adm1 ${e}`, "is-danger");
-						});
-				}
-			});
-			return preparedVendors;
+		async getLocations(vendors) {
+			if (!vendors?.length) return [];
+			return LocationsService.getLocations(vendors, "locationId")
+				.then(({ data }) => data).catch((e) => {
+					Notification(`Locations ${e}`, "is-danger");
+				});
+		},
+
+		async getUsers(vendors) {
+			if (!vendors?.length) return [];
+			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
+				.then(({ data }) => data).catch((e) => {
+					Notification(`Users ${e}`, "is-danger");
+				});
 		},
 	},
 };

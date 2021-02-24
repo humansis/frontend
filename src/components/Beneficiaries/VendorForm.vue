@@ -8,8 +8,20 @@
 			>
 				<b-input
 					v-model="formModel.username"
-					:disabled="formDisabled"
+					:disabled="formDisabled || !formModel.creating"
 					@blur="validate('username')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Email"
+				:type="validateType('email')"
+				:message="validateMsg('email')"
+			>
+				<b-input
+					v-model="formModel.email"
+					:disabled="formDisabled || !formModel.creating"
+					@blur="validate('email')"
 				/>
 			</b-field>
 
@@ -40,14 +52,12 @@
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					Description<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-				</template>
+			<b-field
+				label="Shop"
+			>
 				<b-input
-					v-model="formModel.description"
+					v-model="formModel.shop"
 					:disabled="formDisabled"
-					@blur="validate('description')"
 				/>
 			</b-field>
 
@@ -109,7 +119,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf, email } from "vuelidate/lib/validators";
 import locationForm from "@/components/LocationForm";
 import Validation from "@/mixins/validation";
 
@@ -130,9 +140,10 @@ export default {
 	validations: {
 		formModel: {
 			username: { required },
+			email: { required, email },
 			password: { required: requiredIf((form) => form.creating) },
 			name: { required },
-			description: {},
+			shop: {},
 			addressStreet: {},
 			addressNumber: {},
 			addressPostcode: {},

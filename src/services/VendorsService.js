@@ -14,7 +14,7 @@ export default {
 	},
 
 	async createVendor(body) {
-		const { data, status } = await fetcher({ uri: "institutions", method: "POST", body });
+		const { data, status } = await fetcher({ uri: "vendors", method: "POST", body });
 		return { data, status };
 	},
 
