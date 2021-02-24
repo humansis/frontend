@@ -1,11 +1,14 @@
+// Targets
 const INDIVIDUAL = "0";
 const HOUSEHOLD = "1";
 const COMMUNITY = "2";
 const INSTITUTION = "3";
 
+// Target types
 const ACTIVITY = "activity";
 const DISTRIBUTION = "distribution";
 
+// AddAssistance components
 const SELECTION_CRITERIA = "selectionCriteria";
 const DISTRIBUTED_COMMODITY = "distributedCommodity";
 const COMMUNITIES = "communities";
@@ -13,6 +16,28 @@ const INSTITUTIONS = "institutions";
 const ACTIVITY_DESCRIPTION = "activityDescription";
 const HOUSEHOLD_TARGETED = "householdsTargeted";
 const INDIVIDUALS_TARGETED = "individualsTargeted";
+
+// Commodities
+const CASH = "CASH";
+const SMARDCARD = "SMARDCARD";
+
+const FOOD_RATIONS = "FOOD_RATIONS";
+const READY_TO_EAT_RATIONS = "READY_TO_EAT_RATIONS";
+const BREAD = "BREAD";
+const AGRICULTURAL_KIT = "AGRICULTURAL_KIT";
+const WASH_KIT = "WASH_KIT";
+const SHELTER_TOOL_KIT = "SHELTER_TOOL_KIT";
+const HYGIENE_KIT = "HYGIENE_KIT";
+const DIGNITY_KIT = "DIGNITY_KIT";
+const NFI_KIT = "NFI_KIT";
+const WINTERIZATION_KIT = "WINTERIZATION_KIT";
+const ACTIVITY_ITEM = "ACTIVITY_ITEM";
+
+const LOAN = "LOAN";
+const BUSINESS_GRANT = "BUSINESS_GRANT";
+
+const QR_CODE_VOUCHER = "QR_CODE_VOUCHER";
+const PAPER_VOUCHER = "PAPER_VOUCHER";
 
 export default {
 	TARGET: {
@@ -33,5 +58,24 @@ export default {
 		ACTIVITY_DESCRIPTION,
 		HOUSEHOLD_TARGETED,
 		INDIVIDUALS_TARGETED,
+	},
+	COMMODITY: {
+		CASH,
+		SMARDCARD,
+		FOOD_RATIONS,
+		READY_TO_EAT_RATIONS,
+		BREAD,
+		AGRICULTURAL_KIT,
+		WASH_KIT,
+		SHELTER_TOOL_KIT,
+		HYGIENE_KIT,
+		DIGNITY_KIT,
+		NFI_KIT,
+		WINTERIZATION_KIT,
+		ACTIVITY_ITEM,
+		LOAN,
+		BUSINESS_GRANT,
+		QR_CODE_VOUCHER,
+		PAPER_VOUCHER,
 	},
 };

@@ -98,7 +98,7 @@ export default {
 
 	mixins: [Validation],
 
-	date() {
+	data() {
 		return {
 			uploadedImage: null,
 		};

@@ -21,7 +21,7 @@
 				close-button
 				class="modal-card"
 				submit-button-label="Create"
-				:formModel="commodityModel"
+				:formModel="formModel"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -29,15 +29,13 @@
 		<div class="mb-2">
 			<Table
 				v-if="table.data.length"
-				:data="table.data"
+				:data="modifiedTableData"
 			>
-				<template v-for="(column) in table.columns">
-					<b-table-column
-						v-bind="column"
-						v-slot="props"
-						:key="column.id"
-					>
-						<ColumnField :column="column" :data="props" />
+				<template v-for="column in table.columns">
+					<b-table-column v-bind="column" sortable :key="column.key">
+						<template v-slot="props">
+							{{ props.row[column.field] }}
+						</template>
 					</b-table-column>
 				</template>
 				<b-table-column
@@ -63,14 +61,13 @@
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import DistributedCommodityForm from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodityForm";
+import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "DistributedCommodity",
 
 	components: {
-		ColumnField,
 		Modal,
 		DistributedCommodityForm,
 		Table,
@@ -82,7 +79,7 @@ export default {
 			commodityModal: {
 				isOpened: false,
 			},
-			commodityModel: {
+			formModel: {
 				modality: null,
 				type: null,
 				currency: null,
@@ -93,31 +90,49 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [
-					{ field: "modality" },
-					{ field: "type" },
-					{ field: "currency" },
-					{ field: "unit" },
-					{ field: "quantity" },
-					{ field: "description" },
-					{ field: "totalValueOfBooklet" },
+				columns: [],
+				visibleColumns: [
+					{ key: "modality" },
+					{ key: "type" },
+					{ key: "unit" },
+					{ key: "quantity" },
+					{ key: "description" },
 				],
 			},
 		};
 	},
 
+	created() {
+		this.table.columns = generateColumns(this.table.visibleColumns);
+	},
+
 	updated() {
-		// TODO Emit only if form is validated else emit false
-		if (this.table.data.length > 0) {
+		if (this.table.data.length) {
 			this.$emit("updatedData", this.table.data);
 		}
+	},
+
+	computed: {
+		modifiedTableData() {
+			const tableData = this.table.data.map((
+				{ modality, type, unit, currency, quantity, description, totalValueOfBooklet },
+			) => ({
+				modality: modality?.value,
+				type: type?.value,
+				unit: unit || currency?.value,
+				quantity: quantity || totalValueOfBooklet,
+				description,
+			}));
+
+			return tableData || [];
+		},
 	},
 
 	methods: {
 		addCriteria() {
 			this.commodityModal.isOpened = true;
 
-			this.commodityModel = {
+			this.formModel = {
 				modality: null,
 				type: null,
 				currency: null,
