@@ -14,6 +14,7 @@
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
