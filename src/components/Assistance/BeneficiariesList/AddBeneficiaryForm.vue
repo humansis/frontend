@@ -6,9 +6,27 @@
 					v-model="formModel.beneficiaries"
 					searchable
 					placeholder="Click to select..."
+					label="name"
+					track-by="id"
+					:loading="loading.beneficiaries"
 					:disabled="formDisabled"
 					:options="options.beneficiaries"
-				/>
+				>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">
+								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+							</span>
+						</div>
+					</template>
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">
+								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+							</span>
+						</div>
+					</template>
+				</MultiSelect>
 			</b-field>
 			<b-field label="Justification">
 				<b-input
@@ -33,6 +51,10 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+
 export default {
 	name: "AddBeneficiaryForm",
 
@@ -48,12 +70,35 @@ export default {
 			options: {
 				beneficiaries: [],
 			},
+			loading: {
+				beneficiaries: true,
+			},
 		};
+	},
+
+	mounted() {
+		this.fetchBeneficiariesByProject();
+	},
+
+	computed: {
+		...mapState(["temporaryAssistance"]),
 	},
 
 	methods: {
 		submitForm() {
 			this.$emit("formSubmitted", this.formModel);
+		},
+
+		async fetchBeneficiariesByProject() {
+			const { projectId } = this.$route.params;
+			const { target } = this.temporaryAssistance;
+			await BeneficiariesService.getBeneficiariesByProject(projectId, target)
+				.then(({ data }) => {
+					this.options.beneficiaries = data;
+				}).catch((e) => {
+					Notification(`Project Beneficiaries ${e}`, "is-danger");
+				});
+			this.loading.beneficiaries = false;
 		},
 
 		closeForm() {
