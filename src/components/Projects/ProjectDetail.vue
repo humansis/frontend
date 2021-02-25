@@ -3,6 +3,7 @@
 		<ProjectSummary />
 		<Modal
 			can-cancel
+			is-small
 			header="Assistance Detail"
 			:active="assistanceModal.isOpened"
 			@close="closeAssistanceModal"
@@ -79,14 +80,15 @@ export default {
 		},
 
 		async editAssistance(body) {
-			await AssistancesService.updateAssistance(body.id, body).then((response) => {
-				if (response.status === 200) {
-					Toast("Assistance Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
+			await AssistancesService.updateAssistance(body.id, body)
+				.then((response) => {
+					if (response.status === 200) {
+						Toast("Assistance Successfully Updated", "is-success");
+						this.fetchData();
+					}
+				}).catch((e) => {
+					Notification(`Assistance ${e}`, "is-danger");
+				});
 		},
 
 		async removeAssistance(id) {

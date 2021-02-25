@@ -110,7 +110,9 @@ export default {
 	},
 
 	async updateAssistance(id, body) {
-		console.log(id, body);
-		return { data: {}, status: 200 };
+		const { data, status } = await fetcher({
+			uri: `assistances/${id}`, method: "PUT", body,
+		});
+		return { data, status };
 	},
 };
