@@ -506,7 +506,7 @@ export default {
 			};
 			if (id) {
 				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
-					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "id");
+					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
 					nationalIdCard.idNumber = number;
 				}).catch((e) => {
 					Notification(`National ID ${e}`, "is-danger");
