@@ -158,6 +158,13 @@ export default {
 		return data;
 	},
 
+	async getSupportReceivedTypes() {
+		const { data } = await fetcher({
+			uri: "households/support-received-types",
+		});
+		return data;
+	},
+
 	async addBeneficiaryToAssistance(id, body) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}/beneficiaries`,

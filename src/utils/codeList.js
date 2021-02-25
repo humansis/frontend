@@ -1,16 +1,25 @@
-export const getArrayOfIdsByParam = (items, param) => {
+export const getArrayOfIdsByParam = (items, param, number = false) => {
 	const result = [];
 	if (!Array.isArray(items)) {
+		if (number) {
+			return [Number(items[param])];
+		}
 		return [items[param]];
 	}
 	items.forEach((item) => { result.push(item[param]); });
 	return result;
 };
 
-export const getArrayOfCodeListByKey = (codes, array, key) => {
+export const getArrayOfCodeListByKey = (codes, array, key, toInt = false, toString = false) => {
 	const result = [];
 	codes.forEach((code) => {
-		const field = array.find((item) => code === item[key]);
+		let codeToFind = code;
+		if (toInt) {
+			codeToFind = Number(code);
+		} else if (toString) {
+			codeToFind = String(code);
+		}
+		const field = array.find((item) => codeToFind === item[key]);
 		if (field) {
 			result.push(field);
 		}

@@ -152,7 +152,18 @@
 							:options="options.residencyStatus"
 							:class="validateMultiselect('residencyStatus')"
 							@select="validate('residencyStatus')"
-						/>
+						>
+							<template slot="singleLabel" slot-scope="props">
+								<div class="option__desc">
+									<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+								</div>
+							</template>
+							<template slot="option" slot-scope="props">
+								<div class="option__desc">
+									<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+								</div>
+							</template>
+						</MultiSelect>
 					</b-field>
 				</div>
 
@@ -420,6 +431,7 @@ export default {
 				referralType,
 				vulnerabilityCriteria,
 				isHead,
+				residencyStatus,
 			} = beneficiary;
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
@@ -439,21 +451,24 @@ export default {
 					parentsName: enParentsName,
 				},
 				personalInformation: {
-					gender: gender.code,
+					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: new Date(dateOfBirth),
 				},
 				id,
-				residencyStatus: "",
+				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
-					// TODO
-					referralType,
+					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
 					comment: referralComment,
 				},
 				phone1,
 				phone2,
 				isHead,
-				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
+				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "value"),
 			};
+		},
+
+		normalizeText(text) {
+			return normalizeText(text);
 		},
 
 		prepareVulnerability(name) {

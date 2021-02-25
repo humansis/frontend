@@ -231,6 +231,7 @@ import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 
 export default {
 	name: "HouseholdForm",
@@ -314,20 +315,7 @@ export default {
 					{ code: 4, value: "Very High (300 USD < Income)" },
 				],
 				assets: [],
-				externalSupportReceivedType: [
-					{ code: 0, value: "MPCA" },
-					{ code: 1, value: "Cash For Work" },
-					{ code: 2, value: "Food Kit" },
-					{ code: 3, value: "Food Voucher" },
-					{ code: 4, value: "Hygiene Kit" },
-					{ code: 5, value: "Shelter Kit" },
-					{ code: 6, value: "Shelter Reconstruction Support" },
-					{ code: 7, value: "Non Food Items" },
-					{ code: 8, value: "Livelihoods Support" },
-					{ code: 9, value: "Vocational Training" },
-					{ code: 10, value: "None" },
-					{ code: 11, value: "Other" },
-				],
+				externalSupportReceivedType: [],
 				shelterStatuses: [],
 			},
 		};
@@ -337,6 +325,7 @@ export default {
 		await this.fetchLivelihoods();
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
+		await this.fetchSupportReceivedTypes();
 		if (this.isEditing) {
 			this.mapDetailOfHouseholdToFormModel();
 			await this.mapCurrentLocation().then((response) => {
@@ -356,6 +345,14 @@ export default {
 			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
 			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
 			return "";
+		},
+
+		async fetchSupportReceivedTypes() {
+			await BeneficiariesService.getSupportReceivedTypes()
+				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
+				.catch((e) => {
+					Notification(`Support Received Types ${e}`, "is-danger");
+				});
 		},
 
 		mapCurrentLocation() {
@@ -383,6 +380,11 @@ export default {
 		},
 
 		mapDetailOfHouseholdToFormModel() {
+			const {
+				idPoorNo,
+				equityCardNo,
+				fields,
+			} = this.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
@@ -390,7 +392,7 @@ export default {
 				livelihood: {
 					...this.formModel.livelihood,
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
-					assets: getArrayOfCodeListByKey([this.detailOfHousehold.assets], this.options.assets, "code"),
+					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code", true),
 					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
 					incomeLevel: getArrayOfCodeListByKey([this.detailOfHousehold.incomeLevel], this.options.incomeLevel, "code"),
 					debtLevel: this.detailOfHousehold.debtLevel,
@@ -398,21 +400,39 @@ export default {
 				},
 				externalSupport: {
 					...this.formModel.externalSupport,
-					// TODO map supportReceivedTypes to code/value
-					externalSupportReceivedType: getArrayOfCodeListByKey([this.detailOfHousehold.supportReceivedTypes], this.options.externalSupportReceivedType, "code"),
+					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code", false, true),
 					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
 				countrySpecificOptions: {
 					...this.formModel.countrySpecificOptions,
 					// TODO map countrySpecificOptions
-					idPoorNo: "",
-					equityCardNo: "",
-					fields: "",
+					idPoorNo,
+					equityCardNo,
+					fields,
 				},
-				shelterStatus: getArrayOfCodeListByKey([this.detailOfHousehold.shelterStatus], this.options.shelterStatuses, "code"),
+				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
 				notes: this.detailOfHousehold.notes,
 			};
+		},
+
+		async prepareCountrySpecifics(answers) {
+			const preparedAnswer = {
+				idPoorNo: "",
+				equityCardNo: "",
+				fields: "",
+			};
+			if (!answers) return preparedAnswer;
+			const promise = answers.map(async (item) => {
+				await CountrySpecificOptionsService.getCountrySpecificAnswer(item)
+					.then(({ answer }) => {
+						if (answer) {
+							preparedAnswer.idPoorNo = answer;
+						}
+					});
+			});
+			await Promise.all(promise);
+			return preparedAnswer;
 		},
 
 		async fetchLivelihoods() {

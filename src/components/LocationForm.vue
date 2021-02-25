@@ -202,8 +202,6 @@ export default {
 
 		async mapLocations() {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
-			console.log(this.options.provinces);
-			console.log(this.options.provinces.find((item) => item.id === adm1Id));
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
 				await this.fetchDistricts(adm1Id);

@@ -95,7 +95,7 @@ export default {
 	data() {
 		return {
 			formModel: {
-				selectedProjects: null,
+				selectedProjects: [],
 			},
 			options: {
 				projects: [],

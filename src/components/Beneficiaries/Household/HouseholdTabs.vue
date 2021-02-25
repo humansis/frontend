@@ -164,6 +164,9 @@ export default {
 		},
 
 		save() {
+			if (!this.$refs.householdSummary.submit()) {
+				return;
+			}
 			// TODO Mapping form models to householdBody
 			const {
 				shelterStatus,
@@ -185,7 +188,7 @@ export default {
 				livelihood: livelihood.code,
 				assets: getArrayOfIdsByParam(assets, "code"),
 				shelterStatus: parseInt(shelterStatus.code, 10),
-				projectIds: getArrayOfIdsByParam(this.selectedProjects, "code"),
+				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				// TODO Resolve longitude and latitude
 				longitude: "string",
@@ -198,7 +201,7 @@ export default {
 				copingStrategiesIndex,
 				debtLevel,
 				supportDateReceived: this.$moment(supportDateReceived).format("YYYY-MM-DD"),
-				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
+				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code", true),
 				supportOrganizationName,
 				// TODO Resolve incomeSpentOnFood and houseIncome
 				incomeSpentOnFood: 0,
