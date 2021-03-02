@@ -18,26 +18,27 @@ const HOUSEHOLD_TARGETED = "householdsTargeted";
 const INDIVIDUALS_TARGETED = "individualsTargeted";
 
 // Commodities
-const CASH = "CASH";
-const SMARDCARD = "SMARDCARD";
+const CASH = "Cash";
+const MOBILE_MONEY = "Mobile Money";
+const SMARDCARD = "Smartcard";
 
-const FOOD_RATIONS = "FOOD_RATIONS";
-const READY_TO_EAT_RATIONS = "READY_TO_EAT_RATIONS";
-const BREAD = "BREAD";
-const AGRICULTURAL_KIT = "AGRICULTURAL_KIT";
-const WASH_KIT = "WASH_KIT";
-const SHELTER_TOOL_KIT = "SHELTER_TOOL_KIT";
-const HYGIENE_KIT = "HYGIENE_KIT";
-const DIGNITY_KIT = "DIGNITY_KIT";
-const NFI_KIT = "NFI_KIT";
-const WINTERIZATION_KIT = "WINTERIZATION_KIT";
-const ACTIVITY_ITEM = "ACTIVITY_ITEM";
+const FOOD_RATIONS = "Food Rations";
+const READY_TO_EAT_RATIONS = "Ready to Eat Rations";
+const BREAD = "Bread";
+const AGRICULTURAL_KIT = "Agricultural Kit";
+const WASH_KIT = "WASH Kit";
+const SHELTER_TOOL_KIT = "Shelter tool kit";
+const HYGIENE_KIT = "Hygiene kit";
+const DIGNITY_KIT = "Dignity kit";
+const NFI_KIT = "NFI Kit";
+const WINTERIZATION_KIT = "Winterization Kit";
+const ACTIVITY_ITEM = "Activity item";
 
-const LOAN = "LOAN";
-const BUSINESS_GRANT = "BUSINESS_GRANT";
+const LOAN = "Loan";
+const BUSINESS_GRANT = "Business Grant";
 
-const QR_CODE_VOUCHER = "QR_CODE_VOUCHER";
-const PAPER_VOUCHER = "PAPER_VOUCHER";
+const QR_CODE_VOUCHER = "QR Code Voucher";
+const PAPER_VOUCHER = "Paper Voucher";
 
 export default {
 	TARGET: {
@@ -61,6 +62,7 @@ export default {
 	},
 	COMMODITY: {
 		CASH,
+		MOBILE_MONEY,
 		SMARDCARD,
 		FOOD_RATIONS,
 		READY_TO_EAT_RATIONS,

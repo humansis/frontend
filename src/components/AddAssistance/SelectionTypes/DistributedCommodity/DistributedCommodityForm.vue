@@ -196,6 +196,7 @@ export default {
 				case (
 					consts.COMMODITY.CASH
 					|| consts.COMMODITY.SMARDCARD
+					|| consts.COMMODITY.MOBILE_MONEY
 					|| consts.COMMODITY.LOAN
 				):
 					this.displayedFields = {
