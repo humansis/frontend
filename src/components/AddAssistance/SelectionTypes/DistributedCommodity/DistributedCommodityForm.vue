@@ -1,72 +1,109 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field label="Modality">
+	<form @submit.prevent="submitForm" class="mb-6">
+		<section class="modal-card-body pb-6">
+			<b-field
+				:type="validateType('modality')"
+				:message="validateMsg('modality')"
+				label="Modality"
+			>
 				<MultiSelect
 					v-model="formModel.modality"
 					placeholder="Click to select..."
-					:options="options.modality"
+					label="value"
+					track-by="code"
+					:options="options.modalities"
 					:searchable="false"
+					:loading="loading.modalities"
+					:class="validateMultiselect('modality')"
 					@select="onModalitySelect"
 				/>
 			</b-field>
 
-			<b-field label="Type">
+			<b-field
+				:type="validateType('type')"
+				:message="validateMsg('type')"
+				label="Type"
+			>
 				<MultiSelect
 					v-model="formModel.type"
 					placeholder="Click to select..."
-					:options="options.type"
+					label="value"
+					track-by="code"
+					:options="options.types"
+					:loading="loading.types"
 					:searchable="false"
+					:class="validateMultiselect('type')"
+					@select="onModalityTypeSelect"
 				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.modality === 'Cash' || formModel.modality === 'Vouchers'"
+				v-if="displayedFields.currency"
+				:type="validateType('currency')"
+				:message="validateMsg('currency')"
 				label="Currency"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
 					placeholder="Click to select..."
-					:options="options.currency"
-					:searchable="false"
+					label="value"
+					track-by="value"
+					:options="options.currencies"
+					:class="validateMultiselect('currency')"
+					searchable
 				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.modality !== 'Cash'"
+				v-if="displayedFields.unit"
 				label="Unit"
+				:type="validateType('unit')"
+				:message="validateMsg('unit')"
 			>
-				<MultiSelect
+				<b-input
 					v-model="formModel.unit"
-					placeholder="Click to select..."
-					:options="options.unit"
-					:searchable="false"
+					@blur="validate('unit')"
 				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.modality !== 'Vouchers'"
+				v-if="displayedFields.quantity"
+				:type="validateType('quantity')"
+				:message="validateMsg('quantity')"
 				label="Quantity"
 			>
-				<b-input v-model="formModel.quantity" />
+				<b-input
+					v-model="formModel.quantity"
+					@blur="validate('quantity')"
+				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.modality === 'In Kind'"
+				v-if="displayedFields.description"
+				:type="validateType('description')"
+				:message="validateMsg('description')"
 				label="Description"
 			>
-				<b-input v-model="formModel.description" />
+				<b-input
+					v-model="formModel.description"
+					@blur="validate('description')"
+				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.modality === 'Vouchers'"
+				v-if="displayedFields.totalValueOfBooklet"
+				:type="validateType('totalValueOfBooklet')"
+				:message="validateMsg('totalValueOfBooklet')"
 				label="Total Value of Booklet"
 			>
-				<b-input v-model="formModel.totalValueOfBooklet" />
+				<b-input
+					v-model="formModel.totalValueOfBooklet"
+					@blur="validate('totalValueOfBooklet')"
+				/>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
+			<button class="button" type="button" @click="closeForm">
 				Close
 			</button>
 			<b-button
@@ -80,9 +117,17 @@
 </template>
 
 <script>
+import { required, requiredIf } from "vuelidate/lib/validators";
+import AssistancesService from "@/services/AssistancesService";
+import { Notification } from "@/utils/UI";
+import consts from "@/utils/assistanceConst";
+import currencies from "@/utils/currencies";
+import Validation from "@/mixins/validation";
 
 export default {
 	name: "DistributedCommodityForm",
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,
@@ -92,46 +137,149 @@ export default {
 
 	data() {
 		return {
+			displayedFields: {
+				currency: false,
+				unit: false,
+				quantity: false,
+				description: false,
+				totalValueOfBooklet: false,
+			},
 			options: {
-				modality: ["Cash", "In Kind", "Other", "Vouchers"],
-				type: [],
-				currency: [],
-				unit: [],
+				modalities: [],
+				types: [],
+				currencies,
+			},
+			loading: {
+				modalities: false,
+				types: false,
 			},
 		};
 	},
 
-	computed: {
-		criteria() {
-			return this.options.criteria;
+	validations: {
+		formModel: {
+			modality: { required },
+			type: { required },
+			currency: { required: requiredIf(function () {
+				return this.displayedFields.currency;
+			}) },
+			unit: { required: requiredIf(function () {
+				return this.displayedFields.unit;
+			}) },
+			quantity: { required: requiredIf(function () {
+				return this.displayedFields.quantity;
+			}) },
+			description: { required: requiredIf(function () {
+				return this.displayedFields.description;
+			}) },
+			totalValueOfBooklet: { required: requiredIf(function () {
+				return this.displayedFields.totalValueOfBooklet;
+			}) },
 		},
 	},
 
+	created() {
+		this.fetchModalities();
+	},
+
 	methods: {
-		onModalitySelect(modality) {
-			switch (modality) {
-				case "Cash":
-					this.options.type = ["Mobile Money", "Cash", "Smartcard"];
+		onModalitySelect({ code }) {
+			this.fetchModalityTypes(code);
+		},
+
+		async onModalityTypeSelect({ code }) {
+			this.displayedFields = await this.getFormFieldsToShow(code);
+		},
+
+		async getFormFieldsToShow(code) {
+			switch (code) {
+				case (
+					consts.COMMODITY.CASH
+					|| consts.COMMODITY.SMARDCARD
+					|| consts.COMMODITY.MOBILE_MONEY
+					|| consts.COMMODITY.LOAN
+				):
+					this.displayedFields = {
+						...this.displayedFields,
+						currency: true,
+						quantity: true,
+					};
 					break;
-				case "In Kind":
-					this.options.type = [
-						"Food", "RTE Kit", "Bread", "Agricultural Kit", "WASH Kit", "Hygiene Kit",
-						"Shelter Tool Kit", "Dignity Kit",
-					];
+				case (
+					consts.COMMODITY.FOOD_RATIONS
+					|| consts.COMMODITY.READY_TO_EAT_RATIONS
+					|| consts.COMMODITY.BREAD
+					|| consts.COMMODITY.AGRICULTURAL_KIT
+					|| consts.COMMODITY.WASH_KIT
+					|| consts.COMMODITY.SHELTER_TOOL_KIT
+					|| consts.COMMODITY.HYGIENE_KIT
+					|| consts.COMMODITY.DIGNITY_KIT
+					|| consts.COMMODITY.NFI_KIT
+					|| consts.COMMODITY.WINTERIZATION_KIT
+					|| consts.COMMODITY.ACTIVITY_ITEM
+				):
+					this.displayedFields = {
+						...this.displayedFields,
+						unit: true,
+						quantity: true,
+						description: true,
+					};
 					break;
-				case "Other":
-					this.options.type = ["Loan"];
+				case consts.COMMODITY.BUSINESS_GRANT:
+					this.displayedFields = {
+						...this.displayedFields,
+						unit: true,
+						quantity: true,
+					};
 					break;
-				case "Vouchers":
-					this.options.type = ["Paper Voucher", "QR Code Voucher"];
+				case consts.COMMODITY.QR_CODE_VOUCHER || consts.COMMODITY.PAPER_VOUCHER:
+					this.displayedFields = {
+						...this.displayedFields,
+						currency: true,
+						totalValueOfBooklet: true,
+					};
 					break;
 				default:
-					this.options.type = [];
+					return this.displayedFields;
 			}
+
+			return this.displayedFields;
+		},
+
+		async fetchModalities() {
+			this.loading.modalities = true;
+
+			await AssistancesService.getListOfModalities()
+				.then(({ data }) => { this.options.modalities = data; })
+				.catch((e) => {
+					Notification(`Modalities ${e}`, "is-danger");
+				});
+
+			this.loading.modalities = false;
+		},
+
+		async fetchModalityTypes(code) {
+			this.loading.types = true;
+
+			await AssistancesService.getListOfModalityTypes(code)
+				.then(({ data }) => {
+					this.options.types = data;
+				})
+				.catch((e) => {
+					Notification(`Modality Types ${e}`, "is-danger");
+				});
+
+			this.loading.types = false;
 		},
 
 		submitForm() {
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				return;
+			}
+
 			this.$emit("formSubmitted", this.formModel);
+			this.$v.$reset();
 		},
 
 		closeForm() {
