@@ -206,7 +206,8 @@ export default {
 				// TODO Resolve incomeSpentOnFood and houseIncome
 				incomeSpentOnFood: 0,
 				houseIncome: 0,
-				countrySpecificAnswers: [],
+				countrySpecificAnswers:
+					this.prepareCountrySpecificsForHousehold(this.household.countrySpecificOptions),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -217,6 +218,17 @@ export default {
 					this.createHousehold(householdBody);
 				}
 			}
+		},
+
+		prepareCountrySpecificsForHousehold(countrySpecificAnswers) {
+			const preparedAnswers = [];
+			Object.keys(countrySpecificAnswers).forEach((key) => {
+				preparedAnswers.push({
+					countrySpecificId: Number(key),
+					answer: countrySpecificAnswers[key],
+				});
+			});
+			return preparedAnswers;
 		},
 
 		async updateHousehold(id, householdBody) {

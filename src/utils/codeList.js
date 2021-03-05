@@ -6,7 +6,13 @@ export const getArrayOfIdsByParam = (items, param, number = false) => {
 		}
 		return [items[param]];
 	}
-	items.forEach((item) => { result.push(item[param]); });
+	items.forEach((item) => {
+		if (number) {
+			result.push(Number(item[param]));
+		} else {
+			result.push(item[param]);
+		}
+	});
 	return result;
 };
 

@@ -169,28 +169,15 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
-				<b-field>
+				<b-field
+					v-for="option in countrySpecificOptions"
+					:key="option.id"
+				>
 					<template #label>
-						ID Poor no
+						{{ normalizeText(option.field) }}
 						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</template>
-					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
-				</b-field>
-
-				<b-field>
-					<template #label>
-						Equity Card No
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-					</template>
-					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
-				</b-field>
-
-				<b-field>
-					<template #label>
-						Fields
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-					</template>
-					<b-input v-model="formModel.countrySpecificOptions.fields" />
+					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
 				</b-field>
 			</div>
 		</div>
@@ -230,6 +217,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { normalizeCountrySpecifics } from "@/utils/datagrid";
 import Validation from "@/mixins/validation";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 
@@ -266,11 +254,7 @@ export default {
 				supportDateReceived: { required },
 				supportOrganization: { required },
 			},
-			countrySpecificOptions: {
-				idPoorNo: {},
-				equityCardNo: {},
-				fields: {},
-			},
+			countrySpecificOptions: {},
 			shelterStatus: { required },
 		},
 	},
@@ -280,6 +264,7 @@ export default {
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
+			countrySpecificOptions: [],
 			formModel: {
 				id: null,
 				currentLocation: {},
@@ -297,11 +282,7 @@ export default {
 					supportDateReceived: new Date(),
 					supportOrganization: "",
 				},
-				countrySpecificOptions: {
-					idPoorNo: "",
-					equityCardNo: "",
-					fields: "",
-				},
+				countrySpecificOptions: {},
 				shelterStatus: [],
 				notes: "",
 			},
@@ -326,6 +307,7 @@ export default {
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
 		await this.fetchSupportReceivedTypes();
+		await this.fetchCountrySpecificOptions();
 		if (this.isEditing) {
 			this.mapDetailOfHouseholdToFormModel();
 			await this.mapCurrentLocation().then((response) => {
@@ -335,6 +317,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeCountrySpecifics(text);
+		},
+
 		getAddressTypeAndId() {
 			const {
 				temporarySettlementAddressId,
@@ -379,12 +365,10 @@ export default {
 			return null;
 		},
 
-		mapDetailOfHouseholdToFormModel() {
-			const {
-				idPoorNo,
-				equityCardNo,
-				fields,
-			} = this.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
+		async mapDetailOfHouseholdToFormModel() {
+			const countryAnswers = await this
+				.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
+			console.log(countryAnswers);
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
@@ -406,10 +390,7 @@ export default {
 				},
 				countrySpecificOptions: {
 					...this.formModel.countrySpecificOptions,
-					// TODO map countrySpecificOptions
-					idPoorNo,
-					equityCardNo,
-					fields,
+					...countryAnswers,
 				},
 				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
 				notes: this.detailOfHousehold.notes,
@@ -417,18 +398,14 @@ export default {
 		},
 
 		async prepareCountrySpecifics(answers) {
-			const preparedAnswer = {
-				idPoorNo: "",
-				equityCardNo: "",
-				fields: "",
-			};
+			const preparedAnswer = {};
 			if (!answers) return preparedAnswer;
 			const promise = answers.map(async (item) => {
 				await CountrySpecificOptionsService.getCountrySpecificAnswer(item)
-					.then(({ answer }) => {
-						if (answer) {
-							preparedAnswer.idPoorNo = answer;
-						}
+					.then(({ data: { answer, countrySpecificOptionId } }) => {
+						const temp = this.countrySpecificOptions
+							.find((option) => option.id === countrySpecificOptionId);
+						preparedAnswer[temp.id] = answer;
 					});
 			});
 			await Promise.all(promise);
@@ -460,6 +437,14 @@ export default {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
+		},
+
+		async fetchCountrySpecificOptions() {
+			await CountrySpecificOptionsService.getListOfCountrySpecificOptions()
+				.then(({ data }) => { this.countrySpecificOptions = data; })
+				.catch((e) => {
+					Notification(`Country Specific Options ${e}`, "is-danger");
+				});
 		},
 
 		submit() {
