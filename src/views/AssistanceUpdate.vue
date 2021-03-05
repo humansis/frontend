@@ -46,11 +46,13 @@
 			</b-step-item>
 
 			<template
-				v-if="true"
 				slot="navigation"
 				slot-scope="{previous, next}"
 			>
-				<div class="buttons flex-end">
+				<div
+					v-show="activeStep !== 1"
+					class="buttons flex-end"
+				>
 					<b-button
 						type="is-danger is-light"
 						:disabled="previous.disabled"

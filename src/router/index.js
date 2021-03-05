@@ -92,6 +92,15 @@ const routes = [
 								},
 							},
 							{
+								path: "assistance/detail/:assistanceId",
+								name: "AssistanceDetail",
+								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceDetail"),
+								meta: {
+									breadcrumb: "Assistance Detail",
+									description: "",
+								},
+							},
+							{
 								path: "add-assistance",
 								name: "AddAssistance",
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),

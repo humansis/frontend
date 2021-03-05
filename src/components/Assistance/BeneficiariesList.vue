@@ -23,6 +23,7 @@
 			<EditBeneficiaryForm
 				close-button
 				submit-button-label="Save"
+				class="modal-card"
 				:formModel="editBeneficiaryModel"
 				@formSubmitted="submitEditBeneficiaryForm"
 				@formClosed="closeEditBeneficiaryModal"
@@ -41,14 +42,12 @@
 			</b-button>
 			<b-field v-if="changeButton" class="mb-5">
 				<p class="control">
-					<button class="button is-danger is-medium">
+					<b-button rounded class="button is-danger is-medium" @click="randomSample">
 						<b-icon icon="exchange-alt" />
-						<span>
-							Change
-						</span>
-					</button>
+					</b-button>
 				</p>
 				<b-numberinput
+					v-model="randomSampleSize"
 					expanded
 					size="is-medium"
 					placeholder="%"
@@ -73,6 +72,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:checkable="withCheckbox"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -131,7 +131,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
@@ -143,6 +143,8 @@ export default {
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
+		withCheckbox: Boolean,
+		columns: Array,
 	},
 
 	components: {
@@ -166,13 +168,12 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "transactionId", label: "Transaction ID" },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "phone", label: "Phone" },
-					{ key: "nationalId", label: "National ID", sortable: true },
-					{ key: "status" },
-					{ key: "value" },
+					{ key: "gender", sortable: true },
+					{ key: "dateOfBirth", sortable: true },
+					{ key: "residencyStatus" },
+					{ key: "vulnerabilities" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -202,6 +203,7 @@ export default {
 				comment: null,
 				justificationForAdding: null,
 			},
+			randomSampleSize: 10,
 		};
 	},
 
@@ -218,7 +220,9 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.table.columns = generateColumns(
+				this.columns.length ? this.columns : this.table.visibleColumns,
+			);
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
 				this.table.currentPage,
@@ -249,6 +253,10 @@ export default {
 				this.table.data[key] = item;
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
+				this.table.data[key].gender = this.prepareGender(item.gender);
+				this.table.data[key].distributed = item.dateDistributed || "none";
+				this.table.data[key].vulnerabilities = this
+					.prepareVulnerabilities(item.vulnerabilityCriteria);
 				if (item.nationalIds.length) {
 					nationalIdIds.push(item.nationalIds);
 				}
@@ -260,7 +268,23 @@ export default {
 
 			this.preparePhoneForTable(phoneIds);
 
+			this.prepareValue();
+
 			this.prepareNationalIdForTable(nationalIdIds);
+		},
+
+		prepareVulnerabilities(vulnerabilities) {
+			let result = "none";
+			if (vulnerabilities) {
+				vulnerabilities.forEach((item) => {
+					if (result === "none") {
+						result = normalizeText(item);
+					} else {
+						result += `, ${normalizeText(item)}`;
+					}
+				});
+			}
+			return result;
 		},
 
 		async preparePhoneForTable(phoneIds) {
@@ -272,6 +296,14 @@ export default {
 					: this.prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
 			});
 			this.table.progress += 15;
+		},
+
+		async prepareValue() {
+			const commodities = await this.getAssistanceCommodities();
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].value = `${commodities[0].value} ${commodities[0].unit}`;
+			});
+			this.resetSortKey += 1;
 		},
 
 		async prepareNationalIdForTable(ids) {
@@ -345,6 +377,49 @@ export default {
 
 		removeAssistance(id) {
 			this.table.data = this.table.data.filter((item) => item.id !== id);
+		},
+
+		prepareGender(gender) {
+			return gender === "F" ? "Female" : "Male";
+		},
+
+		showEdit({ id }) {
+			this.editBeneficiaryModel = this.table.data.find((item) => item.id === id);
+			this.editBeneficiaryModal.isOpened = true;
+		},
+
+		async randomSample() {
+			this.isLoadingList = true;
+			this.table.progress = null;
+
+			this.table.columns = generateColumns(this.table.visibleColumns);
+			await AssistancesService.getListOfRandomBeneficiaries(
+				this.$route.params.assistanceId,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.randomSampleSize,
+				this.table.searchPhrase,
+			).then(async ({ data, totalCount }) => {
+				this.table.progress = 0;
+				this.table.total = totalCount;
+				if (totalCount !== 0) {
+					await this.prepareDataForTable(data);
+				} else {
+					this.table.data = [];
+				}
+			}).catch((e) => {
+				Notification(`Households ${e}`, "is-danger");
+			});
+
+			this.isLoadingList = false;
+		},
+		getAssistanceCommodities() {
+			return AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
 		},
 	},
 };
