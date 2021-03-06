@@ -132,6 +132,7 @@ import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 
@@ -184,8 +185,8 @@ export default {
 				isOpened: false,
 			},
 			addBeneficiaryModel: {
-				beneficiaries: null,
-				justification: null,
+				beneficiaries: [],
+				justification: "",
 			},
 			editBeneficiaryModal: {
 				isOpened: false,
@@ -314,8 +315,14 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		submitAddBeneficiaryForm() {
-			// TODO Add Beneficiaries to Assistance
+		async submitAddBeneficiaryForm(form) {
+			const { beneficiaries, justification } = form;
+			const body = {
+				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
+				justification,
+			};
+			const { assistanceId } = this.$route.params;
+			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body);
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
 		},

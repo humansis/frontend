@@ -157,4 +157,21 @@ export default {
 		});
 		return data;
 	},
+
+	async addBeneficiaryToAssistance(id, body) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${id}/beneficiaries`,
+			method: "PUT",
+			body,
+		});
+		return { data, status };
+	},
+
+	async getBeneficiariesByProject(id, target) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `projects/${id}/beneficiaries?target=${target}`,
+		});
+
+		return { data, totalCount };
+	},
 };
