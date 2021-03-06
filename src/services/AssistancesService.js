@@ -121,8 +121,14 @@ export default {
 		return { data: {}, status: 200 };
 	},
 
-	async updateAssistance(id, body) {
-		console.log(id, body);
-		return { data: {}, status: 200 };
+	async updateAssistanceDateOfDistribution(id, date) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${id}`,
+			method: "PATCH",
+			body: {
+				dateDistribution: date,
+			},
+		});
+		return { data, status };
 	},
 };

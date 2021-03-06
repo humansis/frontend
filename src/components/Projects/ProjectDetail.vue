@@ -3,6 +3,7 @@
 		<ProjectSummary />
 		<Modal
 			can-cancel
+			is-small
 			header="Assistance Detail"
 			:active="assistanceModal.isOpened"
 			@close="closeAssistanceModal"
@@ -78,15 +79,17 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		async editAssistance(body) {
-			await AssistancesService.updateAssistance(body.id, body).then((response) => {
-				if (response.status === 200) {
-					Toast("Assistance Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
+		async editAssistance({ id, dateDistribution }) {
+			const date = this.$moment(dateDistribution).format("YYYY-MM-DD");
+			await AssistancesService.updateAssistanceDateOfDistribution(id, date)
+				.then((response) => {
+					if (response.status === 200) {
+						Toast("Assistance Successfully Updated", "is-success");
+						this.fetchData();
+					}
+				}).catch((e) => {
+					Notification(`Assistance ${e}`, "is-danger");
+				});
 		},
 
 		async removeAssistance(id) {
