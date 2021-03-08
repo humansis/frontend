@@ -76,16 +76,15 @@
 				width="150"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="search"
-						type="is-info"
+						type="is-primary"
 						tooltip="Go To Detail"
 						@click.native="goToSummaryDetail(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="editHousehold(props.row.id)"
 					/>
@@ -116,7 +115,7 @@
 			<template slot="export">
 				<div class="column is-two-fifths">
 					<ExportButton
-						type="is-success"
+						type="is-primary"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 						@exportData="exportHousehold"

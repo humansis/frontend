@@ -27,10 +27,10 @@
 			<b-table-column
 				label="Actions"
 			>
-				<div class="block">
-					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+				<div class="buttons is-right">
+					<ActionButton icon="search" type="is-primary" tooltip="Show Detail" />
 					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
 			<template slot="filterButton">

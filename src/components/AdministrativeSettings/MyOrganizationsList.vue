@@ -28,16 +28,15 @@
 			width="150"
 			centered
 		>
-			<div class="block">
+			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
-					type="is-info"
+					type="is-primary"
 					tooltip="Show Detail"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					type="is-link"
 					tooltip="Edit"
 					@click.native="showEdit(props.row.id)"
 				/>

@@ -28,7 +28,7 @@
 				label="Actions"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="history"
 						type="is-link"
@@ -37,13 +37,12 @@
 					/>
 					<ActionButton
 						icon="search"
-						type="is-link"
+						type="is-primary"
 						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="showEdit(props.row.id)"
 					/>
@@ -59,7 +58,7 @@
 			<template slot="export">
 				<div class="column">
 					<ExportButton
-						type="is-success"
+						type="is-primary"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 					/>

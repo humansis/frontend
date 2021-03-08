@@ -58,7 +58,7 @@
 			</b-field>
 			<ExportButton
 				v-if="exportButton"
-				type="is-success"
+				type="is-primary"
 				class="is-pulled-right"
 				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 				@exportData="exportAssistance"
@@ -95,10 +95,9 @@
 				centered
 				width="110"
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="showEdit(props.row)"
 					/>

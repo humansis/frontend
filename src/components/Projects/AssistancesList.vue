@@ -1,7 +1,7 @@
 <template>
 	<Table
-		title="Upcoming Assistances"
 		has-reset-sort
+		:title="upcoming && 'Upcoming Assistances'"
 		:has-search="!upcoming"
 		:key="resetSortKey"
 		:data="table.data"
@@ -32,22 +32,21 @@
 			width="230"
 			:visible="!upcoming"
 		>
-			<div class="block">
+			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
-					type="is-info"
+					type="is-primary"
 					tooltip="Show Detail"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					type="is-link"
 					tooltip="Edit"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<ActionButton
 					icon="lock"
-					type="is-danger"
+					type="is-warning"
 					tooltip="Lock"
 					@click.native="goToValidateAndLockWithId(props.row.id)"
 				/>
@@ -59,7 +58,7 @@
 					@submitted="$emit('onRemove', $event)"
 				/>
 				<ActionButton
-					icon="copy"
+					icon="print"
 					type="is-dark"
 					tooltip="Print"
 					@click.native="$emit('onPrint', props.row.id)"
@@ -69,7 +68,7 @@
 		<template v-if="!upcoming" #export>
 			<div class="column is-two-fifths">
 				<ExportButton
-					type="is-success"
+					type="is-primary"
 					space-between
 					:formats="{ xlsx: true, csv: true, ods: true}"
 					@exportData="exportAssistance"

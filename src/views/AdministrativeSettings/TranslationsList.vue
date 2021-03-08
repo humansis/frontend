@@ -27,7 +27,7 @@
 				label="Actions"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<SafeDelete
 						tabindex="-1"
 						icon="trash"
