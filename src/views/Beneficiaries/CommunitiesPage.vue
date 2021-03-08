@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Communities</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Communities</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewCommunity"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			:active="communityModal.isOpened"
@@ -18,15 +33,7 @@
 				@formClosed="closeCommunityModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewCommunity"
-		>
-			Add
-		</b-button>
+
 		<CommunitiesList
 			ref="communitiesList"
 			@onRemove="removeCommunity"

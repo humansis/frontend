@@ -1,41 +1,47 @@
 <template>
 	<div>
-		<h2 class="title">Households</h2>
-		<b-dropdown>
-			<b-button
-				class="mb-5"
-				size="is-medium"
-				type="is-danger"
-				icon-left="plus"
-				slot="trigger"
-			>
-				<span>Create</span>
-			</b-button>
-			<b-dropdown-item
-				:value="false"
-				@click="goToImportPage"
-			>
-				<div class="media">
-					<b-icon class="media-left" icon="upload" />
-					<div class="media-content">
-						<h2>Import</h2>
-						<small>Import from file</small>
-					</div>
-				</div>
-			</b-dropdown-item>
-			<b-dropdown-item
-				:value="false"
-				@click="goToCreatePage"
-			>
-				<div class="media">
-					<b-icon class="media-left" icon="user-plus" />
-					<div class="media-content">
-						<h2>Add Beneficiary</h2>
-						<small>Create household form</small>
-					</div>
-				</div>
-			</b-dropdown-item>
-		</b-dropdown>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Households</h1>
+			</div>
+
+			<div class="level-right">
+				<b-dropdown position="is-bottom-left">
+					<b-button
+						type="is-primary"
+						icon-left="plus"
+						slot="trigger"
+					>
+						<span>Create</span>
+					</b-button>
+					<b-dropdown-item
+						:value="false"
+						@click="goToImportPage"
+					>
+						<div class="media">
+							<b-icon class="media-left" icon="upload" />
+							<div class="media-content">
+								<h2>Import</h2>
+								<small>Import from file</small>
+							</div>
+						</div>
+					</b-dropdown-item>
+					<b-dropdown-item
+						:value="false"
+						@click="goToCreatePage"
+					>
+						<div class="media">
+							<b-icon class="media-left" icon="user-plus" />
+							<div class="media-content">
+								<h2>Add Beneficiary</h2>
+								<small>Create household form</small>
+							</div>
+						</div>
+					</b-dropdown-item>
+				</b-dropdown>
+			</div>
+		</div>
+
 		<Table
 			ref="householdList"
 			has-reset-sort

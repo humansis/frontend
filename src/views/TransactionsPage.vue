@@ -1,6 +1,11 @@
 <template>
 	<div>
-		<h2 class="title">Transactions</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Transactions</h1>
+			</div>
+		</div>
+
 		<Table
 			has-reset-sort
 			has-search

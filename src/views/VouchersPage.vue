@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Vouchers</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Vouchers</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewVoucher"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			is-small
@@ -19,15 +34,7 @@
 				@formClosed="closeVoucherModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewVoucher"
-		>
-			Add
-		</b-button>
+
 		<!-- switch between two styles of displaying Batches/Vouchers list -->
 		<BatchList
 			v-if="false"
