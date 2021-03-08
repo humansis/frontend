@@ -1,6 +1,32 @@
+.card-content > .progress-wrapper {
+	position: absolute;
+	top: 0;
+	width: 100%;
+
+	.progress {
+		border-radius: 0;
+		height: .25rem;
+	}
+}
+
 .b-table {
 	.is-hoverable {
 		cursor: pointer;
+	}
+
+	.table th {
+		vertical-align: middle;
+	}
+}
+
+.table-action {
+	&.button.is-light {
+		background-color: transparent;
+
+		&:hover,
+		&:focus {
+			background-color: #eeeeee;
+		}
 	}
 }
 
@@ -50,7 +76,7 @@
 }
 
 .vue2leaflet-map {
-	z-index: 0;
+	z-index: 1;
 }
 
 .vue-multiselect-error {
@@ -62,16 +88,6 @@
 	padding-top: -50px;
 	border: 1px solid #48c774;
 	border-radius: 5px;
-}
-
-.table-action {
-	&.button.is-light {
-		background-color: transparent;
-
-		&:hover, &:focus {
-			background-color: #eeeeee;
-		}
-	}
 }
 
 .multiselect__content {

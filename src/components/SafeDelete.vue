@@ -1,11 +1,11 @@
 <template>
-	<b-tooltip :label="tooltip" :active="isActive">
-		<button :disabled="disabled" class="button is-light table-action" @click="confirmDelete">
-			<b-icon
-				:icon="icon"
-				type="is-danger"
-				size="is-medium"
-			/>
+	<b-tooltip :label="tooltip" :active="isActive" type="is-danger">
+		<button
+			:disabled="disabled"
+			class="button is-small is-danger table-action"
+			@click="confirmDelete"
+		>
+			<b-icon :icon="icon" />
 		</button>
 	</b-tooltip>
 </template>
@@ -15,7 +15,10 @@ export default {
 	name: "SafeDelete",
 
 	props: {
-		icon: String,
+		icon: {
+			type: String,
+			required: true,
+		},
 		entity: String,
 		tooltip: String,
 		id: Number,
@@ -28,7 +31,7 @@ export default {
 
 	computed: {
 		isActive() {
-			return !!(this.tooltip && this.tooltip.length !== 0);
+			return this.tooltip?.length !== 0;
 		},
 	},
 

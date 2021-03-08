@@ -12,7 +12,6 @@
 				@formClosed="closeAssistanceModal"
 			/>
 		</Modal>
-		<h2 class="title">Upcoming Assistances</h2>
 		<AssistancesList
 			upcoming
 			@onShowDetail="showDetail"

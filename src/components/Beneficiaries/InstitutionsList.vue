@@ -52,7 +52,7 @@
 				</div>
 			</b-table-column>
 			<template slot="filterButton">
-				<div class="column">
+				<div class="level-item">
 					<button
 						class="button"
 						slot="trigger"

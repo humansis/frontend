@@ -1,87 +1,85 @@
 <template>
-	<div>
-		<Table
-			has-reset-sort
-			:has-search="!upcoming"
-			:key="resetSortKey"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="onRowClick"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
+	<Table
+		title="Upcoming Assistances"
+		has-reset-sort
+		:has-search="!upcoming"
+		:key="resetSortKey"
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="onRowClick"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
+				:sortable="column.sortable"
+				:key="column.id"
 				v-slot="props"
-				label="Actions"
-				centered
-				width="230"
-				:visible="!upcoming"
 			>
-				<div class="block">
-					<ActionButton
-						icon="search"
-						type="is-info"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						tooltip="Edit"
-						@click.native="showEdit(props.row.id)"
-					/>
-					<ActionButton
-						icon="lock"
-						type="is-danger"
-						tooltip="Lock"
-						@click.native="goToValidateAndLockWithId(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="Assistance"
-						tooltip="Delete"
-						:id="props.row.id"
-						@submitted="$emit('onRemove', $event)"
-					/>
-					<ActionButton
-						icon="copy"
-						type="is-dark"
-						tooltip="Print"
-						@click.native="$emit('onPrint', props.row.id)"
-					/>
-				</div>
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
-			<template v-if="!upcoming" slot="export">
-				<div class="column is-two-fifths">
-					<ExportButton
-						type="is-success"
-						size="is-default"
-						space-between
-						:formats="{ xlsx: true, csv: true, ods: true}"
-						@exportData="exportAssistance"
-					/>
-				</div>
-			</template>
-			<template slot="progress">
-				<b-progress :value="table.progress" format="percent" />
-			</template>
-		</Table>
-	</div>
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			centered
+			width="230"
+			:visible="!upcoming"
+		>
+			<div class="block">
+				<ActionButton
+					icon="search"
+					type="is-info"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					type="is-link"
+					tooltip="Edit"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<ActionButton
+					icon="lock"
+					type="is-danger"
+					tooltip="Lock"
+					@click.native="goToValidateAndLockWithId(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					entity="Assistance"
+					tooltip="Delete"
+					:id="props.row.id"
+					@submitted="$emit('onRemove', $event)"
+				/>
+				<ActionButton
+					icon="copy"
+					type="is-dark"
+					tooltip="Print"
+					@click.native="$emit('onPrint', props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+		<template v-if="!upcoming" #export>
+			<div class="column is-two-fifths">
+				<ExportButton
+					type="is-success"
+					space-between
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@exportData="exportAssistance"
+				/>
+			</div>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+	</Table>
 </template>
 
 <script>

@@ -1,11 +1,7 @@
 <template>
-	<b-tooltip :label="tooltip" :active="isActive">
-		<button class="button is-light table-action">
-			<b-icon
-				:icon="icon"
-				:type="type"
-				size="is-medium"
-			/>
+	<b-tooltip :label="tooltip" :active="isActive" :type="type">
+		<button class="button is-small table-action" :class="type">
+			<b-icon :icon="icon" />
 		</button>
 	</b-tooltip>
 </template>
@@ -15,14 +11,17 @@ export default {
 	name: "ActionButton",
 
 	props: {
-		icon: String,
+		icon: {
+			type: String,
+			required: true,
+		},
 		type: String,
 		tooltip: String,
 	},
 
 	computed: {
 		isActive() {
-			return !!(this.tooltip && this.tooltip.length !== 0);
+			return !!this.tooltip?.length;
 		},
 	},
 };

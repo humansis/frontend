@@ -1,18 +1,28 @@
 <template>
-	<div>
-		<slot name="table-header">
-			<div class="columns">
-				<slot name="search">
-					<Search v-if="hasSearch" class="column is-two-fifths" @search="$emit('search', $event)" />
-				</slot>
-				<slot name="filterButton" />
-				<slot name="export" />
+	<CardComponent class="has-table" :title="title">
+		<slot name="progress">
+			<b-progress	value="100" format="percent" />
+		</slot>
+		<slot name="tableHeader">
+			<div class="level p-4 has-border-bottom">
+				<div class="level-left">
+					<slot name="search">
+						<div class="level-item">
+							<Search
+								v-if="hasSearch"
+								@search="$emit('search', $event)"
+							/>
+						</div>
+					</slot>
+					<slot name="filterButton" />
+					<slot name="export" />
+				</div>
 				<slot name="resetSort">
-					<div class="column">
+					<div class="level-right">
 						<b-button
 							v-if="hasResetSort"
 							icon-left="eraser"
-							class="is-pulled-right reset-sort-button is-small is-light mt-2"
+							class="reset-sort-button is-small"
 							@click="$emit('resetSort')"
 						>
 							Reset Sort
@@ -22,7 +32,6 @@
 			</div>
 		</slot>
 		<slot name="filter" />
-		<slot name="progress" />
 		<b-table
 			striped
 			hoverable
@@ -53,35 +62,37 @@
 			@sort="$emit('sorted', $event)"
 		>
 			<slot />
-			<template v-if="paginated" slot="bottom-left">
+			<template v-if="paginated" #bottom-left>
 				<p style="width: 120px;">Per Page: </p>
 				<MultiSelect
 					hide-selected
-					deselect-label=""
-					select-label=""
-					selected-label=""
+					open-direction="above"
 					:value="perPage"
 					:options="options.perPageNumbers"
 					:allow-empty="false"
+					:show-labels="false"
 					@input="onChangePerPage"
 				/>
 			</template>
 		</b-table>
-	</div>
+	</CardComponent>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
+import CardComponent from "@/components/CardComponent";
 import Search from "@/components/Search";
 
 export default {
 	name: "Table",
 
 	components: {
+		CardComponent,
 		Search,
 	},
 
 	props: {
+		title: String,
 		data: Array,
 		total: Number,
 		currentPage: Number,

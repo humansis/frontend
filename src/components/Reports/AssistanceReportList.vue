@@ -34,32 +34,34 @@
 				</div>
 			</b-table-column>
 			<template slot="filterButton">
-				<div class="ml-1 columns box" style="width: 80%">
-					<div class="column is-half">
-						<label class="typo__label">Projects</label>
-						<MultiSelect
-							v-model="selectedProjectsForFilter"
-							tag-placeholder="Add this as new tag"
-							placeholder="Search"
-							label="name"
-							track-by="id"
-							:loading="isProjectsLoading"
-							:options="projects"
-							@input="fetchAssistance"
-						/>
-					</div>
-					<div class="column is-half">
-						<label class="typo__label">Assistance</label>
-						<MultiSelect
-							v-model="selectedAssistanceForFilter"
-							tag-placeholder="Add this as new tag"
-							placeholder="Search"
-							label="name"
-							track-by="id"
-							:loading="isAssistanceLoading"
-							:options="options.assistance"
-							@input="fetchAssistancesReports"
-						/>
+				<div class="level-item">
+					<div class="ml-1 columns box" style="width: 80%">
+						<div class="column is-half">
+							<label class="typo__label">Projects</label>
+							<MultiSelect
+								v-model="selectedProjectsForFilter"
+								tag-placeholder="Add this as new tag"
+								placeholder="Search"
+								label="name"
+								track-by="id"
+								:loading="isProjectsLoading"
+								:options="projects"
+								@input="fetchAssistance"
+							/>
+						</div>
+						<div class="column is-half">
+							<label class="typo__label">Assistance</label>
+							<MultiSelect
+								v-model="selectedAssistanceForFilter"
+								tag-placeholder="Add this as new tag"
+								placeholder="Search"
+								label="name"
+								track-by="id"
+								:loading="isAssistanceLoading"
+								:options="options.assistance"
+								@input="fetchAssistancesReports"
+							/>
+						</div>
 					</div>
 				</div>
 			</template>
