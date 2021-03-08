@@ -15,7 +15,18 @@
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
 				@select="selectTypeOfLocation"
-			/>
+			>
+				<template slot="singleLabel" slot-scope="props">
+					<div class="option__desc">
+						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+					</div>
+				</template>
+				<template slot="option" slot-scope="props">
+					<div class="option__desc">
+						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+					</div>
+				</template>
+			</MultiSelect>
 		</b-field>
 		<div v-if="campSelected">
 			<b-field
@@ -105,6 +116,7 @@ import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -153,10 +165,16 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async fetchLocationsTypes() {
 			this.locationTypesLoading = true;
 			await BeneficiariesService.getListOfLocationsTypes()
-				.then((result) => { this.options.typeOfLocation = result.data; })
+				.then((result) => {
+					this.options.typeOfLocation = result.data;
+				})
 				.catch((e) => {
 					Notification(`Location Types ${e}`, "is-danger");
 				});

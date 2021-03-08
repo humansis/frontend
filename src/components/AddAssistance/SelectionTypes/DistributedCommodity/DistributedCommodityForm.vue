@@ -160,18 +160,23 @@ export default {
 		formModel: {
 			modality: { required },
 			type: { required },
+			// eslint-disable-next-line func-names
 			currency: { required: requiredIf(function () {
 				return this.displayedFields.currency;
 			}) },
+			// eslint-disable-next-line func-names
 			unit: { required: requiredIf(function () {
 				return this.displayedFields.unit;
 			}) },
+			// eslint-disable-next-line func-names
 			quantity: { required: requiredIf(function () {
 				return this.displayedFields.quantity;
 			}) },
+			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
 			}) },
+			// eslint-disable-next-line func-names
 			totalValueOfBooklet: { required: requiredIf(function () {
 				return this.displayedFields.totalValueOfBooklet;
 			}) },

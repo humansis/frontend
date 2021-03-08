@@ -3,6 +3,11 @@ export const normalizeText = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
+export const normalizeCountrySpecifics = (text = "") => text
+	.replace(/([A-Z]+[A-Z])/g, " $1")
+	.replace(/(_)/g, " ")
+	.replace(/^.| ./g, (str) => str.toUpperCase());
+
 export const normalizeProjectName = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());

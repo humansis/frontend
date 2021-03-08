@@ -52,7 +52,18 @@
 					placeholder="Click to select..."
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
-				/>
+				>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
 			</b-field>
 
 			<b-field label="Phone">
@@ -234,6 +245,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "InstitutionForm",
@@ -298,6 +310,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async mapSelects() {
 			const { phonePrefix, type, nationalCardType, phoneType } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
