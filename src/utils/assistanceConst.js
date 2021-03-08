@@ -40,6 +40,18 @@ const BUSINESS_GRANT = "Business Grant";
 const QR_CODE_VOUCHER = "QR Code Voucher";
 const PAPER_VOUCHER = "Paper Voucher";
 
+// Create a new criteria - fields types
+const GENDER = "gender";
+const DATE = "date";
+const RESIDENCY_STATUS = "residencyStatus";
+const BOOLEAN = "boolean";
+const LIVELIHOOD = "livelihood";
+const DOUBLE = "double";
+const INTEGER = "integer";
+const LOCATION = "location";
+const LOCATION_TYPE = "locationType";
+const STRING = "string";
+
 export default {
 	TARGET: {
 		INSTITUTION,
@@ -79,5 +91,17 @@ export default {
 		BUSINESS_GRANT,
 		QR_CODE_VOUCHER,
 		PAPER_VOUCHER,
+	},
+	FIELD_TYPE: {
+		GENDER,
+		DATE,
+		RESIDENCY_STATUS,
+		BOOLEAN,
+		LIVELIHOOD,
+		DOUBLE,
+		INTEGER,
+		LOCATION,
+		LOCATION_TYPE,
+		STRING,
 	},
 };

@@ -33,6 +33,27 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistanceSelectionCriteriaTargets() {
+		const { data: { data, totalCount } } = await fetcher({ uri: "selection-criteria/targets" });
+		return { data, totalCount };
+	},
+
+	async getAssistanceSelectionCriteriaFields(targetCode) {
+		const { data: { data, totalCount } } = await fetcher(
+
+			{ uri: `selection-criteria/targets/${targetCode}/fields` },
+		);
+		return { data, totalCount };
+	},
+
+	async getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
+		const { data: { data, totalCount } } = await fetcher(
+
+			{ uri: `selection-criteria/targets/${targetCode}/fields/${fieldCode}/conditions` },
+		);
+		return { data, totalCount };
+	},
+
 	async getListOfProjectAssistances(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
