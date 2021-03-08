@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field label="First Name">
-				<b-input v-model="formModel.firstName" disabled />
+				<b-input v-model="formModel.givenName" disabled />
 			</b-field>
 
 			<b-field label="Family Name">

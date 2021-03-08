@@ -51,6 +51,12 @@
 						tooltip="Lock"
 						@click.native="goToValidateAndLockWithId(props.row.id)"
 					/>
+					<ActionButton
+						icon="lock"
+						type="is-link"
+						tooltip="Detail"
+						@click.native="goToDetail(props.row.id)"
+					/>
 					<SafeDelete
 						icon="trash"
 						entity="Assistance"
@@ -282,12 +288,22 @@ export default {
 			this.onRowClick(assistance);
 		},
 
+		goToDetail(id) {
+			this.$router.push({
+				name: "AssistanceDetail",
+				params: {
+					assistanceId: id,
+				},
+			});
+		},
+
 		onRowClick(assistance) {
 			if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
 				this.addAssistanceToState(assistance);
-				this.$router.push({ name: "Assistance",
+				this.$router.push({
+					name: "Assistance",
 					params: {
 						assistanceId: assistance.id,
 					},
