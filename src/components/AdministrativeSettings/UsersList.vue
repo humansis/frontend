@@ -60,7 +60,6 @@
 				<div class="column">
 					<ExportButton
 						type="is-success"
-						size="is-default"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 					/>

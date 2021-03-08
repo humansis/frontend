@@ -117,7 +117,6 @@
 				<div class="column is-two-fifths">
 					<ExportButton
 						type="is-success"
-						size="is-default"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 						@exportData="exportHousehold"

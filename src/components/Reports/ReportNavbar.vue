@@ -9,7 +9,6 @@
 		<ExportButton
 			class="column m-2"
 			type="is-success"
-			size="is-default"
 			space-between
 			:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 		/>
