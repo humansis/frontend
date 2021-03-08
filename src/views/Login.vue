@@ -98,8 +98,16 @@ export default {
 		}),
 	},
 
+	mounted() {
+		this.$store.commit("fullPage", true);
+	},
+
 	beforeCreate() {
 		document.documentElement.classList.add("layout-center");
+	},
+
+	beforeDestroy() {
+		this.$store.commit("fullPage", false);
 	},
 
 	methods: {

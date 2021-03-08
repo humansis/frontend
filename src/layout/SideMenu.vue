@@ -1,21 +1,16 @@
 <template>
-	<aside>
-		<b-sidebar
-			fullheight
-			open
-			expand-on-hover
-			reduce
-			:fullwidth="false"
-			:overlay="false"
-			:right="false"
-			:can-cancel="false"
-		>
-			<div class="m-2">
-				<span class="icon">
-					<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
-				</span>
-				<b-menu class="mt-3">
-					<b-menu-list label="Menu">
+	<aside
+		v-show="isAsideVisible"
+		class="aside is-placed-left"
+		:class="{'is-expanded': isAsideExpanded}"
+	>
+		<div ref="container" class="aside-container">
+			<div class="image">
+				<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
+			</div>
+			<div class="menu">
+				<b-menu>
+					<b-menu-list>
 						<b-menu-item
 							label="Home"
 							icon="home"
@@ -129,12 +124,27 @@
 					</b-menu-list>
 				</b-menu>
 			</div>
-		</b-sidebar>
+		</div>
 	</aside>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-	name: "SideBar",
+	name: "SideMenu",
+
+	computed: {
+		...mapState([
+			"isAsideVisible",
+			"isAsideExpanded",
+		]),
+	},
+
+	created() {
+		if (this.isAsideExpanded) {
+			this.$store.commit("asideStateToggle");
+		}
+	},
 };
 </script>

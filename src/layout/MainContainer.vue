@@ -5,12 +5,10 @@
 			:active="this.isAppLoading"
 			:can-cancel="false"
 		/>
+		<NavBar />
 		<SideMenu />
-		<section class="main-content is-fullheight">
-			<div class="container">
-				<NavBar />
-				<router-view />
-			</div>
+		<section class="section">
+			<router-view />
 		</section>
 	</div>
 </template>
@@ -67,9 +65,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.main-content {
-	margin-left: 60px;
-}
-</style>

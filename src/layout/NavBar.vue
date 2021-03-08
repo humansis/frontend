@@ -1,12 +1,16 @@
 <template>
-	<b-navbar>
-		<template slot="start">
-			<b-navbar-item>
-				<Breadcrumbs />
-			</b-navbar-item>
+	<b-navbar v-show="isNavBarVisible" id="navbar-main" class="navbar is-fixed-top">
+		<template #brand>
+			<a @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
+				<b-icon :icon="menuToggleIcon" />
+			</a>
 		</template>
 
-		<template slot="end">
+		<template #start>
+			<Breadcrumbs />
+		</template>
+
+		<template #end>
 			<b-navbar-item>
 				<b-tooltip
 					multilined
@@ -133,7 +137,14 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["updateCountry", "updateLanguage"]),
+		...mapActions([
+			"updateCountry",
+			"updateLanguage",
+		]),
+
+		menuToggle() {
+			this.$store.commit("asideStateToggle");
+		},
 
 		handleChangeCountry(country) {
 			this.updateCountry(country);
@@ -201,7 +212,20 @@ export default {
 	},
 
 	computed: {
-		...mapState(["country", "language"]),
+		...mapState([
+			"isNavBarVisible",
+			"isAsideExpanded",
+			"country",
+			"language",
+		]),
+
+		menuToggleIcon() {
+			return this.isAsideExpanded ? "arrow-left" : "arrow-right";
+		},
+
+		toggleTooltip() {
+			return this.isAsideExpanded ? "Collapse" : "Expand";
+		},
 	},
 
 };
