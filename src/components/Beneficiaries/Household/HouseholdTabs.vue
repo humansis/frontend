@@ -182,7 +182,6 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
-			console.log(this.household);
 			const householdBody = {
 				iso3: this.country.iso3,
 				livelihood: livelihood.code,

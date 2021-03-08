@@ -368,7 +368,6 @@ export default {
 		async mapDetailOfHouseholdToFormModel() {
 			const countryAnswers = await this
 				.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
-			console.log(countryAnswers);
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
