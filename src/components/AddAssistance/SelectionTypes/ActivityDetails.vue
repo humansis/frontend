@@ -54,11 +54,24 @@ import { requiredIf } from "vuelidate/lib/validators";
 export default {
 	name: "ActivityDetails",
 
+	data() {
+		return {
+			formModel: {
+				activityDescription: "",
+				householdsTargeted: 0,
+				individualsTargeted: 0,
+			},
+		};
+	},
+
 	mixins: [validation],
 
 	props: {
-		formModel: Object,
 		visible: Object,
+	},
+
+	updated() {
+		this.$emit("updatedData", this.formModel);
 	},
 
 	validations: {

@@ -39,7 +39,10 @@
 				/>
 			</b-field>
 
-			<b-field label="Value">
+			<b-field
+				v-if="fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION"
+				label="Value"
+			>
 				<b-datepicker
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
 					v-model="formModel.value"
@@ -86,7 +89,7 @@
 			<LocationForm
 				v-if="fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION"
 				ref="locationForm"
-				:form-model="formModel"
+				:form-model="admsModel"
 			/>
 
 			<b-field label="Score Weight">
@@ -134,6 +137,12 @@ export default {
 	data() {
 		return {
 			consts,
+			admsModel: {
+				adm1Id: null,
+				adm2Id: null,
+				adm3Id: null,
+				adm4Id: null,
+			},
 			options: {
 				criteriaTargets: [],
 				criteria: [],
@@ -289,6 +298,24 @@ export default {
 		},
 
 		submitForm() {
+			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION) {
+				console.log(this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION);
+				const { adm1Id, adm2Id, adm3Id, adm4Id } = this.admsModel;
+				const prefix = "locationId-";
+
+				if (adm4Id) {
+					this.formModel.value = prefix + adm4Id.locationId;
+				} else if (adm3Id) {
+					this.formModel.value = prefix + adm3Id.locationId;
+				} else if (adm2Id) {
+					this.formModel.value = prefix + adm2Id.locationId;
+				} else if (adm1Id) {
+					this.formModel.value = prefix + adm1Id.locationId;
+				}
+			}
+
+			console.log(this.formModel);
+
 			this.$emit("formSubmitted", this.formModel);
 		},
 

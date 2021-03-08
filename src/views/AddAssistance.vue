@@ -6,6 +6,7 @@
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetType = $event"
 					@showComponent="onShowComponent"
+					ref="assistanceForm"
 				/>
 			</div>
 			<div class="column is-three-fifths">
@@ -22,13 +23,13 @@
 					v-if="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
-					:form-model="activityDetailsForm"
 					:visible="visibleActivityDetails"
+					@updatedData="fetchActivityDetails"
 				/>
 				<TargetTypeSelect
 					v-if="visibleComponents.communities || visibleComponents.institutions"
-					:form-model="targetTypesForm"
 					:visible="targetTypeSelectVisible"
+					@updatedData="fetchTargetType"
 				/>
 			</div>
 		</div>
@@ -43,8 +44,8 @@
 import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
 import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
-import AssistancesService from "@/services/AssistancesService";
-import { Toast } from "@/utils/UI";
+// import AssistancesService from "@/services/AssistancesService";
+// import { Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 
@@ -61,18 +62,6 @@ export default {
 
 	data() {
 		return {
-			newAssistanceForm: null,
-			selectionCriteria: null,
-			distributedCommodity: null,
-			activityDetailsForm: {
-				activityDescription: "",
-				householdsTargeted: 0,
-				individualsTargeted: 0,
-			},
-			targetTypesForm: {
-				communities: [],
-				institutions: [],
-			},
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -82,18 +71,26 @@ export default {
 				householdsTargeted: false,
 				individualsTargeted: false,
 			},
-			assistanceBody: {
-				adm1: null,
-				adm2: null,
-				adm3: null,
-				adm4: null,
-				dateOfAssistance: null,
-				target: null,
-				minimumSelectionScore: 0,
-				groups: [],
-				distributedCommodity: [],
-			},
 			targetType: "",
+			assistanceBody: {
+				dateDistribution: "",
+				description: "",
+				householdTargeted: null,
+				individualsTargeted: null,
+				projectId: Number(this.$route.params.projectId),
+				target: "",
+				type: "",
+				sector: "",
+				subsector: "",
+				locationId: null,
+				commodities: [],
+				selectionCriteria: [],
+				communities: null,
+				institutions: null,
+				threshold: 0,
+				completed: false,
+				validated: false,
+			},
 		};
 	},
 
@@ -116,13 +113,17 @@ export default {
 	methods: {
 		async submitAddingAssistance() {
 			if (this.$refs.assistanceForm.submit()) {
-				return;
+				console.log("assistanceBody");
+				console.log(this.assistanceBody);
 			}
+
+			/*
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
 				}
 			});
+			*/
 		},
 
 		onShowComponent(components) {
@@ -136,37 +137,65 @@ export default {
 			this.$router.go(-1);
 		},
 
-		fetchNewAssistanceForm(formModel) {
-			if (formModel) {
-				this.assistanceBody = {
-					...this.assistanceBody,
-					adm1: formModel.adm1,
-					adm2: formModel.adm2,
-					adm3: formModel.adm3,
-					adm4: formModel.adm4,
-					dateOfAssistance: formModel.dateOfAssistance.toISOString(),
-					target: formModel.target,
-				};
-			}
+		fetchNewAssistanceForm(data) {
+			const {
+				assistanceType,
+				dateOfAssistance,
+				locationId,
+				sector,
+				subsector,
+				targetType,
+			} = data;
+
+			this.assistanceBody = {
+				...this.assistanceBody,
+				dateDistribution: dateOfAssistance.toISOString(),
+				target: targetType?.code,
+				type: assistanceType?.code,
+				sector: sector?.code,
+				subsector: subsector?.code,
+				locationId,
+			};
 		},
 
-		fetchSelectionCriteria(data, minimumSelectionScore) {
-			if (data) {
-				this.assistanceBody = {
-					...this.assistanceBody,
-					minimumSelectionScore,
-					groups: data,
-				};
-			}
+		fetchSelectionCriteria(selectionCriteria, minimumSelectionScore) {
+			this.assistanceBody = {
+				...this.assistanceBody,
+				selectionCriteria,
+				threshold: minimumSelectionScore,
+			};
 		},
 
-		fetchDistributedCommodity(data) {
-			if (data) {
-				this.assistanceBody = {
-					...this.assistanceBody,
-					distributedCommodity: data,
-				};
-			}
+		fetchDistributedCommodity(commodities) {
+			this.assistanceBody = {
+				...this.assistanceBody,
+				commodities,
+			};
+		},
+
+		fetchActivityDetails(data) {
+			const {
+				activityDescription: description,
+				householdsTargeted: householdTargeted,
+				individualsTargeted,
+			} = data;
+
+			this.assistanceBody = {
+				...this.assistanceBody,
+				description,
+				householdTargeted,
+				individualsTargeted,
+			};
+		},
+
+		fetchTargetType(data) {
+			const { communities, institutions } = data;
+
+			this.assistanceBody = {
+				...this.assistanceBody,
+				communities,
+				institutions,
+			};
 		},
 	},
 };

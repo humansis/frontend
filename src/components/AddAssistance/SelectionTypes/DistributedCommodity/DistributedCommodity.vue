@@ -107,8 +107,15 @@ export default {
 	},
 
 	updated() {
+		const commodities = this.modifiedTableData.map(({ type, unit, quantity, description }) => ({
+			modalityType: type,
+			unit,
+			value: quantity,
+			description,
+		}));
+
 		if (this.table.data.length) {
-			this.$emit("updatedData", this.table.data);
+			this.$emit("updatedData", commodities);
 		}
 	},
 

@@ -76,12 +76,15 @@ export default {
 	mixins: [validation, addressHelper],
 
 	props: {
-		formModel: Object,
 		visible: Object,
 	},
 
 	data() {
 		return {
+			formModel: {
+				communities: [],
+				institutions: [],
+			},
 			options: {
 				communities: [],
 				institutions: [],
@@ -108,6 +111,21 @@ export default {
 			communities: { required },
 			institutions: { required },
 		},
+	},
+
+	updated() {
+		const communities = [];
+		const institutions = [];
+
+		if (this.formModel.communities.length) {
+			this.formModel.communities.forEach(({ id }) => communities.push(id));
+		}
+
+		if (this.formModel.institutions.length) {
+			this.formModel.institutions.forEach(({ id }) => institutions.push(id));
+		}
+
+		this.$emit("updatedData", { communities, institutions });
 	},
 
 	mounted() {
@@ -145,21 +163,27 @@ export default {
 		async prepareCommunitiesForSelect(data) {
 			const filledData = [];
 			const addressesIds = [];
+
 			data.forEach((item, key) => {
 				filledData[key] = item;
 				addressesIds.push(item.addressId);
 			});
+
 			const mappedLocations = await this.getPreparedLocations(addressesIds);
+
 			filledData.forEach((item, key) => {
 				filledData[key].name = this.prepareEntityForTable(item.addressId, mappedLocations, "locationName");
 			});
+
 			return filledData;
 		},
 
 		prepareInstitutionsForSelect(data) {
 			const groups = [];
+
 			data.forEach((item) => {
 				const group = groups.find((g) => g.name === item.type);
+
 				if (!group) {
 					groups.push({
 						name: item.type,
@@ -171,6 +195,7 @@ export default {
 					groups[index].data.push(item);
 				}
 			});
+
 			return groups;
 		},
 	},

@@ -154,7 +154,7 @@ export default {
 	components: { LocationForm },
 
 	updated() {
-		// TODO Emit only if form is validated else emit false
+		this.setLocationId();
 		this.$emit("updatedData", this.formModel);
 	},
 
@@ -163,15 +163,16 @@ export default {
 	data() {
 		return {
 			formModel: {
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
+				adm1Id: null,
+				adm2Id: null,
+				adm3Id: null,
+				adm4Id: null,
 				dateOfAssistance: new Date(),
-				sector: [],
-				subsector: [],
-				targetType: [],
-				assistanceType: [],
+				sector: null,
+				subsector: null,
+				targetType: null,
+				assistanceType: null,
+				locationId: null,
 			},
 			options: {
 				sectors: [],
@@ -190,18 +191,11 @@ export default {
 
 	validations: {
 		formModel: {
-			target: {
-				required,
-			},
-			adm1: {},
-			adm2: {},
-			adm3: {},
-			adm4: {},
-			dateOfAssistance: {},
-			sector: {},
-			subsector: {},
-			targetType: {},
-			assistanceType: {},
+			dateOfAssistance: { required },
+			sector: { required },
+			subsector: { required },
+			targetType: { required },
+			assistanceType: { required },
 		},
 	},
 
@@ -212,12 +206,26 @@ export default {
 	methods: {
 		submit() {
 			this.$v.$touch();
-			const validLocationForm = this.$refs.locationForm.submitLocationForm();
-			return this.$v.$invalid || validLocationForm;
+			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
+			return !this.$v.$invalid || !invalidLocationForm;
 		},
 
 		normalizeText(text) {
 			return normalizeText(text);
+		},
+
+		setLocationId() {
+			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
+
+			if (adm4Id) {
+				this.formModel.locationId = adm4Id.locationId;
+			} else if (adm3Id) {
+				this.formModel.locationId = adm3Id.locationId;
+			} else if (adm2Id) {
+				this.formModel.locationId = adm2Id.locationId;
+			} else if (adm1Id) {
+				this.formModel.locationId = adm1Id.locationId;
+			}
 		},
 
 		onSectorSelect({ code }) {

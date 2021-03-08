@@ -21,7 +21,7 @@
 				<div class="content">
 					<Table
 						:paginated="false"
-						:data="data"
+						:data="criteriaGroups"
 					>
 						<template v-for="(column) in table.columns">
 							<b-table-column
@@ -85,6 +85,20 @@ export default {
 		groupName() {
 			return `Group ${(this.groupId + 1)}`;
 		},
+
+		criteriaGroups() {
+			const criteriaGroups = this.data.map((
+				{ criteria, criteriaTarget, value, scoreWeight, condition },
+			) => ({
+				criteriaTarget: criteriaTarget?.value,
+				criteria: criteria?.code,
+				value: value?.code || value,
+				scoreWeight,
+				condition: condition?.code,
+			}));
+
+			return criteriaGroups || [];
+		},
 	},
 
 	data() {
@@ -96,7 +110,6 @@ export default {
 					{ field: "condition", label: "Condition" },
 					{ field: "value", label: "Value", type: "customValue" },
 					{ field: "scoreWeight", label: "Score Weight" },
-					{ field: "action", label: "Action" },
 				],
 			},
 		};

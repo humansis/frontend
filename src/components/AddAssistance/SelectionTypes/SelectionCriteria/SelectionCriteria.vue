@@ -40,7 +40,7 @@
 		</Modal>
 		<div class="mb-2">
 			<SelectionCriteriaGroup
-				v-for="(group, key) in groups"
+				v-for="(group, key) of groups"
 				:data="group.data"
 				:key="key"
 				:group-id="key"
@@ -118,7 +118,6 @@ export default {
 				scoreWeight: 1,
 			},
 			groups: [],
-			maxGroupId: 0,
 			detailModal: {
 				isOpened: false,
 			},
@@ -128,8 +127,23 @@ export default {
 	},
 
 	updated() {
-		if (this.groups.length > 0) {
-			this.$emit("updatedData", this.groups, this.minimumSelectionScore);
+		if (this.groups.length) {
+			const criteria = [];
+
+			this.groups.forEach(({ data }, index) => {
+				data.forEach(({ condition, scoreWeight, value, criteriaTarget }) => {
+					criteria.push({
+						group: index,
+						target: criteriaTarget?.code,
+						field: criteria?.code,
+						condition,
+						value: value?.code || value,
+						weight: scoreWeight,
+					});
+				});
+			});
+
+			this.$emit("updatedData", criteria, this.minimumSelectionScore);
 		}
 	},
 
@@ -165,9 +179,8 @@ export default {
 			this.groups.splice(key, 1);
 		},
 
-		showDetail(criteria) {
-			// TODO rename attribs
-			this.criteriaGroupData = criteria;
+		showDetail(criteriaGroups) {
+			this.criteriaGroupData = criteriaGroups;
 			this.detailModal.isOpened = true;
 		},
 
