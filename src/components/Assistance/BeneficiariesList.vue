@@ -46,31 +46,31 @@
 						<b-icon icon="exchange-alt" />
 					</b-button>
 				</p>
-				<b-numberinput
+				<b-input
 					v-model="randomSampleSize"
-					expanded
+					type="number"
 					size="is-medium"
 					placeholder="%"
+					min="1"
+					custom-class="has-text-centered"
+					max="100"
 					controls-position="compact"
 					controls-alignment="right"
 				/>
+				<b-button disabled size="is-medium">
+					<span class="is-size-3">%</span>
+				</b-button>
 			</b-field>
-			<ExportButton
-				v-if="exportButton"
-				type="is-success"
-				size="is-default"
-				class="is-pulled-right"
-				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-				@exportData="exportAssistance"
-			/>
 		</div>
 		<Table
 			has-reset-sort
 			has-search
+			:paginated="!table.customPerPage"
 			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
+			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
 			:checkable="withCheckbox"
 			@clicked="showDetail"
@@ -89,6 +89,17 @@
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
+			</template>
+			<template slot="export">
+				<div class="column">
+					<ExportButton
+						v-if="exportButton"
+						type="is-success"
+						size="is-default"
+						:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+						@exportData="exportAssistance"
+					/>
+				</div>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -144,7 +155,7 @@ export default {
 		changeButton: Boolean,
 		exportButton: Boolean,
 		withCheckbox: Boolean,
-		columns: Array,
+		customColumns: Array,
 	},
 
 	components: {
@@ -181,6 +192,7 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
+				customPerPage: null,
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -216,17 +228,18 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
+			this.table.data = [];
 
 			this.table.columns = generateColumns(
-				this.columns.length ? this.columns : this.table.visibleColumns,
+				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
 			);
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
-				this.table.currentPage,
-				this.perPage,
+				page || this.table.currentPage,
+				size || this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
@@ -388,32 +401,6 @@ export default {
 			this.editBeneficiaryModal.isOpened = true;
 		},
 
-		async randomSample() {
-			this.isLoadingList = true;
-			this.table.progress = null;
-
-			this.table.columns = generateColumns(this.table.visibleColumns);
-			await AssistancesService.getListOfRandomBeneficiaries(
-				this.$route.params.assistanceId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.randomSampleSize,
-				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
-				this.table.progress = 0;
-				this.table.total = totalCount;
-				if (totalCount !== 0) {
-					await this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
-				}
-			}).catch((e) => {
-				Notification(`Households ${e}`, "is-danger");
-			});
-
-			this.isLoadingList = false;
-		},
 		getAssistanceCommodities() {
 			return AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => data)
@@ -421,6 +408,23 @@ export default {
 					Notification(`Commodities ${e}`, "is-danger");
 				});
 		},
+
+		async randomSample() {
+			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
+			const randomPage = this.rnd(1, this.table.total / size);
+			this.table.customPerPage = size;
+			await this.fetchData(randomPage, size);
+		},
+
+		rnd(a, b) {
+			return Math.floor((b - a + 1) * Math.random()) + a;
+		},
 	},
 };
 </script>
+
+<style scoped>
+.input-text-center input {
+	text-align: center;
+}
+</style>

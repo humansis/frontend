@@ -44,7 +44,7 @@
 			:checkable="checkable"
 			:data="data"
 			:total="total"
-			:per-page="perPage"
+			:per-page="customPerPage || perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
@@ -104,6 +104,10 @@ export default {
 		hasSearch: {
 			type: Boolean,
 			default: false,
+		},
+		customPerPage: {
+			type: Number,
+			default: 10,
 		},
 	},
 

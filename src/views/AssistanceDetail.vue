@@ -26,7 +26,7 @@
 			export-button
 			add-button
 			with-checkbox
-			:columns="columns"
+			:custom-columns="columns"
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
 		/>
@@ -38,14 +38,6 @@
 					@click="closeAssistance"
 				>
 					Close
-				</b-button>
-				<b-button
-					icon-left="save"
-					type="is-danger"
-					class="flex-end ml-5"
-					@click="offlineMode"
-				>
-					Offline Mode
 				</b-button>
 			</div>
 		</div>
@@ -130,15 +122,6 @@ export default {
 					this.$buefy.toast.open(`Nice`);
 				},
 			});
-		},
-
-		async offlineMode() {
-			console.log(this.$refs.assistanceSummary.assistance);
-			console.log(this.$refs.assistanceSummary.project);
-			console.log(this.$refs.beneficiaries.table.totalCount);
-			console.log(await this.fetchData());
-			// const id = this.$route.para
-			// localStorage.setItem("beneficiary-");
 		},
 
 		async fetchData() {
