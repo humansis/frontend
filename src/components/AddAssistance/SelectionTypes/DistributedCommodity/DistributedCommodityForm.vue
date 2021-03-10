@@ -201,8 +201,6 @@ export default {
 		},
 
 		async getFormFieldsToShow(code) {
-			console.log(code.length, consts.COMMODITY.MOBILE_MONEY.length);
-
 			switch (code) {
 				case consts.COMMODITY.CASH:
 				case consts.COMMODITY.SMARDCARD:
@@ -215,7 +213,6 @@ export default {
 						currency: true,
 						quantity: true,
 					};
-					console.log(`1`);
 					break;
 				case consts.COMMODITY.FOOD_RATIONS:
 				case consts.COMMODITY.READY_TO_EAT_RATIONS:
@@ -235,7 +232,6 @@ export default {
 						quantity: true,
 						description: true,
 					};
-					console.log(`2`);
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
 					this.displayedFields = {
@@ -245,7 +241,6 @@ export default {
 						unit: true,
 						quantity: true,
 					};
-					console.log(`3`);
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
 				case consts.COMMODITY.PAPER_VOUCHER:
@@ -258,7 +253,6 @@ export default {
 					};
 					break;
 				default:
-					console.log(`4`);
 					return this.displayedFields;
 			}
 			return this.displayedFields;

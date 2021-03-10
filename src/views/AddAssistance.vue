@@ -139,9 +139,6 @@ export default {
 				if (!this.$refs.selectionCriteria.submit()) return;
 			}
 
-			console.log("assistanceBody");
-			console.log(this.assistanceBody);
-
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
