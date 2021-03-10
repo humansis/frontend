@@ -94,7 +94,7 @@ export default {
 				threshold: 0,
 				completed: false,
 				validated: false,
-				countryIso3: this.$store.state.country?.iso3,
+				iso3: this.$store.state.country?.iso3,
 			},
 		};
 	},
