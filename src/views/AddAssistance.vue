@@ -118,6 +118,7 @@ export default {
 	methods: {
 		async submitAddingAssistance() {
 			if (!this.$refs.newAssistanceForm.submit()) return;
+			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
 
 			if (this.visibleComponents.communities || this.visibleComponents.institutions) {
 				if (!this.$refs.targetTypeSelect.submit()) return;

@@ -167,7 +167,6 @@ export default {
 				subsector: null,
 				targetType: null,
 				assistanceType: null,
-				locationId: null,
 			},
 			options: {
 				sectors: [],
@@ -199,7 +198,6 @@ export default {
 	},
 
 	updated() {
-		this.setLocationId();
 		this.$emit("updatedData", this.formModel);
 	},
 
@@ -214,7 +212,7 @@ export default {
 			return normalizeText(text);
 		},
 
-		setLocationId() {
+		getLocationId() {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 
 			let locationId = null;
@@ -229,12 +227,7 @@ export default {
 				locationId = adm1Id.locationId;
 			}
 
-			this.formModel = {
-				...this.formModel,
-				locationId,
-			};
-
-			console.log("setLocationId", this.formModel.locationId);
+			return locationId;
 		},
 
 		onSectorSelect({ code }) {
