@@ -1,7 +1,11 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="Criteria Target">
+			<b-field
+				label="Criteria Target"
+				:type="validateType('criteriaTarget')"
+				:message="validateMsg('criteriaTarget')"
+			>
 				<MultiSelect
 					v-model="formModel.criteriaTarget"
 					label="value"
@@ -10,11 +14,17 @@
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
 					:searchable="false"
+					:class="validateMultiselect('criteriaTarget')"
 					@select="onCriteriaTargetSelect"
+					@input="validate('criteriaTarget')"
 				/>
 			</b-field>
 
-			<b-field label="Criteria">
+			<b-field
+				label="Criteria"
+				:type="validateType('criteria')"
+				:message="validateMsg('criteria')"
+			>
 				<MultiSelect
 					v-model="formModel.criteria"
 					placeholder="Click to select..."
@@ -23,11 +33,17 @@
 					label="code"
 					track-by="code"
 					:searchable="false"
+					:class="validateMultiselect('criteria')"
 					@select="onCriteriaSelect"
+					@input="validate('criteria')"
 				/>
 			</b-field>
 
-			<b-field label="Condition">
+			<b-field
+				label="Condition"
+				:type="validateType('condition')"
+				:message="validateMsg('condition')"
+			>
 				<MultiSelect
 					v-model="formModel.condition"
 					placeholder="Click to select..."
@@ -36,12 +52,16 @@
 					:options="options.conditions"
 					:loading="criteriaConditionsLoading"
 					:searchable="false"
+					:class="validateMultiselect('condition')"
+					@input="validate('condition')"
 				/>
 			</b-field>
 
 			<b-field
 				v-if="fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION"
 				label="Value"
+				:type="validateType('value')"
+				:message="validateMsg('value')"
 			>
 				<b-datepicker
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
@@ -50,6 +70,7 @@
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					@input="validate('value')"
 				/>
 
 				<MultiSelect
@@ -67,11 +88,14 @@
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
 					:searchable="false"
+					:class="validateMultiselect('value')"
+					@input="validate('value')"
 				/>
 
 				<b-input
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.STRING"
 					v-model="formModel.value"
+					@blur="validate('value')"
 				/>
 
 				<b-numberinput
@@ -83,16 +107,17 @@
 					expanded
 					controls-alignment="right"
 					controls-position="compact"
+					@blur="validate('value')"
 				/>
 			</b-field>
 
 			<LocationForm
 				v-if="fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION"
 				ref="locationForm"
-				:form-model="admsModel"
+				:form-model="admModel"
 			/>
 
-			<b-field label="Score Weight">
+			<b-field label="Score Weight" class="mt-3">
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
@@ -122,6 +147,8 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { required, requiredIf } from "vuelidate/lib/validators";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "SelectionCriteriaForm",
@@ -134,10 +161,12 @@ export default {
 		closeButton: Boolean,
 	},
 
+	mixins: [validation],
+
 	data() {
 		return {
 			consts,
-			admsModel: {
+			admModel: {
 				adm1Id: null,
 				adm2Id: null,
 				adm3Id: null,
@@ -163,6 +192,18 @@ export default {
 			criteriaLoading: false,
 			criteriaConditionsLoading: false,
 		};
+	},
+
+	validations: {
+		formModel: {
+			criteriaTarget: { required },
+			criteria: { required },
+			condition: { required },
+			// eslint-disable-next-line func-names
+			value: { required: requiredIf(function () {
+				return this.fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION;
+			}) },
+		},
 	},
 
 	computed: {
@@ -294,13 +335,23 @@ export default {
 				.catch((e) => {
 					Notification(`Location Types ${e}`, "is-danger");
 				});
+
 			this.valueSelectLoading = false;
 		},
 
 		submitForm() {
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				return;
+			}
+
+			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION
+				&& this.$refs.locationForm.submitLocationForm()) {
+				return;
+			}
+
 			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION) {
-				console.log(this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION);
-				const { adm1Id, adm2Id, adm3Id, adm4Id } = this.admsModel;
+				const { adm1Id, adm2Id, adm3Id, adm4Id } = this.admModel;
 				const prefix = "locationId-";
 
 				if (adm4Id) {
@@ -313,8 +364,6 @@ export default {
 					this.formModel.value = prefix + adm1Id.locationId;
 				}
 			}
-
-			console.log(this.formModel);
 
 			this.$emit("formSubmitted", this.formModel);
 		},

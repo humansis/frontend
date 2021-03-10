@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="mt-5">
 		<h2 class="subtitle">{{ title }}</h2>
 		<form class="box">
 			<b-field
@@ -66,7 +66,7 @@ import validation from "@/mixins/validation";
 import InstitutionsService from "@/services/InstitutionsService";
 import { Notification } from "@/utils/UI";
 import CommunitiesService from "@/services/CommunitiesService";
-import { required } from "vuelidate/lib/validators";
+import { requiredIf } from "vuelidate/lib/validators";
 import addressHelper from "@/mixins/addressHelper";
 import { normalizeText } from "@/utils/datagrid";
 
@@ -108,8 +108,14 @@ export default {
 
 	validations: {
 		formModel: {
-			communities: { required },
-			institutions: { required },
+			// eslint-disable-next-line func-names
+			communities: { required: requiredIf(function () {
+				return this.visible?.communities;
+			}) },
+			// eslint-disable-next-line func-names
+			institutions: { required: requiredIf(function () {
+				return this.visible?.institutions;
+			}) },
 		},
 	},
 
@@ -133,6 +139,11 @@ export default {
 	},
 
 	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
+		},
+
 		async fetchData() {
 			if (this.visible?.communities) await this.fetchCommunities();
 			if (this.visible?.institutions) await this.fetchInstitutions();

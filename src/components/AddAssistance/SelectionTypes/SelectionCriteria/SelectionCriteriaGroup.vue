@@ -65,6 +65,8 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import LocationsService from "@/services/LocationsService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "SelectionCriteriaGroup",
@@ -92,7 +94,7 @@ export default {
 			) => ({
 				criteriaTarget: criteriaTarget?.value,
 				criteria: criteria?.code,
-				value: value?.code || value,
+				value: this.prepareCriteriaValue(value),
 				scoreWeight,
 				condition: condition?.code,
 			}));
@@ -112,10 +114,33 @@ export default {
 					{ field: "scoreWeight", label: "Score Weight" },
 				],
 			},
+			criteriaLocation: "",
 		};
 	},
 
 	methods: {
+		prepareCriteriaValue(value) {
+			let newValue = value?.code || value;
+
+			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
+				const locationId = Number(newValue.replace("locationId-", ""));
+				this.fetchLocation(locationId);
+				newValue = this.criteriaLocation;
+			}
+
+			return newValue;
+		},
+
+		async fetchLocation(id) {
+			await LocationsService.getLocation(id)
+				.then((data) => {
+					this.criteriaLocation = data?.code;
+				})
+				.catch((e) => {
+					Notification(`Location ${e}`, "is-danger");
+				});
+		},
+
 		remove(index) {
 			this.data.splice(index, 1);
 		},

@@ -70,10 +70,6 @@ export default {
 		visible: Object,
 	},
 
-	updated() {
-		this.$emit("updatedData", this.formModel);
-	},
-
 	validations: {
 		formModel: {
 			// eslint-disable-next-line func-names
@@ -88,6 +84,17 @@ export default {
 			individualsTargeted: { required: requiredIf(function () {
 				return this.visible.individualsTargeted;
 			}) },
+		},
+	},
+
+	updated() {
+		this.$emit("updatedData", this.formModel);
+	},
+
+	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
 		},
 	},
 };

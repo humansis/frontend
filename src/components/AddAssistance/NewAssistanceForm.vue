@@ -153,11 +153,6 @@ export default {
 
 	components: { LocationForm },
 
-	updated() {
-		this.setLocationId();
-		this.$emit("updatedData", this.formModel);
-	},
-
 	mixins: [Validation],
 
 	data() {
@@ -203,11 +198,16 @@ export default {
 		this.fetchSectors();
 	},
 
+	updated() {
+		this.setLocationId();
+		this.$emit("updatedData", this.formModel);
+	},
+
 	methods: {
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
-			return !this.$v.$invalid || !invalidLocationForm;
+			return !this.$v.$invalid || (!this.$v.$invalid && !invalidLocationForm);
 		},
 
 		normalizeText(text) {
@@ -217,15 +217,24 @@ export default {
 		setLocationId() {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 
+			let locationId = null;
+
 			if (adm4Id) {
-				this.formModel.locationId = adm4Id.locationId;
+				locationId = adm4Id.locationId;
 			} else if (adm3Id) {
-				this.formModel.locationId = adm3Id.locationId;
+				locationId = adm3Id.locationId;
 			} else if (adm2Id) {
-				this.formModel.locationId = adm2Id.locationId;
+				locationId = adm2Id.locationId;
 			} else if (adm1Id) {
-				this.formModel.locationId = adm1Id.locationId;
+				locationId = adm1Id.locationId;
 			}
+
+			this.formModel = {
+				...this.formModel,
+				locationId,
+			};
+
+			console.log("setLocationId", this.formModel.locationId);
 		},
 
 		onSectorSelect({ code }) {

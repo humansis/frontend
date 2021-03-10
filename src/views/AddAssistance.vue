@@ -3,23 +3,26 @@
 		<div class="columns">
 			<div class="column">
 				<NewAssistanceForm
+					ref="newAssistanceForm"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetType = $event"
 					@showComponent="onShowComponent"
-					ref="assistanceForm"
 				/>
 			</div>
 			<div class="column is-three-fifths">
 				<SelectionCriteria
+					ref="selectionCriteria"
 					v-if="visibleComponents.selectionCriteria"
 					:target-type="targetType"
 					@updatedData="fetchSelectionCriteria"
 				/>
 				<DistributedCommodity
+					ref="distributedCommodity"
 					v-if="visibleComponents.distributedCommodity"
 					@updatedData="fetchDistributedCommodity"
 				/>
 				<ActivityDetails
+					ref="activityDetails"
 					v-if="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
@@ -27,6 +30,7 @@
 					@updatedData="fetchActivityDetails"
 				/>
 				<TargetTypeSelect
+					ref="targetTypeSelect"
 					v-if="visibleComponents.communities || visibleComponents.institutions"
 					:visible="targetTypeSelectVisible"
 					@updatedData="fetchTargetType"
@@ -44,8 +48,8 @@
 import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
 import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
-// import AssistancesService from "@/services/AssistancesService";
-// import { Toast } from "@/utils/UI";
+import AssistancesService from "@/services/AssistancesService";
+import { Notification, Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 
@@ -85,11 +89,12 @@ export default {
 				locationId: null,
 				commodities: [],
 				selectionCriteria: [],
-				communities: null,
-				institutions: null,
+				communities: [],
+				institutions: [],
 				threshold: 0,
 				completed: false,
 				validated: false,
+				countryIso3: this.$store.state.country?.iso3,
 			},
 		};
 	},
@@ -112,18 +117,37 @@ export default {
 
 	methods: {
 		async submitAddingAssistance() {
-			if (this.$refs.assistanceForm.submit()) {
-				console.log("assistanceBody");
-				console.log(this.assistanceBody);
+			if (!this.$refs.newAssistanceForm.submit()) return;
+
+			if (this.visibleComponents.communities || this.visibleComponents.institutions) {
+				if (!this.$refs.targetTypeSelect.submit()) return;
 			}
 
-			/*
+			if (this.visibleComponents.activityDescription
+				|| this.visibleComponents.householdsTargeted
+				|| this.visibleComponents.individualsTargeted
+			) {
+				if (!this.$refs.activityDetails.submit()) return;
+			}
+
+			if (this.visibleComponents.distributedCommodity) {
+				if (!this.$refs.distributedCommodity.submit()) return;
+			}
+
+			if (this.visibleComponents.selectionCriteria) {
+				if (!this.$refs.selectionCriteria.submit()) return;
+			}
+
+			console.log("assistanceBody");
+			console.log(this.assistanceBody);
+
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
 				}
+			}).catch((e) => {
+				Notification(`New Assistance ${e}`, "is-danger");
 			});
-			*/
 		},
 
 		onShowComponent(components) {

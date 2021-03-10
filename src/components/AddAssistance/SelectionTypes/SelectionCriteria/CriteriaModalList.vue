@@ -7,7 +7,6 @@
 		<Table
 			:data="table.data"
 			:total="table.total"
-			@sorted="onSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column

@@ -80,12 +80,12 @@ export default {
 				isOpened: false,
 			},
 			formModel: {
-				modality: null,
-				type: null,
-				currency: null,
-				unit: null,
-				quantity: null,
-				description: null,
+				modality: "",
+				type: "",
+				currency: "",
+				unit: "",
+				quantity: "",
+				description: "",
 				totalValueOfBooklet: null,
 			},
 			table: {
@@ -111,7 +111,7 @@ export default {
 			modalityType: type,
 			unit,
 			value: quantity,
-			description,
+			description: description || "",
 		}));
 
 		if (this.table.data.length) {
@@ -136,6 +136,10 @@ export default {
 	},
 
 	methods: {
+		submit() {
+			return !!this.table.data.length;
+		},
+
 		addCriteria() {
 			this.commodityModal.isOpened = true;
 
