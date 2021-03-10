@@ -117,7 +117,19 @@
 				:form-model="admModel"
 			/>
 
-			<b-field label="Score Weight" class="mt-3">
+			<button
+				class="button"
+				slot="trigger"
+				@click="advancedOptions = !advancedOptions"
+			>
+				<span>Advanced Options</span>
+				<b-icon
+					size="is-small"
+					:icon="advancedOptions ? 'arrow-up' : 'arrow-down'"
+				/>
+			</button>
+
+			<b-field v-if="advancedOptions" label="Score Weight" class="mt-3">
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
@@ -191,6 +203,7 @@ export default {
 			criteriaTargetLoading: false,
 			criteriaLoading: false,
 			criteriaConditionsLoading: false,
+			advancedOptions: false,
 		};
 	},
 
