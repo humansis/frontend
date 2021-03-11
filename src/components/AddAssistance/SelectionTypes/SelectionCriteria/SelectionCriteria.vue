@@ -1,5 +1,5 @@
 <template>
-	<div class="mb-5">
+	<div class="mb-6">
 		<Modal
 			can-cancel
 			:active="detailModal.isOpened"
@@ -40,7 +40,7 @@
 		</Modal>
 		<div class="mb-2">
 			<SelectionCriteriaGroup
-				v-for="(group, key) in groups"
+				v-for="(group, key) of groups"
 				:data="group.data"
 				:key="key"
 				:group-id="key"
@@ -56,7 +56,7 @@
 				No data
 			</b-notification>
 		</div>
-		<b-field label="Minimum Selection Score">
+		<b-field label="Minimum Vulnerability Score" class="mt-3">
 			<b-numberinput
 				v-model="minimumSelectionScore"
 				expanded
@@ -66,21 +66,19 @@
 		</b-field>
 
 		<b-field>
-			<b-button
-				class="is-pulled-right"
-				icon="detail"
-				type="is-link"
-				@click="showDetailWithAllCriteria"
-			>
-				Details
-			</b-button>
-		</b-field>
-
-		<b-field>
-			<p>
-				The system will only select beneficiaries/households that have a score higher
-				than the minimum selection score
-			</p>
+			<div class="selection-details">
+				<p class="subtitle is-4 mb-0 mr-3">
+					0/0 Individual
+				</p>
+				<b-button
+					class="is-pulled-right"
+					icon="detail"
+					type="is-link"
+					@click="showDetailWithAllCriteria"
+				>
+					Details
+				</b-button>
+			</div>
 		</b-field>
 	</div>
 </template>
@@ -118,7 +116,6 @@ export default {
 				scoreWeight: 1,
 			},
 			groups: [],
-			maxGroupId: 0,
 			detailModal: {
 				isOpened: false,
 			},
@@ -128,12 +125,48 @@ export default {
 	},
 
 	updated() {
-		if (this.groups.length > 0) {
-			this.$emit("updatedData", this.groups, this.minimumSelectionScore);
+		if (this.groups.length) {
+			const selectionCriteria = [];
+
+			this.groups.forEach(({ data }, index) => {
+				data.forEach(({ condition, scoreWeight, value, criteriaTarget, criteria }) => {
+					selectionCriteria.push({
+						group: index,
+						target: criteriaTarget?.code,
+						field: criteria?.code,
+						condition: condition?.code,
+						value: this.prepareCriteriaValue(value),
+						weight: scoreWeight,
+					});
+				});
+			});
+
+			this.$emit("updatedData", selectionCriteria, this.minimumSelectionScore);
 		}
 	},
 
 	methods: {
+		submit() {
+			return !!this.groups.length;
+		},
+
+		prepareCriteriaValue(value) {
+			let newValue = value?.code || value;
+
+			const date = new Date(newValue);
+			if (Object.prototype.toString.call(date) === "[object Date]") {
+				if (!Number.isNaN(date.getTime())) {
+					newValue = date.toISOString();
+				}
+			}
+
+			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
+				newValue = Number(newValue.replace("locationId-", ""));
+			}
+
+			return newValue;
+		},
+
 		addCriteria(id) {
 			this.criteriaModal.isOpened = true;
 
@@ -165,9 +198,8 @@ export default {
 			this.groups.splice(key, 1);
 		},
 
-		showDetail(criteria) {
-			// TODO rename attribs
-			this.criteriaGroupData = criteria;
+		showDetail(criteriaGroups) {
+			this.criteriaGroupData = criteriaGroups;
 			this.detailModal.isOpened = true;
 		},
 
@@ -181,3 +213,11 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.selection-details {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+</style>

@@ -189,7 +189,16 @@ export default {
 
 	methods: {
 		onModalitySelect({ code }) {
+			this.formModel.type = "";
 			this.fetchModalityTypes(code);
+
+			this.displayedFields = {
+				currency: false,
+				unit: false,
+				quantity: false,
+				description: false,
+				totalValueOfBooklet: false,
+			};
 		},
 
 		async onModalityTypeSelect({ code }) {
@@ -198,33 +207,32 @@ export default {
 
 		async getFormFieldsToShow(code) {
 			switch (code) {
-				case (
-					consts.COMMODITY.CASH
-					|| consts.COMMODITY.SMARDCARD
-					|| consts.COMMODITY.MOBILE_MONEY
-					|| consts.COMMODITY.LOAN
-				):
+				case consts.COMMODITY.CASH:
+				case consts.COMMODITY.SMARDCARD:
+				case consts.COMMODITY.MOBILE_MONEY:
+				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
-						...this.displayedFields,
+						unit: false,
+						description: false,
+						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
 					};
 					break;
-				case (
-					consts.COMMODITY.FOOD_RATIONS
-					|| consts.COMMODITY.READY_TO_EAT_RATIONS
-					|| consts.COMMODITY.BREAD
-					|| consts.COMMODITY.AGRICULTURAL_KIT
-					|| consts.COMMODITY.WASH_KIT
-					|| consts.COMMODITY.SHELTER_TOOL_KIT
-					|| consts.COMMODITY.HYGIENE_KIT
-					|| consts.COMMODITY.DIGNITY_KIT
-					|| consts.COMMODITY.NFI_KIT
-					|| consts.COMMODITY.WINTERIZATION_KIT
-					|| consts.COMMODITY.ACTIVITY_ITEM
-				):
+				case consts.COMMODITY.FOOD_RATIONS:
+				case consts.COMMODITY.READY_TO_EAT_RATIONS:
+				case consts.COMMODITY.BREAD:
+				case consts.COMMODITY.AGRICULTURAL_KIT:
+				case consts.COMMODITY.WASH_KIT:
+				case consts.COMMODITY.SHELTER_TOOL_KIT:
+				case consts.COMMODITY.HYGIENE_KIT:
+				case consts.COMMODITY.DIGNITY_KIT:
+				case consts.COMMODITY.NFI_KIT:
+				case consts.COMMODITY.WINTERIZATION_KIT:
+				case consts.COMMODITY.ACTIVITY_ITEM:
 					this.displayedFields = {
-						...this.displayedFields,
+						currency: false,
+						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
 						description: true,
@@ -232,14 +240,19 @@ export default {
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
 					this.displayedFields = {
-						...this.displayedFields,
+						currency: false,
+						description: false,
+						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
 					};
 					break;
-				case consts.COMMODITY.QR_CODE_VOUCHER || consts.COMMODITY.PAPER_VOUCHER:
+				case consts.COMMODITY.QR_CODE_VOUCHER:
+				case consts.COMMODITY.PAPER_VOUCHER:
 					this.displayedFields = {
-						...this.displayedFields,
+						unit: false,
+						quantity: false,
+						description: false,
 						currency: true,
 						totalValueOfBooklet: true,
 					};
@@ -247,7 +260,6 @@ export default {
 				default:
 					return this.displayedFields;
 			}
-
 			return this.displayedFields;
 		},
 

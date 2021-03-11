@@ -80,12 +80,12 @@ export default {
 				isOpened: false,
 			},
 			formModel: {
-				modality: null,
-				type: null,
-				currency: null,
-				unit: null,
-				quantity: null,
-				description: null,
+				modality: "",
+				type: "",
+				currency: "",
+				unit: "",
+				quantity: "",
+				description: "",
 				totalValueOfBooklet: null,
 			},
 			table: {
@@ -107,8 +107,15 @@ export default {
 	},
 
 	updated() {
+		const commodities = this.modifiedTableData.map(({ type, unit, quantity, description }) => ({
+			modalityType: type,
+			unit,
+			value: quantity,
+			description: description || "",
+		}));
+
 		if (this.table.data.length) {
-			this.$emit("updatedData", this.table.data);
+			this.$emit("updatedData", commodities);
 		}
 	},
 
@@ -129,6 +136,10 @@ export default {
 	},
 
 	methods: {
+		submit() {
+			return !!this.table.data.length;
+		},
+
 		addCriteria() {
 			this.commodityModal.isOpened = true;
 

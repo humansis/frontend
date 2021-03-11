@@ -43,7 +43,7 @@ export default {
 
 	async getLocation(id) {
 		const { data } = await fetcher({ uri: `locations/${id}` });
-		return { data };
+		return data;
 	},
 
 	async getLocations(ids, param = null) {

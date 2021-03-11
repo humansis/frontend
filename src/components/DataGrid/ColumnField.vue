@@ -94,6 +94,7 @@ export default {
 
 		customValue() {
 			const value = this.data.row[this.column.field];
+
 			if (!value) {
 				return "";
 			}
@@ -102,11 +103,14 @@ export default {
 				if (value.value) {
 					return value.value;
 				}
+
 				const newDate = new Date(this.data.row[this.column.field]);
-				if (newDate.isValid()) {
+
+				if (newDate.toLocaleDateString()) {
 					return newDate.toLocaleDateString();
 				}
 			}
+
 			return value;
 		},
 
