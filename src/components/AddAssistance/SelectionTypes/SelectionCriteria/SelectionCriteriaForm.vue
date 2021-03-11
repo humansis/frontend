@@ -225,8 +225,9 @@ export default {
 		},
 	},
 
-	async created() {
-		await this.fetchCriteriaTargets();
+	created() {
+		this.advancedOptions = false;
+		this.fetchCriteriaTargets();
 	},
 
 	methods: {
