@@ -1,8 +1,8 @@
 // Targets
-const INDIVIDUAL = "0";
-const HOUSEHOLD = "1";
-const COMMUNITY = "2";
-const INSTITUTION = "3";
+const INDIVIDUAL = "individual";
+const HOUSEHOLD = "household";
+const COMMUNITY = "community";
+const INSTITUTION = "institution";
 
 // Target types
 const ACTIVITY = "activity";
