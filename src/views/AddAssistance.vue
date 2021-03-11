@@ -142,7 +142,10 @@ export default {
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
-					this.$router.go(-1);
+					this.$router.push({
+						name: "ProjectDetail",
+						params: { projectId: this.$route.params.projectId },
+					});
 				}
 			}).catch((e) => {
 				Notification(`New Assistance ${e}`, "is-danger");
