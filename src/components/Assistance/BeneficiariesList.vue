@@ -66,7 +66,6 @@
 			has-reset-sort
 			has-search
 			:paginated="!table.customPerPage"
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -181,8 +180,8 @@ export default {
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "gender", sortable: true },
-					{ key: "dateOfBirth", sortable: true },
+					{ key: "gender" },
+					{ key: "dateOfBirth" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities" },
 				],
@@ -243,13 +242,12 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.$emit("beneficiariesCounted", totalCount);
 				this.table.total = totalCount;
-				if (totalCount !== 0) {
+				if (totalCount > 0) {
 					await this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
@@ -316,7 +314,6 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].value = `${commodities[0].value} ${commodities[0].unit}`;
 			});
-			this.resetSortKey += 1;
 		},
 
 		async prepareNationalIdForTable(ids) {

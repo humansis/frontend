@@ -4,7 +4,6 @@
 		<Table
 			has-reset-sort
 			has-search
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"

@@ -3,7 +3,6 @@
 		<Table
 			has-reset-sort
 			has-search
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -119,11 +118,10 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Vendors ${e}`, "is-danger");
@@ -139,7 +137,6 @@ export default {
 						this.table.data[key] = item;
 						this.table.data[key].user = this.prepareEntityForTable(item.userId, users, "username");
 					});
-					this.resetSortKey += 1;
 				});
 			this.getLocations(data)
 				.then((locations) => {
@@ -147,7 +144,6 @@ export default {
 						this.table.data[key] = item;
 						this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
 					});
-					this.resetSortKey += 1;
 				});
 		},
 

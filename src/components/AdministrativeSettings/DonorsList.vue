@@ -4,7 +4,6 @@
 			has-search
 			has-reset-sort
 			has-export
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"

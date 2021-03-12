@@ -13,7 +13,7 @@
 							v-if="hasResetSort"
 							icon-left="eraser"
 							class="is-pulled-right reset-sort-button is-small is-light mt-2"
-							@click="$emit('resetSort')"
+							@click="onResetSort"
 						>
 							Reset Sort
 						</b-button>
@@ -24,6 +24,7 @@
 		<slot name="filter" />
 		<slot name="progress" />
 		<b-table
+			ref="table"
 			striped
 			hoverable
 			scrollable
@@ -136,6 +137,11 @@ export default {
 		onChangePerPage(value) {
 			this.changePerPage(value);
 			this.$emit("changePerPage");
+		},
+
+		onResetSort() {
+			this.$refs.table.resetMultiSorting();
+			this.$emit("resetSort");
 		},
 	},
 };

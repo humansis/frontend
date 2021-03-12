@@ -68,7 +68,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { normalizeText } from "@/utils/datagrid";
 
 export default {
-	name: "ProjectSummary",
+	name: "AssistanceSummary",
 
 	components: {
 		Loading,
@@ -92,7 +92,7 @@ export default {
 		if (this.temporaryAssistance) {
 			this.assistance = this.temporaryAssistance;
 		} else {
-			await this.fetchAssistance();
+			this.assistance = await this.fetchAssistance();
 		}
 		this.$emit("assistanceLoaded", this.assistance);
 		if (this.temporaryProject) {
@@ -107,7 +107,7 @@ export default {
 		...mapState(["temporaryAssistance", "temporaryProject"]),
 
 		assistanceTarget() {
-			return normalizeText(this.assistance.target);
+			return normalizeText(this.assistance?.target);
 		},
 
 		provinceName() {
@@ -133,15 +133,16 @@ export default {
 		},
 
 		async fetchLocation() {
+			if (!this.assistance) return;
 			await LocationsService.getDetailOfAdm1(
 				this.assistance.adm1Id,
 			).then(({ data }) => { this.province = data; });
 		},
 
 		async fetchAssistance() {
-			await AssistancesService.getDetailOfAssistance(
+			return AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
-			).then(({ data }) => { this.assistance = data; });
+			).then((data) => data);
 		},
 	},
 };

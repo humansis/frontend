@@ -4,7 +4,6 @@
 			has-reset-sort
 			has-search
 			checkable
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
