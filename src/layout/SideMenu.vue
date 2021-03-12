@@ -105,6 +105,7 @@
 							tag="router-link"
 							:to="{ name: 'Administrative Settings' }"
 						/>
+						<!--
 						<b-menu-item
 							label="Transactions"
 							icon="credit-card"
@@ -126,6 +127,7 @@
 							tag="router-link"
 							:to="{ name: 'Logs' }"
 						/>
+						-->
 					</b-menu-list>
 				</b-menu>
 			</div>
