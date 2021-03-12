@@ -10,7 +10,7 @@ export default {
 
 	async updateMyOrganization(id, body) {
 		const { data, status } = await fetcher({
-			uri: `organizations/${id}`, method: "PATCH", body,
+			uri: `organizations/${id}`, method: "PUT", body,
 		});
 		return { data, status };
 	},
