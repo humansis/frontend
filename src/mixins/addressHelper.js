@@ -8,6 +8,7 @@ export default {
 
 	methods: {
 		getAddresses(ids) {
+			if (!ids?.length) return null;
 			return AddressService.getAddresses(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
@@ -16,6 +17,7 @@ export default {
 		},
 
 		getLocations(addresses) {
+			if (!addresses?.length) return null;
 			return LocationsService.getLocations(addresses, "locationId")
 				.then(({ data }) => data)
 				.catch((e) => {
@@ -24,7 +26,7 @@ export default {
 		},
 
 		mapLocationOnAddress(locations, addresses) {
-			if (!locations.length) return [];
+			if (!locations?.length) return [];
 			const addressesMapped = [];
 			addresses.forEach((address) => {
 				const location = locations.find((item) => item.adm.locationId === address.locationId);
