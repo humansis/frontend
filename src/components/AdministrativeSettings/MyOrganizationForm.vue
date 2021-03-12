@@ -177,9 +177,9 @@ export default {
 	data() {
 		return {
 			fonts: [
-				{ code: "arial", value: "Arial" },
-				{ code: "helvetica", value: "Helvetica" },
-				{ code: "courier", value: "Courier" },
+				{ code: "Arial", value: "Arial" },
+				{ code: "Helvetica", value: "Helvetica" },
+				{ code: "Courier", value: "Courier" },
 			],
 		};
 	},
@@ -190,7 +190,17 @@ export default {
 		},
 	},
 
+	mounted() {
+		this.mapSelects();
+	},
+
 	methods: {
+		mapSelects() {
+			if (typeof this.formModel.font !== "object") {
+				this.formModel.font = this.fonts.find((item) => item.code === this.formModel.font);
+			}
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {

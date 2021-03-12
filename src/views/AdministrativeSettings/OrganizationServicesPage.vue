@@ -1,4 +1,3 @@
-<!-- TODO edit after real api-->
 <template>
 	<div>
 		<Modal
@@ -11,7 +10,7 @@
 			<OrganizationServiceForm
 				close-button
 				class="modal-card"
-				submit-button-label="Create"
+				submit-button-label="Update"
 				:formModel="organizationServiceModel"
 				:form-disabled="organizationServiceModal.isDetail"
 				@formSubmitted="submitOrganizationServiceForm"
@@ -52,14 +51,9 @@ export default {
 			},
 			organizationServiceModel: {
 				id: null,
-				name: null,
 				enabled: false,
-				password: null,
-				username: null,
-				token: null,
-				email: null,
-				production: false,
-				country: null,
+				iso3: null,
+				name: "",
 			},
 		};
 	},
@@ -105,29 +99,19 @@ export default {
 			const {
 				id,
 				enabled,
-				password,
-				username,
-				token,
-				email,
-				production,
 			} = organizationServiceForm;
 
 			const organizationServiceBody = {
 				enabled,
-				password,
-				username,
-				token,
-				email,
-				production,
 			};
 
-			this.updateOrganizationService(organizationServiceBody, id);
+			this.updateOrganizationService(id, organizationServiceBody);
 		},
 
-		async updateOrganizationService(organizationServiceBody) {
+		async updateOrganizationService(id, organizationServiceBody) {
 			this.organizationServiceModal.isWaiting = true;
 
-			await OrganizationServicesService.updateOrganizationService(organizationServiceBody)
+			await OrganizationServicesService.updateOrganizationService(id, organizationServiceBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Organization Service Successfully Created", "is-success");
