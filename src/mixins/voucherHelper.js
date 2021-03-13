@@ -43,7 +43,6 @@ export default {
 				this.table.data[key].beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName", "none");
 			});
 			this.table.progress += 15;
-			this.resetSortKey += 1;
 		},
 
 		async prepareProjectsForTable(ids) {
@@ -54,7 +53,6 @@ export default {
 				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "none");
 			});
 			this.table.progress += 15;
-			this.resetSortKey += 1;
 		},
 
 		async prepareAssistancesForTable(ids) {
@@ -64,7 +62,6 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "none");
 			});
-			this.resetSortKey += 1;
 			this.table.progress += 15;
 		},
 

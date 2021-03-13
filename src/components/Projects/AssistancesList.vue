@@ -3,7 +3,6 @@
 		<Table
 			has-reset-sort
 			:has-search="!upcoming"
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -177,12 +176,11 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
-				if (totalCount !== 0) {
+				if (totalCount > 0) {
 					await this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
@@ -196,11 +194,10 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				true,
 			).then(({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Upcoming Assistances ${e}`, "is-danger");
@@ -233,7 +230,6 @@ export default {
 				this.table.data[key].beneficiaries = this.prepareEntityForTable(item.id, statistics, "numberOfBeneficiaries", 0);
 			});
 			this.table.progress += 10;
-			this.resetSortKey += 1;
 		},
 
 		async prepareCommodityForTable(assistanceIds) {
@@ -243,7 +239,6 @@ export default {
 				this.table.data[key].commodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
 			});
 			this.table.progress += 10;
-			this.resetSortKey += 1;
 		},
 
 		async prepareLocationForTable(locationIds) {
@@ -253,7 +248,6 @@ export default {
 				this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
 			});
 			this.table.progress += 10;
-			this.resetSortKey += 1;
 		},
 
 		async getLocations(ids) {

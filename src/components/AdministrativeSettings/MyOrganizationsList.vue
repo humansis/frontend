@@ -1,5 +1,6 @@
 <template>
 	<Table
+		has-reset-sort
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"

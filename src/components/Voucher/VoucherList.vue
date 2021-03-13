@@ -3,7 +3,6 @@
 		<Table
 			has-reset-sort
 			has-search
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -161,12 +160,11 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			});
 
