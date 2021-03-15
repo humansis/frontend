@@ -84,10 +84,10 @@
 					v-model="formModel.currency"
 					searchable
 					placeholder="Click to select..."
-					label="code"
+					label="value"
 					track-by="value"
 					:disabled="formDisabled"
-					:options="currencies"
+					:options="options.currencies"
 					:class="validateMultiselect('currency')"
 					@select="validate('currency')"
 				/>
@@ -142,8 +142,8 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import ProjectsService from "@/services/ProjectsService";
 import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import currencies from "@/utils/currencies";
 
 export default {
 	name: "VoucherForm",
@@ -161,6 +161,9 @@ export default {
 		return {
 			projects: [],
 			currencies: [],
+			options: {
+				currencies,
+			},
 		};
 	},
 
@@ -178,7 +181,6 @@ export default {
 
 	async mounted() {
 		await this.fetchProjects();
-		await this.fetchCurrencies();
 	},
 
 	methods: {
@@ -204,33 +206,6 @@ export default {
 				}).catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});
-		},
-
-		async fetchCurrencies() {
-			// TODO fill currencies
-			this.currencies = [
-				{
-					code: "CZK",
-					value: "CZK",
-				},
-				{
-					code: "USD",
-					value: "USD",
-				},
-				{
-					code: "GBP",
-					value: "GBP",
-				},
-				{
-					code: "EUR",
-					value: "EUR",
-				},
-				{
-					code: "KHR",
-					value: "KHR",
-				},
-			];
-			this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], this.currencies, "code");
 		},
 	},
 };
