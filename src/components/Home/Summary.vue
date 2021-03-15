@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="mb-4">
 		<h2 class="title">Summary</h2>
 
 		<div class="columns is-multiline" ref="summary">
