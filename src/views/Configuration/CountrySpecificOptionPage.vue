@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Country Specific Options</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Country Specific Options</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewCountrySpecificOption"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			is-small
@@ -19,15 +34,7 @@
 				@formClosed="closeCountrySpecificOptionModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewCountrySpecificOption"
-		>
-			Add
-		</b-button>
+
 		<CountrySpecificOptionList
 			ref="countrySpecificOptionList"
 			@onRemove="onRemoveCountrySpecificOption"

@@ -26,7 +26,7 @@
 				label="Actions"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<SafeDelete
 						tabindex="-1"
 						icon="trash"
@@ -36,29 +36,26 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="export">
-				<div class="column">
-					<b-field>
-						<b-button
-							type="is-success"
-							icon-left="plus"
-							@click="addTranslation"
-						>
-							Add Translation
-						</b-button>
-					</b-field>
-				</div>
+			<template #export>
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addTranslation"
+				>
+					Add Translation
+				</b-button>
 			</template>
 		</Table>
-		<b-button
-			class="mb-5"
-			size="is-normal"
-			type="is-danger"
-			icon-left="save"
-			@click="submit"
-		>
-			Save
-		</b-button>
+
+		<div class="buttons flex-end">
+			<b-button
+				type="is-primary"
+				icon-left="save"
+				@click="submit"
+			>
+				Save
+			</b-button>
+		</div>
 	</div>
 </template>
 

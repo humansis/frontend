@@ -1,5 +1,7 @@
 <template>
-	<div v-if="!loading">
+	<card-component v-if="!loading">
+		<b-progress value="100" />
+
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -40,19 +42,18 @@
 			</b-step-item>
 			<template
 				v-if="true"
-				slot="navigation"
-				slot-scope="{previous, next}"
+				#navigation
+				v-slot:default="{previous, next}"
 			>
 				<div class="buttons flex-end">
 					<b-button
-						type="is-danger is-light"
-						:disabled="previous.disabled"
+						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
 						Back
 					</b-button>
 					<b-button
-						type="is-success"
+						type="is-primary"
 						:disabled="next.disabled"
 						@click.prevent="nextPage(next)"
 					>
@@ -69,7 +70,7 @@
 				</div>
 			</template>
 		</b-steps>
-	</div>
+	</card-component>
 </template>
 
 <script>
@@ -79,6 +80,7 @@ import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 
@@ -90,6 +92,7 @@ export default {
 	},
 
 	components: {
+		CardComponent,
 		HouseholdHeadForm,
 		HouseholdForm,
 		Members,

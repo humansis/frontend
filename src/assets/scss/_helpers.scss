@@ -1,0 +1,16 @@
+.space-between {
+	display: flex;
+	justify-content: space-between;
+}
+
+.flex-end {
+	justify-content: flex-end;
+}
+
+.optional-text {
+	font-size: 15px;
+}
+
+.has-border-bottom {
+	border-bottom: 1px solid #f5f8fa;
+}

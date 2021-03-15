@@ -178,13 +178,13 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
+			<b-button v-if="closeButton" @click="closeForm">
 				Close
-			</button>
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

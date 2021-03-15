@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<b-tabs v-model="selectedTab" size="is-medium">
+		<h1 class="title has-text-centered">Reports</h1>
+
+		<b-tabs v-model="selectedTab">
 			<b-tab-item
 				label="Country Report"
 				icon="th-large"

@@ -27,14 +27,14 @@
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
 			<footer class="modal-card-foot">
-				<button class="button" type="button" @click="closeForm">
+				<b-button @click="closeForm">
 					Close
-				</button>
+				</b-button>
 				<b-button
 					v-if="editing"
 					value="Update"
 					tag="input"
-					class="is-success"
+					class="is-primary"
 					@click="submitForm"
 				/>
 			</footer>

@@ -91,7 +91,7 @@
 		</div>
 		<div class="is-pulled-right">
 			<b-button
-				class="is-success"
+				class="is-primary"
 				icon-left="file-import"
 				@click="importFile"
 			>

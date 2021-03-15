@@ -32,9 +32,9 @@
 							</b-field>
 
 							<div class="level-right mt-5">
-								<button class="button is-success" slot="trigger">
+								<b-button type="is-primary" slot="trigger">
 									Save
-								</button>
+								</b-button>
 							</div>
 						</section>
 					</form>
@@ -60,9 +60,9 @@
 							</b-field>
 						</b-field>
 						<div class="level-right mt-5">
-							<button class="button is-success">
+							<b-button type="is-primary">
 								Save
-							</button>
+							</b-button>
 						</div>
 					</form>
 					<section>

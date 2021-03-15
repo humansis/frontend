@@ -14,7 +14,7 @@
 			Selection Criteria
 			<b-button
 				class="mb-5"
-				type="is-success"
+				type="is-primary"
 				icon-left="plus"
 				@click="addCriteria()"
 			>
@@ -60,6 +60,7 @@
 			<b-numberinput
 				v-model="minimumSelectionScore"
 				expanded
+				type="is-dark"
 				controls-alignment="right"
 				controls-position="compact"
 			/>

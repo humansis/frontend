@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Products</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Products</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewProduct"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			:active="productModal.isOpened"
@@ -19,15 +34,7 @@
 				@formClosed="closeProductModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewProduct"
-		>
-			Add
-		</b-button>
+
 		<ProductsList
 			ref="productsList"
 			@onRemove="onRemoveProduct"

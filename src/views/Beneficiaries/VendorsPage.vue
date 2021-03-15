@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Vendors</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Vendors</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewVendor"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			:active="vendorModal.isOpened"
@@ -18,15 +33,7 @@
 				@formClosed="closeVendorModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewVendor"
-		>
-			Add
-		</b-button>
+
 		<VendorsList
 			ref="vendorsList"
 			@onRemove="onVendorRemove"

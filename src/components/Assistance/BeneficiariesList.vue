@@ -32,35 +32,34 @@
 		<div class="buttons space-between">
 			<b-button
 				v-if="addButton"
-				class="mb-5"
-				size="is-medium"
-				type="is-danger"
+				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal"
 			>
 				Add
 			</b-button>
-			<b-field v-if="changeButton" class="mb-5">
+			<b-field v-if="changeButton">
 				<p class="control">
-					<b-button rounded class="button is-danger is-medium" @click="randomSample">
+					<b-button rounded @click="randomSample">
 						<b-icon icon="exchange-alt" />
 					</b-button>
 				</p>
 				<b-input
 					v-model="randomSampleSize"
 					type="number"
-					size="is-medium"
 					placeholder="%"
-					min="1"
 					custom-class="has-text-centered"
+					min="1"
 					max="100"
-					controls-position="compact"
-					controls-alignment="right"
+					icon-right="percent"
 				/>
-				<b-button disabled size="is-medium">
-					<span class="is-size-3">%</span>
-				</b-button>
 			</b-field>
+			<ExportButton
+				v-if="exportButton"
+				class="is-pulled-right"
+				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+				@exportData="exportAssistance"
+			/>
 		</div>
 		<Table
 			has-reset-sort
@@ -89,16 +88,12 @@
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
-			<template slot="export">
-				<div class="column">
-					<ExportButton
-						v-if="exportButton"
-						type="is-success"
-						size="is-default"
-						:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-						@exportData="exportAssistance"
-					/>
-				</div>
+			<template #export>
+				<ExportButton
+					v-if="exportButton"
+					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+					@exportData="exportAssistance"
+				/>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -106,10 +101,9 @@
 				centered
 				width="110"
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="showEdit(props.row)"
 					/>
@@ -122,7 +116,7 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="progress">
+			<template #progress>
 				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>

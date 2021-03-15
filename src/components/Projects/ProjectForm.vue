@@ -44,8 +44,8 @@
 					@select="validate('selectedSectors')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.code }}
 					</template>
@@ -106,8 +106,8 @@
 					@select="validate('selectedDonors')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.shortname }}
 					</template>
@@ -137,6 +137,7 @@
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 					expanded
@@ -165,7 +166,7 @@
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				type="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

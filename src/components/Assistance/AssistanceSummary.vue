@@ -6,11 +6,11 @@
 		<h3 class="subtitle has-text-centered">
 			<Loading type="bubbles" />
 		</h3>
-		<nav class="level is-mobile">
+		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Province</p>
-					<p v-if="provinceName" class="title">{{ provinceName }}</p>
+					<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -18,7 +18,7 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Beneficiaries</p>
-					<p v-if="beneficiaries" class="title">{{ beneficiaries }}</p>
+					<p v-if="beneficiaries" class="has-text-weight-bold is-size-5">{{ beneficiaries }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -26,7 +26,12 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Date Of Distribution</p>
-					<p v-if="assistance.dateDistribution" class="title">{{ assistance.dateDistribution}}</p>
+					<p
+						v-if="assistance.dateDistribution"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ assistance.dateDistribution }}
+					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -34,7 +39,7 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Project</p>
-					<p v-if="projectName" class="title">{{ projectName }}</p>
+					<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -42,7 +47,12 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Target</p>
-					<p v-if="assistanceTarget" class="title">{{ assistanceTarget }}</p>
+					<p
+						v-if="assistanceTarget"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ assistanceTarget }}
+					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -50,7 +60,12 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Commodity</p>
-					<p v-if="assistance.commodity" class="title">{{ assistance.commodity }}</p>
+					<p
+						v-if="assistance.commodity"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ assistance.commodity }}
+					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -129,14 +144,18 @@ export default {
 		async fetchProject() {
 			await ProjectsService.getDetailOfProject(
 				this.$route.params.projectId,
-			).then(({ data }) => { this.project = data; });
+			).then(({ data }) => {
+				this.project = data;
+			});
 		},
 
 		async fetchLocation() {
 			if (!this.assistance) return;
 			await LocationsService.getDetailOfAdm1(
 				this.assistance.adm1Id,
-			).then(({ data }) => { this.province = data; });
+			).then(({ data }) => {
+				this.province = data;
+			});
 		},
 
 		async fetchAssistance() {

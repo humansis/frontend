@@ -27,16 +27,15 @@
 				width="150"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="search"
-						type="is-link"
+						type="is-primary"
 						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="showEdit(props.row.id)"
 					/>
@@ -49,8 +48,8 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
-				<div class="column">
+			<template #filterButton>
+				<div class="level-item">
 					<button
 						class="button"
 						slot="trigger"
@@ -64,7 +63,7 @@
 					</button>
 				</div>
 			</template>
-			<template slot="filter">
+			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<CommunitiesFilter
 						@filtersChanged="onFiltersChange"

@@ -133,6 +133,7 @@
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 				/>
@@ -140,12 +141,12 @@
 		</section>
 
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
+			<b-button v-if="closeButton" @click="closeForm">
 				Close
-			</button>
+			</b-button>
 			<b-button
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

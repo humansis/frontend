@@ -1,6 +1,11 @@
 <template>
 	<div>
-		<h2 class="title">Transactions</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Transactions</h1>
+			</div>
+		</div>
+
 		<Table
 			has-reset-sort
 			has-search
@@ -20,7 +25,7 @@
 					</template>
 				</b-table-column>
 			</template>
-			<template slot="filterButton">
+			<template #filterButton>
 				<div class="column">
 					<button
 						class="button"
@@ -35,7 +40,7 @@
 					</button>
 				</div>
 			</template>
-			<template slot="filter">
+			<template #filter>
 				<b-collapse
 					:open="advancedSearchVisible"
 					animation="slide"

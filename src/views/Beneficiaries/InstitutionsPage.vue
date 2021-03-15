@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Institutions</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Institutions</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewInstitution"
+				>
+					Add
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			:active="institutionModal.isOpened"
@@ -18,15 +33,7 @@
 				@formClosed="closeInstitutionModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewInstitution"
-		>
-			Add
-		</b-button>
+
 		<InstitutionsList
 			ref="institutionList"
 			@onRemove="removeInstitution"
