@@ -505,7 +505,6 @@ export default {
 
 		showDetail(id) {
 			this.mapHouseholdDetail(this.table.data.find((item) => item.id === id));
-			console.log(this.householdModel);
 			this.householdDetailModal.isOpened = true;
 		},
 
