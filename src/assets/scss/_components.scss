@@ -9,6 +9,20 @@
 	}
 }
 
+.b-steps .steps {
+	margin-bottom: 1rem;
+
+	.step-items .step-item {
+		.step-marker {
+			border-color: $grey;
+		}
+
+		.step-details {
+			margin-top: .5rem;
+		}
+	}
+}
+
 .b-table {
 	.is-hoverable {
 		cursor: pointer;

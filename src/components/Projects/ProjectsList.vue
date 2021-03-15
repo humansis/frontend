@@ -1,62 +1,63 @@
 <template>
-	<div>
-		<Table
-			has-reset-sort
-			has-search
-			:key="resetSortKey"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="goToDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					:sortable="column.sortable"
-					v-bind="column"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
+	<Table
+		has-reset-sort
+		has-search
+		:key="resetSortKey"
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="goToDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				:sortable="column.sortable"
+				v-bind="column"
+				:key="column.id"
 				v-slot="props"
-				label="Actions"
-				centered
-				width="180"
 			>
-				<div class="block">
-					<ActionButton
-						icon="search"
-						type="is-info"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						tooltip="Edit"
-						@click.native="edit(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="Project"
-						tooltip="Delete"
-						:disabled="!props.row.deletable"
-						:id="props.row.id"
-						@submitted="onDelete"
-					/>
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
-				</div>
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
-		</Table>
-	</div>
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			centered
+			width="180"
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					tooltip="Edit"
+					@click.native="edit(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					entity="Project"
+					tooltip="Delete"
+					:disabled="!props.row.deletable"
+					:id="props.row.id"
+					@submitted="onDelete"
+				/>
+				<ActionButton
+					icon="copy"
+					type="is-dark"
+					tooltip="Print"
+				/>
+			</div>
+		</b-table-column>
+	</Table>
 </template>
 
 <script>

@@ -31,34 +31,29 @@
 		<div class="buttons space-between">
 			<b-button
 				v-if="addButton"
-				class="mb-5"
-				size="is-medium"
-				type="is-danger"
+				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal"
 			>
 				Add
 			</b-button>
-			<b-field v-if="changeButton" class="mb-5">
+			<b-field v-if="changeButton">
 				<p class="control">
-					<button class="button is-danger is-medium">
+					<b-button>
 						<b-icon icon="exchange-alt" />
-						<span>
-							Change
-						</span>
-					</button>
+						<span>Change</span>
+					</b-button>
 				</p>
 				<b-numberinput
 					expanded
-					size="is-medium"
 					placeholder="%"
+					type="is-dark"
 					controls-position="compact"
 					controls-alignment="right"
 				/>
 			</b-field>
 			<ExportButton
 				v-if="exportButton"
-				type="is-primary"
 				class="is-pulled-right"
 				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 				@exportData="exportAssistance"

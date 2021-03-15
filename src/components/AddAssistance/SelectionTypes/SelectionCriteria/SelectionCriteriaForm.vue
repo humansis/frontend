@@ -69,6 +69,7 @@
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 				/>

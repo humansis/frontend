@@ -60,6 +60,7 @@
 			<b-numberinput
 				v-model="minimumSelectionScore"
 				expanded
+				type="is-dark"
 				controls-alignment="right"
 				controls-position="compact"
 			/>

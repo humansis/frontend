@@ -1,6 +1,23 @@
 <template>
 	<div>
 		<ProjectSummary />
+
+		<div class="level">
+			<div class="level-left">
+				<h2 class="title">Project Assistances</h2>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="goToAddAssistance"
+				>
+					New
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			header="Assistance Detail"
@@ -15,16 +32,7 @@
 				@formSubmitted="editAssistance"
 			/>
 		</Modal>
-		<h2 class="title">Project Assistances</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="goToAddAssistance"
-		>
-			New
-		</b-button>
+
 		<AssistancesList
 			@onRemove="removeAssistance"
 			@onPrint="printAssistance"

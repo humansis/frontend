@@ -137,6 +137,7 @@
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 					expanded
@@ -165,7 +166,7 @@
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				type="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
