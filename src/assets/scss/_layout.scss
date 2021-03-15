@@ -6,8 +6,11 @@
 .breadcrumb {
 	display: flex;
 
-	.breadcrumb-item::before {
-		margin-right: .75rem;
+	.breadcrumb-item span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 .75em;
 	}
 
 	.active {
@@ -56,23 +59,44 @@ aside.aside {
 		background: #fbfcfc;
 	}
 
-	&.is-expanded,
-	&:hover:not(.is-expanded) {
+	&.is-expanded {
 		width: 15rem;
 
-		.menu-list .icon {
-			width: 3rem;
+		.menu-list {
+			.icon {
+				width: 3rem;
+			}
+
+			li a {
+				.tooltip-content {
+					display: none;
+				}
+			}
 		}
 	}
 
-	&:not(.is-expanded) .menu-list ul .icon {
-		width: 3.5rem;
+	&:not(.is-expanded) .menu-list {
+		li a {
+			.tooltip-trigger {
+				display: none;
+			}
+
+			&:not(:hover) .tooltip-content {
+				display: none;
+			}
+		}
+
+		ul {
+			.icon {
+				width: 3.5rem;
+			}
+
+			.tooltip-content {
+				margin-left: .75rem;
+			}
+		}
 	}
 
-	&:not(:hover) .aside-container.is-expanded .menu-list li a span:nth-child(2),
-	&:not(:hover):not(.is-expanded) .menu-list li a span:nth-child(2) {
-		display: none;
-	}
 
 	.menu-list a {
 		display: flex;
