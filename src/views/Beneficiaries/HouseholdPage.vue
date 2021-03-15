@@ -21,8 +21,8 @@
 						<div class="media">
 							<b-icon class="media-left" icon="upload" />
 							<div class="media-content">
-								<h2>Import</h2>
 								<small>Import from file</small>
+								<h2>Import</h2>
 							</div>
 						</div>
 					</b-dropdown-item>
@@ -30,8 +30,8 @@
 						:value="false"
 						@click="goToCreatePage"
 					>
-						<div class="media">
 							<b-icon class="media-left" icon="user-plus" />
+						<div class="media">
 							<div class="media-content">
 								<h2>Add Beneficiary</h2>
 								<small>Create household form</small>
@@ -42,6 +42,19 @@
 			</div>
 		</div>
 
+		<Modal
+			can-cancel
+			header="Household Detail"
+			:active="householdDetailModal.isOpened"
+			@close="closeHouseholdDetailModal"
+		>
+			<HouseholdDetail
+				close-button
+				:form-model="householdModel"
+				class="modal-card"
+				@formClosed="closeHouseholdDetailModal"
+			/>
+		</Modal>
 		<Table
 			ref="householdList"
 			has-reset-sort
@@ -84,7 +97,7 @@
 						icon="search"
 						type="is-primary"
 						tooltip="Go To Detail"
-						@click.native="goToSummaryDetail(props.row.id)"
+						@click.native="showDetail(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
@@ -142,6 +155,7 @@
 import ColumnField from "@/components/DataGrid/ColumnField";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectsService from "@/services/ProjectsService";
@@ -151,6 +165,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
 import addressHelper from "@/mixins/addressHelper";
+import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -158,12 +173,14 @@ export default {
 	name: "HouseholdPage",
 
 	components: {
+		HouseholdDetail,
 		ExportButton,
 		Table,
 		ActionButton,
 		HouseholdsFilters,
 		SafeDelete,
 		ColumnField,
+		Modal,
 	},
 
 	mixins: [grid, addressHelper],
@@ -193,6 +210,15 @@ export default {
 			},
 			checkedRows: [],
 			filters: {},
+			householdDetailModal: {
+				isOpened: false,
+			},
+			householdModel: {},
+			options: {
+				assets: [],
+				shelterStatuses: [],
+				externalSupportReceivedType: [],
+			},
 		};
 	},
 
@@ -471,6 +497,22 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			await this.fetchData();
+		},
+
+		closeHouseholdDetailModal() {
+			this.householdDetailModal.isOpened = false;
+		},
+
+		showDetail(id) {
+			this.mapHouseholdDetail(this.table.data.find((item) => item.id === id));
+			console.log(this.householdModel);
+			this.householdDetailModal.isOpened = true;
+		},
+
+		mapHouseholdDetail(household) {
+			this.householdModel = {
+				...household,
+			};
 		},
 	},
 };
