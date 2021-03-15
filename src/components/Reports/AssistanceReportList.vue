@@ -33,35 +33,37 @@
 					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
-				<div class="level-item">
-					<div class="ml-1 columns box" style="width: 80%">
-						<div class="column is-half">
-							<label class="typo__label">Projects</label>
+			<template #filterButton>
+				<div class="level-item level">
+					<div class="level-item">
+						<b-field label="Projects">
 							<MultiSelect
 								v-model="selectedProjectsForFilter"
 								tag-placeholder="Add this as new tag"
 								placeholder="Search"
 								label="name"
 								track-by="id"
+								style="min-width: 16rem"
 								:loading="isProjectsLoading"
 								:options="projects"
 								@input="fetchAssistance"
 							/>
-						</div>
-						<div class="column is-half">
-							<label class="typo__label">Assistance</label>
+						</b-field>
+					</div>
+					<div class="level-item">
+						<b-field label="Assistance">
 							<MultiSelect
 								v-model="selectedAssistanceForFilter"
 								tag-placeholder="Add this as new tag"
 								placeholder="Search"
 								label="name"
 								track-by="id"
+								style="min-width: 16rem"
 								:loading="isAssistanceLoading"
 								:options="options.assistance"
 								@input="fetchAssistancesReports"
 							/>
-						</div>
+						</b-field>
 					</div>
 				</div>
 			</template>

@@ -1,17 +1,16 @@
 <template>
-	<div class="columns">
-		<PeriodFilter
-			ref="periodFilter"
-			class="column is-two-fifths"
-			@periodChanged="$emit('periodChanged', $event)"
-			@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
-		/>
-		<ExportButton
-			class="column m-2"
-			type="is-primary"
-			space-between
-			:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-		/>
+	<div class="level">
+		<div class="level-left">
+			<PeriodFilter
+				ref="periodFilter"
+				@periodChanged="$emit('periodChanged', $event)"
+				@choosePeriodChanged="$emit('choosePeriodChanged', $event)"
+			/>
+		</div>
+
+		<div class="level-right">
+			<ExportButton :formats="{ xlsx: true, csv: true, ods: true, pdf: true}" />
+		</div>
 	</div>
 </template>
 
