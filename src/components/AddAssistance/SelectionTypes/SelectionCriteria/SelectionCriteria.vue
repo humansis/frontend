@@ -14,7 +14,7 @@
 			Selection Criteria
 			<b-button
 				class="mb-5"
-				type="is-success"
+				type="is-primary"
 				icon-left="plus"
 				@click="addCriteria()"
 			>

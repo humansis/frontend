@@ -44,14 +44,13 @@
 			>
 				<div class="buttons flex-end">
 					<b-button
-						type="is-danger is-light"
-						:disabled="previous.disabled"
+						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
 						Back
 					</b-button>
 					<b-button
-						type="is-success"
+						type="is-primary"
 						:disabled="next.disabled"
 						@click.prevent="nextPage(next)"
 					>

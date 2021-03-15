@@ -8,6 +8,7 @@
 					@showComponent="onShowComponent"
 				/>
 			</div>
+
 			<div class="column is-three-fifths">
 				<SelectionCriteria
 					v-if="visibleComponents.selectionCriteria"
@@ -32,9 +33,10 @@
 				/>
 			</div>
 		</div>
-		<div class="buttons">
-			<b-button type="is-danger is-light" @click="goBack">Cancel</b-button>
-			<b-button type="is-success" @click="submitAddingAssistance">Create</b-button>
+
+		<div class="buttons flex-end">
+			<b-button @click="goBack">Cancel</b-button>
+			<b-button type="is-primary" @click="submitAddingAssistance">Create</b-button>
 		</div>
 	</div>
 </template>

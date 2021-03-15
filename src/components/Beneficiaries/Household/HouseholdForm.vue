@@ -66,6 +66,7 @@
 						v-model="formModel.livelihood.debtLevel"
 						expanded
 						min="0"
+						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.debtLevel')"
@@ -100,6 +101,7 @@
 						v-model="formModel.livelihood.foodConsumptionScore"
 						expanded
 						min="0"
+						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.foodConsumptionScore')"
@@ -115,6 +117,7 @@
 						v-model="formModel.livelihood.copingStrategiesIndex"
 						expanded
 						min="0"
+						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
 						@input="validate('livelihood.copingStrategiesIndex')"

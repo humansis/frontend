@@ -41,7 +41,7 @@
 				<div class="column">
 					<b-field>
 						<b-button
-							type="is-success"
+							type="is-primary"
 							icon-left="plus"
 							@click="addTranslation"
 						>
