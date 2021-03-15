@@ -1,41 +1,47 @@
 <template>
 	<div>
-		<h2 class="title">Households</h2>
-		<b-dropdown>
-			<b-button
-				class="mb-5"
-				size="is-medium"
-				type="is-danger"
-				icon-left="plus"
-				slot="trigger"
-			>
-				<span>Create</span>
-			</b-button>
-			<b-dropdown-item
-				:value="false"
-				@click="goToImportPage"
-			>
-				<div class="media">
-					<b-icon class="media-left" icon="upload" />
-					<div class="media-content">
-						<h2>Import</h2>
-						<small>Import from file</small>
-					</div>
-				</div>
-			</b-dropdown-item>
-			<b-dropdown-item
-				:value="false"
-				@click="goToCreatePage"
-			>
-				<div class="media">
-					<b-icon class="media-left" icon="user-plus" />
-					<div class="media-content">
-						<h2>Add Beneficiary</h2>
-						<small>Create household form</small>
-					</div>
-				</div>
-			</b-dropdown-item>
-		</b-dropdown>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Households</h1>
+			</div>
+
+			<div class="level-right">
+				<b-dropdown position="is-bottom-left">
+					<b-button
+						type="is-primary"
+						icon-left="plus"
+						slot="trigger"
+					>
+						<span>Create</span>
+					</b-button>
+					<b-dropdown-item
+						:value="false"
+						@click="goToImportPage"
+					>
+						<div class="media">
+							<b-icon class="media-left" icon="upload" />
+							<div class="media-content">
+								<h2>Import</h2>
+								<small>Import from file</small>
+							</div>
+						</div>
+					</b-dropdown-item>
+					<b-dropdown-item
+						:value="false"
+						@click="goToCreatePage"
+					>
+						<div class="media">
+							<b-icon class="media-left" icon="user-plus" />
+							<div class="media-content">
+								<h2>Add Beneficiary</h2>
+								<small>Create household form</small>
+							</div>
+						</div>
+					</b-dropdown-item>
+				</b-dropdown>
+			</div>
+		</div>
+
 		<Table
 			ref="householdList"
 			has-reset-sort
@@ -53,6 +59,10 @@
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
 		>
+			<template #progress>
+				<b-progress :value="table.progress" format="percent" />
+			</template>
+
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
@@ -69,16 +79,15 @@
 				width="150"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="search"
-						type="is-info"
+						type="is-primary"
 						tooltip="Go To Detail"
 						@click.native="goToSummaryDetail(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
-						type="is-link"
 						tooltip="Edit"
 						@click.native="editHousehold(props.row.id)"
 					/>
@@ -91,7 +100,8 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
+
+			<template #filterButton>
 				<div class="column">
 					<button
 						class="button"
@@ -106,26 +116,23 @@
 					</button>
 				</div>
 			</template>
-			<template slot="export">
+
+			<template #export>
 				<div class="column is-two-fifths">
 					<ExportButton
-						type="is-success"
-						size="is-default"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 						@exportData="exportHousehold"
 					/>
 				</div>
 			</template>
-			<template slot="filter">
+
+			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<HouseholdsFilters
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
-			</template>
-			<template slot="progress">
-				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>
 	</div>

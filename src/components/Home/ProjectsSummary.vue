@@ -1,17 +1,16 @@
 <template>
-	<div>
+	<div class="mb-6">
 		<h2 class="title">Projects summary</h2>
-		<div
-			class="columns is-multiline projects-summary"
-			ref="projectsSummary"
-		>
+
+		<div class="level-left">
 			<div
 				v-for="{id, name, target} in projectsSummary"
-				class="column is-3"
+				class="level-item has-text-centered"
+				ref="projectsSummary"
 				:key="id"
 			>
 				<div class="box">
-					<p class="title is-6">{{ normalizeText(name) }}</p>
+					<p class="heading">{{ normalizeText(name) }}</p>
 					<p class="subtitle is-4">{{ target }}</p>
 				</div>
 			</div>
@@ -64,14 +63,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.columns {
-	margin-bottom: 20px;
-}
-
-.projects-summary {
-	min-height: 70px;
-	position: relative;
-}
-</style>

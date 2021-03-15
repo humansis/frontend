@@ -20,4 +20,7 @@ new Vue({
 	store,
 	i18n,
 	render: (h) => h(App),
+	mounted() {
+		document.documentElement.classList.remove("has-spinner-active");
+	},
 }).$mount("#app");

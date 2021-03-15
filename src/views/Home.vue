@@ -1,14 +1,17 @@
 <template>
 	<div>
-		<div class="columns">
-			<div class="column is-three-fifths">
+		<div class="columns is-multiline">
+			<div class="column is-full is-half-fullhd">
 				<DistributionMap />
 			</div>
-			<div class="column">
+
+			<div class="column is-full is-half-fullhd">
 				<Summary />
 			</div>
 		</div>
+
 		<ProjectsSummary />
+
 		<UpcomingAssistances />
 	</div>
 </template>

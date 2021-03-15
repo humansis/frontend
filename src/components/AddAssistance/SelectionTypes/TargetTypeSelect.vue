@@ -21,8 +21,8 @@
 					@select="validate('communities')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.code }}
 					</template>
@@ -50,8 +50,8 @@
 					@select="validate('institutions')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.code }}
 					</template>

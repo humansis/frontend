@@ -28,32 +28,27 @@
 				</section>
 			</b-upload>
 		</b-field>
-		<div class="columns is-12">
-			<div class="column is-11">
-				<b-taglist v-for="(file, index) in dropFiles" attached :key="index">
-					<b-tag  size="is-large" type="is-dark">
-						<b-icon icon="file-alt" size="is-medium" />
-					</b-tag>
-					<b-tag size="is-large" type="is-info">
-						{{file.name}}
-						<button
-							class="delete is-medium"
-							type="button"
-							@click="deleteDropFile(index)"
-						/>
-					</b-tag>
-				</b-taglist>
-			</div>
-			<div class="column buttons">
-				<b-button
-					v-if="dropFiles.length"
-					icon-left="file-import"
-					type="is-danger"
-				>
-					Import
-				</b-button>
-			</div>
-		</div>
+
+		<b-taglist v-for="(file, index) in dropFiles" attached :key="index">
+			<b-tag
+				size="is-medium"
+				type="is-dark"
+				close-type='is-danger'
+				closable
+				attached
+				@close="deleteDropFile(index)"
+			>
+				<b-icon icon="file-alt" />
+				{{ file.name }}
+			</b-tag>
+		</b-taglist>
+		<b-button
+			v-if="dropFiles.length"
+			icon-left="file-import"
+			type="is-danger"
+		>
+			Import
+		</b-button>
 	</div>
 </template>
 
@@ -75,9 +70,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.buttons {
-	text-align: right;
-}
-</style>

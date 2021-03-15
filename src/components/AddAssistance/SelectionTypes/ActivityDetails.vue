@@ -22,6 +22,7 @@
 				<b-numberinput
 					v-model="formModel.householdsTargeted"
 					expanded
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 					:min="0"
@@ -37,6 +38,7 @@
 				<b-numberinput
 					v-model="formModel.individualsTargeted"
 					expanded
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 					:min="0"

@@ -24,15 +24,14 @@
 				</b-table-column>
 			</template>
 			<b-table-column label="Actions">
-				<div class="block">
-					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+				<div class="buttons is-right">
+					<ActionButton icon="search" type="is-primary" tooltip="Show Detail" />
 					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
-				<div class="box column is-four-fifths ml-4" style="width: 78%">
-					<label class="typo__label">Projects</label>
+			<template #filterButton>
+				<b-field label="Projects">
 					<MultiSelect
 						v-model="selectedProjectsForFilter"
 						tag-placeholder="Add this as new tag"
@@ -40,10 +39,11 @@
 						label="name"
 						track-by="id"
 						multiple
+						style="min-width: 16rem"
 						:options="projects"
 						@input="fetchProjectReports"
 					/>
-				</div>
+				</b-field>
 			</template>
 		</Table>
 	</div>

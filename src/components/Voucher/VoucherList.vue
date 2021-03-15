@@ -29,10 +29,10 @@
 				width="145"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
 						icon="search"
-						type="is-info"
+						type="is-primary"
 						tooltip="Show Detail"
 						@click.native="showDetailWithId(props.row.id)"
 					/>
@@ -47,7 +47,7 @@
 					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
+			<template #filterButton>
 				<div class="column">
 					<button
 						class="button"
@@ -62,10 +62,10 @@
 					</button>
 				</div>
 			</template>
-			<template slot="progress">
+			<template #progress>
 				<b-progress :value="table.progress" format="percent" />
 			</template>
-			<template slot="filter">
+			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<VoucherFilters
 						@filtersChanged="onFiltersChange"

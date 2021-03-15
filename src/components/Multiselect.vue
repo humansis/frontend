@@ -3,7 +3,6 @@
 		<b-select
 			v-if="!multiple"
 			class="custom-select"
-			size="is-default"
 			:disabled="disabled"
 			:loading="loading"
 			:expanded="expanded"

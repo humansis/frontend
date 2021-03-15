@@ -103,12 +103,12 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button class="button" type="button" @click="closeForm">
+			<b-button @click="closeForm">
 				Close
-			</button>
+			</b-button>
 			<b-button
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

@@ -1,6 +1,21 @@
 <template>
 	<div>
-		<h2 class="title">Projects</h2>
+		<div class="level">
+			<div class="level-left">
+				<h1 class="title">Projects</h1>
+			</div>
+
+			<div class="level-right">
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addNewProject"
+				>
+					New
+				</b-button>
+			</div>
+		</div>
+
 		<Modal
 			can-cancel
 			:active="projectModal.isOpened"
@@ -18,15 +33,7 @@
 				@formClosed="closeProjectModal"
 			/>
 		</Modal>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="addNewProject"
-		>
-			New
-		</b-button>
+
 		<ProjectsList
 			ref="projectList"
 			:project-model="projectModel"

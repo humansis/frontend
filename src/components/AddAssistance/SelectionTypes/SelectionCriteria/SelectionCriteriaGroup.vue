@@ -1,22 +1,20 @@
 <template>
 	<div>
 		<b-collapse class="card" animation="slide" aria-id="selectionCriteriaGroup">
-			<div
-				slot="trigger"
-				slot-scope="props"
-				class="card-header"
-				role="button"
-				aria-controls="selectionCriteriaGroup"
-			>
-				<p class="card-header-title">
-					{{ groupName }}
-				</p>
-				<a class="card-header-icon">
-					<b-icon
-						:icon="props.open ? 'arrow-down' : 'arrow-up'"
-					/>
-				</a>
-			</div>
+			<template #trigger="props">
+				<div
+					class="card-header"
+					role="button"
+					aria-controls="selectionCriteriaGroup"
+				>
+					<p class="card-header-title">
+						{{ groupName }}
+					</p>
+					<a class="card-header-icon">
+						<b-icon :icon="props.open ? 'arrow-down' : 'arrow-up'" />
+					</a>
+				</div>
+			</template>
 			<div class="card-content">
 				<div class="content">
 					<Table

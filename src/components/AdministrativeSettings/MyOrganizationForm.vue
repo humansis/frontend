@@ -62,7 +62,7 @@
 					:options="fonts"
 					@blur="validate('font')"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span
 								class="option__title"
@@ -72,7 +72,7 @@
 							</span>
 						</div>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span
 								class="option__title"
@@ -128,18 +128,16 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
 				Close
-			</button>
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

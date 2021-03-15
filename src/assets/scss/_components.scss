@@ -1,0 +1,110 @@
+.card-content > .progress-wrapper {
+	position: absolute;
+	top: 0;
+	width: 100%;
+
+	.progress {
+		border-radius: 0;
+		height: .25rem;
+	}
+}
+
+.b-steps .steps {
+	margin-bottom: 1rem;
+
+	.step-items .step-item {
+		.step-marker {
+			border-color: $grey;
+		}
+
+		.step-details {
+			margin-top: .5rem;
+		}
+	}
+}
+
+.b-table {
+	.is-hoverable {
+		cursor: pointer;
+	}
+
+	.table th {
+		vertical-align: middle;
+	}
+}
+
+.table-action {
+	&.button.is-light {
+		background-color: transparent;
+
+		&:hover,
+		&:focus {
+			background-color: #eeeeee;
+		}
+	}
+}
+
+.loading-overlay {
+	z-index: 20;
+}
+
+.modal {
+	.modal-background {
+		background-color: rgb(19 46 48 / 80%);
+		position: fixed !important;
+	}
+
+	.animation-content {
+		width: 100%;
+	}
+
+	.modal-card {
+		width: auto;
+	}
+
+	.small-modal {
+		overflow: visible !important;
+
+		.modal-card-body {
+			overflow: visible !important;
+		}
+
+		.modal-card {
+			overflow: visible !important;
+		}
+
+		.modal-content {
+			overflow: visible !important;
+		}
+	}
+
+	.modal-card-foot {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.modal {
+		position: fixed !important;
+		overflow: auto !important;
+	}
+}
+
+.vue2leaflet-map {
+	z-index: 1;
+}
+
+.vue-multiselect-error {
+	border: 1px solid #f14668;
+	border-radius: 5px;
+}
+
+.vue-multiselect-success {
+	padding-top: -50px;
+	border: 1px solid #48c774;
+	border-radius: 5px;
+}
+
+.multiselect__content {
+	margin-left: 0 !important;
+	margin-top: 0 !important;
+}

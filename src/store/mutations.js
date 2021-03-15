@@ -1,6 +1,37 @@
 import CONST from "@/store/const";
 
 export default {
+	basic(state, payload) {
+		state[payload.key] = payload.value;
+	},
+
+	fullPage(state, payload) {
+		state.isNavBarVisible = !payload;
+		state.isAsideVisible = !payload;
+
+		["has-aside-left", "has-navbar-fixed-top"].forEach((htmlClass) => {
+			if (payload) {
+				document.documentElement.classList.remove(htmlClass);
+			} else {
+				document.documentElement.classList.add(htmlClass);
+			}
+		});
+	},
+
+	asideStateToggle(state, payload = null) {
+		const htmlAsideClassName = "has-aside-expanded";
+
+		const isExpand = payload !== null ? payload : !state.isAsideExpanded;
+
+		if (isExpand) {
+			document.documentElement.classList.add(htmlAsideClassName);
+		} else {
+			document.documentElement.classList.remove(htmlAsideClassName);
+		}
+
+		state.isAsideExpanded = isExpand;
+	},
+
 	[CONST.CHANGE_COUNTRY]: (state, countryToChange) => {
 		state.country = { ...countryToChange };
 	},

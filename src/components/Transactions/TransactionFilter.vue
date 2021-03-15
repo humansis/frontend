@@ -1,5 +1,5 @@
 <template>
-	<div class="mb-5">
+	<div class="px-5 pb-5 has-border-bottom">
 		<div class="columns is-multiline">
 			<div v-for="(filter, name) in filters" :key="name" class="column is-half">
 				<b-field :label="filter.label">
@@ -13,8 +13,8 @@
 						@input="filterChanged"
 					>
 						<template
-							slot="singleLabel"
-							slot-scope="option"
+							#singleLabel
+							v-slot:default="option"
 						>
 							{{ option }}
 						</template>

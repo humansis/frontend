@@ -1,8 +1,8 @@
 <template>
 	<div>
-		<div>
+		<div class="block level">
 			<b-button
-				class="m-2"
+				class="level-item"
 				:active="selectedPeriod === 'year'"
 				@click="selectPeriod('year')"
 			>
@@ -10,7 +10,7 @@
 			</b-button>
 
 			<b-button
-				class="m-2"
+				class="level-item"
 				:active="selectedPeriod === 'quarter'"
 				@click="selectPeriod('quarter')"
 			>
@@ -18,18 +18,22 @@
 			</b-button>
 
 			<b-button
-				class="m-2"
+				class="level-item"
 				:active="selectedPeriod === 'month'"
 				@click="selectPeriod('month')"
 			>
 				Per Month
 			</b-button>
 
-			<b-button class="m-2" @click="showChoosePeriod">
+			<b-button
+				class="level-item"
+				@click="showChoosePeriod"
+			>
 				Choose Period
 			</b-button>
 		</div>
-		<div v-if="showChoosePeriodForm" class="ml-2 mt-5 box">
+
+		<div v-if="showChoosePeriodForm" class="box block">
 			<b-field class="columns">
 				<div class="column is-half">
 					<b-datepicker
@@ -78,7 +82,10 @@ export default {
 		},
 
 		choosePeriod() {
-			this.$emit("choosePeriodChanged", { from: new Date(this.from).toISOString(), to: new Date(this.to).toISOString() });
+			this.$emit("choosePeriodChanged", {
+				from: new Date(this.from).toISOString(),
+				to: new Date(this.to).toISOString(),
+			});
 		},
 	},
 };
@@ -86,6 +93,6 @@ export default {
 
 <style scoped>
 .is-active {
-	background-color: #e3e3e3;
+  background-color: #e3e3e3;
 }
 </style>

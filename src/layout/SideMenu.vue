@@ -1,142 +1,230 @@
 <template>
-	<aside>
-		<b-sidebar
-			fullheight
-			open
-			expand-on-hover
-			reduce
-			:fullwidth="false"
-			:overlay="false"
-			:right="false"
-			:can-cancel="false"
-		>
-			<div class="m-2">
-				<span class="icon">
-					<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
-				</span>
-				<b-menu class="mt-3">
-					<b-menu-list label="Menu">
+	<aside
+		v-show="isAsideVisible"
+		class="aside is-placed-left"
+		:class="{'is-expanded': isAsideExpanded}"
+	>
+		<div ref="container" class="aside-container">
+			<div class="image">
+				<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
+			</div>
+			<div class="menu">
+				<b-menu>
+					<b-menu-list>
 						<b-menu-item
-							label="Home"
 							icon="home"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Home' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Home" position="is-right" always>
+									Home
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Projects"
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Projects' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Projects" position="is-right" always>
+									Projects
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Beneficiaries"
 							icon="user-friends"
 							class="to-dropdown-item"
 						>
+							<template #label>
+								<b-tooltip label="Beneficiaries" position="is-right" always>
+									Beneficiaries
+								</b-tooltip>
+							</template>
 							<b-menu-item
-								label="Households"
 								icon="home"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Households" position="is-right" always>
+										Households
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 							<b-menu-item
-								label="Institutions"
 								icon="building"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Institutions" position="is-right" always>
+										Institutions
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 							<b-menu-item
-								label="Communities"
 								icon="users"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Communities" position="is-right" always>
+										Communities
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 							<b-menu-item
-								label="Vendors"
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Vendors' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Vendors" position="is-right" always>
+										Vendors
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							label="Reports"
 							icon="chart-line"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Reports' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Reports" position="is-right" always>
+									Reports
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Vouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Vouchers' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Vouchers" position="is-right" always>
+									Vouchers
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Configuration"
 							icon="cog"
 							class="to-dropdown-item"
 						>
+							<template #label>
+								<b-tooltip label="Configuration" position="is-right" always>
+									Configuration
+								</b-tooltip>
+							</template>
 							<b-menu-item
-								label="Products"
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Products' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Products" position="is-right" always>
+										Products
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 							<b-menu-item
-								label="Country specifics"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'CountrySpecificOptions' }"
-							/>
+							>
+								<template #label>
+									<b-tooltip label="Country specifics" position="is-right" always>
+										Country specifics
+									</b-tooltip>
+								</template>
+							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							label="Administrative Settings"
 							icon="wrench"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Administrative Settings' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Administrative Settings" position="is-right" always>
+									Administrative Settings
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<!--
 						<b-menu-item
-							label="Transactions"
 							icon="credit-card"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Transactions' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Transactions" position="is-right" always>
+									Transactions
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Jobs"
 							icon="briefcase"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Jobs' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Jobs" position="is-right" always>
+									Jobs
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						<b-menu-item
-							label="Logs"
 							icon="eye"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Logs' }"
-						/>
+						>
+							<template #label>
+								<b-tooltip label="Logs" position="is-right" always>
+									Logs
+								</b-tooltip>
+							</template>
+						</b-menu-item>
 						-->
 					</b-menu-list>
 				</b-menu>
 			</div>
-		</b-sidebar>
+		</div>
 	</aside>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-	name: "SideBar",
+	name: "SideMenu",
+
+	computed: {
+		...mapState([
+			"isAsideVisible",
+			"isAsideExpanded",
+		]),
+	},
+
+	created() {
+		if (this.isAsideExpanded) {
+			this.$store.commit("asideStateToggle");
+		}
+	},
 };
 </script>

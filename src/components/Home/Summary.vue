@@ -1,6 +1,7 @@
 <template>
-	<div>
+	<div class="mb-4">
 		<h2 class="title">Summary</h2>
+
 		<div class="columns is-multiline" ref="summary">
 			<div
 				v-for="{ id, code, value, icon } in summary"
@@ -9,19 +10,19 @@
 				:key="id"
 			>
 				<div class="box">
-					<article class="media">
+					<article class="media is-align-items-center">
 						<div class="media-left">
 							<b-icon
-								size="is-large"
+								size="is-medium"
 								type="is-primary"
 								:icon="icon"
 							/>
 						</div>
-						<div class="media-content">
+						<div class="level-left">
 							<div class="content">
-								<p class="title is-6 mb-5">{{ normalizeText(code) }}</p>
-								<p v-if="value || value === 0" class="subtitle is-4 p-0 ml-0">{{ value }}</p>
-								<Loading v-else type="bubbles" is-small class="subtitle p-0 ml-0" />
+								<p class="heading mb-0">{{ normalizeText(code) }}</p>
+								<p v-if="value || value === 0" class="subtitle is-4">{{ value }}</p>
+								<Loading v-else type="bubbles" is-small class="subtitle" />
 							</div>
 						</div>
 					</article>

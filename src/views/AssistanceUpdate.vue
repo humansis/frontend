@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<AssistanceSummary :beneficiaries="beneficiaries" @assistanceLoaded="assistanceLoaded" />
+
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -45,31 +46,27 @@
 				<ValidateAndLock />
 			</b-step-item>
 
-			<template
-				slot="navigation"
-				slot-scope="{previous, next}"
-			>
+			<template #navigation="{previous, next}">
 				<div
 					v-show="activeStep !== 1"
 					class="buttons flex-end"
 				>
 					<b-button
-						type="is-danger is-light"
-						:disabled="previous.disabled"
+						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
 						Back
 					</b-button>
 					<b-button
-						type="is-success"
-						:disabled="next.disabled"
+						type="is-primary"
+						v-show="!next.disabled"
 						@click.prevent="nextPage(next)"
 					>
 						Next
 					</b-button>
 					<b-button
 						v-show="activeStep === 3"
-						type="is-danger"
+						type="is-primary"
 						icon-left="lock"
 						@click.prevent="validate"
 					>
