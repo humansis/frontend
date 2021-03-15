@@ -1,8 +1,9 @@
 <template>
 	<CardComponent class="has-table" :title="title">
 		<slot name="progress">
-			<b-progress	value="100" format="percent" />
+			<b-progress	:value="100" format="percent" />
 		</slot>
+
 		<slot name="tableHeader">
 			<div class="level p-4 has-border-bottom">
 				<div class="level-left">
@@ -31,7 +32,9 @@
 				</slot>
 			</div>
 		</slot>
+
 		<slot name="filter" />
+
 		<b-table
 			striped
 			hoverable
@@ -62,6 +65,7 @@
 			@sort="$emit('sorted', $event)"
 		>
 			<slot />
+
 			<template v-if="paginated" #bottom-left>
 				<p style="width: 120px;">Per Page: </p>
 				<MultiSelect

@@ -53,10 +53,9 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="export">
+			<template #export>
 				<div class="column">
 					<ExportButton
-						type="is-primary"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 					/>

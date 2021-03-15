@@ -62,7 +62,7 @@
 					:options="fonts"
 					@blur="validate('font')"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span
 								class="option__title"
@@ -72,7 +72,7 @@
 							</span>
 						</div>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span
 								class="option__title"

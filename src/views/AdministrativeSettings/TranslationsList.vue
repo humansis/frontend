@@ -37,18 +37,14 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="export">
-				<div class="column">
-					<b-field>
-						<b-button
-							type="is-primary"
-							icon-left="plus"
-							@click="addTranslation"
-						>
-							Add Translation
-						</b-button>
-					</b-field>
-				</div>
+			<template #export>
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addTranslation"
+				>
+					Add Translation
+				</b-button>
 			</template>
 		</Table>
 

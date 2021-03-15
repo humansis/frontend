@@ -49,7 +49,7 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
+			<template #filterButton>
 				<div class="level-item">
 					<button
 						class="button"
@@ -64,7 +64,7 @@
 					</button>
 				</div>
 			</template>
-			<template slot="filter">
+			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<CommunitiesFilter
 						@filtersChanged="onFiltersChange"

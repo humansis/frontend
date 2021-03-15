@@ -105,7 +105,7 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="progress">
+			<template #progress>
 				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>

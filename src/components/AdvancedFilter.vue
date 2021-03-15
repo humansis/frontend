@@ -18,8 +18,8 @@
 						@input="filterChanged(filter)"
 					>
 						<template
-							slot="singleLabel"
-							slot-scope="options"
+							#singleLabel
+							v-slot:default="options"
 						>
 							{{ options.option.name }}
 						</template>

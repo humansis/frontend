@@ -37,12 +37,12 @@
 					:class="validateMultiselect('sector')"
 					@select="onSectorSelect"
 				>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
@@ -65,12 +65,12 @@
 					:class="validateMultiselect('subsector')"
 					@select="onSubsectorSelect"
 				>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
@@ -93,12 +93,12 @@
 					:class="validateMultiselect('assistanceType')"
 					@select="onAssistanceTypeSelect"
 				>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
@@ -121,12 +121,12 @@
 					:class="validateMultiselect('targetType')"
 					@input="onTargetTypeSelect"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
@@ -315,7 +315,9 @@ export default {
 
 		async fetchSectors() {
 			await SectorsService.getListOfSectors()
-				.then(({ data }) => { this.options.sectors = data; })
+				.then(({ data }) => {
+					this.options.sectors = data;
+				})
 				.catch((e) => {
 					Notification(`Sectors ${e}`, "is-danger");
 				});
@@ -325,7 +327,9 @@ export default {
 		async fetchSubsectors(code) {
 			this.loading.subsectors = true;
 			await SectorsService.getListOfSubSectors(code)
-				.then(({ data }) => { this.options.subsectors = data; })
+				.then(({ data }) => {
+					this.options.subsectors = data;
+				})
 				.catch((e) => {
 					Notification(`Subsectors ${e}`, "is-danger");
 				});
@@ -335,7 +339,9 @@ export default {
 		async fetchAssistanceTypes() {
 			this.loading.assistanceTypes = true;
 			await AssistancesService.getAssistanceTypes()
-				.then(({ data }) => { this.options.assistanceTypes = data; })
+				.then(({ data }) => {
+					this.options.assistanceTypes = data;
+				})
 				.catch((e) => {
 					Notification(`Assistance Types ${e}`, "is-danger");
 				});
@@ -345,7 +351,9 @@ export default {
 		async fetchTargetTypes() {
 			this.loading.targetTypes = true;
 			await AssistancesService.getTargetTypes()
-				.then(({ data }) => { this.options.targetTypes = data; })
+				.then(({ data }) => {
+					this.options.targetTypes = data;
+				})
 				.catch((e) => {
 					Notification(`Target Types ${e}`, "is-danger");
 				});

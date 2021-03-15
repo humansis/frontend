@@ -41,8 +41,8 @@
 			</b-step-item>
 			<template
 				v-if="true"
-				slot="navigation"
-				slot-scope="{previous, next}"
+				#navigation
+				v-slot:default="{previous, next}"
 			>
 				<div class="buttons flex-end">
 					<b-button

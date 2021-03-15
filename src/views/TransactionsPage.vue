@@ -26,7 +26,7 @@
 					</template>
 				</b-table-column>
 			</template>
-			<template slot="filterButton">
+			<template #filterButton>
 				<div class="column">
 					<button
 						class="button"
@@ -41,7 +41,7 @@
 					</button>
 				</div>
 			</template>
-			<template slot="filter">
+			<template #filter>
 				<b-collapse
 					:open="advancedSearchVisible"
 					animation="slide"

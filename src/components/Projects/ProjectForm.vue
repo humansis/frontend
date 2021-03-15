@@ -44,8 +44,8 @@
 					@select="validate('selectedSectors')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.code }}
 					</template>
@@ -106,8 +106,8 @@
 					@select="validate('selectedDonors')"
 				>
 					<template
-						slot="singleLabel"
-						slot-scope="option"
+						#singleLabel
+						v-slot:default="option"
 					>
 						{{ option.shortname }}
 					</template>
