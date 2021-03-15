@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Add Household</h2>
+		<h1 class="title">Add Household</h1>
 		<HouseholdTabs :is-editing="false" />
 	</div>
 </template>

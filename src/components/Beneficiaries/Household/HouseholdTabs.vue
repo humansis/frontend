@@ -1,5 +1,7 @@
 <template>
-	<div v-if="!loading">
+	<card-component v-if="!loading">
+		<b-progress value="100" />
+
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -67,7 +69,7 @@
 				</div>
 			</template>
 		</b-steps>
-	</div>
+	</card-component>
 </template>
 
 <script>
@@ -77,6 +79,7 @@ import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 
@@ -88,6 +91,7 @@ export default {
 	},
 
 	components: {
+		CardComponent,
 		HouseholdHeadForm,
 		HouseholdForm,
 		Members,

@@ -60,6 +60,10 @@
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
 		>
+			<template #progress>
+				<b-progress :value="table.progress" format="percent" />
+			</template>
+
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
@@ -97,7 +101,8 @@
 					/>
 				</div>
 			</b-table-column>
-			<template slot="filterButton">
+
+			<template #filterButton>
 				<div class="column">
 					<button
 						class="button"
@@ -112,25 +117,23 @@
 					</button>
 				</div>
 			</template>
-			<template slot="export">
+
+			<template #export>
 				<div class="column is-two-fifths">
 					<ExportButton
-						type="is-primary"
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 						@exportData="exportHousehold"
 					/>
 				</div>
 			</template>
-			<template slot="filter">
+
+			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<HouseholdsFilters
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
-			</template>
-			<template slot="progress">
-				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>
 	</div>
