@@ -28,7 +28,8 @@
 					<p class="heading">Date Of Distribution</p>
 					<p
 						v-if="assistance.dateDistribution"
-						class="has-text-weight-bold is-size-5">
+						class="has-text-weight-bold is-size-5"
+					>
 						{{ assistance.dateDistribution }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />
@@ -48,7 +49,8 @@
 					<p class="heading">Target</p>
 					<p
 						v-if="assistanceTarget"
-						class="has-text-weight-bold is-size-5">
+						class="has-text-weight-bold is-size-5"
+					>
 						{{ assistanceTarget }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />
@@ -60,7 +62,8 @@
 					<p class="heading">Commodity</p>
 					<p
 						v-if="assistance.commodity"
-						class="has-text-weight-bold is-size-5">
+						class="has-text-weight-bold is-size-5"
+					>
 						{{ assistance.commodity }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />

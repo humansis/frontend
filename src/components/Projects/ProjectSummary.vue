@@ -24,8 +24,7 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">End Date</p>
-					<p
-						class="has-text-weight-bold is-size-5">
+					<p class="has-text-weight-bold is-size-5">
 						{{ new Date(projectSummary.endDate).toLocaleDateString() }}
 					</p>
 				</div>

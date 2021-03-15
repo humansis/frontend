@@ -1,9 +1,8 @@
 <template>
 	<Table
 		has-reset-sort
-		:title="upcoming && 'Upcoming Assistances'"
+		:title="upcoming ? 'Upcoming Assistances' : ''"
 		:has-search="!upcoming"
-		:key="resetSortKey"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"

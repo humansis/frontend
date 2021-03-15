@@ -48,15 +48,11 @@
 					v-model="randomSampleSize"
 					type="number"
 					placeholder="%"
-					min="1"
 					custom-class="has-text-centered"
+					min="1"
 					max="100"
-					controls-position="compact"
-					controls-alignment="right"
+					icon-right="percent"
 				/>
-				<b-button disabled size="is-medium">
-					<span class="is-size-3">%</span>
-				</b-button>
 			</b-field>
 			<ExportButton
 				v-if="exportButton"
