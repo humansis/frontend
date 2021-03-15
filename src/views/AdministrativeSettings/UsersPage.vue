@@ -20,9 +20,8 @@
 			/>
 		</Modal>
 		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
+			class="mb-4"
+			type="is-primary"
 			icon-left="plus"
 			@click="addNewUser"
 		>

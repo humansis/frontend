@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<b-tabs v-model="selectedTab" size="is-medium">
+		<h1 class="title has-text-centered">Administrative Settings</h1>
+
+		<b-tabs v-model="selectedTab">
 			<b-tab-item
 				label="Users"
 				icon="user"
@@ -45,7 +47,7 @@
 			</b-tab-item>
 			<b-tab-item
 				label="Translations"
-				icon="translation"
+				icon="people-arrows"
 			>
 				<TranslationsList />
 			</b-tab-item>

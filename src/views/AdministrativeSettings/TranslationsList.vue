@@ -51,15 +51,16 @@
 				</div>
 			</template>
 		</Table>
-		<b-button
-			class="mb-5"
-			size="is-normal"
-			type="is-danger"
-			icon-left="save"
-			@click="submit"
-		>
-			Save
-		</b-button>
+
+		<div class="buttons flex-end">
+			<b-button
+				type="is-primary"
+				icon-left="save"
+				@click="submit"
+			>
+				Save
+			</b-button>
+		</div>
 	</div>
 </template>
 
