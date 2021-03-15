@@ -1,140 +1,139 @@
 <template>
 	<div>
-		<h2 class="title">New Assistance</h2>
-		<form>
-			<h2 class="subtitle">Location and Date</h2>
-			<div class="box">
-				<LocationForm
-					ref="locationForm"
-					:form-model="formModel"
-				/>
-				<b-field label="Date of Assistance">
-					<b-datepicker
-						v-model="formModel.dateOfAssistance"
-						show-week-number
-						placeholder="Click to select..."
-						icon="calendar-day"
-						trap-focus
-					/>
-				</b-field>
-			</div>
+		<h1 class="title">New Assistance</h1>
 
-			<h2 class="subtitle">Target</h2>
-			<div class="box">
-				<b-field
-					label="Sector"
-					:type="validateType('sector')"
-					:message="validateMsg('sector')"
+		<h2 class="subtitle">Location and Date</h2>
+		<div class="box">
+			<LocationForm
+				ref="locationForm"
+				:form-model="formModel"
+			/>
+			<b-field label="Date of Assistance">
+				<b-datepicker
+					v-model="formModel.dateOfAssistance"
+					show-week-number
+					placeholder="Click to select..."
+					icon="calendar-day"
+					trap-focus
+				/>
+			</b-field>
+		</div>
+
+		<h2 class="subtitle">Target</h2>
+		<div class="box">
+			<b-field
+				label="Sector"
+				:type="validateType('sector')"
+				:message="validateMsg('sector')"
+			>
+				<MultiSelect
+					v-model="formModel.sector"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:loading="loading.sectors"
+					:options="options.sectors"
+					:class="validateMultiselect('sector')"
+					@select="onSectorSelect"
 				>
-					<MultiSelect
-						v-model="formModel.sector"
-						searchable
-						label="value"
-						track-by="code"
-						placeholder="Click to select..."
-						:loading="loading.sectors"
-						:options="options.sectors"
-						:class="validateMultiselect('sector')"
-						@select="onSectorSelect"
-					>
-						<template slot="option" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-						<template slot="singleLabel" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-				<b-field
-					label="Subsector"
-					:type="validateType('subsector')"
-					:message="validateMsg('subsector')"
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
+			<b-field
+				label="Subsector"
+				:type="validateType('subsector')"
+				:message="validateMsg('subsector')"
+			>
+				<MultiSelect
+					v-model="formModel.subsector"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:loading="loading.subsectors"
+					:options="options.subsectors"
+					:class="validateMultiselect('subsector')"
+					@select="onSubsectorSelect"
 				>
-					<MultiSelect
-						v-model="formModel.subsector"
-						searchable
-						label="value"
-						track-by="code"
-						placeholder="Click to select..."
-						:loading="loading.subsectors"
-						:options="options.subsectors"
-						:class="validateMultiselect('subsector')"
-						@select="onSubsectorSelect"
-					>
-						<template slot="option" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-						<template slot="singleLabel" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-				<b-field
-					label="Assistance Type"
-					:type="validateType('assistanceType')"
-					:message="validateMsg('assistanceType')"
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
+			<b-field
+				label="Assistance Type"
+				:type="validateType('assistanceType')"
+				:message="validateMsg('assistanceType')"
+			>
+				<MultiSelect
+					v-model="formModel.assistanceType"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:loading="loading.assistanceTypes"
+					:options="options.assistanceTypes"
+					:class="validateMultiselect('assistanceType')"
+					@select="onAssistanceTypeSelect"
 				>
-					<MultiSelect
-						v-model="formModel.assistanceType"
-						searchable
-						label="value"
-						track-by="code"
-						placeholder="Click to select..."
-						:loading="loading.assistanceTypes"
-						:options="options.assistanceTypes"
-						:class="validateMultiselect('assistanceType')"
-						@select="onAssistanceTypeSelect"
-					>
-						<template slot="option" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-						<template slot="singleLabel" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-				<b-field
-					label="Target Type"
-					:type="validateType('targetType')"
-					:message="validateMsg('targetType')"
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
+			<b-field
+				label="Target Type"
+				:type="validateType('targetType')"
+				:message="validateMsg('targetType')"
+			>
+				<MultiSelect
+					v-model="formModel.targetType"
+					searchable
+					label="value"
+					track-by="code"
+					placeholder="Click to select..."
+					:loading="loading.targetTypes"
+					:options="options.targetTypes"
+					:class="validateMultiselect('targetType')"
+					@input="onTargetTypeSelect"
 				>
-					<MultiSelect
-						v-model="formModel.targetType"
-						searchable
-						label="value"
-						track-by="code"
-						placeholder="Click to select..."
-						:loading="loading.targetTypes"
-						:options="options.targetTypes"
-						:class="validateMultiselect('targetType')"
-						@input="onTargetTypeSelect"
-					>
-						<template slot="singleLabel" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-						<template slot="option" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-			</div>
-		</form>
+					<template slot="singleLabel" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template slot="option" slot-scope="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
+		</div>
 	</div>
 </template>
 

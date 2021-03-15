@@ -30,16 +30,16 @@
 		</b-field>
 
 		<b-taglist v-for="(file, index) in dropFiles" attached :key="index">
-			<b-tag  size="is-large" type="is-dark">
-				<b-icon icon="file-alt" size="is-medium" />
-			</b-tag>
-			<b-tag size="is-large" type="is-info">
-				{{file.name}}
-				<button
-					class="delete is-medium"
-					type="button"
-					@click="deleteDropFile(index)"
-				/>
+			<b-tag
+				size="is-medium"
+				type="is-dark"
+				close-type='is-danger'
+				closable
+				attached
+				@close="deleteDropFile(index)"
+			>
+				<b-icon icon="file-alt" />
+				{{ file.name }}
 			</b-tag>
 		</b-taglist>
 		<b-button
