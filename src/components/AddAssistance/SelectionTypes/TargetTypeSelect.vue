@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="mt-5">
 		<h2 class="subtitle">{{ title }}</h2>
 		<form class="box">
 			<b-field
@@ -66,7 +66,7 @@ import validation from "@/mixins/validation";
 import InstitutionsService from "@/services/InstitutionsService";
 import { Notification } from "@/utils/UI";
 import CommunitiesService from "@/services/CommunitiesService";
-import { required } from "vuelidate/lib/validators";
+import { requiredIf } from "vuelidate/lib/validators";
 import addressHelper from "@/mixins/addressHelper";
 import { normalizeText } from "@/utils/datagrid";
 
@@ -76,12 +76,15 @@ export default {
 	mixins: [validation, addressHelper],
 
 	props: {
-		formModel: Object,
 		visible: Object,
 	},
 
 	data() {
 		return {
+			formModel: {
+				communities: [],
+				institutions: [],
+			},
 			options: {
 				communities: [],
 				institutions: [],
@@ -105,9 +108,30 @@ export default {
 
 	validations: {
 		formModel: {
-			communities: { required },
-			institutions: { required },
+			// eslint-disable-next-line func-names
+			communities: { required: requiredIf(function () {
+				return this.visible?.communities;
+			}) },
+			// eslint-disable-next-line func-names
+			institutions: { required: requiredIf(function () {
+				return this.visible?.institutions;
+			}) },
 		},
+	},
+
+	updated() {
+		const communities = [];
+		const institutions = [];
+
+		if (this.formModel.communities.length) {
+			this.formModel.communities.forEach(({ id }) => communities.push(id));
+		}
+
+		if (this.formModel.institutions.length) {
+			this.formModel.institutions.forEach(({ id }) => institutions.push(id));
+		}
+
+		this.$emit("updatedData", { communities, institutions });
 	},
 
 	mounted() {
@@ -115,6 +139,11 @@ export default {
 	},
 
 	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
+		},
+
 		async fetchData() {
 			if (this.visible?.communities) await this.fetchCommunities();
 			if (this.visible?.institutions) await this.fetchInstitutions();
@@ -145,21 +174,27 @@ export default {
 		async prepareCommunitiesForSelect(data) {
 			const filledData = [];
 			const addressesIds = [];
+
 			data.forEach((item, key) => {
 				filledData[key] = item;
 				addressesIds.push(item.addressId);
 			});
+
 			const mappedLocations = await this.getPreparedLocations(addressesIds);
+
 			filledData.forEach((item, key) => {
 				filledData[key].name = this.prepareEntityForTable(item.addressId, mappedLocations, "locationName");
 			});
+
 			return filledData;
 		},
 
 		prepareInstitutionsForSelect(data) {
 			const groups = [];
+
 			data.forEach((item) => {
 				const group = groups.find((g) => g.name === item.type);
+
 				if (!group) {
 					groups.push({
 						name: item.type,
@@ -171,6 +206,7 @@ export default {
 					groups[index].data.push(item);
 				}
 			});
+
 			return groups;
 		},
 	},

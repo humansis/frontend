@@ -56,10 +56,19 @@ import { requiredIf } from "vuelidate/lib/validators";
 export default {
 	name: "ActivityDetails",
 
+	data() {
+		return {
+			formModel: {
+				activityDescription: "",
+				householdsTargeted: 0,
+				individualsTargeted: 0,
+			},
+		};
+	},
+
 	mixins: [validation],
 
 	props: {
-		formModel: Object,
 		visible: Object,
 	},
 
@@ -77,6 +86,17 @@ export default {
 			individualsTargeted: { required: requiredIf(function () {
 				return this.visible.individualsTargeted;
 			}) },
+		},
+	},
+
+	updated() {
+		this.$emit("updatedData", this.formModel);
+	},
+
+	methods: {
+		submit() {
+			this.$v.$touch();
+			return !this.$v.$invalid;
 		},
 	},
 };

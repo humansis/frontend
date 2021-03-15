@@ -46,12 +46,11 @@
 				<ValidateAndLock />
 			</b-step-item>
 
-			<template
-				v-if="true"
-				#navigation
-				v-slot:default="{previous, next}"
-			>
-				<div class="buttons flex-end">
+			<template #navigation="{previous, next}">
+				<div
+					v-show="activeStep !== 1"
+					class="buttons flex-end"
+				>
 					<b-button
 						v-show="!previous.disabled"
 						@click.prevent="previous.action"

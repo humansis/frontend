@@ -19,7 +19,7 @@
 				<div class="content">
 					<Table
 						:paginated="false"
-						:data="data"
+						:data="criteriaGroups"
 					>
 						<template v-for="(column) in table.columns">
 							<b-table-column
@@ -63,6 +63,8 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import LocationsService from "@/services/LocationsService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "SelectionCriteriaGroup",
@@ -83,6 +85,20 @@ export default {
 		groupName() {
 			return `Group ${(this.groupId + 1)}`;
 		},
+
+		criteriaGroups() {
+			const criteriaGroups = this.data.map((
+				{ criteria, criteriaTarget, value, scoreWeight, condition },
+			) => ({
+				criteriaTarget: criteriaTarget?.value,
+				criteria: criteria?.code,
+				value: this.prepareCriteriaValue(value),
+				scoreWeight,
+				condition: condition?.code,
+			}));
+
+			return criteriaGroups || [];
+		},
 	},
 
 	data() {
@@ -94,13 +110,35 @@ export default {
 					{ field: "condition", label: "Condition" },
 					{ field: "value", label: "Value", type: "customValue" },
 					{ field: "scoreWeight", label: "Score Weight" },
-					{ field: "action", label: "Action" },
 				],
 			},
+			criteriaLocation: "",
 		};
 	},
 
 	methods: {
+		prepareCriteriaValue(value) {
+			let newValue = value?.code || value;
+
+			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
+				const locationId = Number(newValue.replace("locationId-", ""));
+				this.fetchLocation(locationId);
+				newValue = this.criteriaLocation;
+			}
+
+			return newValue;
+		},
+
+		async fetchLocation(id) {
+			await LocationsService.getLocation(id)
+				.then((data) => {
+					this.criteriaLocation = data?.code;
+				})
+				.catch((e) => {
+					Notification(`Location ${e}`, "is-danger");
+				});
+		},
+
 		remove(index) {
 			this.data.splice(index, 1);
 		},

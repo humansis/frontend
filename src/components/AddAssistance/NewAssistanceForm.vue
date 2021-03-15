@@ -152,25 +152,20 @@ export default {
 
 	components: { LocationForm },
 
-	updated() {
-		// TODO Emit only if form is validated else emit false
-		this.$emit("updatedData", this.formModel);
-	},
-
 	mixins: [Validation],
 
 	data() {
 		return {
 			formModel: {
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
+				adm1Id: null,
+				adm2Id: null,
+				adm3Id: null,
+				adm4Id: null,
 				dateOfAssistance: new Date(),
-				sector: [],
-				subsector: [],
-				targetType: [],
-				assistanceType: [],
+				sector: null,
+				subsector: null,
+				targetType: null,
+				assistanceType: null,
 			},
 			options: {
 				sectors: [],
@@ -189,18 +184,11 @@ export default {
 
 	validations: {
 		formModel: {
-			target: {
-				required,
-			},
-			adm1: {},
-			adm2: {},
-			adm3: {},
-			adm4: {},
-			dateOfAssistance: {},
-			sector: {},
-			subsector: {},
-			targetType: {},
-			assistanceType: {},
+			dateOfAssistance: { required },
+			sector: { required },
+			subsector: { required },
+			targetType: { required },
+			assistanceType: { required },
 		},
 	},
 
@@ -208,15 +196,37 @@ export default {
 		this.fetchSectors();
 	},
 
+	updated() {
+		this.$emit("updatedData", this.formModel);
+	},
+
 	methods: {
 		submit() {
 			this.$v.$touch();
-			const validLocationForm = this.$refs.locationForm.submitLocationForm();
-			return this.$v.$invalid || validLocationForm;
+			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
+			return !this.$v.$invalid || (!this.$v.$invalid && !invalidLocationForm);
 		},
 
 		normalizeText(text) {
 			return normalizeText(text);
+		},
+
+		getLocationId() {
+			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
+
+			let locationId = null;
+
+			if (adm4Id) {
+				locationId = adm4Id.locationId;
+			} else if (adm3Id) {
+				locationId = adm3Id.locationId;
+			} else if (adm2Id) {
+				locationId = adm2Id.locationId;
+			} else if (adm1Id) {
+				locationId = adm1Id.locationId;
+			}
+
+			return locationId;
 		},
 
 		onSectorSelect({ code }) {

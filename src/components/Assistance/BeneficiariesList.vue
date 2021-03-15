@@ -23,6 +23,7 @@
 			<EditBeneficiaryForm
 				close-button
 				submit-button-label="Save"
+				class="modal-card"
 				:formModel="editBeneficiaryModel"
 				@formSubmitted="submitEditBeneficiaryForm"
 				@formClosed="closeEditBeneficiaryModal"
@@ -39,18 +40,23 @@
 			</b-button>
 			<b-field v-if="changeButton">
 				<p class="control">
-					<b-button>
+					<b-button rounded @click="randomSample">
 						<b-icon icon="exchange-alt" />
-						<span>Change</span>
 					</b-button>
 				</p>
-				<b-numberinput
-					expanded
+				<b-input
+					v-model="randomSampleSize"
+					type="number"
 					placeholder="%"
-					type="is-dark"
+					min="1"
+					custom-class="has-text-centered"
+					max="100"
 					controls-position="compact"
 					controls-alignment="right"
 				/>
+				<b-button disabled size="is-medium">
+					<span class="is-size-3">%</span>
+				</b-button>
 			</b-field>
 			<ExportButton
 				v-if="exportButton"
@@ -62,11 +68,13 @@
 		<Table
 			has-reset-sort
 			has-search
-			:key="resetSortKey"
+			:paginated="!table.customPerPage"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
+			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
+			:checkable="withCheckbox"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -83,6 +91,13 @@
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
+			</template>
+			<template #export>
+				<ExportButton
+					v-if="exportButton"
+					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+					@exportData="exportAssistance"
+				/>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -124,7 +139,8 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 
@@ -135,6 +151,8 @@ export default {
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
+		withCheckbox: Boolean,
+		customColumns: Array,
 	},
 
 	components: {
@@ -158,13 +176,12 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "transactionId", label: "Transaction ID" },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "phone", label: "Phone" },
-					{ key: "nationalId", label: "National ID", sortable: true },
-					{ key: "status" },
-					{ key: "value" },
+					{ key: "gender" },
+					{ key: "dateOfBirth" },
+					{ key: "residencyStatus" },
+					{ key: "vulnerabilities" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -172,13 +189,14 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
+				customPerPage: null,
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
 			},
 			addBeneficiaryModel: {
-				beneficiaries: null,
-				justification: null,
+				beneficiaries: [],
+				justification: "",
 			},
 			editBeneficiaryModal: {
 				isOpened: false,
@@ -194,6 +212,7 @@ export default {
 				comment: null,
 				justificationForAdding: null,
 			},
+			randomSampleSize: 10,
 		};
 	},
 
@@ -206,25 +225,27 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
+		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
+			this.table.data = [];
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.table.columns = generateColumns(
+				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
+			);
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
-				this.table.currentPage,
-				this.perPage,
+				page || this.table.currentPage,
+				size || this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.$emit("beneficiariesCounted", totalCount);
 				this.table.total = totalCount;
-				if (totalCount !== 0) {
+				if (totalCount > 0) {
 					await this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
@@ -241,6 +262,10 @@ export default {
 				this.table.data[key] = item;
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
+				this.table.data[key].gender = this.prepareGender(item.gender);
+				this.table.data[key].distributed = item.dateDistributed || "none";
+				this.table.data[key].vulnerabilities = this
+					.prepareVulnerabilities(item.vulnerabilityCriteria);
 				if (item.nationalIds.length) {
 					nationalIdIds.push(item.nationalIds);
 				}
@@ -252,7 +277,23 @@ export default {
 
 			this.preparePhoneForTable(phoneIds);
 
+			this.prepareValue();
+
 			this.prepareNationalIdForTable(nationalIdIds);
+		},
+
+		prepareVulnerabilities(vulnerabilities) {
+			let result = "none";
+			if (vulnerabilities) {
+				vulnerabilities.forEach((item) => {
+					if (result === "none") {
+						result = normalizeText(item);
+					} else {
+						result += `, ${normalizeText(item)}`;
+					}
+				});
+			}
+			return result;
 		},
 
 		async preparePhoneForTable(phoneIds) {
@@ -264,6 +305,13 @@ export default {
 					: this.prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
 			});
 			this.table.progress += 15;
+		},
+
+		async prepareValue() {
+			const commodities = await this.getAssistanceCommodities();
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].value = `${commodities[0].value} ${commodities[0].unit}`;
+			});
 		},
 
 		async prepareNationalIdForTable(ids) {
@@ -307,8 +355,14 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		submitAddBeneficiaryForm() {
-			// TODO Add Beneficiaries to Assistance
+		async submitAddBeneficiaryForm(form) {
+			const { beneficiaries, justification } = form;
+			const body = {
+				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
+				justification,
+			};
+			const { assistanceId } = this.$route.params;
+			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body);
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
 		},
@@ -332,6 +386,40 @@ export default {
 		removeAssistance(id) {
 			this.table.data = this.table.data.filter((item) => item.id !== id);
 		},
+
+		prepareGender(gender) {
+			return gender === "F" ? "Female" : "Male";
+		},
+
+		showEdit({ id }) {
+			this.editBeneficiaryModel = this.table.data.find((item) => item.id === id);
+			this.editBeneficiaryModal.isOpened = true;
+		},
+
+		getAssistanceCommodities() {
+			return AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
+		},
+
+		async randomSample() {
+			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
+			const randomPage = this.rnd(1, this.table.total / size);
+			this.table.customPerPage = size;
+			await this.fetchData(randomPage, size);
+		},
+
+		rnd(a, b) {
+			return Math.floor((b - a + 1) * Math.random()) + a;
+		},
 	},
 };
 </script>
+
+<style scoped>
+.input-text-center input {
+	text-align: center;
+}
+</style>

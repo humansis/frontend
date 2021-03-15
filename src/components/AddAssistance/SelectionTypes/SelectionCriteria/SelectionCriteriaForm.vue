@@ -1,71 +1,135 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="Criteria Target">
+			<b-field
+				label="Criteria Target"
+				:type="validateType('criteriaTarget')"
+				:message="validateMsg('criteriaTarget')"
+			>
 				<MultiSelect
 					v-model="formModel.criteriaTarget"
 					label="value"
 					track-by="code"
 					placeholder="Click to select..."
 					:loading="criteriaTargetLoading"
-					:options="options.criteriaTarget"
+					:options="options.criteriaTargets"
 					:searchable="false"
+					:class="validateMultiselect('criteriaTarget')"
 					@select="onCriteriaTargetSelect"
-				/>
-			</b-field>
-
-			<b-field label="Criteria">
-				<MultiSelect
-					v-model="formModel.criteria"
-					placeholder="Click to select..."
-					:options="criteria"
-					:searchable="false"
-					@select="onCriteriaSelect"
-				/>
-			</b-field>
-
-			<b-field label="Condition">
-				<MultiSelect
-					v-model="formModel.condition"
-					placeholder="Click to select..."
-					:options="options.condition"
-					:searchable="false"
+					@input="validate('criteriaTarget')"
 				/>
 			</b-field>
 
 			<b-field
-				v-if="showValueInput && !showLocation"
+				label="Criteria"
+				:type="validateType('criteria')"
+				:message="validateMsg('criteria')"
+			>
+				<MultiSelect
+					v-model="formModel.criteria"
+					placeholder="Click to select..."
+					:options="options.criteria"
+					:loading="criteriaLoading"
+					label="code"
+					track-by="code"
+					:searchable="false"
+					:class="validateMultiselect('criteria')"
+					@select="onCriteriaSelect"
+					@input="validate('criteria')"
+				/>
+			</b-field>
+
+			<b-field
+				label="Condition"
+				:type="validateType('condition')"
+				:message="validateMsg('condition')"
+			>
+				<MultiSelect
+					v-model="formModel.condition"
+					placeholder="Click to select..."
+					label="value"
+					track-by="code"
+					:options="options.conditions"
+					:loading="criteriaConditionsLoading"
+					:searchable="false"
+					:class="validateMultiselect('condition')"
+					@input="validate('condition')"
+				/>
+			</b-field>
+
+			<b-field
+				v-if="fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION"
 				label="Value"
+				:type="validateType('value')"
+				:message="validateMsg('value')"
 			>
 				<b-datepicker
-					v-if="formModel.criteria === 'Date Of Birth'"
+					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
 					v-model="formModel.value"
 					show-week-number
 					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					@input="validate('value')"
 				/>
+
 				<MultiSelect
-					v-else-if="formModel.criteria === 'Gender'"
+					v-if="
+						fieldTypeToDisplay === consts.FIELD_TYPE.GENDER
+							|| fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION_TYPE
+							|| fieldTypeToDisplay === consts.FIELD_TYPE.BOOLEAN
+							|| fieldTypeToDisplay === consts.FIELD_TYPE.RESIDENCY_STATUS
+							|| fieldTypeToDisplay === consts.FIELD_TYPE.LIVELIHOOD
+					"
 					v-model="formModel.value"
 					label="value"
 					track-by="code"
 					placeholder="Click to select..."
-					:options="options.gender"
+					:loading="valueSelectLoading"
+					:options="valueSelectOptions"
 					:searchable="false"
-				/>
-				<b-input
-					v-else
-					v-model="formModel.value"
+					:class="validateMultiselect('value')"
+					@input="validate('value')"
 				/>
 
+				<b-input
+					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.STRING"
+					v-model="formModel.value"
+					@blur="validate('value')"
+				/>
+
+				<b-numberinput
+					v-if="
+						fieldTypeToDisplay === consts.FIELD_TYPE.INTEGER
+							|| fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE
+					"
+					v-model="formModel.value"
+					expanded
+					controls-alignment="right"
+					controls-position="compact"
+					@blur="validate('value')"
+				/>
 			</b-field>
+
 			<LocationForm
-				v-if="showLocation"
+				v-if="fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION"
 				ref="locationForm"
-				:form-model="formModel"
+				:form-model="admModel"
 			/>
-			<b-field label="Score Weight">
+
+			<button
+				class="button"
+				slot="trigger"
+				@click="advancedOptions = !advancedOptions"
+			>
+				<span>Advanced Options</span>
+				<b-icon
+					size="is-small"
+					:icon="advancedOptions ? 'arrow-up' : 'arrow-down'"
+				/>
+			</button>
+
+			<b-field v-if="advancedOptions" label="Score Weight" class="mt-3">
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
@@ -94,6 +158,10 @@
 import LocationForm from "@/components/LocationForm";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
+import consts from "@/utils/assistanceConst";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { required, requiredIf } from "vuelidate/lib/validators";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "SelectionCriteriaForm",
@@ -106,21 +174,50 @@ export default {
 		closeButton: Boolean,
 	},
 
+	mixins: [validation],
+
 	data() {
 		return {
+			consts,
+			admModel: {
+				adm1Id: null,
+				adm2Id: null,
+				adm3Id: null,
+				adm4Id: null,
+			},
 			options: {
-				criteriaTarget: [],
+				criteriaTargets: [],
 				criteria: [],
-				condition: [">", "<", ">=", "<=", "=", "!="],
+				conditions: [],
 				gender: [
 					{ code: "M", value: "Male" },
 					{ code: "F", value: "Female" },
 				],
+				boolean: [
+					{ code: true, value: "True" },
+					{ code: false, value: "False" },
+				],
 			},
-			showValueInput: true,
-			showLocation: false,
-			criteriaTargetLoading: true,
+			valueSelectOptions: [],
+			valueSelectLoading: false,
+			fieldTypeToDisplay: "",
+			criteriaTargetLoading: false,
+			criteriaLoading: false,
+			criteriaConditionsLoading: false,
+			advancedOptions: false,
 		};
+	},
+
+	validations: {
+		formModel: {
+			criteriaTarget: { required },
+			criteria: { required },
+			condition: { required },
+			// eslint-disable-next-line func-names
+			value: { required: requiredIf(function () {
+				return this.fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION;
+			}) },
+		},
 	},
 
 	computed: {
@@ -129,86 +226,160 @@ export default {
 		},
 	},
 
-	async mounted() {
-		await this.fetchCriteriaTargets();
+	created() {
+		this.advancedOptions = false;
+		this.fetchCriteriaTargets();
 	},
 
 	methods: {
-		onCriteriaTargetSelect(criteriaTarget) {
+		onCriteriaTargetSelect(target) {
 			this.formModel.criteria = "";
 			this.formModel.condition = "";
-			switch (criteriaTarget) {
-				case "Beneficiary":
-					this.options.criteria = [
-						"Gender", "Date Of Birth", "Residency Status",
-						"Has Not Been In A Distribution Since", "Disable", "Solo Parent",
-						"Lactating", "Pregnant", "Nutritional Issues",
-					];
-					break;
-				case "Head":
-					this.options.criteria = ["Disable", "Date Of Birth", "Gender"];
-					break;
-				case "Household":
-					this.options.criteria = [
-						"Livelihood", "Food Consumption Score", "Coping Strategies Index",
-						"Income Level", "Household Size", "Current Location", "Location Type",
-						"IDPoor", "EquityCardNo",
-					];
-					break;
-				default:
-					this.options.criteria = [];
-			}
+
+			this.formModel.criteriaTarget = target;
+			this.fetchCriteriaFields(target);
 		},
 
 		onCriteriaSelect(criteria) {
 			this.formModel.condition = "";
-			this.showValueInput = true;
-			this.showLocation = false;
-			switch (criteria) {
-				case "Residency Status":
-				case "Location Type":
-				case "IDPoor":
-				case "EquityCardNo":
-				case "Gender":
-					this.options.condition = ["=", "!="];
+			this.formModel.value = null;
+
+			this.fieldTypeToDisplay = criteria.type;
+
+			switch (criteria.type) {
+				case consts.FIELD_TYPE.GENDER:
+					this.valueSelectOptions = this.options.gender;
 					break;
-				case "Household Size":
-				case "Date Of Birth":
-					this.options.condition = [">", "<", ">=", "<=", "=", "!="];
+				case consts.FIELD_TYPE.LOCATION_TYPE:
+					this.fetchLocationsTypes();
 					break;
-				case "Livelihood":
-				case "Food Consumption Score":
-				case "Income Level":
-				case "Copying Strategies Index":
-				case "Has Not Been In A Distribution Since":
-					this.options.condition = ["="];
+				case consts.FIELD_TYPE.BOOLEAN:
+					this.valueSelectOptions = this.options.boolean;
 					break;
-				case "Solo Parent":
-				case "Lactating":
-				case "Pregnant":
-				case "Nutritional Issues":
-				case "Disable":
-					this.options.condition = ["True", "False"];
-					this.showValueInput = false;
+				case consts.FIELD_TYPE.RESIDENCY_STATUS:
+					this.fetchResidenceStatuses();
 					break;
-				case "Current Location":
-					this.options.condition = ["="];
-					this.showLocation = true;
+				case consts.FIELD_TYPE.LIVELIHOOD:
+					this.fetchLivelihoods();
 					break;
-				default: break;
+				default:
+					this.valueSelectOptions = [];
 			}
+
+			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);
 		},
 
 		async fetchCriteriaTargets() {
-			await AssistancesService.getTargetTypes()
-				.then(({ data }) => { this.options.criteriaTarget = data; })
+			this.criteriaTargetLoading = true;
+
+			await AssistancesService.getAssistanceSelectionCriteriaTargets()
+				.then(({ data }) => { this.options.criteriaTargets = data; })
 				.catch((e) => {
-					Notification(`Criteria Target ${e}`, "is-danger");
+					Notification(`Criteria Targets ${e}`, "is-danger");
 				});
+
 			this.criteriaTargetLoading = false;
 		},
 
+		async fetchCriteriaFields(target) {
+			this.criteriaLoading = true;
+
+			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
+				.then(({ data }) => { this.options.criteria = data; })
+				.catch((e) => {
+					Notification(`Criteria Fields ${e}`, "is-danger");
+				});
+
+			this.criteriaLoading = false;
+		},
+
+		async fetchCriteriaConditions(target, field) {
+			this.criteriaConditionsLoading = true;
+
+			await AssistancesService.getAssistanceSelectionCriteriaConditions(target.code, field.code)
+				.then(({ data }) => {
+					this.options.conditions = data;
+
+					if (
+						data.length === 1
+						&& data[0].code === "="
+					) {
+						this.formModel.condition = { ...data[0] };
+					}
+				})
+				.catch((e) => {
+					Notification(`Criteria Conditions ${e}`, "is-danger");
+				});
+
+			this.criteriaConditionsLoading = false;
+		},
+
+		async fetchResidenceStatuses() {
+			this.valueSelectLoading = true;
+
+			await BeneficiariesService.getListOfResidenceStatuses()
+				.then(({ data }) => {
+					this.valueSelectOptions = data;
+				})
+				.catch((e) => {
+					Notification(`Residence Status ${e}`, "is-danger");
+				});
+
+			this.valueSelectLoading = false;
+		},
+
+		async fetchLivelihoods() {
+			this.valueSelectLoading = true;
+
+			await BeneficiariesService.getListOfLivelihoods()
+				.then(({ data }) => {
+					this.valueSelectOptions = data;
+				})
+				.catch((e) => {
+					Notification(`Livelihoods ${e}`, "is-danger");
+				});
+
+			this.valueSelectLoading = false;
+		},
+
+		async fetchLocationsTypes() {
+			this.valueSelectLoading = true;
+
+			await BeneficiariesService.getListOfLocationsTypes()
+				.then(({ data }) => { this.valueSelectOptions = data; })
+				.catch((e) => {
+					Notification(`Location Types ${e}`, "is-danger");
+				});
+
+			this.valueSelectLoading = false;
+		},
+
 		submitForm() {
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				return;
+			}
+
+			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION
+				&& this.$refs.locationForm.submitLocationForm()) {
+				return;
+			}
+
+			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION) {
+				const { adm1Id, adm2Id, adm3Id, adm4Id } = this.admModel;
+				const prefix = "locationId-";
+
+				if (adm4Id) {
+					this.formModel.value = prefix + adm4Id.locationId;
+				} else if (adm3Id) {
+					this.formModel.value = prefix + adm3Id.locationId;
+				} else if (adm2Id) {
+					this.formModel.value = prefix + adm2Id.locationId;
+				} else if (adm1Id) {
+					this.formModel.value = prefix + adm1Id.locationId;
+				}
+			}
+
 			this.$emit("formSubmitted", this.formModel);
 		},
 

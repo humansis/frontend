@@ -163,6 +163,7 @@
 								</b-tooltip>
 							</template>
 						</b-menu-item>
+						<!--
 						<b-menu-item
 							icon="credit-card"
 							exact-active-class="is-active"
@@ -199,6 +200,7 @@
 								</b-tooltip>
 							</template>
 						</b-menu-item>
+						-->
 					</b-menu-list>
 				</b-menu>
 			</div>

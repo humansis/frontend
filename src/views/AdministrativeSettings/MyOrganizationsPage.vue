@@ -137,10 +137,9 @@ export default {
 			} = myOrganizationForm;
 
 			const myOrganizationBody = {
-				id,
 				name,
 				logo: uploadedImage,
-				font,
+				font: font.code,
 				primaryColor,
 				secondaryColor,
 				footerContent,
@@ -152,26 +151,28 @@ export default {
 		async updateMyOrganization(id, myOrganizationBody) {
 			this.myOrganizationModal.isWaiting = true;
 
-			await MyOrganizationsService.updateMyOrganization(id, myOrganizationBody).then((response) => {
-				if (response.status === 200) {
-					Toast("My Organization Successfully Updated", "is-success");
-					this.$refs.myOrganizationsList.fetchData();
-					this.closeMyOrganizationModal();
-				}
-			}).catch((e) => {
-				Toast(`Organization ${e}`, "is-danger");
-				this.myOrganizationModal.isWaiting = false;
-			});
+			await MyOrganizationsService.updateMyOrganization(id, myOrganizationBody)
+				.then((response) => {
+					if (response.status === 200) {
+						Toast("My Organization Successfully Updated", "is-success");
+						this.$refs.myOrganizationsList.fetchData();
+						this.closeMyOrganizationModal();
+					}
+				}).catch((e) => {
+					Toast(`Organization ${e}`, "is-danger");
+					this.myOrganizationModal.isWaiting = false;
+				});
 		},
 
 		async printMyOrganization(id) {
-			await MyOrganizationsService.printMyOrganization(id).then((response) => {
-				if (response.status === 200) {
-					Toast("Your Download is starting", "is-success");
-				}
-			}).catch((e) => {
-				Toast(`Organization ${e}`, "is-danger");
-			});
+			await MyOrganizationsService.printMyOrganization(id)
+				.then((response) => {
+					if (response.status === 200) {
+						Toast("Your Download is starting", "is-success");
+					}
+				}).catch((e) => {
+					Toast(`Organization ${e}`, "is-danger");
+				});
 		},
 	},
 

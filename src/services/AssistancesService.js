@@ -33,6 +33,27 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistanceSelectionCriteriaTargets() {
+		const { data: { data, totalCount } } = await fetcher({ uri: "selection-criteria/targets" });
+		return { data, totalCount };
+	},
+
+	async getAssistanceSelectionCriteriaFields(targetCode) {
+		const { data: { data, totalCount } } = await fetcher(
+
+			{ uri: `selection-criteria/targets/${targetCode}/fields` },
+		);
+		return { data, totalCount };
+	},
+
+	async getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
+		const { data: { data, totalCount } } = await fetcher(
+
+			{ uri: `selection-criteria/targets/${targetCode}/fields/${fieldCode}/conditions` },
+		);
+		return { data, totalCount };
+	},
+
 	async getListOfProjectAssistances(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
@@ -121,8 +142,27 @@ export default {
 		return { data: {}, status: 200 };
 	},
 
-	async updateAssistance(id, body) {
-		console.log(id, body);
-		return { data: {}, status: 200 };
+	async updateAssistanceDateOfDistribution(id, date) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${id}`,
+			method: "PATCH",
+			body: {
+				dateDistribution: date,
+			},
+		});
+		return { data, status };
+	},
+
+	async getListOfRandomBeneficiaries(id, page, size, sort, randomSize, search = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const randomSizeText = randomSize ? `&randomSize=${randomSize}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${id}/random?${randomSizeText + pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
 	},
 };

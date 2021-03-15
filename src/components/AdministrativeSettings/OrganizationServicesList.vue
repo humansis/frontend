@@ -1,26 +1,23 @@
-<!-- TODO edit after real api-->
 <template>
 	<div>
 		<Table
 			has-search
-			has-reset-sort
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
-			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
 			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					v-slot="props"
+					:key="column.id"
+				>
+					<ColumnField :column="column" :data="props" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -49,6 +46,7 @@
 <script>
 import ActionButton from "@/components/ActionButton";
 import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import OrganizationServicesService from "@/services/OrganizationServicesService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -58,6 +56,7 @@ export default {
 	name: "OrganizationServicesList",
 
 	components: {
+		ColumnField,
 		Table,
 		ActionButton,
 	},
@@ -71,7 +70,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "name", label: "Service Name" },
-					{ key: "country" },
+					{ key: "iso3", label: "Country", type: "textOrNone" },
 					{ key: "enabled" },
 				],
 				total: 0,
@@ -96,35 +95,21 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await OrganizationServicesService.getListOfOrganizationServices(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = this.prepareDataForTable(response.data);
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`Organizations ${e}`, "is-danger");
-			});
+			await OrganizationServicesService.getListOfOrganizationServices()
+				.then(({ data, totalCount }) => {
+					this.table.data = data;
+					this.table.total = totalCount;
+				}).catch((e) => {
+					Notification(`Organizations ${e}`, "is-danger");
+				});
 
 			this.isLoadingList = false;
-		},
-
-		prepareDataForTable(data) {
-			const preparedData = [];
-			data.forEach((value) => {
-				const formModel = this.mapToFormModel(value);
-				preparedData.push(formModel);
-			});
-			return preparedData;
 		},
 
 		mapToFormModel(
 			{
 				id,
 				enabled,
-				parametersValue,
 				service,
 			},
 		) {
@@ -132,11 +117,6 @@ export default {
 				...this.organizationServiceModel,
 				id,
 				enabled,
-				password: parametersValue.password,
-				username: parametersValue.username,
-				token: parametersValue.token,
-				email: parametersValue.email,
-				production: parametersValue.production,
 				country: service.country,
 				name: service.name,
 			};

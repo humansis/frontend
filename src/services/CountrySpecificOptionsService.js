@@ -40,4 +40,11 @@ export default {
 		});
 		return { data, status };
 	},
+
+	async getCountrySpecificAnswer(id) {
+		const { data } = await fetcher({
+			uri: `country-specifics/answers/${id}`,
+		});
+		return { data };
+	},
 };

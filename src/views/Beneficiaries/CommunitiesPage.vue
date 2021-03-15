@@ -87,6 +87,7 @@ export default {
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				locationId: "",
 			},
 		};
 	},
@@ -145,6 +146,7 @@ export default {
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				locationId: "",
 			};
 		},
 
@@ -200,6 +202,7 @@ export default {
 				adm2Id: address.adm2Id,
 				adm3Id: address.adm3Id,
 				adm4Id: address.adm4Id,
+				locationId: address.locationId,
 			};
 		},
 

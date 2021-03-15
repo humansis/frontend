@@ -51,7 +51,6 @@
 				<div class="card-content">
 					<Table
 						checkable
-						:key="resetSortKey"
 						:data="batch.booklets"
 						:is-loading="isLoadingList"
 						@clicked="showDetail"
@@ -190,12 +189,11 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");

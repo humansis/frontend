@@ -172,28 +172,15 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">Country Specific Options</h4>
-				<b-field>
+				<b-field
+					v-for="option in countrySpecificOptions"
+					:key="option.id"
+				>
 					<template #label>
-						ID Poor no
+						{{ normalizeText(option.field) }}
 						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</template>
-					<b-input v-model="formModel.countrySpecificOptions.idPoorNo" />
-				</b-field>
-
-				<b-field>
-					<template #label>
-						Equity Card No
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-					</template>
-					<b-input v-model="formModel.countrySpecificOptions.equityCardNo" />
-				</b-field>
-
-				<b-field>
-					<template #label>
-						Fields
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-					</template>
-					<b-input v-model="formModel.countrySpecificOptions.fields" />
+					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
 				</b-field>
 			</div>
 		</div>
@@ -233,7 +220,9 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { normalizeCountrySpecifics } from "@/utils/datagrid";
 import Validation from "@/mixins/validation";
+import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 
 export default {
 	name: "HouseholdForm",
@@ -268,11 +257,7 @@ export default {
 				supportDateReceived: { required },
 				supportOrganization: { required },
 			},
-			countrySpecificOptions: {
-				idPoorNo: {},
-				equityCardNo: {},
-				fields: {},
-			},
+			countrySpecificOptions: {},
 			shelterStatus: { required },
 		},
 	},
@@ -282,6 +267,7 @@ export default {
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
+			countrySpecificOptions: [],
 			formModel: {
 				id: null,
 				currentLocation: {},
@@ -299,11 +285,7 @@ export default {
 					supportDateReceived: new Date(),
 					supportOrganization: "",
 				},
-				countrySpecificOptions: {
-					idPoorNo: "",
-					equityCardNo: "",
-					fields: "",
-				},
+				countrySpecificOptions: {},
 				shelterStatus: [],
 				notes: "",
 			},
@@ -317,20 +299,7 @@ export default {
 					{ code: 4, value: "Very High (300 USD < Income)" },
 				],
 				assets: [],
-				externalSupportReceivedType: [
-					{ code: 0, value: "MPCA" },
-					{ code: 1, value: "Cash For Work" },
-					{ code: 2, value: "Food Kit" },
-					{ code: 3, value: "Food Voucher" },
-					{ code: 4, value: "Hygiene Kit" },
-					{ code: 5, value: "Shelter Kit" },
-					{ code: 6, value: "Shelter Reconstruction Support" },
-					{ code: 7, value: "Non Food Items" },
-					{ code: 8, value: "Livelihoods Support" },
-					{ code: 9, value: "Vocational Training" },
-					{ code: 10, value: "None" },
-					{ code: 11, value: "Other" },
-				],
+				externalSupportReceivedType: [],
 				shelterStatuses: [],
 			},
 		};
@@ -340,6 +309,8 @@ export default {
 		await this.fetchLivelihoods();
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
+		await this.fetchSupportReceivedTypes();
+		await this.fetchCountrySpecificOptions();
 		if (this.isEditing) {
 			this.mapDetailOfHouseholdToFormModel();
 			await this.mapCurrentLocation().then((response) => {
@@ -349,6 +320,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeCountrySpecifics(text);
+		},
+
 		getAddressTypeAndId() {
 			const {
 				temporarySettlementAddressId,
@@ -359,6 +334,14 @@ export default {
 			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
 			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
 			return "";
+		},
+
+		async fetchSupportReceivedTypes() {
+			await BeneficiariesService.getSupportReceivedTypes()
+				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
+				.catch((e) => {
+					Notification(`Support Received Types ${e}`, "is-danger");
+				});
 		},
 
 		mapCurrentLocation() {
@@ -385,7 +368,9 @@ export default {
 			return null;
 		},
 
-		mapDetailOfHouseholdToFormModel() {
+		async mapDetailOfHouseholdToFormModel() {
+			const countryAnswers = await this
+				.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
@@ -393,7 +378,7 @@ export default {
 				livelihood: {
 					...this.formModel.livelihood,
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
-					assets: getArrayOfCodeListByKey([this.detailOfHousehold.assets], this.options.assets, "code"),
+					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code", true),
 					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
 					incomeLevel: getArrayOfCodeListByKey([this.detailOfHousehold.incomeLevel], this.options.incomeLevel, "code"),
 					debtLevel: this.detailOfHousehold.debtLevel,
@@ -401,21 +386,32 @@ export default {
 				},
 				externalSupport: {
 					...this.formModel.externalSupport,
-					// TODO map supportReceivedTypes to code/value
-					externalSupportReceivedType: getArrayOfCodeListByKey([this.detailOfHousehold.supportReceivedTypes], this.options.externalSupportReceivedType, "code"),
+					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code", false, true),
 					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
 				countrySpecificOptions: {
 					...this.formModel.countrySpecificOptions,
-					// TODO map countrySpecificOptions
-					idPoorNo: "",
-					equityCardNo: "",
-					fields: "",
+					...countryAnswers,
 				},
-				shelterStatus: getArrayOfCodeListByKey([this.detailOfHousehold.shelterStatus], this.options.shelterStatuses, "code"),
+				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
 				notes: this.detailOfHousehold.notes,
 			};
+		},
+
+		async prepareCountrySpecifics(answers) {
+			const preparedAnswer = {};
+			if (!answers) return preparedAnswer;
+			const promise = answers.map(async (item) => {
+				await CountrySpecificOptionsService.getCountrySpecificAnswer(item)
+					.then(({ data: { answer, countrySpecificOptionId } }) => {
+						const temp = this.countrySpecificOptions
+							.find((option) => option.id === countrySpecificOptionId);
+						preparedAnswer[temp.id] = answer;
+					});
+			});
+			await Promise.all(promise);
+			return preparedAnswer;
 		},
 
 		async fetchLivelihoods() {
@@ -443,6 +439,14 @@ export default {
 					Notification(`Shelter Types ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
+		},
+
+		async fetchCountrySpecificOptions() {
+			await CountrySpecificOptionsService.getListOfCountrySpecificOptions()
+				.then(({ data }) => { this.countrySpecificOptions = data; })
+				.catch((e) => {
+					Notification(`Country Specific Options ${e}`, "is-danger");
+				});
 		},
 
 		submit() {

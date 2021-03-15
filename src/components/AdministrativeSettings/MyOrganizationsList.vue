@@ -1,20 +1,16 @@
 <template>
 	<Table
 		has-reset-sort
-		:key="resetSortKey"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
-				sortable
 				v-bind="column"
 				v-slot="props"
 				:key="column.id"
@@ -105,16 +101,13 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await MyOrganizationsService.getListOfMyOrganizations(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`Organizations ${e}`, "is-danger");
-			});
+			await MyOrganizationsService.getListOfMyOrganizations()
+				.then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+				}).catch((e) => {
+					Notification(`Organizations ${e}`, "is-danger");
+				});
 
 			this.isLoadingList = false;
 		},

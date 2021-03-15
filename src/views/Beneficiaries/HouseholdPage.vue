@@ -48,7 +48,6 @@
 			has-search
 			checkable
 			paginated
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -219,12 +218,11 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
-				if (totalCount > 0) {
+				if (data.length > 0) {
 					await this.prepareDataForTable(data);
-				} else {
-					this.table.data = [];
 				}
 				this.isLoadingList = false;
 			}).catch((e) => {

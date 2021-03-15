@@ -24,7 +24,7 @@
 							v-if="hasResetSort"
 							icon-left="eraser"
 							class="reset-sort-button is-small"
-							@click="$emit('resetSort')"
+							@click="onResetSort"
 						>
 							Reset Sort
 						</b-button>
@@ -36,6 +36,7 @@
 		<slot name="filter" />
 
 		<b-table
+			ref="table"
 			striped
 			hoverable
 			scrollable
@@ -56,7 +57,7 @@
 			:checkable="checkable"
 			:data="data"
 			:total="total"
-			:per-page="perPage"
+			:per-page="customPerPage || perPage"
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
@@ -120,6 +121,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		customPerPage: {
+			type: Number,
+			default: 10,
+		},
 	},
 
 	data() {
@@ -147,6 +152,11 @@ export default {
 		onChangePerPage(value) {
 			this.changePerPage(value);
 			this.$emit("changePerPage");
+		},
+
+		onResetSort() {
+			this.$refs.table.resetMultiSorting();
+			this.$emit("resetSort");
 		},
 	},
 };

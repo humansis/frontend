@@ -3,7 +3,6 @@
 		<Table
 			has-search
 			has-reset-sort
-			:key="resetSortKey"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
