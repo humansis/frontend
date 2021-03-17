@@ -368,7 +368,7 @@ export default {
 		},
 
 		submitEditBeneficiaryForm() {
-			// TODO Update Beneficiary in thi assistance
+			// TODO Update Beneficiary in this assistance
 			this.editBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
 		},

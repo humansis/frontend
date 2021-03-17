@@ -47,10 +47,7 @@
 			</b-step-item>
 
 			<template #navigation="{previous, next}">
-				<div
-					v-show="activeStep !== 1"
-					class="buttons flex-end"
-				>
+				<div class="buttons flex-end">
 					<b-button
 						v-show="!previous.disabled"
 						@click.prevent="previous.action"
@@ -60,7 +57,7 @@
 					<b-button
 						type="is-primary"
 						v-show="!next.disabled"
-						@click.prevent="nextPage(next)"
+						@click.prevent="next.action"
 					>
 						Next
 					</b-button>
@@ -68,9 +65,9 @@
 						v-show="activeStep === 3"
 						type="is-primary"
 						icon-left="lock"
-						@click.prevent="validate"
+						@click.prevent="validateAssistance"
 					>
-						Validate
+						Validate And Lock
 					</b-button>
 				</div>
 			</template>
@@ -108,20 +105,19 @@ export default {
 	},
 
 	methods: {
-		nextPage(next) {
-			// TODO checkForms
-			if (this.changedBeneficiaryList) {
-				// TODO reload beneficiaries???
-			}
-			next.action();
-		},
+		async validateAssistance() {
+			const assistanceId = Number(this.$route.params.assistanceId);
 
-		async validate() {
-			// TODO implement validate and lock method
-			await AssistancesService.saveAssistance().then(({ status }) => {
+			await AssistancesService.updateAssistanceToStatusValidated(
+				{ assistanceId, validated: true },
+			).then(({ status }) => {
 				if (status === 200) {
 					Toast("Assistance Successfully Saved and lock", "is-success");
-					this.$router.go(-1);
+					this.$router.push({ name: "ProjectDetail",
+						params: {
+							projectId: this.$route.params.projectId,
+						},
+					});
 				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");

@@ -3,9 +3,6 @@
 		<h2 class="title has-text-centered">
 			{{ assistance.name }}
 		</h2>
-		<h3 class="subtitle has-text-centered">
-			<Loading type="bubbles" />
-		</h3>
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
