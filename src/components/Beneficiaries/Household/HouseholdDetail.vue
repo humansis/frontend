@@ -6,7 +6,7 @@
 			>
 				<b-input
 					v-model="formModel.familyName"
-					disabled=""
+					disabled
 				/>
 			</b-field>
 

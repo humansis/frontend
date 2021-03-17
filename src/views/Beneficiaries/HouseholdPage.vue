@@ -30,7 +30,7 @@
 						:value="false"
 						@click="goToCreatePage"
 					>
-							<b-icon class="media-left" icon="user-plus" />
+						<b-icon class="media-left" icon="user-plus" />
 						<div class="media">
 							<div class="media-content">
 								<h2>Add Beneficiary</h2>
@@ -96,7 +96,7 @@
 					<ActionButton
 						icon="search"
 						type="is-primary"
-						tooltip="Go To Detail"
+						tooltip="Show Detail"
 						@click.native="showDetail(props.row.id)"
 					/>
 					<ActionButton
