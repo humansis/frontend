@@ -336,14 +336,6 @@ export default {
 			return "";
 		},
 
-		async fetchSupportReceivedTypes() {
-			await BeneficiariesService.getSupportReceivedTypes()
-				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
-				.catch((e) => {
-					Notification(`Support Received Types ${e}`, "is-danger");
-				});
-		},
-
 		mapCurrentLocation() {
 			if (this.detailOfHousehold) {
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId();
@@ -412,6 +404,14 @@ export default {
 			});
 			await Promise.all(promise);
 			return preparedAnswer;
+		},
+
+		async fetchSupportReceivedTypes() {
+			await BeneficiariesService.getSupportReceivedTypes()
+				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
+				.catch((e) => {
+					Notification(`Support Received Types ${e}`, "is-danger");
+				});
 		},
 
 		async fetchLivelihoods() {
