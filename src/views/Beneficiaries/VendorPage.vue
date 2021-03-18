@@ -34,8 +34,8 @@
 			/>
 		</Modal>
 
-		<VendorsList
-			ref="vendorsList"
+		<VendorList
+			ref="vendorList"
 			@onRemove="onVendorRemove"
 			@onShowEdit="editVendor"
 			@onShowDetail="showDetail"
@@ -44,18 +44,18 @@
 </template>
 
 <script>
-import VendorsList from "@/components/Beneficiaries/VendorsList";
+import VendorList from "@/components/Beneficiaries/VendorList";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import Modal from "@/components/Modal";
-import VendorsService from "@/services/VendorsService";
 import { Toast } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
+import VendorService from "@/services/VendorService";
 
 export default {
-	name: "VendorsPage",
+	name: "VendorPage",
 
 	components: {
-		VendorsList,
+		VendorList,
 		Modal,
 		VendorForm,
 	},
@@ -224,7 +224,7 @@ export default {
 				addressPostcode,
 				locationId,
 				shop,
-				userId: user.id,
+				userId: user?.id || null,
 			};
 			const userBody = {
 				...user,
@@ -249,11 +249,11 @@ export default {
 					if (userResponse.status === 200) {
 						const body = vendorBody;
 						body.userId = userResponse.data.id;
-						await VendorsService.createVendor(body)
+						await VendorService.createVendor(body)
 							.then((vendorResponse) => {
 								if (vendorResponse.status === 200) {
 									Toast("Vendor Successfully Created", "is-success");
-									this.$refs.vendorsList.fetchData();
+									this.$refs.vendorList.fetchData();
 									this.closeVendorModal();
 								}
 							}).catch((e) => {
@@ -274,10 +274,10 @@ export default {
 			await UsersService.updateUser(userBody.id, userBody)
 				.then(async (userResponse) => {
 					if (userResponse.status === 200) {
-						await VendorsService.updateVendor(id, vendorBody).then((vendorResponse) => {
+						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
 							if (vendorResponse.status === 200) {
 								Toast("Vendor Successfully Updated", "is-success");
-								this.$refs.vendorsList.fetchData();
+								this.$refs.vendorList.fetchData();
 								this.closeVendorModal();
 							}
 						}).catch((e) => {
@@ -294,10 +294,10 @@ export default {
 		async onVendorRemove(id) {
 			this.vendorModal.isWaiting = true;
 
-			await VendorsService.deleteVendor(id).then((response) => {
+			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Vendor Successfully Deleted", "is-success");
-					this.$refs.vendorsList.removeFromList(id);
+					this.$refs.vendorList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`Vendor ${e}`, "is-danger");

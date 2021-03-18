@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Table
+			v-show="show"
 			has-reset-sort
 			has-search
 			:data="table.data"
@@ -46,7 +47,6 @@
 						:id="props.row.id"
 						@submitted="remove"
 					/>
-					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
 		</Table>
@@ -57,7 +57,7 @@
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
-import VendorsService from "@/services/VendorsService";
+import VendorService from "@/services/VendorService";
 import LocationsService from "@/services/LocationsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -66,7 +66,7 @@ import UsersService from "@/services/UsersService";
 import baseHelper from "@/mixins/baseHelper";
 
 export default {
-	name: "VendorsList",
+	name: "VendorList",
 
 	components: {
 		SafeDelete,
@@ -111,7 +111,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await VendorsService.getListOfVendors(
+			await VendorService.getListOfVendors(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
@@ -134,8 +134,9 @@ export default {
 				.then((users) => {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
-						this.table.data[key].user = this.prepareEntityForTable(item.userId, users, "username");
+						this.table.data[key].username = this.prepareEntityForTable(item.userId, users, "username");
 					});
+					this.reload();
 				});
 			this.getLocations(data)
 				.then((locations) => {
@@ -143,6 +144,7 @@ export default {
 						this.table.data[key] = item;
 						this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
 					});
+					this.reload();
 				});
 		},
 

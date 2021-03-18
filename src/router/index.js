@@ -195,7 +195,7 @@ const routes = [
 					{
 						path: "vendors",
 						name: "Vendors",
-						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorsPage"),
+						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorPage"),
 						meta: {
 							breadcrumb: "Vendors",
 							description: "",
