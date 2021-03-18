@@ -37,6 +37,8 @@
 				<MultiSelect
 					v-model="formModel.camp"
 					placeholder="Click to select..."
+					label="name"
+					track-by="id"
 					:options="options.camps"
 					:searchable="false"
 					:class="validateMultiselect('camp')"
@@ -117,6 +119,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
+import AddressService from "@/services/AddressService";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -137,22 +140,22 @@ export default {
 
 	data() {
 		return {
-			locationTypesLoading: false,
+			locationTypesLoading: true,
 			createCamp: false,
 			campSelected: false,
 			options: {
 				typeOfLocation: [],
-				// TODO camps
 				camps: [],
 			},
+			campsLoading: true,
 		};
 	},
 
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
-			campName: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
+			camp: { required: requiredIf((form) => form.typeOfLocation.code === "camp" && !form.campName) },
+			campName: { required: requiredIf((form) => form.typeOfLocation.code === "camp" && !form.camp) },
 			tentNumber: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
 			number: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
 			street: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
@@ -162,6 +165,7 @@ export default {
 
 	async mounted() {
 		await this.fetchLocationsTypes();
+		await this.fetchCamps();
 	},
 
 	methods: {
@@ -181,11 +185,28 @@ export default {
 			this.locationTypesLoading = false;
 		},
 
+		async fetchCamps() {
+			this.campsLoading = true;
+			await AddressService.getCamps()
+				.then(({ data }) => {
+					this.options.camps = data;
+				})
+				.catch((e) => {
+					Notification(`Camps ${e}`, "is-danger");
+				});
+			this.campsLoading = false;
+		},
+
 		mapLocations() {
 			if (this.formModel.type) {
 				this.campSelected = this.formModel.type === "camp";
 				this.formModel.typeOfLocation = this.options.typeOfLocation
 					.find((item) => this.formModel.type === item.code);
+			}
+			if (this.formModel.campId) {
+				this.campSelected = this.formModel.type === "camp";
+				this.formModel.camp = this.options.camps
+					.find((item) => this.formModel.campId === item.id);
 			}
 		},
 
