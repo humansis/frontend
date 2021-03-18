@@ -64,7 +64,7 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionsFilter
+				<InstitutionFilter
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
@@ -76,17 +76,17 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import InstitutionsService from "@/services/InstitutionsService";
+import InstitutionService from "@/services/InstitutionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
+import InstitutionFilter from "@/components/Beneficiaries/InstitutionFilter";
 
 export default {
-	name: "InstitutionsList",
+	name: "InstitutionList",
 
 	components: {
-		InstitutionsFilter,
+		InstitutionFilter,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -129,7 +129,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await InstitutionsService.getListOfInstitutions(
+			await InstitutionService.getListOfInstitutions(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",

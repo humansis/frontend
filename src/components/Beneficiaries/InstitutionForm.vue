@@ -242,7 +242,7 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import InstitutionsService from "@/services/InstitutionsService";
+import InstitutionService from "@/services/InstitutionService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
@@ -361,7 +361,7 @@ export default {
 		},
 
 		async fetchTypes() {
-			await InstitutionsService.getListOfInstitutionTypes()
+			await InstitutionService.getListOfInstitutionTypes()
 				.then(({ data }) => {
 					this.options.types = data;
 				})

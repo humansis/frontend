@@ -23,7 +23,7 @@
 			:is-waiting="institutionModal.isWaiting"
 			@close="closeInstitutionModal"
 		>
-			<InstitutionsForm
+			<InstitutionForm
 				close-button
 				class="modal-card"
 				:formModel="institutionModel"
@@ -34,7 +34,7 @@
 			/>
 		</Modal>
 
-		<InstitutionsList
+		<InstitutionList
 			ref="institutionList"
 			@onRemove="removeInstitution"
 			@onShowEdit="editInstitution"
@@ -44,22 +44,22 @@
 </template>
 
 <script>
-import InstitutionsForm from "@/components/Beneficiaries/InstitutionsForm";
-import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
+import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
+import InstitutionList from "@/components/Beneficiaries/InstitutionList";
 import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
-import InstitutionsService from "@/services/InstitutionsService";
+import InstitutionService from "@/services/InstitutionService";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
-	name: "InstitutionsPage",
+	name: "InstitutionPage",
 
 	components: {
-		InstitutionsList,
+		InstitutionList,
 		Modal,
-		InstitutionsForm,
+		InstitutionForm,
 	},
 
 	data() {
@@ -281,7 +281,7 @@ export default {
 		async createInstitution(institutionBody) {
 			this.institutionModal.isWaiting = true;
 
-			await InstitutionsService.createInstitution(institutionBody).then((response) => {
+			await InstitutionService.createInstitution(institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Created", "is-success");
 					this.$refs.institutionList.fetchData();
@@ -296,7 +296,7 @@ export default {
 		async updateInstitution(id, institutionBody) {
 			this.institutionModal.isWaiting = true;
 
-			await InstitutionsService.updateInstitution(id, institutionBody).then((response) => {
+			await InstitutionService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Institution Successfully Updated", "is-success");
 					this.$refs.institutionList.fetchData();
@@ -309,7 +309,7 @@ export default {
 		},
 
 		async removeInstitution(id) {
-			await InstitutionsService.deleteInstitution(id).then((response) => {
+			await InstitutionService.deleteInstitution(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Institution Successfully Deleted", "is-success");
 					this.$refs.institutionList.removeFromList(id);
