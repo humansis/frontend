@@ -21,8 +21,8 @@
 						<div class="media">
 							<b-icon class="media-left" icon="upload" />
 							<div class="media-content">
-								<small>Import from file</small>
 								<h2>Import</h2>
+								<small>Import from file</small>
 							</div>
 						</div>
 					</b-dropdown-item>
@@ -30,8 +30,8 @@
 						:value="false"
 						@click="goToCreatePage"
 					>
-						<b-icon class="media-left" icon="user-plus" />
 						<div class="media">
+							<b-icon class="media-left" icon="user-plus" />
 							<div class="media-content">
 								<h2>Add Beneficiary</h2>
 								<small>Create household form</small>
