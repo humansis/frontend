@@ -35,9 +35,10 @@
 			<div class="column buttons">
 				<b-button
 					class="flex-end ml-5"
+					type="is-primary"
 					@click="closeAssistance"
 				>
-					Close
+					Close Assistance
 				</b-button>
 			</div>
 		</div>
@@ -49,7 +50,7 @@
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistanceDetail",
@@ -113,13 +114,27 @@ export default {
 
 		closeAssistance() {
 			this.$buefy.dialog.confirm({
-				title: "Close",
-				message: "Are You Sure You Want To Close This Distribution?",
-				confirmText: "Delete",
-				type: "is-danger",
-				onConfirm: () => {
-					this.$emit("submitted", this.id);
-					this.$buefy.toast.open(`Nice`);
+				title: "Close Assistance",
+				message: "Are You Sure You Want To Close This Assistance?",
+				confirmText: "Confirm",
+				type: "is-primary",
+				onConfirm: async () => {
+					const assistanceId = Number(this.$route.params.assistanceId);
+
+					await AssistancesService.updateAssistanceToStatusCompleted(
+						{ assistanceId, completed: true },
+					).then(({ status }) => {
+						if (status === 200) {
+							Toast("Assistance Successfully Closed", "is-success");
+							this.$router.push({ name: "ProjectDetail",
+								params: {
+									projectId: this.$route.params.projectId,
+								},
+							});
+						}
+					}).catch((e) => {
+						Notification(`Assistance ${e}`, "is-danger");
+					});
 				},
 			});
 		},

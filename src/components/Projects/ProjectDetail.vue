@@ -21,7 +21,7 @@
 		<Modal
 			can-cancel
 			is-small
-			header="Assistance Detail"
+			:header="assistanceModal.title"
 			:active="assistanceModal.isOpened"
 			@close="closeAssistanceModal"
 		>
@@ -35,8 +35,8 @@
 		</Modal>
 
 		<AssistancesList
+			ref="assistancesList"
 			@onRemove="removeAssistance"
-			@onPrint="printAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
 		/>
@@ -66,6 +66,7 @@ export default {
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
+				title: "",
 			},
 			assistanceModel: {
 				adm1: [],
@@ -93,7 +94,7 @@ export default {
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Assistance Successfully Updated", "is-success");
-						this.fetchData();
+						this.$refs.assistancesList.fetchData();
 					}
 				}).catch((e) => {
 					Notification(`Assistance ${e}`, "is-danger");
@@ -104,17 +105,7 @@ export default {
 			await AssistancesService.removeAssistance(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Assistance Successfully Deleted", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
-		},
-
-		async printAssistance(id) {
-			await AssistancesService.printAssistance(id).then((response) => {
-				if (response.status === 200) {
-					Toast("Download starting", "is-success");
+					this.$refs.assistancesList.fetchData();
 				}
 			}).catch((e) => {
 				Notification(`Assistance ${e}`, "is-danger");
@@ -126,6 +117,7 @@ export default {
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: false,
+				title: "Details Of This Assistance",
 			};
 		},
 
@@ -134,6 +126,7 @@ export default {
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
+				title: "Edit Assistance",
 			};
 		},
 

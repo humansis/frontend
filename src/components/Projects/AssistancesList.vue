@@ -33,29 +33,34 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					v-if="!props.row.validated"
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
-					@click.native="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					icon="edit"
 					tooltip="Edit"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<ActionButton
-					icon="lock"
-					type="is-warning"
-					tooltip="Lock"
-					@click.native="goToValidateAndLockWithId(props.row.id)"
+					v-if="!props.row.validated"
+					icon="edit"
+					tooltip="Update"
+					@click.native="goToUpdate(props.row.id)"
 				/>
 				<ActionButton
+					v-if="props.row.validated && !props.row.completed"
 					icon="lock"
-					type="is-link"
-					tooltip="Detail"
+					type="is-warning"
+					tooltip="Update"
+					@click.native="goToDetail(props.row.id)"
+				/>
+				<ActionButton
+					v-if="props.row.completed"
+					icon="check"
+					type="is-success"
+					tooltip="View"
 					@click.native="goToDetail(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="!props.row.validated"
 					icon="trash"
 					entity="Assistance"
 					tooltip="Delete"
@@ -63,10 +68,9 @@
 					@submitted="$emit('onRemove', $event)"
 				/>
 				<ActionButton
-					icon="print"
+					icon="copy"
 					type="is-dark"
-					tooltip="Print"
-					@click.native="$emit('onPrint', props.row.id)"
+					tooltip="Duplicate"
 				/>
 			</div>
 		</b-table-column>
@@ -145,7 +149,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 
@@ -270,13 +274,8 @@ export default {
 			return AssistancesService.getStatistics(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`Statistics ${e}`, "is-danger");
 				});
-		},
-
-		goToValidateAndLockWithId(id) {
-			const assistance = this.table.data.find((item) => item.id === id);
-			this.onRowClick(assistance);
 		},
 
 		goToDetail(id) {
@@ -288,7 +287,13 @@ export default {
 			});
 		},
 
-		onRowClick(assistance) {
+		onRowClick({ id }) {
+			this.showDetailWithId(id);
+		},
+
+		goToUpdate(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+
 			if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {

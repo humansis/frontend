@@ -128,18 +128,8 @@ export default {
 	},
 
 	async removeAssistance(id) {
-		console.log(id);
-		return { data: {}, status: 204 };
-	},
-
-	async printAssistance(id) {
-		console.log(id);
-		return { data: {}, status: 200 };
-	},
-
-	async saveAssistance(body) {
-		console.log(body);
-		return { data: {}, status: 200 };
+		const { data, status } = await fetcher({ uri: `assistances/${id}`, method: "DELETE" });
+		return { data, status };
 	},
 
 	async updateAssistanceDateOfDistribution(id, date) {
@@ -148,6 +138,28 @@ export default {
 			method: "PATCH",
 			body: {
 				dateDistribution: date,
+			},
+		});
+		return { data, status };
+	},
+
+	async updateAssistanceToStatusValidated({ assistanceId, validated }) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}`,
+			method: "PATCH",
+			body: {
+				validated,
+			},
+		});
+		return { data, status };
+	},
+
+	async updateAssistanceToStatusCompleted({ assistanceId, completed }) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}`,
+			method: "PATCH",
+			body: {
+				completed,
 			},
 		});
 		return { data, status };
