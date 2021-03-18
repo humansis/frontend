@@ -51,6 +51,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
 import InstitutionsService from "@/services/InstitutionsService";
 import { Toast, Notification } from "@/utils/UI";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	name: "InstitutionsPage",
@@ -145,6 +146,7 @@ export default {
 				phoneNumber: "",
 				phoneType: "",
 				phoneProxy: false,
+				projects: [],
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
@@ -177,6 +179,7 @@ export default {
 				phoneId,
 				addressId,
 				nationalId,
+				projects,
 			},
 		) {
 			const phone = await BeneficiariesService.getPhone(phoneId);
@@ -192,19 +195,20 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				addressStreet: address.street,
-				addressNumber: address.number,
-				addressPostCode: address.postcode,
-				nationalCardNumber: nationalIdCard.number,
-				nationalCardType: nationalIdCard.type,
-				phonePrefix: phone.prefix,
-				phoneNumber: phone.number,
-				phoneType: phone.type,
-				phoneProxy: phone.proxy,
-				adm1Id: address.adm1Id,
-				adm2Id: address.adm2Id,
-				adm3Id: address.adm3Id,
-				adm4Id: address.adm4Id,
+				projects,
+				addressStreet: address?.street || "",
+				addressNumber: address?.number || "",
+				addressPostCode: address?.postcode || "",
+				nationalCardNumber: nationalIdCard?.number || "",
+				nationalCardType: nationalIdCard?.type || "",
+				phonePrefix: phone?.prefix || "",
+				phoneNumber: phone?.number || "",
+				phoneType: phone?.type || "",
+				phoneProxy: phone?.proxy || "",
+				adm1Id: address?.adm1Id || "",
+				adm2Id: address?.adm2Id || "",
+				adm3Id: address?.adm3Id || "",
+				adm4Id: address?.adm4Id || "",
 			};
 		},
 
@@ -230,6 +234,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
+				projects,
 			} = institutionForm;
 			let locationId = null;
 			if (adm4Id) {
@@ -264,6 +269,7 @@ export default {
 					type: phoneType?.code,
 					proxy: phoneProxy,
 				},
+				projects: getArrayOfIdsByParam(projects, "id"),
 			};
 			if (this.institutionModal.isEditing && id) {
 				this.updateInstitution(id, institutionBody);
@@ -307,6 +313,7 @@ export default {
 				if (response.status === 204) {
 					Toast("Institution Successfully Deleted", "is-success");
 					this.$refs.institutionList.removeFromList(id);
+					this.$refs.institutionList.table.total -= 1;
 				}
 			}).catch((e) => {
 				Notification(`(Institution) ${e}`, "is-danger");

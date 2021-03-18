@@ -39,6 +39,7 @@ export default {
 	},
 
 	async getAddress(id) {
+		if (!id) return null;
 		const { data } = await fetcher({ uri: `addresses/${id}` });
 		return data;
 	},

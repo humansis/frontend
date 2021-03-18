@@ -45,7 +45,6 @@
 					:id="props.row.id"
 					@submitted="remove"
 				/>
-				<ActionButton icon="print" type="is-dark" tooltip="Print" />
 			</div>
 		</b-table-column>
 		<template #filterButton>
