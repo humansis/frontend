@@ -183,4 +183,12 @@ export default {
 
 		return { data, totalCount };
 	},
+
+	async removeBeneficiaryFromAssistance(id) {
+		const { data } = await fetcher({
+			uri: `assistances/${id}/beneficiaries`,
+		});
+
+		return data;
+	},
 };
