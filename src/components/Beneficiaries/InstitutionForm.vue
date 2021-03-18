@@ -13,11 +13,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Contact Name"
-				:type="validateType('contactGivenName')"
-				:message="validateMsg('contactGivenName')"
-			>
+			<b-field>
+				<template #label>
+					Contact Name
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.contactGivenName"
 					:disabled="formDisabled"
@@ -25,11 +25,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Contact Family Name"
-				:type="validateType('contactFamilyName')"
-				:message="validateMsg('contactFamilyName')"
-			>
+			<b-field>
+				<template #label>
+					Contact Family Name
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.contactFamilyName"
 					:disabled="formDisabled"
@@ -66,12 +66,13 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field label="Phone">
+			<b-field>
+				<template #label>
+					Phone
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-field grouped>
-					<b-field
-						:type="validateType('phonePrefix')"
-						:message="validateMsg('phonePrefix')"
-					>
+					<b-field>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
 							searchable
@@ -80,8 +81,6 @@
 							track-by="code"
 							:disabled="formDisabled"
 							:options="options.phonePrefixes"
-							:class="validateMultiselect('phonePrefix')"
-							@select="validate('phonePrefix')"
 						/>
 					</b-field>
 					<b-field grouped>
@@ -96,21 +95,14 @@
 							:disabled="formDisabled"
 							:loading="phoneTypesLoading"
 							:options="options.phoneTypes"
-							:class="validateMultiselect('phoneType')"
-							@select="validate('phoneType')"
 						/>
 
 					</b-field>
-					<b-field
-						expanded
-						:type="validateType('phoneNumber')"
-						:message="validateMsg('phoneNumber')"
-					>
+					<b-field expanded>
 						<b-input
 							v-model="formModel.phoneNumber"
 							placeholder="Phone No."
 							:disabled="formDisabled"
-							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
@@ -118,11 +110,11 @@
 			<b-checkbox v-model="formModel.phoneProxy" class="mb-4" :disabled="formDisabled">
 				Proxy
 			</b-checkbox>
-			<b-field
-				label="Contact ID Type"
-				:type="validateType('nationalCardType')"
-				:message="validateMsg('nationalCardType')"
-			>
+			<b-field>
+				<template #label>
+					Contact ID Type
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
@@ -131,93 +123,105 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
-					:class="validateMultiselect('nationalCardType')"
-					@select="validate('nationalCardType')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Contact ID Number"
-				:type="validateType('nationalCardNumber')"
-				:message="validateMsg('nationalCardNumber')"
-			>
+			<b-field>
+				<template #label>
+					Contact ID Number
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
 					placeholder="Contact ID Number"
 					:disabled="formDisabled"
-					@blur="validate('nationalCardNumber')"
 				/>
 			</b-field>
 
-			<locationForm
+			<b-field
+				label="Projects"
+				:type="validateType('projects')"
+				:message="validateMsg('projects')"
+			>
+				<MultiSelect
+					v-model="formModel.projects"
+					searchable
+					multiple
+					placeholder="Click to select..."
+					label="name"
+					track-by="id"
+					:loading="projectsLoading"
+					:disabled="formDisabled"
+					:options="options.projects"
+					:class="validateMultiselect('projects')"
+					@select="validate('projects')"
+				/>
+			</b-field>
+
+			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
 			/>
 
-			<b-field
-				label="Address Number"
-				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber')"
-			>
+			<b-field>
+				<template #label>
+					Address Number
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressNumber"
 					placeholder="Address Number"
 					:disabled="formDisabled"
-					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Street"
-				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet')"
-			>
+			<b-field>
+				<template #label>
+					Address Street
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressStreet"
 					placeholder="Address Street"
 					:disabled="formDisabled"
-					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Postcode"
-				:type="validateType('addressPostCode')"
-				:message="validateMsg('addressPostCode')"
-			>
+			<b-field>
+				<template #label>
+					Address Postcode
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.addressPostCode"
 					placeholder="Address Postcode"
 					:disabled="formDisabled"
-					@blur="validate('addressPostCode')"
 				/>
 			</b-field>
 
 			<b-field grouped>
-				<b-field
-					label="Latitude"
-					:type="validateType('latitude')"
-					:message="validateMsg('latitude')"
-				>
+				<b-field>
+					<template #label>
+						Latitude
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input
 						v-model="formModel.latitude"
 						placeholder="Latitude"
 						:disabled="formDisabled"
-						@blur="validate('latitude')"
 					/>
 				</b-field>
-				<b-field
-					label="Longitude"
-					:type="validateType('longitude')"
-					:message="validateMsg('longitude')"
-				>
+				<b-field>
+					<template #label>
+						Longitude
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input
 						v-model="formModel.longitude"
 						placeholder="Longitude"
 						:disabled="formDisabled"
-						@blur="validate('longitude')"
 					/>
 				</b-field>
 			</b-field>
@@ -238,21 +242,21 @@
 </template>
 
 <script>
-import { required, numeric } from "vuelidate/lib/validators";
-import locationForm from "@/components/LocationForm";
-import InstitutionsService from "@/services/InstitutionsService";
+import { required } from "vuelidate/lib/validators";
+import InstitutionService from "@/services/InstitutionService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import ProjectsService from "@/services/ProjectsService";
+import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "InstitutionForm",
-
+	components: { LocationForm },
 	mixins: [Validation],
-
-	components: { locationForm },
 
 	props: {
 		formModel: Object,
@@ -263,21 +267,22 @@ export default {
 
 	validations: {
 		formModel: {
-			name: { required },
-			longitude: { required },
-			latitude: { required },
-			contactGivenName: { required },
-			contactFamilyName: { required },
-			phonePrefix: { required },
-			phoneNumber: { required, numeric },
-			phoneProxy: { required },
-			phoneType: { required },
 			type: { required },
-			addressStreet: { required },
-			addressNumber: { required },
-			addressPostCode: { required },
-			nationalCardNumber: { required },
-			nationalCardType: { required },
+			name: { required },
+			projects: { required },
+			longitude: {},
+			latitude: {},
+			contactGivenName: {},
+			contactFamilyName: {},
+			phonePrefix: {},
+			phoneNumber: {},
+			phoneProxy: {},
+			phoneType: {},
+			addressStreet: {},
+			addressNumber: {},
+			addressPostCode: {},
+			nationalCardNumber: {},
+			nationalCardType: {},
 			adm1Id: { required },
 			adm2Id: {},
 			adm3Id: {},
@@ -292,10 +297,12 @@ export default {
 				nationalCardTypes: [],
 				phonePrefixes: PhoneCodes,
 				phoneTypes: [],
+				projects: [],
 			},
 			phoneTypesLoading: true,
 			institutionTypesLoading: true,
 			nationalCardTypesLoading: true,
+			projectsLoading: true,
 		};
 	},
 
@@ -303,6 +310,7 @@ export default {
 		await this.fetchTypes();
 		await this.fetchNationalCardTypes();
 		await this.fetchPhoneTypes();
+		await this.fetchProjects();
 	},
 
 	watch: {
@@ -315,7 +323,7 @@ export default {
 		},
 
 		async mapSelects() {
-			const { phonePrefix, type, nationalCardType, phoneType } = this.formModel;
+			const { phonePrefix, type, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
 				this.formModel.phonePrefix = await PhoneCodes
 					.find((item) => item.code === phonePrefix);
@@ -331,6 +339,9 @@ export default {
 			if (phoneType && typeof phoneType !== "object") {
 				this.formModel.phoneType = await this.options.phoneTypes
 					.find((item) => item.code === phoneType);
+			}
+			if (projectIds) {
+				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
 		},
 
@@ -351,7 +362,7 @@ export default {
 		},
 
 		async fetchTypes() {
-			await InstitutionsService.getListOfInstitutionTypes()
+			await InstitutionService.getListOfInstitutionTypes()
 				.then(({ data }) => {
 					this.options.types = data;
 				})
@@ -384,6 +395,18 @@ export default {
 				});
 
 			this.phoneTypesLoading = false;
+		},
+
+		async fetchProjects() {
+			await ProjectsService.getListOfProjects()
+				.then(({ data }) => {
+					this.options.projects = data;
+				})
+				.catch((e) => {
+					Notification(`Projects ${e}`, "is-danger");
+				});
+
+			this.projectsLoading = false;
 		},
 	},
 };

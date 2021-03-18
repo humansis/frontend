@@ -63,7 +63,7 @@
 
 <script>
 import validation from "@/mixins/validation";
-import InstitutionsService from "@/services/InstitutionsService";
+import InstitutionService from "@/services/InstitutionService";
 import { Notification } from "@/utils/UI";
 import CommunitiesService from "@/services/CommunitiesService";
 import { requiredIf } from "vuelidate/lib/validators";
@@ -150,7 +150,7 @@ export default {
 		},
 
 		async fetchInstitutions() {
-			await InstitutionsService.getListOfInstitutions()
+			await InstitutionService.getListOfInstitutions()
 				.then(({ data }) => {
 					this.options.institutions = this.prepareInstitutionsForSelect(data);
 				})

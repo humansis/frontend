@@ -81,7 +81,7 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 
 export default {
-	name: "locationForm",
+	name: "LocationForm",
 
 	mixins: [Validation],
 
