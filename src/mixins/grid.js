@@ -3,6 +3,7 @@ import { mapActions, mapState } from "vuex";
 export default {
 	data() {
 		return {
+			show: true,
 			isLoadingList: false,
 		};
 	},
@@ -71,6 +72,11 @@ export default {
 				this.table.sortDirection = "";
 				this.fetchData();
 			}
+		},
+
+		reload() {
+			this.show = false;
+			this.show = true;
 		},
 	},
 };
