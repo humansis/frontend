@@ -65,7 +65,7 @@
 			</template>
 			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
-					<CommunitiesFilter
+					<CommunityFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -78,18 +78,18 @@
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import CommunitiesService from "@/services/CommunitiesService";
+import CommunityService from "@/services/CommunityService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import CommunitiesFilter from "@/components/Beneficiaries/CommunitiesFilter";
+import CommunityFilter from "@/components/Beneficiaries/CommunityFilter";
 import addressHelper from "@/mixins/addressHelper";
 
 export default {
-	name: "CommunitiesList",
+	name: "CommunityList",
 
 	components: {
-		CommunitiesFilter,
+		CommunityFilter,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -131,7 +131,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await CommunitiesService.getListOfCommunities(
+			await CommunityService.getListOfCommunities(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",

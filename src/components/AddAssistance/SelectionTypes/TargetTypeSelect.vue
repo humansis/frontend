@@ -65,7 +65,7 @@
 import validation from "@/mixins/validation";
 import InstitutionService from "@/services/InstitutionService";
 import { Notification } from "@/utils/UI";
-import CommunitiesService from "@/services/CommunitiesService";
+import CommunityService from "@/services/CommunityService";
 import { requiredIf } from "vuelidate/lib/validators";
 import addressHelper from "@/mixins/addressHelper";
 import { normalizeText } from "@/utils/datagrid";
@@ -161,7 +161,7 @@ export default {
 		},
 
 		async fetchCommunities() {
-			await CommunitiesService.getListOfCommunities()
+			await CommunityService.getListOfCommunities()
 				.then(async ({ data }) => {
 					this.options.communities = await this.prepareCommunitiesForSelect(data);
 				})
