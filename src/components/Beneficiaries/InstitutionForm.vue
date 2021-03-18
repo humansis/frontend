@@ -340,7 +340,6 @@ export default {
 				this.formModel.phoneType = await this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
-			if (projects) {
 			if (projectIds) {
 				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
