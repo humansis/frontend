@@ -34,8 +34,8 @@
 			/>
 		</Modal>
 
-		<CommunitiesList
-			ref="communitiesList"
+		<CommunityList
+			ref="communityList"
 			@onRemove="removeCommunity"
 			@onShowEdit="editCommunity"
 			@onShowDetail="showDetail"
@@ -44,19 +44,20 @@
 </template>
 
 <script>
-import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
 import CommunityForm from "@/components/Beneficiaries/CommunityForm";
+import CommunityList from "@/components/Beneficiaries/CommunityList";
 import Modal from "@/components/Modal";
-import CommunitiesService from "@/services/CommunitiesService";
+import CommunityService from "@/services/CommunityService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Toast } from "@/utils/UI";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
-	name: "CommunitiesPage",
+	name: "CommunityPage",
 
 	components: {
-		CommunitiesList,
+		CommunityList,
 		Modal,
 		CommunityForm,
 	},
@@ -73,6 +74,8 @@ export default {
 				id: null,
 				longitude: "",
 				latitude: "",
+				projectIds: [],
+				projects: [],
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
@@ -129,6 +132,8 @@ export default {
 				...this.communityModel,
 				id: null,
 				longitude: "",
+				projects: [],
+				projectIds: [],
 				latitude: "",
 				name: "",
 				contactGivenName: "",
@@ -175,6 +180,7 @@ export default {
 				phoneId,
 				addressId,
 				nationalId,
+				projectIds,
 			},
 		) {
 			const phone = await BeneficiariesService.getPhone(phoneId);
@@ -189,20 +195,21 @@ export default {
 				name,
 				contactGivenName,
 				contactFamilyName,
-				addressStreet: address.street,
-				addressNumber: address.number,
-				addressPostCode: address.postcode,
-				nationalCardNumber: nationalIdCard.number,
-				nationalCardType: nationalIdCard.type,
-				phonePrefix: phone.prefix,
-				phoneNumber: phone.number,
-				phoneType: phone.type,
-				phoneProxy: phone.proxy,
-				adm1Id: address.adm1Id,
-				adm2Id: address.adm2Id,
-				adm3Id: address.adm3Id,
-				adm4Id: address.adm4Id,
-				locationId: address.locationId,
+				projectIds,
+				addressStreet: address?.street || "",
+				addressNumber: address?.number || "",
+				addressPostCode: address?.postcode || "",
+				nationalCardNumber: nationalIdCard?.number || "",
+				nationalCardType: nationalIdCard?.type || "",
+				phonePrefix: phone?.prefix || "",
+				phoneNumber: phone?.number || "",
+				phoneType: phone?.type || "",
+				phoneProxy: phone?.proxy || "",
+				adm1Id: address?.adm1Id || "",
+				adm2Id: address?.adm2Id || "",
+				adm3Id: address?.adm3Id || "",
+				adm4Id: address?.adm4Id || "",
+				locationId: address?.locationId || "",
 			};
 		},
 
@@ -226,6 +233,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
+				projects,
 			} = communityForm;
 			let locationId = null;
 			if (adm4Id) {
@@ -258,6 +266,7 @@ export default {
 					proxy: phoneProxy,
 					type: phoneType.code,
 				},
+				projectIds: getArrayOfIdsByParam(projects, "id"),
 			};
 
 			if (this.communityModal.isEditing && id) {
@@ -270,10 +279,10 @@ export default {
 		async createCommunity(communityBody) {
 			this.communityModal.isWaiting = true;
 
-			await CommunitiesService.createCommunity(communityBody).then((response) => {
+			await CommunityService.createCommunity(communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Community Successfully Created", "is-success");
-					this.$refs.communitiesList.fetchData();
+					this.$refs.communityList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
@@ -285,10 +294,10 @@ export default {
 		async updateCommunity(id, communityBody) {
 			this.communityModal.isWaiting = true;
 
-			await CommunitiesService.updateCommunity(id, communityBody).then((response) => {
+			await CommunityService.updateCommunity(id, communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Community Successfully Updated", "is-success");
-					this.$refs.communitiesList.fetchData();
+					this.$refs.communityList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
@@ -298,10 +307,10 @@ export default {
 		},
 
 		async removeCommunity(id) {
-			await CommunitiesService.deleteCommunity(id).then((response) => {
+			await CommunityService.deleteCommunity(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Community Successfully Deleted", "is-success");
-					this.$refs.communitiesList.removeFromList(id);
+					this.$refs.communityList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`Community ${e}`, "is-danger");

@@ -177,7 +177,7 @@ const routes = [
 					{
 						path: "communities",
 						name: "Communities",
-						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunitiesPage"),
+						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunityPage"),
 						meta: {
 							breadcrumb: "Communities",
 							description: "",

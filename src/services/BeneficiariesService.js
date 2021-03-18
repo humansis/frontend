@@ -118,6 +118,7 @@ export default {
 	},
 
 	async getPhone(id) {
+		if (!id) return null;
 		const { data } = await fetcher({
 			uri: `beneficiaries/phones/${id}`,
 		});
@@ -125,6 +126,7 @@ export default {
 	},
 
 	async getNationalId(id) {
+		if (!id) return null;
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids/${id}`,
 		});
