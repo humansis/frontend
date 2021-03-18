@@ -1,14 +1,15 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfDonors(page, size, sort, search = null) {
+	async getListOfDonors(page, size, sort, search = null, ids = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
+		const idsText = ids ? idsToUri(ids) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `donors?${pageText + sizeText + sortText + fulltext}`,
+			uri: `donors?${pageText + sizeText + sortText + fulltext + idsText}`,
 		});
 		return { data, totalCount };
 	},

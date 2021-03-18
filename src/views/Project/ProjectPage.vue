@@ -34,7 +34,7 @@
 			/>
 		</Modal>
 
-		<ProjectsList
+		<ProjectList
 			ref="projectList"
 			:project-model="projectModel"
 			@onShowDetail="showDetail"
@@ -46,18 +46,18 @@
 
 <script>
 import { mapState } from "vuex";
-import ProjectsList from "@/components/Projects/ProjectsList";
 import ProjectForm from "@/components/Projects/ProjectForm";
 import Modal from "@/components/Modal";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import ProjectList from "@/components/Projects/ProjectList";
 
 export default {
 	name: "ProjectPage",
 
 	components: {
-		ProjectsList,
+		ProjectList,
 		Modal,
 		ProjectForm,
 	},
@@ -226,7 +226,7 @@ export default {
 		async createProject(projectBody) {
 			this.projectModal.isWaiting = true;
 
-			await ProjectsService.createProject(projectBody).then((response) => {
+			await ProjectService.createProject(projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Created", "is-success");
 					this.$refs.projectList.fetchData();
@@ -241,7 +241,7 @@ export default {
 		async updateProject(id, projectBody) {
 			this.projectModal.isWaiting = true;
 
-			await ProjectsService.updateProject(id, projectBody).then((response) => {
+			await ProjectService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Project Successfully Updated", "is-success");
 					this.$refs.projectList.fetchData();
@@ -254,7 +254,7 @@ export default {
 		},
 
 		async onProjectDelete(id) {
-			await ProjectsService.deleteProject(id).then((response) => {
+			await ProjectService.deleteProject(id).then((response) => {
 				if (response.status === 204) {
 					Toast("Project Successfully Deleted", "is-success");
 					this.$refs.projectList.removeFromList(id);

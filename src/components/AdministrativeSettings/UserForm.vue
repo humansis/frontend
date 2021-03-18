@@ -169,7 +169,7 @@
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
@@ -284,7 +284,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {

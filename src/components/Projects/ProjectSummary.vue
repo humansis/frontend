@@ -64,7 +64,7 @@
 
 <script>
 import { mapState } from "vuex";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -90,7 +90,7 @@ export default {
 
 	methods: {
 		async fetchData() {
-			await ProjectsService.getDetailOfProject(
+			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.projectSummary = data;
