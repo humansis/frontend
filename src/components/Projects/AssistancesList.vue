@@ -274,7 +274,7 @@ export default {
 			return AssistancesService.getStatistics(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`Statistics ${e}`, "is-danger");
 				});
 		},
 

@@ -128,8 +128,8 @@ export default {
 	},
 
 	async removeAssistance(id) {
-		console.log(id);
-		return { data: {}, status: 204 };
+		const { data, status } = await fetcher({ uri: `assistances/${id}`, method: "DELETE" });
+		return { data, status };
 	},
 
 	async updateAssistanceDateOfDistribution(id, date) {

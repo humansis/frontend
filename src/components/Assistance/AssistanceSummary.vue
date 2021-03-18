@@ -1,7 +1,21 @@
 <template>
 	<div v-if="assistance" ref="assistanceSummary">
-		<h2 class="title has-text-centered">
+		<h2 class="title is-flex is-justify-content-center is-align-items-center">
 			{{ assistance.name }}
+			<b-icon
+				v-if="assistance.validated && !assistance.completed"
+				class="ml-3"
+				size="is-medium"
+				icon="lock"
+				type="is-warning"
+			/>
+			<b-icon
+				v-if="assistance.completed"
+				class="ml-3"
+				size="is-medium"
+				icon="check"
+				type="is-success"
+			/>
 		</h2>
 		<nav class="level">
 			<div class="level-item has-text-centered">

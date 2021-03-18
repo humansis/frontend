@@ -85,7 +85,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
 
 export default {
-	name: "AddAssistanceUpdate",
+	name: "AssistanceUpdate",
 
 	components: {
 		AssistanceSummary,

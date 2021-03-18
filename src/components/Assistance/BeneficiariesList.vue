@@ -109,10 +109,10 @@
 					/>
 					<SafeDelete
 						icon="trash"
-						entity="Assistance"
+						entity="Beneficiary from Assistance"
 						tooltip="Delete"
 						:id="props.row.id"
-						@submitted="removeAssistance"
+						@submitted="removeBeneficiaryFromAssistance"
 					/>
 				</div>
 			</b-table-column>
@@ -244,7 +244,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Households ${e}`, "is-danger");
+				Notification(`Beneficiaries ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -379,7 +379,8 @@ export default {
 			this.editBeneficiaryModal.isOpened = true;
 		},
 
-		removeAssistance(id) {
+		removeBeneficiaryFromAssistance(id) {
+			// TODO Remove beneficiary from assistance
 			this.table.data = this.table.data.filter((item) => item.id !== id);
 		},
 
