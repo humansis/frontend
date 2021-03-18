@@ -1,6 +1,6 @@
 <template>
 	<card-component v-if="!loading">
-		<b-progress value="100" />
+		<b-progress :value="100" />
 
 		<b-steps
 			v-model="activeStep"
@@ -42,8 +42,7 @@
 			</b-step-item>
 			<template
 				v-if="true"
-				#navigation
-				v-slot:default="{previous, next}"
+				#navigation="{previous, next}"
 			>
 				<div class="buttons flex-end">
 					<b-button
