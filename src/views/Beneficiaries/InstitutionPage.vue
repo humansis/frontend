@@ -74,6 +74,8 @@ export default {
 				id: null,
 				longitude: "",
 				latitude: "",
+				projects: [],
+				projectIds: [],
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
@@ -147,6 +149,7 @@ export default {
 				phoneType: "",
 				phoneProxy: false,
 				projects: [],
+				projectIds: [],
 				adm1Id: "",
 				adm2Id: "",
 				adm3Id: "",
@@ -179,7 +182,7 @@ export default {
 				phoneId,
 				addressId,
 				nationalId,
-				projects,
+				projectIds,
 			},
 		) {
 			const phone = await BeneficiariesService.getPhone(phoneId);
@@ -195,7 +198,7 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				projects,
+				projectIds,
 				addressStreet: address?.street || "",
 				addressNumber: address?.number || "",
 				addressPostCode: address?.postcode || "",
@@ -269,7 +272,7 @@ export default {
 					type: phoneType?.code,
 					proxy: phoneProxy,
 				},
-				projects: getArrayOfIdsByParam(projects, "id"),
+				projectIds: getArrayOfIdsByParam(projects, "id"),
 			};
 			if (this.institutionModal.isEditing && id) {
 				this.updateInstitution(id, institutionBody);

@@ -147,6 +147,7 @@
 				<MultiSelect
 					v-model="formModel.projects"
 					searchable
+					multiple
 					placeholder="Click to select..."
 					label="name"
 					track-by="id"
@@ -322,7 +323,7 @@ export default {
 		},
 
 		async mapSelects() {
-			const { phonePrefix, type, nationalCardType, phoneType, projects } = this.formModel;
+			const { phonePrefix, type, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
 				this.formModel.phonePrefix = await PhoneCodes
 					.find((item) => item.code === phonePrefix);
@@ -340,7 +341,8 @@ export default {
 					.find((item) => item.code === phoneType);
 			}
 			if (projects) {
-				this.formModel.projects = getArrayOfCodeListByKey(projects, this.options.projects, "id");
+			if (projectIds) {
+				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
 		},
 
