@@ -12,7 +12,7 @@
 		<div :class="modalCardClass">
 			<b-loading :is-full-page="false" :active="isWaiting" />
 			<header class="modal-card-head">
-				<p class="modal-card-title">{{ header }}</p>
+				<h2 class="modal-card-title title is-5 mb-0">{{ header }}</h2>
 
 				<button
 					type="button"

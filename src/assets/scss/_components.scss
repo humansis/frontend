@@ -62,6 +62,15 @@
 		width: auto;
 	}
 
+	.modal-card-head {
+		.delete {
+			&:hover,
+			&:focus {
+				background-color: rgba(10, 10, 10, 0.5);
+			}
+		}
+	}
+
 	.small-modal {
 		overflow: visible !important;
 
@@ -107,4 +116,32 @@
 .multiselect__content {
 	margin-left: 0 !important;
 	margin-top: 0 !important;
+}
+
+.multiselect__option--highlight {
+	background: $primary !important;
+
+	&::after {
+		background: $primary !important;
+	}
+}
+
+.multiselect__tag {
+	background: $primary !important;
+}
+
+.multiselect__tag-icon {
+	&:hover,&:focus {
+		background: #354e6b !important;
+	}
+
+	&::after {
+		color: $base-color-light !important;
+	}
+}
+
+.multiselect__spinner {
+	&::before, &::after {
+		border-top-color: $primary !important;
+	}
 }

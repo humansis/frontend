@@ -1,12 +1,16 @@
 <template>
 	<div class="mb-6">
 		<h2 class="title">Projects summary</h2>
-
+		<b-notification
+			v-if="projectSummaryLoading"
+			class="projects-summary-notification mb-0"
+			ref="projectSummaryLoading"
+			:closable="false"
+		/>
 		<div class="level-left">
 			<div
 				v-for="{id, name, target} in projectSummary"
 				class="level-item has-text-centered"
-				ref="projectSummary"
 				:key="id"
 			>
 				<div class="box">
@@ -28,7 +32,7 @@ export default {
 
 	data() {
 		return {
-			isLoading: true,
+			projectSummaryLoading: true,
 			projectSummary: [],
 		};
 	},
@@ -48,7 +52,7 @@ export default {
 
 		async fetchData() {
 			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.projectSummary,
+				container: this.$refs.projectSummaryLoading.$el,
 			});
 
 			await ProjectService.getListOfProjects(
@@ -58,8 +62,20 @@ export default {
 				Notification(`Projects ${e}`, "is-danger");
 			});
 
+			this.projectSummaryLoading = false;
 			loadingComponent.close();
 		},
 	},
 };
 </script>
+
+<style lang="scss">
+.projects-summary-notification {
+	background-color: transparent;
+	padding: 2rem;
+
+	.loading-background {
+		background: none;
+	}
+}
+</style>
