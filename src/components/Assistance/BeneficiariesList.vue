@@ -390,7 +390,8 @@ export default {
 		},
 
 		async removeBeneficiaryFromAssistance(id) {
-			await BeneficiariesService.removeBeneficiaryFromAssistance(id)
+			await BeneficiariesService
+				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, [id])
 				.then(() => { this.table.data = this.table.data.filter((item) => item.id !== id); })
 				.catch(() => { Notification(`Beneficiary not removed`, "is-danger"); });
 		},
