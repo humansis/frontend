@@ -50,4 +50,9 @@ export default {
 		const { data } = await fetcher({ uri: `addresses?${idsText}` });
 		return data;
 	},
+
+	async getCamps() {
+		const { data: { data, totalCount } } = await fetcher({ uri: `camps` });
+		return { data, totalCount };
+	},
 };

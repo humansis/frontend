@@ -236,6 +236,7 @@ export default {
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Household Successfully Updated", "is-success");
+					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
 				Notification(`Household ${e}`, "is-danger");
@@ -246,6 +247,7 @@ export default {
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast("Household Successfully Created", "is-success");
+					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
 				Notification(`Household ${e}`, "is-danger");
@@ -329,6 +331,7 @@ export default {
 				adm4Id,
 				campName,
 				tentNumber,
+				camp,
 			},
 		) {
 			let locationId = null;
@@ -344,16 +347,14 @@ export default {
 			const address = {};
 			if (typeOfLocation.code === "camp") {
 				address.campAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
-					name: campName,
 					tentNumber,
-					locationId,
+					camp: {
+						name: camp?.name || campName,
+						locationId: camp?.locationId || locationId,
+					},
 				};
 			} else if (typeOfLocation.code === "residence") {
 				address.residenceAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
 					number,
 					street,
 					postcode,
@@ -361,8 +362,6 @@ export default {
 				};
 			} else if (typeOfLocation.code === "temporary_settlement") {
 				address.temporarySettlementAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
 					number,
 					street,
 					postcode,
