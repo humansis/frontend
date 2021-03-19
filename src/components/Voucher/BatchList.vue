@@ -64,7 +64,10 @@
 								:key="column.id"
 								v-slot="props"
 							>
-								<ColumnField :data="props" :column="column" />
+								<template v-if="column.field === 'status'">
+									{{ getStatus(props.row[column.field]) }}
+								</template>
+								<ColumnField v-else :data="props" :column="column" />
 							</b-table-column>
 						</template>
 						<b-table-column
@@ -110,6 +113,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import VoucherFilters from "@/components/Voucher/VoucherFilters";
 import voucherHelper from "@/mixins/voucherHelper";
+import { getBookletStatus } from "@/utils/helpers";
 
 export default {
 	name: "BatchList",
@@ -138,7 +142,7 @@ export default {
 					{ key: "project" },
 					{ key: "code" },
 					{ key: "numberVouchers", label: "Quantity Of Vouchers" },
-					{ key: "value", label: "Total Value", sortKey: "value" },
+					{ key: "totalValue", sortKey: "value" },
 					{ key: "currency" },
 					{ key: "status" },
 					{ key: "beneficiary" },
@@ -241,6 +245,10 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			await this.fetchData();
+		},
+
+		getStatus(code) {
+			return getBookletStatus(code).value;
 		},
 	},
 };

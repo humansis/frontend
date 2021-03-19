@@ -20,7 +20,10 @@
 					:key="column.id"
 					v-slot="props"
 				>
-					<ColumnField :data="props" :column="column" />
+					<template v-if="column.field === 'status'">
+						{{ getStatus(props.row[column.field]) }}
+					</template>
+					<ColumnField v-else :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<b-table-column
@@ -83,6 +86,7 @@ import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
+import { getBookletStatus } from "@/utils/helpers";
 import grid from "@/mixins/grid";
 import VoucherFilters from "@/components/Voucher/VoucherFilters";
 import voucherHelper from "@/mixins/voucherHelper";
@@ -178,6 +182,10 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			await this.fetchData();
+		},
+
+		getStatus(code) {
+			return getBookletStatus(code).value;
 		},
 	},
 };

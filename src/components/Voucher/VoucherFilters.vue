@@ -8,10 +8,10 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import CurrencyService from "@/services/CurrencyService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByParams } from "@/utils/codeList";
+import currencies from "@/utils/currencies";
 
 export default {
 	name: "VoucherFilters",
@@ -32,10 +32,11 @@ export default {
 				currencies: {
 					name: "Currency",
 					placeholder: "Select Currency",
-					label: "code",
+					label: "value",
+					trackBy: "value",
 					multiple: true,
-					loading: true,
-					data: [],
+					loading: false,
+					data: currencies,
 				},
 				statuses: {
 					name: "Status",
@@ -73,7 +74,6 @@ export default {
 
 	mounted() {
 		this.fetchAssistances();
-		this.fetchCurrencies();
 	},
 
 	methods: {
@@ -94,18 +94,6 @@ export default {
 				});
 
 			this.filtersOptions.assistances.loading = false;
-		},
-
-		async fetchCurrencies() {
-			await CurrencyService.getListOfCurrencies()
-				.then(({ data }) => {
-					this.filtersOptions.currencies.data = data;
-				})
-				.catch((e) => {
-					Notification(`Currencies ${e}`, "is-danger");
-				});
-
-			this.filtersOptions.currencies.loading = false;
 		},
 
 		async fetchBeneficiaries(ids) {
