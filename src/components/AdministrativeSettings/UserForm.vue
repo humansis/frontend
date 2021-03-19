@@ -252,6 +252,8 @@ export default {
 
 	mounted() {
 		this.mapSelects();
+		this.fetchProjects();
+		this.fetchCountries();
 	},
 
 	methods: {
@@ -272,12 +274,10 @@ export default {
 
 		mapRights({ code }) {
 			if (code === 1 || code === 2 || code === 3 || code === 6) {
-				this.fetchProjects();
 				this.formModel.disabledProject = false;
 				this.formModel.disabledCountry = true;
 			} else if (code === 4 || code === 5) {
 				this.onlyOneCountry = (code === 4);
-				this.fetchCountries();
 				this.formModel.disabledProject = true;
 				this.formModel.disabledCountry = false;
 			}
