@@ -148,11 +148,13 @@ export default {
 
 		handleChangeCountry(country) {
 			this.updateCountry(country);
+			this.$router.push({ name: "Home" });
 			this.$router.go();
 		},
 
 		async handleChangeLanguage(language) {
 			this.$store.dispatch("appLoading", true);
+			this.$router.push({ name: "Home" });
 
 			await TranslationService.getTranslations(language.key).then((response) => {
 				if (response.status === 200) {
