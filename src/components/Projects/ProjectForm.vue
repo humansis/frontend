@@ -48,10 +48,12 @@
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-						</div>
+					<template #tag="props">
+						<MultiSelectTag
+							:props="props"
+							:items="formModel.selectedSectors"
+							@optionRemoved="formModel.selectedSectors = $event"
+						/>
 					</template>
 				</MultiSelect>
 			</b-field>
@@ -196,11 +198,14 @@ import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
+import MultiSelectTag from "@/components/MultiSelectTag";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
+
+	components: { MultiSelectTag },
 
 	mixins: [Validation],
 

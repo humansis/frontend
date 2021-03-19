@@ -204,7 +204,7 @@ import Validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import PhoneCodes from "@/utils/phoneCodes";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "CommunityForm",
@@ -326,7 +326,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;
 				})

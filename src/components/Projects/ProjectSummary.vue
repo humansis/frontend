@@ -6,7 +6,9 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Sectors</p>
-					<p class="has-text-weight-bold is-size-5">{{ projectSummary.sectors.length }}</p>
+					<svg-icon
+						:items="projectSummary.sectors"
+					/>
 				</div>
 			</div>
 
@@ -66,9 +68,12 @@
 import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "ProjectSummary",
+
+	components: { SvgIcon },
 
 	data() {
 		return {
@@ -78,13 +83,14 @@ export default {
 
 	computed: {
 		...mapState(["temporaryProject"]),
+
 	},
 
-	async mounted() {
+	mounted() {
 		if (this.temporaryProject) {
 			this.projectSummary = this.temporaryProject;
 		} else {
-			await this.fetchData();
+			this.fetchData();
 		}
 	},
 

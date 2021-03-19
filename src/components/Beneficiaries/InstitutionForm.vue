@@ -250,7 +250,7 @@ import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import LocationForm from "@/components/LocationForm";
 
 export default {
@@ -398,7 +398,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;
 				})

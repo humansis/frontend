@@ -20,7 +20,7 @@
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
-import ProjectSummary from "@/components/Home/ProjectsSummary";
+import ProjectSummary from "@/components/Home/ProjectSummary";
 
 export default {
 	name: "Home",

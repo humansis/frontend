@@ -69,7 +69,7 @@
 					label="name"
 					track-by="id"
 					placeholder="Click to select..."
-					:multiple="true"
+					multiple
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="options.projects"
 					:class="validateMultiselect('projectIds')"

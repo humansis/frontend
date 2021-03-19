@@ -24,7 +24,7 @@ import { normalizeProjectName } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
 export default {
-	name: "projectSummary",
+	name: "ProjectSummary",
 
 	data() {
 		return {
