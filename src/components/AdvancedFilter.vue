@@ -14,16 +14,9 @@
 						:options="options.data"
 						selectLabel="Select"
 						deselectLabel="Remove"
-						:closeOnSelect="false"
+						:closeOnSelect="!options.multiple"
 						@input="filterChanged(filter)"
-					>
-						<template
-							#singleLabel
-							v-slot:default="options"
-						>
-							{{ options.option.name }}
-						</template>
-					</MultiSelect>
+					/>
 				</b-field>
 			</div>
 		</div>

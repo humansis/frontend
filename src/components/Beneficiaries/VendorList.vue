@@ -142,7 +142,8 @@ export default {
 				.then((locations) => {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
-						this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
+						this.table.data[key].location = this
+							.prepareLocationEntityForTable(item.locationId, locations);
 					});
 					this.reload();
 				});

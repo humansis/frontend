@@ -1,13 +1,13 @@
 export default {
 	methods: {
-		prepareEntityForTable(id, entities, param = null, emptyValue = "") {
+		prepareEntityForTable(id, entities, returnedParam = null, emptyValue = "") {
 			if (!entities?.length) return emptyValue;
 			const entity = entities.find((item) => item.id === id);
 			if (!entity) {
 				return emptyValue;
 			}
-			if (param) {
-				return entity[param];
+			if (returnedParam) {
+				return entity[returnedParam];
 			}
 			return entity;
 		},
@@ -18,6 +18,12 @@ export default {
 				preparedName += ` (${enName})`;
 			}
 			return preparedName;
+		},
+
+		prepareLocationEntityForTable(id, entities) {
+			if (!entities?.length) return "";
+			const entity = entities.find((item) => item.locationId === id);
+			return entity.name;
 		},
 	},
 };

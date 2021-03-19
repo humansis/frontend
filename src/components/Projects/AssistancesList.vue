@@ -246,7 +246,8 @@ export default {
 			const locations = await this.getLocations(locationIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].location = (this.prepareEntityForTable(item.locationId, locations, "adm")).name;
+				this.table.data[key].location = this
+					.prepareLocationEntityForTable(item.locationId, locations);
 			});
 			this.table.progress += 10;
 		},

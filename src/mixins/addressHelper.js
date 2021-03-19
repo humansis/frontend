@@ -29,10 +29,10 @@ export default {
 			if (!locations?.length) return [];
 			const addressesMapped = [];
 			addresses.forEach((address) => {
-				const location = locations.find((item) => item.adm.locationId === address.locationId);
+				const location = locations.find((item) => item.locationId === address.locationId);
 				if (location) {
 					const addressMapped = address;
-					addressMapped.locationName = location.adm.name;
+					addressMapped.locationName = location.name;
 					addressesMapped.push(addressMapped);
 				}
 			});
