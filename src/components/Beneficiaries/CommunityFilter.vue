@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
 
@@ -48,7 +48,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.filtersOptions.projects.data = data;
 				})

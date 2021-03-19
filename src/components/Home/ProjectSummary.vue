@@ -2,15 +2,14 @@
 	<div class="mb-6">
 		<h2 class="title">Projects summary</h2>
 		<b-notification
-			v-if="projectsSummaryLoading"
+			v-if="projectSummaryLoading"
 			class="projects-summary-notification mb-0"
-			ref="projectsSummaryLoading"
+			ref="projectSummaryLoading"
 			:closable="false"
 		/>
-
-		<div class="level-left " ref="projectsSummary">
+		<div class="level-left">
 			<div
-				v-for="{id, name, target} in projectsSummary"
+				v-for="{id, name, target} in projectSummary"
 				class="level-item has-text-centered"
 				:key="id"
 			>
@@ -24,17 +23,17 @@
 </template>
 
 <script>
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { normalizeProjectName } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
 export default {
-	name: "ProjectsSummary",
+	name: "ProjectSummary",
 
 	data() {
 		return {
-			projectsSummary: [],
-			projectsSummaryLoading: true,
+			projectSummaryLoading: true,
+			projectSummary: [],
 		};
 	},
 
@@ -53,17 +52,17 @@ export default {
 
 		async fetchData() {
 			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.projectsSummaryLoading.$el,
+				container: this.$refs.projectSummaryLoading.$el,
 			});
 
-			await ProjectsService.getListOfProjects(
+			await ProjectService.getListOfProjects(
 			).then((response) => {
-				this.projectsSummary = response.data;
+				this.projectSummary = response.data;
 			}).catch((e) => {
 				Notification(`Projects ${e}`, "is-danger");
 			});
 
-			this.projectsSummaryLoading = false;
+			this.projectSummaryLoading = false;
 			loadingComponent.close();
 		},
 	},

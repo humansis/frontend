@@ -158,7 +158,7 @@ import SafeDelete from "@/components/SafeDelete";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
@@ -373,7 +373,7 @@ export default {
 		},
 
 		async getProjects(ids) {
-			return ProjectsService.getListOfProjects(null, null, null, null, ids)
+			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");

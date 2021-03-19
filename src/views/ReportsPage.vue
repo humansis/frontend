@@ -27,7 +27,7 @@
 
 <script>
 import CountryReportList from "@/components/Reports/CountryReportList";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 
 const ProjectReportList = () => import("@/components/Reports/ProjectReportList");
@@ -55,7 +55,7 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then((response) => { this.projects = response.data; }).catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");
 				});

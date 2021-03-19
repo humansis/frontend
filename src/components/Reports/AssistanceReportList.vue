@@ -74,7 +74,7 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import AssistancesService from "@/services/AssistancesService";
 import AssistanceReportService from "@/services/AssistanceReportService";
 import { Notification } from "@/utils/UI";
@@ -154,7 +154,7 @@ export default {
 		async fetchProjects() {
 			this.isProjectsLoading = true;
 
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then((response) => {
 					this.options.projects = response.data;
 				}).catch((e) => {

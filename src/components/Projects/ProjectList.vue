@@ -49,11 +49,6 @@
 					:id="props.row.id"
 					@submitted="onDelete"
 				/>
-				<ActionButton
-					icon="copy"
-					type="is-dark"
-					tooltip="Print"
-				/>
 			</div>
 		</b-table-column>
 	</Table>
@@ -65,19 +60,21 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import baseHelper from "@/mixins/baseHelper";
+import DonorService from "@/services/DonorService";
 
 export default {
-	name: "ProjectsList",
+	name: "ProjectList",
 
 	props: {
 		projectModel: Object,
 	},
 
-	mixins: [grid],
+	mixins: [grid, baseHelper],
 
 	components: {
 		SafeDelete,
@@ -94,7 +91,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", width: "90", sortable: true },
 					{ key: "name", width: "434", sortable: true },
-					{ key: "donorIds", label: "Donors", type: "count", width: "100" },
+					{ key: "donors", width: "150" },
 					{ key: "startDate", type: "date", width: "120", sortable: true },
 					{ key: "endDate", type: "date", width: "120", sortable: true },
 					{ key: "target", width: "90" },
@@ -124,19 +121,64 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await ProjectsService.getListOfProjects(
+			await ProjectService.getListOfProjects(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then(({ data, totalCount }) => {
-				this.table.data = data;
+			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.total = totalCount;
+				if (data.length > 0) {
+					await this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				Notification(`Projects ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			this.table.data = data;
+			const donorIds = [];
+			data.map(async (item) => {
+				donorIds.push(...item.donorIds);
+			});
+			await this.prepareDonorsForTable([...new Set(donorIds)]);
+		},
+
+		async prepareDonorsForTable(ids) {
+			const donors = await this.getDonors(ids);
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].donors = this.prepareDonors(item, donors);
+			});
+		},
+
+		prepareDonors(item, donors) {
+			if (!donors?.length) return "none";
+			let result = "";
+
+			item.donorIds.forEach((id) => {
+				const foundDonor = donors.find((donor) => donor.id === id);
+				if (foundDonor) {
+					if (result === "") {
+						result = foundDonor.shortname;
+					} else {
+						result += `, ${foundDonor.shortname}`;
+					}
+				}
+			});
+
+			return result;
+		},
+
+		async getDonors(ids) {
+			return DonorService.getListOfDonors(null, null, null, null, ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`Donors ${e}`, "is-danger");
+				});
 		},
 
 		goToDetail(project) {

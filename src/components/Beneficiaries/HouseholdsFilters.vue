@@ -9,7 +9,7 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
@@ -184,7 +184,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.filtersOptions.projects.data = data;
 					this.filtersOptions.projects.loading = false;

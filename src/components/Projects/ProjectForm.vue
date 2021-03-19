@@ -13,11 +13,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Internal ID"
-				:type="validateType('internalId')"
-				:message="validateMsg('internalId', 'Required number')"
-			>
+			<b-field>
+				<template #label>
+					Internal ID
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<b-input
 					v-model="formModel.internalId"
 					:disabled="formDisabled"
@@ -43,11 +43,17 @@
 					:class="validateMultiselect('selectedSectors')"
 					@select="validate('selectedSectors')"
 				>
-					<template
-						#singleLabel
-						v-slot:default="option"
-					>
-						{{ option.code }}
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #tag="props">
+						<MultiSelectTag
+							:props="props"
+							:items="formModel.selectedSectors"
+							@optionRemoved="formModel.selectedSectors = $event"
+						/>
 					</template>
 				</MultiSelect>
 			</b-field>
@@ -87,23 +93,20 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Donors"
-				:type="validateType('selectedDonors')"
-				:message="validateMsg('selectedDonors')"
-			>
+			<b-field>
+				<template #label>
+					Donors<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.selectedDonors"
 					searchable
-					label="shortname"
+					label="fullname"
 					track-by="id"
 					multiple
 					placeholder="Click to select..."
-					:class="validateMultiselect('selectedDonors')"
 					:disabled="formDisabled"
 					:options="options.donors"
 					:loading="donorsLoading"
-					@select="validate('selectedDonors')"
 				>
 					<template
 						#singleLabel
@@ -116,18 +119,30 @@
 
 			<b-field>
 				<template #label>
-					Target Type<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					Target Type
+					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
-					label="code"
-					track-by="value"
+					label="value"
+					track-by="code"
 					placeholder="Click to select..."
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
 					:loading="targetTypesLoading"
-				/>
+				>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #singleLabel="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -182,11 +197,15 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import { normalizeText } from "@/utils/datagrid";
+import MultiSelectTag from "@/components/MultiSelectTag";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
+
+	components: { MultiSelectTag },
 
 	mixins: [Validation],
 
@@ -213,14 +232,14 @@ export default {
 	validations: {
 		formModel: {
 			name: { required },
-			internalId: { required },
+			internalId: {},
 			selectedSectors: { required },
 			startDate: { required },
 			endDate: {
 				required,
 				minValue: minDate,
 			},
-			selectedDonors: { required },
+			selectedDonors: {},
 			selectedTargetType: {},
 			totalTarget: { required, minValue: minValue(1) },
 		},
@@ -233,6 +252,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(value) {
+			return normalizeText(value);
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -249,8 +272,8 @@ export default {
 		},
 
 		async fetchSectors() {
-			await SectorsService.getListOfSectors().then((response) => {
-				this.options.sectors = response.data;
+			await SectorsService.getListOfSectors().then(({ data }) => {
+				this.options.sectors = data;
 			}).catch((e) => {
 				Notification(`Sectors ${e}`, "is-danger");
 			});
@@ -260,8 +283,8 @@ export default {
 		},
 
 		async fetchDonors() {
-			await DonorService.getListOfDonors().then((response) => {
-				this.options.donors = response.data;
+			await DonorService.getListOfDonors().then(({ data }) => {
+				this.options.donors = data;
 			}).catch((e) => {
 				Notification(`Donors ${e}`, "is-danger");
 			});
@@ -271,8 +294,8 @@ export default {
 		},
 
 		async fetchTargetTypes() {
-			await AssistancesService.getAssistanceTypes().then((response) => {
-				this.options.targetTypes = response.data;
+			await AssistancesService.getTargetTypes().then(({ data }) => {
+				this.options.targetTypes = data;
 			}).catch((e) => {
 				Notification(`Target Types ${e}`, "is-danger");
 			});
