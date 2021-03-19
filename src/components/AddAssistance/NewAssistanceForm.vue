@@ -85,8 +85,6 @@
 				<MultiSelect
 					v-model="formModel.assistanceType"
 					searchable
-					label="value"
-					track-by="code"
 					placeholder="Click to select..."
 					:loading="loading.assistanceTypes"
 					:options="options.assistanceTypes"
@@ -95,12 +93,12 @@
 				>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeText(props.option) }}</span>
 						</div>
 					</template>
 					<template #singleLabel="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeText(props.option) }}</span>
 						</div>
 					</template>
 				</MultiSelect>
@@ -262,8 +260,8 @@ export default {
 
 		async getComponentsToShow() {
 			const {
-				assistanceType: { code: assistanceType },
-				targetType: { code: targetType },
+				assistanceType,
+				targetType: { value: targetType },
 			} = this.formModel;
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {
 				switch (targetType) {
