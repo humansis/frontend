@@ -349,8 +349,8 @@ export default {
 				address.campAddress = {
 					tentNumber,
 					camp: {
-						name: camp ? camp.name : campName,
-						locationId: camp ? camp.locationId : locationId,
+						name: camp?.name || campName,
+						locationId: camp?.locationId || locationId,
 					},
 				};
 			} else if (typeOfLocation.code === "residence") {
