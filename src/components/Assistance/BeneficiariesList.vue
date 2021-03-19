@@ -16,17 +16,18 @@
 		</Modal>
 		<Modal
 			can-cancel
-			header="Edit This Beneficiary"
-			:active="editBeneficiaryModal.isOpened"
-			@close="closeEditBeneficiaryModal"
+			:header="beneficiaryModal.isEditing ? 'Edit This Beneficiary' : 'Detail of Beneficiary'"
+			:active="beneficiaryModal.isOpened"
+			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
 				close-button
 				submit-button-label="Save"
 				class="modal-card"
-				:formModel="editBeneficiaryModel"
+				:disabled="!beneficiaryModal.isEditing"
+				:formModel="beneficiaryModel"
 				@formSubmitted="submitEditBeneficiaryForm"
-				@formClosed="closeEditBeneficiaryModal"
+				@formClosed="closeBeneficiaryModal"
 			/>
 		</Modal>
 		<div class="buttons space-between">
@@ -194,10 +195,11 @@ export default {
 				beneficiaries: [],
 				justification: "",
 			},
-			editBeneficiaryModal: {
+			beneficiaryModal: {
 				isOpened: false,
+				isEditing: false,
 			},
-			editBeneficiaryModel: {
+			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
 				gender: null,
@@ -363,25 +365,35 @@ export default {
 			this.$emit("onBeneficiaryListChange");
 		},
 
-		closeEditBeneficiaryModal() {
-			this.editBeneficiaryModal.isOpened = false;
+		closeBeneficiaryModal() {
+			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
 		},
 
 		submitEditBeneficiaryForm() {
 			// TODO Update Beneficiary in this assistance
-			this.editBeneficiaryModal.isOpened = false;
+			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
 			this.$emit("onBeneficiaryListChange");
 		},
 
 		showDetail(beneficiary) {
-			// TODO Show detail of beneficiary
-			console.log(beneficiary.id);
-			this.editBeneficiaryModal.isOpened = true;
+			this.beneficiaryModel = beneficiary;
+			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: false,
+			};
 		},
 
-		removeBeneficiaryFromAssistance(id) {
-			// TODO Remove beneficiary from assistance
-			this.table.data = this.table.data.filter((item) => item.id !== id);
+		async removeBeneficiaryFromAssistance(id) {
+			await BeneficiariesService
+				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, [id])
+				.then(() => { this.table.data = this.table.data.filter((item) => item.id !== id); })
+				.catch(() => { Notification(`Beneficiary not removed`, "is-danger"); });
 		},
 
 		prepareGender(gender) {
@@ -389,8 +401,11 @@ export default {
 		},
 
 		showEdit({ id }) {
-			this.editBeneficiaryModel = this.table.data.find((item) => item.id === id);
-			this.editBeneficiaryModal.isOpened = true;
+			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
+			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: true,
+			};
 		},
 
 		getAssistanceCommodities() {

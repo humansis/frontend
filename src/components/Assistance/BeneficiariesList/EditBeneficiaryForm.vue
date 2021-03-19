@@ -26,12 +26,16 @@
 			</b-field>
 
 			<b-field label="Add A Referral Type">
-				<b-checkbox v-model="addAReferral" />
+				<b-checkbox
+					v-model="addAReferral"
+					:disabled="disabled"
+				/>
 			</b-field>
 
 			<b-field v-if="addAReferral" label="Referral Type">
 				<MultiSelect
 					v-model="formModel.referralType"
+					:disabled="disabled"
 					searchable
 					placeholder="Click to select..."
 					:options="options.referralType"
@@ -39,7 +43,10 @@
 			</b-field>
 
 			<b-field v-if="addAReferral" label="Comment">
-				<b-input v-model="formModel.comment" />
+				<b-input
+					v-model="formModel.comment"
+					:disabled="disabled"
+				/>
 			</b-field>
 
 			<b-field label="Justification For Adding">
@@ -54,6 +61,7 @@
 				Close
 			</button>
 			<b-button
+				v-if="!disabled"
 				tag="input"
 				class="is-primary"
 				native-type="submit"
@@ -71,6 +79,7 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+		disabled: Boolean,
 	},
 
 	data() {
