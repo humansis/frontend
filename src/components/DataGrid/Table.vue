@@ -123,7 +123,7 @@ export default {
 		},
 		customPerPage: {
 			type: Number,
-			default: 10,
+			default: null,
 		},
 	},
 
