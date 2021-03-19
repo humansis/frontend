@@ -4,9 +4,9 @@
 
 		<div class="level-left">
 			<div
-				v-for="{id, name, target} in projectsSummary"
+				v-for="{id, name, target} in projectSummary"
 				class="level-item has-text-centered"
-				ref="projectsSummary"
+				ref="projectSummary"
 				:key="id"
 			>
 				<div class="box">
@@ -19,17 +19,17 @@
 </template>
 
 <script>
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { normalizeProjectName } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
 export default {
-	name: "ProjectsSummary",
+	name: "ProjectSummary",
 
 	data() {
 		return {
 			isLoading: true,
-			projectsSummary: [],
+			projectSummary: [],
 		};
 	},
 
@@ -48,12 +48,12 @@ export default {
 
 		async fetchData() {
 			const loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.projectsSummary,
+				container: this.$refs.projectSummary,
 			});
 
-			await ProjectsService.getListOfProjects(
+			await ProjectService.getListOfProjects(
 			).then((response) => {
-				this.projectsSummary = response.data;
+				this.projectSummary = response.data;
 			}).catch((e) => {
 				Notification(`Projects ${e}`, "is-danger");
 			});

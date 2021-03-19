@@ -1,6 +1,6 @@
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 
@@ -87,7 +87,7 @@ export default {
 
 		async getProjects(ids) {
 			if (!ids.length) return [];
-			return ProjectsService.getListOfProjects(null, null, null, null, ids)
+			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`Projects ${e}`, "is-danger");

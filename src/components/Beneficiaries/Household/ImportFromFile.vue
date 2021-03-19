@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Toast } from "@/utils/UI";
 
 export default {
@@ -135,7 +135,7 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.projects = data;
 				});

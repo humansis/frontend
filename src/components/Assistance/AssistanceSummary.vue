@@ -88,7 +88,7 @@
 <script>
 import { mapState } from "vuex";
 import Loading from "@/components/Loading";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import AssistancesService from "@/services/AssistancesService";
 import { normalizeText } from "@/utils/datagrid";
@@ -153,7 +153,7 @@ export default {
 
 	methods: {
 		async fetchProject() {
-			await ProjectsService.getDetailOfProject(
+			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.project = data;
