@@ -1,7 +1,6 @@
 <template>
-	<card-component v-if="!loading">
+	<card-component>
 		<b-progress :value="100" />
-
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -73,7 +72,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
@@ -109,26 +108,20 @@ export default {
 			selectedProjects: [],
 			location: "",
 			address: "",
-			loading: true,
 		};
 	},
 
 	computed: {
-		...mapState(["country", "isAppLoading"]),
+		...mapState(["country"]),
 	},
 
 	async created() {
-		this.appLoading(true);
 		if (this.isEditing) {
 			await this.getDetailOfHousehold(this.$route.params.householdId);
 		}
-		this.loading = false;
-		this.appLoading(false);
 	},
 
 	methods: {
-		...mapActions(["appLoading"]),
-
 		close() {
 			this.$router.go(-1);
 		},
@@ -169,7 +162,7 @@ export default {
 			if (!this.$refs.householdSummary.submit()) {
 				return;
 			}
-			// TODO Mapping form models to householdBody
+
 			const {
 				shelterStatus,
 				livelihood: {
@@ -187,9 +180,9 @@ export default {
 
 			const householdBody = {
 				iso3: this.country.iso3,
-				livelihood: livelihood.code,
+				livelihood: livelihood?.code,
 				assets: getArrayOfIdsByParam(assets, "code"),
-				shelterStatus: parseInt(shelterStatus.code, 10),
+				shelterStatus: parseInt(shelterStatus?.code, 10),
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				// TODO Resolve longitude and latitude
@@ -198,7 +191,7 @@ export default {
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel: incomeLevel.code,
+				incomeLevel: incomeLevel?.code,
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
@@ -256,7 +249,7 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
-			// TODO Loading on data container
+			// TODO Loading component
 
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
