@@ -7,7 +7,7 @@
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
-					:is-editing="true"
+					is-editing
 				/>
 			</div>
 			<div class="column is-half">
@@ -15,7 +15,7 @@
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
-					:is-editing="true"
+					is-editing
 				/>
 			</div>
 		</div>
@@ -242,26 +242,6 @@ export default {
 		TypeOfLocationForm,
 	},
 
-	validations: {
-		formModel: {
-			livelihood: {
-				livelihood: { required },
-				incomeLevel: { required },
-				debtLevel: { required },
-				assets: { required },
-				foodConsumptionScore: { required },
-				copingStrategiesIndex: { required },
-			},
-			externalSupport: {
-				externalSupportReceivedType: { required },
-				supportDateReceived: { required },
-				supportOrganization: { required },
-			},
-			countrySpecificOptions: {},
-			shelterStatus: { required },
-		},
-	},
-
 	data() {
 		return {
 			shelterStatusLoading: true,
@@ -303,6 +283,26 @@ export default {
 				shelterStatuses: [],
 			},
 		};
+	},
+
+	validations: {
+		formModel: {
+			livelihood: {
+				livelihood: { required },
+				incomeLevel: { required },
+				debtLevel: { required },
+				assets: { required },
+				foodConsumptionScore: { required },
+				copingStrategiesIndex: { required },
+			},
+			externalSupport: {
+				externalSupportReceivedType: { required },
+				supportDateReceived: { required },
+				supportOrganization: { required },
+			},
+			countrySpecificOptions: {},
+			shelterStatus: { required },
+		},
 	},
 
 	async mounted() {
@@ -450,7 +450,6 @@ export default {
 		},
 
 		submit() {
-			// TODO submit current or resident location forms
 			const locationValid = this.$refs.currentLocationForm.submitLocationForm();
 			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
 

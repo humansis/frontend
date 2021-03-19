@@ -154,12 +154,12 @@ export default {
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation.code === "camp" && !form.campName) },
-			campName: { required: requiredIf((form) => form.typeOfLocation.code === "camp" && !form.camp) },
-			tentNumber: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
-			street: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
+			camp: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.campName) },
+			campName: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.camp) },
+			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.code === "camp") },
+			number: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
+			street: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
+			postcode: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
 		},
 	},
 

@@ -184,6 +184,7 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
+
 			const householdBody = {
 				iso3: this.country.iso3,
 				livelihood: livelihood.code,
@@ -192,8 +193,8 @@ export default {
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				// TODO Resolve longitude and latitude
-				longitude: "string",
-				latitude: "string",
+				longitude: "",
+				latitude: "",
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
