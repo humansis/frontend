@@ -22,7 +22,11 @@
 		<div class="columns is-multiline">
 			<div class="column is-one-third">
 				<h4 class="title is-4">Livelihood</h4>
-				<b-field label="Livelihood">
+				<b-field>
+					<template #label>
+						<span>Livelihood</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
@@ -34,7 +38,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Income Level">
+				<b-field>
+					<template #label>
+						<span>Income Level</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
 						searchable
@@ -45,7 +53,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Debt Level">
+				<b-field>
+					<template #label>
+						<span>Debt Level</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
 						expanded
@@ -56,7 +68,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Assets">
+				<b-field>
+					<template #label>
+						<span>Assets</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
 						searchable
@@ -69,7 +85,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Food Consumption Score">
+				<b-field>
+					<template #label>
+						<span>Food Consumption Score</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
 						expanded
@@ -80,7 +100,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Coping Strategies Index">
+				<b-field>
+					<template #label>
+						<span>Coping Strategies Index</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
 						expanded
@@ -93,7 +117,11 @@
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">External Support</h4>
-				<b-field label="External Support Received Type">
+				<b-field>
+					<template #label>
+						<span>External Support Received Type</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
 						searchable
@@ -120,7 +148,11 @@
 					/>
 				</b-field>
 
-				<b-field label="Support Organization">
+				<b-field>
+					<template #label>
+						<span>Support Organization</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-input v-model="formModel.externalSupport.supportOrganization" />
 				</b-field>
 			</div>
@@ -131,14 +163,19 @@
 					:key="option.id"
 				>
 					<template #label>
-						{{ normalizeText(option.field) }}
+						<span>{{ normalizeText(option.field) }}</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</template>
 					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
 				</b-field>
 			</div>
 		</div>
 		<h4 class="title is-4">Household Status</h4>
-		<b-field label="Shelter Type">
+		<b-field>
+			<template #label>
+				<span>Shelter Type</span>
+				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<MultiSelect
 				v-model="formModel.shelterStatus"
 				searchable
@@ -151,7 +188,7 @@
 		</b-field>
 		<b-field>
 			<template #label>
-				<span class="is-size-5">Notes</span>
+				<span>Notes</span>
 				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 			</template>
 			<b-input v-model="formModel.notes" type="textarea" />

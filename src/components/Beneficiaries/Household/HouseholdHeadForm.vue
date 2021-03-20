@@ -24,20 +24,36 @@
 							@blur="validate('nameLocal.firstName')"
 						/>
 					</b-field>
-					<b-field label="Parents Name">
+					<b-field>
+						<template #label>
+							<span>Parents Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
 						<b-input v-model="formModel.nameLocal.parentsName" />
 					</b-field>
 				</div>
 
 				<div class="column is-one-quarter">
 					<h4 class="title is-5">Name (English)</h4>
-					<b-field label="Family Name">
+					<b-field>
+						<template #label>
+							<span>Family Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
 						<b-input v-model="formModel.nameEnglish.familyName" />
 					</b-field>
-					<b-field label="First Name">
+					<b-field>
+						<template #label>
+							<span>First Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
 						<b-input v-model="formModel.nameEnglish.firstName" />
 					</b-field>
-					<b-field label="Parents Name">
+					<b-field>
+						<template #label>
+							<span>Parents Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
 						<b-input v-model="formModel.nameEnglish.parentsName" />
 					</b-field>
 				</div>
@@ -140,7 +156,10 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-5">Referral</h4>
+					<h4 class="title is-5">
+						Referral
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</h4>
 					<div class="field">
 						<b-checkbox v-model="formModel.addAReferral">
 							Add a Referral
@@ -165,6 +184,7 @@
 				<div class="column is-one-quarter">
 					<div class="mb-5">
 						<span class="title is-5">Phone 1</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</div>
 					<b-field label="Type" grouped>
 						<MultiSelect
@@ -201,7 +221,10 @@
 
 				<div class="column is-one-quarter">
 					<div class="mb-5">
-						<span class="title is-5">Phone 2</span>
+						<span class="title is-5">
+							Phone 2
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</span>
 					</div>
 					<b-field label="Type" grouped>
 						<MultiSelect
