@@ -99,6 +99,7 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			activeStep: 0,
 			detailOfHousehold: null,
 			household: null,
@@ -123,7 +124,7 @@ export default {
 
 	methods: {
 		close() {
-			this.$router.go(-1);
+			this.$router.push({ name: "Households" });
 		},
 
 		nextPage(next) {

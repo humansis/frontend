@@ -162,7 +162,9 @@ export default {
 		},
 
 		goBack() {
-			this.$router.go(-1);
+			this.$router.push({ name: "ProjectDetail",
+				params: { projectId: this.$route.params.projectId },
+			});
 		},
 
 		fetchNewAssistanceForm(data) {

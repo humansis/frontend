@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form ref="householdFormComponent">
 		<div class="columns is-multiline">
 			<div class="column is-half">
 				<h4 class="title is-4">Current Location</h4>
@@ -228,6 +228,7 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
@@ -290,13 +291,22 @@ export default {
 	},
 
 	async mounted() {
+		if (this.isEditing) {
+			this.loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.householdFormComponent,
+			});
+		}
+
 		await this.fetchLivelihoods();
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
 		await this.fetchSupportReceivedTypes();
 		await this.fetchCountrySpecificOptions();
 		if (this.isEditing) {
-			this.mapDetailOfHouseholdToFormModel();
+			await this.mapDetailOfHouseholdToFormModel();
+
+			this.loadingComponent.close();
+
 			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = response;
 			});
