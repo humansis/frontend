@@ -329,6 +329,7 @@ export default {
 					.addBeneficiariesToProject(this.selectedProject.id, householdsIds)
 					.then(() => {
 						this.fetchData();
+						this.actionsButtonVisible = false;
 						Toast("Beneficiaries Successfully Added To A Project", "is-success");
 					})
 					.catch((e) => {
@@ -575,6 +576,7 @@ export default {
 
 		removeMultipleHouseholds() {
 			this.removeHousehold(null, true);
+			this.actionsButtonVisible = false;
 		},
 
 		async removeHousehold(id, multiple = false) {
