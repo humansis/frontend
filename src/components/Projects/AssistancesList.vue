@@ -98,10 +98,10 @@ import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
+import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import LocationsService from "@/services/LocationsService";
 import baseHelper from "@/mixins/baseHelper";
 
 export default {
@@ -133,7 +133,7 @@ export default {
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date Of Distribution", type: "date", sortable: true, sortKey: "date" },
 					{ key: "target", sortable: true },
-					{ key: "commodity", label: "Commodity" },
+					{ key: "commodity", label: "Commodity", type: "commodity" },
 				],
 				total: 0,
 				currentPage: 1,

@@ -14,4 +14,5 @@ export default {
 	temporaryAssistance: null,
 	temporaryProject: null,
 	perPage: 10,
+	icons: null,
 };

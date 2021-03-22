@@ -48,4 +48,8 @@ export default {
 	removeProjectFromState: ({ commit }) => {
 		commit(CONST.UPDATE_PROJECT, null);
 	},
+
+	loadIconsToState: ({ commit }, icons) => {
+		commit(CONST.LOAD_ICONS, icons);
+	},
 };
