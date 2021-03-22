@@ -41,6 +41,36 @@
 				</b-dropdown>
 			</div>
 		</div>
+		<Modal
+			can-cancel
+			header="Add Beneficiary To A Project"
+			:active="addToProjectModal.isOpened"
+			@close="closeAddToProjectModal"
+		>
+			<form>
+				<section class="modal-card-body">
+					<b-field label="Projects">
+						<MultiSelect
+							v-model="selectedProject"
+							searchable
+							placeholder="Click to select..."
+							label="name"
+							track-by="id"
+							:loading="loading.projects"
+							:options="options.projects"
+						/>
+					</b-field>
+				</section>
+				<footer class="modal-card-foot">
+					<b-button  @click="closeAddToProjectModal">
+						Close
+					</b-button>
+					<b-button type="is-primary" @click="addHouseholdsToProject">
+						Confirm
+					</b-button>
+				</footer>
+			</form>
+		</Modal>
 
 		<Modal
 			can-cancel
@@ -65,6 +95,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			@checked="onRowsChecked"
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -109,7 +140,7 @@
 						entity="Household"
 						tooltip="Delete"
 						:id="props.row.id"
-						@submitted="remove"
+						@submitted="removeHousehold"
 					/>
 				</div>
 			</b-table-column>
@@ -131,12 +162,32 @@
 			</template>
 
 			<template #export>
-				<div class="column is-two-fifths">
+				<div class="column">
 					<ExportButton
 						space-between
 						:formats="{ xlsx: true, csv: true, ods: true}"
 						@exportData="exportHousehold"
 					/>
+				</div>
+			</template>
+
+			<template v-if="actionsButtonVisible" #actions>
+				<div class="column">
+					<b-dropdown aria-role="list">
+						<template #trigger>
+							<b-button
+								label="Actions"
+								type="is-primary"
+								icon-right="arrow-down"
+							/>
+						</template>
+						<b-dropdown-item @click="showAddToProjectModal">
+							Add to Project
+						</b-dropdown-item>
+						<b-dropdown-item @click="removeMultipleHouseholds">
+							Delete
+						</b-dropdown-item>
+					</b-dropdown>
 				</div>
 			</template>
 
@@ -208,9 +259,11 @@ export default {
 				progress: null,
 				searchPhrase: "",
 			},
-			checkedRows: [],
 			filters: {},
 			householdDetailModal: {
+				isOpened: false,
+			},
+			addToProjectModal: {
 				isOpened: false,
 			},
 			householdModel: {},
@@ -218,6 +271,12 @@ export default {
 				assets: [],
 				shelterStatuses: [],
 				externalSupportReceivedType: [],
+				projects: [],
+			},
+			actionsButtonVisible: false,
+			selectedProject: null,
+			loading: {
+				projects: false,
 			},
 		};
 	},
@@ -254,6 +313,43 @@ export default {
 			}).catch((e) => {
 				Notification(`Households ${e}`, "is-danger");
 			});
+		},
+
+		onRowsChecked(rows) {
+			this.actionsButtonVisible = !!rows?.length;
+		},
+
+		async addHouseholdsToProject() {
+			const { checkedRows } = this.$refs.householdList;
+
+			if (checkedRows?.length && this.selectedProject) {
+				const householdsIds = checkedRows.map((household) => household.id);
+
+				await BeneficiariesService
+					.addBeneficiariesToProject(this.selectedProject.id, householdsIds)
+					.then(() => {
+						this.fetchData();
+						this.actionsButtonVisible = false;
+						Toast("Beneficiaries Successfully Added To A Project", "is-success");
+					})
+					.catch((e) => {
+						Notification(`Beneficiaries ${e}`, "is-danger");
+					});
+			}
+		},
+
+		async fetchProjects() {
+			this.loading.projects = true;
+
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.options.projects = data;
+				})
+				.catch((e) => {
+					Notification(`Projects ${e}`, "is-danger");
+				});
+
+			this.loading.projects = false;
 		},
 
 		prepareDataForTable(data) {
@@ -478,15 +574,40 @@ export default {
 			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
 		},
 
-		async remove(id) {
-			await BeneficiariesService.removeHousehold(id).then((response) => {
-				if (response.status === 204) {
-					Toast("Household Successfully Deleted", "is-success");
-					this.fetchData();
+		removeMultipleHouseholds() {
+			this.removeHousehold(null, true);
+			this.actionsButtonVisible = false;
+		},
+
+		async removeHousehold(id, multiple = false) {
+			if (multiple) {
+				const { checkedRows } = this.$refs.householdList;
+				let error = null;
+
+				if (checkedRows?.length) {
+					checkedRows.forEach((household) => {
+						BeneficiariesService.removeHousehold(household.id).then((response) => {
+							if (response.status === 204) { error = null; }
+						}).catch((e) => { error += `Household ${household.id} ${e}. `; });
+					});
+
+					if (error) Toast(error, "is-danger");
+
+					if (!error) {
+						Toast("Households Successfully Deleted", "is-success");
+						await this.fetchData();
+					}
 				}
-			}).catch((e) => {
-				Toast(`Household ${e}`, "is-danger");
-			});
+			} else {
+				await BeneficiariesService.removeHousehold(id).then((response) => {
+					if (response.status === 204) {
+						Toast("Household Successfully Deleted", "is-success");
+						this.fetchData();
+					}
+				}).catch((e) => {
+					Toast(`Household ${e}`, "is-danger");
+				});
+			}
 		},
 
 		exportHousehold(format) {
@@ -506,6 +627,15 @@ export default {
 		showDetail(id) {
 			this.mapHouseholdDetail(this.table.data.find((item) => item.id === id));
 			this.householdDetailModal.isOpened = true;
+		},
+
+		closeAddToProjectModal() {
+			this.addToProjectModal.isOpened = false;
+		},
+
+		showAddToProjectModal() {
+			this.fetchProjects();
+			this.addToProjectModal.isOpened = true;
 		},
 
 		mapHouseholdDetail(household) {

@@ -17,6 +17,7 @@
 					</slot>
 					<slot name="filterButton" />
 					<slot name="export" />
+					<slot name="actions" />
 				</div>
 				<slot name="resetSort">
 					<div class="level-right">
@@ -61,6 +62,7 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
+			@check="checkboxChecked"
 			@cellclick="onClick"
 			@page-change="$emit('pageChanged', $event)"
 			@sort="$emit('sorted', $event)"
@@ -147,6 +149,10 @@ export default {
 			if (column.$options.propsData.label !== "Actions") {
 				this.$emit("clicked", row);
 			}
+		},
+
+		checkboxChecked(rows) {
+			this.$emit("checked", rows);
 		},
 
 		onChangePerPage(value) {

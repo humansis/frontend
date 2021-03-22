@@ -184,6 +184,19 @@ export default {
 		return { data, totalCount };
 	},
 
+	async addBeneficiariesToProject(projectId, ids) {
+		const { data } = await fetcher({
+			uri: `projects/${projectId}/beneficiaries`,
+			auth: true,
+			method: "PUT",
+			body: {
+				beneficiaryIds: ids,
+			},
+		});
+
+		return data;
+	},
+
 	async removeBeneficiaryFromAssistance(assistanceId, body) {
 		const { data } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries`,
