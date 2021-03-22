@@ -2,7 +2,9 @@
 	<div>
 		<Modal
 			can-cancel
-			header="Add Beneficiaries To This Assistance"
+			:header="addBeneficiaryModel.removingId ?
+				'Remove Beneficiary From This Assistance' : 'Add Beneficiaries To This Assistance'
+			"
 			:active="addBeneficiaryModal.isOpened"
 			@close="closeAddBeneficiaryModal"
 		>
@@ -10,7 +12,8 @@
 				close-button
 				submit-button-label="Confirm"
 				:formModel="addBeneficiaryModel"
-				@formSubmitted="submitAddBeneficiaryForm"
+				@addingSubmitted="submitAddBeneficiaryForm"
+				@removingSubmitted="removeBeneficiaryFromAssistance"
 				@formClosed="closeAddBeneficiaryModal"
 			/>
 		</Modal>
@@ -35,7 +38,7 @@
 				v-if="addButton"
 				type="is-primary"
 				icon-left="plus"
-				@click="openAddBeneficiaryModal"
+				@click="openAddBeneficiaryModal(null)"
 			>
 				Add
 			</b-button>
@@ -108,12 +111,11 @@
 						tooltip="Edit"
 						@click.native="showEdit(props.row)"
 					/>
-					<SafeDelete
+					<ActionButton
 						icon="trash"
-						entity="Beneficiary from Assistance"
+						type="is-danger"
 						tooltip="Delete"
-						:id="props.row.id"
-						@submitted="removeBeneficiaryFromAssistance"
+						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 				</div>
 			</b-table-column>
@@ -131,11 +133,10 @@ import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
@@ -153,7 +154,6 @@ export default {
 	},
 
 	components: {
-		SafeDelete,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		Table,
@@ -193,6 +193,7 @@ export default {
 			},
 			addBeneficiaryModel: {
 				beneficiaries: [],
+				removingId: null,
 				justification: "",
 			},
 			beneficiaryModal: {
@@ -345,12 +346,30 @@ export default {
 			console.log(format);
 		},
 
-		openAddBeneficiaryModal() {
+		openAddBeneficiaryModal(id) {
+			this.addBeneficiaryModel.removingId = id;
 			this.addBeneficiaryModal.isOpened = true;
 		},
 
 		closeAddBeneficiaryModal() {
 			this.addBeneficiaryModal.isOpened = false;
+		},
+
+		async removeBeneficiaryFromAssistance({ justification, removingId }) {
+			const body = {
+				beneficiaryIds: [removingId],
+				justification,
+			};
+
+			await BeneficiariesService
+				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
+				.then(() => {
+					Toast("Beneficiary Successfully Removed", "is-success");
+					this.fetchData();
+				})
+				.catch((e) => { Notification(`Beneficiary ${e}`, "is-danger"); });
+
+			this.closeAddBeneficiaryModal();
 		},
 
 		async submitAddBeneficiaryForm(form) {
@@ -360,7 +379,15 @@ export default {
 				justification,
 			};
 			const { assistanceId } = this.$route.params;
-			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body);
+			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body)
+				.then(({ status }) => {
+					if (status === 200) {
+						Toast("Beneficiary Successfully Added", "is-success");
+						this.fetchData();
+					}
+				}).catch((e) => {
+					Notification(`Beneficiaries ${e}`, "is-danger");
+				});
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
 		},
@@ -387,13 +414,6 @@ export default {
 				isOpened: true,
 				isEditing: false,
 			};
-		},
-
-		async removeBeneficiaryFromAssistance(id) {
-			await BeneficiariesService
-				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, [id])
-				.then(() => { this.table.data = this.table.data.filter((item) => item.id !== id); })
-				.catch(() => { Notification(`Beneficiary not removed`, "is-danger"); });
 		},
 
 		prepareGender(gender) {
