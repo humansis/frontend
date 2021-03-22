@@ -207,4 +207,17 @@ export default {
 
 		return data;
 	},
+
+	async getListOfHouseholdPurchases(id, page, size, sort, search = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		// TODO maybe another endpoint and params
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `households/${id}/purchases?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
 };

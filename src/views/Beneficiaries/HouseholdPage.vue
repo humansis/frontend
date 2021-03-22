@@ -537,19 +537,6 @@ export default {
 			return result;
 		},
 
-		getAddressTypeAndId(
-			{
-				temporarySettlementAddressId,
-				residenceAddressId,
-				campAddressId,
-			},
-		) {
-			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
-			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
-			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
-			return "";
-		},
-
 		goToCreatePage() {
 			this.$router.push({ name: "AddHousehold" });
 		},
@@ -566,7 +553,7 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		goToSummaryDetail(id) {
+		goToSummaryDetail({ id }) {
 			this.$router.push({ name: "HouseholdInformationSummary", params: { householdId: id } });
 		},
 
