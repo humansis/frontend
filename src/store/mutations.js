@@ -68,4 +68,8 @@ export default {
 	[CONST.LOGOUT]: (state) => {
 		state.user = null;
 	},
+
+	[CONST.LOAD_ICONS]: (state, icons) => {
+		state.icons = icons;
+	},
 };

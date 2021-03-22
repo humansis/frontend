@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
 import IconService from "@/services/IconService";
 import { Notification } from "@/utils/UI";
 
@@ -22,27 +23,35 @@ export default {
 	},
 
 	computed: {
+		...mapState(["icons"]),
+
 		selectedIcons() {
-			return this.icons
+			return this.fetchedIcons
 				.filter((icon) => this.items.find((item) => item === icon.key));
 		},
 	},
 
 	data() {
 		return {
-			icons: [],
+			fetchedIcons: [],
 		};
 	},
 
 	mounted() {
-		this.fetchIcons();
+		if (this.icons) {
+			this.fetchedIcons = this.icons;
+		} else {
+			this.fetchIcons();
+		}
 	},
 
 	methods: {
+		...mapActions(["loadIconsToState"]),
+
 		async fetchIcons() {
 			await IconService.getIcons()
 				.then(({ data }) => {
-					this.icons = data;
+					this.loadIconsToState(data);
 				}).catch((e) => {
 					Notification(`Icons ${e}`, "is-danger");
 				});

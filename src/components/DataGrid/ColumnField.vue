@@ -76,7 +76,7 @@
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
 		<!-- Column for commodity  -->
-		<CommodityColumn v-if="column.type === 'commodity'" :type="data.row[column.field]" />
+		<CommodityColumn v-if="column.type === 'commodity'" :commodity="data.row[column.field]" />
 	</div>
 </template>
 
