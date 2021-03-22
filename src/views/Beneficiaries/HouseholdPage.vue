@@ -588,10 +588,10 @@ export default {
 					checkedRows.forEach((household) => {
 						BeneficiariesService.removeHousehold(household.id).then((response) => {
 							if (response.status === 204) { error = null; }
-						}).catch((e) => { error = e; });
+						}).catch((e) => { error += `Household ${household.id} ${e}. `; });
 					});
 
-					if (error) Toast(`Household ${error}`, "is-danger");
+					if (error) Toast(error, "is-danger");
 
 					if (!error) {
 						Toast("Households Successfully Deleted", "is-success");
