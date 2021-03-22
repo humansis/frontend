@@ -3,7 +3,7 @@
 		<form>
 			<div class="columns is-multiline">
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Name (Local)</h4>
+					<h4 class="title is-5">Name (Local)</h4>
 					<b-field
 						label="Family Name"
 						:type="validateType('nameLocal.familyName')"
@@ -12,16 +12,6 @@
 						<b-input
 							v-model="formModel.nameLocal.familyName"
 							@blur="validate('nameLocal.familyName')"
-						/>
-					</b-field>
-					<b-field
-						label="Parents Name"
-						:type="validateType('nameLocal.parentsName')"
-						:message="validateMsg('nameLocal.parentsName')"
-					>
-						<b-input
-							v-model="formModel.nameLocal.parentsName"
-							@blur="validate('nameLocal.parentsName')"
 						/>
 					</b-field>
 					<b-field
@@ -34,44 +24,42 @@
 							@blur="validate('nameLocal.firstName')"
 						/>
 					</b-field>
-				</div>
-
-				<div class="column is-one-quarter">
-					<h4 class="title is-4">Name (English)</h4>
-					<b-field
-						label="Family Name"
-						:type="validateType('nameEnglish.familyName')"
-						:message="validateMsg('nameEnglish.familyName')"
-					>
-						<b-input
-							v-model="formModel.nameEnglish.familyName"
-							@blur="validate('nameEnglish.familyName')"
-						/>
-					</b-field>
-					<b-field
-						label="Parents Name"
-						:type="validateType('nameEnglish.parentsName')"
-						:message="validateMsg('nameEnglish.parentsName')"
-					>
-						<b-input
-							v-model="formModel.nameEnglish.parentsName"
-							@blur="validate('nameEnglish.parentsName')"
-						/>
-					</b-field>
-					<b-field
-						label="First Name"
-						:type="validateType('nameEnglish.firstName')"
-						:message="validateMsg('nameEnglish.firstName')"
-					>
-						<b-input
-							v-model="formModel.nameEnglish.firstName"
-							@blur="validate('nameEnglish.firstName')"
-						/>
+					<b-field>
+						<template #label>
+							<span>Parents Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
+						<b-input v-model="formModel.nameLocal.parentsName" />
 					</b-field>
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Personal Information</h4>
+					<h4 class="title is-5">Name (English)</h4>
+					<b-field>
+						<template #label>
+							<span>Family Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
+						<b-input v-model="formModel.nameEnglish.familyName" />
+					</b-field>
+					<b-field>
+						<template #label>
+							<span>First Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
+						<b-input v-model="formModel.nameEnglish.firstName" />
+					</b-field>
+					<b-field>
+						<template #label>
+							<span>Parents Name</span>
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						</template>
+						<b-input v-model="formModel.nameEnglish.parentsName" />
+					</b-field>
+				</div>
+
+				<div class="column is-one-quarter">
+					<h4 class="title is-5">Personal Information</h4>
 					<b-field
 						label="Gender"
 						:type="validateType('personalInformation.gender')"
@@ -105,7 +93,7 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">ID</h4>
+					<h4 class="title is-5">ID</h4>
 					<b-field
 						label="ID Type"
 						:type="validateType('id.idType')"
@@ -136,7 +124,7 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Residency</h4>
+					<h4 class="title is-5">Residency</h4>
 					<b-field
 						label="Residency Status"
 						:type="validateType('residencyStatus')"
@@ -168,7 +156,10 @@
 				</div>
 
 				<div class="column is-one-quarter">
-					<h4 class="title is-4">Referral</h4>
+					<h4 class="title is-5">
+						Referral
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</h4>
 					<div class="field">
 						<b-checkbox v-model="formModel.addAReferral">
 							Add a Referral
@@ -192,10 +183,8 @@
 
 				<div class="column is-one-quarter">
 					<div class="mb-5">
-						<span class="title is-4">Phone 1</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- Optional
-						</span>
+						<span class="title is-5">Phone 1</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</div>
 					<b-field label="Type" grouped>
 						<MultiSelect
@@ -232,9 +221,9 @@
 
 				<div class="column is-one-quarter">
 					<div class="mb-5">
-						<span class="title is-4">Phone 2</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- Optional
+						<span class="title is-5">
+							Phone 2
+							<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 						</span>
 					</div>
 					<b-field label="Type" grouped>
@@ -317,12 +306,12 @@ export default {
 			nameLocal: {
 				familyName: { required },
 				firstName: { required },
-				parentsName: { required },
+				parentsName: {},
 			},
 			nameEnglish: {
-				familyName: { required },
-				firstName: { required },
-				parentsName: { required },
+				familyName: {},
+				firstName: {},
+				parentsName: {},
 			},
 			personalInformation: {
 				gender: { required },
@@ -351,7 +340,7 @@ export default {
 				},
 				personalInformation: {
 					gender: "",
-					dateOfBirth: new Date(),
+					dateOfBirth: null,
 				},
 				id: {
 					idType: "",

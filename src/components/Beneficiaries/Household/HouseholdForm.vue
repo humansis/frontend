@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form ref="householdFormComponent">
 		<div class="columns is-multiline">
 			<div class="column is-half">
 				<h4 class="title is-4">Current Location</h4>
@@ -7,7 +7,7 @@
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
-					:is-editing="true"
+					is-editing
 				/>
 			</div>
 			<div class="column is-half">
@@ -15,18 +15,18 @@
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
-					:is-editing="true"
+					is-editing
 				/>
 			</div>
 		</div>
 		<div class="columns is-multiline">
 			<div class="column is-one-third">
 				<h4 class="title is-4">Livelihood</h4>
-				<b-field
-					label="Livelihood"
-					:type="validateType('livelihood.livelihood')"
-					:message="validateMsg('livelihood.livelihood')"
-				>
+				<b-field>
+					<template #label>
+						<span>Livelihood</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
@@ -35,16 +35,14 @@
 						placeholder="Click to select..."
 						:loading="livelihoodLoading"
 						:options="options.livelihood"
-						:class="validateMultiselect('livelihood.livelihood')"
-						@blur="validate('livelihood.livelihood')"
 					/>
 				</b-field>
 
-				<b-field
-					label="Income Level"
-					:type="validateType('livelihood.incomeLevel')"
-					:message="validateMsg('livelihood.incomeLevel')"
-				>
+				<b-field>
+					<template #label>
+						<span>Income Level</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
 						searchable
@@ -52,16 +50,14 @@
 						track-by="id"
 						placeholder="Click to select..."
 						:options="options.incomeLevel"
-						:class="validateMultiselect('livelihood.incomeLevel')"
-						@blur="validate('livelihood.incomeLevel')"
 					/>
 				</b-field>
 
-				<b-field
-					label="Debt Level"
-					:type="validateType('livelihood.debtLevel')"
-					:message="validateMsg('livelihood.debtLevel')"
-				>
+				<b-field>
+					<template #label>
+						<span>Debt Level</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
 						expanded
@@ -69,15 +65,14 @@
 						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
-						@input="validate('livelihood.debtLevel')"
 					/>
 				</b-field>
 
-				<b-field
-					label="Assets"
-					:type="validateType('livelihood.assets')"
-					:message="validateMsg('livelihood.assets')"
-				>
+				<b-field>
+					<template #label>
+						<span>Assets</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
 						searchable
@@ -87,16 +82,14 @@
 						placeholder="Click to select..."
 						:loading="assetsLoading"
 						:options="options.assets"
-						:class="validateMultiselect('livelihood.assets')"
-						@select="validate('livelihood.assets')"
 					/>
 				</b-field>
 
-				<b-field
-					label="Food Consumption Score"
-					:type="validateType('livelihood.foodConsumptionScore')"
-					:message="validateMsg('livelihood.foodConsumptionScore')"
-				>
+				<b-field>
+					<template #label>
+						<span>Food Consumption Score</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
 						expanded
@@ -104,15 +97,14 @@
 						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
-						@input="validate('livelihood.foodConsumptionScore')"
 					/>
 				</b-field>
 
-				<b-field
-					label="Coping Strategies Index"
-					:type="validateType('livelihood.copingStrategiesIndex')"
-					:message="validateMsg('livelihood.copingStrategiesIndex')"
-				>
+				<b-field>
+					<template #label>
+						<span>Coping Strategies Index</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
 						expanded
@@ -120,17 +112,16 @@
 						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
-						@input="validate('livelihood.copingStrategiesIndex')"
 					/>
 				</b-field>
 			</div>
 			<div class="column is-one-third">
 				<h4 class="title is-4">External Support</h4>
-				<b-field
-					label="External Support Received Type"
-					:type="validateType('externalSupport.externalSupportReceivedType')"
-					:message="validateMsg('externalSupport.externalSupportReceivedType')"
-				>
+				<b-field>
+					<template #label>
+						<span>External Support Received Type</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
 						searchable
@@ -139,8 +130,6 @@
 						track-by="code"
 						placeholder="Click to select..."
 						:options="options.externalSupportReceivedType"
-						:class="validateMultiselect('externalSupport.externalSupportReceivedType')"
-						@select="validate('externalSupport.externalSupportReceivedType')"
 					/>
 				</b-field>
 
@@ -159,15 +148,12 @@
 					/>
 				</b-field>
 
-				<b-field
-					label="Support Organization"
-					:type="validateType('externalSupport.supportOrganization')"
-					:message="validateMsg('externalSupport.supportOrganization')"
-				>
-					<b-input
-						v-model="formModel.externalSupport.supportOrganization"
-						@blur="validate('externalSupport.supportOrganization')"
-					/>
+				<b-field>
+					<template #label>
+						<span>Support Organization</span>
+						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					</template>
+					<b-input v-model="formModel.externalSupport.supportOrganization" />
 				</b-field>
 			</div>
 			<div class="column is-one-third">
@@ -177,7 +163,7 @@
 					:key="option.id"
 				>
 					<template #label>
-						{{ normalizeText(option.field) }}
+						<span>{{ normalizeText(option.field) }}</span>
 						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 					</template>
 					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
@@ -185,11 +171,11 @@
 			</div>
 		</div>
 		<h4 class="title is-4">Household Status</h4>
-		<b-field
-			label="Shelter Type"
-			:type="validateType('shelterStatus')"
-			:message="validateMsg('shelterStatus')"
-		>
+		<b-field>
+			<template #label>
+				<span>Shelter Type</span>
+				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+			</template>
 			<MultiSelect
 				v-model="formModel.shelterStatus"
 				searchable
@@ -198,13 +184,11 @@
 				placeholder="Click to select..."
 				:loading="shelterStatusLoading"
 				:options="options.shelterStatuses"
-				:class="validateMultiselect('shelterStatus')"
-				@select="validate('shelterStatus')"
 			/>
 		</b-field>
 		<b-field>
 			<template #label>
-				<span class="is-size-5">Notes</span>
+				<span>Notes</span>
 				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
 			</template>
 			<b-input v-model="formModel.notes" type="textarea" />
@@ -242,28 +226,9 @@ export default {
 		TypeOfLocationForm,
 	},
 
-	validations: {
-		formModel: {
-			livelihood: {
-				livelihood: { required },
-				incomeLevel: { required },
-				debtLevel: { required },
-				assets: { required },
-				foodConsumptionScore: { required },
-				copingStrategiesIndex: { required },
-			},
-			externalSupport: {
-				externalSupportReceivedType: { required },
-				supportDateReceived: { required },
-				supportOrganization: { required },
-			},
-			countrySpecificOptions: {},
-			shelterStatus: { required },
-		},
-	},
-
 	data() {
 		return {
+			loadingComponent: null,
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
@@ -282,7 +247,7 @@ export default {
 				},
 				externalSupport: {
 					externalSupportReceivedType: [],
-					supportDateReceived: new Date(),
+					supportDateReceived: null,
 					supportOrganization: "",
 				},
 				countrySpecificOptions: {},
@@ -305,14 +270,43 @@ export default {
 		};
 	},
 
+	validations: {
+		formModel: {
+			livelihood: {
+				livelihood: {},
+				incomeLevel: {},
+				debtLevel: {},
+				assets: {},
+				foodConsumptionScore: {},
+				copingStrategiesIndex: {},
+			},
+			externalSupport: {
+				externalSupportReceivedType: {},
+				supportDateReceived: { required },
+				supportOrganization: {},
+			},
+			countrySpecificOptions: {},
+			shelterStatus: {},
+		},
+	},
+
 	async mounted() {
+		if (this.isEditing) {
+			this.loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.householdFormComponent,
+			});
+		}
+
 		await this.fetchLivelihoods();
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
 		await this.fetchSupportReceivedTypes();
 		await this.fetchCountrySpecificOptions();
 		if (this.isEditing) {
-			this.mapDetailOfHouseholdToFormModel();
+			await this.mapDetailOfHouseholdToFormModel();
+
+			this.loadingComponent.close();
+
 			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = response;
 			});
@@ -450,7 +444,6 @@ export default {
 		},
 
 		submit() {
-			// TODO submit current or resident location forms
 			const locationValid = this.$refs.currentLocationForm.submitLocationForm();
 			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
 
