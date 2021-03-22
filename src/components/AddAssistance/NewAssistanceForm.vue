@@ -93,12 +93,12 @@
 				>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option) }}</span>
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
 					<template #singleLabel="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option) }}</span>
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
 						</div>
 					</template>
 				</MultiSelect>
@@ -206,7 +206,7 @@ export default {
 		},
 
 		normalizeText(text) {
-			return normalizeText(text);
+			return normalizeText(String(text));
 		},
 
 		getLocationId() {
@@ -260,9 +260,10 @@ export default {
 
 		async getComponentsToShow() {
 			const {
-				assistanceType,
+				assistanceType: { code: assistanceType },
 				targetType: { value: targetType },
 			} = this.formModel;
+
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {
 				switch (targetType) {
 					case consts.TARGET.INDIVIDUAL:

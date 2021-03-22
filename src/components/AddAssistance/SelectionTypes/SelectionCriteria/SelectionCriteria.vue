@@ -52,8 +52,11 @@
 			<b-notification
 				v-if="!groups.length"
 				type="is-light"
+				has-icon
+				icon="eye-slash"
+				:closable="false"
 			>
-				No data
+				<p class="mt-3">No data</p>
 			</b-notification>
 		</div>
 		<b-field label="Minimum Vulnerability Score" class="mt-3">

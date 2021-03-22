@@ -5,6 +5,7 @@ import getters from "@/store/getters";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
+	let debugs = "";
 
 	if (data.errors && data.errors.length) {
 		data.errors.forEach((error) => {
@@ -12,7 +13,13 @@ async function getErrorsFromResponse(data) {
 		});
 	}
 
-	return errors || "Something went wrong";
+	if (data.debug && data.debug.length) {
+		data.debug.forEach((debug) => {
+			debugs += `${debug.message}. `;
+		});
+	}
+
+	return errors || debugs || "Something went wrong";
 }
 
 export const getResponseJSON = async (response) => {

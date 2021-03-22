@@ -1,7 +1,16 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
+			<p v-if="!formModel.removingId" class="mb-5">
+				Please select the beneficiaries that you want to add to the
+				<strong>{{ assistanceName }}</strong> distribution.
+			</p>
+			<p v-if="formModel.removingId" class="mb-5">
+				You Are About To Remove This Beneficiary From <strong>{{ assistanceName }}</strong>
+				Distribution<br>Do You Wish To Continue?
+			</p>
 			<b-field
+				v-if="!formModel.removingId"
 				label="Beneficiaries"
 				:type="validateType('beneficiaries')"
 				:message="validateMsg('beneficiaries')"
@@ -18,14 +27,14 @@
 					:class="validateMultiselect('beneficiaries')"
 					@select="validate('beneficiaries')"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">
 								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
 							</span>
 						</div>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">
 								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
@@ -65,7 +74,7 @@ import { mapState } from "vuex";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import validation from "@/mixins/validation";
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 
 export default {
 	name: "AddBeneficiaryForm",
@@ -79,7 +88,7 @@ export default {
 
 	validations: {
 		formModel: {
-			beneficiaries: { required },
+			beneficiaries: { required: requiredIf((form) => !form.removingId) },
 			justification: { required },
 		},
 	},
@@ -98,24 +107,35 @@ export default {
 	mixins: [validation],
 
 	mounted() {
-		this.fetchBeneficiariesByProject();
+		if (!this.formModel.removingId) this.fetchBeneficiariesByProject();
+		this.formModel.justification = "";
+		this.formModel.beneficiaries = [];
 	},
 
 	computed: {
 		...mapState(["temporaryAssistance"]),
+
+		assistanceName() {
+			return this.temporaryAssistance?.name;
+		},
 	},
 
 	methods: {
 		submitForm() {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.$emit("formSubmitted", this.formModel);
+				if (this.formModel.removingId) {
+					this.$emit("removingSubmitted", this.formModel);
+				} else {
+					this.$emit("addingSubmitted", this.formModel);
+				}
 			}
 		},
 
 		async fetchBeneficiariesByProject() {
 			const { projectId } = this.$route.params;
 			const { target } = this.temporaryAssistance;
+
 			await BeneficiariesService.getBeneficiariesByProject(projectId, target.toLowerCase())
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
