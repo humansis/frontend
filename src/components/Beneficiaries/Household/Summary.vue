@@ -18,6 +18,8 @@
 						multiple
 						placeholder="Click to select..."
 						:options="options.projects"
+						:class="validateMultiselect('selectedProjects')"
+						@select="validate('selectedProjects')"
 					/>
 				</b-field>
 			</div>

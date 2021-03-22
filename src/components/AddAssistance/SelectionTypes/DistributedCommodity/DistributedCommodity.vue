@@ -30,6 +30,7 @@
 			<Table
 				v-if="table.data.length"
 				:data="modifiedTableData"
+				:paginated="false"
 			>
 				<template v-for="column in table.columns">
 					<b-table-column v-bind="column" sortable :key="column.key">
@@ -50,8 +51,14 @@
 					/>
 				</b-table-column>
 			</Table>
-			<b-notification v-else type="is-light">
-				No data
+			<b-notification
+				v-else
+				type="is-light"
+				has-icon
+				icon="eye-slash"
+				:closable="false"
+			>
+				<p class="mt-3">No data</p>
 			</b-notification>
 		</div>
 	</div>
