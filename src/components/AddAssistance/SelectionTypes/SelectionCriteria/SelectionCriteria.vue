@@ -178,6 +178,8 @@ export default {
 		prepareCriteriaValue(value) {
 			let newValue = value?.code || value;
 
+			if (Number.isInteger(newValue)) return newValue;
+
 			const date = new Date(newValue);
 			if (Object.prototype.toString.call(date) === "[object Date]") {
 				if (!Number.isNaN(date.getTime())) {

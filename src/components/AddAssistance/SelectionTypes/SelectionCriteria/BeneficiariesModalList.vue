@@ -62,7 +62,6 @@ export default {
 	methods: {
 		fetchData() {
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			console.log(this.data);
 		},
 
 		onSearch() {
