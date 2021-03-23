@@ -78,6 +78,13 @@ export default {
 		return { data, status };
 	},
 
+	async calculationOfBeneficiaries(body) {
+		const { data, status } = await fetcher({
+			uri: "assistances/beneficiaries", method: "POST", body,
+		});
+		return { data, status };
+	},
+
 	async getAssistanceCommodities(id) {
 		const { data: { data }, totalCount } = await fetcher({
 			uri: `assistances/${id}/commodities`,

@@ -49,7 +49,7 @@
 					Add
 				</a>
 				<a class="card-footer-item" @click="showDetail">
-					0 {{ targetType }}
+					{{ count }} {{ targetType }}
 				</a>
 				<a class="card-footer-item" @click="removeGroup">
 					Remove
@@ -79,6 +79,7 @@ export default {
 		data: Array,
 		groupId: Number,
 		targetType: String,
+		count: Number,
 	},
 
 	computed: {
@@ -141,6 +142,7 @@ export default {
 
 		remove(index) {
 			this.data.splice(index, 1);
+			this.$emit("updatedCriteria");
 		},
 
 		addCriteria() {

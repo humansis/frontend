@@ -248,8 +248,9 @@ export default {
 			this.fetchTargetTypes();
 		},
 
-		onTargetTypeSelect() {
+		onTargetTypeSelect(targetType) {
 			this.validate("targetType");
+			this.$emit("onTargetSelect", targetType);
 			this.showComponents();
 		},
 

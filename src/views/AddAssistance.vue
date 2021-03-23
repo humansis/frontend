@@ -5,7 +5,7 @@
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					@updatedData="fetchNewAssistanceForm"
-					@onTargetSelect="targetType = $event"
+					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
 				/>
 			</div>
@@ -15,6 +15,7 @@
 					ref="selectionCriteria"
 					v-if="visibleComponents.selectionCriteria"
 					:target-type="targetType"
+					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
 				/>
 				<DistributedCommodity
@@ -154,6 +155,15 @@ export default {
 			});
 		},
 
+		targetSelected(targetType) {
+			this.targetType = targetType?.code;
+
+			if (this.$refs.selectionCriteria) {
+				this.$refs.selectionCriteria.clearComponent();
+			}
+			// TODO Reset all components in AddAssistance on targetSelected change
+		},
+
 		onShowComponent(components) {
 			Object.keys(this.visibleComponents).forEach((item) => {
 				this.visibleComponents[item] = components
@@ -171,7 +181,6 @@ export default {
 			const {
 				assistanceType,
 				dateOfAssistance,
-				locationId,
 				sector,
 				subsector,
 				targetType,
@@ -184,7 +193,7 @@ export default {
 				type: assistanceType?.code,
 				sector: sector?.code,
 				subsector: subsector?.code,
-				locationId,
+				locationId: this.$refs.newAssistanceForm.getLocationId(),
 			};
 		},
 
