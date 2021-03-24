@@ -27,6 +27,8 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				width="150"
+				visible
 				centered
 			>
 				<div class="buttons is-right">
@@ -95,7 +97,7 @@ export default {
 				visibleColumns: [
 					{ key: "field", sortable: true },
 					{ key: "type", sortable: true },
-					{ key: "target" },
+					{ key: "target", visible: false },
 				],
 				total: 0,
 				currentPage: 1,
