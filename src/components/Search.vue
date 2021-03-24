@@ -15,6 +15,13 @@
 export default {
 	name: "Search",
 
+	props: {
+		backendSearch: {
+			type: Boolean,
+			default: true,
+		},
+	},
+
 	data() {
 		return {
 			value: "",
@@ -31,16 +38,20 @@ export default {
 
 	methods: {
 		onSearch(event) {
-			clearTimeout(this.timer);
-			this.loading = true;
-			if (event) {
-				this.$emit("search", this.value);
-				this.loading = false;
-			} else {
-				this.timer = setTimeout(() => {
+			if (this.backendSearch) {
+				clearTimeout(this.timer);
+				this.loading = true;
+				if (event) {
 					this.$emit("search", this.value);
 					this.loading = false;
-				}, 1000);
+				} else {
+					this.timer = setTimeout(() => {
+						this.$emit("search", this.value);
+						this.loading = false;
+					}, 1000);
+				}
+			} else {
+				this.$emit("search", this.value);
 			}
 		},
 	},

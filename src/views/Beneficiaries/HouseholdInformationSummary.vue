@@ -7,7 +7,7 @@
 		</div>
 		<div class="has-text-centered has-text-weight-bold mb-5">Current Address</div>
 		<div v-if="householdHead" class="has-text-centered">
-			{{ `${address.number}, ${address.street}, ${address.postcode}` }}
+			{{ `${address.number || ""}, ${address.street || ""}, ${address.postcode || ""}` }}
 		</div>
 		<b-tabs v-model="activeTab">
 			<b-tab-item label="Assistances">
@@ -73,7 +73,6 @@ export default {
 		async prepareData(household) {
 			BeneficiariesService.getBeneficiary(household.householdHeadId)
 				.then((data) => {
-					console.log(data);
 					this.householdHead = data;
 				});
 			const { typeOfLocation, addressId } = this.getAddressTypeAndId(household);

@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
@@ -9,6 +9,15 @@ export default {
 
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `products?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getProducts(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `products?${idsText}`,
 		});
 		return { data, totalCount };
 	},
