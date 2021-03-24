@@ -91,21 +91,16 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await BeneficiariesService.getListOfDistributedItems(
-				this.$route.params.householdId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
-				this.table.total = totalCount;
-				this.table.data = [];
-				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
-				}
-			}).catch((e) => {
-				Notification(`Assistances ${e}`, "is-danger");
-			});
+			await BeneficiariesService.getListOfDistributedItems(this.$route.params.householdId)
+				.then(async ({ data, totalCount }) => {
+					this.table.total = totalCount;
+					this.table.data = [];
+					if (totalCount > 0) {
+						await this.prepareDataForTable(data);
+					}
+				}).catch((e) => {
+					Notification(`Assistances ${e}`, "is-danger");
+				});
 
 			this.isLoadingList = false;
 		},

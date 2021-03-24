@@ -208,26 +208,16 @@ export default {
 		return data;
 	},
 
-	async getListOfHouseholdPurchases(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
+	async getListOfHouseholdPurchases(id) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households/${id}/purchased-items?${pageText + sizeText + sortText + fulltext}`,
+			uri: `households/${id}/purchased-items`,
 		});
 		return { data, totalCount };
 	},
 
-	async getListOfDistributedItems(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
+	async getListOfDistributedItems(id) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households/${id}/distributed-items?${pageText + sizeText + sortText + fulltext}`,
+			uri: `households/${id}/distributed-items`,
 		});
 		return { data, totalCount };
 	},
