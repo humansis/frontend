@@ -168,7 +168,7 @@ export default {
 			const countrySpecificOptionBody = {
 				field,
 				type: type.code,
-				target: target.code,
+				target: target?.code,
 				iso3: iso3 || this.country.iso3,
 			};
 

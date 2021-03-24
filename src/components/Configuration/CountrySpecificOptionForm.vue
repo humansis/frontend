@@ -33,6 +33,7 @@
 			</b-field>
 
 			<b-field
+				v-if="false"
 				label="Target"
 				:type="validateType('target')"
 				:message="validateMsg('target')"
@@ -111,7 +112,7 @@ export default {
 		formModel: {
 			field: { required },
 			type: { required },
-			target: { required },
+			target: {},
 		},
 	},
 
