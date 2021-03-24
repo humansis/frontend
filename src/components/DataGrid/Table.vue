@@ -53,7 +53,8 @@
 			aria-previous-label="Previous page"
 			aria-page-label="Page"
 			aria-current-label="Current page"
-			:checked-rows.sync="checkedRows"
+			:checked-rows="checkedRows"
+			:is-row-checkable="isRowCheckable"
 			:paginated="paginated"
 			:checkable="checkable"
 			:data="data"
@@ -111,6 +112,14 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		checkedRows: {
+			type: Array,
+			default: () => [],
+		},
+		disableImmediatelyCheckedRows: {
+			type: Boolean,
+			default: false,
+		},
 		isLoading: {
 			type: Boolean,
 			default: false,
@@ -131,7 +140,6 @@ export default {
 
 	data() {
 		return {
-			checkedRows: [],
 			options: {
 				perPageNumbers: [5, 10, 15],
 			},
@@ -152,7 +160,23 @@ export default {
 		},
 
 		checkboxChecked(rows) {
-			this.$emit("checked", rows);
+			if (this.disableImmediatelyCheckedRows) {
+				const immediatelyCheckedRows = this.checkedRows.map((row) => row.id);
+				const checkedNewRows = rows.filter((row) => !immediatelyCheckedRows.includes(row.id));
+
+				this.$emit("checked", checkedNewRows);
+			} else {
+				this.$emit("checked", rows);
+			}
+		},
+
+		isRowCheckable(row) {
+			if (this.disableImmediatelyCheckedRows) {
+				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow.id);
+				return !immediatelyCheckedRows.includes(row.id);
+			}
+
+			return true;
 		},
 
 		onChangePerPage(value) {

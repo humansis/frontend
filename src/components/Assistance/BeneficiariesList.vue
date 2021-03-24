@@ -75,12 +75,15 @@
 			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
 			:checkable="withCheckbox"
+			:checked-rows="table.checkedRows"
+			disable-immediately-checked-rows
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
 			@search="onSearch"
+			@checked="onRowsCheck"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -149,8 +152,8 @@ export default {
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
-		withCheckbox: Boolean,
 		customColumns: Array,
+		withCheckbox: Boolean,
 	},
 
 	components: {
@@ -187,6 +190,7 @@ export default {
 				searchPhrase: "",
 				progress: null,
 				customPerPage: null,
+				checkedRows: [],
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -253,11 +257,22 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		prepareDataForTable(data) {
+		async prepareDataForTable(data) {
 			this.table.progress += 15;
 			const phoneIds = [];
 			const nationalIdIds = [];
 			data.forEach((item, key) => {
+				console.log(key, "item in table with id:", item.id);
+
+				// TODO Get general relief for every ID
+				// Set checked rows for example
+				if (item.id === 158) {
+					this.table.checkedRows.push(item);
+				}
+				if (item.id === 163) {
+					this.table.checkedRows.push(item);
+				}
+
 				this.table.data[key] = item;
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
@@ -274,11 +289,11 @@ export default {
 			});
 			this.table.progress += 15;
 
-			this.preparePhoneForTable(phoneIds);
+			await this.preparePhoneForTable(phoneIds);
 
-			this.prepareValue();
+			await this.prepareValue();
 
-			this.prepareNationalIdForTable(nationalIdIds);
+			await this.prepareNationalIdForTable(nationalIdIds);
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
@@ -340,6 +355,10 @@ export default {
 				.catch((e) => {
 					Notification(`Phones ${e}`, "is-danger");
 				});
+		},
+
+		onRowsCheck(rows) {
+			this.$emit("rowsChecked", rows);
 		},
 
 		exportAssistance(format) {
