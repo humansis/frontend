@@ -41,8 +41,8 @@
 			striped
 			hoverable
 			scrollable
-			backend-sorting
-			backend-pagination
+			:backend-sorting="backendSorting"
+			:backend-pagination="backendPagination"
 			selectable
 			pagination-position="bottom"
 			default-sort-direction="asc"
@@ -104,6 +104,14 @@ export default {
 		total: Number,
 		currentPage: Number,
 		paginated: {
+			type: Boolean,
+			default: true,
+		},
+		backendSorting: {
+			type: Boolean,
+			default: true,
+		},
+		backendPagination: {
 			type: Boolean,
 			default: true,
 		},
