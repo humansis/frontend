@@ -120,7 +120,7 @@
 			<button
 				class="button"
 				slot="trigger"
-				@click="advancedOptions = !advancedOptions"
+				@click.prevent="advancedOptions = !advancedOptions"
 			>
 				<span>Advanced Options</span>
 				<b-icon

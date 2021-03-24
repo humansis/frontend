@@ -78,6 +78,13 @@ export default {
 		return { data, status };
 	},
 
+	async calculationOfBeneficiaries(body) {
+		const { data, status } = await fetcher({
+			uri: "assistances/beneficiaries", method: "POST", body,
+		});
+		return { data, status };
+	},
+
 	async getAssistanceCommodities(id) {
 		const { data: { data }, totalCount } = await fetcher({
 			uri: `assistances/${id}/commodities`,
@@ -170,18 +177,5 @@ export default {
 			},
 		});
 		return { data, status };
-	},
-
-	async getListOfRandomBeneficiaries(id, page, size, sort, randomSize, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const randomSizeText = randomSize ? `&randomSize=${randomSize}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/random?${randomSizeText + pageText + sizeText + sortText + fulltext}`,
-		});
-		return { data, totalCount };
 	},
 };

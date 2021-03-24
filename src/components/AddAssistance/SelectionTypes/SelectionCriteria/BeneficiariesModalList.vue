@@ -1,12 +1,12 @@
 <!-- TODO implement -->
 <template>
 	<section class="modal-card-body">
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-		</div>
+		<Search class="column is-two-fifths" @search="onSearch" />
 		<Table
-			:data="table.data"
-			:total="table.total"
+			:data="data"
+			:total="data.length"
+			:backend-pagination="false"
+			:backend-sorting="false"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -28,7 +28,7 @@ import Search from "@/components/Search";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
-	name: "CriteriaModalList",
+	name: "BeneficiariesModalList",
 
 	components: {
 		Search,
@@ -37,26 +37,22 @@ export default {
 	},
 
 	props: {
-		criteria: Array,
+		data: Array,
 	},
 
 	data() {
 		return {
 			table: {
-				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id" },
-					{ key: "familyName", label: "Family Name [English]" },
-					{ key: "familyGivenName", label: "First Name [English]" },
+					{ key: "id", sortable: true },
+					{ key: "localFamilyName", label: "Family Name", sortable: true },
+					{ key: "localGivenName", label: "First Name", sortable: true },
+					{ key: "vulnerability", sortable: true },
 				],
 				total: 0,
 			},
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	mounted() {
@@ -64,15 +60,12 @@ export default {
 	},
 
 	methods: {
-		async fetchData() {
-			// TODO Loading on data container
-			// TODO get real data from API
+		fetchData() {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 		},
 
-		onSearch(value) {
-			// TODO implement after real data
-			console.log(value);
+		onSearch() {
+			// TODO Search in this.data and update result in the table
 		},
 	},
 };

@@ -39,6 +39,19 @@ export default {
 			return addressesMapped;
 		},
 
+		getAddressTypeAndId(
+			{
+				temporarySettlementAddressId,
+				residenceAddressId,
+				campAddressId,
+			},
+		) {
+			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
+			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
+			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			return "";
+		},
+
 		async getPreparedLocations(addressesIds) {
 			const addresses = await this.getAddresses(addressesIds);
 			const locations = await this.getLocations(addresses);
