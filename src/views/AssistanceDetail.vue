@@ -25,7 +25,7 @@
 			ref="beneficiaries"
 			export-button
 			add-button
-			with-checkbox
+			isAssistanceDetail
 			:custom-columns="columns"
 			:change-button="false"
 			:checked-rows="checkedRows"
@@ -105,8 +105,6 @@ export default {
 	methods: {
 		assistanceLoaded(assistance) {
 			this.target = assistance.target;
-
-			// TODO If assistance.commodity is sth, do another way of "Set As Distributed"
 		},
 
 		onRowsCheck(rows) {
@@ -114,7 +112,7 @@ export default {
 			console.log(rows);
 		},
 
-		setAsDistributed() {
+		setGeneralReliefItemAsDistributed() {
 			// TODO Set as Distributed for one one more Households
 			// TODO Then fetchData
 		},

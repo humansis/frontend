@@ -115,6 +115,13 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getGeneralReliefForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
+		});
+		return { data, totalCount };
+	},
+
 	async getListOfModalities() {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `modalities`,

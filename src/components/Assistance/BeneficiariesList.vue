@@ -74,7 +74,7 @@
 			:current-page="table.currentPage"
 			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
-			:checkable="withCheckbox"
+			:checkable="isTableCheckable"
 			:checked-rows="table.checkedRows"
 			disable-immediately-checked-rows
 			@clicked="showDetail"
@@ -153,7 +153,7 @@ export default {
 		changeButton: Boolean,
 		exportButton: Boolean,
 		customColumns: Array,
-		withCheckbox: Boolean,
+		isAssistanceDetail: Boolean,
 	},
 
 	components: {
@@ -171,6 +171,7 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
+			commodities: [],
 			table: {
 				data: [],
 				columns: [],
@@ -227,15 +228,34 @@ export default {
 		this.fetchData();
 	},
 
+	computed: {
+		isTableCheckable() {
+			// If isAssistanceDetail and
+			// If commodity === voucher, row in table has icon for send voucher code
+			// If commodity === smardcard,
+			// If commodity === transaction,
+			// If commodity === sth else, row in table has checkbox and it's posible to "Set ad D.."
+
+			if (this.isAssistanceDetail) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+
 	methods: {
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
 
+			await this.getAssistanceCommodities();
+
 			this.table.columns = generateColumns(
 				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
 			);
+
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
 				page || this.table.currentPage,
@@ -261,17 +281,10 @@ export default {
 			this.table.progress += 15;
 			const phoneIds = [];
 			const nationalIdIds = [];
-			data.forEach((item, key) => {
-				console.log(key, "item in table with id:", item.id);
+			const beneficiaryIds = [];
 
-				// TODO Get general relief for every ID
-				// Set checked rows for example
-				if (item.id === 158) {
-					this.table.checkedRows.push(item);
-				}
-				if (item.id === 163) {
-					this.table.checkedRows.push(item);
-				}
+			data.forEach((item, key) => {
+				beneficiaryIds.push(item.id);
 
 				this.table.data[key] = item;
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
@@ -287,13 +300,43 @@ export default {
 					phoneIds.push(item.phoneIds);
 				}
 			});
+
 			this.table.progress += 15;
 
 			await this.preparePhoneForTable(phoneIds);
-
 			await this.prepareValue();
-
 			await this.prepareNationalIdForTable(nationalIdIds);
+
+			if (this.isAssistanceDetail) {
+				await this.findOutStatusAboutDistribution(beneficiaryIds);
+			}
+		},
+
+		async findOutStatusAboutDistribution(beneficiaryIds) {
+			// If commodity === voucher
+			// If commodity === smardcard,
+			// If commodity === transaction,
+
+			// If commodity === sth else
+			await this.setGeneralRelief(beneficiaryIds);
+		},
+
+		setGeneralRelief(ids) {
+			ids.forEach((id) => {
+				console.log(this.getGeneralRelief(id));
+			});
+
+			// TODO for every general relief (if is distributed) set this.table.checkedRows
+		},
+
+		getGeneralRelief(beneficiaryId) {
+			return AssistancesService
+				.getGeneralReliefForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch(() => {
+					// Notification(`General Relief ${e}`, "is-danger");
+				});
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
@@ -322,9 +365,8 @@ export default {
 		},
 
 		async prepareValue() {
-			const commodities = await this.getAssistanceCommodities();
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].value = `${commodities[0].value} ${commodities[0].unit}`;
+				this.table.data[key].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
 			});
 		},
 
@@ -448,8 +490,8 @@ export default {
 		},
 
 		getAssistanceCommodities() {
-			return AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => data)
+			AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
 					Notification(`Commodities ${e}`, "is-danger");
 				});
