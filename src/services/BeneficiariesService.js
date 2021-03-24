@@ -207,4 +207,18 @@ export default {
 
 		return data;
 	},
+
+	async getListOfHouseholdPurchases(id) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `households/${id}/purchased-items`,
+		});
+		return { data, totalCount };
+	},
+
+	async getListOfDistributedItems(id) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `households/${id}/distributed-items`,
+		});
+		return { data, totalCount };
+	},
 };

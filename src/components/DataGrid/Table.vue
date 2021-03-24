@@ -11,7 +11,8 @@
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
-								@search="$emit('search', $event)"
+								:backend-search="backendSearching"
+								@search="onSearch"
 							/>
 						</div>
 					</slot>
@@ -56,7 +57,7 @@
 			:checked-rows.sync="checkedRows"
 			:paginated="paginated"
 			:checkable="checkable"
-			:data="data"
+			:data="preparedData"
 			:total="total"
 			:per-page="customPerPage || perPage"
 			:current-page="currentPage"
@@ -101,6 +102,7 @@ export default {
 	props: {
 		title: String,
 		data: Array,
+		columns: Array,
 		total: Number,
 		currentPage: Number,
 		paginated: {
@@ -108,6 +110,10 @@ export default {
 			default: true,
 		},
 		backendSorting: {
+			type: Boolean,
+			default: true,
+		},
+		backendSearching: {
 			type: Boolean,
 			default: true,
 		},
@@ -143,11 +149,18 @@ export default {
 			options: {
 				perPageNumbers: [5, 10, 15],
 			},
+			searchedData: null,
 		};
 	},
 
 	computed: {
 		...mapState(["perPage"]),
+		preparedData() {
+			if (this.backendSearching || this.searchedData === null) {
+				return this.data;
+			}
+			return this.searchedData;
+		},
 	},
 
 	methods: {
@@ -171,6 +184,26 @@ export default {
 		onResetSort() {
 			this.$refs.table.resetMultiSorting();
 			this.$emit("resetSort");
+		},
+
+		onSearch(event) {
+			if (this.backendSearching) {
+				this.$emit("search", event);
+			} else {
+				if (!event) this.searchedData = this.data;
+				this.searchedData = this.data.filter((item) => {
+					let includes = false;
+					Object.keys(item).forEach((key) => {
+						if (!includes) {
+							const column = this.columns.find((value) => value.key === key);
+							if (column && column.searchable) {
+								includes = !!String(item[key]).toLowerCase().includes(event.toLowerCase());
+							}
+						}
+					});
+					return includes;
+				});
+			}
 		},
 	},
 };

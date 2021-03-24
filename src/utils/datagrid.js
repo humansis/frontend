@@ -23,6 +23,7 @@ export const generateColumns = ((visibleColumns) => {
 			centered: true,
 			sortable: column.sortable,
 			attribute: column.attribute,
+			customSort: column.customSort,
 		});
 	});
 	return preparedColumns;
