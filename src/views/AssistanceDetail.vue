@@ -11,7 +11,7 @@
 			</div>
 			<b-progress v-model="assistanceProgress" />
 			<div class="columns">
-				<div v-if="$refs.beneficiaries" class="column is-offset-3">
+				<div v-if="$refs.beneficiariesList" class="column is-offset-3">
 					<div class="has-text-weight-bold">Total Amount:</div>
 					<span class="ml-5">{{ totalAmount }} {{ commodityUnit }}</span>
 				</div>
@@ -22,13 +22,12 @@
 			</div>
 		</div>
 		<BeneficiariesList
-			ref="beneficiaries"
+			ref="beneficiariesList"
 			export-button
 			add-button
 			isAssistanceDetail
 			:custom-columns="columns"
 			:change-button="false"
-			:checked-rows="checkedRows"
 			@beneficiariesCounted="beneficiaries = $event"
 			@rowsChecked="onRowsCheck"
 		/>
@@ -45,7 +44,6 @@
 			</div>
 		</div>
 	</div>
-
 </template>
 
 <script>
@@ -78,7 +76,7 @@ export default {
 				{ key: "distributed" },
 				{ key: "value" },
 			],
-			checkedRows: [],
+			selectedBeneficiaries: [],
 		};
 	},
 
@@ -91,8 +89,8 @@ export default {
 		},
 
 		totalAmount() {
-			if (this.$refs.beneficiaries) {
-				return this.$refs.beneficiaries.table.total * this.commodity[0].value;
+			if (this.$refs.beneficiariesList) {
+				return this.$refs.beneficiariesList.table.total * this.commodity[0].value;
 			}
 			return null;
 		},
@@ -108,13 +106,13 @@ export default {
 		},
 
 		onRowsCheck(rows) {
-			// TODO If sth is selected, display button for "set as distributed"
-			console.log(rows);
+			// TODO If sth is selected, display button for "set as distributed" or another button
+			this.selectedBeneficiaries = rows;
 		},
 
 		setGeneralReliefItemAsDistributed() {
-			// TODO Set as Distributed for one one more Households
-			// TODO Then fetchData
+			// TODO Set as Distributed for one one more Households, use this.selectedBnf
+			// TODO Then fetchData in ref component
 		},
 
 		async fetchCommodity() {
@@ -150,18 +148,6 @@ export default {
 					});
 				},
 			});
-		},
-
-		async fetchData() {
-			return AssistancesService.getListOfBeneficiaries(
-				this.$route.params.assistanceId,
-				null,
-				this.$refs.beneficiaries.table.totalCount,
-			)
-				.then(async ({ data }) => data)
-				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
-				});
 		},
 	},
 };
