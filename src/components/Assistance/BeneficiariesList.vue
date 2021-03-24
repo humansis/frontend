@@ -76,7 +76,7 @@
 			:is-loading="isLoadingList"
 			:checkable="isTableCheckable"
 			:checked-rows="table.checkedRows"
-			disable-immediately-checked-rows
+			disable-prechecked-rows
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
