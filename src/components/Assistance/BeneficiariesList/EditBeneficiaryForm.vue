@@ -86,6 +86,7 @@ export default {
 		return {
 			addAReferral: false,
 			options: {
+				// TODO Fetch Referral types
 				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
 			},
 		};
