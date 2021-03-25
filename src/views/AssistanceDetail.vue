@@ -140,7 +140,7 @@ export default {
 							});
 						}
 					}).catch((e) => {
-						Notification(`Assistance ${e}`, "is-danger");
+						Toast(`Assistance ${e}`, "is-danger");
 					});
 				},
 			});

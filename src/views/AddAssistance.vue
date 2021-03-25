@@ -52,7 +52,7 @@ import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/Selecti
 import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 
@@ -151,7 +151,7 @@ export default {
 					});
 				}
 			}).catch((e) => {
-				Notification(`New Assistance ${e}`, "is-danger");
+				Toast(`New Assistance ${e}`, "is-danger");
 			});
 		},
 

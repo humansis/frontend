@@ -82,7 +82,7 @@ import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "AssistanceUpdate",
@@ -120,7 +120,7 @@ export default {
 					});
 				}
 			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
+				Toast(`Assistance ${e}`, "is-danger");
 			});
 		},
 
