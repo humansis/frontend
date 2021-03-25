@@ -17,8 +17,8 @@
 				@formClosed="closeOrganizationServiceModal"
 			/>
 		</Modal>
-		<OrganizationServicesList
-			ref="organizationServicesList"
+		<OrganizationServiceList
+			ref="organizationServiceList"
 			@onShowEdit="editOrganizationService"
 			@onShowDetail="showDetail"
 		/>
@@ -26,17 +26,17 @@
 </template>
 
 <script>
-import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServicesList";
+import OrganizationServiceList from "@/components/AdministrativeSettings/OrganizationServiceList";
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
-import OrganizationServicesService from "@/services/OrganizationServicesService";
+import OrganizationServiceService from "@/services/OrganizationServiceService";
 import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "OrganizationServicesPage",
+	name: "OrganizationServicePage",
 
 	components: {
-		OrganizationServicesList,
+		OrganizationServiceList,
 		Modal,
 		OrganizationServiceForm,
 	},
@@ -99,10 +99,12 @@ export default {
 			const {
 				id,
 				enabled,
+				parameters,
 			} = organizationServiceForm;
 
 			const organizationServiceBody = {
 				enabled,
+				parameters,
 			};
 
 			this.updateOrganizationService(id, organizationServiceBody);
@@ -111,11 +113,11 @@ export default {
 		async updateOrganizationService(id, organizationServiceBody) {
 			this.organizationServiceModal.isWaiting = true;
 
-			await OrganizationServicesService.updateOrganizationService(id, organizationServiceBody)
+			await OrganizationServiceService.updateOrganizationService(id, organizationServiceBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast("Organization Service Successfully Created", "is-success");
-						this.$refs.organizationServicesList.fetchData();
+						this.$refs.organizationServiceList.fetchData();
 						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {

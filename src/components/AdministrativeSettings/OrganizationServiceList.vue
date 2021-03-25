@@ -6,15 +6,17 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:backend-searching="false"
+			:backend-sorting="false"
+			:backend-pagination="false"
+			:columns="table.visibleColumns"
 			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@changePerPage="onChangePerPage"
-			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
 					v-slot="props"
+					sortable
 					:key="column.id"
 				>
 					<ColumnField :column="column" :data="props" />
@@ -23,6 +25,7 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
+				width="100"
 				centered
 			>
 				<div class="buttons is-right">
@@ -47,13 +50,13 @@
 import ActionButton from "@/components/ActionButton";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import OrganizationServicesService from "@/services/OrganizationServicesService";
+import OrganizationServiceService from "@/services/OrganizationServiceService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "OrganizationServicesList",
+	name: "OrganizationServiceList",
 
 	components: {
 		ColumnField,
@@ -69,9 +72,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "name", label: "Service Name" },
-					{ key: "iso3", label: "Country", type: "textOrNone" },
-					{ key: "enabled" },
+					{ key: "name", label: "Service Name", searchable: true },
+					{ key: "iso3", label: "Country", type: "textOrNone", searchable: true },
+					{ key: "enabled", searchable: true },
 				],
 				total: 0,
 				currentPage: 1,
@@ -95,7 +98,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await OrganizationServicesService.getListOfOrganizationServices()
+			await OrganizationServiceService.getListOfOrganizationServices()
 				.then(({ data, totalCount }) => {
 					this.table.data = data;
 					this.table.total = totalCount;
@@ -104,22 +107,6 @@ export default {
 				});
 
 			this.isLoadingList = false;
-		},
-
-		mapToFormModel(
-			{
-				id,
-				enabled,
-				service,
-			},
-		) {
-			return {
-				...this.organizationServiceModel,
-				id,
-				enabled,
-				country: service.country,
-				name: service.name,
-			};
 		},
 	},
 };

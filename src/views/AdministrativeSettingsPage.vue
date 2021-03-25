@@ -28,7 +28,7 @@
 				label="Organization services"
 				icon="th-large"
 			>
-				<OrganizationServicesPage />
+				<OrganizationServicePage />
 			</b-tab-item>
 			<!---
 			<b-tab-item
@@ -67,7 +67,7 @@
 import UsersPage from "@/views/AdministrativeSettings/UsersPage";
 import DonorsPage from "@/views/AdministrativeSettings/DonorsPage";
 import MyOrganizationsPage from "@/views/AdministrativeSettings/MyOrganizationsPage";
-import OrganizationServicesPage from "@/views/AdministrativeSettings/OrganizationServicesPage";
+import OrganizationServicePage from "@/views/AdministrativeSettings/OrganizationServicePage";
 /*
 import CountriesPage from "@/views/AdministrativeSettings/CountriesPage";
 import LanguagesPage from "@/views/AdministrativeSettings/LanguagesPage";
@@ -85,7 +85,7 @@ export default {
 		CountriesPage,
 		LanguagesPage,
 		*/
-		OrganizationServicesPage,
+		OrganizationServicePage,
 		MyOrganizationsPage,
 		DonorsPage,
 		UsersPage,
