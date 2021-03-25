@@ -1,4 +1,4 @@
-// TODO implement after import endpoint
+// TODO Not used for now
 export default {
 	async getListOfImports() {
 		return {

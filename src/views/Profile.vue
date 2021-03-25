@@ -118,17 +118,17 @@ export default {
 
 	methods: {
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		submitPasswordForm() {
 			console.log("Password Submitted");
 		},
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		submitTelephoneForm() {
 			console.log("Telephone Submitted");
 		},
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		enableTwoFactor() {
 			console.log("Two Factor");
 		},

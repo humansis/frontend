@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<Table
@@ -60,7 +61,6 @@
 </template>
 
 <script>
-// TODO Fix translations and check all functionalities in table
 import ColumnField from "@/components/DataGrid/ColumnField";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
@@ -109,8 +109,6 @@ export default {
 
 	methods: {
 		async fetchData() {
-			// TODO Loading on data container
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
 				this.table.currentPage,
@@ -126,7 +124,6 @@ export default {
 		},
 
 		async submit() {
-			// TODO send data via API service
 			// const data = this.table.data.filter((item) => item.key);
 			await TranslationService.saveTranslation()
 				.then((response) => {

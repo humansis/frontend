@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<ReportNavbar
@@ -122,9 +123,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		goToDetail() {
-			// TODO go to detail
-		},
+		goToDetail() {},
 
 		onPeriodFilterChange(period) {
 			this.selectedPeriod = period;

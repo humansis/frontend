@@ -232,7 +232,7 @@ export default {
 				password,
 				email,
 				phoneNumber: "",
-				// TODO edit after permissions
+				// TODO edit after BE will implement permissions
 				roles: ["ROLE_VENDOR"],
 				changePassword: false,
 			};

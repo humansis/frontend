@@ -1,4 +1,4 @@
-// TODO implement after we know this data
+// TODO Not used for now
 export default {
 	async getListOfProjectReports() {
 		return {

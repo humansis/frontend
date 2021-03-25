@@ -24,7 +24,7 @@
 				/>
 			</b-field>
 
-			<!-- TODO add rules to password -->
+			<!-- TODO Add rules to password -->
 			<b-field
 				label="Password"
 				:type="validateType('password')"
@@ -206,7 +206,7 @@ export default {
 	data() {
 		return {
 			options: {
-				// TODO fix after implementing real api or roleService or something like that
+				// TODO Fix after implementing real api or roleService or something like that
 				rights: [
 					{
 						code: 0,
@@ -313,7 +313,7 @@ export default {
 				this.formModel.language = this.options.languages
 					.find((item) => item.code === this.formModel.language);
 			}
-			// TODO map Rights on select after add permissions
+			// TODO Map Rights on select after add permissions
 			this.mapRights(this.formModel.rights);
 		},
 

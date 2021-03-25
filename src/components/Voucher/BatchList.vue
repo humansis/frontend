@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<div class="columns">
@@ -230,13 +231,9 @@ export default {
 			return batches;
 		},
 
-		onPageChange() {
-			// TODO on table page change
-		},
+		onPageChange() {},
 
-		onSort() {
-			// TODO on table sort
-		},
+		onSort() {},
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;

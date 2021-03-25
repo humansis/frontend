@@ -1,3 +1,4 @@
+// TODO Not used for now
 import { fetcher } from "@/utils/fetcher";
 
 export default {
@@ -8,7 +9,6 @@ export default {
 	},
 
 	async saveTranslation() {
-		// TODO send translation
 		return { status: 200 };
 	},
 };

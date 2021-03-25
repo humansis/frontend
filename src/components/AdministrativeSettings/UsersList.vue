@@ -147,7 +147,7 @@ export default {
 
 		// eslint-disable-next-line no-unused-vars
 		prepareRights(rights) {
-			// TODO prepare rights for table
+			// TODO Prepare rights for this table
 			return "Officer Manager";
 		},
 
