@@ -25,14 +25,12 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
 				Close
-			</button>
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"

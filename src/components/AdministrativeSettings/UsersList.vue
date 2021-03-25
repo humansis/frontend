@@ -55,12 +55,10 @@
 				</div>
 			</b-table-column>
 			<template #export>
-				<div class="column">
-					<ExportButton
-						space-between
-						:formats="{ xlsx: true, csv: true, ods: true}"
-					/>
-				</div>
+				<ExportButton
+					space-between
+					:formats="{ xlsx: true, csv: true, ods: true}"
+				/>
 			</template>
 		</Table>
 	</div>

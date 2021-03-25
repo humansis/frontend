@@ -1,8 +1,8 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive" :type="type">
-		<button class="button is-small table-action" :class="type">
+		<b-button size="is-small" :class="type">
 			<b-icon :icon="icon" />
-		</button>
+		</b-button>
 	</b-tooltip>
 </template>
 

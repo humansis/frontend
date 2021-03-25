@@ -78,9 +78,9 @@
 							</strong>
 						</div>
 						<div class="level-right mt-5">
-							<button class="button is-primary" @click="enableTwoFactor">
+							<b-button type="is-primary" @click="enableTwoFactor">
 								{{ twoFactorEnabled ? "Disable" : "Enable" }}
-							</button>
+							</b-button>
 						</div>
 					</section>
 				</section>

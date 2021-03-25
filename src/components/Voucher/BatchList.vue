@@ -3,19 +3,13 @@
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column">
-				<button
-					class="button"
-					slot="trigger"
-					@click="filtersToggle"
-				>
-					<span>Advanced search</span>
-					<b-icon
-						size="is-small"
-						:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					/>
-				</button>
-			</div>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				Advanced search
+			</b-button>
 		</div>
 		<b-collapse v-model="advancedSearchVisible">
 			<VoucherFilters

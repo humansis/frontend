@@ -117,17 +117,13 @@
 				:form-model="admModel"
 			/>
 
-			<button
-				class="button"
+			<b-button
 				slot="trigger"
+				:icon-right="advancedOptions ? 'arrow-up' : 'arrow-down'"
 				@click.prevent="advancedOptions = !advancedOptions"
 			>
-				<span>Advanced Options</span>
-				<b-icon
-					size="is-small"
-					:icon="advancedOptions ? 'arrow-up' : 'arrow-down'"
-				/>
-			</button>
+				Advanced Options
+			</b-button>
 
 			<b-field v-if="advancedOptions" label="Score Weight" class="mt-3">
 				<b-numberinput

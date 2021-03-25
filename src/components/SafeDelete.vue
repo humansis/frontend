@@ -1,12 +1,13 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive" type="is-danger">
-		<button
+		<b-button
+			type="is-danger"
+			size="is-small"
 			:disabled="disabled"
-			class="button is-small is-danger table-action"
 			@click="confirmDelete"
 		>
 			<b-icon :icon="icon" />
-		</button>
+		</b-button>
 	</b-tooltip>
 </template>
 
