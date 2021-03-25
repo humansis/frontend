@@ -345,7 +345,7 @@ export default {
 						});
 					case "temporary_settlement":
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							Notification(`TemporarySettlementAddress ${e}`, "is-danger");
+							Notification(`Temporary Settlement Address ${e}`, "is-danger");
 						});
 					default:
 						return null;

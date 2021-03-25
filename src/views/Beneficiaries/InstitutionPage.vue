@@ -319,7 +319,7 @@ export default {
 					this.$refs.institutionList.table.total -= 1;
 				}
 			}).catch((e) => {
-				Notification(`(Institution) ${e}`, "is-danger");
+				Notification(`Institution ${e}`, "is-danger");
 			});
 		},
 	},

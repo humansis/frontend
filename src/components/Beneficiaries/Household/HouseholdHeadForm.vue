@@ -547,7 +547,7 @@ export default {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => { this.options.referralType = data; })
 				.catch((e) => {
-					Notification(`Residence Status ${e}`, "is-danger");
+					Notification(`Referral Types ${e}`, "is-danger");
 				});
 
 			this.referralTypeLoading = false;
