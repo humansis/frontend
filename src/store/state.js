@@ -11,8 +11,6 @@ export default {
 	auth: { ...permissions },
 	country: null,
 	language: null,
-	temporaryAssistance: null,
-	temporaryProject: null,
 	perPage: 10,
 	icons: null,
 };

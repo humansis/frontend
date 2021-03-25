@@ -69,13 +69,13 @@
 			</div>
 
 			<div class="level-item has-text-centered">
-				<div class="box">
+				<div class="box commodity-item">
 					<p class="heading">Commodity</p>
 					<p
-						v-if="assistance.commodity"
+						v-if="commodity"
 						class="has-text-weight-bold is-size-5"
 					>
-						{{ assistance.commodity }}
+						<SvgIcon :items="commodity" />
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -86,52 +86,41 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Loading from "@/components/Loading";
 import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
-import AssistancesService from "@/services/AssistancesService";
 import { normalizeText } from "@/utils/datagrid";
+import SvgIcon from "@/components/SvgIcon";
+import AssistancesService from "@/services/AssistancesService";
 
 export default {
 	name: "AssistanceSummary",
 
 	components: {
+		SvgIcon,
 		Loading,
 	},
 
 	props: {
 		beneficiaries: Number,
+		assistance: Object,
 	},
 
 	data() {
 		return {
 			project: null,
 			province: null,
-			commodity: null,
-			assistance: null,
+			commodity: [],
 		};
 	},
 
 	async mounted() {
-		// TODO check after BE implements /assistances/:id endpoint
-		if (this.temporaryAssistance) {
-			this.assistance = this.temporaryAssistance;
-		} else {
-			this.assistance = await this.fetchAssistance();
-		}
-		this.$emit("assistanceLoaded", this.assistance);
-		if (this.temporaryProject) {
-			this.project = this.temporaryProject;
-		} else {
-			await this.fetchProject();
-		}
+		await this.fetchProject();
 		await this.fetchLocation();
+		await this.fetchCommodity();
 	},
 
 	computed: {
-		...mapState(["temporaryAssistance", "temporaryProject"]),
-
 		assistanceTarget() {
 			return normalizeText(this.assistance?.target);
 		},
@@ -169,11 +158,20 @@ export default {
 			});
 		},
 
-		async fetchAssistance() {
-			return AssistancesService.getDetailOfAssistance(
-				this.$route.params.assistanceId,
-			).then((data) => data);
+		async fetchCommodity() {
+			if (!this.assistance) return;
+			await AssistancesService.getCommodities(
+				[this.assistance.id],
+			).then(({ data }) => {
+				this.commodity = data.map((item) => item.modalityType);
+			});
 		},
 	},
 };
 </script>
+
+<style scoped>
+.box {
+	height: 90px;
+}
+</style>

@@ -91,7 +91,6 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
@@ -154,8 +153,6 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["addAssistanceToState"]),
-
 		async fetchData() {
 			this.isLoadingList = true;
 			this.table.progress = null;
@@ -298,7 +295,6 @@ export default {
 			if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
-				this.addAssistanceToState(assistance);
 				this.$router.push({
 					name: "Assistance",
 					params: {

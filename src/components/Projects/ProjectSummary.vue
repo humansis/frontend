@@ -65,7 +65,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
@@ -81,17 +80,8 @@ export default {
 		};
 	},
 
-	computed: {
-		...mapState(["temporaryProject"]),
-
-	},
-
 	mounted() {
-		if (this.temporaryProject) {
-			this.projectSummary = this.temporaryProject;
-		} else {
-			this.fetchData();
-		}
+		this.fetchData();
 	},
 
 	methods: {
@@ -107,3 +97,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.box {
+	height: 90px;
+}
+</style>
