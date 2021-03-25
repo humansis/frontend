@@ -55,6 +55,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AddAssistance",
@@ -99,6 +100,8 @@ export default {
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
 			},
+			duplicate: false,
+			duplicateAssistance: null,
 		};
 	},
 
@@ -116,6 +119,20 @@ export default {
 				institutions: this.visibleComponents.institutions,
 			};
 		},
+	},
+
+	mounted() {
+		this.duplicate = !!this.$route.query.duplicateAssistance;
+		if (this.duplicate) {
+			AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
+				.then((data) => {
+					this.duplicateAssistance = data;
+					this.mapAssistance(data);
+				})
+				.catch((e) => {
+					Notification(`Duplicate Assistance ${e}`, "is-danger");
+				});
+		}
 	},
 
 	methods: {
@@ -155,6 +172,33 @@ export default {
 			});
 		},
 
+		async mapAssistance(assistance) {
+			this.$refs.newAssistanceForm.formModel = {
+				adm1Id: assistance.adm1Id,
+				adm2Id: assistance.adm2Id,
+				adm3Id: assistance.adm3Id,
+				adm4Id: assistance.adm4Id,
+				dateOfAssistance: new Date(assistance.dateDistribution),
+				assistanceType: assistance.type,
+				sector: assistance.sector,
+				subsector: assistance.subsector,
+				targetType: assistance.target,
+			};
+			const commodities = await this.fetchAssistanceCommodities();
+			const preparedCommodities = [];
+			commodities.forEach((item) => {
+				const modality = this.getModalityByType(item.modalityType);
+				preparedCommodities.push({
+					type: item.modalityType,
+					quantity: item.value,
+					unit: item.unit,
+					description: item.description,
+					modality,
+				});
+			});
+			this.$refs.distributedCommodity.table.data.push(...preparedCommodities);
+		},
+
 		targetSelected(targetType) {
 			this.targetType = targetType?.code;
 
@@ -175,6 +219,14 @@ export default {
 			this.$router.push({ name: "ProjectDetail",
 				params: { projectId: this.$route.params.projectId },
 			});
+		},
+
+		fetchAssistanceCommodities() {
+			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`Commodities ${e}`, "is-danger");
+				});
 		},
 
 		fetchNewAssistanceForm(data) {
@@ -235,6 +287,34 @@ export default {
 				communities,
 				institutions,
 			};
+		},
+
+		getModalityByType(code) {
+			switch (code) {
+				case consts.COMMODITY.CASH:
+				case consts.COMMODITY.SMARDCARD:
+				case consts.COMMODITY.MOBILE_MONEY:
+					return "Cash";
+				case consts.COMMODITY.FOOD_RATIONS:
+				case consts.COMMODITY.READY_TO_EAT_RATIONS:
+				case consts.COMMODITY.BREAD:
+				case consts.COMMODITY.AGRICULTURAL_KIT:
+				case consts.COMMODITY.WASH_KIT:
+				case consts.COMMODITY.SHELTER_TOOL_KIT:
+				case consts.COMMODITY.HYGIENE_KIT:
+				case consts.COMMODITY.DIGNITY_KIT:
+				case consts.COMMODITY.NFI_KIT:
+				case consts.COMMODITY.WINTERIZATION_KIT:
+					return "In Kind";
+				case consts.COMMODITY.LOAN:
+				case consts.COMMODITY.BUSINESS_GRANT:
+					return "Other";
+				case consts.COMMODITY.QR_CODE_VOUCHER:
+				case consts.COMMODITY.PAPER_VOUCHER:
+					return "Other";
+				default:
+					return "";
+			}
 		},
 	},
 };
