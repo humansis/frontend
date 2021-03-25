@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -115,8 +114,6 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["addProjectToState"]),
-
 		async fetchData() {
 			this.isLoadingList = true;
 
@@ -182,7 +179,6 @@ export default {
 		},
 
 		goToDetail(project) {
-			this.addProjectToState(project);
 			this.$router.push({ name: "ProjectDetail", params: { projectId: project.id } });
 		},
 

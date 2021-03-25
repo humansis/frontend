@@ -214,7 +214,7 @@ export default {
 		async onRemoveProduct(id) {
 			await ProductsService.removeProduct(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Product successfully removed", "is-success");
+					Toast("Product Successfully Removed", "is-success");
 					this.$refs.productsList.removeFromList(id);
 				}
 			}).catch((e) => {

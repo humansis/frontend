@@ -47,7 +47,7 @@ export default {
 
 				await TranslationService.getTranslations(languageKey).then((response) => {
 					if (response.status === 200) {
-						sessionStorage.setItem("translations", JSON.stringify(response.data) || {});
+						sessionStorage.setItem("translations", JSON.stringify(response.data));
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {

@@ -1,9 +1,10 @@
 <template>
 	<div>
 		<AssistanceSummary
+			v-if="assistance"
 			ref="assistanceSummary"
 			:beneficiaries="beneficiaries"
-			@assistanceLoaded="assistanceLoaded"
+			:assistance="assistance"
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
@@ -26,6 +27,7 @@
 			export-button
 			add-button
 			isAssistanceDetail
+			:assistance="assistance"
 			:custom-columns="columns"
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
@@ -62,7 +64,7 @@ export default {
 
 	data() {
 		return {
-			target: "",
+			assistance: null,
 			beneficiaries: 0,
 			// TODO calculate progress and amountDistributed
 			assistanceProgress: 20,
@@ -76,7 +78,6 @@ export default {
 				{ key: "distributed" },
 				{ key: "value" },
 			],
-			selectedBeneficiaries: [],
 		};
 	},
 
@@ -89,20 +90,25 @@ export default {
 		},
 
 		totalAmount() {
-			if (this.$refs.beneficiariesList) {
-				return this.$refs.beneficiariesList.table.total * this.commodity[0].value;
+			if (this.$refs.beneficiaries && this.commodity[0]?.value) {
+				return this.$refs.beneficiaries.table.total * this.commodity[0].value;
 			}
 			return null;
 		},
 	},
 
-	async mounted() {
-		await this.fetchCommodity();
+	mounted() {
+		this.fetchAssistance();
+		this.fetchCommodity();
 	},
 
 	methods: {
-		assistanceLoaded(assistance) {
-			this.target = assistance.target;
+		async fetchAssistance() {
+			return AssistancesService.getDetailOfAssistance(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.assistance = data;
+			});
 		},
 
 		onRowsCheck(rows) {
@@ -148,6 +154,18 @@ export default {
 					});
 				},
 			});
+		},
+
+		async fetchData() {
+			return AssistancesService.getListOfBeneficiaries(
+				this.$route.params.assistanceId,
+				null,
+				this.$refs.beneficiaries.table.totalCount,
+			)
+				.then(async ({ data }) => data)
+				.catch((e) => {
+					Notification(`Beneficiaries ${e}`, "is-danger");
+				});
 		},
 	},
 };

@@ -215,7 +215,7 @@ export default {
 			await CountrySpecificOptionsService.deleteCountrySpecificOption(id)
 				.then((response) => {
 					if (response.status === 204) {
-						Toast("Country Specific Option successfully removed", "is-success");
+						Toast("Country Specific Option Successfully Removed", "is-success");
 						this.$refs.countrySpecificOptionList.removeFromList(id);
 					}
 				}).catch((e) => {

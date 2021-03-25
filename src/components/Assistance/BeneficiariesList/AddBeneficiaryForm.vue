@@ -3,10 +3,10 @@
 		<section class="modal-card-body">
 			<p v-if="!formModel.removingId" class="mb-5">
 				Please select the beneficiaries that you want to add to the
-				<strong>{{ assistanceName }}</strong> distribution.
+				<strong>{{ assistance.name }}</strong> distribution.
 			</p>
 			<p v-if="formModel.removingId" class="mb-5">
-				You Are About To Remove This Beneficiary From <strong>{{ assistanceName }}</strong>
+				You Are About To Remove This Beneficiary From <strong>{{ assistance.name }}</strong>
 				Distribution<br>Do You Wish To Continue?
 			</p>
 			<b-field
@@ -70,7 +70,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import validation from "@/mixins/validation";
@@ -84,6 +83,7 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		assistance: Object,
 	},
 
 	validations: {
@@ -112,14 +112,6 @@ export default {
 		this.formModel.beneficiaries = [];
 	},
 
-	computed: {
-		...mapState(["temporaryAssistance"]),
-
-		assistanceName() {
-			return this.temporaryAssistance?.name;
-		},
-	},
-
 	methods: {
 		submitForm() {
 			this.$v.$touch();
@@ -134,9 +126,8 @@ export default {
 
 		async fetchBeneficiariesByProject() {
 			const { projectId } = this.$route.params;
-			const { target } = this.temporaryAssistance;
 
-			await BeneficiariesService.getBeneficiariesByProject(projectId, target.toLowerCase())
+			await BeneficiariesService.getBeneficiariesByProject(projectId, this.assistance.target)
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {

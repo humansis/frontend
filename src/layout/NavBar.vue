@@ -158,8 +158,8 @@ export default {
 
 			await TranslationService.getTranslations(language.key).then((response) => {
 				if (response.status === 200) {
-					this.$i18n.locale = language.key;
-					this.$i18n.fallbackLocale = language.key;
+					this.$i18n.locale = language.key.toLowerCase();
+					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
 					this.updateLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
@@ -194,7 +194,6 @@ export default {
 
 		async fetchLanguages() {
 			if (!sessionStorage.getItem("languages")) {
-				// TODO Get languages from API
 				const languages = [
 					{ name: "EN", key: "en" },
 					{ name: "AR", key: "ar" },
