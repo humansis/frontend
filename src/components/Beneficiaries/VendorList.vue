@@ -34,6 +34,11 @@
 					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
+					<ActionButton
+						icon="hand-holding-usd"
+						tooltip="Show Vendor Summary"
+						@click.native="showSummary(props.row.id)"
+					/>
 				<ActionButton
 					v-if="userCan.addEditVendors"
 					icon="edit"
@@ -162,6 +167,10 @@ export default {
 					});
 					this.reload();
 				});
+		},
+
+		showSummary(id) {
+			this.$emit("onShowSummary", id);
 		},
 
 		async getLocations(vendors) {
