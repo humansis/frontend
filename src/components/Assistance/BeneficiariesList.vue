@@ -12,6 +12,7 @@
 				close-button
 				submit-button-label="Confirm"
 				:formModel="addBeneficiaryModel"
+				:assistance="assistance"
 				@addingSubmitted="submitAddBeneficiaryForm"
 				@removingSubmitted="removeBeneficiaryFromAssistance"
 				@formClosed="closeAddBeneficiaryModal"
@@ -146,6 +147,7 @@ export default {
 	name: "BeneficiariesList",
 
 	props: {
+		assistance: Object,
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,

@@ -29,26 +29,6 @@ export default {
 		}
 	},
 
-	addAssistanceToState: ({ commit }, assistance) => {
-		if (assistance) {
-			commit(CONST.UPDATE_ASSISTANCE, assistance);
-		}
-	},
-
-	addProjectToState: ({ commit }, project) => {
-		if (project) {
-			commit(CONST.UPDATE_PROJECT, project);
-		}
-	},
-
-	removeAssistanceFromState: ({ commit }) => {
-		commit(CONST.UPDATE_ASSISTANCE, null);
-	},
-
-	removeProjectFromState: ({ commit }) => {
-		commit(CONST.UPDATE_PROJECT, null);
-	},
-
 	loadIconsToState: ({ commit }, icons) => {
 		commit(CONST.LOAD_ICONS, icons);
 	},
