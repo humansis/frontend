@@ -537,7 +537,7 @@ export default {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
-					Notification(`Residence Status ${e}`, "is-danger");
+					Notification(`Residence Statuses ${e}`, "is-danger");
 				});
 
 			this.residenceStatusesLoading = false;

@@ -318,7 +318,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					Notification(`Residence Status ${e}`, "is-danger");
+					Notification(`Residence Statuses ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;

@@ -331,7 +331,7 @@ export default {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`NationalIds ${e}`, "is-danger");
+					Notification(`National IDs ${e}`, "is-danger");
 				});
 		},
 
@@ -388,7 +388,7 @@ export default {
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
+					Notification(`Beneficiary ${e}`, "is-danger");
 				});
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
