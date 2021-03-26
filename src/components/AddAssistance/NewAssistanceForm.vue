@@ -144,6 +144,7 @@ import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 
 export default {
 	name: "NewAssistanceForm",
@@ -190,8 +191,13 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchSectors();
+	watch: {
+		formModel: "mapTargets",
+	},
+
+	async mounted() {
+		await this.fetchSectors();
+		await this.mapTargets();
 	},
 
 	updated() {
@@ -199,6 +205,28 @@ export default {
 	},
 
 	methods: {
+		async mapTargets() {
+			const { sector, subsector, assistanceType, targetType } = this.formModel;
+			if (sector && typeof sector !== "object") {
+				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
+				await this.fetchSubsectors(sector);
+			}
+			if (subsector && typeof subsector !== "object") {
+				this.formModel.subsector = getArrayOfCodeListByKey([subsector], this.options.subsectors, "code");
+				await this.fetchAssistanceTypes(subsector);
+			} else {
+				await this.fetchAssistanceTypes(subsector);
+			}
+			if (assistanceType && typeof assistanceType !== "object") {
+				this.formModel.assistanceType = getArrayOfCodeListByKey([assistanceType], this.options.assistanceTypes, "code");
+				await this.fetchTargetTypes(assistanceType);
+			}
+			if (targetType && typeof targetType !== "object") {
+				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
+			}
+			await this.showComponents();
+		},
+
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();

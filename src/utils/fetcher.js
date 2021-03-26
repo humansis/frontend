@@ -93,6 +93,33 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	return getResponseJSON(response);
 };
 
+export const upload = async ({ uri, auth = true, method, body }) => {
+	const url = `${CONST.API}/${uri}`;
+
+	const headers = {};
+
+	if (auth) {
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		if (user?.authdata) {
+			headers.Authorization = `Basic ${user.authdata}`;
+		}
+	}
+
+	const country = getters.getCountryFromLocalStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
+
+	const config = { headers };
+
+	config.method = method;
+
+	config.body = body;
+
+	const response = await fetch(url, config);
+
+	return getResponseJSON(response);
+};
+
 export const filtersToUri = (filters) => {
 	let query = "";
 	Object.keys(filters).forEach((key) => {

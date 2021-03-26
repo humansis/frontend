@@ -50,13 +50,6 @@
 					/>
 				</div>
 			</b-table-column>
-			<template #export>
-				<ExportButton
-					type="is-primary"
-					space-between
-					:formats="{ xlsx: true, csv: true, ods: true}"
-				/>
-			</template>
 		</Table>
 	</div>
 </template>
@@ -64,19 +57,17 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import ExportButton from "@/components/ExportButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ProductsService from "@/services/ProductsService";
+import ProductService from "@/services/ProductService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "ProductsList",
+	name: "ProductList",
 
 	components: {
-		ExportButton,
 		ColumnField,
 		SafeDelete,
 		Table,
@@ -131,7 +122,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await ProductsService.getListOfProducts(
+			await ProductService.getListOfProducts(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",

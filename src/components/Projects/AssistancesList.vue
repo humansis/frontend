@@ -71,6 +71,7 @@
 					icon="copy"
 					type="is-dark"
 					tooltip="Duplicate"
+					@click.native="duplicate(props.row.id)"
 				/>
 			</div>
 		</b-table-column>
@@ -300,6 +301,10 @@ export default {
 					},
 				});
 			}
+		},
+
+		duplicate(id) {
+			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
 		exportAssistance(format) {
