@@ -36,7 +36,6 @@
 
 		<ProjectList
 			ref="projectList"
-			:project-model="projectModel"
 			@onShowDetail="showDetail"
 			@onEdit="editProject"
 			@onDelete="onProjectDelete"

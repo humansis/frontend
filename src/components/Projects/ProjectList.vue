@@ -69,10 +69,6 @@ import DonorService from "@/services/DonorService";
 export default {
 	name: "ProjectList",
 
-	props: {
-		projectModel: Object,
-	},
-
 	mixins: [grid, baseHelper],
 
 	components: {

@@ -55,7 +55,7 @@ const routes = [
 			},
 			{
 				path: "/projects",
-				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project/ProjectsView"),
+				component: { render(c) { return c("router-view"); } },
 				meta: {
 					breadcrumb: "Projects",
 				},
@@ -63,14 +63,14 @@ const routes = [
 					{
 						path: "",
 						name: "Projects",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectPage"),
+						component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects"),
 						meta: {
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
 					{
 						path: "/project/:projectId",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectView"),
+						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: "Project",
 						},
@@ -118,11 +118,15 @@ const routes = [
 
 			{
 				path: "/beneficiaries",
-				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/BeneficiariesView"),
+				redirect: { name: "Households" },
+				component: { render(c) { return c("router-view"); } },
+				meta: {
+					breadcrumb: "Beneficiaries",
+				},
 				children: [
 					{
 						path: "households",
-						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/HouseholdsView"),
+						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: "Households",
 							parent: "Beneficiaries",
