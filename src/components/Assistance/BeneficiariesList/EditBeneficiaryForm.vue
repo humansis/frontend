@@ -26,10 +26,7 @@
 			</b-field>
 
 			<b-field label="Add A Referral Type">
-				<b-checkbox
-					v-model="addAReferral"
-					:disabled="disabled"
-				/>
+				<b-checkbox v-model="addAReferral" :disabled="disabled" />
 			</b-field>
 
 			<b-field v-if="addAReferral" label="Referral Type">
@@ -43,17 +40,11 @@
 			</b-field>
 
 			<b-field v-if="addAReferral" label="Comment">
-				<b-input
-					v-model="formModel.comment"
-					:disabled="disabled"
-				/>
+				<b-input v-model="formModel.comment" :disabled="disabled" />
 			</b-field>
 
 			<b-field label="Justification For Adding">
-				<b-input
-					v-model="formModel.justificationForAdding"
-					disabled
-				/>
+				<b-input v-model="formModel.justificationForAdding" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">

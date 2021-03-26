@@ -1,49 +1,47 @@
 <template>
-	<div>
-		<Table
-			has-search
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:backend-searching="false"
-			:backend-sorting="false"
-			:backend-pagination="false"
-			:columns="table.visibleColumns"
-			@clicked="showDetail"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					v-slot="props"
-					sortable
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
+	<Table
+		has-search
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		:backend-searching="false"
+		:backend-sorting="false"
+		:backend-pagination="false"
+		:columns="table.visibleColumns"
+		@clicked="showDetail"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
 				v-slot="props"
-				label="Actions"
-				width="100"
-				centered
+				sortable
+				:key="column.id"
 			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						tooltip="Edit"
-						@click.native="showEdit(props.row.id)"
-					/>
-				</div>
+				<ColumnField :column="column" :data="props" />
 			</b-table-column>
-		</Table>
-	</div>
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			width="100"
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					tooltip="Edit"
+					@click.native="showEdit(props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+	</Table>
 </template>
 
 <script>

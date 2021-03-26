@@ -1,62 +1,60 @@
 <template>
-	<div>
-		<b-collapse class="card" animation="slide" aria-id="selectionCriteriaGroup">
-			<template #trigger="props">
-				<div
-					class="card-header"
-					role="button"
-					aria-controls="selectionCriteriaGroup"
-				>
-					<p class="card-header-title">
-						{{ groupName }}
-					</p>
-					<a class="card-header-icon">
-						<b-icon :icon="props.open ? 'arrow-down' : 'arrow-up'" />
-					</a>
-				</div>
-			</template>
-			<div class="card-content">
-				<div class="content">
-					<Table
-						:paginated="false"
-						:data="criteriaGroups"
-					>
-						<template v-for="(column) in table.columns">
-							<b-table-column
-								sortable
-								centered
-								v-bind="column"
-								:key="column.id"
-								v-slot="props"
-							>
-								<ColumnField :data="props" :column="column" />
-							</b-table-column>
-						</template>
-						<b-table-column v-slot="props" label="Actions">
-							<ActionButton
-								icon="trash"
-								centered
-								type="is-danger"
-								tooltip="Delete"
-								@click.native="remove(props.index)"
-							/>
-						</b-table-column>
-					</Table>
-				</div>
+	<b-collapse class="card" animation="slide" aria-id="selectionCriteriaGroup">
+		<template #trigger="props">
+			<div
+				class="card-header"
+				role="button"
+				aria-controls="selectionCriteriaGroup"
+			>
+				<p class="card-header-title">
+					{{ groupName }}
+				</p>
+				<a class="card-header-icon">
+					<b-icon :icon="props.open ? 'arrow-down' : 'arrow-up'" />
+				</a>
 			</div>
-			<footer class="card-footer">
-				<a class="card-footer-item" @click="addCriteria">
-					Add
-				</a>
-				<a class="card-footer-item" @click="showDetail">
-					{{ count }} {{ targetType }}
-				</a>
-				<a class="card-footer-item" @click="removeGroup">
-					Remove
-				</a>
-			</footer>
-		</b-collapse>
-	</div>
+		</template>
+		<div class="card-content">
+			<div class="content">
+				<Table
+					:paginated="false"
+					:data="criteriaGroups"
+				>
+					<template v-for="(column) in table.columns">
+						<b-table-column
+							sortable
+							centered
+							v-bind="column"
+							:key="column.id"
+							v-slot="props"
+						>
+							<ColumnField :data="props" :column="column" />
+						</b-table-column>
+					</template>
+					<b-table-column v-slot="props" label="Actions">
+						<ActionButton
+							icon="trash"
+							centered
+							type="is-danger"
+							tooltip="Delete"
+							@click.native="remove(props.index)"
+						/>
+					</b-table-column>
+				</Table>
+			</div>
+		</div>
+		<footer class="card-footer">
+			<a class="card-footer-item" @click="addCriteria">
+				Add
+			</a>
+			<a class="card-footer-item" @click="showDetail">
+				{{ count }} {{ targetType }}
+			</a>
+			<a class="card-footer-item" @click="removeGroup">
+				Remove
+			</a>
+		</footer>
+	</b-collapse>
 </template>
 
 <script>

@@ -1,27 +1,25 @@
 <template>
-	<div>
-		<Table
-			has-search
-			has-reset-sort
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
-				</b-table-column>
-			</template>
-		</Table>
-	</div>
+	<Table
+		has-search
+		has-reset-sort
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
+			<b-table-column v-bind="column" sortable :key="column.id">
+				<template v-slot="props">
+					{{ props.row[column.field] }}
+				</template>
+			</b-table-column>
+		</template>
+	</Table>
 </template>
 
 <script>

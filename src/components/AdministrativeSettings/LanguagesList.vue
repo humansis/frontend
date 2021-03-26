@@ -1,45 +1,43 @@
 <template>
-	<div>
-		<Table
-			has-search
-			has-reset-sort
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					sortable
-					v-bind="column"
-					v-slot="props"
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
+	<Table
+		has-search
+		has-reset-sort
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				sortable
+				v-bind="column"
 				v-slot="props"
-				label="Actions"
-				centered
+				:key="column.id"
 			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-				</div>
+				<ColumnField :column="column" :data="props" />
 			</b-table-column>
-		</Table>
-	</div>
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+	</Table>
 </template>
 
 <script>

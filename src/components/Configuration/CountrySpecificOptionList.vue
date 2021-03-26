@@ -1,66 +1,64 @@
 <template>
-	<div>
-		<Table
-			has-reset-sort
-			has-search
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
+	<Table
+		has-reset-sort
+		has-search
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
+				:sortable="column.sortable"
+				:key="column.id"
 				v-slot="props"
-				label="Actions"
-				width="150"
-				visible
-				centered
 			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						tooltip="Edit"
-						@click.native="showEdit(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="Country Specific Option"
-						tooltip="Delete"
-						:id="props.row.id"
-						@submitted="remove"
-					/>
-				</div>
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
-			<template #export>
-				<ExportButton
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			width="150"
+			visible
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
 					type="is-primary"
-					space-between
-					:formats="{ xlsx: true, csv: true, ods: true}"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
 				/>
-			</template>
-		</Table>
-	</div>
+				<ActionButton
+					icon="edit"
+					tooltip="Edit"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					entity="Country Specific Option"
+					tooltip="Delete"
+					:id="props.row.id"
+					@submitted="remove"
+				/>
+			</div>
+		</b-table-column>
+		<template #export>
+			<ExportButton
+				type="is-primary"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+			/>
+		</template>
+	</Table>
 </template>
 
 <script>
