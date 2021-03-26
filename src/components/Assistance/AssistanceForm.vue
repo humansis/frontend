@@ -8,7 +8,7 @@
 			<LocationForm
 				v-if="!editing"
 				ref="locationForm"
-				:form-disabled="true"
+				:form-disabled
 				:form-model="formModel"
 			/>
 

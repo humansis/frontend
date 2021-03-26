@@ -4,7 +4,7 @@
 		<Modal
 			is-small
 			:active="countryModal.isOpened"
-			:can-cancel="true"
+			:can-cancel
 			:header="modalHeader"
 			:is-waiting="countryModal.isWaiting"
 			@close="closeCountryModal"

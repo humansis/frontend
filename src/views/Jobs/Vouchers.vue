@@ -11,7 +11,7 @@
 				close-button
 				class="modal-card"
 				:formModel="voucherModel"
-				:form-disabled="true"
+				:form-disabled
 				@formClosed="closeVoucherModal"
 			/>
 		</Modal>

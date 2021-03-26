@@ -2,7 +2,7 @@
 	<div>
 		<Modal
 			:active="donorModal.isOpened"
-			:can-cancel="true"
+			:can-cancel
 			:header="modalHeader"
 			:is-waiting="donorModal.isWaiting"
 			@close="closeDonorModal"

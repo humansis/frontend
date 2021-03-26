@@ -11,7 +11,7 @@
 				close-button
 				class="modal-card"
 				:formModel="importModel"
-				:form-disabled="true"
+				:form-disabled
 				@formClosed="closeImportModal"
 			/>
 		</Modal>

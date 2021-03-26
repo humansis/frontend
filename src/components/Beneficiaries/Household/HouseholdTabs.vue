@@ -21,7 +21,7 @@
 					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
-					:is-household-head="true"
+					:is-household-head
 				/>
 			</b-step-item>
 
@@ -39,10 +39,7 @@
 					:is-editing="isEditing"
 				/>
 			</b-step-item>
-			<template
-				v-if="true"
-				#navigation="{previous, next}"
-			>
+			<template #navigation="{previous, next}">
 				<div class="buttons flex-end">
 					<b-button
 						v-show="!previous.disabled"
