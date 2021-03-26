@@ -83,7 +83,7 @@ export default {
 			assistanceBody: {
 				dateDistribution: "",
 				description: "",
-				householdTargeted: null,
+				householdsTargeted: null,
 				individualsTargeted: null,
 				projectId: Number(this.$route.params.projectId),
 				target: "",
@@ -196,7 +196,16 @@ export default {
 					modality,
 				});
 			});
-			this.$refs.distributedCommodity.table.data.push(...preparedCommodities);
+			if (this.$refs.distributedCommodity) {
+				this.$refs.distributedCommodity.table.data.push(...preparedCommodities);
+			}
+			if (this.$refs.activityDetails) {
+				this.$refs.activityDetails.formModel = {
+					activityDescription: assistance.description || "",
+					householdsTargeted: assistance.householdsTargeted || 0,
+					individualsTargeted: assistance.individualsTargeted || 0,
+				};
+			}
 		},
 
 		targetSelected(targetType) {
@@ -267,14 +276,14 @@ export default {
 		fetchActivityDetails(data) {
 			const {
 				activityDescription: description,
-				householdsTargeted: householdTargeted,
+				householdsTargeted,
 				individualsTargeted,
 			} = data;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
 				description,
-				householdTargeted,
+				householdsTargeted,
 				individualsTargeted,
 			};
 		},
