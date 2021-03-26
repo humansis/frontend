@@ -19,9 +19,9 @@
 				<HouseholdHeadForm
 					ref="householdHeadForm"
 					show-type-of-beneficiary
+					is-household-head
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
-					:is-household-head
 				/>
 			</b-step-item>
 

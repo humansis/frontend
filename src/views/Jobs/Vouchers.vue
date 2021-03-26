@@ -10,8 +10,8 @@
 			<VoucherForm
 				close-button
 				class="modal-card"
+				form-disabled
 				:formModel="voucherModel"
-				:form-disabled
 				@formClosed="closeVoucherModal"
 			/>
 		</Modal>

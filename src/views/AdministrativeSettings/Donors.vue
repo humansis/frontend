@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<Modal
+			can-cancel
 			:active="donorModal.isOpened"
-			:can-cancel
 			:header="modalHeader"
 			:is-waiting="donorModal.isWaiting"
 			@close="closeDonorModal"

@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<Modal
+			can-cancel
+			is-small
 			:active="userModal.isOpened"
-			:can-cancel
 			:header="modalHeader"
 			:is-waiting="userModal.isWaiting"
-			is-small
 			@close="closeUserModal"
 		>
 			<UserForm

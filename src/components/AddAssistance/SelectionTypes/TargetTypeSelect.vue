@@ -43,7 +43,7 @@
 					placeholder="Click to select..."
 					group-values="data"
 					group-label="label"
-					:group-select
+					group-select
 					:options="options.institutions"
 					:loading="loading.institutions"
 					:class="validateMultiselect('institutions')"

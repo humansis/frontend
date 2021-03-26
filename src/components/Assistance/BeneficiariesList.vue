@@ -332,7 +332,7 @@ export default {
 				.getGeneralReliefForBeneficiaryInAssistance(
 					this.$route.params.assistanceId, beneficiaryId,
 				).then(({ data }) => data)
-				.catch(() => {
+				.catch((e) => {
 					Notification(`General Relief ${e}`, "is-danger");
 				});
 		},
