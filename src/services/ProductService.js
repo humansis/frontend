@@ -1,4 +1,4 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { fetcher, idsToUri, upload } from "@/utils/fetcher";
 
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
@@ -46,6 +46,18 @@ export default {
 	async removeProduct(id) {
 		const { data, status } = await fetcher({
 			uri: `products/${id}`, method: "DELETE",
+		});
+		return { data, status };
+	},
+
+	async uploadImage(id, image) {
+		const formData = new FormData();
+		formData.append("file", image);
+
+		const { data, status } = await upload({
+			uri: `products/${id}/images`,
+			method: "POST",
+			body: formData,
 		});
 		return { data, status };
 	},

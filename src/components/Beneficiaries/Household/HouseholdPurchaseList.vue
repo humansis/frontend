@@ -37,7 +37,7 @@ import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import ProductsService from "@/services/ProductsService";
+import ProductService from "@/services/ProductService";
 import baseHelper from "@/mixins/baseHelper";
 
 export default {
@@ -152,7 +152,7 @@ export default {
 
 		async getProducts(ids) {
 			if (!ids.length) return [];
-			return ProductsService.getProducts(ids)
+			return ProductService.getProducts(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`Products ${e}`, "is-danger");
