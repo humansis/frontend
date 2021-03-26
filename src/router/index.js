@@ -63,7 +63,7 @@ const routes = [
 					{
 						path: "",
 						name: "Projects",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects"),
+						component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
 						meta: {
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
@@ -77,8 +77,8 @@ const routes = [
 						children: [
 							{
 								path: "",
-								name: "ProjectDetail",
-								component: () => import(/* webpackChunkName: "ProjectList" */ "@/views/Project"),
+								name: "Project",
+								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 								meta: {
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
@@ -88,14 +88,14 @@ const routes = [
 								name: "Assistance",
 								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceUpdate"),
 								meta: {
-									breadcrumb: "Assistance",
+									breadcrumb: "Assistance Update",
 									description: "",
 								},
 							},
 							{
 								path: "assistance/detail/:assistanceId",
 								name: "AssistanceDetail",
-								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceDetail"),
+								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								meta: {
 									breadcrumb: "Assistance Detail",
 									description: "",
@@ -115,7 +115,6 @@ const routes = [
 					},
 				],
 			},
-
 			{
 				path: "/beneficiaries",
 				redirect: { name: "Households" },
@@ -135,7 +134,7 @@ const routes = [
 							{
 								path: "",
 								name: "Households",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/Households"),
+								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
@@ -143,7 +142,7 @@ const routes = [
 							{
 								path: "add",
 								name: "AddHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsAddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								meta: {
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
@@ -152,7 +151,7 @@ const routes = [
 							{
 								path: "import",
 								name: "ImportHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+								component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
 								meta: {
 									breadcrumb: "Import Household",
 									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
@@ -161,7 +160,7 @@ const routes = [
 							{
 								path: "edit/:householdId",
 								name: "EditHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsEditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								meta: {
 									breadcrumb: "Edit Household",
 									description: "",
@@ -170,7 +169,7 @@ const routes = [
 							{
 								path: "summary/:householdId",
 								name: "HouseholdInformationSummary",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								meta: {
 									breadcrumb: "Household Information Summary",
 									description: "",
@@ -182,7 +181,7 @@ const routes = [
 					{
 						path: "communities",
 						name: "Communities",
-						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
+						component: () => import(/* webpackChunkName: "Communities" */ "@/views/Beneficiaries/Communities"),
 						meta: {
 							breadcrumb: "Communities",
 							description: "",
@@ -191,7 +190,7 @@ const routes = [
 					{
 						path: "institutions",
 						name: "Institutions",
-						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/Institutions"),
+						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
 							breadcrumb: "Institutions",
 							description: "",
@@ -200,7 +199,7 @@ const routes = [
 					{
 						path: "vendors",
 						name: "Vendors",
-						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/Vendors"),
+						component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
 						meta: {
 							breadcrumb: "Vendors",
 							description: "",
@@ -234,7 +233,7 @@ const routes = [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/Products"),
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/Configuration/Products"),
 						meta: {
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -243,7 +242,7 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptions"),
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Configuration/CountrySpecificOptions"),
 						meta: {
 							breadcrumb: "Country Specifics",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",

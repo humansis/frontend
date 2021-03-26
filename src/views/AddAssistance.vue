@@ -163,7 +163,7 @@ export default {
 				if (status === 200) {
 					Toast("Assistance Successfully Created", "is-success");
 					this.$router.push({
-						name: "ProjectDetail",
+						name: "Project",
 						params: { projectId: this.$route.params.projectId },
 					});
 				}
@@ -225,7 +225,7 @@ export default {
 		},
 
 		goBack() {
-			this.$router.push({ name: "ProjectDetail",
+			this.$router.push({ name: "Project",
 				params: { projectId: this.$route.params.projectId },
 			});
 		},
