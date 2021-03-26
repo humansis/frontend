@@ -13,8 +13,9 @@
 		</h2>
 		<Modal
 			can-cancel
-			:active.sync="commodityModal.isOpened"
+			is-small
 			header="Create A New Commodity"
+			:active.sync="commodityModal.isOpened"
 			@close="closeCommodityModal"
 		>
 			<DistributedCommodityForm
@@ -131,8 +132,8 @@ export default {
 			const tableData = this.table.data.map((
 				{ modality, type, unit, currency, quantity, description, totalValueOfBooklet },
 			) => ({
-				modality: modality?.value,
-				type: type?.value,
+				modality: modality?.value || modality,
+				type: type?.value || type,
 				unit: unit || currency?.value,
 				quantity: quantity || totalValueOfBooklet,
 				description,
