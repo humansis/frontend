@@ -1,7 +1,9 @@
 <template>
 	<div>
-		<AssistanceSummary :beneficiaries="beneficiaries" @assistanceLoaded="assistanceLoaded" />
-
+		<AssistanceSummary
+			:beneficiaries="beneficiaries"
+			:assistance="assistance"
+		/>
 		<b-steps
 			v-model="activeStep"
 			animated
@@ -97,6 +99,7 @@ export default {
 
 	data() {
 		return {
+			assistance: null,
 			activeStep: 0,
 			target: "",
 			beneficiaries: 0,
@@ -104,7 +107,19 @@ export default {
 		};
 	},
 
+	mounted() {
+		this.fetchAssistance();
+	},
+
 	methods: {
+		async fetchAssistance() {
+			return AssistancesService.getDetailOfAssistance(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.assistance = data;
+			});
+		},
+
 		async validateAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
 
@@ -122,10 +137,6 @@ export default {
 			}).catch((e) => {
 				Toast(`Assistance ${e}`, "is-danger");
 			});
-		},
-
-		assistanceLoaded(assistance) {
-			this.target = assistance.target;
 		},
 
 		beneficiaryListChanged() {

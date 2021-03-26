@@ -226,7 +226,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 
@@ -273,7 +273,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Beneficiaries ${e}`, "is-danger");
+				Notification(`Beneficiaries ? ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -310,7 +310,8 @@ export default {
 			await this.prepareNationalIdForTable(nationalIdIds);
 
 			if (this.isAssistanceDetail) {
-				await this.findOutStatusAboutDistribution(beneficiaryIds);
+				// TODO Uncomment this after solving feneral relief
+				// await this.findOutStatusAboutDistribution(beneficiaryIds);
 			}
 		},
 
@@ -318,16 +319,11 @@ export default {
 			// If commodity === voucher
 			// If commodity === smardcard,
 			// If commodity === transaction,
-
 			// If commodity === sth else
 			await this.setGeneralRelief(beneficiaryIds);
 		},
 
-		setGeneralRelief(ids) {
-			ids.forEach((id) => {
-				console.log(this.getGeneralRelief(id));
-			});
-
+		setGeneralRelief() {
 			// TODO for every general relief (if is distributed) set this.table.checkedRows
 		},
 
@@ -337,7 +333,7 @@ export default {
 					this.$route.params.assistanceId, beneficiaryId,
 				).then(({ data }) => data)
 				.catch(() => {
-					// Notification(`General Relief ${e}`, "is-danger");
+					Notification(`General Relief ${e}`, "is-danger");
 				});
 		},
 

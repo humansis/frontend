@@ -1,16 +1,16 @@
 <template>
-	<div v-if="assistance" ref="assistanceSummary">
+	<div>
 		<h2 class="title is-flex is-justify-content-center is-align-items-center">
-			{{ assistance.name }}
+			{{ assistanceName }}
 			<b-icon
-				v-if="assistance.validated && !assistance.completed"
+				v-if="validated && !completed"
 				class="ml-3"
 				size="is-medium"
 				icon="lock"
 				type="is-warning"
 			/>
 			<b-icon
-				v-if="assistance.completed"
+				v-if="completed"
 				class="ml-3"
 				size="is-medium"
 				icon="check"
@@ -29,7 +29,9 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">Beneficiaries</p>
-					<p v-if="beneficiaries" class="has-text-weight-bold is-size-5">{{ beneficiaries }}</p>
+					<p v-if="beneficiaries" class="has-text-weight-bold is-size-5">{{
+						beneficiariesCount }}
+					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -38,10 +40,10 @@
 				<div class="box">
 					<p class="heading">Date Of Distribution</p>
 					<p
-						v-if="assistance.dateDistribution"
+						v-if="dateDistribution"
 						class="has-text-weight-bold is-size-5"
 					>
-						{{ assistance.dateDistribution }}
+						{{ dateDistribution }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -110,7 +112,7 @@ export default {
 		return {
 			project: null,
 			province: null,
-			commodity: [],
+			commodity: null,
 		};
 	},
 
@@ -121,22 +123,36 @@ export default {
 	},
 
 	computed: {
+		assistanceName() {
+			return this.assistance?.name || "";
+		},
+
 		assistanceTarget() {
 			return normalizeText(this.assistance?.target);
 		},
 
 		provinceName() {
-			if (this.province) {
-				return this.province.name;
-			}
-			return "";
+			return this.province?.name || "";
 		},
 
 		projectName() {
-			if (this.project) {
-				return this.project.name;
-			}
-			return "";
+			return this.project?.name || "";
+		},
+
+		validated() {
+			return this.assistance?.validated;
+		},
+
+		completed() {
+			return this.assistance?.completed;
+		},
+
+		dateDistribution() {
+			return this.assistance?.dateDistribution || "";
+		},
+
+		beneficiariesCount() {
+			return this.beneficiaries;
 		},
 	},
 

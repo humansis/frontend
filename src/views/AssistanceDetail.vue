@@ -1,8 +1,6 @@
 <template>
 	<div>
 		<AssistanceSummary
-			v-if="assistance"
-			ref="assistanceSummary"
 			:beneficiaries="beneficiaries"
 			:assistance="assistance"
 		/>
@@ -91,7 +89,7 @@ export default {
 
 		totalAmount() {
 			if (this.$refs.beneficiaries && this.commodity[0]?.value) {
-				return this.$refs.beneficiaries.table.total * this.commodity[0].value;
+				return this.$refs.beneficiaries.table.total * this.commodity[0]?.value;
 			}
 			return null;
 		},
@@ -118,7 +116,6 @@ export default {
 
 		setGeneralReliefItemAsDistributed() {
 			// TODO Set as Distributed for one one more Households, use this.selectedBnf
-			// TODO Then fetchData in ref component
 		},
 
 		async fetchCommodity() {
@@ -154,18 +151,6 @@ export default {
 					});
 				},
 			});
-		},
-
-		async fetchData() {
-			return AssistancesService.getListOfBeneficiaries(
-				this.$route.params.assistanceId,
-				null,
-				this.$refs.beneficiaries.table.totalCount,
-			)
-				.then(async ({ data }) => data)
-				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
-				});
 		},
 	},
 };
