@@ -27,41 +27,41 @@
 				@formClosed="closeCommodityModal"
 			/>
 		</Modal>
-		<div class="mb-2">
-			<Table
-				v-if="table.data.length"
-				:data="modifiedTableData"
-				:paginated="false"
-			>
-				<template v-for="column in table.columns">
-					<b-table-column v-bind="column" sortable :key="column.key">
-						<template v-slot="props">
-							{{ props.row[column.field] }}
-						</template>
-					</b-table-column>
-				</template>
-				<b-table-column
-					label="Actions"
-					v-slot="props"
-				>
-					<ActionButton
-						icon="trash"
-						type="is-danger"
-						tooltip="Delete"
-						@click.native="removeCommodity(props.index)"
-					/>
+
+		<Table
+			v-if="table.data.length"
+			class="mb-2"
+			:data="modifiedTableData"
+			:paginated="false"
+		>
+			<template v-for="column in table.columns">
+				<b-table-column v-bind="column" sortable :key="column.key">
+					<template v-slot="props">
+						{{ props.row[column.field] }}
+					</template>
 				</b-table-column>
-			</Table>
-			<b-notification
-				v-else
-				type="is-light"
-				has-icon
-				icon="eye-slash"
-				:closable="false"
+			</template>
+			<b-table-column
+				label="Actions"
+				v-slot="props"
 			>
-				<p class="mt-3">No data</p>
-			</b-notification>
-		</div>
+				<ActionButton
+					icon="trash"
+					type="is-danger"
+					tooltip="Delete"
+					@click.native="removeCommodity(props.index)"
+				/>
+			</b-table-column>
+		</Table>
+		<b-notification
+			v-else
+			type="is-light"
+			has-icon
+			icon="eye-slash"
+			:closable="false"
+		>
+			<p class="mt-3">No data</p>
+		</b-notification>
 	</div>
 </template>
 

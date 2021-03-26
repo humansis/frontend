@@ -78,7 +78,7 @@ const routes = [
 							{
 								path: "",
 								name: "ProjectDetail",
-								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectDetail"),
+								component: () => import(/* webpackChunkName: "ProjectList" */ "@/views/Project"),
 								meta: {
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
