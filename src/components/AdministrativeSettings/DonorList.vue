@@ -74,7 +74,7 @@ import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
 
 export default {
-	name: "DonorsList",
+	name: "DonorList",
 
 	components: {
 		ExportButton,

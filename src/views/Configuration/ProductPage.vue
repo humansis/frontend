@@ -35,8 +35,8 @@
 			/>
 		</Modal>
 
-		<ProductsList
-			ref="productsList"
+		<ProductList
+			ref="ProductList"
 			@onRemove="onRemoveProduct"
 			@onShowEdit="editProduct"
 			@onShowDetail="showDetail"
@@ -46,17 +46,17 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/Configuration/ProductsList";
+import ProductList from "@/components/Configuration/ProductList";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
-import ProductsService from "@/services/ProductsService";
+import ProductService from "@/services/ProductService";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "ProductsPage",
+	name: "ProductPage",
 
 	components: {
-		ProductsList,
+		ProductList,
 		Modal,
 		ProductForm,
 	},
@@ -163,8 +163,8 @@ export default {
 				name,
 				image,
 				unit,
+				uploadedImage,
 			} = productForm;
-
 			const productBody = {
 				name,
 				image,
@@ -173,20 +173,21 @@ export default {
 			};
 
 			if (this.productModal.isEditing && id) {
-				this.updateProduct(id, productBody);
+				this.updateProduct(id, productBody, uploadedImage);
 			} else {
-				this.createProduct(productBody);
+				this.createProduct(productBody, uploadedImage);
 			}
 		},
 
 		// TODO Fix after we have image handler, crashes on image
-		async createProduct(productBody) {
+		async createProduct(productBody, image) {
 			this.productModal.isWaiting = true;
 
-			await ProductsService.createProduct(productBody).then((response) => {
-				if (response.status === 200) {
+			await ProductService.createProduct(productBody).then(async ({ data, status }) => {
+				if (status === 200) {
+					await this.uploadImage(data.id, image);
 					Toast("Product Successfully Created", "is-success");
-					this.$refs.productsList.fetchData();
+					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
@@ -196,13 +197,14 @@ export default {
 		},
 
 		// TODO Fix after we have image handler, crashes on image
-		async updateProduct(id, productBody) {
+		async updateProduct(id, productBody, image) {
 			this.productModal.isWaiting = true;
 
-			await ProductsService.updateProduct(id, productBody).then((response) => {
-				if (response.status === 200) {
+			await ProductService.updateProduct(id, productBody).then(async ({ data, status }) => {
+				if (status === 200) {
+					await this.uploadImage(data.id, image);
 					Toast("Product Successfully Updated", "is-success");
-					this.$refs.productsList.fetchData();
+					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
@@ -211,11 +213,18 @@ export default {
 			});
 		},
 
+		async uploadImage(id, image) {
+			console.log(image);
+			if (image) {
+				await ProductService.uploadImage(id, image);
+			}
+		},
+
 		async onRemoveProduct(id) {
-			await ProductsService.removeProduct(id).then((response) => {
-				if (response.status === 204) {
+			await ProductService.removeProduct(id).then(({ status }) => {
+				if (status === 204) {
 					Toast("Product Successfully Removed", "is-success");
-					this.$refs.productsList.removeFromList(id);
+					this.$refs.ProductList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`Product ${e}`, "is-danger");

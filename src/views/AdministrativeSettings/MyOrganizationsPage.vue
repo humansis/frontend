@@ -133,27 +133,29 @@ export default {
 				primaryColor,
 				secondaryColor,
 				footerContent,
+				logo,
 				uploadedImage,
 			} = myOrganizationForm;
 
 			const myOrganizationBody = {
 				name,
-				logo: uploadedImage,
+				logo,
 				font: font.code,
 				primaryColor,
 				secondaryColor,
 				footerContent,
 			};
 
-			this.updateMyOrganization(id, myOrganizationBody);
+			this.updateMyOrganization(id, myOrganizationBody, uploadedImage);
 		},
 
-		async updateMyOrganization(id, myOrganizationBody) {
+		async updateMyOrganization(id, myOrganizationBody, image) {
 			this.myOrganizationModal.isWaiting = true;
 
 			await MyOrganizationsService.updateMyOrganization(id, myOrganizationBody)
-				.then((response) => {
-					if (response.status === 200) {
+				.then(async ({ data, status }) => {
+					if (status === 200) {
+						await this.uploadImage(data.id, image);
 						Toast("My Organization Successfully Updated", "is-success");
 						this.$refs.myOrganizationsList.fetchData();
 						this.closeMyOrganizationModal();
@@ -162,6 +164,12 @@ export default {
 					Toast(`Organization ${e}`, "is-danger");
 					this.myOrganizationModal.isWaiting = false;
 				});
+		},
+
+		async uploadImage(id, image) {
+			if (image) {
+				await MyOrganizationsService.uploadImage(id, image);
+			}
 		},
 
 		async printMyOrganization(id) {

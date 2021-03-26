@@ -34,13 +34,13 @@
 					class="file"
 				>
 					<b-upload
-						v-model="uploadedImage"
+						v-model="formModel.uploadedImage"
 						expanded
 					>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ uploadedImage ? uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
 							</span>
 						</a>
 					</b-upload>
@@ -83,12 +83,6 @@ export default {
 
 	mixins: [Validation],
 
-	data() {
-		return {
-			uploadedImage: null,
-		};
-	},
-
 	props: {
 		formModel: Object,
 		submitButtonLabel: String,
@@ -107,11 +101,6 @@ export default {
 
 	methods: {
 		submitForm() {
-			if (this.uploadedImage) {
-				// TODO uncomment and delete after upload image
-				// this.formModel.image = this.uploadedImage;
-				this.formModel.image = "https://www.hello.com/img_/hellowithwaves.png";
-			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

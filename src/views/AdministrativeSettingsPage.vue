@@ -14,7 +14,7 @@
 				label="Donors"
 				icon="dollar-sign"
 			>
-				<DonorsPage />
+				<DonorPage />
 			</b-tab-item>
 
 			<b-tab-item
@@ -65,7 +65,7 @@
 
 <script>
 import UsersPage from "@/views/AdministrativeSettings/UsersPage";
-import DonorsPage from "@/views/AdministrativeSettings/DonorsPage";
+import DonorPage from "@/views/AdministrativeSettings/DonorPage";
 import MyOrganizationsPage from "@/views/AdministrativeSettings/MyOrganizationsPage";
 import OrganizationServicePage from "@/views/AdministrativeSettings/OrganizationServicePage";
 /*
@@ -87,7 +87,7 @@ export default {
 		*/
 		OrganizationServicePage,
 		MyOrganizationsPage,
-		DonorsPage,
+		DonorPage,
 		UsersPage,
 	},
 

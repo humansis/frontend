@@ -230,7 +230,7 @@ const routes = [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductsPage"),
+						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductPage"),
 						meta: {
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",

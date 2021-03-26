@@ -25,8 +25,8 @@
 		>
 			Add
 		</b-button>
-		<DonorsList
-			ref="donorsList"
+		<DonorList
+			ref="DonorList"
 			@onShowDetail="showDetail"
 			@onRemove="removeDonor"
 			@onShowEdit="editDonor"
@@ -35,19 +35,19 @@
 </template>
 
 <script>
-import DonorsList from "@/components/AdministrativeSettings/DonorsList";
+import DonorList from "@/components/AdministrativeSettings/DonorList";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import DonorService from "@/services/DonorService";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "DonorsPage",
+	name: "DonorPage",
 
 	components: {
 		Modal,
 		DonorForm,
-		DonorsList,
+		DonorList,
 	},
 
 	data() {
@@ -151,6 +151,7 @@ export default {
 				shortname,
 				logo,
 				notes,
+				uploadedImage,
 			} = donorForm;
 
 			const donorBody = {
@@ -161,40 +162,50 @@ export default {
 			};
 
 			if (this.donorModal.isEditing && id) {
-				this.updateDonor(id, donorBody);
+				this.updateDonor(id, donorBody, uploadedImage);
 			} else {
-				this.createDonor(donorBody);
+				this.createDonor(donorBody, uploadedImage);
 			}
 		},
 
-		async createDonor(donorBody) {
+		async createDonor(donorBody, image) {
 			this.donorModal.isWaiting = true;
 
-			await DonorService.createDonor(donorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Donor Successfully Created", "is-success");
-					this.$refs.donorsList.fetchData();
-					this.closeDonorModal();
-				}
-			}).catch((e) => {
-				Toast(`Donor ${e}`, "is-danger");
-				this.donorModal.isWaiting = false;
-			});
+			await DonorService.createDonor(donorBody)
+				.then(async ({ data, status }) => {
+					if (status === 200) {
+						await this.uploadImage(data.id, image);
+						Toast("Donor Successfully Created", "is-success");
+						this.$refs.DonorList.fetchData();
+						this.closeDonorModal();
+					}
+				}).catch((e) => {
+					Toast(`Donor ${e}`, "is-danger");
+					this.donorModal.isWaiting = false;
+				});
 		},
 
-		async updateDonor(id, donorBody) {
+		async updateDonor(id, donorBody, image) {
 			this.donorModal.isWaiting = true;
 
-			await DonorService.updateDonor(id, donorBody).then((response) => {
-				if (response.status === 200) {
-					Toast("Donor Successfully Updated", "is-success");
-					this.$refs.donorsList.fetchData();
-					this.closeDonorModal();
-				}
-			}).catch((e) => {
-				Toast(`Donor ${e}`, "is-danger");
-				this.donorModal.isWaiting = false;
-			});
+			await DonorService.updateDonor(id, donorBody)
+				.then(async ({ data, status }) => {
+					if (status === 200) {
+						await this.uploadImage(data.id, image);
+						Toast("Donor Successfully Updated", "is-success");
+						this.$refs.DonorList.fetchData();
+						this.closeDonorModal();
+					}
+				}).catch((e) => {
+					Toast(`Donor ${e}`, "is-danger");
+					this.donorModal.isWaiting = false;
+				});
+		},
+
+		async uploadImage(id, image) {
+			if (image) {
+				await DonorService.uploadImage(id, image);
+			}
 		},
 
 		async removeDonor(id) {
@@ -202,7 +213,7 @@ export default {
 				.then((response) => {
 					if (response.status === 204) {
 						Toast("Donor successfully removed", "is-success");
-						this.$refs.donorsList.removeFromList(id);
+						this.$refs.DonorList.removeFromList(id);
 					}
 				}).catch((e) => {
 					Toast(`Donor ${e}`, "is-danger");

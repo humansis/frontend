@@ -96,12 +96,6 @@ export default {
 
 	mixins: [Validation],
 
-	data() {
-		return {
-			uploadedImage: null,
-		};
-	},
-
 	props: {
 		formModel: Object,
 		submitButtonLabel: String,
@@ -120,9 +114,6 @@ export default {
 
 	methods: {
 		submitForm() {
-			if (this.uploadedImage) {
-				this.formModel.logo = this.uploadedImage;
-			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;
