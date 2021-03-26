@@ -135,7 +135,7 @@ const routes = [
 							{
 								path: "",
 								name: "Households",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdPage"),
+								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/Households"),
 								meta: {
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
@@ -182,7 +182,7 @@ const routes = [
 					{
 						path: "communities",
 						name: "Communities",
-						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunityPage"),
+						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/Communities"),
 						meta: {
 							breadcrumb: "Communities",
 							description: "",
@@ -191,7 +191,7 @@ const routes = [
 					{
 						path: "institutions",
 						name: "Institutions",
-						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/InstitutionPage"),
+						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
 							breadcrumb: "Institutions",
 							description: "",
@@ -200,7 +200,7 @@ const routes = [
 					{
 						path: "vendors",
 						name: "Vendors",
-						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorPage"),
+						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/Vendors"),
 						meta: {
 							breadcrumb: "Vendors",
 							description: "",
@@ -211,7 +211,7 @@ const routes = [
 			{
 				path: "/reports",
 				name: "Reports",
-				component: () => import(/* webpackChunkName: "Reports" */ "@/views/ReportsPage"),
+				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
 				meta: {
 					breadcrumb: "Reports",
 					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions...",
@@ -220,7 +220,7 @@ const routes = [
 			{
 				path: "/vouchers",
 				name: "Vouchers",
-				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/VouchersPage"),
+				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				meta: {
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
@@ -229,12 +229,12 @@ const routes = [
 			{
 				path: "/configuration",
 				name: "Configuration",
-				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/ConfigurationView"),
+				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductPage"),
+						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/Products"),
 						meta: {
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -243,7 +243,7 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptionPage"),
+						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptions"),
 						meta: {
 							breadcrumb: "Country Specifics",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -254,7 +254,7 @@ const routes = [
 			{
 				path: "/administrative-settings",
 				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettingsPage"),
+				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 				meta: {
 					breadcrumb: "Administrative Settings",
 					description: "This page is where you can manage users, donors and your organization's specifics",
@@ -263,7 +263,7 @@ const routes = [
 			{
 				path: "/transactions",
 				name: "Transactions",
-				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/TransactionsPage"),
+				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/Transactions"),
 				meta: {
 					breadcrumb: "Transactions",
 					description: "",

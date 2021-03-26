@@ -64,10 +64,10 @@
 </template>
 
 <script>
-import UsersPage from "@/views/AdministrativeSettings/UsersPage";
-import DonorPage from "@/views/AdministrativeSettings/DonorPage";
-import MyOrganizationsPage from "@/views/AdministrativeSettings/MyOrganizationsPage";
-import OrganizationServicePage from "@/views/AdministrativeSettings/OrganizationServicePage";
+import UsersPage from "@/views/AdministrativeSettings/Users";
+import DonorPage from "@/views/AdministrativeSettings/Donors";
+import MyOrganizationsPage from "@/views/AdministrativeSettings/MyOrganizations";
+import OrganizationServicePage from "@/views/AdministrativeSettings/OrganizationServices";
 /*
 import CountriesPage from "@/views/AdministrativeSettings/CountriesPage";
 import LanguagesPage from "@/views/AdministrativeSettings/LanguagesPage";
