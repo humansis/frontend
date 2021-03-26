@@ -259,7 +259,7 @@ export default {
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Vulnerability ${e}`, "is-danger");
+					Notification(`Vulnerabilities ${e}`, "is-danger");
 				});
 		},
 
@@ -270,7 +270,7 @@ export default {
 					this.filtersOptions.residencyStatuses.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Residence Status ${e}`, "is-danger");
+					Notification(`Residency Statuses ${e}`, "is-danger");
 				});
 		},
 

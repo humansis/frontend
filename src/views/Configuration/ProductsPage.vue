@@ -50,7 +50,7 @@ import ProductsList from "@/components/Configuration/ProductsList";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
 import ProductsService from "@/services/ProductsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "ProductsPage",
@@ -190,7 +190,7 @@ export default {
 					this.closeProductModal();
 				}
 			}).catch((e) => {
-				Notification(`Product ${e}`, "is-danger");
+				Toast(`Product ${e}`, "is-danger");
 				this.productModal.isWaiting = false;
 			});
 		},
@@ -206,7 +206,7 @@ export default {
 					this.closeProductModal();
 				}
 			}).catch((e) => {
-				Notification(`Product ${e}`, "is-danger");
+				Toast(`Product ${e}`, "is-danger");
 				this.productModal.isWaiting = false;
 			});
 		},
@@ -218,7 +218,7 @@ export default {
 					this.$refs.productsList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`Product ${e}`, "is-danger");
+				Toast(`Product ${e}`, "is-danger");
 			});
 		},
 	},

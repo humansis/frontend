@@ -78,9 +78,9 @@
 							</strong>
 						</div>
 						<div class="level-right mt-5">
-							<button class="button is-primary" @click="enableTwoFactor">
+							<b-button type="is-primary" @click="enableTwoFactor">
 								{{ twoFactorEnabled ? "Disable" : "Enable" }}
-							</button>
+							</b-button>
 						</div>
 					</section>
 				</section>
@@ -118,17 +118,17 @@ export default {
 
 	methods: {
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		submitPasswordForm() {
 			console.log("Password Submitted");
 		},
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		submitTelephoneForm() {
 			console.log("Telephone Submitted");
 		},
 
-		// TODO
+		// TODO After login and user profile update will be implemented by BE
 		enableTwoFactor() {
 			console.log("Two Factor");
 		},

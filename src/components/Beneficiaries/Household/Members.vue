@@ -18,12 +18,13 @@
 					<span class="ml-3">Member</span>
 				</p>
 				<a class="card-header-icon">
-					<button
-						class="button button is-danger is-light mr-4"
+					<b-button
+						type="is-danger"
+						class="is-light mr-4"
 						@click="removeMember(index)"
 					>
 						<b-icon icon="trash" />
-					</button>
+					</b-button>
 					<b-icon icon="arrow-down" />
 				</a>
 			</div>

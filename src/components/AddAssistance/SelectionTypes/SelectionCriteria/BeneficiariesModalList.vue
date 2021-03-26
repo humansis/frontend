@@ -1,4 +1,3 @@
-<!-- TODO implement -->
 <template>
 	<section class="modal-card-body">
 		<Search class="column is-two-fifths" @search="onSearch" />

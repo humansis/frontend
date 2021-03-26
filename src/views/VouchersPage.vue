@@ -224,7 +224,7 @@ export default {
 					this.$refs.voucherList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`Booklet ${e}`, "is-danger");
+				Toast(`Booklet ${e}`, "is-danger");
 			});
 		},
 	},

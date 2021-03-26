@@ -3,11 +3,12 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+// TODO Prepare auth system after login will be implemented by BE
 // https://blog.sqreen.com/authentication-best-practices-vue/
 // eslint-disable-next-line max-len
 // https://www.digitalocean.com/community/tutorials/how-to-set-up-vue-js-authentication-and-route-handling-using-vue-router
 // const ifAuthenticated = (to, from, next) => {
-// 	next(); // FIXME
+// 	next();
 //	 if (store.getters.isAuthenticated) {
 //	 	next()
 //	 	return
@@ -16,7 +17,7 @@ Vue.use(VueRouter);
 // };
 
 // const ifNotAuthenticated = (to, from, next) => {
-// 	next(); // FIXME
+// 	next();
 //	 if (!store.getters.isAuthenticated) {
 //	 	next()
 //	 	return

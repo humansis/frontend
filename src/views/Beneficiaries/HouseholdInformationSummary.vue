@@ -1,14 +1,14 @@
 <template>
 	<card-component>
 		<b-progress :value="100" />
-		<div class="subtitle has-text-centered has-text-weight-bold">Household Information Summary</div>
-		<div v-if="householdHead" class="has-text-centered has-text-weight-bold mb-6">
+		<h1 class="title has-text-centered has-text-weight-bold mb-6">Household Information Summary</h1>
+		<h2 v-if="householdHead" class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
 			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}
-		</div>
-		<div class="has-text-centered has-text-weight-bold mb-5">Current Address</div>
-		<div v-if="householdHead" class="has-text-centered">
+		</h2>
+		<h3 class="subtitle is-5 has-text-centered has-text-weight-bold mb-5">Current Address</h3>
+		<p v-if="householdHead" class="has-text-centered">
 			{{ `${address.number || ""}, ${address.street || ""}, ${address.postcode || ""}` }}
-		</div>
+		</p>
 		<b-tabs v-model="activeTab">
 			<b-tab-item label="Assistances">
 				<HouseholdAssistanceList />

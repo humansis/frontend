@@ -1,2 +1,2 @@
-// TODO Add permissions after they will be defined from BE
+// TODO Add permissions after BE will implement it
 export default {};

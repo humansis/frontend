@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<h1 class="title has-text-centered">Reports</h1>

@@ -250,8 +250,6 @@ export default {
 		},
 
 		async getDetailOfHousehold(id) {
-			// TODO Loading component
-
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {

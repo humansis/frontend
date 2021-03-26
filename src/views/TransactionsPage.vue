@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<div class="level">
@@ -26,19 +27,13 @@
 				</b-table-column>
 			</template>
 			<template #filterButton>
-				<div class="column">
-					<button
-						class="button"
-						slot="trigger"
-						@click="filtersToggle"
-					>
-						<span>Advanced search</span>
-						<b-icon
-							size="is-small"
-							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-						/>
-					</button>
-				</div>
+				<b-button
+					slot="trigger"
+					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					@click="filtersToggle"
+				>
+					Advanced search
+				</b-button>
 			</template>
 			<template #filter>
 				<b-collapse

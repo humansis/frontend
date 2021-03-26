@@ -75,14 +75,12 @@
 			</div>
 		</b-table-column>
 		<template v-if="!upcoming" #export>
-			<div class="column is-two-fifths">
-				<ExportButton
-					type="is-primary"
-					space-between
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportAssistance"
-				/>
-			</div>
+			<ExportButton
+				type="is-primary"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@exportData="exportAssistance"
+			/>
 		</template>
 		<template #progress>
 			<b-progress :value="table.progress" format="percent" />

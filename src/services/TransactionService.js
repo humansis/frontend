@@ -1,5 +1,5 @@
+// TODO Not used for now
 /* eslint-disable no-unused-vars */
-// TODO implement after transaction endpoint
 import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {

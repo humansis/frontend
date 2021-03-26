@@ -12,7 +12,7 @@
 						icon-left="plus"
 						slot="trigger"
 					>
-						<span>Create</span>
+						Create
 					</b-button>
 					<b-dropdown-item
 						:value="false"
@@ -146,29 +146,22 @@
 			</b-table-column>
 
 			<template #filterButton>
-				<div class="column">
-					<button
-						class="button"
-						slot="trigger"
-						@click="filtersToggle"
-					>
-						<span>Advanced search</span>
-						<b-icon
-							size="is-small"
-							:icon="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-						/>
-					</button>
-				</div>
+				<b-button
+					slot="trigger"
+					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					@click="filtersToggle"
+				>
+					Advanced search
+				</b-button>
 			</template>
 
 			<template #export>
-				<div class="column">
-					<ExportButton
-						space-between
-						:formats="{ xlsx: true, csv: true, ods: true}"
-						@exportData="exportHousehold"
-					/>
-				</div>
+				<ExportButton
+					class="ml-3"
+					space-between
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@exportData="exportHousehold"
+				/>
 			</template>
 
 			<template v-if="actionsButtonVisible" #actions>
