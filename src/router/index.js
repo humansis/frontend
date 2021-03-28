@@ -85,10 +85,10 @@ const routes = [
 							},
 							{
 								path: "assistance/:assistanceId",
-								name: "AssistanceUpdate",
-								component: () => import(/* webpackChunkName: "AssistanceUpdate" */ "@/views/AssistanceUpdate"),
+								name: "AssistanceEdit",
+								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
 								meta: {
-									breadcrumb: "Assistance Update",
+									breadcrumb: "Assistance Edit",
 									description: "",
 								},
 							},

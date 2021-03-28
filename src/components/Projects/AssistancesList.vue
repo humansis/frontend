@@ -295,7 +295,7 @@ export default {
 				this.showDetail(assistance);
 			} else {
 				this.$router.push({
-					name: "AssistanceUpdate",
+					name: "AssistanceEdit",
 					params: {
 						assistanceId: assistance.id,
 					},

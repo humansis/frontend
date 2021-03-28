@@ -140,11 +140,11 @@ export default {
 		},
 
 		validated() {
-			return !!this.assistance?.validated;
+			return this.assistance?.validated || false;
 		},
 
 		completed() {
-			return !!this.assistance?.completed;
+			return this.assistance?.completed || false;
 		},
 
 		dateDistribution() {
