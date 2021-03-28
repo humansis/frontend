@@ -140,11 +140,11 @@ export default {
 		},
 
 		validated() {
-			return this.assistance?.validated;
+			return !!this.assistance?.validated;
 		},
 
 		completed() {
-			return this.assistance?.completed;
+			return !!this.assistance?.completed;
 		},
 
 		dateDistribution() {
@@ -152,7 +152,7 @@ export default {
 		},
 
 		beneficiariesCount() {
-			return this.beneficiaries;
+			return this.beneficiaries || 0;
 		},
 	},
 

@@ -69,6 +69,7 @@
 		<Table
 			has-reset-sort
 			has-search
+			disable-prechecked-rows
 			:paginated="!table.customPerPage"
 			:data="table.data"
 			:total="table.total"
@@ -77,7 +78,6 @@
 			:is-loading="isLoadingList"
 			:checkable="isTableCheckable"
 			:checked-rows="table.checkedRows"
-			disable-prechecked-rows
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -273,7 +273,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Beneficiaries ? ${e}`, "is-danger");
+				Notification(`Beneficiaries ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

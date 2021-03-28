@@ -88,10 +88,7 @@ export default {
 		},
 
 		totalAmount() {
-			if (this.$refs.beneficiaries && this.commodity[0]?.value) {
-				return this.$refs.beneficiaries.table.total * this.commodity[0]?.value;
-			}
-			return null;
+			return this.$refs.beneficiariesList?.table.total * this.commodity?.[0]?.value ?? null;
 		},
 	},
 
