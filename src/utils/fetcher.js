@@ -39,7 +39,7 @@ export const getResponseJSON = async (response) => {
 	}
 
 	if (unauthorized) {
-		const redirect = Vue.$router.currentRoute.query?.redirect
+		const redirect = Vue.$router.currentRoute?.query?.redirect
 			|| Vue.$router.currentRoute?.fullPath;
 		Vue.$router.push({ name: "Logout", query: { redirect } });
 		throw new Error("You need to login to continue");
