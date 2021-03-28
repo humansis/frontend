@@ -3,8 +3,8 @@
 	<div>
 		<Modal
 			is-small
+			can-cancel
 			:active="countryModal.isOpened"
-			:can-cancel="true"
 			:header="modalHeader"
 			:is-waiting="countryModal.isWaiting"
 			@close="closeCountryModal"

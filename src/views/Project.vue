@@ -52,7 +52,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
 
 export default {
-	name: "ProjectDetail",
+	name: "Project",
 
 	components: {
 		AssistanceForm,

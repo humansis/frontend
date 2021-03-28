@@ -1,63 +1,31 @@
 <template>
 	<form>
 		<section class="modal-card-body">
-			<b-field
-				label="Family Name"
-			>
-				<b-input
-					v-model="formModel.familyName"
-					disabled
-				/>
+			<b-field label="Family Name">
+				<b-input v-model="formModel.familyName" disabled />
 			</b-field>
 
-			<b-field
-				label="First Name"
-			>
-				<b-input
-					v-model="formModel.givenName"
-					disabled
-				/>
+			<b-field label="First Name">
+				<b-input v-model="formModel.givenName" disabled />
 			</b-field>
 
-			<b-field
-				label="Members"
-			>
-				<b-input
-					v-model="formModel.members"
-					disabled
-				/>
+			<b-field label="Members">
+				<b-input v-model="formModel.members" disabled />
 			</b-field>
 
-			<b-field
-				label="Vulnerabilities"
-			>
-				<b-input
-					v-model="formModel.vulnerabilities"
-					disabled
-				/>
+			<b-field label="Vulnerabilities">
+				<b-input v-model="formModel.vulnerabilities" disabled />
 			</b-field>
 
-			<b-field
-				label="Projects"
-			>
-				<b-input
-					v-model="formModel.projects"
-					disabled
-				/>
+			<b-field label="Projects">
+				<b-input v-model="formModel.projects" disabled />
 			</b-field>
 
-			<b-field
-				label="Income"
-			>
-				<b-input
-					v-model="formModel.incomeLevel"
-					disabled
-				/>
+			<b-field label="Income">
+				<b-input v-model="formModel.incomeLevel" disabled />
 			</b-field>
 
-			<b-field
-				label="External Support Received Type"
-			>
+			<b-field label="External Support Received Type">
 				<MultiSelect
 					v-model="formModel.supportReceivedTypes"
 					multiple
@@ -68,18 +36,11 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Support Date Received"
-			>
-				<b-input
-					v-model="formModel.supportDateReceived"
-					disabled
-				/>
+			<b-field label="Support Date Received">
+				<b-input v-model="formModel.supportDateReceived" disabled />
 			</b-field>
 
-			<b-field
-				label="Assets"
-			>
+			<b-field label="Assets">
 				<MultiSelect
 					v-model="formModel.assets"
 					searchable
@@ -91,9 +52,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Shelter Type"
-			>
+			<b-field label="Shelter Type">
 				<MultiSelect
 					v-model="formModel.shelterStatus"
 					searchable
@@ -104,15 +63,9 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Current Location"
-			>
-				<b-input
-					v-model="formModel.currentLocation"
-					disabled
-				/>
+			<b-field label="Current Location">
+				<b-input v-model="formModel.currentLocation" disabled />
 			</b-field>
-
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">

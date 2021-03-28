@@ -19,9 +19,9 @@
 				<HouseholdHeadForm
 					ref="householdHeadForm"
 					show-type-of-beneficiary
+					is-household-head
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
-					:is-household-head="true"
 				/>
 			</b-step-item>
 
@@ -39,10 +39,7 @@
 					:is-editing="isEditing"
 				/>
 			</b-step-item>
-			<template
-				v-if="true"
-				#navigation="{previous, next}"
-			>
+			<template #navigation="{previous, next}">
 				<div class="buttons flex-end">
 					<b-button
 						v-show="!previous.disabled"

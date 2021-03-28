@@ -1,76 +1,74 @@
 <template>
-	<div>
-		<Table
-			has-reset-sort
-			has-search
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@search="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:key="column.id"
-					v-slot="props"
-				>
-					<template v-if="column.field === 'status'">
-						{{ getStatus(props.row[column.field]) }}
-					</template>
-					<ColumnField v-else :data="props" :column="column" />
-				</b-table-column>
-			</template>
+	<Table
+		has-reset-sort
+		has-search
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
 			<b-table-column
+				v-bind="column"
+				:key="column.id"
 				v-slot="props"
-				label="Actions"
-				width="145"
-				centered
 			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="Voucher"
-						tooltip="Delete"
-						:disabled="!props.row.deletable"
-						:id="props.row.id"
-						@submitted="remove"
-					/>
-					<ActionButton icon="print" type="is-dark" tooltip="Print" />
-				</div>
+				<template v-if="column.field === 'status'">
+					{{ getStatus(props.row[column.field]) }}
+				</template>
+				<ColumnField v-else :data="props" :column="column" />
 			</b-table-column>
-			<template #filterButton>
-				<b-button
-					slot="trigger"
-					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					@click="filtersToggle"
-				>
-					Advanced search
-				</b-button>
-			</template>
-			<template #progress>
-				<b-progress :value="table.progress" format="percent" />
-			</template>
-			<template #filter>
-				<b-collapse v-model="advancedSearchVisible">
-					<VoucherFilters
-						@filtersChanged="onFiltersChange"
-					/>
-				</b-collapse>
-			</template>
-		</Table>
-	</div>
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			width="145"
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					entity="Voucher"
+					tooltip="Delete"
+					:disabled="!props.row.deletable"
+					:id="props.row.id"
+					@submitted="remove"
+				/>
+				<ActionButton icon="print" type="is-dark" tooltip="Print" />
+			</div>
+		</b-table-column>
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				Advanced search
+			</b-button>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+		<template #filter>
+			<b-collapse v-model="advancedSearchVisible">
+				<VoucherFilters
+					@filtersChanged="onFiltersChange"
+				/>
+			</b-collapse>
+		</template>
+	</Table>
 </template>
 
 <script>

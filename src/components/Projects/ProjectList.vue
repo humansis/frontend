@@ -69,10 +69,6 @@ import DonorService from "@/services/DonorService";
 export default {
 	name: "ProjectList",
 
-	props: {
-		projectModel: Object,
-	},
-
 	mixins: [grid, baseHelper],
 
 	components: {
@@ -179,7 +175,7 @@ export default {
 		},
 
 		goToDetail(project) {
-			this.$router.push({ name: "ProjectDetail", params: { projectId: project.id } });
+			this.$router.push({ name: "Project", params: { projectId: project.id } });
 		},
 
 		edit(id) {

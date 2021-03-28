@@ -1,67 +1,65 @@
 <template>
-	<div>
-		<Table
-			has-reset-sort
-			has-search
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:export-format="{xlsx: true, csv: true, ods: true}"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@search="onSearch"
-			@resetSort="resetSort"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				label="Actions"
-				centered
-			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="history"
-						type="is-link"
-						tooltip="Send History"
-						@click.native="sendHistory(props.row.id)"
-					/>
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						tooltip="Edit"
-						@click.native="showEdit(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="User"
-						tooltip="Delete"
-						:id="props.row.id"
-						@submitted="remove"
-					/>
-				</div>
+	<Table
+		has-reset-sort
+		has-search
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		:export-format="{xlsx: true, csv: true, ods: true}"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@search="onSearch"
+		@resetSort="resetSort"
+	>
+		<template v-for="column in table.columns">
+			<b-table-column v-bind="column" sortable :key="column.id">
+				<template v-slot="props">
+					{{ props.row[column.field] }}
+				</template>
 			</b-table-column>
-			<template #export>
-				<ExportButton
-					space-between
-					:formats="{ xlsx: true, csv: true, ods: true}"
+		</template>
+		<b-table-column
+			v-slot="props"
+			label="Actions"
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="history"
+					type="is-link"
+					tooltip="Send History"
+					@click.native="sendHistory(props.row.id)"
 				/>
-			</template>
-		</Table>
-	</div>
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					tooltip="Show Detail"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					tooltip="Edit"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					entity="User"
+					tooltip="Delete"
+					:id="props.row.id"
+					@submitted="remove"
+				/>
+			</div>
+		</b-table-column>
+		<template #export>
+			<ExportButton
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+			/>
+		</template>
+	</Table>
 </template>
 
 <script>

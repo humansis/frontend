@@ -1,8 +1,6 @@
 <template>
 	<div>
 		<AssistanceSummary
-			v-if="assistance"
-			ref="assistanceSummary"
 			:beneficiaries="beneficiaries"
 			:assistance="assistance"
 		/>
@@ -12,7 +10,7 @@
 			</div>
 			<b-progress v-model="assistanceProgress" />
 			<div class="columns">
-				<div v-if="$refs.beneficiaries" class="column is-offset-3">
+				<div v-if="$refs.beneficiariesList" class="column is-offset-3">
 					<div class="has-text-weight-bold">Total Amount:</div>
 					<span class="ml-5">{{ totalAmount }} {{ commodityUnit }}</span>
 				</div>
@@ -23,14 +21,15 @@
 			</div>
 		</div>
 		<BeneficiariesList
-			ref="beneficiaries"
+			ref="beneficiariesList"
 			export-button
 			add-button
-			with-checkbox
+			isAssistanceDetail
 			:assistance="assistance"
 			:custom-columns="columns"
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
+			@rowsChecked="onRowsCheck"
 		/>
 		<br>
 		<div class="columns">
@@ -45,7 +44,6 @@
 			</div>
 		</div>
 	</div>
-
 </template>
 
 <script>
@@ -90,10 +88,7 @@ export default {
 		},
 
 		totalAmount() {
-			if (this.$refs.beneficiaries && this.commodity[0]?.value) {
-				return this.$refs.beneficiaries.table.total * this.commodity[0].value;
-			}
-			return null;
+			return this.$refs.beneficiariesList?.table.total * this.commodity?.[0]?.value ?? null;
 		},
 	},
 
@@ -109,6 +104,15 @@ export default {
 			).then((data) => {
 				this.assistance = data;
 			});
+		},
+
+		onRowsCheck(rows) {
+			// TODO If sth is selected, display button for "set as distributed" or another button
+			this.selectedBeneficiaries = rows;
+		},
+
+		setGeneralReliefItemAsDistributed() {
+			// TODO Set as Distributed for one one more Households, use this.selectedBnf
 		},
 
 		async fetchCommodity() {
@@ -133,7 +137,7 @@ export default {
 					).then(({ status }) => {
 						if (status === 200) {
 							Toast("Assistance Successfully Closed", "is-success");
-							this.$router.push({ name: "ProjectDetail",
+							this.$router.push({ name: "Project",
 								params: {
 									projectId: this.$route.params.projectId,
 								},
@@ -144,18 +148,6 @@ export default {
 					});
 				},
 			});
-		},
-
-		async fetchData() {
-			return AssistancesService.getListOfBeneficiaries(
-				this.$route.params.assistanceId,
-				null,
-				this.$refs.beneficiaries.table.totalCount,
-			)
-				.then(async ({ data }) => data)
-				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
-				});
 		},
 	},
 };

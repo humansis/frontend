@@ -2,41 +2,26 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field label="Service Name">
-				<b-input
-					v-model="formModel.name"
-					disabled
-				/>
+				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
 			<b-field label="Country">
-				<b-input
-					v-model="formModel.iso3"
-					disabled
-				/>
+				<b-input v-model="formModel.iso3" disabled />
 			</b-field>
 
 			<b-field
 				v-if="fields.token"
 				label="Token"
 			>
-				<b-input
-					v-model="formModel.parameters.token"
-					:disabled="formDisabled"
-				/>
+				<b-input v-model="formModel.parameters.token" :disabled="formDisabled" />
 			</b-field>
 
 			<b-field v-if="fields.username" label="Username">
-				<b-input
-					v-model="formModel.parameters.username"
-					:disabled="formDisabled"
-				/>
+				<b-input v-model="formModel.parameters.username" :disabled="formDisabled" />
 			</b-field>
 
 			<b-field v-if="fields.email" label="Email">
-				<b-input
-					v-model="formModel.parameters.email"
-					:disabled="formDisabled"
-				/>
+				<b-input v-model="formModel.parameters.email" :disabled="formDisabled" />
 			</b-field>
 
 			<b-field v-if="fields.password" label="Password">
@@ -48,17 +33,11 @@
 			</b-field>
 
 			<b-field label="Enabled">
-				<b-checkbox
-					v-model="formModel.enabled"
-					:disabled="formDisabled"
-				/>
+				<b-checkbox v-model="formModel.enabled" :disabled="formDisabled" />
 			</b-field>
 
 			<b-field v-if="fields.username" label="Production">
-				<b-checkbox
-					v-model="formModel.parameters.production"
-					:disabled="formDisabled"
-				/>
+				<b-checkbox v-model="formModel.parameters.production" :disabled="formDisabled" />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">

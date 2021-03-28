@@ -1,30 +1,28 @@
 <template>
-	<div>
-		<b-dropdown
-			v-model="currentFormat"
-			aria-role="list"
+	<b-dropdown
+		v-model="currentFormat"
+		aria-role="list"
+	>
+		<b-button icon-left="file-download" slot="trigger" :size="size" :type="type">
+			<template>
+				<span>Export</span>
+			</template>
+			<b-icon icon="arrow-down" />
+		</b-button>
+		<b-dropdown-item
+			v-for="(menu, index) in formatMenu"
+			v-show="menu.disabled"
+			:key="index"
+			:value="menu"
+			@click="exportData(menu.name)"
 		>
-			<b-button icon-left="file-download" slot="trigger" :size="size" :type="type">
-				<template>
-					<span>Export</span>
-				</template>
-				<b-icon icon="arrow-down" />
-			</b-button>
-			<b-dropdown-item
-				v-for="(menu, index) in formatMenu"
-				v-show="menu.disabled"
-				:key="index"
-				:value="menu"
-				@click="exportData(menu.name)"
-			>
-				<div class="media">
-					<div class="media-content">
-						<h3>{{menu.name}}</h3>
-					</div>
+			<div class="media">
+				<div class="media-content">
+					<h3>{{menu.name}}</h3>
 				</div>
-			</b-dropdown-item>
-		</b-dropdown>
-	</div>
+			</div>
+		</b-dropdown-item>
+	</b-dropdown>
 </template>
 
 <script>

@@ -10,8 +10,8 @@
 			<ImportForm
 				close-button
 				class="modal-card"
+				form-disabled
 				:formModel="importModel"
-				:form-disabled="true"
 				@formClosed="closeImportModal"
 			/>
 		</Modal>
