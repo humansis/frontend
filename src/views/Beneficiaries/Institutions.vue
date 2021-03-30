@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Institutions</h1>
+				<h1 class="title">{{ $t('Institutions') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewInstitution"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="institutionModel"
-				:submit-button-label="institutionModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="institutionModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="institutionModal.isDetail"
 				@formSubmitted="submitInstitutionForm"
 				@formClosed="closeInstitutionModal"
@@ -101,11 +101,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.institutionModal.isDetail) {
-				result = "Detail of Institution";
+				result = this.$t("Detail of Institution");
 			} else if (this.institutionModal.isEditing) {
-				result = "Edit Institution";
+				result = this.$t("Edit Institution");
 			} else {
-				result = "Create new Institution";
+				result = this.$t("Create New Institution");
 			}
 			return result;
 		},
@@ -286,12 +286,12 @@ export default {
 
 			await InstitutionService.createInstitution(institutionBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Institution Successfully Created", "is-success");
+					Toast(this.$t("Institution Successfully Created"), "is-success");
 					this.$refs.institutionList.fetchData();
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
-				Toast(`Institution ${e}`, "is-danger");
+				Toast(`${this.$t("Institution")} ${e}`, "is-danger");
 				this.institutionModal.isWaiting = false;
 			});
 		},
@@ -301,12 +301,12 @@ export default {
 
 			await InstitutionService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Institution Successfully Updated", "is-success");
+					Toast(this.$t("Institution Successfully Updated", "is-success"));
 					this.$refs.institutionList.fetchData();
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
-				Toast(`Institution ${e}`, "is-danger");
+				Toast(`${this.$t("Institution")} ${e}`, "is-danger");
 				this.institutionModal.isWaiting = false;
 			});
 		},
@@ -314,12 +314,12 @@ export default {
 		async removeInstitution(id) {
 			await InstitutionService.deleteInstitution(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Institution Successfully Deleted", "is-success");
+					Toast(this.$t("Institution Successfully Deleted"), "is-success");
 					this.$refs.institutionList.removeFromList(id);
 					this.$refs.institutionList.table.total -= 1;
 				}
 			}).catch((e) => {
-				Toast(`Institution ${e}`, "is-danger");
+				Toast(`${this.$t("Institution")} ${e}`, "is-danger");
 			});
 		},
 	},

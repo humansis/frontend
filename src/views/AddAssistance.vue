@@ -41,8 +41,10 @@
 		</div>
 
 		<div class="buttons flex-end">
-			<b-button @click="goBack">Cancel</b-button>
-			<b-button type="is-primary" @click="submitAddingAssistance">Create</b-button>
+			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
+			<b-button type="is-primary" @click="submitAddingAssistance">
+				{{ $t('Create') }}
+			</b-button>
 		</div>
 	</div>
 </template>
@@ -52,7 +54,7 @@ import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/Selecti
 import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 import consts from "@/utils/assistanceConst";
@@ -130,7 +132,7 @@ export default {
 					this.mapAssistance(data);
 				})
 				.catch((e) => {
-					Notification(`Duplicate Assistance ${e}`, "is-danger");
+					Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 				});
 		}
 	},
@@ -161,14 +163,14 @@ export default {
 
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
-					Toast("Assistance Successfully Created", "is-success");
+					Toast(this.$t("Assistance Successfully Created"), "is-success");
 					this.$router.push({
 						name: "Project",
 						params: { projectId: this.$route.params.projectId },
 					});
 				}
 			}).catch((e) => {
-				Toast(`New Assistance ${e}`, "is-danger");
+				Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -234,7 +236,7 @@ export default {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

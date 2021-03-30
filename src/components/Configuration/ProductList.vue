@@ -105,7 +105,7 @@ export default {
 			} else if (this.productModal.isEditing) {
 				result = "Edit Product";
 			} else {
-				result = "Create new Product";
+				result = "Create New Product";
 			}
 			return result;
 		},

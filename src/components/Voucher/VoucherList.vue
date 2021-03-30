@@ -133,7 +133,7 @@ export default {
 			if (this.voucherModal.isDetail) {
 				result = "Detail of Voucher";
 			} else {
-				result = "Create new Voucher";
+				result = "Create New Voucher";
 			}
 			return result;
 		},

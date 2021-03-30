@@ -13,7 +13,7 @@
 			<b-step-item
 				clickable
 				step="1"
-				label="Assistance List Of Beneficiaries"
+				:label="$t('Assistance List of Beneficiaries')"
 			>
 				<BeneficiariesList
 					export-button
@@ -27,7 +27,7 @@
 			<b-step-item
 				clickable
 				step="2"
-				label="Import & Compare"
+				:label="$t('Import & Compare')"
 			>
 				<ImportAndCompare />
 			</b-step-item>
@@ -35,7 +35,7 @@
 			<b-step-item
 				clickable
 				step="3"
-				label="Export Random Sample"
+				:label="$t('Export Random Sample')"
 			>
 				<ExportRandomSample />
 			</b-step-item>
@@ -43,7 +43,7 @@
 			<b-step-item
 				clickable
 				step="4"
-				label="Validate And Lock"
+				:label="$t('Validate and Lock')"
 			>
 				<ValidateAndLock />
 			</b-step-item>
@@ -54,14 +54,14 @@
 						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
-						Back
+						{{ $t('Back') }}
 					</b-button>
 					<b-button
 						type="is-primary"
 						v-show="!next.disabled"
 						@click.prevent="next.action"
 					>
-						Next
+						{{ $t('Next') }}
 					</b-button>
 					<b-button
 						v-show="activeStep === 3"
@@ -69,7 +69,7 @@
 						icon-left="lock"
 						@click.prevent="validateAssistance"
 					>
-						Validate And Lock
+						{{ $t('Validate and Lock') }}
 					</b-button>
 				</div>
 			</template>
@@ -127,7 +127,7 @@ export default {
 				{ assistanceId, validated: true },
 			).then(({ status }) => {
 				if (status === 200) {
-					Toast("Assistance Successfully Saved and lock", "is-success");
+					Toast(this.$t("Assistance Successfully Saved and lock"), "is-success");
 					this.$router.push({ name: "Project",
 						params: {
 							projectId: this.$route.params.projectId,
@@ -135,7 +135,7 @@ export default {
 					});
 				}
 			}).catch((e) => {
-				Toast(`Assistance ${e}`, "is-danger");
+				Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 

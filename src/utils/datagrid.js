@@ -17,7 +17,7 @@ export const generateColumns = ((visibleColumns) => {
 	visibleColumns.forEach((column) => {
 		preparedColumns.push({
 			field: column.key,
-			label: column.label ? column.label : normalizeText(column.key),
+			label: column.label || normalizeText(column.key),
 			type: column.type,
 			width: column.width,
 			centered: true,

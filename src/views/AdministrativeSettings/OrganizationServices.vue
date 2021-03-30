@@ -10,7 +10,7 @@
 			<OrganizationServiceForm
 				close-button
 				class="modal-card"
-				submit-button-label="Update"
+				:submit-button-label="$t('Update')"
 				:formModel="organizationServiceModel"
 				:form-disabled="organizationServiceModal.isDetail"
 				@formSubmitted="submitOrganizationServiceForm"
@@ -62,9 +62,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.organizationServiceModal.isDetail) {
-				result = "Detail of Organization Service";
+				result = this.$t("Detail of Organization Service");
 			} else if (this.organizationServiceModal.isEditing) {
-				result = "Update new OrganizationService";
+				result = this.$t("Update new OrganizationService");
 			}
 			return result;
 		},
@@ -116,12 +116,12 @@ export default {
 			await OrganizationServiceService.updateOrganizationService(id, organizationServiceBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Organization Service Successfully Created", "is-success");
+						Toast(this.$t("Organization Service Successfully Created"), "is-success");
 						this.$refs.organizationServiceList.fetchData();
 						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {
-					Toast(`Organization ${e}`, "is-danger");
+					Toast(`${this.$t("Organization")} ${e}`, "is-danger");
 					this.organizationServiceModal.isWaiting = false;
 				});
 		},

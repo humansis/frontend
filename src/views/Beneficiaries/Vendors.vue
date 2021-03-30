@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Vendors</h1>
+				<h1 class="title">{{ $t('Vendors') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewVendor"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="vendorModel"
-				:submit-button-label="vendorModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="vendorModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="vendorModal.isDetail"
 				@formSubmitted="submitVendorForm"
 				@formClosed="closeVendorModal"
@@ -92,11 +92,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.vendorModal.isDetail) {
-				result = "Detail of Vendor";
+				result = this.$t("Detail of Vendor");
 			} else if (this.vendorModal.isEditing) {
-				result = "Edit Vendor";
+				result = this.$t("Edit Vendor");
 			} else {
-				result = "Create new Vendor";
+				result = this.$t("Create New Vendor");
 			}
 			return result;
 		},
@@ -252,18 +252,18 @@ export default {
 						await VendorService.createVendor(body)
 							.then((vendorResponse) => {
 								if (vendorResponse.status === 200) {
-									Toast("Vendor Successfully Created", "is-success");
+									Toast(this.$t("Vendor Successfully Created"), "is-success");
 									this.$refs.vendorList.fetchData();
 									this.closeVendorModal();
 								}
 							}).catch((e) => {
-								Toast(`Vendor ${e}`, "is-danger");
+								Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
 								this.vendorModal.isWaiting = false;
 							});
 					}
 				})
 				.catch((e) => {
-					Toast(`User ${e}`, "is-danger");
+					Toast(`${this.$t("User")} ${e}`, "is-danger");
 					this.vendorModal.isWaiting = false;
 				});
 		},
@@ -276,17 +276,17 @@ export default {
 					if (userResponse.status === 200) {
 						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
 							if (vendorResponse.status === 200) {
-								Toast("Vendor Successfully Updated", "is-success");
+								Toast(this.$t("Vendor Successfully Updated"), "is-success");
 								this.$refs.vendorList.fetchData();
 								this.closeVendorModal();
 							}
 						}).catch((e) => {
-							Toast(`Vendor ${e}`, "is-danger");
+							Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
 							this.vendorModal.isWaiting = false;
 						});
 					}
 				}).catch((e) => {
-					Toast(`User ${e}`, "is-danger");
+					Toast(`${this.$t("User")} ${e}`, "is-danger");
 					this.vendorModal.isWaiting = false;
 				});
 		},
@@ -296,11 +296,11 @@ export default {
 
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Vendor Successfully Deleted", "is-success");
+					Toast(this.$t("Vendor Successfully Deleted"), "is-success");
 					this.$refs.vendorList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`Vendor ${e}`, "is-danger");
+				Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
 			});
 		},
 	},

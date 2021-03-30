@@ -18,10 +18,7 @@
 					:label="tooltip.label"
 					:active="tooltip.active"
 				>
-					<b-icon
-						icon="question"
-						size="is-medium"
-					/>
+					<b-icon icon="question" size="is-medium" />
 				</b-tooltip>
 			</b-navbar-item>
 
@@ -46,7 +43,7 @@
 					@click="handleChangeCountry(country)"
 				>
 					<b-icon class="mr-1" icon="globe" />
-					{{ country.iso3 }}
+					{{ $t(country.iso3)  }}
 				</b-dropdown-item>
 			</b-dropdown>
 
@@ -71,7 +68,7 @@
 					@click="handleChangeLanguage(language)"
 				>
 					<b-icon class="mr-1" icon="language" />
-					{{ language.name }}
+					{{ $t(language.key) }}
 				</b-dropdown-item>
 			</b-dropdown>
 
@@ -91,14 +88,14 @@
 				<router-link :to="{ name: 'Profile' }">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
-						Profile
+						{{ $t('Profile') }}
 					</b-dropdown-item>
 				</router-link>
 
 				<router-link :to="{ name: 'Logout' }">
 					<b-dropdown-item value="logout">
 						<b-icon class="mr-1" icon="sign-out-alt" />
-						Log out
+						{{ $t('Log out') }}
 					</b-dropdown-item>
 				</router-link>
 			</b-dropdown>
@@ -165,7 +162,7 @@ export default {
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
 				}
 			}).catch((e) => {
-				Notification(`Translations ${e}`, "is-danger");
+				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 				this.$store.dispatch("appLoading", false);
 			});
 
@@ -185,7 +182,7 @@ export default {
 						sessionStorage.setItem("countries", JSON.stringify(data));
 					})
 					.catch((e) => {
-						Notification(`Countries ${e}`, "is-danger");
+						Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 					});
 			} else {
 				this.countries = JSON.parse(sessionStorage.getItem("countries"));
@@ -225,7 +222,7 @@ export default {
 		},
 
 		toggleTooltip() {
-			return this.isAsideExpanded ? "Collapse" : "Expand";
+			return this.isAsideExpanded ? this.$t("Collapse") : this.$t("Expand");
 		},
 	},
 

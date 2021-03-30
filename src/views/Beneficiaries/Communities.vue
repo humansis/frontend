@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Communities</h1>
+				<h1 class="title">{{ $t('Communities') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewCommunity"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="communityModel"
-				:submit-button-label="communityModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="communityModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="communityModal.isDetail"
 				@formSubmitted="submitCommunityForm"
 				@formClosed="closeCommunityModal"
@@ -99,11 +99,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.communityModal.isDetail) {
-				result = "Detail of Community";
+				result = this.$t("Detail of Community");
 			} else if (this.communityModal.isEditing) {
-				result = "Edit Community";
+				result = this.$t("Edit Community");
 			} else {
-				result = "Create new Community";
+				result = this.$t("Create New Community");
 			}
 			return result;
 		},
@@ -281,12 +281,12 @@ export default {
 
 			await CommunityService.createCommunity(communityBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Community Successfully Created", "is-success");
+					Toast(this.$t("Community Successfully Created"), "is-success");
 					this.$refs.communityList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
-				Toast(`Community ${e}`, "is-danger");
+				Toast(`${this.$t("Community")} ${e}`, "is-danger");
 				this.communityModal.isWaiting = false;
 			});
 		},
@@ -296,12 +296,12 @@ export default {
 
 			await CommunityService.updateCommunity(id, communityBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Community Successfully Updated", "is-success");
+					Toast(this.$t("Community Successfully Updated"), "is-success");
 					this.$refs.communityList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
-				Toast(`Community ${e}`, "is-danger");
+				Toast(`${this.$t("Community")} ${e}`, "is-danger");
 				this.communityModal.isWaiting = false;
 			});
 		},
@@ -309,11 +309,11 @@ export default {
 		async removeCommunity(id) {
 			await CommunityService.deleteCommunity(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Community Successfully Deleted", "is-success");
+					Toast(this.$t("Community Successfully Deleted"), "is-success");
 					this.$refs.communityList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`Community ${e}`, "is-danger");
+				Toast(`${this.$t("Community")} ${e}`, "is-danger");
 			});
 		},
 	},

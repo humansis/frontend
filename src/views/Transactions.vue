@@ -3,7 +3,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Transactions</h1>
+				<h1 class="title">{{ $t('Transactions') }}</h1>
 			</div>
 		</div>
 
@@ -32,7 +32,7 @@
 					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 					@click="filtersToggle"
 				>
-					Advanced search
+					{{ $t('Advanced search') }}
 				</b-button>
 			</template>
 			<template #filter>
@@ -115,7 +115,7 @@ export default {
 					this.table.visibleColumns,
 				);
 			}).catch((e) => {
-				Notification(`Transactions ${e}`, "is-danger");
+				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
