@@ -263,7 +263,7 @@ export default {
 				phone: {
 					prefix: phonePrefix.code,
 					number: phoneNumber,
-					proxy: phoneProxy,
+					proxy: !!phoneProxy,
 					type: phoneType.code,
 				},
 				projectIds: getArrayOfIdsByParam(projects, "id"),
