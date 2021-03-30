@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			label="Type Of Location"
+			label="Type of Location"
 			:type="validateType('typeOfLocation')"
 			:message="validateMsg('typeOfLocation')"
 		>
@@ -52,7 +52,7 @@
 				:type="validateType('campName')"
 				:message="validateMsg('campName')"
 			>
-				<b-checkbox v-model="createCamp">Create A Camp</b-checkbox>
+				<b-checkbox v-model="createCamp">Create a Camp</b-checkbox>
 				<b-input
 					v-if="createCamp"
 					v-model="formModel.campName"

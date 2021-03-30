@@ -27,7 +27,7 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Quantity Of Booklets"
+				label="Quantity of Booklets"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
 			>
@@ -38,7 +38,7 @@
 					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					placeholder="Quantity Of Booklets"
+					placeholder="Quantity of Booklets"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfBooklets')"
@@ -46,7 +46,7 @@
 			</b-field>
 
 			<b-field
-				label="Quantity Of Vouchers"
+				label="Quantity of Vouchers"
 				:type="validateType('quantityOfVouchers')"
 				:message="validateMsg('quantityOfVouchers')"
 			>
@@ -97,7 +97,7 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Define A Password"
+				label="Define a Password"
 			>
 				<b-checkbox
 					v-model="formModel.defineAPassword"

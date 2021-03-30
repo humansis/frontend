@@ -136,7 +136,7 @@ export default {
 				visibleColumns: [
 					{ key: "project" },
 					{ key: "code" },
-					{ key: "quantityOfVouchers", label: "Quantity Of Vouchers" },
+					{ key: "quantityOfVouchers", label: "Quantity of Vouchers" },
 					{ key: "totalValue", sortKey: "value" },
 					{ key: "currency" },
 					{ key: "status" },

@@ -76,7 +76,7 @@
 					/>
 				</b-field>
 				<b-field
-					label="Date Of Birth"
+					label="Date of Birth"
 					:type="validateType('personalInformation.dateOfBirth')"
 					:message="validateMsg('personalInformation.dateOfBirth')"
 				>

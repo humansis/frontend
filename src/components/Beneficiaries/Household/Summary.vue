@@ -107,7 +107,7 @@ export default {
 					{ field: "firstName", label: "First Name (Local)" },
 					{ field: "familyName", label: "Family Name (Local)" },
 					{ field: "gender", label: "Gender", type: "object" },
-					{ field: "dateBirth", label: "Date Of Birth", type: "date" },
+					{ field: "dateBirth", label: "Date of Birth", type: "date" },
 					{ field: "phone", label: "Phone" },
 					{ field: "nationalId", label: "National ID" },
 				],

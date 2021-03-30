@@ -11,7 +11,7 @@
 				/>
 			</div>
 			<div class="column is-half">
-				<h4 class="title is-4">Type Of Location</h4>
+				<h4 class="title is-4">Type of Location</h4>
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"

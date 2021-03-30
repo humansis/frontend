@@ -13,7 +13,7 @@
 				<b-input v-model="formModel.gender" disabled />
 			</b-field>
 
-			<b-field label="Date Of Birth">
+			<b-field label="Date of Birth">
 				<b-input v-model="formModel.dateOfBirth" disabled />
 			</b-field>
 
@@ -25,7 +25,7 @@
 				<b-input v-model="formModel.residencyStatus" disabled />
 			</b-field>
 
-			<b-field label="Add A Referral Type">
+			<b-field label="Add a Referral Type">
 				<b-checkbox v-model="addAReferral" :disabled="disabled" />
 			</b-field>
 
