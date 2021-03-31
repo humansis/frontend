@@ -184,7 +184,7 @@ export default {
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
 					{ key: "gender" },
-					{ key: "dateOfBirth" },
+					{ key: "dateOfBirth", label: "Date of Birth" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities" },
 				],

@@ -90,7 +90,7 @@ export default {
 					{ key: "startDate", type: "date", width: "120", sortable: true },
 					{ key: "endDate", type: "date", width: "120", sortable: true },
 					{ key: "target", width: "90" },
-					{ key: "numberOfHouseholds", width: "130", sortable: true },
+					{ key: "numberOfHouseholds", label: "Number of Households", width: "130", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,

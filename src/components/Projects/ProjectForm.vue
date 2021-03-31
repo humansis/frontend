@@ -150,7 +150,7 @@
 			<b-field
 				label="Total Target"
 				:type="validateType('totalTarget')"
-				:message="validateMsg('totalTarget', $t('Required, min length is 1'))"
+				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"

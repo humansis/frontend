@@ -8,7 +8,7 @@
 				<b-field
 					:label="$t('Projects')"
 					:type="validateType('selectedProjects')"
-					:message="validateMsg('selectedProjects', 'Projects are Required')"
+					:message="validateMsg('selectedProjects', )"
 				>
 					<MultiSelect
 						v-model="formModel.selectedProjects"

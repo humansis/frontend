@@ -28,7 +28,7 @@
 			<b-field
 				label="Available Currencies"
 				:type="validateType('availableCurrencies')"
-				:message="validateMsg('availableCurrencies', 'Required')"
+				:message="validateMsg('availableCurrencies', )"
 			>
 				<MultiSelect
 					v-model="formModel.availableCurrencies"
