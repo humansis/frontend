@@ -16,7 +16,7 @@
 				<b-datepicker
 					v-model="formModel.dateDistribution"
 					show-week-number
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					icon="calendar-day"
 					trap-focus
 					:disabled="!editing"

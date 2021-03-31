@@ -39,7 +39,7 @@
 								class="m-5"
 								track-by="id"
 								label="name"
-								:placeholder="$t('Click to select...')"
+								:placeholder="$t('Click to select')"
 								:options="projects"
 							/>
 						</div>

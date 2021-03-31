@@ -77,7 +77,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.gender"
 						:class="validateMultiselect('personalInformation.gender')"
 						@select="validate('personalInformation.gender')"
@@ -91,7 +91,7 @@
 					<b-datepicker
 						v-model="formModel.personalInformation.dateOfBirth"
 						show-week-number
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						icon="calendar-day"
 						trap-focus
 						@blur="validate('personalInformation.dateOfBirth')"
@@ -111,7 +111,7 @@
 						label="value"
 						track-by="code"
 						searchable
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="idTypeLoading"
 						:options="options.idType"
 						:class="validateMultiselect('id.idType')"
@@ -142,7 +142,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="residenceStatusesLoading"
 						:options="options.residencyStatus"
 						:class="validateMultiselect('residencyStatus')"
@@ -180,7 +180,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="referralTypeLoading"
 						:options="options.referralType"
 					/>
@@ -205,7 +205,7 @@
 						deselectLabel=""
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
 					/>
@@ -219,7 +219,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
 					/>
 				</b-field>
@@ -245,7 +245,7 @@
 						deselectLabel=""
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
 					/>
@@ -259,7 +259,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
 					/>
 				</b-field>

@@ -61,7 +61,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="fonts"
 					@blur="validate('font')"
@@ -125,7 +125,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Pdf Footer Content')"
+				:label="$t('PDF Footer Content')"
 				:type="validateType('footerContent')"
 			>
 				<b-input

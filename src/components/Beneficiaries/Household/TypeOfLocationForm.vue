@@ -9,7 +9,7 @@
 				v-model="formModel.typeOfLocation"
 				label="value"
 				track-by="code"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="locationTypesLoading"
 				:options="options.typeOfLocation"
 				:searchable="false"
@@ -36,9 +36,9 @@
 			>
 				<MultiSelect
 					v-model="formModel.camp"
-					:placeholder="$t('Click to select...')"
 					label="name"
 					track-by="id"
+					:placeholder="$t('Click to select')"
 					:options="options.camps"
 					:searchable="false"
 					:class="validateMultiselect('camp')"

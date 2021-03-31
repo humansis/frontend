@@ -53,7 +53,7 @@
 						<MultiSelect
 							v-model="selectedProject"
 							searchable
-							:placeholder="$t('Click to select...')"
+							:placeholder="$t('Click to select')"
 							label="name"
 							track-by="id"
 							:loading="loading.projects"
@@ -151,7 +151,7 @@
 					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 					@click="filtersToggle"
 				>
-					{{ $t('Advanced search') }}
+					{{ $t('Advanced Search') }}
 				</b-button>
 			</template>
 

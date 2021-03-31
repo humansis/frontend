@@ -10,7 +10,7 @@
 					v-model="formModel.criteriaTarget"
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
 					:searchable="false"
@@ -27,7 +27,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.criteria"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:options="options.criteria"
 					:loading="criteriaLoading"
 					label="code"
@@ -46,7 +46,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.condition"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.conditions"
@@ -67,7 +67,7 @@
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
 					v-model="formModel.value"
 					show-week-number
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					icon="calendar-day"
 					trap-focus
 					@input="validate('value')"
@@ -84,7 +84,7 @@
 					v-model="formModel.value"
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
 					:searchable="false"

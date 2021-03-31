@@ -24,7 +24,7 @@
 		<Modal
 			can-cancel
 			is-small
-			:header="$t('Create a New Criteria')"
+			:header="$t('Create New Criteria')"
 			:active.sync="criteriaModal.isOpened"
 			@close="closeCriteriaModal"
 		>

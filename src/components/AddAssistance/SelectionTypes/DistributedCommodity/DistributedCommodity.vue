@@ -14,7 +14,7 @@
 		<Modal
 			can-cancel
 			is-small
-			:header="$t('Create  New Commodity')"
+			:header="$t('Create New Commodity')"
 			:active.sync="commodityModal.isOpened"
 			@close="closeCommodityModal"
 		>

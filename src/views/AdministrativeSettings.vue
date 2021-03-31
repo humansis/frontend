@@ -15,7 +15,7 @@
 				<MyOrganizationsPage />
 			</b-tab-item>
 
-			<b-tab-item icon="th-large" :label="$t('Organization services')">
+			<b-tab-item icon="th-large" :label="$t('Organization Services')">
 				<OrganizationServicePage />
 			</b-tab-item>
 			<!---

@@ -49,7 +49,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.rights"
 					:class="validateMultiselect('rights')"
@@ -68,7 +68,7 @@
 					searchable
 					label="name"
 					track-by="id"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					multiple
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="options.projects"
@@ -88,7 +88,7 @@
 					searchable
 					label="name"
 					track-by="iso3"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="options.countries"
@@ -112,7 +112,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.languages"
 				/>

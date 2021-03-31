@@ -55,7 +55,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				{{ $t('Advanced search') }}
+				{{ $t('Advanced Search') }}
 			</b-button>
 		</template>
 		<template #progress>

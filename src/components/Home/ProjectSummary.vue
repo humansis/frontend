@@ -1,6 +1,6 @@
 <template>
 	<div class="mb-6">
-		<h2 class="title">{{ $t('Projects summary') }}</h2>
+		<h2 class="title">{{ $t('Projects Summary') }}</h2>
 		<b-notification
 			v-if="projectSummaryLoading"
 			class="projects-summary-notification mb-0"

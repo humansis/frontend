@@ -53,7 +53,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.types"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
 				>
@@ -130,7 +130,7 @@
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
@@ -162,7 +162,7 @@
 					v-model="formModel.projects"
 					searchable
 					multiple
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="name"
 					track-by="id"
 					:loading="projectsLoading"

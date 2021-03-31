@@ -8,7 +8,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.modality"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.modalities"
@@ -26,7 +26,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.type"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.types"
@@ -45,7 +45,7 @@
 			>
 				<MultiSelect
 					v-model="formModel.currency"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="value"
 					:options="options.currencies"

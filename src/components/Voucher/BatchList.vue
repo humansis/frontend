@@ -8,7 +8,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced search
+				Advanced Search
 			</b-button>
 		</div>
 		<b-collapse v-model="advancedSearchVisible">

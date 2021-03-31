@@ -5,7 +5,7 @@
 				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
-			<b-field label="Country">
+			<b-field :label="$t('Country')">
 				<b-input v-model="formModel.iso3" disabled />
 			</b-field>
 

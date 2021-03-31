@@ -34,7 +34,7 @@
 					v-model="formModel.referralType"
 					searchable
 					:disabled="disabled"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:options="options.referralType"
 				/>
 			</b-field>

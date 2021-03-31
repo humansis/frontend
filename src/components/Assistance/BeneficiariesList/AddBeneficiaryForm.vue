@@ -20,9 +20,10 @@
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable
-					:placeholder="$t('Click to select...')"
+
 					label="name"
 					track-by="id"
+					:placeholder="$t('Click to select')"
 					:loading="loading.beneficiaries"
 					:disabled="formDisabled"
 					:options="options.beneficiaries"

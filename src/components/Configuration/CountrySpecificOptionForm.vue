@@ -24,7 +24,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.types"
 					:class="validateMultiselect('type')"
@@ -44,7 +44,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.targets"
 					:loading="loadingTargets"

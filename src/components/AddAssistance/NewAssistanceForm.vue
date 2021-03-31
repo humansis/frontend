@@ -12,7 +12,7 @@
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					icon="calendar-day"
 					trap-focus
 				/>
@@ -31,7 +31,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="loading.sectors"
 					:options="options.sectors"
 					:class="validateMultiselect('sector')"
@@ -59,7 +59,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="loading.subsectors"
 					:options="options.subsectors"
 					:class="validateMultiselect('subsector')"
@@ -85,7 +85,7 @@
 				<MultiSelect
 					v-model="formModel.assistanceType"
 					searchable
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="loading.assistanceTypes"
 					:options="options.assistanceTypes"
 					:class="validateMultiselect('assistanceType')"
@@ -113,7 +113,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="loading.targetTypes"
 					:options="options.targetTypes"
 					:class="validateMultiselect('targetType')"

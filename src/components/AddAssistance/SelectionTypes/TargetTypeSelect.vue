@@ -14,7 +14,7 @@
 					label="name"
 					track-by="id"
 					multiple
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:options="options.communities"
 					:loading="loading.communities"
 					:class="validateMultiselect('communities')"
@@ -37,7 +37,7 @@
 					label="name"
 					track-by="id"
 					multiple
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					group-values="data"
 					group-label="label"
 					group-select

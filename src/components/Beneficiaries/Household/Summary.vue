@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h4 class="title is-4 has-text-centered mt-5">
-			Please Add This Household To One Or More Project {{ $t('') }}
+			{{ $t('Please add this household to one or more project') }}
 		</h4>
 		<div class="columns mb-5">
 			<div class="column is-half is-offset-one-quarter">
@@ -16,7 +16,7 @@
 						track-by="id"
 						label="name"
 						multiple
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.projects"
 						:class="validateMultiselect('selectedProjects')"
 						@select="validate('selectedProjects')"

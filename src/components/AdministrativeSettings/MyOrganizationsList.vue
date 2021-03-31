@@ -75,10 +75,10 @@ export default {
 				visibleColumns: [
 					{ key: "name", label: "Organization Name" },
 					{ type: "image", key: "logo", label: "Organization Logo" },
-					{ type: "font", key: "font", label: "Font To Apply To The Pdf" },
+					{ type: "font", key: "font", label: "Font to Apply to The PDF" },
 					{ type: "color", key: "primaryColor", label: "Organization Primary Color" },
 					{ type: "color", key: "secondaryColor", label: "Organization Secondary Color" },
-					{ key: "footerContent", label: "Pdf Footer Content" },
+					{ key: "footerContent", label: "PDF Footer Content" },
 				],
 				total: 0,
 				currentPage: 1,

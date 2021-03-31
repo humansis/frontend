@@ -34,7 +34,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="livelihoodLoading"
 						:options="options.livelihood"
 					/>
@@ -52,7 +52,7 @@
 						searchable
 						label="value"
 						track-by="id"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.incomeLevel"
 					/>
 				</b-field>
@@ -87,7 +87,7 @@
 						multiple
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:loading="assetsLoading"
 						:options="options.assets"
 					/>
@@ -142,7 +142,7 @@
 						multiple
 						label="value"
 						track-by="code"
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						:options="options.externalSupportReceivedType"
 					/>
 				</b-field>
@@ -155,7 +155,7 @@
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
-						:placeholder="$t('Click to select...')"
+						:placeholder="$t('Click to select')"
 						icon="calendar-day"
 						trap-focus
 						@input="validate('externalSupport.supportDateReceived')"
@@ -201,7 +201,7 @@
 				searchable
 				label="value"
 				track-by="code"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="shelterStatusLoading"
 				:options="options.shelterStatuses"
 			/>

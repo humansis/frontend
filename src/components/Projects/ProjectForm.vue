@@ -38,7 +38,7 @@
 					label="code"
 					track-by="value"
 					multiple
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
@@ -70,7 +70,7 @@
 					show-week-number
 					icon="calendar-day"
 					trap-focus
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('startDate')"
 				/>
@@ -88,7 +88,7 @@
 					show-week-number
 					icon="calendar-day"
 					trap-focus
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('endDate')"
 				/>
@@ -106,7 +106,7 @@
 					searchable
 					track-by="id"
 					multiple
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.donors"
 					:loading="donorsLoading"
@@ -128,7 +128,7 @@
 					v-model="formModel.selectedTargetType"
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"

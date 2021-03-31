@@ -12,7 +12,7 @@
 					searchable
 					label="name"
 					track-by="id"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="projects"
 					:class="validateMultiselect('projectId')"
@@ -86,7 +86,7 @@
 					v-model="formModel.currency"
 					searchable
 					track-by="value"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:label="$t('value')"
 					:disabled="formDisabled"
 					:options="options.currencies"

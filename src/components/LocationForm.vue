@@ -10,7 +10,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="options.provinces"
@@ -31,7 +31,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="options.districts"
@@ -51,7 +51,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="options.communes"
@@ -72,7 +72,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				:placeholder="$t('Click to select...')"
+				:placeholder="$t('Click to select')"
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="options.villages"

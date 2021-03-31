@@ -91,7 +91,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="nationalCardTypesLoading"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
@@ -113,7 +113,7 @@
 			</b-field>
 
 			<b-field
-				label="Projects"
+				:label="$t('Projects')"
 				:type="validateType('projects')"
 				:message="validateMsg('projects')"
 			>
@@ -123,7 +123,7 @@
 					multiple
 					label="name"
 					track-by="id"
-					:placeholder="$t('Click to select...')"
+					:placeholder="$t('Click to select')"
 					:loading="projectsLoading"
 					:disabled="formDisabled"
 					:options="options.projects"
