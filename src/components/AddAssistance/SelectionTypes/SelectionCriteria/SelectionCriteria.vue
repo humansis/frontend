@@ -106,7 +106,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 
 export default {
-	name: "SelectionCriteriaPage",
+	name: "SelectionCriteria",
 
 	components: {
 		BeneficiariesModalList,
@@ -146,7 +146,7 @@ export default {
 	},
 
 	updated() {
-		if (this.groups.length) {
+		if (this.groups?.length) {
 			this.$emit("updatedData", this.prepareCriteria(), this.minimumSelectionScore);
 		}
 	},
