@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Criteria Target"
+				:label="$t('Criteria Target')"
 				:type="validateType('criteriaTarget')"
 				:message="validateMsg('criteriaTarget')"
 			>
@@ -10,7 +10,7 @@
 					v-model="formModel.criteriaTarget"
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
 					:searchable="false"
@@ -21,13 +21,13 @@
 			</b-field>
 
 			<b-field
-				label="Criteria"
+				:label="$t('Criteria')"
 				:type="validateType('criteria')"
 				:message="validateMsg('criteria')"
 			>
 				<MultiSelect
 					v-model="formModel.criteria"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:options="options.criteria"
 					:loading="criteriaLoading"
 					label="code"
@@ -40,13 +40,13 @@
 			</b-field>
 
 			<b-field
-				label="Condition"
+				:label="$t('Condition')"
 				:type="validateType('condition')"
 				:message="validateMsg('condition')"
 			>
 				<MultiSelect
 					v-model="formModel.condition"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					label="value"
 					track-by="code"
 					:options="options.conditions"
@@ -59,7 +59,7 @@
 
 			<b-field
 				v-if="fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION"
-				label="Value"
+				:label="$t('Value')"
 				:type="validateType('value')"
 				:message="validateMsg('value')"
 			>
@@ -67,7 +67,7 @@
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
 					v-model="formModel.value"
 					show-week-number
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					icon="calendar-day"
 					trap-focus
 					@input="validate('value')"
@@ -84,7 +84,7 @@
 					v-model="formModel.value"
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
 					:searchable="false"
@@ -122,10 +122,14 @@
 				:icon-right="advancedOptions ? 'arrow-up' : 'arrow-down'"
 				@click.prevent="advancedOptions = !advancedOptions"
 			>
-				Advanced Options
+				{{ $t('Advanced Options') }}
 			</b-button>
 
-			<b-field v-if="advancedOptions" label="Score Weight" class="mt-3">
+			<b-field
+				v-if="advancedOptions"
+				:label="$t('Score Weight')"
+				class="mt-3"
+			>
 				<b-numberinput
 					v-model="formModel.scoreWeight"
 					expanded
@@ -138,7 +142,7 @@
 
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				tag="input"
@@ -186,12 +190,12 @@ export default {
 				criteria: [],
 				conditions: [],
 				gender: [
-					{ code: "M", value: "Male" },
-					{ code: "F", value: "Female" },
+					{ code: "M", value: this.$t("Male") },
+					{ code: "F", value: this.$t("Female") },
 				],
 				boolean: [
-					{ code: true, value: "True" },
-					{ code: false, value: "False" },
+					{ code: true, value: this.$t("True") },
+					{ code: false, value: this.$t("False") },
 				],
 			},
 			valueSelectOptions: [],
@@ -271,7 +275,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaTargets()
 				.then(({ data }) => { this.options.criteriaTargets = data; })
 				.catch((e) => {
-					Notification(`Criteria Targets ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
 				});
 
 			this.criteriaTargetLoading = false;
@@ -283,7 +287,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
 				.then(({ data }) => { this.options.criteria = data; })
 				.catch((e) => {
-					Notification(`Criteria Fields ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
 				});
 
 			this.criteriaLoading = false;
@@ -304,7 +308,7 @@ export default {
 					}
 				})
 				.catch((e) => {
-					Notification(`Criteria Conditions ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
 				});
 
 			this.criteriaConditionsLoading = false;
@@ -318,7 +322,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					Notification(`Residence Statuses ${e}`, "is-danger");
+					Notification(`${this.$t("Residence Statuses")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;
@@ -332,7 +336,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					Notification(`Livelihoods ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;
@@ -344,7 +348,7 @@ export default {
 			await BeneficiariesService.getListOfLocationsTypes()
 				.then(({ data }) => { this.valueSelectOptions = data; })
 				.catch((e) => {
-					Notification(`Location Types ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;

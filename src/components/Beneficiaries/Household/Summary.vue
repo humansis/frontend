@@ -1,12 +1,12 @@
 <template>
 	<div>
 		<h4 class="title is-4 has-text-centered mt-5">
-			Please Add This Household To One Or More Project
+			Please Add This Household To One Or More Project {{ $t('') }}
 		</h4>
 		<div class="columns mb-5">
 			<div class="column is-half is-offset-one-quarter">
 				<b-field
-					label="Projects"
+					:label="$t('Projects')"
 					:type="validateType('selectedProjects')"
 					:message="validateMsg('selectedProjects', 'Projects are Required')"
 				>
@@ -16,7 +16,7 @@
 						track-by="id"
 						label="name"
 						multiple
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						:options="options.projects"
 						:class="validateMultiselect('selectedProjects')"
 						@select="validate('selectedProjects')"
@@ -24,22 +24,22 @@
 				</b-field>
 			</div>
 		</div>
-		<h4 class="title is-4 has-text-centered">Household Information Summary</h4>
+		<h4 class="title is-4 has-text-centered">{{ $t('Household Information Summary') }}</h4>
 		<div class="columns mb-5">
 			<div class="column is-half">
 				<div class="box">
-					<p class="title is-6">Current Address</p>
+					<p class="title is-6">{{ $t('Current Address') }}</p>
 					<p class="subtitle is-4">{{ address }}</p>
 				</div>
 			</div>
 			<div class="column is-half">
 				<div class="box">
-					<p class="title is-6">Current Location</p>
+					<p class="title is-6">{{ $t('Current Location') }}</p>
 					<p class="subtitle is-4">{{ location }}</p>
 				</div>
 			</div>
 		</div>
-		<h4 class="title is-4 has-text-centered">Household Members</h4>
+		<h4 class="title is-4 has-text-centered">{{ $t('Household Members') }}</h4>
 		<Table
 			:data="membersData"
 			:total="table.total"
@@ -104,8 +104,8 @@ export default {
 			},
 			table: {
 				columns: [
-					{ field: "firstName", label: "First Name (Local)" },
-					{ field: "familyName", label: "Family Name (Local)" },
+					{ field: "firstName", label: "First Name" },
+					{ field: "familyName", label: "Family Name" },
 					{ field: "gender", label: "Gender", type: "object" },
 					{ field: "dateBirth", label: "Date of Birth", type: "date" },
 					{ field: "phone", label: "Phone" },
@@ -133,7 +133,7 @@ export default {
 					this.options.projects = response.data;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			if (this.isEditing) {

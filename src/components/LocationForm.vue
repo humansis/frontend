@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			label="Province"
+			:label="$t('Province')"
 			:type="validateType('adm1Id')"
 			:message="validateMsg('adm1Id', 'Required')"
 		>
@@ -10,7 +10,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="options.provinces"
@@ -21,14 +21,17 @@
 
 		<b-field>
 			<template #label>
-				District<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('District') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm2Id"
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="options.districts"
@@ -38,14 +41,17 @@
 
 		<b-field>
 			<template #label>
-				Commune<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('Commune') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm3Id"
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="options.communes"
@@ -55,7 +61,10 @@
 
 		<b-field>
 			<template #label>
-				Village<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('Village') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm4Id"
@@ -63,7 +72,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="options.villages"
@@ -165,7 +174,7 @@ export default {
 			await LocationsService.getListOfAdm1()
 				.then((result) => { this.options.provinces = result.data; })
 				.catch((e) => {
-					Notification(`Adm1 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
 				});
 			this.provincesLoading = false;
 		},
@@ -175,7 +184,7 @@ export default {
 			await LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.options.districts = result.data; })
 				.catch((e) => {
-					Notification(`Adm2 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
 				});
 			this.districtsLoading = false;
 		},
@@ -185,7 +194,7 @@ export default {
 			await LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.options.communes = result.data; })
 				.catch((e) => {
-					Notification(`Adm3 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
 				});
 			this.communesLoading = false;
 		},
@@ -195,7 +204,7 @@ export default {
 			await LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.options.villages = result.data; })
 				.catch((e) => {
-					Notification(`Adm4 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
 		},

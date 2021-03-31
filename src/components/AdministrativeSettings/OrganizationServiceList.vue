@@ -23,7 +23,7 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="100"
 			centered
 		>
@@ -31,12 +31,12 @@
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 			</div>
@@ -101,7 +101,7 @@ export default {
 					this.table.data = data;
 					this.table.total = totalCount;
 				}).catch((e) => {
-					Notification(`Organizations ${e}`, "is-danger");
+					Notification(`${this.$t("Organizations")} ${e}`, "is-danger");
 				});
 
 			this.isLoadingList = false;

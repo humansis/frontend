@@ -22,7 +22,7 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="150"
 			centered
 		>
@@ -30,7 +30,7 @@
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
@@ -40,8 +40,8 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Community"
-					tooltip="Delete"
+					:entity="$t('Community')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -53,7 +53,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced search
+				{{ $t('Advanced search') }}
 			</b-button>
 		</template>
 		<template #filter>
@@ -133,7 +133,7 @@ export default {
 				this.table.total = totalCount;
 				this.table.data = await this.prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`Communities ${e}`, "is-danger");
+				Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

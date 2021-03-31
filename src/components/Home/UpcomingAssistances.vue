@@ -2,7 +2,7 @@
 	<div>
 		<Modal
 			can-cancel
-			header="Assistance Detail"
+			:header="$t('Assistance Detail')"
 			:active="assistanceModal.isOpened"
 			@close="closeAssistanceModal"
 		>

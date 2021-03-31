@@ -23,31 +23,31 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			centered
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="history"
 					type="is-link"
-					tooltip="Send History"
+					:tooltip="$t('Send History')"
 					@click.native="sendHistory(props.row.id)"
 				/>
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
 					entity="User"
-					tooltip="Delete"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -126,7 +126,7 @@ export default {
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`Users ${e}`, "is-danger");
+				Notification(`${this.$t("Users")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

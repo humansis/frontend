@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Username"
+				:label="$t('Username')"
 				:type="validateType('username')"
 				:message="validateMsg('username')"
 			>
@@ -14,7 +14,7 @@
 			</b-field>
 
 			<b-field
-				label="Email"
+				:label="$t('Email')"
 				:type="validateType('email')"
 				:message="validateMsg('email')"
 			>
@@ -27,7 +27,7 @@
 
 			<b-field
 				v-if="formModel.creating"
-				label="Password"
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
@@ -41,7 +41,7 @@
 			</b-field>
 
 			<b-field
-				label="Name"
+				:label="$t('Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -52,9 +52,7 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Shop"
-			>
+			<b-field :label="$t('Shop')">
 				<b-input
 					v-model="formModel.shop"
 					:disabled="formDisabled"
@@ -63,8 +61,10 @@
 
 			<b-field>
 				<template #label>
-					Address Street
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Street') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressStreet"
@@ -75,8 +75,10 @@
 
 			<b-field>
 				<template #label>
-					Address Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressNumber"
@@ -87,8 +89,10 @@
 
 			<b-field>
 				<template #label>
-					Address Postcode
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Postcode') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressPostcode"
@@ -105,7 +109,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"

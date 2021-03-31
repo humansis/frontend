@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Field"
+				:label="$t('Field')"
 				:type="validateType('field')"
 				:message="validateMsg('field')"
 			>
@@ -14,7 +14,7 @@
 			</b-field>
 
 			<b-field
-				label="Type"
+				:label="$t('Type')"
 				:type="validateType('type')"
 				:message="validateMsg('type')"
 			>
@@ -24,7 +24,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:disabled="formDisabled"
 					:options="options.types"
 					:class="validateMultiselect('type')"
@@ -34,7 +34,7 @@
 
 			<b-field
 				v-if="false"
-				label="Target"
+				:label="$t('Target')"
 				:type="validateType('target')"
 				:message="validateMsg('target')"
 			>
@@ -44,7 +44,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:disabled="formDisabled"
 					:options="options.targets"
 					:loading="loadingTargets"
@@ -58,7 +58,7 @@
 				v-if="closeButton"
 				@click="closeForm"
 			>
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -95,11 +95,11 @@ export default {
 				types: [
 					{
 						code: "number",
-						value: "Number",
+						value: this.$t("Number"),
 					},
 					{
 						code: "text",
-						value: "Text",
+						value: this.$t("Text"),
 					},
 				],
 				targets: [],
@@ -145,7 +145,7 @@ export default {
 			await AssistancesService.getTargetTypes()
 				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
-					Notification(`Target Types ${e}`, "is-danger");
+					Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 
 			this.formModel.target = this.options.targets

@@ -25,26 +25,26 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
 			centered
 			width="180"
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="edit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
 					entity="Project"
-					tooltip="Delete"
+					:tooltip="$t('Delete')"
 					:disabled="!props.row.deletable"
 					:id="props.row.id"
 					@submitted="onDelete"
@@ -126,7 +126,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Projects ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -170,7 +170,7 @@ export default {
 			return DonorService.getListOfDonors(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Donors ${e}`, "is-danger");
+					Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 				});
 		},
 

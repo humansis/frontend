@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Project"
+				:label="$t('Project')"
 				:type="validateType('projectId')"
 				:message="validateMsg('projectId')"
 			>
@@ -10,9 +10,9 @@
 					v-model="formModel.projectId"
 					v-if="!formDisabled"
 					searchable
-					placeholder="Click to select..."
 					label="name"
 					track-by="id"
+					:placeholder="$t('Click to select...')"
 					:disabled="formDisabled"
 					:options="projects"
 					:class="validateMultiselect('projectId')"
@@ -27,7 +27,7 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Quantity of Booklets"
+				:label="$t('Quantity of Booklets')"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
 			>
@@ -38,7 +38,7 @@
 					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					placeholder="Quantity of Booklets"
+					:placeholder="$t('Quantity of Booklets')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfBooklets')"
@@ -55,9 +55,9 @@
 					expanded
 					min="0"
 					type="is-dark"
-					placeholder="Quantity Of Vouchers"
 					controls-alignment="right"
 					controls-position="compact"
+					:placeholder="$t('Quantity Of Vouchers')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfVouchers')"
@@ -65,29 +65,29 @@
 			</b-field>
 
 			<b-field
-				label="Individual Value"
+				:label="$t('Individual Value')"
 				:type="validateType('values')"
 				:message="validateMsg('values')"
 			>
 				<b-taginput
 					v-model="formModel.values"
-					placeholder="Values"
+					:placeholder="$t('Values')"
 					:disabled="formDisabled"
 					@blur="validate('values')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Currency"
+				:label="$t('Currency')"
 				:type="validateType('currency')"
 				:message="validateMsg('currency')"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
 					searchable
-					placeholder="Click to select..."
-					label="value"
 					track-by="value"
+					:placeholder="$t('Click to select...')"
+					:label="$t('value')"
 					:disabled="formDisabled"
 					:options="options.currencies"
 					:class="validateMultiselect('currency')"
@@ -95,26 +95,21 @@
 				/>
 			</b-field>
 
-			<b-field
-				v-if="!formDisabled"
-				label="Define a Password"
-			>
-				<b-checkbox
-					v-model="formModel.defineAPassword"
-				/>
+			<b-field v-if="!formDisabled" :label="$t('Define a Password')">
+				<b-checkbox v-model="formModel.defineAPassword" />
 			</b-field>
 
 			<b-field
 				v-if="formModel.defineAPassword && !formDisabled"
-				label="Password"
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
+					:placeholder="$t('Password')"
 					:disabled="formDisabled"
 					@blur="validate('password')"
 				/>
@@ -125,7 +120,7 @@
 				v-if="closeButton"
 				@click="closeForm"
 			>
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -204,7 +199,7 @@ export default {
 				.then(({ data }) => {
 					this.projects = data;
 				}).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 	},

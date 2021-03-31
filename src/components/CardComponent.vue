@@ -9,7 +9,6 @@
 				v-if="headerIcon"
 				href="#"
 				class="card-header-icon"
-				aria-label="more options"
 				@click.prevent="headerIconClick"
 			>
 				<b-icon :icon="headerIcon" custom-size="default" />

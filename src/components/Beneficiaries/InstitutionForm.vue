@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Name"
+				:label="$t('Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -15,8 +15,10 @@
 
 			<b-field>
 				<template #label>
-					Contact Name
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Contact Name') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.contactGivenName"
@@ -27,8 +29,10 @@
 
 			<b-field>
 				<template #label>
-					Contact Family Name
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Contact Family Name') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.contactFamilyName"
@@ -38,7 +42,7 @@
 			</b-field>
 
 			<b-field
-				label="Type"
+				:label="$t('Type')"
 				:type="validateType('type')"
 				:message="validateMsg('type')"
 			>
@@ -49,7 +53,7 @@
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.types"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
 				>
@@ -68,15 +72,17 @@
 
 			<b-field>
 				<template #label>
-					Phone
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Phone') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-field grouped>
 					<b-field>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
 							searchable
-							placeholder="Phone Ext"
+							:placeholder="$t('Phone Ext')"
 							label="value"
 							track-by="code"
 							:disabled="formDisabled"
@@ -91,7 +97,7 @@
 							deselectLabel=""
 							label="value"
 							track-by="code"
-							placeholder="Phone Type"
+							:placeholder="$t('Phone Type')"
 							:disabled="formDisabled"
 							:loading="phoneTypesLoading"
 							:options="options.phoneTypes"
@@ -101,24 +107,30 @@
 					<b-field expanded>
 						<b-input
 							v-model="formModel.phoneNumber"
-							placeholder="Phone No."
+							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
 						/>
 					</b-field>
 				</b-field>
 			</b-field>
-			<b-checkbox v-model="formModel.phoneProxy" class="mb-4" :disabled="formDisabled">
-				Proxy
+			<b-checkbox
+				v-model="formModel.phoneProxy"
+				class="mb-4"
+				:disabled="formDisabled"
+			>
+				Proxy {{ $t('') }}
 			</b-checkbox>
 			<b-field>
 				<template #label>
-					Contact ID Type
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Contact ID Type') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
@@ -128,19 +140,21 @@
 
 			<b-field>
 				<template #label>
-					Contact ID Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Contact ID Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
-					placeholder="Contact ID Number"
+					:placeholder="$t('Contact ID Number')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
 			<b-field
-				label="Projects"
+				:label="$t('Projects')"
 				:type="validateType('projects')"
 				:message="validateMsg('projects')"
 			>
@@ -148,7 +162,7 @@
 					v-model="formModel.projects"
 					searchable
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					label="name"
 					track-by="id"
 					:loading="projectsLoading"
@@ -167,36 +181,42 @@
 
 			<b-field>
 				<template #label>
-					Address Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressNumber"
-					placeholder="Address Number"
+					:placeholder="$t('Address Number')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Address Street
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Street') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressStreet"
-					placeholder="Address Street"
+					:placeholder="$t('Address Street')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Address Postcode
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Postcode') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressPostCode"
-					placeholder="Address Postcode"
+					:placeholder="$t('Address Postcode')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
@@ -204,23 +224,27 @@
 			<b-field grouped>
 				<b-field>
 					<template #label>
-						Latitude
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						{{ $t('Latitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input
 						v-model="formModel.latitude"
-						placeholder="Latitude"
+						:placeholder="$t('Latitude')"
 						:disabled="formDisabled"
 					/>
 				</b-field>
 				<b-field>
 					<template #label>
-						Longitude
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						{{ $t('Longitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input
 						v-model="formModel.longitude"
-						placeholder="Longitude"
+						:placeholder="$t('Longitude')"
 						:disabled="formDisabled"
 					/>
 				</b-field>
@@ -228,7 +252,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -367,7 +391,7 @@ export default {
 					this.options.types = data;
 				})
 				.catch((e) => {
-					Notification(`Institution Types ${e}`, "is-danger");
+					Notification(`${this.$t("Institution Types")} ${e}`, "is-danger");
 				});
 
 			this.institutionTypesLoading = false;
@@ -379,7 +403,7 @@ export default {
 					this.options.nationalCardTypes = data;
 				})
 				.catch((e) => {
-					Notification(`National IDs ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 
 			this.nationalCardTypesLoading = false;
@@ -391,7 +415,7 @@ export default {
 					this.options.phoneTypes = data;
 				})
 				.catch((e) => {
-					Notification(`Phone types ${e}`, "is-danger");
+					Notification(`${this.$t("Phone types")} ${e}`, "is-danger");
 				});
 
 			this.phoneTypesLoading = false;
@@ -403,7 +427,7 @@ export default {
 					this.options.projects = data;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.projectsLoading = false;

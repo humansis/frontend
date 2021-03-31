@@ -53,7 +53,7 @@ export default {
 				.then(({ data }) => {
 					this.loadIconsToState(data);
 				}).catch((e) => {
-					Notification(`Icons ${e}`, "is-danger");
+					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});
 		},
 	},

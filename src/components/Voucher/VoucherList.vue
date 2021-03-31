@@ -27,7 +27,7 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="145"
 			centered
 		>
@@ -35,18 +35,18 @@
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
 					entity="Voucher"
-					tooltip="Delete"
+					:tooltip="$t('Delete')"
 					:disabled="!props.row.deletable"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
-				<ActionButton icon="print" type="is-dark" tooltip="Print" />
+				<ActionButton icon="print" type="is-dark" :tooltip="$t('Print')" />
 			</div>
 		</b-table-column>
 		<template #filterButton>
@@ -55,7 +55,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced search
+				{{ $t('Advanced search') }}
 			</b-button>
 		</template>
 		<template #progress>
@@ -131,9 +131,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {
-				result = "Detail of Voucher";
+				result = this.$t("Detail of Voucher");
 			} else {
-				result = "Create New Voucher";
+				result = this.$t("Create New Voucher");
 			}
 			return result;
 		},

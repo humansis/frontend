@@ -20,7 +20,7 @@
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Province</p>
+					<p class="heading">{{ $t('Province') }}</p>
 					<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -28,7 +28,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Beneficiaries</p>
+					<p class="heading">{{ $t('Beneficiaries') }}</p>
 					<p v-if="beneficiaries" class="has-text-weight-bold is-size-5">{{
 						beneficiariesCount }}
 					</p>
@@ -38,7 +38,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Date Of Distribution</p>
+					<p class="heading">{{ $t('Date of Distribution') }}</p>
 					<p
 						v-if="dateDistribution"
 						class="has-text-weight-bold is-size-5"
@@ -51,7 +51,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Project</p>
+					<p class="heading">{{ $t('Project') }}</p>
 					<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -59,7 +59,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Target</p>
+					<p class="heading">{{ $t('Target') }}</p>
 					<p
 						v-if="assistanceTarget"
 						class="has-text-weight-bold is-size-5"
@@ -72,7 +72,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box commodity-item">
-					<p class="heading">Commodity</p>
+					<p class="heading">{{ $t('Commodity') }}</p>
 					<p
 						v-if="commodity"
 						class="has-text-weight-bold is-size-5"

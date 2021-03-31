@@ -4,7 +4,7 @@
 		<form class="box">
 			<b-field
 				v-if="visible.communities"
-				label="Communities"
+				:label="$t('Communities')"
 				:type="validateType('communities')"
 				:message="validateMsg('communities')"
 			>
@@ -14,23 +14,20 @@
 					label="name"
 					track-by="id"
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:options="options.communities"
 					:loading="loading.communities"
 					:class="validateMultiselect('communities')"
 					@select="validate('communities')"
 				>
-					<template
-						#singleLabel
-						v-slot:default="option"
-					>
+					<template #singleLabel v-slot:default="option">
 						{{ option.code }}
 					</template>
 				</MultiSelect>
 			</b-field>
 			<b-field
 				v-if="visible.institutions"
-				label="Institutions"
+				:label="$t('Institutions')"
 				:type="validateType('institutions')"
 				:message="validateMsg('institutions')"
 			>
@@ -40,7 +37,7 @@
 					label="name"
 					track-by="id"
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					group-values="data"
 					group-label="label"
 					group-select
@@ -49,10 +46,7 @@
 					:class="validateMultiselect('institutions')"
 					@select="validate('institutions')"
 				>
-					<template
-						#singleLabel
-						v-slot:default="option"
-					>
+					<template #singleLabel v-slot:default="option">
 						{{ option.code }}
 					</template>
 				</MultiSelect>
@@ -102,7 +96,7 @@ export default {
 
 	computed: {
 		title() {
-			return this.visible?.communities ? "Communities" : "Institutions";
+			return this.visible?.communities ? this.$t("Communities") : this.$t("Institutions");
 		},
 	},
 
@@ -155,7 +149,7 @@ export default {
 					this.options.institutions = this.prepareInstitutionsForSelect(data);
 				})
 				.catch((e) => {
-					Notification(`Institutions ${e}`, "is-danger");
+					Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 				});
 			this.loading.institutions = false;
 		},
@@ -166,7 +160,7 @@ export default {
 					this.options.communities = await this.prepareCommunitiesForSelect(data);
 				})
 				.catch((e) => {
-					Notification(`Communities ${e}`, "is-danger");
+					Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 				});
 			this.loading.communities = false;
 		},

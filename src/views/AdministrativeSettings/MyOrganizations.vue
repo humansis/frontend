@@ -176,7 +176,7 @@ export default {
 			await MyOrganizationsService.printMyOrganization(id)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast(this.$t("Download is starting"), "is-success");
+						Toast(this.$t("Download Is Starting"), "is-success");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Organization")} ${e}`, "is-danger");

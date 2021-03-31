@@ -2,7 +2,7 @@
 	<b-field>
 		<b-input
 			v-model="value"
-			placeholder="Search..."
+			:placeholder="$t('Search...')"
 			type="search"
 			icon="search"
 			:loading="loading"

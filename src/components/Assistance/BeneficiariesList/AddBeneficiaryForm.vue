@@ -2,23 +2,25 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<p v-if="!formModel.removingId" class="mb-5">
-				Please select the beneficiaries that you want to add to the
-				<strong>{{ assistance.name }}</strong> distribution.
+				{{ $t('Please select the beneficiaries that you want to add to the') }}
+				<strong>{{ assistance.name }}</strong>{{ $t('distribution') }}.
 			</p>
 			<p v-if="formModel.removingId" class="mb-5">
-				You Are About To Remove This Beneficiary From <strong>{{ assistance.name }}</strong>
-				Distribution<br>Do You Wish To Continue?
+				{{ $t('You are about to remove this beneficiary from') }}
+				<strong>{{ assistance.name }}</strong>
+				{{ $t('distribution') }}.<br>
+				{{ $t('Do you wish to continue?') }}
 			</p>
 			<b-field
 				v-if="!formModel.removingId"
-				label="Beneficiaries"
+				:label="$t('Beneficiaries')"
 				:type="validateType('beneficiaries')"
 				:message="validateMsg('beneficiaries')"
 			>
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					label="name"
 					track-by="id"
 					:loading="loading.beneficiaries"
@@ -44,7 +46,7 @@
 				</MultiSelect>
 			</b-field>
 			<b-field
-				label="Justification"
+				:label="$t('Justification')"
 				:type="validateType('justification')"
 				:message="validateMsg('justification')"
 			>
@@ -56,7 +58,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -131,7 +133,7 @@ export default {
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
-					Notification(`Project Beneficiaries ${e}`, "is-danger");
+					Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
 				});
 			this.loading.beneficiaries = false;
 		},

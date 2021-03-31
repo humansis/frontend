@@ -39,7 +39,7 @@ export default {
 			filtersOptions: {
 				projects: {
 					name: "Project",
-					placeholder: "Select Project",
+					placeholder: this.$t("Select Project"),
 					multiple: true,
 					trackBy: "id",
 					label: "name",
@@ -48,14 +48,14 @@ export default {
 				},
 				vulnerabilities: {
 					name: "Vulnerability",
-					placeholder: "Select Vulnerability",
+					placeholder: this.$t("Select Vulnerability"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				gender: {
 					name: "Gender",
-					placeholder: "Select Gender",
+					placeholder: this.$t("Select Gender"),
 					data: [
 						{ code: "M", value: "Male" },
 						{ code: "F", value: "Female" },
@@ -63,28 +63,28 @@ export default {
 				},
 				residencyStatuses: {
 					name: "Residence Status",
-					placeholder: "Select Residence",
+					placeholder: this.$t("Select Residence"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				referralTypes: {
 					name: "Referral",
-					placeholder: "Select Referral",
+					placeholder: this.$t("Select Referral"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				livelihoods: {
 					name: "Livelihood",
-					placeholder: "Select Livelihood",
+					placeholder: this.$t("Select Livelihood"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				adm1: {
 					name: "Province",
-					placeholder: "Select Province",
+					placeholder: this.$t("Select Province"),
 					trackBy: "id",
 					label: "name",
 					loading: true,
@@ -94,7 +94,7 @@ export default {
 				},
 				adm2: {
 					name: "District",
-					placeholder: "Select District",
+					placeholder: this.$t("Select District"),
 					trackBy: "id",
 					label: "name",
 					data: [],
@@ -102,7 +102,7 @@ export default {
 				},
 				adm3: {
 					name: "Commune",
-					placeholder: "Select Commune",
+					placeholder: this.$t("Select Commune"),
 					trackBy: "id",
 					label: "name",
 					data: [],
@@ -110,7 +110,7 @@ export default {
 				},
 				adm4: {
 					name: "Village",
-					placeholder: "Select Village",
+					placeholder: this.$t("Select Village"),
 					trackBy: "id",
 					label: "name",
 					data: [],
@@ -190,7 +190,7 @@ export default {
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
@@ -201,7 +201,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Provinces ${e}`, "is-danger");
+					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
 				});
 		},
 
@@ -213,7 +213,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Districts ${e}`, "is-danger");
+					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
 				});
 		},
 
@@ -225,7 +225,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Communes ${e}`, "is-danger");
+					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
 				});
 		},
 
@@ -237,7 +237,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Villages ${e}`, "is-danger");
+					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
 				});
 		},
 
@@ -248,7 +248,7 @@ export default {
 					this.filtersOptions.livelihoods.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Livelihoods ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 		},
 
@@ -259,7 +259,7 @@ export default {
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Vulnerabilities ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -270,7 +270,7 @@ export default {
 					this.filtersOptions.residencyStatuses.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Residency Statuses ${e}`, "is-danger");
+					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 		},
 
@@ -281,7 +281,7 @@ export default {
 					this.filtersOptions.referralTypes.data = data;
 				})
 				.catch((e) => {
-					Notification(`Referral Types ${e}`, "is-danger");
+					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
 		},
 	},

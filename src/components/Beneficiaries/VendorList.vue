@@ -23,26 +23,26 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
 			width="190"
 			centered
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Vendor"
-					tooltip="Delete"
+					:entity="$t('Vendor')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -121,7 +121,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Vendors ${e}`, "is-danger");
+				Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 			});
 			this.isLoadingList = false;
 		},
@@ -151,7 +151,7 @@ export default {
 			if (!vendors?.length) return [];
 			return LocationsService.getLocations(vendors, "locationId")
 				.then(({ data }) => data).catch((e) => {
-					Notification(`Locations ${e}`, "is-danger");
+					Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
@@ -159,7 +159,7 @@ export default {
 			if (!vendors?.length) return [];
 			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
 				.then(({ data }) => data).catch((e) => {
-					Notification(`Users ${e}`, "is-danger");
+					Notification(`${this.$t("Users")} ${e}`, "is-danger");
 				});
 		},
 	},

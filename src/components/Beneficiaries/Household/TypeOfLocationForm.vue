@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			label="Type of Location"
+			:label="$t('Type of Location')"
 			:type="validateType('typeOfLocation')"
 			:message="validateMsg('typeOfLocation')"
 		>
@@ -9,7 +9,7 @@
 				v-model="formModel.typeOfLocation"
 				label="value"
 				track-by="code"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="locationTypesLoading"
 				:options="options.typeOfLocation"
 				:searchable="false"
@@ -30,13 +30,13 @@
 		</b-field>
 		<div v-if="campSelected">
 			<b-field
-				label="Camp"
+				:label="$t('Camp')"
 				:type="validateType('camp')"
 				:message="validateMsg('camp')"
 			>
 				<MultiSelect
 					v-model="formModel.camp"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					label="name"
 					track-by="id"
 					:options="options.camps"
@@ -48,64 +48,64 @@
 
 			<b-field
 				grouped
-				label="Camp Name"
+				:label="$t('Camp Name')"
 				:type="validateType('campName')"
 				:message="validateMsg('campName')"
 			>
-				<b-checkbox v-model="createCamp">Create a Camp</b-checkbox>
+				<b-checkbox v-model="createCamp">{{ $t('Create a Camp') }}</b-checkbox>
 				<b-input
 					v-if="createCamp"
 					v-model="formModel.campName"
-					placeholder="Camp name"
+					:placeholder="$t('Camp name')"
 					@blur="validate('campName')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Tent Number"
+				:label="$t('Tent Number')"
 				:type="validateType('tentNumber')"
 				:message="validateMsg('tentNumber')"
 			>
 				<b-input
 					v-model="formModel.tentNumber"
-					placeholder="Tent Number"
+					:placeholder="$t('Tent Number')"
 					@blur="validate('tentNumber')"
 				/>
 			</b-field>
 		</div>
 		<div v-else>
 			<b-field
-				label="Address Number"
+				:label="$t('Address Number')"
 				:type="validateType('number')"
 				:message="validateMsg('number')"
 			>
 				<b-input
 					v-model="formModel.number"
-					placeholder="Address Number"
+					:placeholder="$t('Address Number')"
 					@blur="validate('number')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Address Street"
+				:label="$t('Address Street')"
 				:type="validateType('street')"
 				:message="validateMsg('street')"
 			>
 				<b-input
 					v-model="formModel.street"
-					placeholder="Address Street"
+					:placeholder="$t('Address Street')"
 					@blur="validate('street')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Address Postcode"
+				:label="$t('Address Postcode')"
 				:type="validateType('postcode')"
 				:message="validateMsg('postcode')"
 			>
 				<b-input
 					v-model="formModel.postcode"
-					placeholder="Address Postcode"
+					:placeholder="$t('Address Postcode')"
 					@blur="validate('postcode')"
 				/>
 			</b-field>
@@ -180,7 +180,7 @@ export default {
 					this.options.typeOfLocation = result.data;
 				})
 				.catch((e) => {
-					Notification(`Location Types ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
 				});
 			this.locationTypesLoading = false;
 		},
@@ -192,7 +192,7 @@ export default {
 					this.options.camps = data;
 				})
 				.catch((e) => {
-					Notification(`Camps ${e}`, "is-danger");
+					Notification(`${this.$t("Camps")} ${e}`, "is-danger");
 				});
 			this.campsLoading = false;
 		},

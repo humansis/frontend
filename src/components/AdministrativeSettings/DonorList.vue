@@ -26,7 +26,7 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="145"
 			centered
 		>
@@ -34,19 +34,19 @@
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Donor"
+					:entity="$t('Donor')"
 					:id="props.row.id"
-					tooltip="Delete"
+					:tooltip="$t('Delete')"
 					@submitted="remove"
 				/>
 			</div>
@@ -126,7 +126,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Donors ${e}`, "is-danger");
+				Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

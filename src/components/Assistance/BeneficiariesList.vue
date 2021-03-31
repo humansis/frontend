@@ -3,14 +3,15 @@
 		<Modal
 			can-cancel
 			:header="addBeneficiaryModel.removingId ?
-				'Remove Beneficiary From This Assistance' : 'Add Beneficiaries To This Assistance'
+				$t('Remove Beneficiary From This Assistance')
+				: $t('Add Beneficiaries To This Assistance')
 			"
 			:active="addBeneficiaryModal.isOpened"
 			@close="closeAddBeneficiaryModal"
 		>
 			<AddBeneficiaryForm
 				close-button
-				submit-button-label="Confirm"
+				:submit-button-label="$t('Confirm')"
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
 				@addingSubmitted="submitAddBeneficiaryForm"
@@ -20,13 +21,14 @@
 		</Modal>
 		<Modal
 			can-cancel
-			:header="beneficiaryModal.isEditing ? 'Edit This Beneficiary' : 'Detail of Beneficiary'"
+			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
+				: $t('Detail of Beneficiary')"
 			:active="beneficiaryModal.isOpened"
 			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
 				close-button
-				submit-button-label="Save"
+				:submit-button-label="$t('Save')"
 				class="modal-card"
 				:disabled="!beneficiaryModal.isEditing"
 				:formModel="beneficiaryModel"
@@ -41,7 +43,7 @@
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null)"
 			>
-				Add
+				{{ $t('Add') }}
 			</b-button>
 			<b-field v-if="changeButton">
 				<p class="control">
@@ -105,20 +107,20 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				label="Actions"
+				:label="$t('Actions')"
 				centered
 				width="110"
 			>
 				<div class="buttons is-right">
 					<ActionButton
 						icon="edit"
-						tooltip="Edit"
+						:tooltip="$t('Edit')"
 						@click.native="showEdit(props.row)"
 					/>
 					<ActionButton
 						icon="trash"
 						type="is-danger"
-						tooltip="Delete"
+						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 				</div>
@@ -273,7 +275,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Beneficiaries ${e}`, "is-danger");
+				Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -333,7 +335,7 @@ export default {
 					this.$route.params.assistanceId, beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
-					Notification(`General Relief ${e}`, "is-danger");
+					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
 				});
 		},
 
@@ -357,7 +359,8 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
 					? "none"
-					: this.prepareEntityForTable(item.phoneIds[0], phones, "number", "none");
+					: this.prepareEntityForTable(item.phoneIds[0], phones,
+						"number", "none");
 			});
 			this.table.progress += 15;
 		},
@@ -374,7 +377,8 @@ export default {
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? "none"
-					: this.prepareEntityForTable(item.nationalIds[0], nationalIds, "number", "none");
+					: this.prepareEntityForTable(item.nationalIds[0],
+						nationalIds, "number", "none");
 			});
 			this.table.progress += 15;
 		},
@@ -384,7 +388,7 @@ export default {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`National IDs ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 		},
 
@@ -393,7 +397,7 @@ export default {
 			return BeneficiariesService.getPhones(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Phones ${e}`, "is-danger");
+					Notification(`${this.$t("Phones")} ${e}`, "is-danger");
 				});
 		},
 
@@ -423,10 +427,15 @@ export default {
 			await BeneficiariesService
 				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
 				.then(() => {
-					Toast("Beneficiary Successfully Removed", "is-success");
+					Toast(this.$t("Beneficiary Successfully Removed"), "is-success");
 					this.fetchData();
 				})
-				.catch((e) => { Notification(`Beneficiary ${e}`, "is-danger"); });
+				.catch((e) => {
+					Notification(
+						`${this.$t("Beneficiary")} ${e}`,
+						"is-danger",
+					);
+				});
 
 			this.closeAddBeneficiaryModal();
 		},
@@ -441,11 +450,11 @@ export default {
 			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body)
 				.then(({ status }) => {
 					if (status === 200) {
-						Toast("Beneficiary Successfully Added", "is-success");
+						Toast(this.$t("Beneficiary Successfully Added"), "is-success");
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`Beneficiary ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiary")} ${e}`, "is-danger");
 				});
 			this.addBeneficiaryModal.isOpened = false;
 			this.$emit("onBeneficiaryListChange");
@@ -476,7 +485,7 @@ export default {
 		},
 
 		prepareGender(gender) {
-			return gender === "F" ? "Female" : "Male";
+			return gender === "F" ? this.$t("Female") : this.$t("Male");
 		},
 
 		showEdit({ id }) {
@@ -491,7 +500,7 @@ export default {
 			AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

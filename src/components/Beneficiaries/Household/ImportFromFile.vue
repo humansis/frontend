@@ -14,10 +14,7 @@
 									<section class="section">
 										<div class="content has-text-centered">
 											<p>
-												<b-icon
-													icon="upload"
-													size="is-large"
-												/>
+												<b-icon icon="upload" size="is-large" />
 											</p>
 											<p>{{ uploadText }}</p>
 										</div>
@@ -42,7 +39,7 @@
 								class="m-5"
 								track-by="id"
 								label="name"
-								placeholder="Click to select..."
+								:placeholder="$t('Click to select...')"
 								:options="projects"
 							/>
 						</div>
@@ -56,14 +53,14 @@
 				class="m-2"
 				@click="convertFile"
 			>
-				Convert File
+				{{ $t('Convert File') }}
 			</b-button>
 			<b-button
 				icon-left="download"
 				class="mt-2"
 				@click="downloadTemplate"
 			>
-				Download Template
+				{{ $t('Download Template') }}
 			</b-button>
 			<b-dropdown
 				v-model="currentFormat"
@@ -95,7 +92,7 @@
 				icon-left="file-import"
 				@click="importFile"
 			>
-				Import
+				{{ $t('Import') }}
 			</b-button>
 		</div>
 	</div>
@@ -125,7 +122,8 @@ export default {
 
 	computed: {
 		uploadText() {
-			return !this.dropFile ? "Drop your files here or click to upload" : this.dropFile.name;
+			return !this.dropFile
+				? this.$t("Drop your files here or click to upload") : this.dropFile.name;
 		},
 	},
 
@@ -152,7 +150,10 @@ export default {
 
 		importFile() {
 			if (!this.dropFile || !this.selectedProject) {
-				Toast("You must insert file for import and select project before uploading", "is-danger");
+				Toast(
+					this.$t("You must insert file for import and select project before uploading"),
+					"is-danger",
+				);
 			}
 			// TODO route to next page and prepare file for show
 		},

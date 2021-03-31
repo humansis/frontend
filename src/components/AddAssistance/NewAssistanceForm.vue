@@ -1,28 +1,28 @@
 <template>
 	<div>
-		<h1 class="title">New Assistance</h1>
+		<h1 class="title">{{ $t('New Assistance') }}</h1>
 
-		<h2 class="subtitle">Location and Date</h2>
+		<h2 class="subtitle">{{ $t('Location and Date') }}</h2>
 		<div class="box">
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 			/>
-			<b-field label="Date of Assistance">
+			<b-field :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					icon="calendar-day"
 					trap-focus
 				/>
 			</b-field>
 		</div>
 
-		<h2 class="subtitle">Target</h2>
+		<h2 class="subtitle">{{ $t('Target') }}</h2>
 		<div class="box">
 			<b-field
-				label="Sector"
+				:label="$t('Sector')"
 				:type="validateType('sector')"
 				:message="validateMsg('sector')"
 			>
@@ -31,7 +31,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="loading.sectors"
 					:options="options.sectors"
 					:class="validateMultiselect('sector')"
@@ -50,7 +50,7 @@
 				</MultiSelect>
 			</b-field>
 			<b-field
-				label="Subsector"
+				:label="$t('Subsector')"
 				:type="validateType('subsector')"
 				:message="validateMsg('subsector')"
 			>
@@ -59,7 +59,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="loading.subsectors"
 					:options="options.subsectors"
 					:class="validateMultiselect('subsector')"
@@ -78,14 +78,14 @@
 				</MultiSelect>
 			</b-field>
 			<b-field
-				label="Assistance Type"
+				:label="$t('Assistance Type')"
 				:type="validateType('assistanceType')"
 				:message="validateMsg('assistanceType')"
 			>
 				<MultiSelect
 					v-model="formModel.assistanceType"
 					searchable
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="loading.assistanceTypes"
 					:options="options.assistanceTypes"
 					:class="validateMultiselect('assistanceType')"
@@ -104,7 +104,7 @@
 				</MultiSelect>
 			</b-field>
 			<b-field
-				label="Target Type"
+				:label="$t('Target Type')"
 				:type="validateType('targetType')"
 				:message="validateMsg('targetType')"
 			>
@@ -113,7 +113,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select...')"
 					:loading="loading.targetTypes"
 					:options="options.targetTypes"
 					:class="validateMultiselect('targetType')"
@@ -357,7 +357,7 @@ export default {
 					this.options.sectors = data;
 				})
 				.catch((e) => {
-					Notification(`Sectors ${e}`, "is-danger");
+					Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 				});
 			this.loading.sectors = false;
 		},
@@ -369,7 +369,7 @@ export default {
 					this.options.subsectors = data;
 				})
 				.catch((e) => {
-					Notification(`Subsectors ${e}`, "is-danger");
+					Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
 				});
 			this.loading.subsectors = false;
 		},
@@ -381,7 +381,7 @@ export default {
 					this.options.assistanceTypes = data;
 				})
 				.catch((e) => {
-					Notification(`Assistance Types ${e}`, "is-danger");
+					Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
 				});
 			this.loading.assistanceTypes = false;
 		},
@@ -393,7 +393,7 @@ export default {
 					this.options.targetTypes = data;
 				})
 				.catch((e) => {
-					Notification(`Target Types ${e}`, "is-danger");
+					Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 			this.loading.targetTypes = false;
 		},

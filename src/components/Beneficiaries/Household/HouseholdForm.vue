@@ -2,7 +2,7 @@
 	<form ref="householdFormComponent">
 		<div class="columns is-multiline">
 			<div class="column is-half">
-				<h4 class="title is-4">Current Location</h4>
+				<h4 class="title is-4">{{ $t('Current Location') }}</h4>
 				<LocationForm
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
@@ -11,7 +11,7 @@
 				/>
 			</div>
 			<div class="column is-half">
-				<h4 class="title is-4">Type of Location</h4>
+				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
@@ -21,18 +21,20 @@
 		</div>
 		<div class="columns is-multiline">
 			<div class="column is-one-third">
-				<h4 class="title is-4">Livelihood</h4>
+				<h4 class="title is-4">{{ $t('Livelihood') }}</h4>
 				<b-field>
 					<template #label>
-						<span>Livelihood</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Livelihood') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.livelihood"
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						:loading="livelihoodLoading"
 						:options="options.livelihood"
 					/>
@@ -40,23 +42,27 @@
 
 				<b-field>
 					<template #label>
-						<span>Income Level</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Income Level') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.incomeLevel"
 						searchable
 						label="value"
 						track-by="id"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						:options="options.incomeLevel"
 					/>
 				</b-field>
 
 				<b-field>
 					<template #label>
-						<span>Debt Level</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Debt Level') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.debtLevel"
@@ -70,8 +76,10 @@
 
 				<b-field>
 					<template #label>
-						<span>Assets</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>Assets {{ $t('') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<MultiSelect
 						v-model="formModel.livelihood.assets"
@@ -79,7 +87,7 @@
 						multiple
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						:loading="assetsLoading"
 						:options="options.assets"
 					/>
@@ -87,8 +95,10 @@
 
 				<b-field>
 					<template #label>
-						<span>Food Consumption Score</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Food Consumption Score') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.foodConsumptionScore"
@@ -102,8 +112,10 @@
 
 				<b-field>
 					<template #label>
-						<span>Coping Strategies Index</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Coping Strategies Index') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-numberinput
 						v-model="formModel.livelihood.copingStrategiesIndex"
@@ -116,11 +128,13 @@
 				</b-field>
 			</div>
 			<div class="column is-one-third">
-				<h4 class="title is-4">External Support</h4>
+				<h4 class="title is-4">{{ $t('External Support') }}</h4>
 				<b-field>
 					<template #label>
-						<span>External Support Received Type</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('External Support Received Type') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<MultiSelect
 						v-model="formModel.externalSupport.externalSupportReceivedType"
@@ -128,20 +142,20 @@
 						multiple
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						:options="options.externalSupportReceivedType"
 					/>
 				</b-field>
 
 				<b-field
-					label="Support Date Received"
+					:label="$t('Support Date Received')"
 					:type="validateType('externalSupport.supportDateReceived')"
 					:message="validateMsg('externalSupport.supportDateReceived')"
 				>
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select...')"
 						icon="calendar-day"
 						trap-focus
 						@input="validate('externalSupport.supportDateReceived')"
@@ -150,46 +164,54 @@
 
 				<b-field>
 					<template #label>
-						<span>Support Organization</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Support Organization') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.externalSupport.supportOrganization" />
 				</b-field>
 			</div>
 			<div class="column is-one-third">
-				<h4 class="title is-4">Country Specific Options</h4>
+				<h4 class="title is-4">{{ $t('Country Specific Options') }}</h4>
 				<b-field
 					v-for="option in countrySpecificOptions"
 					:key="option.id"
 				>
 					<template #label>
 						<span>{{ normalizeText(option.field) }}</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
 				</b-field>
 			</div>
 		</div>
-		<h4 class="title is-4">Household Status</h4>
+		<h4 class="title is-4">{{ $t('Household Status') }}</h4>
 		<b-field>
 			<template #label>
-				<span>Shelter Type</span>
-				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				<span>{{ $t('Shelter Type') }}</span>
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.shelterStatus"
 				searchable
 				label="value"
 				track-by="code"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select...')"
 				:loading="shelterStatusLoading"
 				:options="options.shelterStatuses"
 			/>
 		</b-field>
 		<b-field>
 			<template #label>
-				<span>Notes</span>
-				<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				<span>{{ $t('Notes') }}</span>
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<b-input v-model="formModel.notes" type="textarea" />
 		</b-field>
@@ -337,15 +359,15 @@ export default {
 				switch (typeOfLocation) {
 					case "camp":
 						return AddressService.getCampAddress(addressId).catch((e) => {
-							Notification(`Camp Address ${e}`, "is-danger");
+							Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 						});
 					case "residence":
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
-							Notification(`Residence Address ${e}`, "is-danger");
+							Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 						});
 					case "temporary_settlement":
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							Notification(`Temporary Settlement Address ${e}`, "is-danger");
+							Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
 						});
 					default:
 						return null;
@@ -404,7 +426,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					Notification(`Support Received Types ${e}`, "is-danger");
+					Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
 				});
 		},
 
@@ -412,7 +434,7 @@ export default {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
-					Notification(`Livelihoods ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 			this.livelihoodLoading = false;
 		},
@@ -421,7 +443,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					Notification(`Assets ${e}`, "is-danger");
+					Notification(`${this.$t("Assets")} ${e}`, "is-danger");
 				});
 			this.assetsLoading = false;
 		},
@@ -430,7 +452,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					Notification(`Shelter Types ${e}`, "is-danger");
+					Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -439,7 +461,7 @@ export default {
 			await CountrySpecificOptionsService.getListOfCountrySpecificOptions()
 				.then(({ data }) => { this.countrySpecificOptions = data; })
 				.catch((e) => {
-					Notification(`Country Specific Options ${e}`, "is-danger");
+					Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 				});
 		},
 
