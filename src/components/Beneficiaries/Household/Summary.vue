@@ -104,12 +104,12 @@ export default {
 			},
 			table: {
 				columns: [
-					{ field: "firstName", label: "First Name" },
-					{ field: "familyName", label: "Family Name" },
-					{ field: "gender", label: "Gender", type: "object" },
-					{ field: "dateBirth", label: "Date of Birth", type: "date" },
-					{ field: "phone", label: "Phone" },
-					{ field: "nationalId", label: "National ID" },
+					{ field: "firstName", label: this.$t("First Name") },
+					{ field: "familyName", label: this.$t("Family Name") },
+					{ field: "gender", label: this.$t("Gender"), type: "object" },
+					{ field: "dateBirth", label: this.$t("Date of Birth"), type: "date" },
+					{ field: "phone", label: this.$t("Phone") },
+					{ field: "nationalId", label: this.$t("National ID") },
 				],
 				total: 0,
 			},
