@@ -196,7 +196,6 @@ export default {
 			});
 		},
 
-		// TODO Fix after we have image handler, crashes on image
 		async updateProduct(id, productBody, image) {
 			this.productModal.isWaiting = true;
 
@@ -214,7 +213,6 @@ export default {
 		},
 
 		async uploadImage(id, image) {
-			console.log(image);
 			if (image) {
 				await ProductService.uploadImage(id, image);
 			}
