@@ -1,10 +1,12 @@
+import i18n from "@/plugins/i18n";
+
 export default {
 	methods: {
 		prepareEntityForTable(id, entities, returnedParam = null, emptyValue = "") {
 			if (!entities?.length) return emptyValue;
 			const entity = entities.find((item) => item.id === id);
 			if (!entity) {
-				return (emptyValue === "none") ? this.$root.$i18n.t(emptyValue) : emptyValue;
+				return (emptyValue === "none") ? i18n.t(emptyValue) : emptyValue;
 			}
 			if (returnedParam) {
 				return entity[returnedParam];

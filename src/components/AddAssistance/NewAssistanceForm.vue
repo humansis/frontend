@@ -276,10 +276,10 @@ export default {
 			this.fetchTargetTypes();
 		},
 
-		onTargetTypeSelect(targetType) {
+		async onTargetTypeSelect(targetType) {
 			this.validate("targetType");
 			this.$emit("onTargetSelect", targetType);
-			this.showComponents();
+			await this.showComponents();
 		},
 
 		async showComponents() {
