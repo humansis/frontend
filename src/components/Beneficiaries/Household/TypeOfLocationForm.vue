@@ -56,7 +56,7 @@
 				<b-input
 					v-if="createCamp"
 					v-model="formModel.campName"
-					:placeholder="$t('Camp name')"
+					:placeholder="$t('Camp Name')"
 					@blur="validate('campName')"
 				/>
 			</b-field>
