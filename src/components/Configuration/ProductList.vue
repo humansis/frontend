@@ -42,7 +42,7 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Product"
+					:entity="$t('Product')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"

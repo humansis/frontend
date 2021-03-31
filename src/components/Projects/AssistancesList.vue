@@ -62,7 +62,7 @@
 				<SafeDelete
 					v-if="!props.row.validated"
 					icon="trash"
-					entity="Assistance"
+					:entity="$t('Assistance')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="$emit('onRemove', $event)"

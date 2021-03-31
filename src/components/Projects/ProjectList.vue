@@ -43,7 +43,7 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Project"
+					:entity="$t('Project')"
 					:tooltip="$t('Delete')"
 					:disabled="!props.row.deletable"
 					:id="props.row.id"

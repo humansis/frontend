@@ -44,7 +44,7 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Country Specific Option"
+					:entity="$t('Country Specific Option')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"

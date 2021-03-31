@@ -104,11 +104,11 @@ export default {
 		return {
 			table: {
 				columns: [
-					{ field: "criteriaTarget", label: "Criteria Target" },
-					{ field: "criteria", label: "Criteria" },
-					{ field: "condition", label: "Condition" },
-					{ field: "value", label: "Value", type: "customValue" },
-					{ field: "scoreWeight", label: "Score Weight" },
+					{ field: "criteriaTarget", label: this.$t("Criteria Target") },
+					{ field: "criteria", label: this.$t("Criteria") },
+					{ field: "condition", label: this.$t("Condition") },
+					{ field: "value", label: this.$t("Value"), type: "customValue" },
+					{ field: "scoreWeight", label: this.$t("Score Weight") },
 				],
 			},
 			criteriaLocation: "",

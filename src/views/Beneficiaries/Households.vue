@@ -137,7 +137,7 @@
 					/>
 					<SafeDelete
 						icon="trash"
-						entity="Household"
+						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
 						:id="props.row.id"
 						@submitted="removeHousehold"

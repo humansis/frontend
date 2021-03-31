@@ -7,7 +7,7 @@ export default {
 
 		validateMsg(fieldName, message = "Required") {
 			const validation = this.validationPropertyLevel(fieldName);
-			return validation.$error ? message : "";
+			return validation.$error ? this.$root.$i18n.t(message) : "";
 		},
 
 		validateType(fieldName) {

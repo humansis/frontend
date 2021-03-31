@@ -40,7 +40,7 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Voucher"
+					:entity="$t('Voucher')"
 					:tooltip="$t('Delete')"
 					:disabled="!props.row.deletable"
 					:id="props.row.id"

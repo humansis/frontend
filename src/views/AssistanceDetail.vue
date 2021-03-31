@@ -71,12 +71,12 @@ export default {
 			amountDistributed: 200,
 			commodity: [],
 			columns: [
-				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-				{ key: "nationalId", label: "National ID", sortable: true },
-				{ key: "distributed" },
-				{ key: "value" },
+				{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+				{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+				{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+				{ key: "distributed", label: this.$t("Distributed") },
+				{ key: "value", label: this.$t("Value") },
 			],
 		};
 	},

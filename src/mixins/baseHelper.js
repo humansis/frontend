@@ -4,7 +4,7 @@ export default {
 			if (!entities?.length) return emptyValue;
 			const entity = entities.find((item) => item.id === id);
 			if (!entity) {
-				return emptyValue;
+				return (emptyValue === "none") ? this.$root.$i18n.t(emptyValue) : emptyValue;
 			}
 			if (returnedParam) {
 				return entity[returnedParam];
