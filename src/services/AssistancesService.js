@@ -178,4 +178,11 @@ export default {
 		});
 		return { data, status };
 	},
+
+	async getSelectionCriteria(id) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${id}/selection-criteria`,
+		});
+		return { data, totalCount };
+	},
 };

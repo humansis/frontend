@@ -29,8 +29,8 @@
 
 			<b-field
 				:label="$t('Image')"
-				:type="validateType('image')"
-				:message="validateMsg('image')"
+				:type="validateType('uploadedImage')"
+				:message="validateMsg('uploadedImage')"
 			>
 				<b-field
 					v-if="!formDisabled"
@@ -95,7 +95,7 @@ export default {
 		formModel: {
 			name: { required },
 			unit: {},
-			image: { required },
+			uploadedImage: { required },
 		},
 	},
 

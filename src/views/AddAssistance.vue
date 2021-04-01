@@ -54,7 +54,7 @@ import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/Selecti
 import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
-import { Toast, Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 import consts from "@/utils/assistanceConst";
@@ -104,6 +104,7 @@ export default {
 			},
 			duplicate: false,
 			duplicateAssistance: null,
+			assistanceSelectionCriteria: [],
 		};
 	},
 
@@ -123,10 +124,17 @@ export default {
 		},
 	},
 
-	mounted() {
+	async mounted() {
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
-			AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
+			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
+				.then(({ data }) => {
+					this.assistanceSelectionCriteria = data;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
+				});
+			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
 				.then((data) => {
 					this.duplicateAssistance = data;
 					this.mapAssistance(data);
@@ -186,6 +194,8 @@ export default {
 				subsector: assistance.subsector,
 				targetType: assistance.target,
 			};
+			this.targetType = assistance.target;
+			this.assistanceBody.locationId = assistance.locationId;
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
@@ -208,6 +218,43 @@ export default {
 					individualsTargeted: assistance.individualsTargeted || 0,
 				};
 			}
+			if (this.$refs.selectionCriteria) {
+				this.$refs.selectionCriteria.groups = this.mapSelectionCriteria();
+				this.$refs.selectionCriteria.getCountOfBeneficiaries({ totalCount: false });
+				this.$refs.selectionCriteria.getCountOfBeneficiaries({ totalCount: true });
+				this.$refs.selectionCriteria.groups.forEach((item, key) => {
+					this.$refs.selectionCriteria.getCountOfBeneficiariesInGroup(key);
+				});
+			}
+		},
+
+		mapSelectionCriteria() {
+			const preparedSelectionCriteria = [];
+			this.assistanceSelectionCriteria.forEach((item) => {
+				if (preparedSelectionCriteria[item.group]) {
+					preparedSelectionCriteria[item.group].data.push({
+						criteriaTarget: { value: item.target },
+						target: item.target,
+						criteria: { code: item.field },
+						condition: { code: item.condition },
+						value: item.value,
+						scoreWeight: item.weight,
+					});
+				} else {
+					preparedSelectionCriteria[item.group] = {};
+					preparedSelectionCriteria[item.group].data = [];
+					preparedSelectionCriteria[item.group].tableData = [];
+					preparedSelectionCriteria[item.group].data.push({
+						criteriaTarget: { value: item.target, code: item.target },
+						target: item.target,
+						criteria: { code: item.field },
+						condition: { code: item.condition },
+						value: item.value,
+						scoreWeight: item.weight,
+					});
+				}
+			});
+			return preparedSelectionCriteria;
 		},
 
 		targetSelected(targetType) {
