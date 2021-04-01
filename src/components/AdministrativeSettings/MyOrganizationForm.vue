@@ -18,7 +18,7 @@
 				:type="validateType('logo')"
 			>
 				<template #label>
-					{{ $t('Organizational Logo') }}
+					{{ $t('Organization Logo') }}
 					<span class="optional-text has-text-weight-normal is-italic">
 						- {{ $t('Optional') }}
 					</span>
