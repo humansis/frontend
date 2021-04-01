@@ -7,6 +7,7 @@
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
+				@mapped="$emit('updatedData', formModel)"
 			/>
 			<b-field label="Date of Assistance">
 				<b-datepicker
@@ -225,6 +226,7 @@ export default {
 				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
 			}
 			await this.showComponents();
+			this.$emit("updatedData", this.formModel);
 		},
 
 		submit() {
@@ -238,21 +240,7 @@ export default {
 		},
 
 		getLocationId() {
-			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
-
-			let locationId = null;
-
-			if (adm4Id) {
-				locationId = adm4Id.locationId;
-			} else if (adm3Id) {
-				locationId = adm3Id.locationId;
-			} else if (adm2Id) {
-				locationId = adm2Id.locationId;
-			} else if (adm1Id) {
-				locationId = adm1Id.locationId;
-			}
-
-			return locationId;
+			return this.$refs.locationForm.locationId;
 		},
 
 		onSectorSelect({ code }) {
@@ -288,6 +276,7 @@ export default {
 		},
 
 		async getComponentsToShow() {
+			if (!(this.formModel.assistanceType && this.formModel.targetType)) return [];
 			const {
 				assistanceType: { code: assistanceType },
 				targetType: { value: targetType },
