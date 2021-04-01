@@ -13,7 +13,7 @@
 			<b-upload v-model="file" expanded>
 				<a class="button is-primary is-fullwidth">
 					<b-icon icon="upload" />
-					<span>{{ $t('Click to upload') }}</span>
+					<span>{{ $t('Click to Upload') }}</span>
 				</a>
 			</b-upload>
 		</b-field>

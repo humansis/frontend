@@ -40,7 +40,7 @@
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to upload")}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
 							</span>
 						</a>
 					</b-upload>

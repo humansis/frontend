@@ -123,7 +123,7 @@ export default {
 	computed: {
 		uploadText() {
 			return !this.dropFile
-				? this.$t("Drop your files here or click to upload") : this.dropFile.name;
+				? this.$t("Drop your files here or click to Upload") : this.dropFile.name;
 		},
 	},
 

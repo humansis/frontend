@@ -62,7 +62,7 @@ export default {
 					],
 				},
 				residencyStatuses: {
-					name: "Residence Status",
+					name: "Residency Status",
 					placeholder: this.$t("Select Residence"),
 					multiple: true,
 					loading: true,

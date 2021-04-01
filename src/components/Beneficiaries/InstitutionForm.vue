@@ -415,7 +415,7 @@ export default {
 					this.options.phoneTypes = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Phone types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
 				});
 
 			this.phoneTypesLoading = false;
