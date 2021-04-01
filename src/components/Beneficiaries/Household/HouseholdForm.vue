@@ -76,7 +76,7 @@
 
 				<b-field>
 					<template #label>
-						<span>Assets {{ $t('') }}</span>
+						<span>{{ $t('Assets') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>

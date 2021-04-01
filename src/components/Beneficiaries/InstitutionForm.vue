@@ -118,7 +118,7 @@
 				class="mb-4"
 				:disabled="formDisabled"
 			>
-				Proxy {{ $t('') }}
+				{{ $t('Proxy') }}
 			</b-checkbox>
 			<b-field>
 				<template #label>
