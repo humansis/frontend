@@ -64,7 +64,7 @@ export default {
 			if (this.organizationServiceModal.isDetail) {
 				result = this.$t("Detail of Organization Service");
 			} else if (this.organizationServiceModal.isEditing) {
-				result = this.$t("Update New OrganizationService");
+				result = this.$t("Update Organization Service");
 			}
 			return result;
 		},

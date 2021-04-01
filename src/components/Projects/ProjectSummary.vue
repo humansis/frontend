@@ -30,7 +30,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Number of households') }}</p>
+					<p class="heading">{{ $t('Number of Households') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</p>
 				</div>
 			</div>
