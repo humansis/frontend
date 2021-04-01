@@ -49,6 +49,13 @@
 				/>
 			</div>
 		</b-table-column>
+		<template #export>
+			<ExportButton
+				type="is-primary"
+				space-between
+				:formats="{ xlsx: true, csv: true, ods: true}"
+			/>
+		</template>
 	</Table>
 </template>
 
@@ -61,11 +68,13 @@ import ProductService from "@/services/ProductService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "ProductList",
 
 	components: {
+		ExportButton,
 		ColumnField,
 		SafeDelete,
 		Table,
