@@ -237,7 +237,7 @@ export default {
 			// If commodity === smardcard,
 			// If commodity === transaction,
 			// If commodity === sth else, row in table has checkbox and it's posible to "Set ad D.."
-
+			// TODO Switch between modality type
 			if (this.isAssistanceDetail) {
 				return true;
 			}
@@ -310,21 +310,41 @@ export default {
 			await this.prepareNationalIdForTable(nationalIdIds);
 
 			if (this.isAssistanceDetail) {
-				// TODO Uncomment this after solving feneral relief
-				// await this.findOutStatusAboutDistribution(beneficiaryIds);
+				await this.findOutStatusAboutBeneficiaryDistribution(beneficiaryIds);
 			}
 		},
 
-		async findOutStatusAboutDistribution(beneficiaryIds) {
+		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
 			// If commodity === voucher
 			// If commodity === smardcard,
 			// If commodity === transaction,
 			// If commodity === sth else
-			await this.setGeneralRelief(beneficiaryIds);
+			// TODO Switch between modality type
+			switch (this.commodities[0]?.id) {
+				case 0:
+					// call action for setting rules
+					break;
+				default:
+					await this.setGeneralRelief(beneficiaryIds);
+			}
 		},
 
-		setGeneralRelief() {
-			// TODO for every general relief (if is distributed) set this.table.checkedRows
+		async setGeneralRelief(beneficiaryIds) {
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const generalRelief = await this.getGeneralRelief(beneficiaryId);
+
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					if (generalRelief[0].distributed) {
+						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+					}
+
+					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+				}));
+			}
 		},
 
 		getGeneralRelief(beneficiaryId) {

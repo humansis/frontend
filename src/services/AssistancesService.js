@@ -129,6 +129,17 @@ export default {
 		return { data, totalCount };
 	},
 
+	async updateGeneralReliefItem(id, property, value) {
+		const { data, status } = await fetcher({
+			uri: `general-relief-items/${id}`,
+			method: "PATCH",
+			body: {
+				[property]: value,
+			},
+		});
+		return { data, status };
+	},
+
 	async getListOfModalities() {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `modalities`,

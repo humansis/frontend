@@ -35,11 +35,22 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					class="flex-end ml-5"
+					v-if="isAssistanceValidated"
+					class="flex-end ml-3"
 					type="is-primary"
+					icon-right="check"
 					@click="closeAssistance"
 				>
 					Close Assistance
+				</b-button>
+				<b-button
+					v-if="setAtDistributedButton"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="parachute-box"
+					@click="setGeneralReliefItemAsDistributed"
+				>
+					{{ $t('Set As Distributed')}}
 				</b-button>
 			</div>
 		</div>
@@ -76,6 +87,7 @@ export default {
 				{ key: "distributed" },
 				{ key: "value" },
 			],
+			setAtDistributedButton: false,
 		};
 	},
 
@@ -85,6 +97,10 @@ export default {
 				return this.commodity[0].unit;
 			}
 			return "";
+		},
+
+		isAssistanceValidated() {
+			return this.assistance?.validated;
 		},
 
 		totalAmount() {
@@ -107,12 +123,33 @@ export default {
 		},
 
 		onRowsCheck(rows) {
-			// TODO If sth is selected, display button for "set as distributed" or another button
+			this.setAtDistributedButton = !!rows?.length;
 			this.selectedBeneficiaries = rows;
 		},
 
-		setGeneralReliefItemAsDistributed() {
-			// TODO Set as Distributed for one one more Households, use this.selectedBnf
+		async setGeneralReliefItemAsDistributed() {
+			let error = "";
+			let success = "";
+
+			if (this.selectedBeneficiaries?.length) {
+				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
+					await AssistancesService.updateGeneralReliefItem(
+						beneficiary.generalReliefItem.id, "distributed", true,
+					).then(({ status }) => {
+						if (status === 200) {
+							success += `${this.$t("Success for Household")} ${beneficiary.id}. `;
+						}
+					}).catch((e) => {
+						error += `${this.$t("Error for Household")} ${beneficiary.id} ${e}. `;
+					});
+				}));
+
+				if (error) Toast(error, "is-danger");
+				if (success) Toast(success, "is-success");
+
+				this.setAtDistributedButton = false;
+				this.$refs.beneficiariesList.fetchData();
+			}
 		},
 
 		async fetchCommodity() {

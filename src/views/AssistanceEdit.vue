@@ -66,7 +66,7 @@
 					<b-button
 						v-show="activeStep === 3"
 						type="is-primary"
-						icon-left="lock"
+						icon-right="lock"
 						@click.prevent="validateAssistance"
 					>
 						Validate And Lock
