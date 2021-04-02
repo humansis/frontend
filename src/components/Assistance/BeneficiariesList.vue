@@ -324,7 +324,6 @@ export default {
 		},
 
 		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
-			console.log(this.commodities[0].modalityType);
 			switch (this.commodities[0].modalityType) {
 				case consts.COMMODITY.SMARDCARD:
 					// TODO Call action for setting rules for smardcards
