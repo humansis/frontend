@@ -251,6 +251,7 @@ export default {
 				sortDirection: "desc",
 				progress: null,
 				searchPhrase: "",
+				checkedRows: null,
 			},
 			filters: {},
 			householdDetailModal: {
@@ -309,14 +310,13 @@ export default {
 		},
 
 		onRowsChecked(rows) {
+			this.table.checkedRows = rows;
 			this.actionsButtonVisible = !!rows?.length;
 		},
 
 		async addHouseholdsToProject() {
-			const { checkedRows } = this.$refs.householdList;
-
-			if (checkedRows?.length && this.selectedProject) {
-				const householdsIds = checkedRows.map((household) => household.id);
+			if (this.table.checkedRows?.length && this.selectedProject) {
+				const householdsIds = this.table.checkedRows.map((household) => household.id);
 
 				await BeneficiariesService
 					.addBeneficiariesToProject(this.selectedProject.id, householdsIds)
