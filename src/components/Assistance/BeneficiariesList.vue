@@ -145,6 +145,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "BeneficiariesList",
@@ -232,17 +233,25 @@ export default {
 
 	computed: {
 		isTableCheckable() {
-			// If isAssistanceDetail and
-			// If commodity === voucher, row in table has icon for send voucher code
-			// If commodity === smardcard,
-			// If commodity === transaction,
-			// If commodity === sth else, row in table has checkbox and it's posible to "Set ad D.."
-			// TODO Switch between modality type
+			let result = false;
+
 			if (this.isAssistanceDetail) {
-				return true;
+				switch (this.commodities[0]?.modalityType) {
+					case consts.COMMODITY.SMARDCARD:
+						result = false;
+						break;
+					case consts.COMMODITY.MOBILE_MONEY:
+						result = false;
+						break;
+					case consts.COMMODITY.QR_CODE_VOUCHER:
+						result = false;
+						break;
+					default:
+						result = true;
+				}
 			}
 
-			return false;
+			return result;
 		},
 	},
 
@@ -315,14 +324,16 @@ export default {
 		},
 
 		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
-			// If commodity === voucher
-			// If commodity === smardcard,
-			// If commodity === transaction,
-			// If commodity === sth else
-			// TODO Switch between modality type
-			switch (this.commodities[0]?.id) {
-				case 0:
-					// call action for setting rules
+			console.log(this.commodities[0].modalityType);
+			switch (this.commodities[0].modalityType) {
+				case consts.COMMODITY.SMARDCARD:
+					// TODO Call action for setting rules for smardcards
+					break;
+				case consts.COMMODITY.MOBILE_MONEY:
+					// TODO Call action for setting rules for transactions
+					break;
+				case consts.COMMODITY.QR_CODE_VOUCHER:
+					// TODO Call action for setting rules for QR voucher code
 					break;
 				default:
 					await this.setGeneralRelief(beneficiaryIds);
