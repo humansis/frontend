@@ -562,19 +562,23 @@ export default {
 		async removeHousehold(id, multiple = false) {
 			if (multiple) {
 				const { checkedRows } = this.$refs.householdList;
-				let error = null;
+				let error = "";
+				let success = "";
 
 				if (checkedRows?.length) {
 					checkedRows.forEach((household) => {
 						BeneficiariesService.removeHousehold(household.id).then((response) => {
-							if (response.status === 204) { error = null; }
-						}).catch((e) => { error += `Household ${household.id} ${e}. `; });
+							if (response.status === 204) {
+								success += `${this.$t("Success for Household")} ${household.id}. `;
+							}
+						}).catch((e) => {
+							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
+						});
 					});
 
 					if (error) Toast(error, "is-danger");
-
-					if (!error) {
-						Toast("Households Successfully Deleted", "is-success");
+					if (success) {
+						Toast(success, "is-success");
 						await this.fetchData();
 					}
 				}

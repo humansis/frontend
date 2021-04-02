@@ -137,10 +137,10 @@ export default {
 						beneficiary.generalReliefItem.id, "distributed", true,
 					).then(({ status }) => {
 						if (status === 200) {
-							success += `${this.$t("Success for Household")} ${beneficiary.id}. `;
+							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
 						}
 					}).catch((e) => {
-						error += `${this.$t("Error for Household")} ${beneficiary.id} ${e}. `;
+						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e}. `;
 					});
 				}));
 
