@@ -319,7 +319,7 @@ export default {
 				const householdsIds = this.table.checkedRows.map((household) => household.id);
 
 				await BeneficiariesService
-					.addBeneficiariesToProject(this.selectedProject.id, householdsIds)
+					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
 					.then(() => {
 						this.fetchData();
 						this.actionsButtonVisible = false;
@@ -328,6 +328,8 @@ export default {
 					.catch((e) => {
 						Notification(`Beneficiaries ${e}`, "is-danger");
 					});
+
+				this.closeAddToProjectModal();
 			}
 		},
 
