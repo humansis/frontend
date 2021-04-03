@@ -1,6 +1,6 @@
 <template>
 	<div class="mb-6">
-		<h2 class="title">Projects summary</h2>
+		<h2 class="title">{{ $t('Projects Summary') }}</h2>
 		<b-notification
 			v-if="projectSummaryLoading"
 			class="projects-summary-notification mb-0"
@@ -14,7 +14,7 @@
 				:key="id"
 			>
 				<div class="box">
-					<p class="heading">{{ normalizeText(name) }}</p>
+					<p class="heading">{{ $t(normalizeText(name)) }}</p>
 					<p class="subtitle is-4">{{ target }}</p>
 				</div>
 			</div>
@@ -59,7 +59,7 @@ export default {
 			).then((response) => {
 				this.projectSummary = response.data;
 			}).catch((e) => {
-				Notification(`Projects ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 			});
 
 			this.projectSummaryLoading = false;

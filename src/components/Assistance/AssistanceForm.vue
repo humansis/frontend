@@ -1,7 +1,7 @@
 <template>
 	<div class="modal-card-body">
 		<form>
-			<b-field label="Name">
+			<b-field :label="$t('Name')">
 				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
@@ -12,27 +12,27 @@
 				:form-model="formModel"
 			/>
 
-			<b-field label="Date of Assistance">
+			<b-field :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateDistribution"
 					show-week-number
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					icon="calendar-day"
 					trap-focus
 					:disabled="!editing"
 				/>
 			</b-field>
 
-			<b-field label="Target">
+			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
 			<footer class="modal-card-foot">
 				<b-button @click="closeForm">
-					Close
+					{{ $t('Close') }}
 				</b-button>
 				<b-button
 					v-if="editing"
-					value="Update"
+					:value="$t('Update')"
 					tag="input"
 					class="is-primary"
 					@click="submitForm"

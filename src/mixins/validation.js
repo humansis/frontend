@@ -1,3 +1,5 @@
+import i18n from "@/plugins/i18n";
+
 export default {
 	methods: {
 		validate(fieldName) {
@@ -7,7 +9,7 @@ export default {
 
 		validateMsg(fieldName, message = "Required") {
 			const validation = this.validationPropertyLevel(fieldName);
-			return validation.$error ? message : "";
+			return validation.$error ? i18n.t(message) : "";
 		},
 
 		validateType(fieldName) {

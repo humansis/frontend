@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<h2 class="subtitle">Activity Details</h2>
+		<h2 class="subtitle">{{ $t('Activity Details') }}</h2>
 		<form class="box">
 			<b-field
 				v-if="visible.activityDescription"
-				label="Activity Description"
+				:label="$t('Activity Description')"
 				:type="validateType('activityDescription')"
 				:message="validateMsg('activityDescription')"
 			>
@@ -15,7 +15,7 @@
 			</b-field>
 			<b-field
 				v-if="visible.householdsTargeted"
-				label="Households Targeted"
+				:label="$t('Households Targeted')"
 				:type="validateType('householdsTargeted')"
 				:message="validateMsg('householdsTargeted')"
 			>
@@ -31,7 +31,7 @@
 			</b-field>
 			<b-field
 				v-if="visible.individualsTargeted"
-				label="Individuals Targeted"
+				:label="$t('Individuals Targeted')"
 				:type="validateType('individualsTargeted')"
 				:message="validateMsg('individualsTargeted')"
 			>

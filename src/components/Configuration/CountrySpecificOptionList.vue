@@ -16,36 +16,36 @@
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
+				v-slot="props"
 				:sortable="column.sortable"
 				:key="column.id"
-				v-slot="props"
 			>
 				<ColumnField :data="props" :column="column" />
 			</b-table-column>
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
 			width="150"
 			visible
 			centered
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Country Specific Option"
-					tooltip="Delete"
+					:entity="$t('Country Specific Option')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -126,7 +126,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Country Specific Options ${e}`, "is-danger");
+				Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

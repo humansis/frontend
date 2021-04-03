@@ -1,7 +1,7 @@
 <template>
 	<Table
 		has-reset-sort
-		:title="upcoming ? 'Upcoming Assistances' : ''"
+		:title="upcoming ? $t('Upcoming Assistances') : ''"
 		:has-search="!upcoming"
 		:data="table.data"
 		:total="table.total"
@@ -26,9 +26,9 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
 			centered
 			width="230"
+			:label="$t('Actions')"
 			:visible="!upcoming"
 		>
 			<div class="buttons is-right">
@@ -36,41 +36,41 @@
 					v-if="!props.row.validated"
 					icon="search"
 					type="is-primary"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<ActionButton
 					v-if="!props.row.validated"
 					icon="edit"
-					tooltip="Update"
+					:tooltip="$t('Update')"
 					@click.native="goToUpdate(props.row.id)"
 				/>
 				<ActionButton
 					v-if="props.row.validated && !props.row.completed"
 					icon="lock"
 					type="is-warning"
-					tooltip="Update"
+					:tooltip="$t('Update')"
 					@click.native="goToDetail(props.row.id)"
 				/>
 				<ActionButton
 					v-if="props.row.completed"
 					icon="check"
 					type="is-success"
-					tooltip="View"
+					:tooltip="$t('View')"
 					@click.native="goToDetail(props.row.id)"
 				/>
 				<SafeDelete
 					v-if="!props.row.validated"
 					icon="trash"
-					entity="Assistance"
-					tooltip="Delete"
+					:entity="$t('Assistance')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="$emit('onRemove', $event)"
 				/>
 				<ActionButton
 					icon="copy"
 					type="is-dark"
-					tooltip="Duplicate"
+					:tooltip="$t('Duplicate')"
 					@click.native="duplicate(props.row.id)"
 				/>
 			</div>
@@ -129,7 +129,7 @@ export default {
 					{ key: "name", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
-					{ key: "dateDistribution", label: "Date Of Distribution", type: "date", sortable: true, sortKey: "date" },
+					{ key: "dateDistribution", label: "Date of Distribution", type: "date", sortable: true, sortKey: "date" },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "commodity" },
 				],
@@ -180,7 +180,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
+				Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -197,7 +197,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Upcoming Assistances ${e}`, "is-danger");
+				Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
 			});
 		},
 
@@ -253,7 +253,7 @@ export default {
 			return LocationsService.getLocations(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Locations ${e}`, "is-danger");
+					Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
@@ -262,7 +262,7 @@ export default {
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -271,7 +271,7 @@ export default {
 			return AssistancesService.getStatistics(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Statistics ${e}`, "is-danger");
+					Notification(`${this.$t("Statistics")} ${e}`, "is-danger");
 				});
 		},
 

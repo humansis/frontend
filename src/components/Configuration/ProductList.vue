@@ -23,16 +23,16 @@
 			</b-table-column>
 		</template>
 		<b-table-column
-			label="Actions"
 			v-slot="props"
 			width="150"
 			centered
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
@@ -42,8 +42,8 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Product"
-					tooltip="Delete"
+					:entity="$t('Product')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -110,11 +110,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.productModal.isDetail) {
-				result = "Detail of Product";
+				result = this.$t("Detail of Product");
 			} else if (this.productModal.isEditing) {
-				result = "Edit Product";
+				result = this.$t("Edit Product");
 			} else {
-				result = "Create new Product";
+				result = this.$t("Create New Product");
 			}
 			return result;
 		},
@@ -138,7 +138,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Products ${e}`, "is-danger");
+				Notification(`${this.$t("Products")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

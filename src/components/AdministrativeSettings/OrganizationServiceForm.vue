@@ -1,30 +1,30 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="Service Name">
+			<b-field :label="$t('Service Name')">
 				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
-			<b-field label="Country">
+			<b-field :label="$t('Country')">
 				<b-input v-model="formModel.iso3" disabled />
 			</b-field>
 
 			<b-field
 				v-if="fields.token"
-				label="Token"
+				:label="$t('Token')"
 			>
 				<b-input v-model="formModel.parameters.token" :disabled="formDisabled" />
 			</b-field>
 
-			<b-field v-if="fields.username" label="Username">
+			<b-field v-if="fields.username" :label="$t('Username')">
 				<b-input v-model="formModel.parameters.username" :disabled="formDisabled" />
 			</b-field>
 
-			<b-field v-if="fields.email" label="Email">
+			<b-field v-if="fields.email" :label="$t('Email')">
 				<b-input v-model="formModel.parameters.email" :disabled="formDisabled" />
 			</b-field>
 
-			<b-field v-if="fields.password" label="Password">
+			<b-field v-if="fields.password" :label="$t('Password')">
 				<b-input
 					v-model="formModel.parameters.password"
 					type="password"
@@ -32,11 +32,11 @@
 				/>
 			</b-field>
 
-			<b-field label="Enabled">
+			<b-field :label="$t('Enabled')">
 				<b-checkbox v-model="formModel.enabled" :disabled="formDisabled" />
 			</b-field>
 
-			<b-field v-if="fields.username" label="Production">
+			<b-field v-if="fields.username" :label="$t('Production')">
 				<b-checkbox v-model="formModel.parameters.production" :disabled="formDisabled" />
 			</b-field>
 		</section>
@@ -45,7 +45,7 @@
 				v-if="closeButton"
 				@click="closeForm"
 			>
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"

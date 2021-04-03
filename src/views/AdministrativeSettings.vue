@@ -1,33 +1,21 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered">Administrative Settings</h1>
+		<h1 class="title has-text-centered">{{ $t('Administrative Settings') }}</h1>
 
 		<b-tabs v-model="selectedTab">
-			<b-tab-item
-				label="Users"
-				icon="user"
-			>
+			<b-tab-item icon="user" :label="$t('Users')">
 				<UsersPage />
 			</b-tab-item>
 
-			<b-tab-item
-				label="Donors"
-				icon="dollar-sign"
-			>
+			<b-tab-item icon="dollar-sign" :label="$t('Donors')">
 				<DonorPage />
 			</b-tab-item>
 
-			<b-tab-item
-				label="My Organizations"
-				icon="child"
-			>
+			<b-tab-item icon="child" :label="$t('My Organizations')">
 				<MyOrganizationsPage />
 			</b-tab-item>
 
-			<b-tab-item
-				label="Organization services"
-				icon="th-large"
-			>
+			<b-tab-item icon="th-large" :label="$t('Organization Services')">
 				<OrganizationServicePage />
 			</b-tab-item>
 			<!---

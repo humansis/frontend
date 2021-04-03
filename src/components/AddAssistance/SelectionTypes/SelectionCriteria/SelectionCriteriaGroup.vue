@@ -31,12 +31,12 @@
 							<ColumnField :data="props" :column="column" />
 						</b-table-column>
 					</template>
-					<b-table-column v-slot="props" label="Actions">
+					<b-table-column v-slot="props" :label="$t('Actions')">
 						<ActionButton
 							icon="trash"
 							centered
 							type="is-danger"
-							tooltip="Delete"
+							:tooltip="$t('Delete')"
 							@click.native="remove(props.index)"
 						/>
 					</b-table-column>
@@ -45,13 +45,13 @@
 		</div>
 		<footer class="card-footer">
 			<a class="card-footer-item" @click="addCriteria">
-				Add
+				{{ $t('Add') }}
 			</a>
 			<a class="card-footer-item" @click="showDetail">
 				{{ count }} {{ targetType }}
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
-				Remove
+				{{ $t('Remove') }}
 			</a>
 		</footer>
 	</b-collapse>
@@ -104,11 +104,11 @@ export default {
 		return {
 			table: {
 				columns: [
-					{ field: "criteriaTarget", label: "Criteria Target" },
-					{ field: "criteria", label: "Criteria" },
-					{ field: "condition", label: "Condition" },
-					{ field: "value", label: "Value", type: "customValue" },
-					{ field: "scoreWeight", label: "Score Weight" },
+					{ field: "criteriaTarget", label: this.$t("Criteria Target") },
+					{ field: "criteria", label: this.$t("Criteria") },
+					{ field: "condition", label: this.$t("Condition") },
+					{ field: "value", label: this.$t("Value"), type: "customValue" },
+					{ field: "scoreWeight", label: this.$t("Score Weight") },
 				],
 			},
 			criteriaLocation: "",

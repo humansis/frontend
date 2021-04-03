@@ -2,9 +2,9 @@
 	<form>
 		<div class="columns is-multiline">
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">Name (Local)</h4>
+				<h4 class="title is-5">{{ $t('Name') }}</h4>
 				<b-field
-					label="Family Name"
+					:label="$t('Family Name')"
 					:type="validateType('nameLocal.familyName')"
 					:message="validateMsg('nameLocal.familyName')"
 				>
@@ -14,7 +14,7 @@
 					/>
 				</b-field>
 				<b-field
-					label="First Name"
+					:label="$t('First Name')"
 					:type="validateType('nameLocal.firstName')"
 					:message="validateMsg('nameLocal.firstName')"
 				>
@@ -25,42 +25,50 @@
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>Parents Name</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Parents Name') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.nameLocal.parentsName" />
 				</b-field>
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">Name (English)</h4>
+				<h4 class="title is-5">{{ $t('Name (English)') }}</h4>
 				<b-field>
 					<template #label>
-						<span>Family Name</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Family Name') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.nameEnglish.familyName" />
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>First Name</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('First Name') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.nameEnglish.firstName" />
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>Parents Name</span>
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						<span>{{ $t('Parents Name') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</template>
 					<b-input v-model="formModel.nameEnglish.parentsName" />
 				</b-field>
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">Personal Information</h4>
+				<h4 class="title is-5">{{ $t('Personal Information') }}</h4>
 				<b-field
-					label="Gender"
+					:label="$t('Gender')"
 					:type="validateType('personalInformation.gender')"
 					:message="validateMsg('personalInformation.gender')"
 				>
@@ -69,21 +77,21 @@
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:options="options.gender"
 						:class="validateMultiselect('personalInformation.gender')"
 						@select="validate('personalInformation.gender')"
 					/>
 				</b-field>
 				<b-field
-					label="Date Of Birth"
+					:label="$t('Date of Birth')"
 					:type="validateType('personalInformation.dateOfBirth')"
 					:message="validateMsg('personalInformation.dateOfBirth')"
 				>
 					<b-datepicker
 						v-model="formModel.personalInformation.dateOfBirth"
 						show-week-number
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						icon="calendar-day"
 						trap-focus
 						@blur="validate('personalInformation.dateOfBirth')"
@@ -92,9 +100,9 @@
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">ID</h4>
+				<h4 class="title is-5">{{ $t('ID') }}</h4>
 				<b-field
-					label="ID Type"
+					:label="$t('ID Type')"
 					:type="validateType('id.idType')"
 					:message="validateMsg('id.idType')"
 				>
@@ -103,7 +111,7 @@
 						label="value"
 						track-by="code"
 						searchable
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:loading="idTypeLoading"
 						:options="options.idType"
 						:class="validateMultiselect('id.idType')"
@@ -111,7 +119,7 @@
 					/>
 				</b-field>
 				<b-field
-					label="ID Number"
+					:label="$t('ID Number')"
 					:type="validateType('id.idNumber')"
 					:message="validateMsg('id.idNumber')"
 				>
@@ -123,9 +131,9 @@
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">Residency</h4>
+				<h4 class="title is-5">{{ $t('Residency') }}</h4>
 				<b-field
-					label="Residency Status"
+					:label="$t('Residency Status')"
 					:type="validateType('residencyStatus')"
 					:message="validateMsg('residencyStatus')"
 				>
@@ -134,7 +142,7 @@
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:loading="residenceStatusesLoading"
 						:options="options.residencyStatus"
 						:class="validateMultiselect('residencyStatus')"
@@ -156,36 +164,40 @@
 
 			<div class="column is-one-quarter">
 				<h4 class="title is-5">
-					Referral
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Referral') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</h4>
 				<div class="field">
 					<b-checkbox v-model="formModel.addAReferral">
-						Add a Referral
+						{{ $t('Add a Referral') }}
 					</b-checkbox>
 				</div>
-				<b-field v-if="formModel.addAReferral" label="Referral Type">
+				<b-field v-if="formModel.addAReferral" :label="$t('Referral Type')">
 					<MultiSelect
 						v-model="formModel.referral.referralType"
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:loading="referralTypeLoading"
 						:options="options.referralType"
 					/>
 				</b-field>
-				<b-field v-if="formModel.addAReferral" label="Comment">
+				<b-field v-if="formModel.addAReferral" :label="$t('Comment')">
 					<b-input v-model="formModel.referral.comment" />
 				</b-field>
 			</div>
 
 			<div class="column is-one-quarter">
 				<div class="mb-5">
-					<span class="title is-5">Phone 1</span>
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					<span class="title is-5">{{ $t('Phone') }} 1</span>
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</div>
-				<b-field label="Type" grouped>
+				<b-field :label="$t('Type')" grouped>
 					<MultiSelect
 						v-model="formModel.phone1.type"
 						searchable
@@ -193,39 +205,39 @@
 						deselectLabel=""
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
 					/>
 					<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
-						Proxy
+						{{ $t('Proxy') }}
 					</b-checkbox>
 				</b-field>
-				<b-field label="Ext" grouped>
+				<b-field :label="$t('Ext')" grouped>
 					<MultiSelect
 						v-model="formModel.phone1.ext"
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
 					/>
 				</b-field>
-				<b-field label="Phone No. 1">
-					<b-input
-						v-model="formModel.phone1.phoneNo"
-					/>
+				<b-field :label="$t('Phone No.') + ' 1'">
+					<b-input v-model="formModel.phone1.phoneNo" />
 				</b-field>
 			</div>
 
 			<div class="column is-one-quarter">
 				<div class="mb-5">
 					<span class="title is-5">
-						Phone 2
-						<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+						{{ $t('Phone') }} 2
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
 					</span>
 				</div>
-				<b-field label="Type" grouped>
+				<b-field :label="$t('Type')" grouped>
 					<MultiSelect
 						v-model="formModel.phone2.type"
 						searchable
@@ -233,28 +245,26 @@
 						deselectLabel=""
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
 					/>
 					<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
-						Proxy
+						{{ $t('Proxy') }}
 					</b-checkbox>
 				</b-field>
-				<b-field label="Ext" grouped>
+				<b-field :label="$t('Ext')" grouped>
 					<MultiSelect
 						v-model="formModel.phone2.ext"
 						searchable
 						label="value"
 						track-by="code"
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
 					/>
 				</b-field>
-				<b-field label="Phone No. 2">
-					<b-input
-						v-model="formModel.phone2.phoneNo"
-					/>
+				<b-field :label="$t('Phone No.') + ' 2'">
+					<b-input v-model="formModel.phone2.phoneNo" />
 				</b-field>
 			</div>
 		</div>
@@ -367,8 +377,8 @@ export default {
 			},
 			options: {
 				gender: [
-					{ code: "M", value: "Male" },
-					{ code: "F", value: "Female" },
+					{ code: "M", value: this.$t("Male") },
+					{ code: "F", value: this.$t("Female") },
 				],
 				idType: [],
 				residencyStatus: [],
@@ -478,7 +488,7 @@ export default {
 							phoneNo: number,
 						};
 					}).catch((e) => {
-						Notification(`Phone ${key + 1} ${e}`, "is-danger");
+						Notification(`${this.$t("Phone")} ${key + 1} ${e}`, "is-danger");
 					});
 				promises.push(promise);
 			});
@@ -496,7 +506,7 @@ export default {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
 					nationalIdCard.idNumber = number;
 				}).catch((e) => {
-					Notification(`National ID ${e}`, "is-danger");
+					Notification(`${this.$t("National ID")} ${e}`, "is-danger");
 				});
 			}
 
@@ -507,7 +517,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
-					Notification(`National IDs ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 
 			this.idTypeLoading = false;
@@ -517,7 +527,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfPhones()
 				.then(({ data }) => { this.options.phoneType = data; })
 				.catch((e) => {
-					Notification(`Phone types ${e}`, "is-danger");
+					Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
 				});
 
 			this.phoneTypesLoading = false;
@@ -527,7 +537,7 @@ export default {
 			await BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
-					Notification(`Vulnerabilities ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -535,7 +545,7 @@ export default {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
-					Notification(`Residence Statuses ${e}`, "is-danger");
+					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 
 			this.residenceStatusesLoading = false;
@@ -545,7 +555,7 @@ export default {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => { this.options.referralType = data; })
 				.catch((e) => {
-					Notification(`Referral Types ${e}`, "is-danger");
+					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
 
 			this.referralTypeLoading = false;

@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Households</h1>
+				<h1 class="title">{{ $t('Households') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -12,7 +12,7 @@
 						icon-left="plus"
 						slot="trigger"
 					>
-						Create
+						{{ $t('Create') }}
 					</b-button>
 					<b-dropdown-item
 						:value="false"
@@ -21,8 +21,8 @@
 						<div class="media">
 							<b-icon class="media-left" icon="upload" />
 							<div class="media-content">
-								<h2>Import</h2>
-								<small>Import from file</small>
+								<h2>{{ $t('Import') }}</h2>
+								<small>{{ $t('Import from File') }}</small>
 							</div>
 						</div>
 					</b-dropdown-item>
@@ -33,8 +33,8 @@
 						<div class="media">
 							<b-icon class="media-left" icon="user-plus" />
 							<div class="media-content">
-								<h2>Add Beneficiary</h2>
-								<small>Create household form</small>
+								<h2>{{ $t('Add Beneficiary') }}</h2>
+								<small>{{ $t('Create household form') }}</small>
 							</div>
 						</div>
 					</b-dropdown-item>
@@ -43,7 +43,7 @@
 		</div>
 		<Modal
 			can-cancel
-			header="Add Beneficiary To A Project"
+			:header="$t('Add Beneficiary To A Project')"
 			:active="addToProjectModal.isOpened"
 			@close="closeAddToProjectModal"
 		>
@@ -53,9 +53,9 @@
 						<MultiSelect
 							v-model="selectedProject"
 							searchable
-							placeholder="Click to select..."
 							label="name"
 							track-by="id"
+							:placeholder="$t('Click to select')"
 							:loading="loading.projects"
 							:options="options.projects"
 						/>
@@ -63,10 +63,10 @@
 				</section>
 				<footer class="modal-card-foot">
 					<b-button  @click="closeAddToProjectModal">
-						Close
+						{{ $t('Close') }}
 					</b-button>
 					<b-button type="is-primary" @click="addHouseholdsToProject">
-						Confirm
+						{{ $t('Confirm') }}
 					</b-button>
 				</footer>
 			</form>
@@ -74,7 +74,7 @@
 
 		<Modal
 			can-cancel
-			header="Household Detail"
+			:header="$t('Household Detail')"
 			:active="householdDetailModal.isOpened"
 			@close="closeHouseholdDetailModal"
 		>
@@ -119,26 +119,26 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				label="Actions"
 				width="150"
 				centered
+				:label="$t('Actions')"
 			>
 				<div class="buttons is-right">
 					<ActionButton
 						icon="search"
 						type="is-primary"
-						tooltip="Show Detail"
+						:tooltip="$t('Show Detail')"
 						@click.native="showDetail(props.row.id)"
 					/>
 					<ActionButton
 						icon="edit"
-						tooltip="Edit"
+						:tooltip="$t('Edit')"
 						@click.native="editHousehold(props.row.id)"
 					/>
 					<SafeDelete
 						icon="trash"
-						entity="Household"
-						tooltip="Delete"
+						:entity="$t('Household')"
+						:tooltip="$t('Delete')"
 						:id="props.row.id"
 						@submitted="removeHousehold"
 					/>
@@ -151,7 +151,7 @@
 					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 					@click="filtersToggle"
 				>
-					Advanced search
+					{{ $t('Advanced Search') }}
 				</b-button>
 			</template>
 
@@ -169,16 +169,16 @@
 					<b-dropdown aria-role="list">
 						<template #trigger>
 							<b-button
-								label="Actions"
 								type="is-primary"
 								icon-right="arrow-down"
+								:label="$t('Actions')"
 							/>
 						</template>
 						<b-dropdown-item @click="showAddToProjectModal">
-							Add to Project
+							{{ $t('Add to Project') }}
 						</b-dropdown-item>
 						<b-dropdown-item @click="removeMultipleHouseholds">
-							Delete
+							{{ $t('Delete') }}
 						</b-dropdown-item>
 					</b-dropdown>
 				</div>
@@ -251,6 +251,7 @@ export default {
 				sortDirection: "desc",
 				progress: null,
 				searchPhrase: "",
+				checkedRows: null,
 			},
 			filters: {},
 			householdDetailModal: {
@@ -304,30 +305,31 @@ export default {
 				}
 				this.isLoadingList = false;
 			}).catch((e) => {
-				Notification(`Households ${e}`, "is-danger");
+				Notification(`${this.$t("Households")} ${e}`, "is-danger");
 			});
 		},
 
 		onRowsChecked(rows) {
+			this.table.checkedRows = rows;
 			this.actionsButtonVisible = !!rows?.length;
 		},
 
 		async addHouseholdsToProject() {
-			const { checkedRows } = this.$refs.householdList;
-
-			if (checkedRows?.length && this.selectedProject) {
-				const householdsIds = checkedRows.map((household) => household.id);
+			if (this.table.checkedRows?.length && this.selectedProject) {
+				const householdsIds = this.table.checkedRows.map((household) => household.id);
 
 				await BeneficiariesService
-					.addBeneficiariesToProject(this.selectedProject.id, householdsIds)
+					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
 					.then(() => {
 						this.fetchData();
 						this.actionsButtonVisible = false;
-						Toast("Beneficiaries Successfully Added To A Project", "is-success");
+						Toast(this.$t("Beneficiaries Successfully Added to a Project"), "is-success");
 					})
 					.catch((e) => {
-						Notification(`Beneficiaries ${e}`, "is-danger");
+						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					});
+
+				this.closeAddToProjectModal();
 			}
 		},
 
@@ -339,7 +341,7 @@ export default {
 					this.options.projects = data;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.loading.projects = false;
@@ -421,7 +423,7 @@ export default {
 		async getNationalIds(ids) {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data).catch((e) => {
-					Notification(`NationalIds ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 		},
 
@@ -435,7 +437,7 @@ export default {
 							addresses.push({ locationId, id, type: "camp" });
 						});
 					}).catch((e) => {
-						Notification(`Camp Address ${e}`, "is-danger");
+						Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.residence.length) {
@@ -445,7 +447,7 @@ export default {
 							addresses.push({ locationId, id, type: "residence" });
 						});
 					}).catch((e) => {
-						Notification(`Residence Address ${e}`, "is-danger");
+						Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.temporary_settlement.length) {
@@ -455,7 +457,10 @@ export default {
 							addresses.push({ locationId, id, type: "temporary_settlement" });
 						});
 					}).catch((e) => {
-						Notification(`Temporary Settlement Address ${e}`, "is-danger");
+						Notification(
+							`${this.$t("Temporary Settlement Address")} ${e}`,
+							"is-danger",
+						);
 					});
 			}
 			return addresses;
@@ -465,7 +470,7 @@ export default {
 			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
@@ -473,7 +478,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 				});
 		},
 
@@ -585,11 +590,11 @@ export default {
 			} else {
 				await BeneficiariesService.removeHousehold(id).then((response) => {
 					if (response.status === 204) {
-						Toast("Household Successfully Deleted", "is-success");
+						Toast(this.$t("Household Successfully Deleted"), "is-success");
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`Household ${e}`, "is-danger");
+					Toast(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 			}
 		},

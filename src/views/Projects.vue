@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Projects</h1>
+				<h1 class="title">{{ $t('Projects') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewProject"
 				>
-					New
+					{{ $t('New') }}
 				</b-button>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="projectModel"
-				:submit-button-label="projectModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="projectModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="projectModal.isDetail"
 				@formSubmitted="submitProjectForm"
 				@formClosed="closeProjectModal"
@@ -92,11 +92,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.projectModal.isDetail) {
-				result = "Detail of Project";
+				result = this.$t("Detail of Project");
 			} else if (this.projectModal.isEditing) {
-				result = "Edit Project";
+				result = this.$t("Edit Project");
 			} else {
-				result = "Create new Project";
+				result = this.$t("Create New Project");
 			}
 			return result;
 		},
@@ -227,12 +227,12 @@ export default {
 
 			await ProjectService.createProject(projectBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Project Successfully Created", "is-success");
+					Toast(this.$t("Project Successfully Created"), "is-success");
 					this.$refs.projectList.fetchData();
 					this.closeProjectModal();
 				}
 			}).catch((e) => {
-				Notification(`Project ${e}`, "is-danger");
+				Notification(`${this.$t("Project")} ${e}`, "is-danger");
 				this.projectModal.isWaiting = false;
 			});
 		},
@@ -242,12 +242,12 @@ export default {
 
 			await ProjectService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Project Successfully Updated", "is-success");
+					Toast(this.$t("Project Successfully Updated"), "is-success");
 					this.$refs.projectList.fetchData();
 					this.closeProjectModal();
 				}
 			}).catch((e) => {
-				Notification(`Project ${e}`, "is-danger");
+				Notification(`${this.$t("Project")} ${e}`, "is-danger");
 				this.projectModal.isWaiting = false;
 			});
 		},
@@ -255,11 +255,11 @@ export default {
 		async onProjectDelete(id) {
 			await ProjectService.deleteProject(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Project Successfully Deleted", "is-success");
+					Toast(this.$t("Project Successfully Deleted"), "is-success");
 					this.$refs.projectList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`Project ${e}`, "is-danger");
+				Notification(`${this.$t("Project")} ${e}`, "is-danger");
 			});
 		},
 	},

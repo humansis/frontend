@@ -2,16 +2,18 @@
 	<div>
 		<p class="mb-4 mt-5 has-text-centered">
 			<strong>
+				{{ $t(`
 				Import the file that contains the modified distribution.
 				The database will be updated with the new list of beneficiaries for this
 				distribution when you will click on "update" after importing.
+				`) }}
 			</strong>
 		</p>
 		<b-field class="file">
 			<b-upload v-model="file" expanded>
 				<a class="button is-primary is-fullwidth">
 					<b-icon icon="upload" />
-					<span>Click to upload</span>
+					<span>{{ $t('Click to Upload') }}</span>
 				</a>
 			</b-upload>
 		</b-field>
@@ -23,7 +25,7 @@
 						<p>
 							<b-icon icon="upload" size="is-large" />
 						</p>
-						<p>Add File Or Drag And Drop</p>
+						<p>{{ $t('Add File Or Drag And Drop') }}</p>
 					</div>
 				</section>
 			</b-upload>
@@ -47,7 +49,7 @@
 			icon-left="file-import"
 			type="is-danger"
 		>
-			Import
+			{{ $t('Import') }}
 		</b-button>
 	</div>
 </template>

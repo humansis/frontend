@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Vouchers</h1>
+				<h1 class="title">{{ $t('Vouchers') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewVoucher"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 			<VoucherForm
 				close-button
 				class="modal-card"
-				submit-button-label="Create"
+				:submit-button-label="$t('Create')"
 				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"
 				@formSubmitted="submitVoucherForm"
@@ -95,9 +95,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {
-				result = "Detail Of This Voucher Booklets";
+				result = this.$t("Detail of This Voucher Booklets");
 			} else {
-				result = "Create New Voucher Booklets";
+				result = this.$t("Create New Voucher Booklets");
 			}
 			return result;
 		},
@@ -201,7 +201,7 @@ export default {
 
 			await BookletsService.createBooklet(voucherBody).then((response) => {
 				if (response.status === 204) {
-					Toast("Voucher Successfully Created", "is-success");
+					Toast(this.$t("Booklet Successfully Created"), "is-success");
 					if (this.$refs.voucherList) {
 						this.$refs.voucherList.fetchData();
 					} else if (this.$refs.batchList) {
@@ -212,7 +212,7 @@ export default {
 					this.closeVoucherModal();
 				}
 			}).catch((e) => {
-				Notification(`Booklet ${e}`, "is-danger");
+				Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
 				this.voucherModal.isWaiting = false;
 			});
 		},
@@ -220,11 +220,11 @@ export default {
 		async onRemoveVoucher(id) {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Voucher successfully removed", "is-success");
+					Toast(this.$t("Booklet successfully removed"), "is-success");
 					this.$refs.voucherList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`Booklet ${e}`, "is-danger");
+				Toast(`${this.$t("Booklet")} ${e}`, "is-danger");
 			});
 		},
 	},

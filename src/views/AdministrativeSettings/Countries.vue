@@ -78,7 +78,7 @@ export default {
 			} else if (this.countryModal.isEditing) {
 				result = "Edit Country";
 			} else {
-				result = "Create new Country";
+				result = "Create New Country";
 			}
 			return result;
 		},

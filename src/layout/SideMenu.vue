@@ -18,8 +18,8 @@
 							:to="{ name: 'Home' }"
 						>
 							<template #label>
-								<b-tooltip label="Home" position="is-right" always>
-									Home
+								<b-tooltip :label="$t('Home')" position="is-right" always>
+									{{ $t('Home') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>
@@ -30,8 +30,8 @@
 							:to="{ name: 'Projects' }"
 						>
 							<template #label>
-								<b-tooltip label="Projects" position="is-right" always>
-									Projects
+								<b-tooltip :label="$t('Projects')" position="is-right" always>
+									{{ $t('Projects') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>
@@ -40,8 +40,8 @@
 							class="to-dropdown-item"
 						>
 							<template #label>
-								<b-tooltip label="Beneficiaries" position="is-right" always>
-									Beneficiaries
+								<b-tooltip :label="$t('Beneficiaries')" position="is-right" always>
+									{{ $t('Beneficiaries') }}
 								</b-tooltip>
 							</template>
 							<b-menu-item
@@ -51,8 +51,8 @@
 								:to="{ name: 'Households' }"
 							>
 								<template #label>
-									<b-tooltip label="Households" position="is-right" always>
-										Households
+									<b-tooltip :label="$t('Households')" position="is-right" always>
+										{{ $t('Households') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -63,8 +63,8 @@
 								:to="{ name: 'Institutions' }"
 							>
 								<template #label>
-									<b-tooltip label="Institutions" position="is-right" always>
-										Institutions
+									<b-tooltip :label="$t('Institutions')" position="is-right" always>
+										{{ $t('Institutions') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -75,8 +75,8 @@
 								:to="{ name: 'Communities' }"
 							>
 								<template #label>
-									<b-tooltip label="Communities" position="is-right" always>
-										Communities
+									<b-tooltip :label="$t('Communities')" position="is-right" always>
+										{{ $t('Communities') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -87,8 +87,8 @@
 								:to="{ name: 'Vendors' }"
 							>
 								<template #label>
-									<b-tooltip label="Vendors" position="is-right" always>
-										Vendors
+									<b-tooltip :label="$t('Vendors')" position="is-right" always>
+										{{ $t('Vendors') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -100,8 +100,8 @@
 							:to="{ name: 'Reports' }"
 						>
 							<template #label>
-								<b-tooltip label="Reports" position="is-right" always>
-									Reports
+								<b-tooltip :label="$t('Reports')" position="is-right" always>
+									{{ $t('Reports') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>
@@ -112,8 +112,8 @@
 							:to="{ name: 'Vouchers' }"
 						>
 							<template #label>
-								<b-tooltip label="Vouchers" position="is-right" always>
-									Vouchers
+								<b-tooltip :label="$t('Vouchers')" position="is-right" always>
+									{{ $t('Vouchers') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>
@@ -122,8 +122,8 @@
 							class="to-dropdown-item"
 						>
 							<template #label>
-								<b-tooltip label="Configuration" position="is-right" always>
-									Configuration
+								<b-tooltip :label="$t('Configuration')" position="is-right" always>
+									{{ $t('Configuration') }}
 								</b-tooltip>
 							</template>
 							<b-menu-item
@@ -133,8 +133,8 @@
 								:to="{ name: 'Products' }"
 							>
 								<template #label>
-									<b-tooltip label="Products" position="is-right" always>
-										Products
+									<b-tooltip :label="$t('Products')" position="is-right" always>
+										{{ $t('Products') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -145,8 +145,8 @@
 								:to="{ name: 'CountrySpecificOptions' }"
 							>
 								<template #label>
-									<b-tooltip label="Country specifics" position="is-right" always>
-										Country specifics
+									<b-tooltip :label="$t('Country specifics')" position="is-right" always>
+										{{ $t('Country specifics') }}
 									</b-tooltip>
 								</template>
 							</b-menu-item>
@@ -158,8 +158,8 @@
 							:to="{ name: 'Administrative Settings' }"
 						>
 							<template #label>
-								<b-tooltip label="Administrative Settings" position="is-right" always>
-									Administrative Settings
+								<b-tooltip :label="$t('Administrative Settings')" position="is-right" always>
+									{{ $t('Administrative Settings') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>

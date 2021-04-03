@@ -28,7 +28,7 @@
 			<b-field
 				label="Available Currencies"
 				:type="validateType('availableCurrencies')"
-				:message="validateMsg('availableCurrencies', 'Required')"
+				:message="validateMsg('availableCurrencies' )"
 			>
 				<MultiSelect
 					v-model="formModel.availableCurrencies"
@@ -36,7 +36,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					placeholder="Click to select"
 					:disabled="formDisabled"
 					:class="validateMultiselect('availableCurrencies')"
 					:options="currencies"
@@ -54,7 +54,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					placeholder="Click to select"
 					:disabled="formDisabled"
 					:options="flags"
 					:class="validateMultiselect('countryFlag')"

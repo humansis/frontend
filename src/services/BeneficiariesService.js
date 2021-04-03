@@ -184,13 +184,13 @@ export default {
 		return { data, totalCount };
 	},
 
-	async addBeneficiariesToProject(projectId, ids) {
+	async addHouseholdsToProject(projectId, ids) {
 		const { data } = await fetcher({
-			uri: `projects/${projectId}/beneficiaries`,
+			uri: `projects/${projectId}/households`,
 			auth: true,
 			method: "PUT",
 			body: {
-				beneficiaryIds: ids,
+				householdIds: ids,
 			},
 		});
 

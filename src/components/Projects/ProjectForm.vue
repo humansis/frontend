@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Project Name"
+				:label="$t('Project Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -15,8 +15,10 @@
 
 			<b-field>
 				<template #label>
-					Internal ID
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Internal ID') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.internalId"
@@ -26,7 +28,7 @@
 			</b-field>
 
 			<b-field
-				label="Sectors"
+				:label="$t('Sectors')"
 				:type="validateType('selectedSectors')"
 				:message="validateMsg('selectedSectors')"
 			>
@@ -36,7 +38,7 @@
 					label="code"
 					track-by="value"
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
@@ -59,35 +61,34 @@
 			</b-field>
 
 			<b-field
-				label="Start date"
+				:label="$t('Start date')"
 				:type="validateType('startDate')"
 				:message="validateMsg('startDate')"
 			>
 				<b-datepicker
 					v-model="formModel.startDate"
 					show-week-number
-					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('startDate')"
 				/>
 			</b-field>
 
 			<b-field
-				label="End Date"
+				:label="$t('End Date')"
 				:type="validateType('endDate')"
 				:message="validateMsg(
 					'endDate',
-					`Required and must be greater than Start Date`
-				)"
+					$t('Required and must be greater than Start Date'))"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
 					show-week-number
-					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('endDate')"
 				/>
@@ -95,23 +96,22 @@
 
 			<b-field>
 				<template #label>
-					Donors<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Donors') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.selectedDonors"
 					searchable
-					label="fullname"
 					track-by="id"
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.donors"
 					:loading="donorsLoading"
 				>
-					<template
-						#singleLabel
-						v-slot:default="option"
-					>
+					<template #singleLabel v-slot:default="option">
 						{{ option.shortname }}
 					</template>
 				</MultiSelect>
@@ -119,14 +119,16 @@
 
 			<b-field>
 				<template #label>
-					Target Type
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Target Type') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
@@ -148,7 +150,7 @@
 			<b-field
 				label="Total Target"
 				:type="validateType('totalTarget')"
-				:message="validateMsg('totalTarget', 'Required, min length is 1')"
+				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
@@ -165,7 +167,10 @@
 
 			<b-field>
 				<template #label>
-					Notes<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Notes') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.notes"
@@ -176,7 +181,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -275,7 +280,7 @@ export default {
 			await SectorsService.getListOfSectors().then(({ data }) => {
 				this.options.sectors = data;
 			}).catch((e) => {
-				Notification(`Sectors ${e}`, "is-danger");
+				Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
@@ -286,7 +291,7 @@ export default {
 			await DonorService.getListOfDonors().then(({ data }) => {
 				this.options.donors = data;
 			}).catch((e) => {
-				Notification(`Donors ${e}`, "is-danger");
+				Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedDonors = getArrayOfCodeListByKey(this.formModel.donorIds, this.options.donors, "id");
@@ -297,7 +302,7 @@ export default {
 			await AssistancesService.getTargetTypes().then(({ data }) => {
 				this.options.targetTypes = data;
 			}).catch((e) => {
-				Notification(`Target Types ${e}`, "is-danger");
+				Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");

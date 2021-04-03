@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1 class="title">Add Household</h1>
+		<h1 class="title">{{ $t('Add Household') }}</h1>
 		<HouseholdTabs :is-editing="false" />
 	</div>
 </template>

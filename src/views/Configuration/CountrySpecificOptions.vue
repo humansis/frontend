@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Country Specific Options</h1>
+				<h1 class="title">{{ $t('Country Specific Options') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewCountrySpecificOption"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 				close-button
 				class="modal-card"
 				:formModel="countrySpecificOptionModel"
-				:submit-button-label="'Create'"
+				:submit-button-label="$t('Create')"
 				:form-disabled="countrySpecificOptionModal.isDetail"
 				@formSubmitted="submitCountrySpecificOptionForm"
 				@formClosed="closeCountrySpecificOptionModal"
@@ -85,11 +85,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.countrySpecificOptionModal.isDetail) {
-				result = "Detail of Country Specific Option";
+				result = this.$t("Detail of Country Specific Option");
 			} else if (this.countrySpecificOptionModal.isEditing) {
-				result = "Edit Specific Option";
+				result = this.$t("Edit Specific Option");
 			} else {
-				result = "Create new Country Specific Option";
+				result = this.$t("Create New Country Specific Option");
 			}
 			return result;
 		},
@@ -185,12 +185,14 @@ export default {
 			await CountrySpecificOptionsService.createCountrySpecificOption(countrySpecificOptionBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Country Specific Option Successfully Created", "is-success");
+						Toast(
+							this.$t("Country Specific Option Successfully Created"), "is-success",
+						);
 						this.$refs.countrySpecificOptionList.fetchData();
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
-					Toast(`Country Specific Options ${e}`, "is-danger");
+					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -201,12 +203,14 @@ export default {
 			await CountrySpecificOptionsService.updateCountrySpecificOption(id, countrySpecificOptionBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Country Specific Option Successfully Updated", "is-success");
+						Toast(
+							this.$t("Country Specific Option Successfully Updated"), "is-success",
+						);
 						this.$refs.countrySpecificList.fetchData();
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
-					Toast(`Country Specific Options ${e}`, "is-danger");
+					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -215,11 +219,13 @@ export default {
 			await CountrySpecificOptionsService.deleteCountrySpecificOption(id)
 				.then((response) => {
 					if (response.status === 204) {
-						Toast("Country Specific Option Successfully Removed", "is-success");
+						Toast(
+							this.$t("Country Specific Option Successfully Removed"), "is-success",
+						);
 						this.$refs.countrySpecificOptionList.removeFromList(id);
 					}
 				}).catch((e) => {
-					Toast(`Country Specific Options ${e}`, "is-danger");
+					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 				});
 		},
 	},

@@ -51,7 +51,7 @@ export default {
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {
-					Notification(`Translations ${e}`, "is-danger");
+					Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 					this.$store.dispatch("appLoading", false);
 				});
 

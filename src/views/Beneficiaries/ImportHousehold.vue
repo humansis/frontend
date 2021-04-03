@@ -1,9 +1,6 @@
 <template>
 	<b-tabs size="is-medium">
-		<b-tab-item
-			label="Import From File"
-			icon="file-import"
-		>
+		<b-tab-item icon="file-import" :label="$t('Import from File')">
 			<ImportFromFile />
 		</b-tab-item>
 	</b-tabs>

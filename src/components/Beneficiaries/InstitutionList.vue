@@ -22,26 +22,26 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
 			width="190"
 			centered
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
-					entity="Institute"
-					tooltip="Delete"
+					:entity="$t('Institution')"
+					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -53,14 +53,12 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced search
+				{{ $t('Advanced Search') }}
 			</b-button>
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionFilter
-					@filtersChanged="onFiltersChange"
-				/>
+				<InstitutionFilter @filtersChanged="onFiltersChange" />
 			</b-collapse>
 		</template>
 	</Table>
@@ -133,7 +131,7 @@ export default {
 				this.table.total = totalCount;
 				this.table.data = data;
 			}).catch((e) => {
-				Notification(`Institutions ${e}`, "is-danger");
+				Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

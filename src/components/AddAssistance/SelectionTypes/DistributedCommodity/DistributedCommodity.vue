@@ -1,27 +1,27 @@
 <template>
 	<div>
 		<h2 class="title space-between mb-0">
-			Distributed Commodity
+			{{ $t('Distributed Commodity') }}
 			<b-button
 				class="mb-5"
 				type="is-primary"
 				icon-left="plus"
 				@click="addCriteria"
 			>
-				Add
+				{{ $t('Add') }}
 			</b-button>
 		</h2>
 		<Modal
 			can-cancel
 			is-small
-			header="Create A New Commodity"
+			:header="$t('Create New Commodity')"
 			:active.sync="commodityModal.isOpened"
 			@close="closeCommodityModal"
 		>
 			<DistributedCommodityForm
 				close-button
 				class="modal-card"
-				submit-button-label="Create"
+				:submit-button-label="$t('Create')"
 				:formModel="formModel"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
@@ -42,13 +42,13 @@
 				</b-table-column>
 			</template>
 			<b-table-column
-				label="Actions"
+				:label="$t('Actions')"
 				v-slot="props"
 			>
 				<ActionButton
 					icon="trash"
 					type="is-danger"
-					tooltip="Delete"
+					:tooltip="$t('Delete')"
 					@click.native="removeCommodity(props.index)"
 				/>
 			</b-table-column>
@@ -60,7 +60,7 @@
 			icon="eye-slash"
 			:closable="false"
 		>
-			<p class="mt-3">No data</p>
+			<p class="mt-3">{{ $t('No data') }}</p>
 		</b-notification>
 	</div>
 </template>

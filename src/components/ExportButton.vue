@@ -5,7 +5,7 @@
 	>
 		<b-button icon-left="file-download" slot="trigger" :size="size" :type="type">
 			<template>
-				<span>Export</span>
+				<span>{{ $t('Export') }}</span>
 			</template>
 			<b-icon icon="arrow-down" />
 		</b-button>

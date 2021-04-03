@@ -27,7 +27,7 @@ export default {
 			filtersOptions: {
 				projects: {
 					name: "Project",
-					placeholder: "Select Projects",
+					placeholder: this.$t("Select Projects"),
 					trackBy: "id",
 					label: "name",
 					multiple: true,
@@ -53,7 +53,7 @@ export default {
 					this.filtersOptions.projects.data = data;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.filtersOptions.projects.loading = false;

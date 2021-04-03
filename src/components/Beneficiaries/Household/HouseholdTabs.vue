@@ -7,7 +7,7 @@
 			rounded
 			has-navigation
 		>
-			<b-step-item step="1" label="Household">
+			<b-step-item step="1" :label="$t('Household')">
 				<HouseholdForm
 					ref="householdForm"
 					:is-editing="isEditing"
@@ -15,7 +15,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="2" label="Household Head">
+			<b-step-item step="2" :label="$t('Household Head')">
 				<HouseholdHeadForm
 					ref="householdHeadForm"
 					show-type-of-beneficiary
@@ -25,11 +25,11 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" label="Members">
+			<b-step-item step="3" :label="$t('Members')">
 				<Members :detailOfHousehold="detailOfHousehold" ref="householdMembers" />
 			</b-step-item>
 
-			<b-step-item step="4" label="Summary">
+			<b-step-item step="4" :label="$t('Summary')">
 				<Summary
 					ref="householdSummary"
 					:detailOfHousehold="detailOfHousehold"
@@ -45,14 +45,14 @@
 						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
-						Back
+						{{ $t('Back') }}
 					</b-button>
 					<b-button
 						type="is-primary"
 						:disabled="next.disabled"
 						@click.prevent="nextPage(next)"
 					>
-						Next
+						{{ $t('Next') }}
 					</b-button>
 					<b-button
 						v-if="activeStep === 3"
@@ -60,7 +60,7 @@
 						icon-left="save"
 						@click="save"
 					>
-						{{ isEditing ? "Update" : "Save" }}
+						{{ isEditing ? $t('Update') : $t('Save') }}
 					</b-button>
 				</div>
 			</template>
@@ -227,22 +227,22 @@ export default {
 		async updateHousehold(id, householdBody) {
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Household Successfully Updated", "is-success");
+					Toast(this.$t("Household Successfully Updated"), "is-success");
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 		},
 
 		async createHousehold(householdBody) {
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Household Successfully Created", "is-success");
+					Toast(this.$t("Household Successfully Created"), "is-success");
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 		},
 
@@ -250,7 +250,7 @@ export default {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 		},
 

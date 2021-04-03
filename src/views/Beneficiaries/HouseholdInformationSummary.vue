@@ -1,20 +1,24 @@
 <template>
 	<card-component>
 		<b-progress :value="100" />
-		<h1 class="title has-text-centered has-text-weight-bold mb-6">Household Information Summary</h1>
+		<h1 class="title has-text-centered has-text-weight-bold mb-6">
+			{{ $t('Household Information Summary') }}
+		</h1>
 		<h2 v-if="householdHead" class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
 			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}
 		</h2>
-		<h3 class="subtitle is-5 has-text-centered has-text-weight-bold mb-5">Current Address</h3>
+		<h3 class="subtitle is-5 has-text-centered has-text-weight-bold mb-5">
+			{{ $t('Current Address') }}
+		</h3>
 		<p v-if="householdHead" class="has-text-centered">
 			{{ `${address.number || ""}, ${address.street || ""}, ${address.postcode || ""}` }}
 		</p>
 		<b-tabs v-model="activeTab">
-			<b-tab-item label="Assistances">
+			<b-tab-item :label="$t('Assistances')">
 				<HouseholdAssistanceList />
 			</b-tab-item>
 
-			<b-tab-item label="Purchases">
+			<b-tab-item :label="$t('Purchases')">
 				<HouseholdPurchaseList />
 			</b-tab-item>
 		</b-tabs>
@@ -32,7 +36,7 @@ import HouseholdAssistanceList from "@/components/Beneficiaries/Household/Househ
 import HouseholdPurchaseList from "@/components/Beneficiaries/Household/HouseholdPurchaseList";
 
 export default {
-	name: "AddHousehold",
+	name: "HouseholdInformationSummary",
 
 	components: {
 		HouseholdPurchaseList,
@@ -66,7 +70,7 @@ export default {
 					this.household = data;
 					this.prepareData(data);
 				}).catch((e) => {
-					Notification(`Household ${e}`, "is-danger");
+					Notification(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 		},
 
@@ -89,7 +93,7 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(`Camp Address ${e}`, "is-danger");
+						Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
 			if (type === "residence") {
@@ -99,7 +103,7 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(`Residence Address ${e}`, "is-danger");
+						Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 					});
 			}
 			if (type === "temporary_settlement") {
@@ -109,7 +113,10 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(`Temporary Settlement Address ${e}`, "is-danger");
+						Notification(
+							`${this.$t("Temporary Settlement Address")} ${e}`,
+							"is-danger",
+						);
 					});
 			}
 			return address;

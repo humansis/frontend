@@ -16,7 +16,7 @@
 				{{ data.row[column.field].length }}
 			</p>
 			<p v-else>
-				None
+				{{ $t('none') }}
 			</p>
 		</template>
 

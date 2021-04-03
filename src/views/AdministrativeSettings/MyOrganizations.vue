@@ -11,7 +11,7 @@
 				close-button
 				class="modal-card"
 				:formModel="myOrganizationModel"
-				:submit-button-label="myOrganizationModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="myOrganizationModal.isEditing ?  $t('Update') :  $t('Create')"
 				:form-disabled="myOrganizationModal.isDetail"
 				@formSubmitted="submitMyOrganizationForm"
 				@formClosed="closeMyOrganizationModal"
@@ -67,9 +67,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.myOrganizationModal.isDetail) {
-				result = "Detail of MyOrganization";
+				result = this.$t("Detail of MyOrganization");
 			} else if (this.myOrganizationModal.isEditing) {
-				result = "Edit MyOrganization";
+				result = this.$t("Edit MyOrganization");
 			}
 			return result;
 		},
@@ -156,12 +156,12 @@ export default {
 				.then(async ({ data, status }) => {
 					if (status === 200) {
 						await this.uploadImage(data.id, image);
-						Toast("My Organization Successfully Updated", "is-success");
+						Toast(this.$t("My Organization Successfully Updated"), "is-success");
 						this.$refs.myOrganizationsList.fetchData();
 						this.closeMyOrganizationModal();
 					}
 				}).catch((e) => {
-					Toast(`Organization ${e}`, "is-danger");
+					Toast(`${this.$t("Organization")} ${e}`, "is-danger");
 					this.myOrganizationModal.isWaiting = false;
 				});
 		},
@@ -176,10 +176,10 @@ export default {
 			await MyOrganizationsService.printMyOrganization(id)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Download is starting", "is-success");
+						Toast(this.$t("Download Is Starting"), "is-success");
 					}
 				}).catch((e) => {
-					Toast(`Organization ${e}`, "is-danger");
+					Toast(`${this.$t("Organization")} ${e}`, "is-danger");
 				});
 		},
 	},

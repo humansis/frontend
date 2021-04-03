@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Name"
+				:label="$t('Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -15,7 +15,10 @@
 
 			<b-field>
 				<template #label>
-					Unit<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Unit') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.unit"
@@ -25,7 +28,7 @@
 			</b-field>
 
 			<b-field
-				label="Image"
+				:label="$t('Image')"
 				:type="validateType('uploadedImage')"
 				:message="validateMsg('uploadedImage')"
 			>
@@ -33,14 +36,11 @@
 					v-if="!formDisabled"
 					class="file"
 				>
-					<b-upload
-						v-model="formModel.uploadedImage"
-						expanded
-					>
+					<b-upload v-model="formModel.uploadedImage" expanded>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
 							</span>
 						</a>
 					</b-upload>
@@ -61,7 +61,7 @@
 				v-if="closeButton"
 				@click="closeForm"
 			>
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"

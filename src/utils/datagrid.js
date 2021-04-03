@@ -1,3 +1,5 @@
+import i18n from "@/plugins/i18n";
+
 export const normalizeText = (text = "") => text
 	.replace(/([A-Z])/g, " $1")
 	.replace(/(_)/g, " ")
@@ -17,7 +19,8 @@ export const generateColumns = ((visibleColumns) => {
 	visibleColumns.forEach((column) => {
 		preparedColumns.push({
 			field: column.key,
-			label: column.label ? column.label : normalizeText(column.key),
+			label: column.label
+				? i18n.t(column.label) : i18n.t(normalizeText(column.key)),
 			type: column.type,
 			width: column.width,
 			centered: true,

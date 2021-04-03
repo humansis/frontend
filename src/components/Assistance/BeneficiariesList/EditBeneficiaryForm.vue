@@ -1,55 +1,55 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="First Name">
+			<b-field :label="$t('First Name')">
 				<b-input v-model="formModel.givenName" disabled />
 			</b-field>
 
-			<b-field label="Family Name">
+			<b-field :label="$t('Family Name')">
 				<b-input v-model="formModel.familyName" disabled />
 			</b-field>
 
-			<b-field label="Gender">
+			<b-field :label="$t('Gender')">
 				<b-input v-model="formModel.gender" disabled />
 			</b-field>
 
-			<b-field label="Date Of Birth">
+			<b-field :label="$t('Date of Birth')">
 				<b-input v-model="formModel.dateOfBirth" disabled />
 			</b-field>
 
-			<b-field label="Residency Status">
+			<b-field :label="$t('Residency Status')">
 				<b-input v-model="formModel.residencyStatus" disabled />
 			</b-field>
 
-			<b-field label="Status">
+			<b-field :label="$t('Status')">
 				<b-input v-model="formModel.residencyStatus" disabled />
 			</b-field>
 
-			<b-field label="Add A Referral Type">
+			<b-field :label="$t('Add a Referral Type')">
 				<b-checkbox v-model="addAReferral" :disabled="disabled" />
 			</b-field>
 
-			<b-field v-if="addAReferral" label="Referral Type">
+			<b-field v-if="addAReferral" :label="$t('Referral Type')">
 				<MultiSelect
 					v-model="formModel.referralType"
-					:disabled="disabled"
 					searchable
-					placeholder="Click to select..."
+					:disabled="disabled"
+					:placeholder="$t('Click to select')"
 					:options="options.referralType"
 				/>
 			</b-field>
 
-			<b-field v-if="addAReferral" label="Comment">
+			<b-field v-if="addAReferral" :label="$t('Comment')">
 				<b-input v-model="formModel.comment" :disabled="disabled" />
 			</b-field>
 
-			<b-field label="Justification For Adding">
+			<b-field :label="$t('Justification for Adding')">
 				<b-input v-model="formModel.justificationForAdding" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!disabled"
@@ -78,7 +78,13 @@ export default {
 			addAReferral: false,
 			options: {
 				// TODO Fetch Referral types
-				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
+				referralType: [
+					this.$t("Health"),
+					this.$t("Protection"),
+					this.$t("Shelter"),
+					this.$t("Nutrition"),
+					this.$t("Other"),
+				],
 			},
 		};
 	},
