@@ -11,7 +11,7 @@
 				close-button
 				class="modal-card"
 				:formModel="donorModel"
-				:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="donorModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="donorModal.isDetail"
 				@formSubmitted="submitDonorForm"
 				@formClosed="closeDonorModal"
@@ -23,7 +23,7 @@
 			icon-left="plus"
 			@click="addNewDonor"
 		>
-			Add
+			{{ $t('Add') }}
 		</b-button>
 		<DonorList
 			ref="DonorList"
@@ -72,11 +72,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.donorModal.isDetail) {
-				result = "Detail of Donor";
+				result = this.$t("Detail of Donor");
 			} else if (this.donorModal.isEditing) {
-				result = "Edit Donor";
+				result = this.$t("Edit Donor");
 			} else {
-				result = "Create new Donor";
+				result = this.$t("Create New Donor");
 			}
 			return result;
 		},
@@ -175,12 +175,12 @@ export default {
 				.then(async ({ data, status }) => {
 					if (status === 200) {
 						await this.uploadImage(data.id, image);
-						Toast("Donor Successfully Created", "is-success");
+						Toast(this.$t("Donor Successfully Created"), "is-success");
 						this.$refs.DonorList.fetchData();
 						this.closeDonorModal();
 					}
 				}).catch((e) => {
-					Toast(`Donor ${e}`, "is-danger");
+					Toast(`${this.$t("Donor")} ${e}`, "is-danger");
 					this.donorModal.isWaiting = false;
 				});
 		},
@@ -192,12 +192,12 @@ export default {
 				.then(async ({ data, status }) => {
 					if (status === 200) {
 						await this.uploadImage(data.id, image);
-						Toast("Donor Successfully Updated", "is-success");
+						Toast(this.$t("Donor Successfully Updated"), "is-success");
 						this.$refs.DonorList.fetchData();
 						this.closeDonorModal();
 					}
 				}).catch((e) => {
-					Toast(`Donor ${e}`, "is-danger");
+					Toast(`${this.$t("Donor")} ${e}`, "is-danger");
 					this.donorModal.isWaiting = false;
 				});
 		},
@@ -212,11 +212,11 @@ export default {
 			await DonorService.deleteDonor(id)
 				.then((response) => {
 					if (response.status === 204) {
-						Toast("Donor successfully removed", "is-success");
+						Toast(this.$t("Donor successfully removed"), "is-success");
 						this.$refs.DonorList.removeFromList(id);
 					}
 				}).catch((e) => {
-					Toast(`Donor ${e}`, "is-danger");
+					Toast(`${this.$t("Donor")} ${e}`, "is-danger");
 				});
 		},
 	},

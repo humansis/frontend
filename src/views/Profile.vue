@@ -3,83 +3,71 @@
 		<div class="columns">
 			<div class="column is-half is-offset-one-quarter">
 				<section class="modal-card-body">
-					<p class="is-size-4 my-5">User Information</p>
-					<b-field label="Email">
+					<p class="is-size-4 my-5">{{ $t('User Information') }}</p>
+					<b-field :label="$t('Email')">
 						<b-input v-model="user.email" disabled />
 					</b-field>
 					<form @submit.prevent="submitPasswordForm">
-						<p class="is-size-4 my-5">Change Password</p>
+						<p class="is-size-4 my-5">{{ $t('Change Password') }}</p>
 						<section>
-							<b-field label="Old Password">
-								<b-input
-									type="password"
-								/>
+							<b-field :label="$t('Old Password')">
+								<b-input type="password" />
 							</b-field>
 
-							<b-field label="New Password">
-								<b-input
-									v-model="passwordForm.newPassword"
-									type="password"
-								/>
-
+							<b-field :label="$t('New Password')">
+								<b-input v-model="passwordForm.newPassword" type="password" />
 							</b-field>
 
-							<b-field label="Re-Enter New Password">
-								<b-input
-									v-model="passwordForm.reenteredPassword"
-									type="password"
-								/>
+							<b-field :label="$t('Re-Enter New Password')">
+								<b-input v-model="passwordForm.reenteredPassword" type="password" />
 							</b-field>
 
 							<div class="level-right mt-5">
 								<b-button type="is-primary" slot="trigger">
-									Save
+									{{ $t('Save') }}
 								</b-button>
 							</div>
 						</section>
 					</form>
 					<form @submit.prevent="submitTelephoneForm">
-						<p class="is-size-4 my-5">Change Phone Number</p>
+						<p class="is-size-4 my-5">{{ $t('Change Phone Number') }}</p>
 						<b-field grouped>
-							<b-field
-								label="Phone Ext"
-							>
+							<b-field :label="$t('Phone Ext')">
 								<MultiSelect
 									v-model="telephoneForm.prefix"
 									searchable
-									placeholder="Phone Ext"
 									label="value"
 									track-by="code"
 									:options="options.phonePrefixes"
+									:placeholder="$t('Click to select')"
 								/>
 							</b-field>
-							<b-field label="Phone Number" expanded>
-								<b-input
-									v-model="telephoneForm.telephoneNumber"
-								/>
+							<b-field :label="$t('Phone Number')" expanded>
+								<b-input v-model="telephoneForm.telephoneNumber" />
 							</b-field>
 						</b-field>
 						<div class="level-right mt-5">
 							<b-button type="is-primary">
-								Save
+								{{ $t('Save') }}
 							</b-button>
 						</div>
 					</form>
 					<section>
-						<p class="is-size-4 my-5">2 Factor Authentication</p>
+						<p class="is-size-4 my-5">{{ $t('Two Factor Authentication') }}</p>
 						<div class="has-text-centered">
-							Two-factor authentication adds an additional layer of security to
-							your account by requiring more than a password to log in
+							{{ $t(`Two-factor authentication adds an additional layer of security
+							to your account by requiring more than a password to log in`) }}
 						</div>
 						<br>
 						<div class="has-text-centered">
 							<strong>
-								Two Factor Authentication {{ twoFactorEnabled ? "Enabled" : "Disabled" }}
+								{{ $t('Two Factor Authentication') }}
+								{{ twoFactorEnabled ? $t('Enabled') : $t('Disabled') }}
 							</strong>
 						</div>
 						<div class="level-right mt-5">
 							<b-button type="is-primary" @click="enableTwoFactor">
-								{{ twoFactorEnabled ? "Disable" : "Enable" }}
+								{{ twoFactorEnabled ? $t('Disable') : $t('Enable') }}
 							</b-button>
 						</div>
 					</section>

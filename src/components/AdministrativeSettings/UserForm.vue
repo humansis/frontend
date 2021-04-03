@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Email"
+				:label="$t('Email')"
 				:type="validateType('email')"
 			>
 				<b-input
@@ -14,7 +14,7 @@
 			</b-field>
 
 			<b-field
-				label="Username"
+				:label="$t('Username')"
 				:type="validateType('username')"
 			>
 				<b-input
@@ -26,7 +26,7 @@
 
 			<!-- TODO Add rules to password -->
 			<b-field
-				label="Password"
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
@@ -40,7 +40,7 @@
 			</b-field>
 
 			<b-field
-				label="Rights"
+				:label="$t('Rights')"
 				:type="validateType('rights')"
 				:message="validateMsg('rights')"
 			>
@@ -49,7 +49,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.rights"
 					:class="validateMultiselect('rights')"
@@ -59,7 +59,7 @@
 
 			<b-field
 				v-show="!formModel.disabledProject"
-				label="Project"
+				:label="$t('Project')"
 				:type="validateType('projectIds')"
 				:message="validateMsg('projectIds')"
 			>
@@ -68,7 +68,7 @@
 					searchable
 					label="name"
 					track-by="id"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					multiple
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="options.projects"
@@ -79,7 +79,7 @@
 
 			<b-field
 				v-show="!formModel.disabledCountry"
-				label="Country"
+				:label="$t('Country')"
 				:type="validateType('countries')"
 				:message="validateMsg('countries')"
 			>
@@ -88,7 +88,7 @@
 					searchable
 					label="name"
 					track-by="iso3"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="options.countries"
@@ -96,20 +96,23 @@
 					@select="validate('countries')"
 				/>
 				<small v-if="onlyOneCountry" class="ml-2">
-					<strong>You can select only one country</strong>
+					<strong>{{ $t('You can select only one country') }}</strong>
 				</small>
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Language<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Language') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.language"
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.languages"
 				/>
@@ -117,19 +120,22 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Update Password On Next Login"
+				:label="$t('Update password on next login')"
 			>
 				<b-checkbox v-model="formModel.updatePasswordOnNextLogin" />
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Prefix<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Prefix') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.phonePrefix"
 					searchable
-					placeholder="Phone Ext"
+					:placeholder="$t('Phone Ext')"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
@@ -141,8 +147,10 @@
 
 			<b-field>
 				<template #label>
-					Phone Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Phone Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.phoneNumber"
@@ -153,7 +161,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button v-if="closeButton" @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
@@ -210,30 +218,30 @@ export default {
 				rights: [
 					{
 						code: 0,
-						value: "Administrator",
+						value: this.$t("Administrator"),
 					},
 					{
 						code: 1,
-						value: "Field Officer",
+						value: this.$t("Field Officer"),
 					},
 					{
 						code: 2,
-						value: "Project Officer",
+						value: this.$t("Project Officer"),
 					},
 					{
 						code: 3,
-						value: "Project Manager",
+						value: this.$t("Project Manager"),
 					},
 					{
-						value: "Country Manager",
+						value: this.$t("Country Manager"),
 						code: 4,
 					},
 					{
-						value: "Regional Manager",
+						value: this.$t("Regional Manager"),
 						code: 5,
 					},
 					{
-						value: "Enumerator",
+						value: this.$t("Enumerator"),
 						code: 6,
 					},
 				],
@@ -288,7 +296,7 @@ export default {
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
@@ -299,7 +307,7 @@ export default {
 				.then(({ data }) => {
 					this.options.countries = data;
 				}).catch((e) => {
-					Notification(`Countries ${e}`, "is-danger");
+					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 				});
 
 			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");

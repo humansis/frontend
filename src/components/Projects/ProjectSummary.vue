@@ -5,19 +5,15 @@
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Sectors</p>
-					<svg-icon
-						:items="projectSummary.sectors"
-					/>
+					<p class="heading">{{ $t('Sectors') }}</p>
+					<svg-icon :items="projectSummary.sectors" />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Start Date</p>
-					<p
-						class="has-text-weight-bold is-size-5"
-					>
+					<p class="heading">{{ $t('Start Date') }}</p>
+					<p class="has-text-weight-bold is-size-5">
 						{{ new Date(projectSummary.startDate).toLocaleDateString() }}
 					</p>
 				</div>
@@ -25,7 +21,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">End Date</p>
+					<p class="heading">{{ $t('End Date') }}</p>
 					<p class="has-text-weight-bold is-size-5">
 						{{ new Date(projectSummary.endDate).toLocaleDateString() }}
 					</p>
@@ -34,28 +30,28 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Number of households</p>
+					<p class="heading">{{ $t('Number of Households') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Donors</p>
+					<p class="heading">{{ $t('Donors') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Total target beneficiaries</p>
+					<p class="heading">{{ $t('Total target beneficiaries') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Beneficiaries reached</p>
+					<p class="heading"> {{ $t('Beneficiaries Reached') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>
@@ -91,7 +87,7 @@ export default {
 			).then(({ data }) => {
 				this.projectSummary = data;
 			}).catch((e) => {
-				Notification(`Detail Of Project ${e}`, "is-danger");
+				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 			});
 		},
 	},

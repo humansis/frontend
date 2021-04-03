@@ -11,20 +11,20 @@
 			/>
 		</Modal>
 		<h2 class="title space-between mb-0">
-			Selection Criteria
+			{{ $t('Selection Criteria') }}
 			<b-button
 				class="mb-5"
 				type="is-primary"
 				icon-left="plus"
 				@click="addCriteria()"
 			>
-				Add Group
+				{{ $t('Add Group') }}
 			</b-button>
 		</h2>
 		<Modal
 			can-cancel
 			is-small
-			header="Create A New Criteria"
+			:header="$t('Create New Criteria')"
 			:active.sync="criteriaModal.isOpened"
 			@close="closeCriteriaModal"
 		>
@@ -32,7 +32,7 @@
 				close-button
 				class="modal-card"
 				ref="criteriaForm"
-				submit-button-label="Create"
+				:submit-button-label="$t('Create')"
 				:formModel="criteriaModel"
 				@formSubmitted="submitCriteriaForm"
 				@formClosed="closeCriteriaModal"
@@ -59,13 +59,14 @@
 				:closable="false"
 			>
 				<p class="mt-3">
-					There Are No Criteria Groups. Please Add At Least One Criteria Group.
+					{{ $t('There Are No Criteria Groups') }}.
+					{{ $t('Please Add At Least One Criteria Group') }}.
 				</p>
 			</b-notification>
 		</div>
 		<div class="level is-align-items-flex-end">
 			<div class="level-left">
-				<b-field label="Minimum Vulnerability Score">
+				<b-field :label="$t('Minimum Vulnerability Score')">
 					<b-numberinput
 						v-model="minimumSelectionScore"
 						expanded
@@ -88,7 +89,7 @@
 							type="is-link"
 							@click="showTotalBeneficiaries"
 						>
-							Details
+							{{ $t('Details') }}
 						</b-button>
 					</div>
 				</b-field>
@@ -284,7 +285,7 @@ export default {
 						}
 					}
 				}).catch((e) => {
-					Notification(`Calculation ${e}`, "is-danger");
+					Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 				});
 		},
 

@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Organization Name"
+				:label="$t('Organization Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -18,8 +18,10 @@
 				:type="validateType('logo')"
 			>
 				<template #label>
-					Organizational Logo
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Logo') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-field class="file">
 					<b-upload
@@ -29,7 +31,7 @@
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
 							</span>
 						</a>
 					</b-upload>
@@ -38,7 +40,7 @@
 
 			<b-field
 				v-if="formDisabled && formModel.logo"
-				label="Image"
+				:label="$t('Image')"
 			>
 				<b-image
 					alt="Image"
@@ -49,15 +51,17 @@
 
 			<b-field>
 				<template #label>
-					Font To Apply To The Pdf
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Font To Apply To The Pdf') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="fonts"
 					@blur="validate('font')"
@@ -87,8 +91,10 @@
 
 			<b-field>
 				<template #label>
-					Organization Primary Color
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Primary Color') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<VSwatches
 					v-model="formModel.primaryColor"
@@ -102,8 +108,10 @@
 
 			<b-field>
 				<template #label>
-					Organization Secondary Color
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Secondary Color') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<VSwatches
 					v-model="formModel.secondaryColor"
@@ -117,7 +125,7 @@
 			</b-field>
 
 			<b-field
-				label="Pdf Footer Content"
+				:label="$t('PDF Footer Content')"
 				:type="validateType('footerContent')"
 			>
 				<b-input
@@ -132,7 +140,7 @@
 				v-if="closeButton"
 				@click="closeForm"
 			>
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				v-if="!formDisabled"

@@ -20,7 +20,7 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="150"
 			centered
 		>
@@ -28,18 +28,18 @@
 				<ActionButton
 					icon="search"
 					type="is-primary"
-					tooltip="Show Detail"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<ActionButton
 					icon="print"
 					type="is-dark"
-					tooltip="Print"
+					:tooltip="$t('Print')"
 					@click.native="print(props.row.id)"
 				/>
 			</div>
@@ -75,10 +75,10 @@ export default {
 				visibleColumns: [
 					{ key: "name", label: "Organization Name" },
 					{ type: "image", key: "logo", label: "Organization Logo" },
-					{ type: "font", key: "font", label: "Font To Apply To The Pdf" },
+					{ type: "font", key: "font", label: "Font to Apply to The PDF" },
 					{ type: "color", key: "primaryColor", label: "Organization Primary Color" },
 					{ type: "color", key: "secondaryColor", label: "Organization Secondary Color" },
-					{ key: "footerContent", label: "Pdf Footer Content" },
+					{ key: "footerContent", label: "PDF Footer Content" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -106,7 +106,7 @@ export default {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
 				}).catch((e) => {
-					Notification(`Organizations ${e}`, "is-danger");
+					Notification(`${this.$t("Organizations")} ${e}`, "is-danger");
 				});
 
 			this.isLoadingList = false;

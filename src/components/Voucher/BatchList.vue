@@ -8,7 +8,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced search
+				Advanced Search
 			</b-button>
 		</div>
 		<b-collapse v-model="advancedSearchVisible">
@@ -136,7 +136,7 @@ export default {
 				visibleColumns: [
 					{ key: "project" },
 					{ key: "code" },
-					{ key: "quantityOfVouchers", label: "Quantity Of Vouchers" },
+					{ key: "quantityOfVouchers", label: "Quantity of Vouchers" },
 					{ key: "totalValue", sortKey: "value" },
 					{ key: "currency" },
 					{ key: "status" },
@@ -161,7 +161,7 @@ export default {
 			if (this.voucherModal.isDetail) {
 				result = "Detail of Voucher";
 			} else {
-				result = "Create new Voucher";
+				result = "Create New Voucher";
 			}
 			return result;
 		},

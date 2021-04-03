@@ -4,7 +4,7 @@
 
 		<div class="level">
 			<div class="level-left">
-				<h2 class="title">Project Assistances</h2>
+				<h2 class="title">{{ $t('Project Assistances') }}</h2>
 			</div>
 
 			<div class="level-right">
@@ -13,7 +13,7 @@
 					icon-left="plus"
 					@click="goToAddAssistance"
 				>
-					New
+					{{ $t('New') }}
 				</b-button>
 			</div>
 		</div>
@@ -93,22 +93,22 @@ export default {
 			await AssistancesService.updateAssistanceDateOfDistribution(id, date)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Assistance Successfully Updated", "is-success");
+						Toast(this.$t("Assistance Successfully Updated"), "is-success");
 						this.$refs.assistancesList.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`Assistance ${e}`, "is-danger");
+					Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				});
 		},
 
 		async removeAssistance(id) {
 			await AssistancesService.removeAssistance(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Assistance Successfully Deleted", "is-success");
+					Toast(this.$t("Assistance Successfully Deleted"), "is-success");
 					this.$refs.assistancesList.fetchData();
 				}
 			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
+				Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -117,7 +117,7 @@ export default {
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: false,
-				title: "Details Of This Assistance",
+				title: this.$t("Details of This Assistance"),
 			};
 		},
 
@@ -126,7 +126,7 @@ export default {
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
-				title: "Edit Assistance",
+				title: this.$t("Edit Assistance"),
 			};
 		},
 

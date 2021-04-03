@@ -1,6 +1,6 @@
 <template>
 	<div class="mb-4">
-		<h2 class="title">Summary</h2>
+		<h2 class="title">{{ $t('Summary') }}</h2>
 
 		<div class="columns is-multiline" ref="summary">
 			<div
@@ -20,7 +20,7 @@
 						</div>
 						<div class="level-left">
 							<div class="content">
-								<p class="heading mb-0">{{ normalizeText(code) }}</p>
+								<p class="heading mb-0"> {{ $t(normalizeText(code)) }}</p>
 								<p v-if="value || value === 0" class="subtitle is-4">{{ value }}</p>
 								<Loading v-else type="bubbles" is-small class="subtitle" />
 							</div>
@@ -105,7 +105,7 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						Notification(`Summaries ${e}`, "is-danger");
+						Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
 					});
 			});
 		},

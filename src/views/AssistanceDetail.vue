@@ -6,16 +6,18 @@
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
-				<div class="subtitle">Assistance Progress: {{ assistanceProgress }} %</div>
+				<div class="subtitle">
+					{{ $t('Assistance Progress') }}: {{ assistanceProgress }} %
+				</div>
 			</div>
 			<b-progress v-model="assistanceProgress" />
 			<div class="columns">
 				<div v-if="$refs.beneficiariesList" class="column is-offset-3">
-					<div class="has-text-weight-bold">Total Amount:</div>
+					<div class="has-text-weight-bold">{{ $t('Total Amount') }}:</div>
 					<span class="ml-5">{{ totalAmount }} {{ commodityUnit }}</span>
 				</div>
 				<div class="column">
-					<div class="has-text-weight-bold">Amount Distributed:</div>
+					<div class="has-text-weight-bold">{{ $t('Amount Distributed') }}:</div>
 					<span class="ml-6">{{ amountDistributed }} {{ commodityUnit }}</span>
 				</div>
 			</div>
@@ -39,7 +41,7 @@
 					type="is-primary"
 					@click="closeAssistance"
 				>
-					Close Assistance
+					{{ $t('Close Assistance') }}
 				</b-button>
 			</div>
 		</div>
@@ -69,12 +71,12 @@ export default {
 			amountDistributed: 200,
 			commodity: [],
 			columns: [
-				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-				{ key: "nationalId", label: "National ID", sortable: true },
-				{ key: "distributed" },
-				{ key: "value" },
+				{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+				{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+				{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+				{ key: "distributed", label: this.$t("Distributed") },
+				{ key: "value", label: this.$t("Value") },
 			],
 		};
 	},
@@ -119,15 +121,15 @@ export default {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodity = data; })
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 
 		closeAssistance() {
 			this.$buefy.dialog.confirm({
-				title: "Close Assistance",
-				message: "Are You Sure You Want To Close This Assistance?",
-				confirmText: "Confirm",
+				title: this.$t("Close Assistance"),
+				message: this.$t("Are You Sure You Want To Close This Assistance?"),
+				confirmText: this.$t("Confirm"),
 				type: "is-primary",
 				onConfirm: async () => {
 					const assistanceId = Number(this.$route.params.assistanceId);
@@ -136,7 +138,7 @@ export default {
 						{ assistanceId, completed: true },
 					).then(({ status }) => {
 						if (status === 200) {
-							Toast("Assistance Successfully Closed", "is-success");
+							Toast(this.$t("Assistance Successfully Closed"), "is-success");
 							this.$router.push({ name: "Project",
 								params: {
 									projectId: this.$route.params.projectId,
@@ -144,7 +146,7 @@ export default {
 							});
 						}
 					}).catch((e) => {
-						Toast(`Assistance ${e}`, "is-danger");
+						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
 					});
 				},
 			});

@@ -15,7 +15,7 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
-					<span class="ml-3">Member</span>
+					<span class="ml-3">{{ $t('Member') }}</span>
 				</p>
 				<a class="card-header-icon">
 					<b-button
@@ -45,7 +45,7 @@
 			icon-left="plus"
 			@click="addMember"
 		>
-			New
+			{{ $t('New') }}
 		</b-button>
 		<hr>
 	</div>

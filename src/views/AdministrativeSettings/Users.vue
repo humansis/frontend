@@ -12,7 +12,7 @@
 				close-button
 				class="modal-card"
 				:formModel="userModel"
-				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="userModal.isEditing ? $t('Update') : $t('Create')"
 				:is-editing="userModal.isEditing"
 				:form-disabled="userModal.isDetail"
 				@formSubmitted="submitUserForm"
@@ -25,7 +25,7 @@
 			icon-left="plus"
 			@click="addNewUser"
 		>
-			Add
+			{{ $t('Add') }}
 		</b-button>
 		<UsersList
 			ref="usersList"
@@ -84,11 +84,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.userModal.isDetail) {
-				result = "Detail of User";
+				result = this.$t("Detail of User");
 			} else if (this.userModal.isEditing) {
-				result = "Edit User";
+				result = this.$t("Edit User");
 			} else {
-				result = "Create new User";
+				result = this.$t("Create New User");
 			}
 			return result;
 		},
@@ -220,12 +220,12 @@ export default {
 
 			await UsersService.createUser(userBody).then((response) => {
 				if (response.status === 200) {
-					Toast("User Successfully Created", "is-success");
+					Toast(this.$t("User Successfully Created"), "is-success");
 					this.$refs.usersList.fetchData();
 					this.closeUserModal();
 				}
 			}).catch((e) => {
-				Toast(`User ${e}`, "is-danger");
+				Toast(`${this.$t("User")} ${e}`, "is-danger");
 				this.userModal.isWaiting = false;
 			});
 		},
@@ -235,12 +235,12 @@ export default {
 
 			await UsersService.updateUser(id, userBody).then((response) => {
 				if (response.status === 200) {
-					Toast("User Successfully Updated", "is-success");
+					Toast(this.$t("User Successfully Updated"), "is-success");
 					this.$refs.usersList.fetchData();
 					this.closeUserModal();
 				}
 			}).catch((e) => {
-				Toast(`User ${e}`, "is-danger");
+				Toast(`${this.$t("User")} ${e}`, "is-danger");
 				this.userModal.isWaiting = false;
 			});
 		},
@@ -248,11 +248,11 @@ export default {
 		async removeUser(id) {
 			await UsersService.deleteUser(id).then((response) => {
 				if (response.status === 204) {
-					Toast("User Successfully Deleted", "is-success");
+					Toast(this.$t("User Successfully Deleted"), "is-success");
 					this.$refs.usersList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`User ${e}`, "is-danger");
+				Toast(`${this.$t("User")} ${e}`, "is-danger");
 			});
 		},
 	},

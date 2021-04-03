@@ -2,7 +2,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">Products</h1>
+				<h1 class="title">{{ $t('Products') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -11,7 +11,7 @@
 					icon-left="plus"
 					@click="addNewProduct"
 				>
-					Add
+					{{ $t('Add') }}
 				</b-button>
 			</div>
 		</div>
@@ -29,7 +29,7 @@
 				:formModel="productModel"
 				:editing="productModal.isEditing"
 				:form-disabled="productModal.isDetail"
-				:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="productModal.isEditing ? $t('Update') : $t('Create')"
 				@formSubmitted="submitProductForm"
 				@formClosed="closeProductModal"
 			/>
@@ -83,11 +83,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.productModal.isDetail) {
-				result = "Detail of Product";
+				result = this.$t("Detail of Product");
 			} else if (this.productModal.isEditing) {
-				result = "Edit Product";
+				result = this.$t("Edit Product");
 			} else {
-				result = "Create new Product";
+				result = this.$t("Create New Product");
 			}
 			return result;
 		},
@@ -186,12 +186,12 @@ export default {
 			await ProductService.createProduct(productBody).then(async ({ data, status }) => {
 				if (status === 200) {
 					await this.uploadImage(data.id, image);
-					Toast("Product Successfully Created", "is-success");
+					Toast(this.$t("Product Successfully Created"), "is-success");
 					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
-				Toast(`Product ${e}`, "is-danger");
+				Toast(`${this.$t("Product")} ${e}`, "is-danger");
 				this.productModal.isWaiting = false;
 			});
 		},
@@ -202,12 +202,12 @@ export default {
 			await ProductService.updateProduct(id, productBody).then(async ({ data, status }) => {
 				if (status === 200) {
 					await this.uploadImage(data.id, image);
-					Toast("Product Successfully Updated", "is-success");
+					Toast(this.$t("Product Successfully Updated"), "is-success");
 					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
-				Toast(`Product ${e}`, "is-danger");
+				Toast(`${this.$t("Product")} ${e}`, "is-danger");
 				this.productModal.isWaiting = false;
 			});
 		},
@@ -221,11 +221,11 @@ export default {
 		async onRemoveProduct(id) {
 			await ProductService.removeProduct(id).then(({ status }) => {
 				if (status === 204) {
-					Toast("Product Successfully Removed", "is-success");
+					Toast(this.$t("Product Successfully Removed"), "is-success");
 					this.$refs.ProductList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`Product ${e}`, "is-danger");
+				Toast(`${this.$t("Product")} ${e}`, "is-danger");
 			});
 		},
 	},

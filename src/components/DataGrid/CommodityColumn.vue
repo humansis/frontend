@@ -1,5 +1,5 @@
 <template>
-	<b-tooltip :label="commodity" :active="commodity !== undefined">
+	<b-tooltip :label="$t(commodity)" :active="commodity !== undefined">
 		<svg-icon :items="[commodity]" />
 	</b-tooltip>
 </template>

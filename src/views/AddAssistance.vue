@@ -41,8 +41,10 @@
 		</div>
 
 		<div class="buttons flex-end">
-			<b-button @click="goBack">Cancel</b-button>
-			<b-button type="is-primary" @click="submitAddingAssistance">Create</b-button>
+			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
+			<b-button type="is-primary" @click="submitAddingAssistance">
+				{{ $t('Create') }}
+			</b-button>
 		</div>
 	</div>
 </template>
@@ -130,7 +132,7 @@ export default {
 					this.assistanceSelectionCriteria = data;
 				})
 				.catch((e) => {
-					Notification(`Assistance Selection Criteria ${e}`, "is-danger");
+					Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
 				});
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
 				.then((data) => {
@@ -138,7 +140,7 @@ export default {
 					this.mapAssistance(data);
 				})
 				.catch((e) => {
-					Notification(`Duplicate Assistance ${e}`, "is-danger");
+					Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 				});
 		}
 	},
@@ -169,14 +171,14 @@ export default {
 
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
-					Toast("Assistance Successfully Created", "is-success");
+					Toast(this.$t("Assistance Successfully Created"), "is-success");
 					this.$router.push({
 						name: "Project",
 						params: { projectId: this.$route.params.projectId },
 					});
 				}
 			}).catch((e) => {
-				Toast(`New Assistance ${e}`, "is-danger");
+				Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -281,7 +283,7 @@ export default {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

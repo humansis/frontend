@@ -28,7 +28,7 @@
 							class="reset-sort-button is-small"
 							@click="onResetSort"
 						>
-							Reset Sort
+							{{ $t('Reset Sort') }}
 						</b-button>
 					</div>
 				</slot>
@@ -50,10 +50,10 @@
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
 			default-sort="id"
-			aria-next-label="Next page"
-			aria-previous-label="Previous page"
-			aria-page-label="Page"
-			aria-current-label="Current page"
+			:aria-next-label="$t('Next Page')"
+			:aria-previous-label="$t('Previous Page')"
+			:aria-page-label="$t('Page')"
+			:aria-current-label="$t('Current Page')"
 			:checked-rows="checkedRows"
 			:is-row-checkable="isRowCheckable"
 			:paginated="paginated"
@@ -72,7 +72,7 @@
 			<slot />
 
 			<template v-if="paginated" #bottom-left>
-				<p style="width: 120px;">Per Page: </p>
+				<p style="width: 120px;">{{ $t('Per Page') }}: </p>
 				<MultiSelect
 					hide-selected
 					open-direction="above"

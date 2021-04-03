@@ -213,7 +213,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
 				meta: {
 					breadcrumb: "Reports",
-					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions...",
+					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions",
 				},
 			},
 			{

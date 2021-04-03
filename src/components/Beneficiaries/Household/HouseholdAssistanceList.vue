@@ -99,7 +99,7 @@ export default {
 						await this.prepareDataForTable(data);
 					}
 				}).catch((e) => {
-					Notification(`Assistances ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
 				});
 
 			this.isLoadingList = false;
@@ -158,7 +158,7 @@ export default {
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -167,7 +167,7 @@ export default {
 			return AssistancesService.getAssistances(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Assistances ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
 				});
 		},
 
@@ -175,7 +175,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Beneficiaries ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 				});
 		},
 	},

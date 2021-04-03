@@ -38,14 +38,16 @@ export default {
 
 	methods: {
 		confirmDelete() {
-			let message = "Are you sure";
-			let title = "Deleting";
-			let confirmMessage = "Deleted";
+			let message = this.$t("Are you sure");
+			let title = this.$t("Deleting");
+			let confirmMessage = this.$t("Deleted");
+
 			if (this.entity) {
-				message = `${message} you want to delete ${this.entity}`;
+				message = `${message} ${this.$t("you want to delete")} ${this.entity}`;
 				title = `${title} ${this.entity}`;
 				confirmMessage = `${this.entity} ${confirmMessage}`;
 			}
+
 			this.$buefy.dialog.confirm({
 				title,
 				message: `${message}?`,
@@ -62,5 +64,4 @@ export default {
 		},
 	},
 };
-
 </script>

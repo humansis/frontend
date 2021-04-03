@@ -1,31 +1,31 @@
 <template>
 	<form>
 		<section class="modal-card-body">
-			<b-field label="Family Name">
+			<b-field :label="$t('Family Name')">
 				<b-input v-model="formModel.familyName" disabled />
 			</b-field>
 
-			<b-field label="First Name">
+			<b-field :label="$t('First Name')">
 				<b-input v-model="formModel.givenName" disabled />
 			</b-field>
 
-			<b-field label="Members">
+			<b-field :label="$t('Members')">
 				<b-input v-model="formModel.members" disabled />
 			</b-field>
 
-			<b-field label="Vulnerabilities">
+			<b-field :label="$t('Vulnerabilities')">
 				<b-input v-model="formModel.vulnerabilities" disabled />
 			</b-field>
 
-			<b-field label="Projects">
+			<b-field :label="$t('Projects')">
 				<b-input v-model="formModel.projects" disabled />
 			</b-field>
 
-			<b-field label="Income">
+			<b-field :label="$t('Income')">
 				<b-input v-model="formModel.incomeLevel" disabled />
 			</b-field>
 
-			<b-field label="External Support Received Type">
+			<b-field :label="$t('External Support Received Type')">
 				<MultiSelect
 					v-model="formModel.supportReceivedTypes"
 					multiple
@@ -36,11 +36,11 @@
 				/>
 			</b-field>
 
-			<b-field label="Support Date Received">
+			<b-field :label="$t('Support Date Received')">
 				<b-input v-model="formModel.supportDateReceived" disabled />
 			</b-field>
 
-			<b-field label="Assets">
+			<b-field :label="$t('Assets')">
 				<MultiSelect
 					v-model="formModel.assets"
 					searchable
@@ -52,7 +52,7 @@
 				/>
 			</b-field>
 
-			<b-field label="Shelter Type">
+			<b-field :label="$t('Shelter Type')">
 				<MultiSelect
 					v-model="formModel.shelterStatus"
 					searchable
@@ -63,13 +63,13 @@
 				/>
 			</b-field>
 
-			<b-field label="Current Location">
+			<b-field :label="$t('Current Location')">
 				<b-input v-model="formModel.currentLocation" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 		</footer>
 	</form>
@@ -131,7 +131,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					Notification(`Assets ${e}`, "is-danger");
+					Notification(`${this.$t("Assets")} ${e}`, "is-danger");
 				});
 			this.assetsLoading = false;
 		},
@@ -140,7 +140,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					Notification(`Shelter Types ${e}`, "is-danger");
+					Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -149,7 +149,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					Notification(`Support Received Types ${e}`, "is-danger");
+					Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
 				});
 		},
 	},

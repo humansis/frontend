@@ -4,11 +4,11 @@
 			<b-field
 				:type="validateType('modality')"
 				:message="validateMsg('modality')"
-				label="Modality"
+				:label="$t('Modality')"
 			>
 				<MultiSelect
 					v-model="formModel.modality"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.modalities"
@@ -22,11 +22,11 @@
 			<b-field
 				:type="validateType('type')"
 				:message="validateMsg('type')"
-				label="Type"
+				:label="$t('Type')"
 			>
 				<MultiSelect
 					v-model="formModel.type"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.types"
@@ -41,11 +41,11 @@
 				v-if="displayedFields.currency"
 				:type="validateType('currency')"
 				:message="validateMsg('currency')"
-				label="Currency"
+				:label="$t('Currency')"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="value"
 					:options="options.currencies"
@@ -56,7 +56,7 @@
 
 			<b-field
 				v-if="displayedFields.unit"
-				label="Unit"
+				:label="$t('Unit')"
 				:type="validateType('unit')"
 				:message="validateMsg('unit')"
 			>
@@ -70,7 +70,7 @@
 				v-if="displayedFields.quantity"
 				:type="validateType('quantity')"
 				:message="validateMsg('quantity')"
-				label="Quantity"
+				:label="$t('Quantity')"
 			>
 				<b-input
 					v-model="formModel.quantity"
@@ -82,7 +82,7 @@
 				v-if="displayedFields.description"
 				:type="validateType('description')"
 				:message="validateMsg('description')"
-				label="Description"
+				:label="$t('Description')"
 			>
 				<b-input
 					v-model="formModel.description"
@@ -94,7 +94,7 @@
 				v-if="displayedFields.totalValueOfBooklet"
 				:type="validateType('totalValueOfBooklet')"
 				:message="validateMsg('totalValueOfBooklet')"
-				label="Total Value of Booklet"
+				:label="$t('Total Value of Booklet')"
 			>
 				<b-input
 					v-model="formModel.totalValueOfBooklet"
@@ -104,7 +104,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
-				Close
+				{{ $t('Close') }}
 			</b-button>
 			<b-button
 				tag="input"
@@ -269,7 +269,7 @@ export default {
 			await AssistancesService.getListOfModalities()
 				.then(({ data }) => { this.options.modalities = data; })
 				.catch((e) => {
-					Notification(`Modalities ${e}`, "is-danger");
+					Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
 				});
 
 			this.loading.modalities = false;
@@ -283,7 +283,7 @@ export default {
 					this.options.types = data;
 				})
 				.catch((e) => {
-					Notification(`Modality Types ${e}`, "is-danger");
+					Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
 				});
 
 			this.loading.types = false;

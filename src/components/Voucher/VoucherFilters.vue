@@ -31,7 +31,7 @@ export default {
 			filtersOptions: {
 				currencies: {
 					name: "Currency",
-					placeholder: "Select Currency",
+					placeholder: this.$t("Select Currency"),
 					label: "value",
 					trackBy: "value",
 					multiple: true,
@@ -40,18 +40,18 @@ export default {
 				},
 				statuses: {
 					name: "Status",
-					placeholder: "Select Status",
+					placeholder: this.$t("Select Status"),
 					multiple: true,
 					data: [
-						{ code: 0, value: "Unassigned" },
-						{ code: 1, value: "Distributed" },
-						{ code: 2, value: "Used" },
-						{ code: 3, value: "Deactivated" },
+						{ code: 0, value: this.$t("Unassigned") },
+						{ code: 1, value: this.$t("Distributed") },
+						{ code: 2, value: this.$t("Used") },
+						{ code: 3, value: this.$t("Deactivated") },
 					],
 				},
 				assistances: {
 					name: "Assistance",
-					placeholder: "Select Assistance",
+					placeholder: this.$t("Select Assistance"),
 					trackBy: "id",
 					label: "name",
 					multiple: true,
@@ -61,7 +61,7 @@ export default {
 				},
 				beneficiaries: {
 					name: "Beneficiary",
-					placeholder: "Select Beneficiary",
+					placeholder: this.$t("Select Beneficiary"),
 					trackBy: "id",
 					label: "localFamilyName",
 					multiple: true,
@@ -90,7 +90,7 @@ export default {
 					this.filtersOptions.assistances.data = data;
 				})
 				.catch((e) => {
-					Notification(`Assistances ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
 				});
 
 			this.filtersOptions.assistances.loading = false;
@@ -110,7 +110,7 @@ export default {
 							});
 						})
 						.catch((e) => {
-							Notification(`Beneficiaries ${e}`, "is-danger");
+							Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 						});
 				});
 				await Promise.all(promise);
