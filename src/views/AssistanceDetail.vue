@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiaries"
-			:assistance="assistance"
+			:beneficiaries.sync="beneficiaries"
+			:assistance.sync="assistance"
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
@@ -37,11 +37,22 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					class="flex-end ml-5"
+					v-if="isAssistanceValidated"
+					class="flex-end ml-3"
 					type="is-primary"
+					icon-right="check"
 					@click="closeAssistance"
 				>
 					{{ $t('Close Assistance') }}
+				</b-button>
+				<b-button
+					v-if="setAtDistributedButton"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="parachute-box"
+					@click="setGeneralReliefItemAsDistributed"
+				>
+					{{ $t('Set As Distributed')}}
 				</b-button>
 			</div>
 		</div>
@@ -78,6 +89,7 @@ export default {
 				{ key: "distributed", label: this.$t("Distributed") },
 				{ key: "value", label: this.$t("Value") },
 			],
+			setAtDistributedButton: false,
 		};
 	},
 
@@ -87,6 +99,10 @@ export default {
 				return this.commodity[0].unit;
 			}
 			return "";
+		},
+
+		isAssistanceValidated() {
+			return this.assistance?.validated;
 		},
 
 		totalAmount() {
@@ -109,12 +125,33 @@ export default {
 		},
 
 		onRowsCheck(rows) {
-			// TODO If sth is selected, display button for "set as distributed" or another button
+			this.setAtDistributedButton = !!rows?.length;
 			this.selectedBeneficiaries = rows;
 		},
 
-		setGeneralReliefItemAsDistributed() {
-			// TODO Set as Distributed for one one more Households, use this.selectedBnf
+		async setGeneralReliefItemAsDistributed() {
+			let error = "";
+			let success = "";
+
+			if (this.selectedBeneficiaries?.length) {
+				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
+					await AssistancesService.updateGeneralReliefItem(
+						beneficiary.generalReliefItem.id, "distributed", true,
+					).then(({ status }) => {
+						if (status === 200) {
+							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
+						}
+					}).catch((e) => {
+						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e}. `;
+					});
+				}));
+
+				if (error) Toast(error, "is-danger");
+				if (success) Toast(success, "is-success");
+
+				this.setAtDistributedButton = false;
+				this.$refs.beneficiariesList.fetchData();
+			}
 		},
 
 		async fetchCommodity() {

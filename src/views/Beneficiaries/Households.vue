@@ -53,9 +53,9 @@
 						<MultiSelect
 							v-model="selectedProject"
 							searchable
-							:placeholder="$t('Click to select')"
 							label="name"
 							track-by="id"
+							:placeholder="$t('Click to select')"
 							:loading="loading.projects"
 							:options="options.projects"
 						/>
@@ -119,9 +119,9 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				:label="$t('Actions')"
 				width="150"
 				centered
+				:label="$t('Actions')"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -169,9 +169,9 @@
 					<b-dropdown aria-role="list">
 						<template #trigger>
 							<b-button
-								:label="$t('Actions')"
 								type="is-primary"
 								icon-right="arrow-down"
+								:label="$t('Actions')"
 							/>
 						</template>
 						<b-dropdown-item @click="showAddToProjectModal">
@@ -447,7 +447,7 @@ export default {
 							addresses.push({ locationId, id, type: "residence" });
 						});
 					}).catch((e) => {
-						Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+						Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.temporary_settlement.length) {
@@ -567,19 +567,23 @@ export default {
 		async removeHousehold(id, multiple = false) {
 			if (multiple) {
 				const { checkedRows } = this.$refs.householdList;
-				let error = null;
+				let error = "";
+				let success = "";
 
 				if (checkedRows?.length) {
 					checkedRows.forEach((household) => {
 						BeneficiariesService.removeHousehold(household.id).then((response) => {
-							if (response.status === 204) { error = null; }
-						}).catch((e) => { error += `${this.$t("Household")} ${household.id} ${e}. `; });
+							if (response.status === 204) {
+								success += `${this.$t("Success for Household")} ${household.id}. `;
+							}
+						}).catch((e) => {
+							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
+						});
 					});
 
 					if (error) Toast(error, "is-danger");
-
-					if (!error) {
-						Toast(this.$t("Households Successfully Deleted"), "is-success");
+					if (success) {
+						Toast(success, "is-success");
 						await this.fetchData();
 					}
 				}

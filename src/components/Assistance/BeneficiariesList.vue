@@ -147,6 +147,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "BeneficiariesList",
@@ -234,17 +235,25 @@ export default {
 
 	computed: {
 		isTableCheckable() {
-			// If isAssistanceDetail and
-			// If commodity === voucher, row in table has icon for send voucher code
-			// If commodity === smardcard,
-			// If commodity === transaction,
-			// If commodity === sth else, row in table has checkbox and it's posible to "Set ad D.."
+			let result = false;
 
 			if (this.isAssistanceDetail) {
-				return true;
+				switch (this.commodities[0]?.modalityType) {
+					case consts.COMMODITY.SMARDCARD:
+						result = false;
+						break;
+					case consts.COMMODITY.MOBILE_MONEY:
+						result = false;
+						break;
+					case consts.COMMODITY.QR_CODE_VOUCHER:
+						result = false;
+						break;
+					default:
+						result = true;
+				}
 			}
 
-			return false;
+			return result;
 		},
 	},
 
@@ -312,21 +321,42 @@ export default {
 			await this.prepareNationalIdForTable(nationalIdIds);
 
 			if (this.isAssistanceDetail) {
-				// TODO Uncomment this after solving feneral relief
-				// await this.findOutStatusAboutDistribution(beneficiaryIds);
+				await this.findOutStatusAboutBeneficiaryDistribution(beneficiaryIds);
 			}
 		},
 
-		async findOutStatusAboutDistribution(beneficiaryIds) {
-			// If commodity === voucher
-			// If commodity === smardcard,
-			// If commodity === transaction,
-			// If commodity === sth else
-			await this.setGeneralRelief(beneficiaryIds);
+		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
+			switch (this.commodities[0].modalityType) {
+				case consts.COMMODITY.SMARDCARD:
+					// TODO Call action for setting rules for smardcards
+					break;
+				case consts.COMMODITY.MOBILE_MONEY:
+					// TODO Call action for setting rules for transactions
+					break;
+				case consts.COMMODITY.QR_CODE_VOUCHER:
+					// TODO Call action for setting rules for QR voucher code
+					break;
+				default:
+					await this.setGeneralRelief(beneficiaryIds);
+			}
 		},
 
-		setGeneralRelief() {
-			// TODO for every general relief (if is distributed) set this.table.checkedRows
+		async setGeneralRelief(beneficiaryIds) {
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const generalRelief = await this.getGeneralRelief(beneficiaryId);
+
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					if (generalRelief[0].distributed) {
+						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+					}
+
+					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+				}));
+			}
 		},
 
 		getGeneralRelief(beneficiaryId) {
