@@ -21,6 +21,21 @@
 		</Modal>
 		<Modal
 			can-cancel
+			:header="$t('Assign Booklet to a Beneficiary')"
+			:active="assignVoucherModal.isOpened"
+			@close="closeAssignVoucherModal"
+		>
+			<AssignVoucherForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				:beneficiary="assignVoucherToBeneficiary"
+				:assistance="assistance"
+				:project="project"
+				@formClosed="closeAssignVoucherModal"
+			/>
+		</Modal>
+		<Modal
+			can-cancel
 			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
 				: $t('Detail of Beneficiary')"
 			:active="beneficiaryModal.isOpened"
@@ -109,7 +124,7 @@
 				v-slot="props"
 				:label="$t('Actions')"
 				centered
-				width="110"
+				width="140"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -122,6 +137,12 @@
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
+					/>
+					<ActionButton
+						icon="qrcode"
+						type="is-dark"
+						:tooltip="$t('Assign')"
+						@click.native="openAssignVoucherModal(props.row.id)"
 					/>
 				</div>
 			</b-table-column>
@@ -148,20 +169,23 @@ import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 
 export default {
 	name: "BeneficiariesList",
 
 	props: {
 		assistance: Object,
+		project: Object,
+		isAssistanceDetail: Boolean,
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
 		customColumns: Array,
-		isAssistanceDetail: Boolean,
 	},
 
 	components: {
+		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		Table,
@@ -222,6 +246,10 @@ export default {
 				justificationForAdding: null,
 			},
 			randomSampleSize: 10,
+			assignVoucherModal: {
+				isOpened: false,
+			},
+			assignVoucherToBeneficiary: null,
 		};
 	},
 
@@ -446,6 +474,15 @@ export default {
 
 		closeAddBeneficiaryModal() {
 			this.addBeneficiaryModal.isOpened = false;
+		},
+
+		openAssignVoucherModal(id) {
+			this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
+			this.assignVoucherModal.isOpened = true;
+		},
+
+		closeAssignVoucherModal() {
+			this.assignVoucherModal.isOpened = false;
 		},
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {

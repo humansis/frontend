@@ -3,6 +3,7 @@
 		<AssistanceSummary
 			:beneficiaries="beneficiaries"
 			:assistance="assistance"
+			:project="project"
 		/>
 		<b-steps
 			v-model="activeStep"
@@ -85,6 +86,7 @@ import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
 import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "AssistanceEdit",
@@ -100,6 +102,7 @@ export default {
 	data() {
 		return {
 			assistance: null,
+			project: null,
 			activeStep: 0,
 			target: "",
 			beneficiaries: 0,
@@ -109,6 +112,7 @@ export default {
 
 	mounted() {
 		this.fetchAssistance();
+		this.fetchProject();
 	},
 
 	methods: {
@@ -117,6 +121,14 @@ export default {
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.assistance = data;
+			});
+		},
+
+		async fetchProject() {
+			await ProjectService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then(({ data }) => {
+				this.project = data;
 			});
 		},
 
