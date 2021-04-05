@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<h3 class="subtitle is-5 has-text-centered mb-5 mt-5">
-				{{ $t('Scan booklet QR code') }}
+				{{ $t('Scan Booklet QR Code') }}
 			</h3>
 		</section>
 		<footer class="modal-card-foot">
