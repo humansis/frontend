@@ -2,13 +2,13 @@
 	<div class="modal-card">
 		<section class="modal-card-body">
 			<div class="level-left">
-				<div class="level-item mb-3">
+				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
 						<p class="heading">{{ $t('Project') }}</p>
 						<p class="subtitle is-5">{{projectName}}</p>
 					</div>
 				</div>
-				<div class="level-item mb-3">
+				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
 						<p class="heading">{{ $t('Assistance') }}</p>
 						<p class="subtitle is-5">{{ assistanceName }}</p>
@@ -16,7 +16,7 @@
 				</div>
 			</div>
 			<div class="level-left">
-				<div class="level-item mb-3">
+				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
 						<p class="heading">{{ $t('Beneficiary') }}</p>
 						<p class="subtitle is-5">{{ beneficiaryName }}</p>
