@@ -31,6 +31,7 @@
 				:beneficiary="assignVoucherToBeneficiary"
 				:assistance="assistance"
 				:project="project"
+				@scannedCode="assignBookletToBeneficiary"
 				@formClosed="closeAssignVoucherModal"
 			/>
 		</Modal>
@@ -139,6 +140,7 @@
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 					<ActionButton
+						v-if="hasTableAssignVoucherAction"
 						icon="qrcode"
 						type="is-dark"
 						:tooltip="$t('Assign')"
@@ -283,6 +285,11 @@ export default {
 
 			return result;
 		},
+
+		hasTableAssignVoucherAction() {
+			return this.isAssistanceDetail
+				&& this.commodities[0]?.modalityType === consts.COMMODITY.QR_CODE_VOUCHER;
+		},
 	},
 
 	methods: {
@@ -363,16 +370,68 @@ export default {
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
 					// TODO Call action for setting rules for QR voucher code
+					await this.setAssignedBooklets(beneficiaryIds);
 					break;
 				default:
 					await this.setGeneralRelief(beneficiaryIds);
 			}
 		},
 
+		async setAssignedBooklets(beneficiaryIds) {
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					console.log(booklets);
+					// TODO Set if assign voucher button can be visible for BNF
+					/*
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					if (generalRelief[0].distributed) {
+						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+					}
+
+					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+
+					 */
+				}));
+			}
+		},
+
+		async assignBookletToBeneficiary(booklet) {
+			await AssistancesService.assignBookletForBeneficiaryInAssistance(
+				this.$route.params.assistanceId, booklet.beneficiaryId, booklet.code,
+			).then(({ status }) => {
+				if (status === 200) {
+					Toast(
+						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
+						"is-success",
+					);
+				}
+			}).catch((e) => {
+				Notification(
+					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
+					"is-danger",
+				);
+			});
+		},
+
+		getBookletsForBeneficiary(beneficiaryId) {
+			return AssistancesService
+				.getBookletsForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch(() => {
+					// TODO Uncomment this after this endpoint will be prepared by BE
+					// Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+				});
+		},
+
 		async setGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalRelief = await this.getGeneralRelief(beneficiaryId);
+					const generalRelief = await this.getGeneralReliefForBeneficiary(beneficiaryId);
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
@@ -387,7 +446,7 @@ export default {
 			}
 		},
 
-		getGeneralRelief(beneficiaryId) {
+		getGeneralReliefForBeneficiary(beneficiaryId) {
 			return AssistancesService
 				.getGeneralReliefForBeneficiaryInAssistance(
 					this.$route.params.assistanceId, beneficiaryId,
