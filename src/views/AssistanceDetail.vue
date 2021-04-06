@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries.sync="beneficiaries"
-			:assistance.sync="assistance"
+			:beneficiaries="beneficiaries"
+			:assistance="assistance"
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">

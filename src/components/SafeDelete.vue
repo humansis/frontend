@@ -51,7 +51,7 @@ export default {
 			this.$buefy.dialog.confirm({
 				title,
 				message: `${message}?`,
-				confirmText: "Delete",
+				confirmText: this.$t("Delete"),
 				type: "is-danger",
 				hasIcon: true,
 				onConfirm: () => {
