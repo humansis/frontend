@@ -116,12 +116,12 @@ export default {
 			await OrganizationServiceService.updateOrganizationService(id, organizationServiceBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast(this.$t("Organization Service Successfully Created"), "is-success");
+						Toast(this.$t("Organization Service Successfully Updated"), "is-success");
 						this.$refs.organizationServiceList.fetchData();
 						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("Organization")} ${e}`, "is-danger");
+					Toast(`${this.$t("Organization Service")} ${e}`, "is-danger");
 					this.organizationServiceModal.isWaiting = false;
 				});
 		},
