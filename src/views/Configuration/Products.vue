@@ -156,7 +156,7 @@ export default {
 			};
 		},
 
-		submitProductForm(productForm) {
+		async submitProductForm(productForm) {
 			const {
 				id,
 				iso3,
@@ -167,25 +167,25 @@ export default {
 			} = productForm;
 			const productBody = {
 				name,
-				image,
 				unit,
 				iso3: iso3 || this.country.iso3,
 			};
 
+			const imageUrl = await this.uploadImage(uploadedImage);
+			productBody.image = imageUrl || image;
+
 			if (this.productModal.isEditing && id) {
-				this.updateProduct(id, productBody, uploadedImage);
+				await this.updateProduct(id, productBody);
 			} else {
-				this.createProduct(productBody, uploadedImage);
+				await this.createProduct(productBody);
 			}
 		},
 
-		// TODO Fix after we have image handler, crashes on image
-		async createProduct(productBody, image) {
+		async createProduct(productBody) {
 			this.productModal.isWaiting = true;
 
-			await ProductService.createProduct(productBody).then(async ({ data, status }) => {
+			await ProductService.createProduct(productBody).then(({ status }) => {
 				if (status === 200) {
-					await this.uploadImage(data.id, image);
 					Toast(this.$t("Product Successfully Created"), "is-success");
 					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
@@ -196,12 +196,11 @@ export default {
 			});
 		},
 
-		async updateProduct(id, productBody, image) {
+		async updateProduct(id, productBody) {
 			this.productModal.isWaiting = true;
 
-			await ProductService.updateProduct(id, productBody).then(async ({ data, status }) => {
+			await ProductService.updateProduct(id, productBody).then(({ status }) => {
 				if (status === 200) {
-					await this.uploadImage(data.id, image);
 					Toast(this.$t("Product Successfully Updated"), "is-success");
 					this.$refs.ProductList.fetchData();
 					this.closeProductModal();
@@ -212,10 +211,12 @@ export default {
 			});
 		},
 
-		async uploadImage(id, image) {
+		async uploadImage(image) {
 			if (image) {
-				await ProductService.uploadImage(id, image);
+				const { data: { url } } = await ProductService.uploadImage(image);
+				return url;
 			}
+			return null;
 		},
 
 		async onRemoveProduct(id) {

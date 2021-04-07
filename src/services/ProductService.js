@@ -50,12 +50,12 @@ export default {
 		return { data, status };
 	},
 
-	async uploadImage(id, image) {
+	async uploadImage(image) {
 		const formData = new FormData();
 		formData.append("file", image);
 
 		const { data, status } = await upload({
-			uri: `products/${id}/images`,
+			uri: `products/images`,
 			method: "POST",
 			body: formData,
 		});
