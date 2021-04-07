@@ -2,7 +2,6 @@
 	<div>
 		<Modal
 			can-cancel
-			is-small
 			:active="userModal.isOpened"
 			:header="modalHeader"
 			:is-waiting="userModal.isWaiting"
