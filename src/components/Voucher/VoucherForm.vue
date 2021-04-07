@@ -73,6 +73,7 @@
 					v-model="formModel.values"
 					:placeholder="$t('Values')"
 					:disabled="formDisabled"
+					:before-adding="beforeAdding"
 					@blur="validate('values')"
 				/>
 			</b-field>
@@ -85,9 +86,9 @@
 				<MultiSelect
 					v-model="formModel.currency"
 					searchable
+					label="value"
 					track-by="value"
 					:placeholder="$t('Click to select')"
-					:label="$t('value')"
 					:disabled="formDisabled"
 					:options="options.currencies"
 					:class="validateMultiselect('currency')"
@@ -179,6 +180,10 @@ export default {
 	},
 
 	methods: {
+		beforeAdding(tag) {
+			return !Number.isNaN(Number(tag));
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
