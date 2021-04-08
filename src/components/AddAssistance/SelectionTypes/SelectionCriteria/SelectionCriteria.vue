@@ -104,6 +104,7 @@ import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/Se
 import BeneficiariesModalList from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/BeneficiariesModalList";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "SelectionCriteria",
@@ -163,10 +164,10 @@ export default {
 				data.forEach(({ condition, scoreWeight, value, criteriaTarget, criteria }) => {
 					selectionCriteria.push({
 						group: Number(index),
-						target: criteriaTarget?.code,
-						field: criteria?.code,
-						condition: condition?.code,
-						value: this.prepareCriteriaValue(value),
+						target: criteriaTarget.code,
+						field: criteria.code,
+						condition: condition.code,
+						value: this.prepareCriteriaValue(value, criteria.type),
 						weight: scoreWeight,
 					});
 				});
@@ -175,23 +176,26 @@ export default {
 			return selectionCriteria;
 		},
 
-		prepareCriteriaValue(value) {
-			let newValue = value?.code || value;
+		prepareCriteriaValue(value, dataType) {
+			let newValue = value.code || value;
+			let result = null;
 
-			if (Number.isInteger(newValue)) return newValue;
-
-			const date = new Date(newValue);
-			if (Object.prototype.toString.call(date) === "[object Date]") {
-				if (!Number.isNaN(date.getTime())) {
-					newValue = date.toISOString();
-				}
+			if (value.code === false && dataType === consts.FIELD_TYPE.BOOLEAN) {
+				newValue = false;
 			}
 
-			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
-				newValue = Number(newValue.replace("locationId-", ""));
+			switch (dataType) {
+				case consts.FIELD_TYPE.DATE:
+					result = new Date(newValue.toString()).toISOString();
+					break;
+				case consts.FIELD_TYPE.LOCATION:
+					result = Number(newValue.replace("locationId-", ""));
+					break;
+				default:
+					result = newValue;
 			}
 
-			return newValue;
+			return result;
 		},
 
 		addCriteria(id) {

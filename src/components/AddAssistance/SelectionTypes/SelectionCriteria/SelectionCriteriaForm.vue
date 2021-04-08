@@ -30,7 +30,7 @@
 					:placeholder="$t('Click to select')"
 					:options="options.criteria"
 					:loading="criteriaLoading"
-					label="code"
+					label="value"
 					track-by="code"
 					:searchable="false"
 					:class="validateMultiselect('criteria')"
@@ -104,6 +104,9 @@
 							|| fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE
 					"
 					v-model="formModel.value"
+					:step="(fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
+					min="0"
+					max="1000"
 					expanded
 					controls-alignment="right"
 					controls-position="compact"
@@ -300,10 +303,7 @@ export default {
 				.then(({ data }) => {
 					this.options.conditions = data;
 
-					if (
-						data.length === 1
-						&& data[0].code === "="
-					) {
+					if (data.length === 1 && data[0].code === "=") {
 						this.formModel.condition = { ...data[0] };
 					}
 				})
