@@ -181,7 +181,9 @@ export default {
 
 	methods: {
 		beforeAdding(tag) {
-			return !Number.isNaN(Number(tag));
+			// Values length must be lower or equal than quantityOfVoucher and value must be number
+			return this.formModel.values.length < this.formModel.quantityOfVouchers
+				&& !Number.isNaN(Number(tag));
 		},
 
 		submitForm() {
