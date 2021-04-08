@@ -24,7 +24,6 @@
 				<b-input
 					v-model="formModel.contactFamilyName"
 					:disabled="formDisabled"
-					@blur="validate('contactFamilyName')"
 				/>
 			</b-field>
 
@@ -82,7 +81,7 @@
 							v-model="formModel.phoneNumber"
 							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
-							@blur="validate('contactFamilyName')"
+							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
@@ -133,7 +132,7 @@
 					v-model="formModel.nationalCardNumber"
 					expanded
 					:disabled="formDisabled"
-					@blur="validate('contactFamilyName')"
+					@blur="validate('nationalCardNumber')"
 				/>
 			</b-field>
 
