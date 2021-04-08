@@ -250,30 +250,36 @@ export default {
 				locationId = adm1Id.locationId;
 			}
 			const institutionBody = {
-				name,
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
+				name: name || null,
+				longitude: longitude || null,
+				latitude: latitude || null,
+				contactGivenName: contactGivenName || null,
+				contactFamilyName: contactFamilyName || null,
 				type: type?.code,
 				address: {
-					street: addressStreet,
-					number: addressNumber,
-					postCode: addressPostCode,
+					street: addressStreet || null,
+					number: addressNumber || null,
+					postCode: addressPostCode || null,
 					locationId,
 				},
-				nationalIdCard: {
+				nationalIdCard: null,
+				phone: null,
+				projectIds: getArrayOfIdsByParam(projects, "id"),
+			};
+			if (nationalCardNumber || nationalCardType) {
+				institutionBody.nationalIdCard = {
 					number: nationalCardNumber,
 					type: nationalCardType?.code,
-				},
-				phone: {
+				};
+			}
+			if (phonePrefix || phoneNumber || phoneType) {
+				institutionBody.nationalIdCard = {
 					prefix: phonePrefix?.code,
 					number: phoneNumber,
 					type: phoneType?.code,
 					proxy: phoneProxy,
-				},
-				projectIds: getArrayOfIdsByParam(projects, "id"),
-			};
+				};
+			}
 			if (this.institutionModal.isEditing && id) {
 				this.updateInstitution(id, institutionBody);
 			} else {
