@@ -129,6 +129,8 @@ export default {
 				beneficiaryId: this.beneficiary.id,
 				code: this.scannedResult,
 			});
+
+			this.scannedResult = "";
 		},
 
 		close() {

@@ -23,6 +23,7 @@
 			can-cancel
 			:header="$t('Assign Booklet to a Beneficiary')"
 			:active="assignVoucherModal.isOpened"
+			:is-waiting="assignVoucherModal.isWaiting"
 			@close="closeAssignVoucherModal"
 		>
 			<AssignVoucherForm
@@ -143,8 +144,9 @@
 						v-if="hasTableAssignVoucherAction"
 						icon="qrcode"
 						type="is-dark"
-						:tooltip="$t('Assign')"
-						@click.native="openAssignVoucherModal(props.row.id)"
+						:disabled="!props.row.canAssignVoucher"
+						:tooltip="$t('Assign Voucher')"
+						@click.native="openAssignVoucherModal(props.row.id, props.row.canAssignVoucher)"
 					/>
 				</div>
 			</b-table-column>
@@ -250,6 +252,7 @@ export default {
 			randomSampleSize: 10,
 			assignVoucherModal: {
 				isOpened: false,
+				isWaiting: false,
 			},
 			assignVoucherToBeneficiary: null,
 		};
@@ -381,25 +384,20 @@ export default {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
-					console.log(booklets);
-					// TODO Set if assign voucher button can be visible for BNF
-					/*
+
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (generalRelief[0].distributed) {
-						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
-					}
-
-					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
-
-					 */
+					// TODO Set if assign voucher button can be visible for BNF base on sth
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !!booklets?.length;
 				}));
 			}
 		},
 
 		async assignBookletToBeneficiary(booklet) {
+			this.assignVoucherModal.isWaiting = true;
+
 			await AssistancesService.assignBookletForBeneficiaryInAssistance(
 				this.$route.params.assistanceId, booklet.beneficiaryId, booklet.code,
 			).then(({ status }) => {
@@ -408,13 +406,17 @@ export default {
 						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
 						"is-success",
 					);
+					this.closeAssignVoucherModal();
 				}
 			}).catch((e) => {
 				Notification(
 					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
 					"is-danger",
 				);
+				this.closeAssignVoucherModal();
 			});
+
+			this.assignVoucherModal.isWaiting = false;
 		},
 
 		getBookletsForBeneficiary(beneficiaryId) {
@@ -422,9 +424,8 @@ export default {
 				.getBookletsForBeneficiaryInAssistance(
 					this.$route.params.assistanceId, beneficiaryId,
 				).then(({ data }) => data)
-				.catch(() => {
-					// TODO Uncomment this after this endpoint will be prepared by BE
-					// Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+				.catch((e) => {
+					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
 				});
 		},
 
@@ -535,9 +536,11 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		openAssignVoucherModal(id) {
-			this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
-			this.assignVoucherModal.isOpened = true;
+		openAssignVoucherModal(id, canAssignVoucher) {
+			if (canAssignVoucher) {
+				this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
+				this.assignVoucherModal.isOpened = true;
+			}
 		},
 
 		closeAssignVoucherModal() {

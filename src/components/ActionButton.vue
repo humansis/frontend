@@ -1,6 +1,6 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive" :type="type">
-		<b-button size="is-small" :class="type">
+		<b-button size="is-small" :class="type" :disabled="disabled">
 			<b-icon :icon="icon" />
 		</b-button>
 	</b-tooltip>
@@ -14,6 +14,11 @@ export default {
 		icon: {
 			type: String,
 			required: true,
+		},
+		disabled: {
+			type: Boolean,
+			required: false,
+			default: false,
 		},
 		type: String,
 		tooltip: String,
