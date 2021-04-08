@@ -43,7 +43,7 @@
 		</div>
 		<Modal
 			can-cancel
-			:header="$t('Add Beneficiary To A Project')"
+			:header="$t('Add Beneficiary to a Project')"
 			:active="addToProjectModal.isOpened"
 			@close="closeAddToProjectModal"
 		>
@@ -175,9 +175,11 @@
 							/>
 						</template>
 						<b-dropdown-item @click="showAddToProjectModal">
+							<b-icon class="mr-1" icon="plus" />
 							{{ $t('Add to Project') }}
 						</b-dropdown-item>
-						<b-dropdown-item @click="removeMultipleHouseholds">
+						<b-dropdown-item @click="saveDeleteOfMultipleHouseholds">
+							<b-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</b-dropdown-item>
 					</b-dropdown>
@@ -559,33 +561,44 @@ export default {
 			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
 		},
 
-		removeMultipleHouseholds() {
-			this.removeHousehold(null, true);
+		async removeMultipleHouseholds() {
+			await this.removeHousehold(null, true);
 			this.actionsButtonVisible = false;
+			await this.fetchData();
+		},
+
+		saveDeleteOfMultipleHouseholds() {
+			this.$buefy.dialog.confirm({
+				title: this.$t("Deleting"),
+				message: this.$t("Are you sure you want to delete this Households?"),
+				confirmText: this.$t("Delete"),
+				type: "is-danger",
+				hasIcon: true,
+				onConfirm: () => {
+					this.removeMultipleHouseholds();
+				},
+			});
 		},
 
 		async removeHousehold(id, multiple = false) {
 			if (multiple) {
-				const { checkedRows } = this.$refs.householdList;
+				const { checkedRows } = this.table;
 				let error = "";
 				let success = "";
 
 				if (checkedRows?.length) {
-					checkedRows.forEach((household) => {
-						BeneficiariesService.removeHousehold(household.id).then((response) => {
+					await Promise.all(checkedRows.map(async (household) => {
+						await BeneficiariesService.removeHousehold(household.id).then((response) => {
 							if (response.status === 204) {
 								success += `${this.$t("Success for Household")} ${household.id}. `;
 							}
 						}).catch((e) => {
 							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
 						});
-					});
+					}));
 
 					if (error) Toast(error, "is-danger");
-					if (success) {
-						Toast(success, "is-success");
-						await this.fetchData();
-					}
+					if (success) Toast(success, "is-success");
 				}
 			} else {
 				await BeneficiariesService.removeHousehold(id).then((response) => {

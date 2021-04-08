@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -95,7 +95,7 @@ export default {
 		formModel: {
 			name: { required },
 			unit: {},
-			uploadedImage: { required },
+			uploadedImage: { required: requiredIf((form) => !form.image) },
 		},
 	},
 

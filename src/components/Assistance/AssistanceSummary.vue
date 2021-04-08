@@ -29,8 +29,11 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">{{ $t('Beneficiaries') }}</p>
-					<p v-if="beneficiaries" class="has-text-weight-bold is-size-5">{{
-						beneficiariesCount }}
+					<p
+						v-if="beneficiariesCount || beneficiariesCount === 0"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ beneficiariesCount }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -89,6 +92,7 @@
 
 <script>
 import Loading from "@/components/Loading";
+import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
@@ -105,19 +109,27 @@ export default {
 	props: {
 		beneficiaries: Number,
 		assistance: Object,
-		project: Object,
 	},
 
 	data() {
 		return {
+			project: null,
 			province: null,
 			commodity: null,
 		};
 	},
 
+	watch: {
+		assistance(newAssistance) {
+			if (newAssistance) {
+				this.fetchLocation(newAssistance.adm1Id);
+				this.fetchCommodity(newAssistance.id);
+			}
+		},
+	},
+
 	async mounted() {
-		await this.fetchLocation();
-		await this.fetchCommodity();
+		await this.fetchProject();
 	},
 
 	computed: {
@@ -155,19 +167,25 @@ export default {
 	},
 
 	methods: {
-		async fetchLocation() {
-			if (!this.assistance) return;
+		async fetchProject() {
+			await ProjectService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then(({ data }) => {
+				this.project = data;
+			});
+		},
+
+		async fetchLocation(adm1Id) {
 			await LocationsService.getDetailOfAdm1(
-				this.assistance.adm1Id,
+				adm1Id,
 			).then(({ data }) => {
 				this.province = data;
 			});
 		},
 
-		async fetchCommodity() {
-			if (!this.assistance) return;
+		async fetchCommodity(assistanceId) {
 			await AssistancesService.getCommodities(
-				[this.assistance.id],
+				[assistanceId],
 			).then(({ data }) => {
 				this.commodity = data.map((item) => item.modalityType);
 			});
