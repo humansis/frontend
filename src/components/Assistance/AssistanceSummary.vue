@@ -92,7 +92,6 @@
 
 <script>
 import Loading from "@/components/Loading";
-import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
@@ -109,11 +108,11 @@ export default {
 	props: {
 		beneficiaries: Number,
 		assistance: Object,
+		project: Object,
 	},
 
 	data() {
 		return {
-			project: null,
 			province: null,
 			commodity: null,
 		};
@@ -126,10 +125,6 @@ export default {
 				this.fetchCommodity(newAssistance.id);
 			}
 		},
-	},
-
-	async mounted() {
-		await this.fetchProject();
 	},
 
 	computed: {
@@ -167,14 +162,6 @@ export default {
 	},
 
 	methods: {
-		async fetchProject() {
-			await ProjectService.getDetailOfProject(
-				this.$route.params.projectId,
-			).then(({ data }) => {
-				this.project = data;
-			});
-		},
-
 		async fetchLocation(adm1Id) {
 			await LocationsService.getDetailOfAdm1(
 				adm1Id,
