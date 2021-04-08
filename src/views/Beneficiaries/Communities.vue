@@ -246,28 +246,32 @@ export default {
 				locationId = adm1Id.locationId;
 			}
 			const communityBody = {
-				longitude,
-				latitude,
-				contactGivenName,
-				contactFamilyName,
+				longitude: longitude || null,
+				latitude: latitude || null,
+				contactGivenName: contactGivenName || null,
+				contactFamilyName: contactFamilyName || null,
 				address: {
-					street: addressStreet,
-					number: addressNumber,
-					postCode: addressPostCode,
+					street: addressStreet || null,
+					number: addressNumber || null,
+					postCode: addressPostCode || null,
 					locationId,
-				},
-				nationalIdCard: {
-					number: nationalCardNumber,
-					type: nationalCardType.code,
-				},
-				phone: {
-					prefix: phonePrefix.code,
-					number: phoneNumber,
-					proxy: !!phoneProxy,
-					type: phoneType.code,
 				},
 				projectIds: getArrayOfIdsByParam(projects, "id"),
 			};
+			if (nationalCardNumber || nationalCardType) {
+				communityBody.nationalIdCard = {
+					number: nationalCardNumber || null,
+					type: nationalCardType.code || null,
+				};
+			}
+			if (phonePrefix || phoneNumber || phoneType) {
+				communityBody.phone = {
+					prefix: phonePrefix.code || null,
+					number: phoneNumber || null,
+					proxy: !!phoneProxy,
+					type: phoneType.code || null,
+				};
+			}
 
 			if (this.communityModal.isEditing && id) {
 				this.updateCommunity(id, communityBody);

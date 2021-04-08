@@ -36,7 +36,10 @@
 					</span>
 				</template>
 				<b-field grouped>
-					<b-field>
+					<b-field
+						:type="validateType('phonePrefix', true)"
+						:message="validateMsg('phonePrefix')"
+					>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
 							searchable
@@ -45,9 +48,15 @@
 							track-by="code"
 							:disabled="formDisabled"
 							:options="options.phonePrefixes"
+							:class="validateMultiselect('phonePrefix', true)"
+							@select="validate('phonePrefix')"
 						/>
 					</b-field>
-					<b-field grouped>
+					<b-field
+						grouped
+						:type="validateType('phoneType', true)"
+						:message="validateMsg('phoneType')"
+					>
 						<MultiSelect
 							v-model="formModel.phoneType"
 							searchable
@@ -59,14 +68,21 @@
 							:disabled="formDisabled"
 							:loading="phoneTypesLoading"
 							:options="options.phoneTypes"
+							:class="validateMultiselect('phoneType', true)"
+							@select="validate('phoneType')"
 						/>
 
 					</b-field>
-					<b-field expanded>
+					<b-field
+						expanded
+						:type="validateType('phoneNumber', true)"
+						:message="validateMsg('phoneNumber')"
+					>
 						<b-input
 							v-model="formModel.phoneNumber"
 							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
+							@blur="validate('contactFamilyName')"
 						/>
 					</b-field>
 				</b-field>
@@ -79,7 +95,10 @@
 				{{ $t('Proxy') }}
 			</b-checkbox>
 
-			<b-field>
+			<b-field
+				:type="validateType('nationalCardType', true)"
+				:message="validateMsg('nationalCardType')"
+			>
 				<template #label>
 					{{ $t('Contact ID Type') }}
 					<span class="optional-text has-text-weight-normal is-italic">
@@ -95,10 +114,15 @@
 					:loading="nationalCardTypesLoading"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
+					:class="validateMultiselect('nationalCardType', true)"
+					@select="validate('nationalCardType')"
 				/>
 			</b-field>
 
-			<b-field>
+			<b-field
+				:type="validateType('nationalCardNumber', true)"
+				:message="validateMsg('nationalCardNumber')"
+			>
 				<template #label>
 					{{ $t('Contact ID Number') }}
 					<span class="optional-text has-text-weight-normal is-italic">
@@ -109,6 +133,7 @@
 					v-model="formModel.nationalCardNumber"
 					expanded
 					:disabled="formDisabled"
+					@blur="validate('contactFamilyName')"
 				/>
 			</b-field>
 
@@ -221,7 +246,7 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Validation from "@/mixins/validation";
@@ -250,15 +275,15 @@ export default {
 			latitude: {},
 			contactGivenName: {},
 			contactFamilyName: {},
-			phonePrefix: {},
-			phoneNumber: {},
-			phoneType: {},
+			phonePrefix: { required: requiredIf((form) => form.phoneNumber || form.phoneType) },
+			phoneNumber: { required: requiredIf((form) => form.phonePrefix || form.phoneType) },
+			phoneType: { required: requiredIf((form) => form.phoneNumber || form.phonePrefix) },
 			phoneProxy: {},
 			addressStreet: {},
 			addressNumber: {},
 			addressPostCode: {},
-			nationalCardNumber: {},
-			nationalCardType: {},
+			nationalCardNumber: { required: requiredIf((form) => form.nationalCardType) },
+			nationalCardType: { required: requiredIf((form) => form.nationalCardNumber) },
 			projects: { required },
 			adm1Id: { required },
 			adm2Id: {},
