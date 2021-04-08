@@ -95,6 +95,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:checked-rows="table.checkedRows"
 			@checked="onRowsChecked"
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
@@ -253,7 +254,7 @@ export default {
 				sortDirection: "desc",
 				progress: null,
 				searchPhrase: "",
-				checkedRows: null,
+				checkedRows: [],
 			},
 			filters: {},
 			householdDetailModal: {
@@ -323,7 +324,7 @@ export default {
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
 					.then(() => {
-						this.fetchData();
+						this.table.checkedRows = [];
 						this.actionsButtonVisible = false;
 						Toast(this.$t("Beneficiaries Successfully Added to a Project"), "is-success");
 					})
