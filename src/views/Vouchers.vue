@@ -18,7 +18,6 @@
 
 		<Modal
 			can-cancel
-			is-small
 			:active="voucherModal.isOpened"
 			:header="modalHeader"
 			:is-waiting="voucherModal.isWaiting"

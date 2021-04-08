@@ -18,7 +18,6 @@
 
 		<Modal
 			can-cancel
-			is-small
 			:active="countrySpecificOptionModal.isOpened"
 			:header="modalHeader"
 			:is-waiting="countrySpecificOptionModal.isWaiting"

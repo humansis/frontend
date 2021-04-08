@@ -4,19 +4,19 @@
 
 		<b-tabs v-model="selectedTab">
 			<b-tab-item icon="user" :label="$t('Users')">
-				<UsersPage />
+				<Users />
 			</b-tab-item>
 
 			<b-tab-item icon="dollar-sign" :label="$t('Donors')">
-				<DonorPage />
+				<Donors />
 			</b-tab-item>
 
 			<b-tab-item icon="child" :label="$t('My Organizations')">
-				<MyOrganizationsPage />
+				<MyOrganizations />
 			</b-tab-item>
 
 			<b-tab-item icon="th-large" :label="$t('Organization Services')">
-				<OrganizationServicePage />
+				<OrganizationServices />
 			</b-tab-item>
 			<!---
 			<b-tab-item
@@ -52,13 +52,13 @@
 </template>
 
 <script>
-import UsersPage from "@/views/AdministrativeSettings/Users";
-import DonorPage from "@/views/AdministrativeSettings/Donors";
-import MyOrganizationsPage from "@/views/AdministrativeSettings/MyOrganizations";
-import OrganizationServicePage from "@/views/AdministrativeSettings/OrganizationServices";
+import Users from "@/views/AdministrativeSettings/Users";
+import Donors from "@/views/AdministrativeSettings/Donors";
+import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
+import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
 /*
-import CountriesPage from "@/views/AdministrativeSettings/CountriesPage";
-import LanguagesPage from "@/views/AdministrativeSettings/LanguagesPage";
+import Countries from "@/views/AdministrativeSettings/Countries";
+import Languages from "@/views/AdministrativeSettings/Languages";
 import CurrenciesList from "@/views/AdministrativeSettings/CurrenciesList";
 import TranslationsList from "@/views/AdministrativeSettings/TranslationsList";
 */
@@ -70,13 +70,13 @@ export default {
 		/*
 		TranslationsList,
 		CurrenciesList,
-		CountriesPage,
-		LanguagesPage,
+		Countries,
+		Languages,
 		*/
-		OrganizationServicePage,
-		MyOrganizationsPage,
-		DonorPage,
-		UsersPage,
+		OrganizationServices,
+		MyOrganizations,
+		Donors,
+		Users,
 	},
 
 	data() {
