@@ -12,23 +12,31 @@ export default {
 			return validation.$error ? i18n.t(message) : "";
 		},
 
-		validateType(fieldName) {
+		validateType(fieldName, errorOrNothing = false) {
 			const validation = this.validationPropertyLevel(fieldName);
 
 			let result = "";
 			if (validation.$dirty) {
-				result = validation.$error ? "is-danger" : "is-success";
+				if (errorOrNothing) {
+					result = validation.$error ? "is-danger" : "";
+				} else {
+					result = validation.$error ? "is-danger" : "is-success";
+				}
 			}
 
 			return result;
 		},
 
-		validateMultiselect(fieldName) {
+		validateMultiselect(fieldName, errorOrNothing = false) {
 			const validation = this.validationPropertyLevel(fieldName);
 
 			let result = "";
 			if (validation.$dirty) {
-				result = validation.$error ? "vue-multiselect-error" : "vue-multiselect-success";
+				if (errorOrNothing) {
+					result = validation.$error ? "vue-multiselect-error" : "";
+				} else {
+					result = validation.$error ? "vue-multiselect-error" : "vue-multiselect-success";
+				}
 			}
 			return result;
 		},
