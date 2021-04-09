@@ -421,7 +421,8 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0]?.distributed;
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !(booklets?.length
+						? booklets[0].distributed : false);
 				}));
 			}
 		},
