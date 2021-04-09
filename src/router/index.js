@@ -56,30 +56,26 @@ const routes = [
 			{
 				path: "/projects",
 				component: { render(c) { return c("router-view"); } },
-				meta: {
-					breadcrumb: "Projects",
-				},
 				children: [
 					{
 						path: "",
 						name: "Projects",
 						component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
 						meta: {
+							breadcrumb: "Projects",
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
 					{
 						path: "/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
-						meta: {
-							breadcrumb: "Project",
-						},
 						children: [
 							{
 								path: "",
 								name: "Project",
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 								meta: {
+									breadcrumb: "Project",
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
@@ -127,7 +123,6 @@ const routes = [
 						path: "households",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
-							breadcrumb: "Households",
 							parent: "Beneficiaries",
 						},
 						children: [
@@ -136,6 +131,7 @@ const routes = [
 								name: "Households",
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
+									breadcrumb: "Households",
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
@@ -319,6 +315,7 @@ router.beforeEach((to, from, next) => {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Logout", query: { redirect } });
 	} else {
+		window.document.title = to.meta && to.meta.breadcrumb ? `${to.meta.breadcrumb} | Humansis` : "Humansis";
 		next();
 	}
 });
