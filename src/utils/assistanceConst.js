@@ -20,7 +20,7 @@ const INDIVIDUALS_TARGETED = "individualsTargeted";
 // Commodities
 const CASH = "Cash";
 const MOBILE_MONEY = "Mobile Money";
-const SMARDCARD = "Smartcard";
+const SMARTCARD = "Smartcard";
 
 const FOOD_RATIONS = "Food Rations";
 const READY_TO_EAT_RATIONS = "Ready to Eat Rations";
@@ -75,7 +75,7 @@ export default {
 	COMMODITY: {
 		CASH,
 		MOBILE_MONEY,
-		SMARDCARD,
+		SMARTCARD,
 		FOOD_RATIONS,
 		READY_TO_EAT_RATIONS,
 		BREAD,

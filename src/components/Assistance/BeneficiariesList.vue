@@ -272,7 +272,7 @@ export default {
 
 			if (this.isAssistanceDetail) {
 				switch (this.commodities[0]?.modalityType) {
-					case consts.COMMODITY.SMARDCARD:
+					case consts.COMMODITY.SMARTCARD:
 						result = false;
 						break;
 					case consts.COMMODITY.MOBILE_MONEY:
@@ -334,6 +334,8 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
+			// TODO Refactor this to await Promise.all
+			// Sometimes causes errors with something is undefined
 			data.forEach((item, key) => {
 				beneficiaryIds.push(item.id);
 
@@ -341,7 +343,7 @@ export default {
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
 				this.table.data[key].gender = this.prepareGender(item.gender);
-				this.table.data[key].distributed = item.dateDistributed || "none";
+				this.table.data[key].distributed = item.distributed;
 				this.table.data[key].vulnerabilities = this
 					.prepareVulnerabilities(item.vulnerabilityCriteria);
 				if (item.nationalIds.length) {
@@ -365,8 +367,8 @@ export default {
 
 		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
 			switch (this.commodities[0].modalityType) {
-				case consts.COMMODITY.SMARDCARD:
-					// TODO Call action for setting rules for smardcards
+				case consts.COMMODITY.SMARTCARD:
+					await this.setAssignedSmartCards(beneficiaryIds);
 					break;
 				case consts.COMMODITY.MOBILE_MONEY:
 					// TODO Call action for setting rules for transactions
@@ -378,6 +380,23 @@ export default {
 				default:
 					await this.setGeneralRelief(beneficiaryIds);
 			}
+		},
+
+		async setAssignedSmartCards(beneficiaryIds) {
+			console.log("this is smartcard", beneficiaryIds);
+			/*
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
+				}));
+			}
+			 */
 		},
 
 		async setAssignedBooklets(beneficiaryIds) {
@@ -442,6 +461,9 @@ export default {
 					}
 
 					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+					this.table.data[beneficiaryItemIndex].distributed =	generalRelief?.[0].dateOfDistribution
+						? this.$moment(generalRelief[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+						: this.$t("Not Distributed");
 				}));
 			}
 		},

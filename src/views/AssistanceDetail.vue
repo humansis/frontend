@@ -143,13 +143,14 @@ export default {
 		},
 
 		async setGeneralReliefItemAsDistributed() {
+			const dateOfDistribution = new Date().toISOString();
 			let error = "";
 			let success = "";
 
 			if (this.selectedBeneficiaries?.length) {
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id, "distributed", true,
+						beneficiary.generalReliefItem.id, true, dateOfDistribution,
 					).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;

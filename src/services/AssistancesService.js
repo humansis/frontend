@@ -129,12 +129,13 @@ export default {
 		return { data, totalCount };
 	},
 
-	async updateGeneralReliefItem(id, property, value) {
+	async updateGeneralReliefItem(id, value, dateOfDistribution) {
 		const { data, status } = await fetcher({
 			uri: `general-relief-items/${id}`,
 			method: "PATCH",
 			body: {
-				[property]: value,
+				distributed: value,
+				dateOfDistribution,
 			},
 		});
 		return { data, status };
