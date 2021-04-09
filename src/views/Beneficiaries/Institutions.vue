@@ -112,8 +112,8 @@ export default {
 	},
 
 	methods: {
-		editInstitution(institution) {
-			this.mapToFormModel(institution);
+		async editInstitution(institution) {
+			await this.mapToFormModel(institution);
 			this.institutionModal = {
 				isEditing: true,
 				isOpened: true,
@@ -158,11 +158,12 @@ export default {
 		},
 
 		closeInstitutionModal() {
+			this.institutionModel = null;
 			this.institutionModal.isOpened = false;
 		},
 
-		showDetail(institution) {
-			this.mapToFormModel(institution);
+		async showDetail(institution) {
+			await this.mapToFormModel(institution);
 			this.institutionModal = {
 				isEditing: false,
 				isOpened: true,
@@ -185,9 +186,24 @@ export default {
 				projectIds,
 			},
 		) {
-			const phone = await BeneficiariesService.getPhone(phoneId);
-			const address = await AddressService.getAddress(addressId);
-			const nationalIdCard = await BeneficiariesService.getNationalId(nationalId);
+			let phone = null;
+			let address = null;
+			let nationalIdCard = null;
+
+			await Promise.all([
+				BeneficiariesService.getPhone(phoneId)
+					.then((response) => {
+						phone = response;
+					}),
+				AddressService.getAddress(addressId)
+					.then((response) => {
+						address = response;
+					}),
+				BeneficiariesService.getNationalId(nationalId)
+					.then((response) => {
+						nationalIdCard = response;
+					}),
+			]);
 
 			this.institutionModel = {
 				...this.institutionModel,

@@ -203,6 +203,7 @@
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 
 			<b-field>
@@ -285,8 +286,8 @@
 				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+				:disabled="mapping"
+			>{{ submitButtonLabel }}</b-button>
 		</footer>
 	</form>
 </template>
@@ -342,6 +343,7 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
 			options: {
 				types: [],
 				nationalCardTypes: [],
@@ -357,10 +359,13 @@ export default {
 	},
 
 	async created() {
-		await this.fetchTypes();
-		await this.fetchNationalCardTypes();
-		await this.fetchPhoneTypes();
-		await this.fetchProjects();
+		await Promise.all([
+			this.fetchTypes(),
+			this.fetchNationalCardTypes(),
+			this.fetchPhoneTypes(),
+			this.fetchProjects(),
+		]);
+		this.mapSelects();
 	},
 
 	watch: {
@@ -372,27 +377,28 @@ export default {
 			return normalizeText(text);
 		},
 
-		async mapSelects() {
+		mapSelects() {
 			const { phonePrefix, type, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
-				this.formModel.phonePrefix = await PhoneCodes
+				this.formModel.phonePrefix = PhoneCodes
 					.find((item) => item.code === phonePrefix);
 			}
 			if (type && typeof type !== "object") {
-				this.formModel.type = await this.options.types
+				this.formModel.type = this.options.types
 					.find((item) => item.code === type);
 			}
 			if (nationalCardType && typeof nationalCardType !== "object") {
-				this.formModel.nationalCardType = await this.options.nationalCardTypes
+				this.formModel.nationalCardType = this.options.nationalCardTypes
 					.find((item) => item.code === nationalCardType);
 			}
 			if (phoneType && typeof phoneType !== "object") {
-				this.formModel.phoneType = await this.options.phoneTypes
+				this.formModel.phoneType = this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
 			if (projectIds) {
 				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
+			this.mapping = this.$refs.locationForm.mapping;
 		},
 
 		submitForm() {
