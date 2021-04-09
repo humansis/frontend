@@ -21,6 +21,23 @@
 		</Modal>
 		<Modal
 			can-cancel
+			:header="$t('Assign Booklet to a Beneficiary')"
+			:active="assignVoucherModal.isOpened"
+			:is-waiting="assignVoucherModal.isWaiting"
+			@close="closeAssignVoucherModal"
+		>
+			<AssignVoucherForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				:beneficiary="assignVoucherToBeneficiary"
+				:assistance="assistance"
+				:project="project"
+				@scannedCode="assignBookletToBeneficiary"
+				@formClosed="closeAssignVoucherModal"
+			/>
+		</Modal>
+		<Modal
+			can-cancel
 			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
 				: $t('Detail of Beneficiary')"
 			:active="beneficiaryModal.isOpened"
@@ -109,7 +126,7 @@
 				v-slot="props"
 				:label="$t('Actions')"
 				centered
-				width="110"
+				width="140"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -122,6 +139,14 @@
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
+					/>
+					<ActionButton
+						v-if="hasTableAssignVoucherAction"
+						icon="qrcode"
+						type="is-dark"
+						:disabled="!props.row.canAssignVoucher"
+						:tooltip="$t('Assign Voucher')"
+						@click.native="openAssignVoucherModal(props.row.id, props.row.canAssignVoucher)"
 					/>
 				</div>
 			</b-table-column>
@@ -148,20 +173,23 @@ import { getArrayOfIdsByParam } from "@/utils/codeList";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 
 export default {
 	name: "BeneficiariesList",
 
 	props: {
 		assistance: Object,
+		project: Object,
+		isAssistanceDetail: Boolean,
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
 		customColumns: Array,
-		isAssistanceDetail: Boolean,
 	},
 
 	components: {
+		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		Table,
@@ -222,6 +250,11 @@ export default {
 				justificationForAdding: null,
 			},
 			randomSampleSize: 10,
+			assignVoucherModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
+			assignVoucherToBeneficiary: null,
 		};
 	},
 
@@ -254,6 +287,11 @@ export default {
 			}
 
 			return result;
+		},
+
+		hasTableAssignVoucherAction() {
+			return this.isAssistanceDetail
+				&& this.commodities[0]?.modalityType === consts.COMMODITY.QR_CODE_VOUCHER;
 		},
 	},
 
@@ -335,16 +373,65 @@ export default {
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
 					// TODO Call action for setting rules for QR voucher code
+					await this.setAssignedBooklets(beneficiaryIds);
 					break;
 				default:
 					await this.setGeneralRelief(beneficiaryIds);
 			}
 		},
 
+		async setAssignedBooklets(beneficiaryIds) {
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
+				}));
+			}
+		},
+
+		async assignBookletToBeneficiary(booklet) {
+			this.assignVoucherModal.isWaiting = true;
+
+			await AssistancesService.assignBookletForBeneficiaryInAssistance(
+				this.$route.params.assistanceId, booklet.beneficiaryId, booklet.code,
+			).then(({ status }) => {
+				if (status === 200) {
+					Toast(
+						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
+						"is-success",
+					);
+					this.closeAssignVoucherModal();
+				}
+			}).catch((e) => {
+				Notification(
+					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
+					"is-danger",
+				);
+				this.closeAssignVoucherModal();
+			});
+
+			this.assignVoucherModal.isWaiting = false;
+		},
+
+		getBookletsForBeneficiary(beneficiaryId) {
+			return AssistancesService
+				.getBookletsForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+				});
+		},
+
 		async setGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalRelief = await this.getGeneralRelief(beneficiaryId);
+					const generalRelief = await this.getGeneralReliefForBeneficiary(beneficiaryId);
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
@@ -359,7 +446,7 @@ export default {
 			}
 		},
 
-		getGeneralRelief(beneficiaryId) {
+		getGeneralReliefForBeneficiary(beneficiaryId) {
 			return AssistancesService
 				.getGeneralReliefForBeneficiaryInAssistance(
 					this.$route.params.assistanceId, beneficiaryId,
@@ -446,6 +533,17 @@ export default {
 
 		closeAddBeneficiaryModal() {
 			this.addBeneficiaryModal.isOpened = false;
+		},
+
+		openAssignVoucherModal(id, canAssignVoucher) {
+			if (canAssignVoucher) {
+				this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
+				this.assignVoucherModal.isOpened = true;
+			}
+		},
+
+		closeAssignVoucherModal() {
+			this.assignVoucherModal.isOpened = false;
 		},
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {

@@ -3,6 +3,7 @@
 		<AssistanceSummary
 			:beneficiaries="beneficiaries"
 			:assistance="assistance"
+			:project="project"
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
@@ -28,6 +29,7 @@
 			add-button
 			isAssistanceDetail
 			:assistance="assistance"
+			:project="project"
 			:custom-columns="columns"
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
@@ -64,6 +66,7 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "AssistanceDetail",
@@ -76,6 +79,7 @@ export default {
 	data() {
 		return {
 			assistance: null,
+			project: null,
 			beneficiaries: 0,
 			// TODO calculate progress and amountDistributed
 			assistanceProgress: 20,
@@ -113,6 +117,7 @@ export default {
 	mounted() {
 		this.fetchAssistance();
 		this.fetchCommodity();
+		this.fetchProject();
 	},
 
 	methods: {
@@ -121,6 +126,14 @@ export default {
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.assistance = data;
+			});
+		},
+
+		async fetchProject() {
+			await ProjectService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then(({ data }) => {
+				this.project = data;
 			});
 		},
 

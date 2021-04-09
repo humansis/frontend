@@ -140,6 +140,21 @@ export default {
 		return { data, status };
 	},
 
+	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,
+		});
+		return { data, totalCount };
+	},
+
+	async assignBookletForBeneficiaryInAssistance(assistanceId, beneficiaryId, bookletCode) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets/${bookletCode}`,
+			method: "PUT",
+		});
+		return { data, status };
+	},
+
 	async getListOfModalities() {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `modalities`,
