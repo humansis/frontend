@@ -141,6 +141,13 @@ export default {
 		return { data, status };
 	},
 
+	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+		});
+		return { data, totalCount };
+	},
+
 	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,

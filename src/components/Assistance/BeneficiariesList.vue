@@ -334,8 +334,6 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
-			// TODO Refactor this to await Promise.all
-			// Sometimes causes errors with something is undefined
 			data.forEach((item, key) => {
 				beneficiaryIds.push(item.id);
 
@@ -343,7 +341,7 @@ export default {
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
 				this.table.data[key].gender = this.prepareGender(item.gender);
-				this.table.data[key].distributed = item.distributed;
+				this.table.data[key].distributed = "";
 				this.table.data[key].vulnerabilities = this
 					.prepareVulnerabilities(item.vulnerabilityCriteria);
 				if (item.nationalIds.length) {
@@ -383,20 +381,35 @@ export default {
 		},
 
 		async setAssignedSmartCards(beneficiaryIds) {
-			console.log("this is smartcard", beneficiaryIds);
-			/*
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					const smartCard = await this.getSmartCardDeposits(beneficiaryId);
+
+					// TODO Finish this after BE update
+					console.log(smartCard);
+
+					/*
+					? smartCard can have array of smartcard deposits, each of them has own value
+					? and now there's no property "distributed"
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
+					this.table.data[beneficiaryItemIndex].distributed =
+					 */
 				}));
 			}
-			 */
+		},
+
+		getSmartCardDeposits(beneficiaryId) {
+			return AssistancesService
+				.getSmartCardDepositForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+				});
 		},
 
 		async setAssignedBooklets(beneficiaryIds) {
@@ -408,7 +421,7 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0]?.distributed;
 				}));
 			}
 		},
@@ -461,6 +474,7 @@ export default {
 					}
 
 					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+
 					this.table.data[beneficiaryItemIndex].distributed =	generalRelief?.[0].dateOfDistribution
 						? this.$moment(generalRelief[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
 						: this.$t("Not Distributed");
@@ -483,7 +497,7 @@ export default {
 			if (vulnerabilities) {
 				vulnerabilities.forEach((item) => {
 					if (result === "none") {
-						result = normalizeText(item);
+						result = this.$t(normalizeText(item));
 					} else {
 						result += `, ${normalizeText(item)}`;
 					}
