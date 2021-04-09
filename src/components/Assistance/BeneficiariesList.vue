@@ -185,7 +185,6 @@ export default {
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
-		customColumns: Array,
 	},
 
 	components: {
@@ -208,7 +207,7 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [
+				assistanceEditColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
@@ -216,6 +215,14 @@ export default {
 					{ key: "dateOfBirth", label: "Date of Birth" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities" },
+				],
+				assistanceDetailColumns: [
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+					{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+					{ key: "distributed", label: this.$t("Distributed") },
+					{ key: "value", label: this.$t("Value") },
 				],
 				total: 0,
 				currentPage: 1,
@@ -303,9 +310,7 @@ export default {
 
 			await this.getAssistanceCommodities();
 
-			this.table.columns = generateColumns(
-				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
-			);
+			await this.prepareTableColumns();
 
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
@@ -326,6 +331,13 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async prepareTableColumns() {
+			this.table.columns = generateColumns(
+				this.isAssistanceDetail
+					? this.table.assistanceDetailColumns : this.table.assistanceEditColumns,
+			);
 		},
 
 		async prepareDataForTable(data) {
@@ -661,8 +673,8 @@ export default {
 			};
 		},
 
-		getAssistanceCommodities() {
-			AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+		async getAssistanceCommodities() {
+			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
 					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
