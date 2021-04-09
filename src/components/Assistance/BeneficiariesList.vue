@@ -389,8 +389,7 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					// TODO Set if assign voucher button can be visible for BNF base on sth
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !!booklets?.length;
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
 				}));
 			}
 		},
