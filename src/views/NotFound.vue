@@ -25,14 +25,15 @@ h1 {
 	font-size: 15rem;
 	color: #0e2640;
 }
+
 h2 {
 	font-size: 2rem;
 }
+
 .is-center {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -80%);
 }
-
 </style>
