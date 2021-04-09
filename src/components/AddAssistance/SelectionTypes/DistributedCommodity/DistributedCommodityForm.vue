@@ -208,7 +208,7 @@ export default {
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARDCARD:
+				case consts.COMMODITY.SMARTCARD:
 				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {

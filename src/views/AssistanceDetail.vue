@@ -30,7 +30,6 @@
 			isAssistanceDetail
 			:assistance="assistance"
 			:project="project"
-			:custom-columns="columns"
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
 			@rowsChecked="onRowsCheck"
@@ -85,14 +84,6 @@ export default {
 			assistanceProgress: 20,
 			amountDistributed: 200,
 			commodity: [],
-			columns: [
-				{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
-				{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
-				{ key: "nationalId", label: this.$t("National ID"), sortable: true },
-				{ key: "distributed", label: this.$t("Distributed") },
-				{ key: "value", label: this.$t("Value") },
-			],
 			setAtDistributedButton: false,
 		};
 	},
@@ -143,13 +134,14 @@ export default {
 		},
 
 		async setGeneralReliefItemAsDistributed() {
+			const dateOfDistribution = new Date().toISOString();
 			let error = "";
 			let success = "";
 
 			if (this.selectedBeneficiaries?.length) {
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id, "distributed", true,
+						beneficiary.generalReliefItem.id, true, dateOfDistribution,
 					).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;

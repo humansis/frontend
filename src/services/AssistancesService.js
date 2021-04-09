@@ -129,15 +129,23 @@ export default {
 		return { data, totalCount };
 	},
 
-	async updateGeneralReliefItem(id, property, value) {
+	async updateGeneralReliefItem(id, value, dateOfDistribution) {
 		const { data, status } = await fetcher({
 			uri: `general-relief-items/${id}`,
 			method: "PATCH",
 			body: {
-				[property]: value,
+				distributed: value,
+				dateOfDistribution,
 			},
 		});
 		return { data, status };
+	},
+
+	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+		});
+		return { data, totalCount };
 	},
 
 	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {

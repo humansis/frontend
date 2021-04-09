@@ -185,7 +185,6 @@ export default {
 		addButton: Boolean,
 		changeButton: Boolean,
 		exportButton: Boolean,
-		customColumns: Array,
 	},
 
 	components: {
@@ -208,7 +207,7 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [
+				assistanceEditColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
@@ -216,6 +215,14 @@ export default {
 					{ key: "dateOfBirth", label: "Date of Birth" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities" },
+				],
+				assistanceDetailColumns: [
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+					{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+					{ key: "distributed", label: this.$t("Distributed") },
+					{ key: "value", label: this.$t("Value") },
 				],
 				total: 0,
 				currentPage: 1,
@@ -272,7 +279,7 @@ export default {
 
 			if (this.isAssistanceDetail) {
 				switch (this.commodities[0]?.modalityType) {
-					case consts.COMMODITY.SMARDCARD:
+					case consts.COMMODITY.SMARTCARD:
 						result = false;
 						break;
 					case consts.COMMODITY.MOBILE_MONEY:
@@ -303,9 +310,7 @@ export default {
 
 			await this.getAssistanceCommodities();
 
-			this.table.columns = generateColumns(
-				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
-			);
+			await this.prepareTableColumns();
 
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
@@ -328,6 +333,13 @@ export default {
 			this.isLoadingList = false;
 		},
 
+		async prepareTableColumns() {
+			this.table.columns = generateColumns(
+				this.isAssistanceDetail
+					? this.table.assistanceDetailColumns : this.table.assistanceEditColumns,
+			);
+		},
+
 		async prepareDataForTable(data) {
 			this.table.progress += 15;
 			const phoneIds = [];
@@ -341,7 +353,7 @@ export default {
 				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
 				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
 				this.table.data[key].gender = this.prepareGender(item.gender);
-				this.table.data[key].distributed = item.dateDistributed || "none";
+				this.table.data[key].distributed = "";
 				this.table.data[key].vulnerabilities = this
 					.prepareVulnerabilities(item.vulnerabilityCriteria);
 				if (item.nationalIds.length) {
@@ -365,8 +377,8 @@ export default {
 
 		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
 			switch (this.commodities[0].modalityType) {
-				case consts.COMMODITY.SMARDCARD:
-					// TODO Call action for setting rules for smardcards
+				case consts.COMMODITY.SMARTCARD:
+					await this.setAssignedSmartCards(beneficiaryIds);
 					break;
 				case consts.COMMODITY.MOBILE_MONEY:
 					// TODO Call action for setting rules for transactions
@@ -380,6 +392,38 @@ export default {
 			}
 		},
 
+		async setAssignedSmartCards(beneficiaryIds) {
+			if (beneficiaryIds.length) {
+				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
+					const smartCard = await this.getSmartCardDeposits(beneficiaryId);
+
+					// TODO Finish this after BE update
+					console.log(smartCard);
+
+					/*
+					? smartCard can have array of smartcard deposits, each of them has own value
+					? and now there's no property "distributed"
+
+					const beneficiaryItemIndex = this.table.data.findIndex(
+						({ id }) => id === beneficiaryId,
+					);
+
+					this.table.data[beneficiaryItemIndex].distributed =
+					 */
+				}));
+			}
+		},
+
+		getSmartCardDeposits(beneficiaryId) {
+			return AssistancesService
+				.getSmartCardDepositForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+				});
+		},
+
 		async setAssignedBooklets(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
@@ -389,7 +433,8 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0].distributed;
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !(booklets?.length
+						? booklets[0].distributed : false);
 				}));
 			}
 		},
@@ -442,6 +487,10 @@ export default {
 					}
 
 					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
+
+					this.table.data[beneficiaryItemIndex].distributed =	generalRelief?.[0].dateOfDistribution
+						? this.$moment(generalRelief[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+						: this.$t("Not Distributed");
 				}));
 			}
 		},
@@ -461,9 +510,9 @@ export default {
 			if (vulnerabilities) {
 				vulnerabilities.forEach((item) => {
 					if (result === "none") {
-						result = normalizeText(item);
+						result = this.$t(normalizeText(item));
 					} else {
-						result += `, ${normalizeText(item)}`;
+						result += `, ${this.$t(normalizeText(item))}`;
 					}
 				});
 			}
@@ -624,8 +673,8 @@ export default {
 			};
 		},
 
-		getAssistanceCommodities() {
-			AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+		async getAssistanceCommodities() {
+			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
 					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
