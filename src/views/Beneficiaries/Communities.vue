@@ -110,8 +110,8 @@ export default {
 	},
 
 	methods: {
-		editCommunity(community) {
-			this.mapToFormModel(community);
+		async editCommunity(community) {
+			await this.mapToFormModel(community);
 			this.communityModal = {
 				isEditing: true,
 				isOpened: true,
@@ -159,8 +159,8 @@ export default {
 			this.communityModal.isOpened = false;
 		},
 
-		showDetail(community) {
-			this.mapToFormModel(community);
+		async showDetail(community) {
+			await this.mapToFormModel(community);
 			this.communityModal = {
 				isEditing: false,
 				isOpened: true,
@@ -183,10 +183,24 @@ export default {
 				projectIds,
 			},
 		) {
-			const phone = await BeneficiariesService.getPhone(phoneId);
-			const address = await AddressService.getAddress(addressId);
-			const nationalIdCard = await BeneficiariesService.getNationalId(nationalId);
+			let phone = null;
+			let address = null;
+			let nationalIdCard = null;
 
+			await Promise.all([
+				BeneficiariesService.getPhone(phoneId)
+					.then((response) => {
+						phone = response;
+					}),
+				AddressService.getAddress(addressId)
+					.then((response) => {
+						address = response;
+					}),
+				BeneficiariesService.getNationalId(nationalId)
+					.then((response) => {
+						nationalIdCard = response;
+					}),
+			]);
 			this.communityModel = {
 				...this.communityModel,
 				id,
