@@ -512,7 +512,7 @@ export default {
 					if (result === "none") {
 						result = this.$t(normalizeText(item));
 					} else {
-						result += `, ${normalizeText(item)}`;
+						result += `, ${this.$t(normalizeText(item))}`;
 					}
 				});
 			}
