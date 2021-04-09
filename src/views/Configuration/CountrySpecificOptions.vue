@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="countrySpecificOptionModel"
-				:submit-button-label="$t('Create')"
+				:submit-button-label="$t('Update')"
 				:form-disabled="countrySpecificOptionModal.isDetail"
 				@formSubmitted="submitCountrySpecificOptionForm"
 				@formClosed="closeCountrySpecificOptionModal"
@@ -205,7 +205,7 @@ export default {
 						Toast(
 							this.$t("Country Specific Option Successfully Updated"), "is-success",
 						);
-						this.$refs.countrySpecificList.fetchData();
+						this.$refs.countrySpecificOptionList.fetchData();
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
