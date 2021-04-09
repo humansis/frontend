@@ -54,7 +54,9 @@
 		<template #export>
 			<ExportButton
 				space-between
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportDonors"
 			/>
 		</template>
 	</Table>
@@ -86,6 +88,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -130,6 +133,22 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async exportDonors(format) {
+			this.exportLoading = true;
+			await DonorService.exportDonors(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `donors.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

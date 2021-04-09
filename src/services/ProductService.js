@@ -1,4 +1,4 @@
-import { fetcher, idsToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, idsToUri, upload } from "@/utils/fetcher";
 
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
@@ -60,5 +60,12 @@ export default {
 			body: formData,
 		});
 		return { data, status };
+	},
+
+	async exportProducts(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `products/exports?${formatText}` });
+		return { data };
 	},
 };

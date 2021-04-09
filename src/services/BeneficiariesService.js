@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
@@ -207,5 +207,19 @@ export default {
 			uri: `households/${id}/distributed-items`,
 		});
 		return { data, totalCount };
+	},
+
+	async exportHouseholds(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `households/exports?${formatText}` });
+		return { data };
+	},
+
+	async exportBeneficiaries(format, assistanceId) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
+		return { data };
 	},
 };

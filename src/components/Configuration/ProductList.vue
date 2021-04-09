@@ -51,9 +51,11 @@
 		</b-table-column>
 		<template #export>
 			<ExportButton
-				type="is-primary"
 				space-between
+				type="is-primary"
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportProducts"
 			/>
 		</template>
 	</Table>
@@ -85,6 +87,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -142,6 +145,22 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async exportProducts(format) {
+			this.exportLoading = true;
+			await ProductService.exportProducts(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `products.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

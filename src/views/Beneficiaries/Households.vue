@@ -162,8 +162,9 @@
 				<ExportButton
 					class="ml-3"
 					space-between
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportHousehold"
+					@onExport="exportHousehold"
 				/>
 			</template>
 
@@ -236,6 +237,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			advancedSearchVisible: false,
 			table: {
 				data: [],
@@ -605,9 +607,20 @@ export default {
 			}
 		},
 
-		exportHousehold(format) {
-			console.log(format);
-			console.log(this.$refs.householdList.checkedRows);
+		async exportHousehold(format) {
+			this.exportLoading = true;
+			await BeneficiariesService.exportHouseholds(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `households.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 
 		async onFiltersChange(selectedFilters) {

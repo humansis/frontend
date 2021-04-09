@@ -51,6 +51,14 @@
 				/>
 			</div>
 		</b-table-column>
+		<template #export>
+			<ExportButton
+				space-between
+				:loading="exportLoading"
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportProjects"
+			/>
+		</template>
 	</Table>
 </template>
 
@@ -65,6 +73,7 @@ import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "ProjectList",
@@ -72,6 +81,7 @@ export default {
 	mixins: [grid, baseHelper],
 
 	components: {
+		ExportButton,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -80,6 +90,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -195,6 +206,21 @@ export default {
 			this.$emit("onShowDetail", project);
 		},
 
+		async exportProjects(format) {
+			this.exportLoading = true;
+			await ProjectService.exportProjects(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `projects.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
+		},
 	},
 };
 </script>

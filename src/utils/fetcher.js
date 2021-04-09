@@ -23,7 +23,7 @@ async function getErrorsFromResponse(data) {
 	return errors || debugs || "Something went wrong";
 }
 
-export const getResponseJSON = async (response) => {
+export const getResponseJSON = async (response, download = false) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
@@ -49,8 +49,12 @@ export const getResponseJSON = async (response) => {
 	if (notFound) {
 		throw new Error(response.statusText);
 	}
-
-	const data = await response.json();
+	let data = null;
+	if (download) {
+		data = await response.blob();
+	} else {
+		data = await response.json();
+	}
 
 	if (success) {
 		return { data, status: response.status };
@@ -120,6 +124,30 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	const response = await fetch(url, config);
 
 	return getResponseJSON(response);
+};
+
+export const download = async ({ uri }) => {
+	const url = `${CONST.API}/${uri}`;
+
+	const headers = {};
+
+	const user = JSON.parse(localStorage.getItem("user"));
+
+	if (user?.authdata) {
+		headers.Authorization = `Basic ${user.authdata}`;
+	}
+
+	const country = getters.getCountryFromLocalStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
+
+	const config = {
+		headers,
+		method: "GET",
+	};
+
+	const response = await fetch(url, config);
+
+	return getResponseJSON(response, true);
 };
 
 export const filtersToUri = (filters) => {

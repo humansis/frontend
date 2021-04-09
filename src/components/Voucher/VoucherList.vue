@@ -68,6 +68,15 @@
 				/>
 			</b-collapse>
 		</template>
+		<template #export>
+			<ExportButton
+				class="ml-3"
+				space-between
+				:loading="exportLoading"
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportBooklets"
+			/>
+		</template>
 	</Table>
 </template>
 
@@ -82,11 +91,14 @@ import { getBookletStatus } from "@/utils/helpers";
 import grid from "@/mixins/grid";
 import VoucherFilters from "@/components/Voucher/VoucherFilters";
 import voucherHelper from "@/mixins/voucherHelper";
+import { Notification } from "@/utils/UI";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "VoucherList",
 
 	components: {
+		ExportButton,
 		VoucherFilters,
 		SafeDelete,
 		Table,
@@ -100,6 +112,7 @@ export default {
 		return {
 			advancedSearchVisible: false,
 			filters: [],
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -178,6 +191,22 @@ export default {
 
 		getStatus(code) {
 			return getBookletStatus(code).value;
+		},
+
+		async exportBooklets(format) {
+			this.exportLoading = true;
+			await BookletsService.exportBooklets(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `booklets.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };
