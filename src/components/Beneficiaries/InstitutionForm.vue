@@ -378,6 +378,7 @@ export default {
 		},
 
 		mapSelects() {
+			if (!this.formModel) return;
 			const { phonePrefix, type, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
 				this.formModel.phonePrefix = PhoneCodes
