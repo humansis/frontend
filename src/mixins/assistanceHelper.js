@@ -161,7 +161,7 @@ export default {
 				});
 		},
 
-		async setGeneralRelief(beneficiaryIds) {
+		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					const generalRelief = await this.getGeneralReliefForBeneficiary(beneficiaryId);

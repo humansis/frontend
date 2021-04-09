@@ -412,7 +412,7 @@ export default {
 					};
 					break;
 				default:
-					await this.setGeneralRelief(beneficiaryIds);
+					await this.setAssignedGeneralRelief(beneficiaryIds);
 
 					this.table.settings = {
 						assignVoucherAction: false,
