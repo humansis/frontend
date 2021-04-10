@@ -39,7 +39,6 @@
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
 			@rowsChecked="onRowsCheck"
-			@countOfCompleted="onCountOfCompleted"
 		/>
 		<br>
 		<div class="columns">
@@ -60,7 +59,7 @@
 					icon-right="parachute-box"
 					@click="setGeneralReliefItemAsDistributed"
 				>
-					{{ $t('Set As Distributed')}}
+					{{ $t(setAtDistributedButtonLabel) }}
 				</b-button>
 			</div>
 		</div>
@@ -98,6 +97,12 @@ export default {
 	computed: {
 		commodityUnit() {
 			return this.commodities?.[0]?.unit || "";
+		},
+
+		setAtDistributedButtonLabel() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Set As Distributed";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Set As Completed";
+			return "";
 		},
 
 		typeOfAssistance() {
@@ -170,10 +175,6 @@ export default {
 			).then(({ data }) => {
 				this.project = data;
 			});
-		},
-
-		onCountOfCompleted(count) {
-			this.countOfCompleted = count;
 		},
 
 		onRowsCheck(rows) {
