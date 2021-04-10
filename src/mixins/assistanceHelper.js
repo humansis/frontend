@@ -3,8 +3,20 @@ import { Notification, Toast } from "@/utils/UI";
 import { normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { mapActions, mapState } from "vuex";
 
 export default {
+	data() {
+		return {
+			show: true,
+			isLoadingList: false,
+		};
+	},
+
+	computed: {
+		...mapState(["perPage"]),
+	},
+
 	methods: {
 		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(beneficiaryIds) {
@@ -51,9 +63,9 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (smartCardDeposits.length) {
+					if (smartCardDeposits?.length) {
 						this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits[0].distributed
-							? this.$moment(smartCardDeposits[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+							? this.$moment(smartCardDeposits[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
 							: this.$t("Not Distributed");
 						this.table.data[beneficiaryItemIndex].value = `
 						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
@@ -90,7 +102,7 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (booklets.length) {
+					if (booklets?.length) {
 						this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets[0].distributed;
 
 						this.table.data[beneficiaryItemIndex].booklet = booklets[0].code;
@@ -157,7 +169,7 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (generalReliefItems.length) {
+					if (generalReliefItems?.length) {
 						if (generalReliefItems[0].distributed) {
 							this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
 						}
@@ -166,7 +178,7 @@ export default {
 
 						this.table.data[beneficiaryItemIndex].distributed =	generalReliefItems[0]
 							.dateOfDistribution
-							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+							? this.$moment(generalReliefItems[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
 							: this.$t("Not Distributed");
 
 						this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
@@ -372,6 +384,48 @@ export default {
 				isEditing: false,
 			};
 			this.$emit("onBeneficiaryListChange");
+		},
+
+		...mapActions(["changePerPage"]),
+
+		async onPageChange(currentPage) {
+			this.table.currentPage = currentPage;
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
+		async onSort(column) {
+			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
+			const sortKey = currentColumn.sortKey || column;
+
+			if (this.table.sortColumn === sortKey) {
+				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+			} else {
+				this.table.sortColumn = sortKey;
+				this.table.sortDirection = "desc";
+			}
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
+		async onSearch(value) {
+			this.table.searchPhrase = value;
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
+		async onChangePerPage() {
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
+		async resetSort() {
+			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
+				this.table.sortColumn = "";
+				this.table.sortDirection = "";
+				await this.fetchData();
+				await this.prepareTableColumns();
+			}
 		},
 	},
 };

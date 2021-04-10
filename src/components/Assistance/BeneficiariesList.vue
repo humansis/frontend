@@ -169,7 +169,6 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
@@ -198,7 +197,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, baseHelper, assistanceHelper],
+	mixins: [baseHelper, assistanceHelper],
 
 	data() {
 		return {
@@ -252,8 +251,8 @@ export default {
 		};
 	},
 
-	created() {
-		this.getAssistanceCommodities();
+	async created() {
+		await this.getAssistanceCommodities();
 	},
 
 	watch: {

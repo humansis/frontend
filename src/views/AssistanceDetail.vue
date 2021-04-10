@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiaries"
+			:beneficiaries="beneficiariesCount"
 			:assistance="assistance"
 			:project="project"
 		/>
@@ -38,7 +38,7 @@
 			:assistance="assistance"
 			:project="project"
 			:change-button="false"
-			@beneficiariesCounted="beneficiaries = $event"
+			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
 		/>
 		<br>
@@ -54,13 +54,24 @@
 					{{ $t('Close Assistance') }}
 				</b-button>
 				<b-button
-					v-if="setAtDistributedButton"
+					v-if="setAtDistributedButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
+					:loading="setAtDistributedButtonLoading"
 					@click="setGeneralReliefItemAsDistributed"
 				>
 					{{ $t(setAtDistributedButtonLabel) }}
+				</b-button>
+				<b-button
+					v-if="startTransactionButtonVisible"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="parachute-box"
+					:loading="startTransactionButtonLoading"
+					@click="startTransaction"
+				>
+					{{ $t("Start Transaction") }} ({{ beneficiariesCount }})
 				</b-button>
 			</div>
 		</div>
@@ -88,10 +99,12 @@ export default {
 			assistance: null,
 			statistics: null,
 			project: null,
-			beneficiaries: 0,
+			beneficiariesCount: 0,
 			countOfCompleted: 0,
 			commodities: [],
-			setAtDistributedButton: false,
+			setAtDistributedButtonVisible: false,
+			setAtDistributedButtonLoading: false,
+			startTransactionButtonLoading: false,
 		};
 	},
 
@@ -104,6 +117,10 @@ export default {
 			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
 
 			return "";
+		},
+
+		startTransactionButtonVisible() {
+			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
 		},
 
 		setAtDistributedButtonLabel() {
@@ -204,7 +221,7 @@ export default {
 		},
 
 		onRowsCheck(rows) {
-			this.setAtDistributedButton = !!rows?.length;
+			this.setAtDistributedButtonVisible = !!rows?.length;
 			this.selectedBeneficiaries = rows;
 		},
 
@@ -214,6 +231,8 @@ export default {
 			let success = "";
 
 			if (this.selectedBeneficiaries?.length) {
+				this.setAtDistributedButtonLoading = true;
+
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
 						beneficiary.generalReliefItem.id, true, dateOfDistribution,
@@ -229,10 +248,21 @@ export default {
 				if (error) Toast(error, "is-danger");
 				if (success) Toast(success, "is-success");
 
-				this.setAtDistributedButton = false;
+				this.setAtDistributedButtonVisible = false;
 				this.$refs.beneficiariesList.fetchData();
 				this.fetchAssistanceStatistics();
+
+				this.setAtDistributedButtonLoading = false;
 			}
+		},
+
+		async startTransaction() {
+			this.startTransactionButtonLoading = true;
+
+			// TODO Call endpoint for Start Transaction in this assistance
+			// TODO Hide button if transaction was already done
+
+			this.startTransactionButtonLoading = false;
 		},
 
 		async fetchCommodity() {
