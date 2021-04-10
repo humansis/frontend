@@ -8,18 +8,24 @@
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t('Assistance Progress') }}: {{ assistanceProgress }} %
+					{{ $t(typeOfAssistance) }} {{ $t('Progress') }}: {{ assistanceProgress }} %
 				</div>
 			</div>
 			<b-progress v-model="assistanceProgress" />
 			<div class="columns">
-				<div v-if="$refs.beneficiariesList" class="column is-offset-3">
-					<div class="has-text-weight-bold">{{ $t('Total Amount') }}:</div>
-					<span class="ml-5">{{ totalAmount }} {{ commodityUnit }}</span>
+				<div class="column">
+					<div class="has-text-weight-bold">
+						{{ $t('Total Amount') }}:
+					</div>
+					<span>{{ totalAmount }} </span>
+					<span v-if="commodityUnit">{{ commodityUnit }}</span>
 				</div>
 				<div class="column">
-					<div class="has-text-weight-bold">{{ $t('Amount Distributed') }}:</div>
-					<span class="ml-6">{{ amountDistributed }} {{ commodityUnit }}</span>
+					<div class="has-text-weight-bold">
+						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
+					</div>
+					<span>{{ amountCompleted }} </span>
+					<span v-if="commodityUnit">{{ commodityUnit }}</span>
 				</div>
 			</div>
 		</div>
@@ -33,6 +39,7 @@
 			:change-button="false"
 			@beneficiariesCounted="beneficiaries = $event"
 			@rowsChecked="onRowsCheck"
+			@countOfCompleted="onCountOfCompleted"
 		/>
 		<br>
 		<div class="columns">
@@ -66,6 +73,7 @@ import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceDetail",
@@ -80,19 +88,27 @@ export default {
 			assistance: null,
 			project: null,
 			beneficiaries: 0,
-			// TODO calculate progress and amountDistributed
-			assistanceProgress: 20,
-			amountDistributed: 200,
-			commodity: [],
+			assistanceProgress: 0,
+			countOfCompleted: 0,
+			commodities: [],
 			setAtDistributedButton: false,
 		};
 	},
 
 	computed: {
 		commodityUnit() {
-			if (this.commodity.length) {
-				return this.commodity[0].unit;
-			}
+			return this.commodities?.[0]?.unit || "";
+		},
+
+		typeOfAssistance() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			return "";
+		},
+
+		distributedOrCompleted() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distributed";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Completed";
 			return "";
 		},
 
@@ -100,23 +116,51 @@ export default {
 			return this.assistance?.validated;
 		},
 
+		amountCompleted() {
+			let result = 0;
+
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				result = this.commodities?.[0]?.value
+					? this.commodities.[0].value * this.countOfCompleted : 0;
+			}
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
+				result = this.countOfCompleted;
+			}
+
+			return result;
+		},
+
 		totalAmount() {
-			return this.$refs.beneficiariesList?.table.total * this.commodity?.[0]?.value ?? null;
+			let result = 0;
+
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
+					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
+				}
+			}
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
+				return this.$refs.beneficiariesList.table.total;
+			}
+
+			return result;
 		},
 	},
 
 	mounted() {
 		this.fetchAssistance();
-		this.fetchCommodity();
 		this.fetchProject();
 	},
 
 	methods: {
 		async fetchAssistance() {
-			return AssistancesService.getDetailOfAssistance(
+			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.assistance = data;
+
+				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+					this.fetchCommodity();
+				}
 			});
 		},
 
@@ -126,6 +170,10 @@ export default {
 			).then(({ data }) => {
 				this.project = data;
 			});
+		},
+
+		onCountOfCompleted(count) {
+			this.countOfCompleted = count;
 		},
 
 		onRowsCheck(rows) {
@@ -161,7 +209,9 @@ export default {
 
 		async fetchCommodity() {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodity = data; })
+				.then(({ data }) => {
+					this.commodities = data;
+				})
 				.catch((e) => {
 					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
@@ -182,9 +232,7 @@ export default {
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Closed"), "is-success");
 							this.$router.push({ name: "Project",
-								params: {
-									projectId: this.$route.params.projectId,
-								},
+								params: { projectId: this.$route.params.projectId },
 							});
 						}
 					}).catch((e) => {

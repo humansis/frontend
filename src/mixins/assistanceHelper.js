@@ -71,6 +71,13 @@ export default {
 					this.table.data[beneficiaryItemIndex].value =
 					`${this.commodities[0].value} ${this.commodities[0].unit}`
 					 */
+
+					this.table.data = [...this.table.data];
+
+					this.table.settings = {
+						assignVoucherAction: false,
+						checkableTable: false,
+					};
 				}));
 			}
 		},
@@ -95,6 +102,13 @@ export default {
 					this.table.data[beneficiaryItemIndex].value =
 					`${this.commodities[0].value} ${this.commodities[0].unit}`
 					 */
+
+					this.table.data = [...this.table.data];
+
+					this.table.settings = {
+						assignVoucherAction: false,
+						checkableTable: false,
+					};
 				}));
 			}
 		},
@@ -123,6 +137,13 @@ export default {
 
 					// this.table.data[beneficiaryItemIndex].booklet =
 					this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
+
+					this.table.data = [...this.table.data];
+
+					this.table.settings = {
+						assignVoucherAction: true,
+						checkableTable: false,
+					};
 				}));
 			}
 		},
@@ -163,6 +184,8 @@ export default {
 
 		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
+				let countOfDistributed = 0;
+
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					const generalRelief = await this.getGeneralReliefForBeneficiary(beneficiaryId);
 
@@ -172,6 +195,9 @@ export default {
 
 					if (generalRelief[0].distributed) {
 						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+
+						countOfDistributed += 1;
+						this.$emit("countOfCompleted", countOfDistributed);
 					}
 
 					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
@@ -181,6 +207,13 @@ export default {
 						: this.$t("Not Distributed");
 
 					this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
+
+					this.table.data = [...this.table.data];
+
+					this.table.settings = {
+						assignVoucherAction: false,
+						checkableTable: true,
+					};
 				}));
 			}
 		},

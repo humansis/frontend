@@ -73,7 +73,10 @@
 				</div>
 			</div>
 
-			<div class="level-item has-text-centered">
+			<div
+				v-if="assistanceType === consts.TYPE.DISTRIBUTION"
+				class="level-item has-text-centered"
+			>
 				<div class="box commodity-item">
 					<p class="heading">{{ $t('Commodity') }}</p>
 					<p
@@ -96,6 +99,7 @@ import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
 import AssistancesService from "@/services/AssistancesService";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceSummary",
@@ -113,6 +117,7 @@ export default {
 
 	data() {
 		return {
+			consts,
 			province: null,
 			commodity: null,
 		};
@@ -130,6 +135,10 @@ export default {
 	computed: {
 		assistanceName() {
 			return this.assistance?.name || "";
+		},
+
+		assistanceType() {
+			return this.assistance?.type;
 		},
 
 		assistanceTarget() {

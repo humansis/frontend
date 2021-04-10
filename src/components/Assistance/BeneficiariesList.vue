@@ -123,6 +123,7 @@
 				/>
 			</template>
 			<b-table-column
+				v-if="table.columns.length"
 				v-slot="props"
 				:label="$t('Actions')"
 				centered
@@ -251,12 +252,17 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
+	created() {
+		this.getAssistanceCommodities();
 	},
 
-	created() {
-		this.fetchData();
+	watch: {
+		assistance(newAssistance) {
+			if (newAssistance) {
+				this.fetchData();
+				this.prepareTableColumns();
+			}
+		},
 	},
 
 	methods: {
@@ -264,9 +270,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
-
-			await this.getAssistanceCommodities();
-			await this.prepareTableColumns();
 
 			await AssistancesService.getListOfBeneficiaries(
 				this.$route.params.assistanceId,
@@ -386,47 +389,25 @@ export default {
 			}
 		},
 
-		async settingsOfBeneficiaryDistribution(beneficiaryIds) {
+		settingsOfBeneficiaryDistribution(beneficiaryIds) {
 			switch (this.commodities[0].modalityType) {
 				case consts.COMMODITY.SMARTCARD:
-					await this.setAssignedSmartCards(beneficiaryIds);
-
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: false,
-					};
+					this.setAssignedSmartCards(beneficiaryIds);
 					break;
 				case consts.COMMODITY.MOBILE_MONEY:
-					// TODO Call action for setting rules for transactions
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: false,
-					};
+					this.setAssignedTransactions();
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
-					await this.setAssignedBooklets(beneficiaryIds);
-
-					this.table.settings = {
-						assignVoucherAction: true,
-						checkableTable: false,
-					};
+					this.setAssignedBooklets(beneficiaryIds);
 					break;
 				default:
-					await this.setAssignedGeneralRelief(beneficiaryIds);
-
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: true,
-					};
+					this.setAssignedGeneralRelief(beneficiaryIds);
 			}
 		},
 
-		async settingsOfBeneficiaryActivity() {
+		settingsOfBeneficiaryActivity(beneficiaryIds) {
 			// TODO Get info about beneficiary activity
-			this.table.settings = {
-				assignVoucherAction: false,
-				checkableTable: true,
-			};
+			this.setAssignedGeneralRelief(beneficiaryIds);
 		},
 	},
 };
