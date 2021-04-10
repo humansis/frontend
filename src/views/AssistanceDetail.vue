@@ -8,10 +8,11 @@
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t(typeOfAssistance) }} {{ $t('Progress') }}: {{ assistanceProgress }} %
+					{{ $t(typeOfAssistance) }} {{ $t('Progress') }}:
+					<strong>{{ assistanceProgress }} %</strong>
 				</div>
 			</div>
-			<b-progress v-model="assistanceProgress" />
+			<b-progress v-model="assistanceProgress" type="is-success" />
 			<div class="columns">
 				<div class="column is-3">
 					<div class="has-text-weight-bold">
@@ -85,9 +86,9 @@ export default {
 	data() {
 		return {
 			assistance: null,
+			statistics: null,
 			project: null,
 			beneficiaries: 0,
-			assistanceProgress: 0,
 			countOfCompleted: 0,
 			commodities: [],
 			setAtDistributedButton: false,
@@ -127,15 +128,22 @@ export default {
 			return this.assistance?.validated;
 		},
 
+		assistanceProgress() {
+			if (!this.totalAmount && !this.amountCompleted) return 0;
+			const result = (100 / this.totalAmount) * this.amountCompleted;
+			if (result === Infinity) return 0;
+			return (result > 100) ? 100 : Math.round(result);
+		},
+
 		amountCompleted() {
 			let result = 0;
 
 			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				result = this.commodities?.[0]?.value
-					? this.commodities.[0].value * this.countOfCompleted : 0;
+				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfDistributedItems)
+					? this.commodities.[0].value * this.statistics.summaryOfDistributedItems : 0;
 			}
 			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				result = this.countOfCompleted;
+				result = this.statistics?.summaryOfDistributedItems || 0;
 			}
 
 			return result;
@@ -159,6 +167,7 @@ export default {
 
 	mounted() {
 		this.fetchAssistance();
+		this.fetchAssistanceStatistics();
 		this.fetchProject();
 	},
 
@@ -172,6 +181,14 @@ export default {
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
 					this.fetchCommodity();
 				}
+			});
+		},
+
+		async fetchAssistanceStatistics() {
+			AssistancesService.getAssistanceStatistics(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.statistics = data;
 			});
 		},
 
@@ -211,6 +228,7 @@ export default {
 
 				this.setAtDistributedButton = false;
 				this.$refs.beneficiariesList.fetchData();
+				this.fetchAssistanceStatistics();
 			}
 		},
 

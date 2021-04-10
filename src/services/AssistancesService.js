@@ -110,6 +110,14 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistanceStatistics(assistanceId) {
+		const { data } = await fetcher({
+			uri: `assistances/${assistanceId}/statistics`,
+		});
+
+		return data;
+	},
+
 	async getListOfBeneficiaries(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
