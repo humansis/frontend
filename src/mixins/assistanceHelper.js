@@ -7,57 +7,11 @@ import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	methods: {
-		async randomSample() {
-			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
-			const randomPage = this.rnd(1, this.table.total / size);
-			this.table.customPerPage = size;
-			await this.fetchData(randomPage, size);
-		},
-
-		rnd(a, b) {
-			return Math.floor((b - a + 1) * Math.random()) + a;
-		},
-
-		prepareGender(gender) {
-			return gender === "F" ? this.$t("Female") : this.$t("Male");
-		},
-
-		showDetail(beneficiary) {
-			this.beneficiaryModel = beneficiary;
-			this.beneficiaryModal = {
-				isOpened: true,
-				isEditing: false,
-			};
-		},
-
-		showEdit({ id }) {
-			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
-			this.beneficiaryModal = {
-				isOpened: true,
-				isEditing: true,
-			};
-		},
-
-		closeBeneficiaryModal() {
-			this.beneficiaryModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-		},
-
-		submitEditBeneficiaryForm() {
-			// TODO Update Beneficiary in this assistance
-			this.beneficiaryModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			this.$emit("onBeneficiaryListChange");
-		},
-
+		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const transactions = await this.getSmartCardDeposits(beneficiaryId);
+					const transactions = await this.getTransactions(beneficiaryId);
 
 					// TODO Finish this after BE update
 					console.log(transactions);
@@ -82,6 +36,18 @@ export default {
 			}
 		},
 
+		/** @summary Obtaining information about the beneficiary MOBILE MONEY */
+		getTransactions(beneficiaryId) {
+			return AssistancesService
+				.getTransactionsForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+				});
+		},
+
+		/** @summary Setting the BNF if the SMART CARD was already distributed to him */
 		async setAssignedSmartCards(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
@@ -113,6 +79,7 @@ export default {
 			}
 		},
 
+		/** @summary Obtaining information about the beneficiary SMART CARD */
 		getSmartCardDeposits(beneficiaryId) {
 			return AssistancesService
 				.getSmartCardDepositForBeneficiaryInAssistance(
@@ -123,6 +90,7 @@ export default {
 				});
 		},
 
+		/** @summary Setting the BNF if the QR VOUCHER CODE was already distributed to him */
 		async setAssignedBooklets(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
@@ -148,6 +116,18 @@ export default {
 			}
 		},
 
+		/** @summary Obtaining information about the beneficiary QR VOUCHER CODE */
+		getBookletsForBeneficiary(beneficiaryId) {
+			return AssistancesService
+				.getBookletsForBeneficiaryInAssistance(
+					this.$route.params.assistanceId, beneficiaryId,
+				).then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+				});
+		},
+
+		/** @summary Setting the BNF that the QR VOUCHER CODE is now distributed to him */
 		async assignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
 
@@ -172,16 +152,7 @@ export default {
 			this.assignVoucherModal.isWaiting = false;
 		},
 
-		getBookletsForBeneficiary(beneficiaryId) {
-			return AssistancesService
-				.getBookletsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
-				});
-		},
-
+		/** @summary Setting the BNF if the GENERAL RELIEF ITEMS was already distributed to him */
 		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
@@ -213,6 +184,7 @@ export default {
 			}
 		},
 
+		/** @summary Obtaining information about the beneficiary GENERAL RELIEF */
 		getGeneralReliefForBeneficiary(beneficiaryId) {
 			return AssistancesService
 				.getGeneralReliefForBeneficiaryInAssistance(
@@ -261,50 +233,8 @@ export default {
 			this.table.progress += 15;
 		},
 
-		async getNationalIds(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
-		},
-
-		async getPhones(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getPhones(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Phones")} ${e}`, "is-danger");
-				});
-		},
-
-		onRowsCheck(rows) {
-			this.$emit("rowsChecked", rows);
-		},
-
-		exportAssistance(format) {
-			console.log(format);
-		},
-
-		openAddBeneficiaryModal(id) {
-			this.addBeneficiaryModel.removingId = id;
-			this.addBeneficiaryModal.isOpened = true;
-		},
-
-		closeAddBeneficiaryModal() {
-			this.addBeneficiaryModal.isOpened = false;
-		},
-
-		openAssignVoucherModal(id, canAssignVoucher) {
-			if (canAssignVoucher) {
-				this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
-				this.assignVoucherModal.isOpened = true;
-			}
-		},
-
-		closeAssignVoucherModal() {
-			this.assignVoucherModal.isOpened = false;
+		prepareGender(gender) {
+			return gender === "F" ? this.$t("Female") : this.$t("Male");
 		},
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
@@ -329,7 +259,7 @@ export default {
 			this.closeAddBeneficiaryModal();
 		},
 
-		async submitAddBeneficiaryForm(form) {
+		async addBeneficiaryToAssistance(form) {
 			const { beneficiaries, justification } = form;
 			const body = {
 				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
@@ -349,12 +279,101 @@ export default {
 			this.$emit("onBeneficiaryListChange");
 		},
 
+		async getNationalIds(ids) {
+			if (!ids.length) return [];
+			return BeneficiariesService.getNationalIds(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+				});
+		},
+
+		async getPhones(ids) {
+			if (!ids.length) return [];
+			return BeneficiariesService.getPhones(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					Notification(`${this.$t("Phones")} ${e}`, "is-danger");
+				});
+		},
+
 		async getAssistanceCommodities() {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
 					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
+		},
+
+		openAssignVoucherModal(id, canAssignVoucher) {
+			if (canAssignVoucher) {
+				this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
+				this.assignVoucherModal.isOpened = true;
+			}
+		},
+
+		closeAssignVoucherModal() {
+			this.assignVoucherModal.isOpened = false;
+		},
+
+		openAddBeneficiaryModal(id) {
+			this.addBeneficiaryModel.removingId = id;
+			this.addBeneficiaryModal.isOpened = true;
+		},
+
+		closeAddBeneficiaryModal() {
+			this.addBeneficiaryModal.isOpened = false;
+		},
+
+		showDetail(beneficiary) {
+			this.beneficiaryModel = beneficiary;
+			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: false,
+			};
+		},
+
+		showEdit({ id }) {
+			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
+			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: true,
+			};
+		},
+
+		closeBeneficiaryModal() {
+			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+		},
+
+		onRowsCheck(rows) {
+			this.$emit("rowsChecked", rows);
+		},
+
+		exportAssistance(format) {
+			console.log(format);
+		},
+
+		async randomSample() {
+			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
+			const randomPage = this.rnd(1, this.table.total / size);
+			this.table.customPerPage = size;
+			await this.fetchData(randomPage, size);
+		},
+
+		rnd(a, b) {
+			return Math.floor((b - a + 1) * Math.random()) + a;
+		},
+
+		submitEditBeneficiaryForm() {
+			// TODO Update Beneficiary in this assistance
+			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+			this.$emit("onBeneficiaryListChange");
 		},
 	},
 };

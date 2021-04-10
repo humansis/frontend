@@ -13,19 +13,19 @@
 			</div>
 			<b-progress v-model="assistanceProgress" />
 			<div class="columns">
-				<div class="column">
+				<div class="column is-3">
 					<div class="has-text-weight-bold">
 						{{ $t('Total Amount') }}:
 					</div>
 					<span>{{ totalAmount }} </span>
-					<span v-if="commodityUnit">{{ commodityUnit }}</span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
-				<div class="column">
+				<div class="column is-3">
 					<div class="has-text-weight-bold">
 						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
 					</div>
 					<span>{{ amountCompleted }} </span>
-					<span v-if="commodityUnit">{{ commodityUnit }}</span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 			</div>
 		</div>
@@ -95,8 +95,14 @@ export default {
 	},
 
 	computed: {
-		commodityUnit() {
-			return this.commodities?.[0]?.unit || "";
+		assistanceUnit() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				return this.commodities?.[0]?.unit || "";
+			}
+
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+
+			return "";
 		},
 
 		setAtDistributedButtonLabel() {

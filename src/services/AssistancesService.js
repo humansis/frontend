@@ -148,6 +148,13 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getTransactionsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/transactions`,
+		});
+		return { data, totalCount };
+	},
+
 	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,

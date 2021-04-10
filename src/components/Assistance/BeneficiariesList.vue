@@ -14,7 +14,7 @@
 				:submit-button-label="$t('Confirm')"
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
-				@addingSubmitted="submitAddBeneficiaryForm"
+				@addingSubmitted="addBeneficiaryToAssistance"
 				@removingSubmitted="removeBeneficiaryFromAssistance"
 				@formClosed="closeAddBeneficiaryModal"
 			/>
@@ -395,7 +395,7 @@ export default {
 					this.setAssignedSmartCards(beneficiaryIds);
 					break;
 				case consts.COMMODITY.MOBILE_MONEY:
-					this.setAssignedTransactions();
+					this.setAssignedTransactions(beneficiaryIds);
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
 					this.setAssignedBooklets(beneficiaryIds);
@@ -406,7 +406,6 @@ export default {
 		},
 
 		settingsOfBeneficiaryActivity(beneficiaryIds) {
-			// TODO Get info about beneficiary activity
 			this.setAssignedGeneralRelief(beneficiaryIds);
 		},
 	},
