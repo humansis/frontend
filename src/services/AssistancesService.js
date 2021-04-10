@@ -130,7 +130,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
 		});

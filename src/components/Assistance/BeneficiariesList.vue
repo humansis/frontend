@@ -257,10 +257,10 @@ export default {
 	},
 
 	watch: {
-		assistance(newAssistance) {
+		async assistance(newAssistance) {
 			if (newAssistance) {
-				this.fetchData();
-				this.prepareTableColumns();
+				await this.fetchData();
+				await this.prepareTableColumns();
 			}
 		},
 	},
@@ -292,7 +292,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async prepareTableColumns() {
+		prepareTableColumns() {
 			const assistanceEditColumns = [
 				{ key: "id", label: "Beneficiary ID", sortable: true },
 				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
@@ -326,14 +326,15 @@ export default {
 					case consts.COMMODITY.MOBILE_MONEY:
 						additionalColumns = [
 							{ key: "phone", label: this.$t("Phone") },
-							{ key: "distributed", label: this.$t("Status") },
+							{ key: "status", label: this.$t("Status") },
 							{ key: "value", label: this.$t("Value") },
 						];
 						break;
 					case consts.COMMODITY.QR_CODE_VOUCHER:
 						additionalColumns = [
 							{ key: "booklet", label: this.$t("Booklet") },
-							{ key: "distributed", label: this.$t("Used") },
+							{ key: "status", label: this.$t("Status") },
+							{ key: "quantity", label: this.$t("Quantity") },
 							{ key: "value", label: this.$t("Value") },
 						];
 						break;

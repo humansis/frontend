@@ -1,4 +1,3 @@
-// import consts from "@/utils/assistanceConst";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import { normalizeText } from "@/utils/datagrid";
@@ -13,18 +12,13 @@ export default {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					const transactions = await this.getTransactions(beneficiaryId);
 
-					// TODO Finish this after BE update
-					console.log(transactions);
-					/*
-
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].distributed =
-					this.table.data[beneficiaryItemIndex].value =
-					`${this.commodities[0].value} ${this.commodities[0].unit}`
-					 */
+					this.table.data[beneficiaryItemIndex].status = transactions?.[0]?.status || this.$t("none");
+					this.table.data[beneficiaryItemIndex].value = `
+						${this.commodities[0].value} ${this.commodities[0].unit}`;
 
 					this.table.data = [...this.table.data];
 
@@ -51,23 +45,19 @@ export default {
 		async setAssignedSmartCards(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const smartCard = await this.getSmartCardDeposits(beneficiaryId);
-
-					// TODO Finish this after BE update
-					console.log(smartCard);
-
-					/*
-					? smartCard can have array of smartcard deposits, each of them has own value
-					? and now there's no property "distributed"
+					const smartCardDeposits = await this.getSmartCardDeposits(beneficiaryId);
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].distributed =
-					this.table.data[beneficiaryItemIndex].value =
-					`${this.commodities[0].value} ${this.commodities[0].unit}`
-					 */
+					if (smartCardDeposits.length) {
+						this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits[0].distributed
+							? this.$moment(smartCardDeposits[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+							: this.$t("Not Distributed");
+						this.table.data[beneficiaryItemIndex].value = `
+						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
+					}
 
 					this.table.data = [...this.table.data];
 
@@ -100,11 +90,16 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !(booklets?.length
-						? booklets[0].distributed : false);
+					if (booklets.length) {
+						this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets[0].distributed;
 
-					// this.table.data[beneficiaryItemIndex].booklet =
-					this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
+						this.table.data[beneficiaryItemIndex].booklet = booklets[0].code;
+						this.table.data[beneficiaryItemIndex].status = booklets[0].distributed
+							? this.$t("Distributed") : this.$t("Not Distributed");
+						this.table.data[beneficiaryItemIndex].quantity = booklets[0].quantityOfVouchers;
+						this.table.data[beneficiaryItemIndex].value = `
+						${booklets[0].totalValue} ${booklets[0].currency}`;
+					}
 
 					this.table.data = [...this.table.data];
 
@@ -156,23 +151,26 @@ export default {
 		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalRelief = await this.getGeneralReliefForBeneficiary(beneficiaryId);
+					const generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (generalRelief[0].distributed) {
-						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+					if (generalReliefItems.length) {
+						if (generalReliefItems[0].distributed) {
+							this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
+						}
+
+						this.table.data[beneficiaryItemIndex].generalReliefItem = { ...generalReliefItems[0] };
+
+						this.table.data[beneficiaryItemIndex].distributed =	generalReliefItems[0]
+							.dateOfDistribution
+							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
+							: this.$t("Not Distributed");
+
+						this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
 					}
-
-					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
-
-					this.table.data[beneficiaryItemIndex].distributed =	generalRelief?.[0].dateOfDistribution
-						? this.$moment(generalRelief[0].dateOfDistribution).format("YYYY-MM-DD h:mm")
-						: this.$t("Not Distributed");
-
-					this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
 
 					this.table.data = [...this.table.data];
 
@@ -185,9 +183,9 @@ export default {
 		},
 
 		/** @summary Obtaining information about the beneficiary GENERAL RELIEF */
-		getGeneralReliefForBeneficiary(beneficiaryId) {
+		getGeneralReliefItemsForBeneficiary(beneficiaryId) {
 			return AssistancesService
-				.getGeneralReliefForBeneficiaryInAssistance(
+				.getGeneralReliefItemsForBeneficiaryInAssistance(
 					this.$route.params.assistanceId, beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {

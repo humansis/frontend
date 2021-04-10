@@ -83,7 +83,9 @@
 						v-if="commodity"
 						class="has-text-weight-bold is-size-5"
 					>
-						<SvgIcon :items="commodity" />
+						<b-tooltip :label="$t(commodity[0])" :active="commodity[0] !== undefined">
+							<SvgIcon :items="commodity" />
+						</b-tooltip>
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>

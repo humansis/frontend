@@ -136,17 +136,20 @@ export default {
 		},
 
 		amountCompleted() {
-			let result = 0;
+			// TODO Resolve this when logic of behaviour will be explained
+			/*
+			const result = 0;
 
 			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfDistributedItems)
-					? this.commodities.[0].value * this.statistics.summaryOfDistributedItems : 0;
+				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfUsedItems)
+					? this.commodities.[0].value * this.statistics.summaryOfUsedItems : 0;
 			}
 			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				result = this.statistics?.summaryOfDistributedItems || 0;
+				result = this.statistics?.summaryOfUsedItems || 0;
 			}
+			 */
 
-			return result;
+			return this.statistics?.summaryOfDistributedItems || 0;
 		},
 
 		totalAmount() {

@@ -139,7 +139,7 @@ export default {
 				{ assistanceId, validated: true },
 			).then(({ status }) => {
 				if (status === 200) {
-					Toast(this.$t("Assistance Successfully Saved and lock"), "is-success");
+					Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
 					this.$router.push({ name: "Project",
 						params: {
 							projectId: this.$route.params.projectId,
