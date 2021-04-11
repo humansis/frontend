@@ -189,7 +189,7 @@ export default {
 				projectId: projectId.id,
 				password,
 				iso3: this.country.iso3,
-				currency: currency.code,
+				currency: currency.value,
 			};
 
 			this.createVoucher(voucherBody);
