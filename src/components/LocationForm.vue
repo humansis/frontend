@@ -239,6 +239,7 @@ export default {
 			}
 			this.mapping = false;
 			this.$emit("mapped");
+			this.mapping = false;
 		},
 
 		eraseData(type) {
