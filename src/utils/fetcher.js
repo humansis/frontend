@@ -1,4 +1,4 @@
-import Vue from "vue";
+import router from "@/router";
 import CONST from "@/const";
 import store from "@/store/index";
 import getters from "@/store/getters";
@@ -34,14 +34,14 @@ export const getResponseJSON = async (response) => {
 	}
 
 	if (forbidden) {
-		Vue.$router.push({ name: "NotFound" });
+		router.push({ name: "NotFound" });
 		throw new Error("You don't have a access to continue");
 	}
 
 	if (unauthorized) {
-		const redirect = Vue.$router?.currentRoute?.query?.redirect
-			|| Vue.$router?.currentRoute?.fullPath;
-		Vue.$router.push({ name: "Logout", query: { redirect } });
+		const redirect = router?.currentRoute?.query?.redirect
+			|| router?.currentRoute?.fullPath;
+		router.push({ name: "Logout", query: { redirect } });
 		throw new Error("You need to login to continue");
 	}
 

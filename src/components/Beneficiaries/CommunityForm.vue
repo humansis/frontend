@@ -160,6 +160,7 @@
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 
 			<b-field>
@@ -238,8 +239,8 @@
 				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+				:disabled="mapping"
+			>{{ submitButtonLabel }}</b-button>
 		</footer>
 	</form>
 </template>
@@ -293,6 +294,7 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
 			phoneTypesLoading: true,
 			nationalCardTypesLoading: true,
 			projectsLoading: true,
@@ -309,30 +311,34 @@ export default {
 		formModel: "mapSelects",
 	},
 
-	async mounted() {
-		await this.fetchNationalCardTypes();
-		await this.fetchPhoneTypes();
-		await this.fetchProjects();
+	async created() {
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchProjects(),
+			this.fetchPhoneTypes(),
+		]);
+		this.mapSelects();
 	},
 
 	methods: {
-		async mapSelects() {
+		mapSelects() {
 			const { phonePrefix, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
-				this.formModel.phonePrefix = await PhoneCodes
+				this.formModel.phonePrefix = PhoneCodes
 					.find((item) => item.code === phonePrefix);
 			}
 			if (nationalCardType && typeof nationalCardType !== "object") {
-				this.formModel.nationalCardType = await this.options.nationalCardTypes
+				this.formModel.nationalCardType = this.options.nationalCardTypes
 					.find((item) => item.code === nationalCardType);
 			}
 			if (phoneType && typeof phoneType !== "object") {
-				this.formModel.phoneType = await this.options.phoneTypes
+				this.formModel.phoneType = this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
 			if (projectIds) {
 				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
+			this.mapping = this.$refs.locationForm.mapping;
 		},
 
 		submitForm() {
