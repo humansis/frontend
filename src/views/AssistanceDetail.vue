@@ -143,12 +143,10 @@ export default {
 		},
 
 		isAssistanceValidated() {
-			console.log(this.assistance);
 			return this.assistance?.validated;
 		},
 
 		isAssistanceCompleted() {
-			console.log(this.assistance);
 			return this.assistance?.completed;
 		},
 
