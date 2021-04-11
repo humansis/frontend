@@ -37,7 +37,6 @@
 			isAssistanceDetail
 			:assistance="assistance"
 			:project="project"
-			:change-button="false"
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
 		/>

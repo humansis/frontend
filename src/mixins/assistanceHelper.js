@@ -286,7 +286,8 @@ export default {
 					Notification(`${this.$t("Beneficiary")} ${e}`, "is-danger");
 				});
 			this.addBeneficiaryModal.isOpened = false;
-			this.$emit("onBeneficiaryListChange");
+			await this.fetchData();
+			await this.prepareTableColumns();
 		},
 
 		async getNationalIds(ids) {
@@ -317,7 +318,7 @@ export default {
 
 		openAssignVoucherModal(id, canAssignVoucher) {
 			if (canAssignVoucher) {
-				this.assignVoucherToBeneficiary = this.table.data.find((item) => item.id === id);
+				this.assignVoucherToBeneficiaryId = this.table.data.find((item) => item.id === id);
 				this.assignVoucherModal.isOpened = true;
 			}
 		},
@@ -377,13 +378,14 @@ export default {
 			return Math.floor((b - a + 1) * Math.random()) + a;
 		},
 
-		submitEditBeneficiaryForm() {
+		async submitEditBeneficiaryForm() {
 			// TODO Update Beneficiary in this assistance
 			this.beneficiaryModal = {
 				isOpened: false,
 				isEditing: false,
 			};
-			this.$emit("onBeneficiaryListChange");
+			await this.fetchData();
+			await this.prepareTableColumns();
 		},
 
 		...mapActions(["changePerPage"]),

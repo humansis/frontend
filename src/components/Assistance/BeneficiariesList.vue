@@ -29,7 +29,7 @@
 			<AssignVoucherForm
 				close-button
 				:submit-button-label="$t('Confirm')"
-				:beneficiary="assignVoucherToBeneficiary"
+				:beneficiary="assignVoucherToBeneficiaryId"
 				:assistance="assistance"
 				:project="project"
 				@scannedCode="assignBookletToBeneficiary"
@@ -182,7 +182,10 @@ export default {
 		project: Object,
 		isAssistanceDetail: Boolean,
 		addButton: Boolean,
-		changeButton: Boolean,
+		changeButton: {
+			type: Boolean,
+			default: false,
+		},
 		exportButton: Boolean,
 	},
 
@@ -201,7 +204,6 @@ export default {
 
 	data() {
 		return {
-			advancedSearchVisible: false,
 			commodities: [],
 			table: {
 				data: [],
@@ -218,6 +220,32 @@ export default {
 					assignVoucherAction: false,
 					checkableTable: false,
 				},
+				householdsAndIndividualEditColumns: [
+					{ key: "id", label: "Beneficiary ID", sortable: true },
+					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
+					{ key: "gender" },
+					{ key: "dateOfBirth", label: "Date of Birth" },
+					{ key: "residencyStatus" },
+					{ key: "vulnerabilities" },
+				],
+				householdsAndIndividualDetailColumns: [
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+					{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+				],
+				communityColumns: [
+					{ key: "name" },
+					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactFamilyName" },
+				],
+				institutionColumns: [
+					{ key: "name" },
+					{ key: "type" },
+					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactFamilyName" },
+				],
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -247,7 +275,7 @@ export default {
 				isOpened: false,
 				isWaiting: false,
 			},
-			assignVoucherToBeneficiary: null,
+			assignVoucherToBeneficiaryId: null,
 		};
 	},
 
@@ -258,6 +286,7 @@ export default {
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
+				console.log(newAssistance);
 				await this.fetchData();
 				await this.prepareTableColumns();
 			}
@@ -270,49 +299,56 @@ export default {
 			this.table.progress = null;
 			this.table.data = [];
 
-			await AssistancesService.getListOfBeneficiaries(
-				this.$route.params.assistanceId,
-				page || this.table.currentPage,
-				size || this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
-				this.table.data = [];
-				this.table.progress = 0;
-				this.$emit("beneficiariesCounted", totalCount);
-				this.table.total = totalCount;
-				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-			});
+			console.log(this.assistance.target);
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO Call AssistancesService.getListOfCommunities()
+					break;
+				case consts.TARGET.INSTITUTION:
+					// TODO Call AssistancesService.getListOfInstitutions()
+					break;
+				default:
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					await AssistancesService.getListOfBeneficiaries(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					});
+			}
 
 			this.isLoadingList = false;
 		},
 
 		prepareTableColumns() {
-			const assistanceEditColumns = [
-				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-				{ key: "gender" },
-				{ key: "dateOfBirth", label: "Date of Birth" },
-				{ key: "residencyStatus" },
-				{ key: "vulnerabilities" },
-			];
-
-			const assistanceDetailColumns = [
-				{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
-				{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
-				{ key: "nationalId", label: this.$t("National ID"), sortable: true },
-			];
-
-			const baseColumns = this.isAssistanceDetail
-				? assistanceDetailColumns : assistanceEditColumns;
-
+			let baseColumns = [];
 			let additionalColumns = [];
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					baseColumns = this.table.communityColumns;
+					break;
+				case consts.TARGET.INSTITUTION:
+					baseColumns = this.table.institutionColumns;
+					break;
+				default:
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					baseColumns = this.isAssistanceDetail
+						? this.table.householdsAndIndividualDetailColumns
+						: this.table.householdsAndIndividualEditColumns;
+			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				switch (this.commodities[0]?.modalityType) {
@@ -361,24 +397,36 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
-			data.forEach((item, key) => {
-				beneficiaryIds.push(item.id);
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO Set data to table for COMMUNITY
+					break;
+				case consts.TARGET.INSTITUTION:
+					// TODO Set data to table for INSTITUTION
+					break;
+				default:
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
 
-				this.table.data[key] = item;
-				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
-				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				this.table.data[key].gender = this.prepareGender(item.gender);
-				this.table.data[key].vulnerabilities = this
-					.prepareVulnerabilities(item.vulnerabilityCriteria);
+						this.table.data[key] = item;
+						this.table.data[key].givenName = this
+							.prepareName(item.localGivenName, item.enGivenName);
+						this.table.data[key].familyName = this
+							.prepareName(item.localFamilyName, item.enFamilyName);
+						this.table.data[key].gender = this.prepareGender(item.gender);
+						this.table.data[key].vulnerabilities = this
+							.prepareVulnerabilities(item.vulnerabilityCriteria);
 
-				if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
-				if (item.phoneIds.length) phoneIds.push(item.phoneIds);
-			});
+						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
+						if (item.phoneIds.length) phoneIds.push(item.phoneIds);
+					});
 
-			this.table.progress += 15;
+					this.table.progress += 15;
 
-			this.preparePhoneForTable(phoneIds);
-			this.prepareNationalIdForTable(nationalIdIds);
+					this.preparePhoneForTable(phoneIds);
+					this.prepareNationalIdForTable(nationalIdIds);
+			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				await this.settingsOfBeneficiaryDistribution(beneficiaryIds);
