@@ -44,7 +44,7 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					v-if="isAssistanceValidated"
+					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="check"
@@ -53,7 +53,8 @@
 					{{ $t('Close Assistance') }}
 				</b-button>
 				<b-button
-					v-if="setAtDistributedButtonVisible"
+					v-if="setAtDistributedButtonVisible
+						&& (isAssistanceValidated && !isAssistanceCompleted)"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -63,7 +64,8 @@
 					{{ $t(setAtDistributedButtonLabel) }}
 				</b-button>
 				<b-button
-					v-if="startTransactionButtonVisible"
+					v-if="startTransactionButtonVisible
+						&& (isAssistanceValidated && !isAssistanceCompleted)"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -141,7 +143,13 @@ export default {
 		},
 
 		isAssistanceValidated() {
+			console.log(this.assistance);
 			return this.assistance?.validated;
+		},
+
+		isAssistanceCompleted() {
+			console.log(this.assistance);
+			return this.assistance?.completed;
 		},
 
 		assistanceProgress() {
