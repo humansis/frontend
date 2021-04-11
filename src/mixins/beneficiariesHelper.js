@@ -27,7 +27,7 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					this.table.data[beneficiaryItemIndex].status = transactions?.[0]?.status || this.$t("none");
+					this.table.data[beneficiaryItemIndex].status = transactions?.[0]?.status || this.$t("None");
 					this.table.data[beneficiaryItemIndex].value = `
 						${this.commodities[0].value} ${this.commodities[0].unit}`;
 
@@ -62,13 +62,11 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (smartCardDeposits?.length) {
-						this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits[0].distributed
-							? this.$moment(smartCardDeposits[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
-							: this.$t("Not Distributed");
-						this.table.data[beneficiaryItemIndex].value = `
+					this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits?.[0]?.distributed
+						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
+						: this.$t("Not Distributed");
+					this.table.data[beneficiaryItemIndex].value = `
 						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
-					}
 
 					this.table.data = [...this.table.data];
 
@@ -101,16 +99,16 @@ export default {
 						({ id }) => id === beneficiaryId,
 					);
 
-					if (booklets?.length) {
-						this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets[0].distributed;
+					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0]?.distributed
+						|| booklets?.length === 0;
 
-						this.table.data[beneficiaryItemIndex].booklet = booklets[0].code;
-						this.table.data[beneficiaryItemIndex].status = booklets[0].distributed
-							? this.$t("Distributed") : this.$t("Not Distributed");
-						this.table.data[beneficiaryItemIndex].quantity = booklets[0].quantityOfVouchers;
-						this.table.data[beneficiaryItemIndex].value = `
-						${booklets[0].totalValue} ${booklets[0].currency}`;
-					}
+					this.table.data[beneficiaryItemIndex].booklet = booklets?.[0]?.code || this.$t("None");
+					this.table.data[beneficiaryItemIndex].status = booklets?.[0]?.distributed
+						? this.$t("Distributed") : this.$t("Not Distributed");
+					this.table.data[beneficiaryItemIndex].quantity = booklets?.[0]?.quantityOfVouchers
+						|| this.$t("None");
+					this.table.data[beneficiaryItemIndex].value = booklets?.[0]
+						? `${booklets[0].totalValue} ${booklets[0].currency}` : this.$t("None");
 
 					this.table.data = [...this.table.data];
 
@@ -223,9 +221,9 @@ export default {
 			this.table.progress += 20;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
-					? "none"
+					? this.$t("None")
 					: this.prepareEntityForTable(item.phoneIds[0], phones,
-						"number", "none");
+						"number", this.$t("None"));
 			});
 			this.table.progress += 15;
 		},
@@ -235,9 +233,9 @@ export default {
 			this.table.progress += 20;
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
-					? "none"
+					? this.$t("None")
 					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", "none");
+						nationalIds, "number", this.$t("None"));
 			});
 			this.table.progress += 15;
 		},
