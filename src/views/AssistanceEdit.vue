@@ -67,6 +67,7 @@
 			/>
 			<div class="buttons mt-3 flex-end">
 				<b-button
+					v-if="assistance"
 					type="is-primary"
 					icon-right="lock"
 					:loading="validateAssistanceButtonLoading"
@@ -111,12 +112,6 @@ export default {
 			validateAssistanceButtonLoading: false,
 			isTargetHouseholdOrIndividual: false,
 		};
-	},
-
-	watch: {
-		isTargetHouseholdOrIndividual() {
-			this.assistance = { ...this.assistance };
-		},
 	},
 
 	mounted() {

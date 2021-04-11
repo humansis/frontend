@@ -172,7 +172,7 @@ import { generateColumns } from "@/utils/datagrid";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
-import assistanceHelper from "@/mixins/assistanceHelper";
+import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 
 export default {
 	name: "BeneficiariesList",
@@ -200,7 +200,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [baseHelper, assistanceHelper],
+	mixins: [baseHelper, beneficiariesHelper],
 
 	data() {
 		return {
@@ -286,7 +286,6 @@ export default {
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
-				console.log(newAssistance);
 				await this.fetchData();
 				await this.prepareTableColumns();
 			}
@@ -298,8 +297,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
-
-			console.log(this.assistance.target);
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
@@ -460,8 +457,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.input-text-center input {
-	text-align: center;
+<style>
+.table-wrapper {
+	min-height: 75px;
 }
 </style>
