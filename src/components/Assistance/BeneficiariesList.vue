@@ -14,8 +14,7 @@
 				:submit-button-label="$t('Confirm')"
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
-				@addingSubmitted="addBeneficiaryToAssistance"
-				@removingSubmitted="removeBeneficiaryFromAssistance"
+				@addingOrRemovingSubmitted="reloadBeneficiariesList"
 				@formClosed="closeAddBeneficiaryModal"
 			/>
 		</Modal>
@@ -293,6 +292,11 @@ export default {
 	},
 
 	methods: {
+		async reloadBeneficiariesList() {
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;

@@ -2,7 +2,6 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import { normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -245,49 +244,6 @@ export default {
 
 		prepareGender(gender) {
 			return gender === "F" ? this.$t("Female") : this.$t("Male");
-		},
-
-		async removeBeneficiaryFromAssistance({ justification, removingId }) {
-			const body = {
-				beneficiaryIds: [removingId],
-				justification,
-			};
-
-			await BeneficiariesService
-				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
-				.then(() => {
-					Toast(this.$t("Beneficiary Successfully Removed"), "is-success");
-					this.fetchData();
-				})
-				.catch((e) => {
-					Notification(
-						`${this.$t("Beneficiary")} ${e}`,
-						"is-danger",
-					);
-				});
-
-			this.closeAddBeneficiaryModal();
-		},
-
-		async addBeneficiaryToAssistance(form) {
-			const { beneficiaries, justification } = form;
-			const body = {
-				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
-				justification,
-			};
-			const { assistanceId } = this.$route.params;
-			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body)
-				.then(({ status }) => {
-					if (status === 200) {
-						Toast(this.$t("Beneficiary Successfully Added"), "is-success");
-						this.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Beneficiary")} ${e}`, "is-danger");
-				});
-			this.addBeneficiaryModal.isOpened = false;
-			await this.fetchData();
-			await this.prepareTableColumns();
 		},
 
 		async getNationalIds(ids) {

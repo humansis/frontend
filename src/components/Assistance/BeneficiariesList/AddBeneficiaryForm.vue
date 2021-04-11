@@ -7,8 +7,7 @@
 			</p>
 			<p v-if="formModel.removingId" class="mb-5">
 				{{ $t('You are about to remove this beneficiary from') }}
-				<strong>{{ assistance.name }}</strong>
-				{{ $t('distribution') }}.<br>
+				<strong>{{ assistance.name }}</strong> {{ $t('distribution') }}.<br>
 				{{ $t('Do you wish to continue?') }}
 			</p>
 			<b-field
@@ -20,8 +19,8 @@
 				<MultiSelect
 					v-model="formModel.beneficiaries"
 					searchable
-
-					label="name"
+					multiple
+					label="localGivenName"
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:loading="loading.beneficiaries"
@@ -63,20 +62,22 @@
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+				:loading="submitButtonLoading"
+			>
+				{{ submitButtonLabel }}
+			</b-button>
 		</footer>
 	</form>
 </template>
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import validation from "@/mixins/validation";
 import { required, requiredIf } from "vuelidate/lib/validators";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 
 export default {
 	name: "AddBeneficiaryForm",
@@ -104,6 +105,7 @@ export default {
 			loading: {
 				beneficiaries: true,
 			},
+			submitButtonLoading: false,
 		};
 	},
 
@@ -120,9 +122,9 @@ export default {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
 				if (this.formModel.removingId) {
-					this.$emit("removingSubmitted", this.formModel);
+					this.removeBeneficiaryFromAssistance(this.formModel);
 				} else {
-					this.$emit("addingSubmitted", this.formModel);
+					this.addBeneficiaryToAssistance(this.formModel);
 				}
 			}
 		},
@@ -137,6 +139,49 @@ export default {
 					Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
 				});
 			this.loading.beneficiaries = false;
+		},
+
+		async removeBeneficiaryFromAssistance({ justification, removingId }) {
+			const body = {
+				removed: true,
+				beneficiaryIds: [removingId],
+				justification,
+			};
+
+			await this.addOrRemoveBeneficiaryFromAssistance(body,
+				this.$t("Beneficiary Successfully Removed"));
+		},
+
+		async addBeneficiaryToAssistance({ beneficiaries, justification }) {
+			const body = {
+				added: true,
+				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
+				justification,
+			};
+
+			await this.addOrRemoveBeneficiaryFromAssistance(body,
+				this.$t("Beneficiary Successfully Added"));
+		},
+
+		async addOrRemoveBeneficiaryFromAssistance(body, successMessage) {
+			this.submitButtonLoading = true;
+
+			await BeneficiariesService
+				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
+				.then(() => {
+					Toast(successMessage, "is-success");
+					this.fetchData();
+				})
+				.catch((e) => {
+					Notification(
+						`${this.$t("Beneficiary")} ${e}`,
+						"is-danger",
+					);
+				});
+
+			this.submitButtonLoading = false;
+			this.$emit("formClosed");
+			this.$emit("addingOrRemovingSubmitted");
 		},
 
 		closeForm() {
