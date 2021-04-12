@@ -9,7 +9,7 @@
 		</div>
 
 		<div class="level-right">
-			<ExportButton :formats="{ xlsx: true, csv: true, ods: true, pdf: true}" />
+			<ExportButton type="is-primary" :formats="{ xlsx: true, csv: true, ods: true, pdf: true}" />
 		</div>
 	</div>
 </template>

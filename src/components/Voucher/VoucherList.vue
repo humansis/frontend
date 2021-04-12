@@ -72,6 +72,7 @@
 			<ExportButton
 				class="ml-3"
 				space-between
+				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportBooklets"

@@ -222,4 +222,12 @@ export default {
 		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
 		return { data };
 	},
+
+	async exportRandomSample(format, ids, param = null) {
+		const formatText = format ? `type=${format}` : "";
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await download({ uri: `beneficiaries/exports?${formatText + idsText}` });
+		return { data };
+	},
 };

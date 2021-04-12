@@ -51,6 +51,7 @@
 		<template #export>
 			<ExportButton
 				space-between
+				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportVendors"

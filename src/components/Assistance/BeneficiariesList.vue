@@ -111,6 +111,7 @@
 			<template #export>
 				<ExportButton
 					v-if="exportButton"
+					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 					@onExport="exportData"
@@ -162,8 +163,10 @@ import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBen
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { Notification, Toast } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
@@ -610,9 +613,7 @@ export default {
 
 		async exportData(format) {
 			this.exportLoading = true;
-			console.log(this.$route.name);
-			if (this.$route.name === "AssistanceEdit") {
-				// If I am on this page export should be for Beneficiaries
+			if (!this.changeButton) {
 				await BeneficiariesService.exportBeneficiaries(format, this.$route.params.assistanceId)
 					.then(({ data }) => {
 						const blob = new Blob([data], { type: data.type });
@@ -624,18 +625,17 @@ export default {
 					.catch((e) => {
 						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
 					});
-			} else if (this.$route.name === "AssistanceDetail") {
-				// If I am on this page export should be for Assistance
-				await AssistancesService.exportAssistance(format, this.$route.params.assistanceId)
+			} else {
+				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
 					.then(({ data }) => {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");
 						link.href = window.URL.createObjectURL(blob);
-						link.download = `assistance.${format}`;
+						link.download = `beneficiaries.${format}`;
 						link.click();
 					})
 					.catch((e) => {
-						Notification(`${this.$t("Export Assistance")} ${e}`, "is-danger");
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
 					});
 			}
 			this.exportLoading = false;

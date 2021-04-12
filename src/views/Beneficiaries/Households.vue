@@ -158,16 +158,6 @@
 				</b-button>
 			</template>
 
-			<template #export>
-				<ExportButton
-					class="ml-3"
-					space-between
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@onExport="exportHousehold"
-				/>
-			</template>
-
 			<template v-if="actionsButtonVisible" #actions>
 				<div class="column">
 					<b-dropdown aria-role="list">
@@ -213,7 +203,6 @@ import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 
@@ -224,7 +213,6 @@ export default {
 
 	components: {
 		HouseholdDetail,
-		ExportButton,
 		Table,
 		ActionButton,
 		HouseholdsFilters,
@@ -605,22 +593,6 @@ export default {
 					Toast(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 			}
-		},
-
-		async exportHousehold(format) {
-			this.exportLoading = true;
-			await BeneficiariesService.exportHouseholds(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `households.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
 		},
 
 		async onFiltersChange(selectedFilters) {

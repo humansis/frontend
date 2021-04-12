@@ -53,8 +53,8 @@
 		</b-table-column>
 		<template #export>
 			<ExportButton
-				type="is-primary"
 				space-between
+				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportCountrySpecifics"
