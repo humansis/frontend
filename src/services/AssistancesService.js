@@ -110,6 +110,14 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistanceStatistics(assistanceId) {
+		const { data } = await fetcher({
+			uri: `assistances/${assistanceId}/statistics`,
+		});
+
+		return data;
+	},
+
 	async getListOfBeneficiaries(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
@@ -122,20 +130,50 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
 		});
 		return { data, totalCount };
 	},
 
-	async updateGeneralReliefItem(id, property, value) {
+	async updateGeneralReliefItem(id, value, dateOfDistribution) {
 		const { data, status } = await fetcher({
 			uri: `general-relief-items/${id}`,
 			method: "PATCH",
 			body: {
-				[property]: value,
+				distributed: value,
+				dateOfDistribution,
 			},
+		});
+		return { data, status };
+	},
+
+	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+		});
+		return { data, totalCount };
+	},
+
+	async getTransactionsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/transactions`,
+		});
+		return { data, totalCount };
+	},
+
+	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,
+		});
+		return { data, totalCount };
+	},
+
+	async assignBookletForBeneficiaryInAssistance(assistanceId, beneficiaryId, bookletCode) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets/${bookletCode}`,
+			method: "PUT",
 		});
 		return { data, status };
 	},

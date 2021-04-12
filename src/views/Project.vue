@@ -20,13 +20,13 @@
 
 		<Modal
 			can-cancel
-			is-small
 			:header="assistanceModal.title"
 			:active="assistanceModal.isOpened"
 			@close="closeAssistanceModal"
 		>
 			<AssistanceForm
 				close-button
+				class="modal-card"
 				:formModel="assistanceModel"
 				:editing="assistanceModal.isEditing"
 				@formClosed="closeAssistanceModal"

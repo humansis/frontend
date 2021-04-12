@@ -127,6 +127,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", label: "Assistance ID", sortable: true },
 					{ key: "name", sortable: true },
+					{ key: "type", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date of Distribution", type: "date", sortable: true, sortKey: "date" },

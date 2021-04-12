@@ -73,14 +73,19 @@
 				</div>
 			</div>
 
-			<div class="level-item has-text-centered">
+			<div
+				v-if="assistanceType === consts.TYPE.DISTRIBUTION"
+				class="level-item has-text-centered"
+			>
 				<div class="box commodity-item">
 					<p class="heading">{{ $t('Commodity') }}</p>
 					<p
 						v-if="commodity"
 						class="has-text-weight-bold is-size-5"
 					>
-						<SvgIcon :items="commodity" />
+						<b-tooltip :label="$t(commodity[0])" :active="commodity[0] !== undefined">
+							<SvgIcon :items="commodity" />
+						</b-tooltip>
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -92,11 +97,11 @@
 
 <script>
 import Loading from "@/components/Loading";
-import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
 import AssistancesService from "@/services/AssistancesService";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceSummary",
@@ -109,11 +114,12 @@ export default {
 	props: {
 		beneficiaries: Number,
 		assistance: Object,
+		project: Object,
 	},
 
 	data() {
 		return {
-			project: null,
+			consts,
 			province: null,
 			commodity: null,
 		};
@@ -128,13 +134,13 @@ export default {
 		},
 	},
 
-	async mounted() {
-		await this.fetchProject();
-	},
-
 	computed: {
 		assistanceName() {
 			return this.assistance?.name || "";
+		},
+
+		assistanceType() {
+			return this.assistance?.type;
 		},
 
 		assistanceTarget() {
@@ -167,14 +173,6 @@ export default {
 	},
 
 	methods: {
-		async fetchProject() {
-			await ProjectService.getDetailOfProject(
-				this.$route.params.projectId,
-			).then(({ data }) => {
-				this.project = data;
-			});
-		},
-
 		async fetchLocation(adm1Id) {
 			await LocationsService.getDetailOfAdm1(
 				adm1Id,

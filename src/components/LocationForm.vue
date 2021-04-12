@@ -105,6 +105,7 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
 			locationId: null,
 			componentKey: 0,
 			options: {
@@ -215,6 +216,7 @@ export default {
 		},
 
 		async mapLocations() {
+			this.mapping = true;
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
@@ -235,7 +237,9 @@ export default {
 				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
 				this.locationId = this.formModel.adm4Id.locationId;
 			}
+			this.mapping = false;
 			this.$emit("mapped");
+			this.mapping = false;
 		},
 
 		eraseData(type) {

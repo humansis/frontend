@@ -350,7 +350,7 @@ export default {
 		getModalityByType(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARDCARD:
+				case consts.COMMODITY.SMARTCARD:
 				case consts.COMMODITY.MOBILE_MONEY:
 					return "Cash";
 				case consts.COMMODITY.FOOD_RATIONS:

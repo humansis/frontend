@@ -1,24 +1,32 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiaries"
+			:beneficiaries="beneficiariesCount"
 			:assistance="assistance"
+			:project="project"
 		/>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t('Assistance Progress') }}: {{ assistanceProgress }} %
+					{{ $t(typeOfAssistance) }} {{ $t('Progress') }}:
+					<strong>{{ assistanceProgress }} %</strong>
 				</div>
 			</div>
-			<b-progress v-model="assistanceProgress" />
+			<b-progress v-model="assistanceProgress" type="is-success" />
 			<div class="columns">
-				<div v-if="$refs.beneficiariesList" class="column is-offset-3">
-					<div class="has-text-weight-bold">{{ $t('Total Amount') }}:</div>
-					<span class="ml-5">{{ totalAmount }} {{ commodityUnit }}</span>
+				<div class="column is-3">
+					<div class="has-text-weight-bold">
+						{{ $t('Total Amount') }}:
+					</div>
+					<span>{{ totalAmount }} </span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
-				<div class="column">
-					<div class="has-text-weight-bold">{{ $t('Amount Distributed') }}:</div>
-					<span class="ml-6">{{ amountDistributed }} {{ commodityUnit }}</span>
+				<div class="column is-3">
+					<div class="has-text-weight-bold">
+						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
+					</div>
+					<span>{{ amountCompleted }} </span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 			</div>
 		</div>
@@ -28,16 +36,15 @@
 			add-button
 			isAssistanceDetail
 			:assistance="assistance"
-			:custom-columns="columns"
-			:change-button="false"
-			@beneficiariesCounted="beneficiaries = $event"
+			:project="project"
+			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
 		/>
 		<br>
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					v-if="isAssistanceValidated"
+					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="check"
@@ -46,13 +53,26 @@
 					{{ $t('Close Assistance') }}
 				</b-button>
 				<b-button
-					v-if="setAtDistributedButton"
+					v-if="setAtDistributedButtonVisible
+						&& (isAssistanceValidated && !isAssistanceCompleted)"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
+					:loading="setAtDistributedButtonLoading"
 					@click="setGeneralReliefItemAsDistributed"
 				>
-					{{ $t('Set As Distributed')}}
+					{{ $t(setAtDistributedButtonLabel) }}
+				</b-button>
+				<b-button
+					v-if="startTransactionButtonVisible
+						&& (isAssistanceValidated && !isAssistanceCompleted)"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="parachute-box"
+					:loading="startTransactionButtonLoading"
+					@click="startTransaction"
+				>
+					{{ $t("Start Transaction") }} ({{ beneficiariesCount }})
 				</b-button>
 			</div>
 		</div>
@@ -64,6 +84,8 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
+import ProjectService from "@/services/ProjectService";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceDetail",
@@ -76,28 +98,47 @@ export default {
 	data() {
 		return {
 			assistance: null,
-			beneficiaries: 0,
-			// TODO calculate progress and amountDistributed
-			assistanceProgress: 20,
-			amountDistributed: 200,
-			commodity: [],
-			columns: [
-				{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
-				{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
-				{ key: "nationalId", label: this.$t("National ID"), sortable: true },
-				{ key: "distributed", label: this.$t("Distributed") },
-				{ key: "value", label: this.$t("Value") },
-			],
-			setAtDistributedButton: false,
+			statistics: null,
+			project: null,
+			beneficiariesCount: 0,
+			countOfCompleted: 0,
+			commodities: [],
+			setAtDistributedButtonVisible: false,
+			setAtDistributedButtonLoading: false,
+			startTransactionButtonLoading: false,
 		};
 	},
 
 	computed: {
-		commodityUnit() {
-			if (this.commodity.length) {
-				return this.commodity[0].unit;
+		assistanceUnit() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				return this.commodities?.[0]?.unit || "";
 			}
+
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+
+			return "";
+		},
+
+		startTransactionButtonVisible() {
+			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
+		},
+
+		setAtDistributedButtonLabel() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Set As Distributed";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Set As Completed";
+			return "";
+		},
+
+		typeOfAssistance() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			return "";
+		},
+
+		distributedOrCompleted() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distributed";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Completed";
 			return "";
 		},
 
@@ -105,38 +146,101 @@ export default {
 			return this.assistance?.validated;
 		},
 
+		isAssistanceCompleted() {
+			return this.assistance?.completed;
+		},
+
+		assistanceProgress() {
+			if (!this.totalAmount || !this.amountCompleted) return 0;
+			const result = (100 / this.totalAmount) * this.amountCompleted;
+			if (result === Infinity) return 0;
+			return (result > 100) ? 100 : Math.round(result);
+		},
+
+		amountCompleted() {
+			// TODO Resolve this when logic of behaviour will be explained
+			/*
+			const result = 0;
+
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfUsedItems)
+					? this.commodities.[0].value * this.statistics.summaryOfUsedItems : 0;
+			}
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
+				result = this.statistics?.summaryOfUsedItems || 0;
+			}
+			 */
+
+			return this.statistics?.summaryOfDistributedItems || 0;
+		},
+
 		totalAmount() {
-			return this.$refs.beneficiariesList?.table.total * this.commodity?.[0]?.value ?? null;
+			let result = 0;
+
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
+					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
+				}
+			}
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
+				return this.$refs.beneficiariesList.table.total;
+			}
+
+			return result;
 		},
 	},
 
 	mounted() {
 		this.fetchAssistance();
-		this.fetchCommodity();
+		this.fetchAssistanceStatistics();
+		this.fetchProject();
 	},
 
 	methods: {
 		async fetchAssistance() {
-			return AssistancesService.getDetailOfAssistance(
+			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.assistance = data;
+
+				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+					this.fetchCommodity();
+				}
+			});
+		},
+
+		async fetchAssistanceStatistics() {
+			AssistancesService.getAssistanceStatistics(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.statistics = data;
+			});
+		},
+
+		async fetchProject() {
+			await ProjectService.getDetailOfProject(
+				this.$route.params.projectId,
+			).then(({ data }) => {
+				this.project = data;
 			});
 		},
 
 		onRowsCheck(rows) {
-			this.setAtDistributedButton = !!rows?.length;
+			this.setAtDistributedButtonVisible = !!rows?.length;
 			this.selectedBeneficiaries = rows;
 		},
 
 		async setGeneralReliefItemAsDistributed() {
+			const dateOfDistribution = new Date().toISOString();
 			let error = "";
 			let success = "";
 
 			if (this.selectedBeneficiaries?.length) {
+				this.setAtDistributedButtonLoading = true;
+
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id, "distributed", true,
+						beneficiary.generalReliefItem.id, true, dateOfDistribution,
 					).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
@@ -149,14 +253,28 @@ export default {
 				if (error) Toast(error, "is-danger");
 				if (success) Toast(success, "is-success");
 
-				this.setAtDistributedButton = false;
+				this.setAtDistributedButtonVisible = false;
 				this.$refs.beneficiariesList.fetchData();
+				this.fetchAssistanceStatistics();
+
+				this.setAtDistributedButtonLoading = false;
 			}
+		},
+
+		async startTransaction() {
+			this.startTransactionButtonLoading = true;
+
+			// TODO Call endpoint for Start Transaction in this assistance
+			// TODO Hide button if transaction was already done
+
+			this.startTransactionButtonLoading = false;
 		},
 
 		async fetchCommodity() {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodity = data; })
+				.then(({ data }) => {
+					this.commodities = data;
+				})
 				.catch((e) => {
 					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
@@ -177,9 +295,7 @@ export default {
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Closed"), "is-success");
 							this.$router.push({ name: "Project",
-								params: {
-									projectId: this.$route.params.projectId,
-								},
+								params: { projectId: this.$route.params.projectId },
 							});
 						}
 					}).catch((e) => {

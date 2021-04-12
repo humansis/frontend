@@ -1,6 +1,6 @@
 <template>
-	<div class="modal-card-body">
-		<form>
+	<form>
+		<section class="modal-card-body">
 			<b-field :label="$t('Name')">
 				<b-input v-model="formModel.name" disabled />
 			</b-field>
@@ -26,20 +26,20 @@
 			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
-			<footer class="modal-card-foot">
-				<b-button @click="closeForm">
-					{{ $t('Close') }}
-				</b-button>
-				<b-button
-					v-if="editing"
-					:value="$t('Update')"
-					tag="input"
-					class="is-primary"
-					@click="submitForm"
-				/>
-			</footer>
-		</form>
-	</div>
+		</section>
+		<footer class="modal-card-foot">
+			<b-button @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
+			<b-button
+				v-if="editing"
+				:value="$t('Update')"
+				tag="input"
+				class="is-primary"
+				@click="submitForm"
+			/>
+		</footer>
+	</form>
 </template>
 
 <script>

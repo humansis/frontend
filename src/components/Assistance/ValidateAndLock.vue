@@ -1,6 +1,5 @@
 <template>
 	<BeneficiariesList
-		:change-button="false"
 		:add-button="false"
 		:export-button="false"
 	/>

@@ -14,9 +14,25 @@
 				:submit-button-label="$t('Confirm')"
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
-				@addingSubmitted="submitAddBeneficiaryForm"
-				@removingSubmitted="removeBeneficiaryFromAssistance"
+				@addingOrRemovingSubmitted="reloadBeneficiariesList"
 				@formClosed="closeAddBeneficiaryModal"
+			/>
+		</Modal>
+		<Modal
+			can-cancel
+			:header="$t('Assign Booklet to a Beneficiary')"
+			:active="assignVoucherModal.isOpened"
+			:is-waiting="assignVoucherModal.isWaiting"
+			@close="closeAssignVoucherModal"
+		>
+			<AssignVoucherForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				:beneficiary="assignVoucherToBeneficiaryId"
+				:assistance="assistance"
+				:project="project"
+				@scannedCode="assignBookletToBeneficiary"
+				@formClosed="closeAssignVoucherModal"
 			/>
 		</Modal>
 		<Modal
@@ -78,7 +94,7 @@
 			:current-page="table.currentPage"
 			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
-			:checkable="isTableCheckable"
+			:checkable="table.settings.checkableTable"
 			:checked-rows="table.checkedRows"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
@@ -106,10 +122,11 @@
 				/>
 			</template>
 			<b-table-column
+				v-if="table.columns.length"
 				v-slot="props"
 				:label="$t('Actions')"
 				centered
-				width="110"
+				width="140"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -122,6 +139,14 @@
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
+					/>
+					<ActionButton
+						v-if="table.settings.assignVoucherAction"
+						icon="qrcode"
+						type="is-dark"
+						:disabled="!props.row.canAssignVoucher"
+						:tooltip="$t('Assign Voucher')"
+						@click.native="openAssignVoucherModal(props.row.id, props.row.canAssignVoucher)"
 					/>
 				</div>
 			</b-table-column>
@@ -141,27 +166,30 @@ import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBen
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification, Toast } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
-import grid from "@/mixins/grid";
+import { Notification } from "@/utils/UI";
+import { generateColumns } from "@/utils/datagrid";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
+import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 
 export default {
 	name: "BeneficiariesList",
 
 	props: {
 		assistance: Object,
-		addButton: Boolean,
-		changeButton: Boolean,
-		exportButton: Boolean,
-		customColumns: Array,
+		project: Object,
 		isAssistanceDetail: Boolean,
+		addButton: Boolean,
+		changeButton: {
+			type: Boolean,
+			default: false,
+		},
+		exportButton: Boolean,
 	},
 
 	components: {
+		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		Table,
@@ -171,24 +199,14 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [baseHelper, beneficiariesHelper],
 
 	data() {
 		return {
-			advancedSearchVisible: false,
 			commodities: [],
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "gender" },
-					{ key: "dateOfBirth", label: "Date of Birth" },
-					{ key: "residencyStatus" },
-					{ key: "vulnerabilities" },
-				],
 				total: 0,
 				currentPage: 1,
 				sortDirection: "",
@@ -197,6 +215,36 @@ export default {
 				progress: null,
 				customPerPage: null,
 				checkedRows: [],
+				settings: {
+					assignVoucherAction: false,
+					checkableTable: false,
+				},
+				householdsAndIndividualEditColumns: [
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", sortable: true, sortKey: "localFamilyName" },
+					{ key: "gender" },
+					{ key: "dateOfBirth", label: "Date of Birth" },
+					{ key: "residencyStatus" },
+					{ key: "vulnerabilities" },
+				],
+				householdsAndIndividualDetailColumns: [
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
+					{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+				],
+				communityColumns: [
+					{ key: "name" },
+					{ key: "contactGivenName", label: this.$t("Contact Name") },
+					{ key: "contactFamilyName" },
+				],
+				institutionColumns: [
+					{ key: "name" },
+					{ key: "type" },
+					{ key: "contactGivenName", label: this.$t("Contact Name") },
+					{ key: "contactFamilyName" },
+				],
 			},
 			addBeneficiaryModal: {
 				isOpened: false,
@@ -222,72 +270,121 @@ export default {
 				justificationForAdding: null,
 			},
 			randomSampleSize: 10,
+			assignVoucherModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
+			assignVoucherToBeneficiaryId: null,
 		};
 	},
 
+	async created() {
+		await this.getAssistanceCommodities();
+	},
+
 	watch: {
-		$route: "fetchData",
-	},
-
-	created() {
-		this.fetchData();
-	},
-
-	computed: {
-		isTableCheckable() {
-			let result = false;
-
-			if (this.isAssistanceDetail) {
-				switch (this.commodities[0]?.modalityType) {
-					case consts.COMMODITY.SMARDCARD:
-						result = false;
-						break;
-					case consts.COMMODITY.MOBILE_MONEY:
-						result = false;
-						break;
-					case consts.COMMODITY.QR_CODE_VOUCHER:
-						result = false;
-						break;
-					default:
-						result = true;
-				}
+		async assistance(newAssistance) {
+			if (newAssistance) {
+				await this.reloadBeneficiariesList();
 			}
-
-			return result;
 		},
 	},
 
 	methods: {
+		async reloadBeneficiariesList() {
+			await this.fetchData();
+			await this.prepareTableColumns();
+		},
+
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
 
-			await this.getAssistanceCommodities();
-
-			this.table.columns = generateColumns(
-				this.customColumns?.length ? this.customColumns : this.table.visibleColumns,
-			);
-
-			await AssistancesService.getListOfBeneficiaries(
-				this.$route.params.assistanceId,
-				page || this.table.currentPage,
-				size || this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
-				this.table.data = [];
-				this.table.progress = 0;
-				this.$emit("beneficiariesCounted", totalCount);
-				this.table.total = totalCount;
-				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-			});
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO Call AssistancesService.getListOfCommunities()
+					break;
+				case consts.TARGET.INSTITUTION:
+					// TODO Call AssistancesService.getListOfInstitutions()
+					break;
+				default:
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					await AssistancesService.getListOfBeneficiaries(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					});
+			}
 
 			this.isLoadingList = false;
+		},
+
+		prepareTableColumns() {
+			let baseColumns = [];
+			let additionalColumns = [];
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					baseColumns = this.table.communityColumns;
+					break;
+				case consts.TARGET.INSTITUTION:
+					baseColumns = this.table.institutionColumns;
+					break;
+				default:
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					baseColumns = this.isAssistanceDetail
+						? this.table.householdsAndIndividualDetailColumns
+						: this.table.householdsAndIndividualEditColumns;
+			}
+
+			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
+				switch (this.commodities[0]?.modalityType) {
+					case consts.COMMODITY.MOBILE_MONEY:
+						additionalColumns = [
+							{ key: "phone", label: this.$t("Phone") },
+							{ key: "status", label: this.$t("Status") },
+							{ key: "value", label: this.$t("Value") },
+						];
+						break;
+					case consts.COMMODITY.QR_CODE_VOUCHER:
+						additionalColumns = [
+							{ key: "booklet", label: this.$t("Booklet") },
+							{ key: "status", label: this.$t("Status") },
+							{ key: "quantity", label: this.$t("Quantity") },
+							{ key: "value", label: this.$t("Value") },
+						];
+						break;
+					case consts.COMMODITY.SMARTCARD:
+					default:
+						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
+						additionalColumns = [
+							{ key: "distributed", label: this.$t("Distributed") },
+							{ key: "value", label: this.$t("Value") },
+						];
+				}
+			}
+
+			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
+				additionalColumns = [
+					{ key: "distributed", label: this.$t("Distributed") },
+					{ key: "value", label: this.$t("Value") },
+				];
+			}
+
+			this.table.columns = generateColumns([...baseColumns, ...additionalColumns]);
 		},
 
 		async prepareDataForTable(data) {
@@ -296,260 +393,71 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
-			data.forEach((item, key) => {
-				beneficiaryIds.push(item.id);
-
-				this.table.data[key] = item;
-				this.table.data[key].givenName = this.prepareName(item.localGivenName, item.enGivenName);
-				this.table.data[key].familyName = this.prepareName(item.localFamilyName, item.enFamilyName);
-				this.table.data[key].gender = this.prepareGender(item.gender);
-				this.table.data[key].distributed = item.dateDistributed || "none";
-				this.table.data[key].vulnerabilities = this
-					.prepareVulnerabilities(item.vulnerabilityCriteria);
-				if (item.nationalIds.length) {
-					nationalIdIds.push(item.nationalIds);
-				}
-				if (item.phoneIds.length) {
-					phoneIds.push(item.phoneIds);
-				}
-			});
-
-			this.table.progress += 15;
-
-			await this.preparePhoneForTable(phoneIds);
-			await this.prepareValue();
-			await this.prepareNationalIdForTable(nationalIdIds);
-
-			if (this.isAssistanceDetail) {
-				await this.findOutStatusAboutBeneficiaryDistribution(beneficiaryIds);
-			}
-		},
-
-		async findOutStatusAboutBeneficiaryDistribution(beneficiaryIds) {
-			switch (this.commodities[0].modalityType) {
-				case consts.COMMODITY.SMARDCARD:
-					// TODO Call action for setting rules for smardcards
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO Set data to table for COMMUNITY
 					break;
-				case consts.COMMODITY.MOBILE_MONEY:
-					// TODO Call action for setting rules for transactions
-					break;
-				case consts.COMMODITY.QR_CODE_VOUCHER:
-					// TODO Call action for setting rules for QR voucher code
+				case consts.TARGET.INSTITUTION:
+					// TODO Set data to table for INSTITUTION
 					break;
 				default:
-					await this.setGeneralRelief(beneficiaryIds);
+					/** @summary For target HOUSEHOLD and INDIVIDUAL */
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
+
+						this.table.data[key] = item;
+						this.table.data[key].givenName = this
+							.prepareName(item.localGivenName, item.enGivenName);
+						this.table.data[key].familyName = this
+							.prepareName(item.localFamilyName, item.enFamilyName);
+						this.table.data[key].gender = this.prepareGender(item.gender);
+						this.table.data[key].vulnerabilities = this
+							.prepareVulnerabilities(item.vulnerabilityCriteria);
+
+						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
+						if (item.phoneIds.length) phoneIds.push(item.phoneIds);
+					});
+
+					this.table.progress += 15;
+
+					this.preparePhoneForTable(phoneIds);
+					this.prepareNationalIdForTable(nationalIdIds);
+			}
+
+			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
+				await this.settingsOfBeneficiaryDistribution(beneficiaryIds);
+			}
+
+			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
+				await this.settingsOfBeneficiaryActivity(beneficiaryIds);
 			}
 		},
 
-		async setGeneralRelief(beneficiaryIds) {
-			if (beneficiaryIds.length) {
-				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalRelief = await this.getGeneralRelief(beneficiaryId);
-
-					const beneficiaryItemIndex = this.table.data.findIndex(
-						({ id }) => id === beneficiaryId,
-					);
-
-					if (generalRelief[0].distributed) {
-						this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
-					}
-
-					this.table.data[beneficiaryItemIndex].generalReliefItem = generalRelief?.[0];
-				}));
+		settingsOfBeneficiaryDistribution(beneficiaryIds) {
+			switch (this.commodities[0].modalityType) {
+				case consts.COMMODITY.SMARTCARD:
+					this.setAssignedSmartCards(beneficiaryIds);
+					break;
+				case consts.COMMODITY.MOBILE_MONEY:
+					this.setAssignedTransactions(beneficiaryIds);
+					break;
+				case consts.COMMODITY.QR_CODE_VOUCHER:
+					this.setAssignedBooklets(beneficiaryIds);
+					break;
+				default:
+					this.setAssignedGeneralRelief(beneficiaryIds);
 			}
 		},
 
-		getGeneralRelief(beneficiaryId) {
-			return AssistancesService
-				.getGeneralReliefForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
-				});
-		},
-
-		prepareVulnerabilities(vulnerabilities) {
-			let result = "none";
-			if (vulnerabilities) {
-				vulnerabilities.forEach((item) => {
-					if (result === "none") {
-						result = normalizeText(item);
-					} else {
-						result += `, ${normalizeText(item)}`;
-					}
-				});
-			}
-			return result;
-		},
-
-		async preparePhoneForTable(phoneIds) {
-			const phones = await this.getPhones(phoneIds);
-			this.table.progress += 20;
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].phone = !item.phoneIds.length
-					? "none"
-					: this.prepareEntityForTable(item.phoneIds[0], phones,
-						"number", "none");
-			});
-			this.table.progress += 15;
-		},
-
-		async prepareValue() {
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
-			});
-		},
-
-		async prepareNationalIdForTable(ids) {
-			const nationalIds = await this.getNationalIds(ids);
-			this.table.progress += 20;
-			this.table.data.map(async (item, key) => {
-				this.table.data[key].nationalId = !item.nationalIds.length
-					? "none"
-					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", "none");
-			});
-			this.table.progress += 15;
-		},
-
-		async getNationalIds(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
-		},
-
-		async getPhones(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getPhones(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Phones")} ${e}`, "is-danger");
-				});
-		},
-
-		onRowsCheck(rows) {
-			this.$emit("rowsChecked", rows);
-		},
-
-		exportAssistance(format) {
-			console.log(format);
-		},
-
-		openAddBeneficiaryModal(id) {
-			this.addBeneficiaryModel.removingId = id;
-			this.addBeneficiaryModal.isOpened = true;
-		},
-
-		closeAddBeneficiaryModal() {
-			this.addBeneficiaryModal.isOpened = false;
-		},
-
-		async removeBeneficiaryFromAssistance({ justification, removingId }) {
-			const body = {
-				beneficiaryIds: [removingId],
-				justification,
-			};
-
-			await BeneficiariesService
-				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
-				.then(() => {
-					Toast(this.$t("Beneficiary Successfully Removed"), "is-success");
-					this.fetchData();
-				})
-				.catch((e) => {
-					Notification(
-						`${this.$t("Beneficiary")} ${e}`,
-						"is-danger",
-					);
-				});
-
-			this.closeAddBeneficiaryModal();
-		},
-
-		async submitAddBeneficiaryForm(form) {
-			const { beneficiaries, justification } = form;
-			const body = {
-				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
-				justification,
-			};
-			const { assistanceId } = this.$route.params;
-			await BeneficiariesService.addBeneficiaryToAssistance(assistanceId, body)
-				.then(({ status }) => {
-					if (status === 200) {
-						Toast(this.$t("Beneficiary Successfully Added"), "is-success");
-						this.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Beneficiary")} ${e}`, "is-danger");
-				});
-			this.addBeneficiaryModal.isOpened = false;
-			this.$emit("onBeneficiaryListChange");
-		},
-
-		closeBeneficiaryModal() {
-			this.beneficiaryModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-		},
-
-		submitEditBeneficiaryForm() {
-			// TODO Update Beneficiary in this assistance
-			this.beneficiaryModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			this.$emit("onBeneficiaryListChange");
-		},
-
-		showDetail(beneficiary) {
-			this.beneficiaryModel = beneficiary;
-			this.beneficiaryModal = {
-				isOpened: true,
-				isEditing: false,
-			};
-		},
-
-		prepareGender(gender) {
-			return gender === "F" ? this.$t("Female") : this.$t("Male");
-		},
-
-		showEdit({ id }) {
-			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
-			this.beneficiaryModal = {
-				isOpened: true,
-				isEditing: true,
-			};
-		},
-
-		getAssistanceCommodities() {
-			AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodities = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
-		},
-
-		async randomSample() {
-			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
-			const randomPage = this.rnd(1, this.table.total / size);
-			this.table.customPerPage = size;
-			await this.fetchData(randomPage, size);
-		},
-
-		rnd(a, b) {
-			return Math.floor((b - a + 1) * Math.random()) + a;
+		settingsOfBeneficiaryActivity(beneficiaryIds) {
+			this.setAssignedGeneralRelief(beneficiaryIds);
 		},
 	},
 };
 </script>
 
-<style scoped>
-.input-text-center input {
-	text-align: center;
+<style>
+.table-wrapper {
+	min-height: 75px;
 }
 </style>

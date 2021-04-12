@@ -24,7 +24,6 @@
 				<b-input
 					v-model="formModel.contactFamilyName"
 					:disabled="formDisabled"
-					@blur="validate('contactFamilyName')"
 				/>
 			</b-field>
 
@@ -36,7 +35,10 @@
 					</span>
 				</template>
 				<b-field grouped>
-					<b-field>
+					<b-field
+						:type="validateType('phonePrefix', true)"
+						:message="validateMsg('phonePrefix')"
+					>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
 							searchable
@@ -45,9 +47,15 @@
 							track-by="code"
 							:disabled="formDisabled"
 							:options="options.phonePrefixes"
+							:class="validateMultiselect('phonePrefix', true)"
+							@select="validate('phonePrefix')"
 						/>
 					</b-field>
-					<b-field grouped>
+					<b-field
+						grouped
+						:type="validateType('phoneType', true)"
+						:message="validateMsg('phoneType')"
+					>
 						<MultiSelect
 							v-model="formModel.phoneType"
 							searchable
@@ -59,14 +67,21 @@
 							:disabled="formDisabled"
 							:loading="phoneTypesLoading"
 							:options="options.phoneTypes"
+							:class="validateMultiselect('phoneType', true)"
+							@select="validate('phoneType')"
 						/>
 
 					</b-field>
-					<b-field expanded>
+					<b-field
+						expanded
+						:type="validateType('phoneNumber', true)"
+						:message="validateMsg('phoneNumber')"
+					>
 						<b-input
 							v-model="formModel.phoneNumber"
 							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
+							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
@@ -79,7 +94,10 @@
 				{{ $t('Proxy') }}
 			</b-checkbox>
 
-			<b-field>
+			<b-field
+				:type="validateType('nationalCardType', true)"
+				:message="validateMsg('nationalCardType')"
+			>
 				<template #label>
 					{{ $t('Contact ID Type') }}
 					<span class="optional-text has-text-weight-normal is-italic">
@@ -95,10 +113,15 @@
 					:loading="nationalCardTypesLoading"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
+					:class="validateMultiselect('nationalCardType', true)"
+					@select="validate('nationalCardType')"
 				/>
 			</b-field>
 
-			<b-field>
+			<b-field
+				:type="validateType('nationalCardNumber', true)"
+				:message="validateMsg('nationalCardNumber')"
+			>
 				<template #label>
 					{{ $t('Contact ID Number') }}
 					<span class="optional-text has-text-weight-normal is-italic">
@@ -109,6 +132,7 @@
 					v-model="formModel.nationalCardNumber"
 					expanded
 					:disabled="formDisabled"
+					@blur="validate('nationalCardNumber')"
 				/>
 			</b-field>
 
@@ -136,6 +160,7 @@
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 
 			<b-field>
@@ -214,14 +239,14 @@
 				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+				:disabled="mapping"
+			>{{ submitButtonLabel }}</b-button>
 		</footer>
 	</form>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Validation from "@/mixins/validation";
@@ -250,15 +275,15 @@ export default {
 			latitude: {},
 			contactGivenName: {},
 			contactFamilyName: {},
-			phonePrefix: {},
-			phoneNumber: {},
-			phoneType: {},
+			phonePrefix: { required: requiredIf((form) => form.phoneNumber || form.phoneType) },
+			phoneNumber: { required: requiredIf((form) => form.phonePrefix || form.phoneType) },
+			phoneType: { required: requiredIf((form) => form.phoneNumber || form.phonePrefix) },
 			phoneProxy: {},
 			addressStreet: {},
 			addressNumber: {},
 			addressPostCode: {},
-			nationalCardNumber: {},
-			nationalCardType: {},
+			nationalCardNumber: { required: requiredIf((form) => form.nationalCardType) },
+			nationalCardType: { required: requiredIf((form) => form.nationalCardNumber) },
 			projects: { required },
 			adm1Id: { required },
 			adm2Id: {},
@@ -269,6 +294,7 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
 			phoneTypesLoading: true,
 			nationalCardTypesLoading: true,
 			projectsLoading: true,
@@ -285,30 +311,34 @@ export default {
 		formModel: "mapSelects",
 	},
 
-	async mounted() {
-		await this.fetchNationalCardTypes();
-		await this.fetchPhoneTypes();
-		await this.fetchProjects();
+	async created() {
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchProjects(),
+			this.fetchPhoneTypes(),
+		]);
+		this.mapSelects();
 	},
 
 	methods: {
-		async mapSelects() {
+		mapSelects() {
 			const { phonePrefix, nationalCardType, phoneType, projectIds } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
-				this.formModel.phonePrefix = await PhoneCodes
+				this.formModel.phonePrefix = PhoneCodes
 					.find((item) => item.code === phonePrefix);
 			}
 			if (nationalCardType && typeof nationalCardType !== "object") {
-				this.formModel.nationalCardType = await this.options.nationalCardTypes
+				this.formModel.nationalCardType = this.options.nationalCardTypes
 					.find((item) => item.code === nationalCardType);
 			}
 			if (phoneType && typeof phoneType !== "object") {
-				this.formModel.phoneType = await this.options.phoneTypes
+				this.formModel.phoneType = this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
 			if (projectIds) {
 				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
+			this.mapping = this.$refs.locationForm.mapping;
 		},
 
 		submitForm() {
