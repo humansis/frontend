@@ -220,9 +220,9 @@ export default {
 					checkableTable: false,
 				},
 				householdsAndIndividualEditColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
+					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
+					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", sortable: true, sortKey: "localFamilyName" },
 					{ key: "gender" },
 					{ key: "dateOfBirth", label: "Date of Birth" },
 					{ key: "residencyStatus" },
@@ -236,13 +236,13 @@ export default {
 				],
 				communityColumns: [
 					{ key: "name" },
-					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactGivenName", label: this.$t("Contact Name") },
 					{ key: "contactFamilyName" },
 				],
 				institutionColumns: [
 					{ key: "name" },
 					{ key: "type" },
-					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactGivenName", label: this.$t("Contact Name") },
 					{ key: "contactFamilyName" },
 				],
 			},
@@ -285,8 +285,7 @@ export default {
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
-				await this.fetchData();
-				await this.prepareTableColumns();
+				await this.reloadBeneficiariesList();
 			}
 		},
 	},
@@ -353,12 +352,6 @@ export default {
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				switch (this.commodities[0]?.modalityType) {
-					case consts.COMMODITY.SMARTCARD:
-						additionalColumns = [
-							{ key: "distributed", label: this.$t("Distributed") },
-							{ key: "value", label: this.$t("Value") },
-						];
-						break;
 					case consts.COMMODITY.MOBILE_MONEY:
 						additionalColumns = [
 							{ key: "phone", label: this.$t("Phone") },
@@ -375,6 +368,7 @@ export default {
 						];
 						break;
 					default:
+						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
 						additionalColumns = [
 							{ key: "distributed", label: this.$t("Distributed") },
 							{ key: "value", label: this.$t("Value") },

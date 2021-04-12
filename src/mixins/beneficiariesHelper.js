@@ -17,6 +17,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["changePerPage"]),
+
 		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(beneficiaryIds) {
 			if (beneficiaryIds.length) {
@@ -45,7 +47,8 @@ export default {
 		getTransactions(beneficiaryId) {
 			return AssistancesService
 				.getTransactionsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
+					this.$route.params.assistanceId,
+					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
@@ -82,7 +85,8 @@ export default {
 		getSmartCardDeposits(beneficiaryId) {
 			return AssistancesService
 				.getSmartCardDepositForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
+					this.$route.params.assistanceId,
+					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
@@ -124,7 +128,8 @@ export default {
 		getBookletsForBeneficiary(beneficiaryId) {
 			return AssistancesService
 				.getBookletsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
+					this.$route.params.assistanceId,
+					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
@@ -136,7 +141,9 @@ export default {
 			this.assignVoucherModal.isWaiting = true;
 
 			await AssistancesService.assignBookletForBeneficiaryInAssistance(
-				this.$route.params.assistanceId, booklet.beneficiaryId, booklet.code,
+				this.$route.params.assistanceId,
+				booklet.beneficiaryId,
+				booklet.code,
 			).then(({ status }) => {
 				if (status === 200) {
 					Toast(
@@ -195,7 +202,8 @@ export default {
 		getGeneralReliefItemsForBeneficiary(beneficiaryId) {
 			return AssistancesService
 				.getGeneralReliefItemsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
+					this.$route.params.assistanceId,
+					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
@@ -338,16 +346,12 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
-			await this.fetchData();
-			await this.prepareTableColumns();
+			await this.reloadBeneficiariesList();
 		},
-
-		...mapActions(["changePerPage"]),
 
 		async onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
-			await this.fetchData();
-			await this.prepareTableColumns();
+			await this.reloadBeneficiariesList();
 		},
 
 		async onSort(column) {
@@ -360,27 +364,23 @@ export default {
 				this.table.sortColumn = sortKey;
 				this.table.sortDirection = "desc";
 			}
-			await this.fetchData();
-			await this.prepareTableColumns();
+			await this.reloadBeneficiariesList();
 		},
 
 		async onSearch(value) {
 			this.table.searchPhrase = value;
-			await this.fetchData();
-			await this.prepareTableColumns();
+			await this.reloadBeneficiariesList();
 		},
 
 		async onChangePerPage() {
-			await this.fetchData();
-			await this.prepareTableColumns();
+			await this.reloadBeneficiariesList();
 		},
 
 		async resetSort() {
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = "";
 				this.table.sortDirection = "";
-				await this.fetchData();
-				await this.prepareTableColumns();
+				await this.reloadBeneficiariesList();
 			}
 		},
 	},

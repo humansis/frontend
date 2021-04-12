@@ -180,7 +180,7 @@ export default {
 				});
 
 			this.submitButtonLoading = false;
-			this.$emit("formClosed");
+			this.closeForm();
 			this.$emit("addingOrRemovingSubmitted");
 		},
 

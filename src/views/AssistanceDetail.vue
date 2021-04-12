@@ -151,7 +151,7 @@ export default {
 		},
 
 		assistanceProgress() {
-			if (!this.totalAmount && !this.amountCompleted) return 0;
+			if (!this.totalAmount || !this.amountCompleted) return 0;
 			const result = (100 / this.totalAmount) * this.amountCompleted;
 			if (result === Infinity) return 0;
 			return (result > 100) ? 100 : Math.round(result);
