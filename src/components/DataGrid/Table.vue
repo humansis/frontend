@@ -193,7 +193,7 @@ export default {
 
 		isRowCheckable(row) {
 			if (this.disablePrecheckedRows) {
-				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow.id);
+				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
 				return !immediatelyCheckedRows.includes(row.id);
 			}
 

@@ -65,7 +65,10 @@
 					<b-button  @click="closeAddToProjectModal">
 						{{ $t('Close') }}
 					</b-button>
-					<b-button type="is-primary" @click="addHouseholdsToProject">
+					<b-button
+						type="is-primary"
+						@click="addHouseholdsToProject"
+					>
 						{{ $t('Confirm') }}
 					</b-button>
 				</footer>
@@ -327,6 +330,7 @@ export default {
 						this.table.checkedRows = [];
 						this.actionsButtonVisible = false;
 						Toast(this.$t("Beneficiaries Successfully Added to a Project"), "is-success");
+						this.fetchData();
 					})
 					.catch((e) => {
 						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");

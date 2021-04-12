@@ -110,6 +110,14 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getAssistanceStatistics(assistanceId) {
+		const { data } = await fetcher({
+			uri: `assistances/${assistanceId}/statistics`,
+		});
+
+		return data;
+	},
+
 	async getListOfBeneficiaries(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
@@ -122,7 +130,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
 		});
@@ -144,6 +152,13 @@ export default {
 	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+		});
+		return { data, totalCount };
+	},
+
+	async getTransactionsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/transactions`,
 		});
 		return { data, totalCount };
 	},

@@ -6,46 +6,30 @@
 			:project="project"
 		/>
 		<b-steps
+			v-if="isTargetHouseholdOrIndividual"
 			v-model="activeStep"
 			animated
 			rounded
 			has-navigation
 		>
-			<b-step-item
-				clickable
-				step="1"
-				:label="$t('Assistance List of Beneficiaries')"
-			>
+			<b-step-item clickable step="1" :label="$t('Assistance List of Beneficiaries')">
 				<BeneficiariesList
 					export-button
 					add-button
-					:change-button="false"
+					:assistance="assistance"
 					@beneficiariesCounted="beneficiaries = $event"
-					@onBeneficiaryListChange="beneficiaryListChanged"
 				/>
 			</b-step-item>
 
-			<b-step-item
-				clickable
-				step="2"
-				:label="$t('Import & Compare')"
-			>
+			<b-step-item clickable step="2" :label="$t('Import & Compare')">
 				<ImportAndCompare />
 			</b-step-item>
 
-			<b-step-item
-				clickable
-				step="3"
-				:label="$t('Export Random Sample')"
-			>
+			<b-step-item clickable step="3" :label="$t('Export Random Sample')">
 				<ExportRandomSample />
 			</b-step-item>
 
-			<b-step-item
-				clickable
-				step="4"
-				:label="$t('Validate and Lock')"
-			>
+			<b-step-item clickable step="4" :label="$t('Validate and Lock')">
 				<ValidateAndLock />
 			</b-step-item>
 
@@ -68,6 +52,7 @@
 						v-show="activeStep === 3"
 						type="is-primary"
 						icon-right="lock"
+						:loading="validateAssistanceButtonLoading"
 						@click.prevent="validateAssistance"
 					>
 						{{ $t('Validate and Lock') }}
@@ -75,6 +60,23 @@
 				</div>
 			</template>
 		</b-steps>
+		<div v-if="!isTargetHouseholdOrIndividual">
+			<BeneficiariesList
+				:assistance="assistance"
+				@beneficiariesCounted="beneficiaries = $event"
+			/>
+			<div class="buttons mt-3 flex-end">
+				<b-button
+					v-if="assistance"
+					type="is-primary"
+					icon-right="lock"
+					:loading="validateAssistanceButtonLoading"
+					@click.prevent="validateAssistance"
+				>
+					{{ $t('Validate and Lock') }}
+				</b-button>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -87,6 +89,7 @@ import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceEdit",
@@ -106,7 +109,8 @@ export default {
 			activeStep: 0,
 			target: "",
 			beneficiaries: 0,
-			changedBeneficiaryList: false,
+			validateAssistanceButtonLoading: false,
+			isTargetHouseholdOrIndividual: false,
 		};
 	},
 
@@ -117,10 +121,16 @@ export default {
 
 	methods: {
 		async fetchAssistance() {
-			return AssistancesService.getDetailOfAssistance(
+			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
-				this.assistance = data;
+				this.isTargetHouseholdOrIndividual = data.target
+					=== consts.TARGET.HOUSEHOLD
+					|| data.target === consts.TARGET.INDIVIDUAL;
+
+				this.$nextTick(() => {
+					this.assistance = data;
+				});
 			});
 		},
 
@@ -134,12 +144,13 @@ export default {
 
 		async validateAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
+			this.validateAssistanceButtonLoading = true;
 
 			await AssistancesService.updateAssistanceToStatusValidated(
 				{ assistanceId, validated: true },
 			).then(({ status }) => {
 				if (status === 200) {
-					Toast(this.$t("Assistance Successfully Saved and lock"), "is-success");
+					Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
 					this.$router.push({ name: "Project",
 						params: {
 							projectId: this.$route.params.projectId,
@@ -149,10 +160,8 @@ export default {
 			}).catch((e) => {
 				Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
-		},
 
-		beneficiaryListChanged() {
-			this.changedBeneficiaryList = true;
+			this.validateAssistanceButtonLoading = false;
 		},
 	},
 };

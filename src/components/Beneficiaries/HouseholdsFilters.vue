@@ -57,8 +57,8 @@ export default {
 					name: "Gender",
 					placeholder: this.$t("Select Gender"),
 					data: [
-						{ code: "M", value: "Male" },
-						{ code: "F", value: "Female" },
+						{ code: "M", value: this.$t("Male") },
+						{ code: "F", value: this.$t("Female") },
 					],
 				},
 				residencyStatuses: {
