@@ -220,8 +220,8 @@ export default {
 					checkableTable: false,
 				},
 				householdsAndIndividualEditColumns: [
-					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
-					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
+					{ key: "id", label: "Beneficiary ID", sortable: true },
+					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", sortable: true, sortKey: "localFamilyName" },
 					{ key: "gender" },
 					{ key: "dateOfBirth", label: "Date of Birth" },
@@ -229,20 +229,20 @@ export default {
 					{ key: "vulnerabilities" },
 				],
 				householdsAndIndividualDetailColumns: [
-					{ key: "id", label: this.$t("Beneficiary ID"), sortable: true },
-					{ key: "givenName", label: this.$t("First Name"), sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: this.$t("Family Name"), sortable: true, sortKey: "localFamilyName" },
-					{ key: "nationalId", label: this.$t("National ID"), sortable: true },
+					{ key: "id", label: "Beneficiary ID", sortable: true },
+					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
+					{ key: "nationalId", label: "National ID", sortable: true },
 				],
 				communityColumns: [
 					{ key: "name" },
-					{ key: "contactGivenName", label: this.$t("Contact Name") },
+					{ key: "contactGivenName", label: "Contact Name" },
 					{ key: "contactFamilyName" },
 				],
 				institutionColumns: [
 					{ key: "name" },
 					{ key: "type" },
-					{ key: "contactGivenName", label: this.$t("Contact Name") },
+					{ key: "contactGivenName", label: "Contact Name" },
 					{ key: "contactFamilyName" },
 				],
 			},
@@ -354,33 +354,33 @@ export default {
 				switch (this.commodities[0]?.modalityType) {
 					case consts.COMMODITY.MOBILE_MONEY:
 						additionalColumns = [
-							{ key: "phone", label: this.$t("Phone") },
-							{ key: "status", label: this.$t("Status") },
-							{ key: "value", label: this.$t("Value") },
+							{ key: "phone", label: "Phone" },
+							{ key: "status", label: "Status" },
+							{ key: "value", label: "Value" },
 						];
 						break;
 					case consts.COMMODITY.QR_CODE_VOUCHER:
 						additionalColumns = [
-							{ key: "booklet", label: this.$t("Booklet") },
-							{ key: "status", label: this.$t("Status") },
-							{ key: "quantity", label: this.$t("Quantity") },
-							{ key: "value", label: this.$t("Value") },
+							{ key: "booklet", label: "Booklet" },
+							{ key: "status", label: "Status" },
+							{ key: "quantity", label: "Quantity" },
+							{ key: "value", label: "Value" },
 						];
 						break;
 					case consts.COMMODITY.SMARTCARD:
 					default:
 						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
 						additionalColumns = [
-							{ key: "distributed", label: this.$t("Distributed") },
-							{ key: "value", label: this.$t("Value") },
+							{ key: "distributed", label: "Distributed" },
+							{ key: "value", label: "Value" },
 						];
 				}
 			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
 				additionalColumns = [
-					{ key: "distributed", label: this.$t("Distributed") },
-					{ key: "value", label: this.$t("Value") },
+					{ key: "distributed", label: "Distributed" },
+					{ key: "value", label: "Value" },
 				];
 			}
 
