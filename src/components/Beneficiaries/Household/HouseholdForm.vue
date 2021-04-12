@@ -155,9 +155,10 @@
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
-						:placeholder="$t('Click to select')"
+						locale="en-CA"
 						icon="calendar-day"
 						trap-focus
+						:placeholder="$t('Click to select')"
 						@input="validate('externalSupport.supportDateReceived')"
 					/>
 				</b-field>

@@ -66,7 +66,7 @@ export default {
 					);
 
 					this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits?.[0]?.distributed
-						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
+						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
 						: this.$t("Not Distributed");
 					this.table.data[beneficiaryItemIndex].value = `
 						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
@@ -182,7 +182,7 @@ export default {
 
 						this.table.data[beneficiaryItemIndex].distributed =	generalReliefItems[0]
 							.dateOfDistribution
-							? this.$moment(generalReliefItems[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
+							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
 							: this.$t("Not Distributed");
 
 						this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
@@ -299,7 +299,10 @@ export default {
 		},
 
 		showDetail(beneficiary) {
-			this.beneficiaryModel = beneficiary;
+			this.beneficiaryModel = {
+				...beneficiary,
+				dateOfBirth: new Date(beneficiary.dateOfBirth),
+			};
 			this.beneficiaryModal = {
 				isOpened: true,
 				isEditing: false,

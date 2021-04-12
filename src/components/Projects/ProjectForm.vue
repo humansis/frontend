@@ -70,6 +70,7 @@
 					show-week-number
 					icon="calendar-day"
 					trap-focus
+					locale="en-CA"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('startDate')"
@@ -88,6 +89,7 @@
 					show-week-number
 					icon="calendar-day"
 					trap-focus
+					locale="en-CA"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('endDate')"
@@ -104,6 +106,7 @@
 				<MultiSelect
 					v-model="formModel.selectedDonors"
 					searchable
+					label="fullname"
 					track-by="id"
 					multiple
 					:placeholder="$t('Click to select')"

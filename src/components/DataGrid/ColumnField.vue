@@ -100,28 +100,22 @@ export default {
 		customValue() {
 			const value = this.data.row[this.column.field];
 
-			if (!value) {
-				return "";
-			}
+			if (!value) return "";
 
 			if (typeof value === "object") {
-				if (value.value) {
-					return value.value;
-				}
+				if (value.value) return value.value;
 
-				const newDate = new Date(this.data.row[this.column.field]);
+				const newDate = this.$moment(this.data.row[this.column.field])
+					.format("YYYY-MM-DD hh:mm");
 
-				if (newDate.toLocaleDateString()) {
-					return newDate.toLocaleDateString();
-				}
+				if (newDate.isValid()) return newDate;
 			}
 
 			return value;
 		},
 
 		formattedDate() {
-			const newDate = new Date(this.data.row[this.column.field]);
-			return newDate.toLocaleDateString();
+			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD hh:mm")}`;
 		},
 	},
 

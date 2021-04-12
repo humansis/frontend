@@ -14,7 +14,7 @@
 				<div class="box">
 					<p class="heading">{{ $t('Start Date') }}</p>
 					<p class="has-text-weight-bold is-size-5">
-						{{ new Date(projectSummary.startDate).toLocaleDateString() }}
+						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
 				</div>
 			</div>
@@ -23,7 +23,7 @@
 				<div class="box">
 					<p class="heading">{{ $t('End Date') }}</p>
 					<p class="has-text-weight-bold is-size-5">
-						{{ new Date(projectSummary.endDate).toLocaleDateString() }}
+						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
 				</div>
 			</div>

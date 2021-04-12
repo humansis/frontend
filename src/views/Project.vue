@@ -89,7 +89,7 @@ export default {
 		},
 
 		async editAssistance({ id, dateDistribution }) {
-			const date = this.$moment(dateDistribution).format("YYYY-MM-DD");
+			const date = this.$moment(dateDistribution).format("YYYY-MM-DD hh:mm");
 			await AssistancesService.updateAssistanceDateOfDistribution(id, date)
 				.then((response) => {
 					if (response.status === 200) {

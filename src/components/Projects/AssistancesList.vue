@@ -1,92 +1,95 @@
 <template>
-	<Table
-		has-reset-sort
-		:title="upcoming ? $t('Upcoming Assistances') : ''"
-		:has-search="!upcoming"
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		@clicked="onRowClick"
-		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
-		@search="onSearch"
-	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				:sortable="column.sortable"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
-		</template>
-		<b-table-column
-			v-slot="props"
-			centered
-			width="230"
-			:label="$t('Actions')"
-			:visible="!upcoming"
+	<div>
+		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
+		<Table
+			has-reset-sort
+			default-sort-key="dateDistribution"
+			:has-search="!upcoming"
+			:data="table.data"
+			:total="table.total"
+			:current-page="table.currentPage"
+			:is-loading="isLoadingList"
+			@clicked="onRowClick"
+			@pageChanged="onPageChange"
+			@sorted="onSort"
+			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
-			<div class="buttons is-right">
-				<ActionButton
-					v-if="!props.row.validated"
-					icon="search"
+			<template v-for="column in table.columns">
+				<b-table-column
+					v-bind="column"
+					:sortable="column.sortable"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
+				</b-table-column>
+			</template>
+			<b-table-column
+				v-slot="props"
+				centered
+				width="230"
+				:label="$t('Actions')"
+				:visible="!upcoming"
+			>
+				<div class="buttons is-right">
+					<ActionButton
+						v-if="!props.row.validated"
+						icon="search"
+						type="is-primary"
+						:tooltip="$t('Edit')"
+						@click.native="showEdit(props.row.id)"
+					/>
+					<ActionButton
+						v-if="!props.row.validated"
+						icon="edit"
+						:tooltip="$t('Update')"
+						@click.native="goToUpdate(props.row.id)"
+					/>
+					<ActionButton
+						v-if="props.row.validated && !props.row.completed"
+						icon="lock"
+						type="is-warning"
+						:tooltip="$t('Update')"
+						@click.native="goToDetail(props.row.id)"
+					/>
+					<ActionButton
+						v-if="props.row.completed"
+						icon="check"
+						type="is-success"
+						:tooltip="$t('View')"
+						@click.native="goToDetail(props.row.id)"
+					/>
+					<SafeDelete
+						v-if="!props.row.validated"
+						icon="trash"
+						:entity="$t('Assistance')"
+						:tooltip="$t('Delete')"
+						:id="props.row.id"
+						@submitted="$emit('onRemove', $event)"
+					/>
+					<ActionButton
+						icon="copy"
+						type="is-dark"
+						:tooltip="$t('Duplicate')"
+						@click.native="duplicate(props.row.id)"
+					/>
+				</div>
+			</b-table-column>
+			<template v-if="!upcoming" #export>
+				<ExportButton
 					type="is-primary"
-					:tooltip="$t('Edit')"
-					@click.native="showEdit(props.row.id)"
+					space-between
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@exportData="exportAssistance"
 				/>
-				<ActionButton
-					v-if="!props.row.validated"
-					icon="edit"
-					:tooltip="$t('Update')"
-					@click.native="goToUpdate(props.row.id)"
-				/>
-				<ActionButton
-					v-if="props.row.validated && !props.row.completed"
-					icon="lock"
-					type="is-warning"
-					:tooltip="$t('Update')"
-					@click.native="goToDetail(props.row.id)"
-				/>
-				<ActionButton
-					v-if="props.row.completed"
-					icon="check"
-					type="is-success"
-					:tooltip="$t('View')"
-					@click.native="goToDetail(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="!props.row.validated"
-					icon="trash"
-					:entity="$t('Assistance')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="$emit('onRemove', $event)"
-				/>
-				<ActionButton
-					icon="copy"
-					type="is-dark"
-					:tooltip="$t('Duplicate')"
-					@click.native="duplicate(props.row.id)"
-				/>
-			</div>
-		</b-table-column>
-		<template v-if="!upcoming" #export>
-			<ExportButton
-				type="is-primary"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@exportData="exportAssistance"
-			/>
-		</template>
-		<template #progress>
-			<b-progress :value="table.progress" format="percent" />
-		</template>
-	</Table>
+			</template>
+			<template #progress>
+				<b-progress :value="table.progress" format="percent" />
+			</template>
+		</Table>
+	</div>
 </template>
 
 <script>
@@ -130,14 +133,14 @@ export default {
 					{ key: "type", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
-					{ key: "dateDistribution", label: "Date of Distribution", type: "date", sortable: true, sortKey: "date" },
+					{ key: "dateDistribution", label: "Date of Distribution", type: "date", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "commodity" },
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "dateDistribution",
 				searchPhrase: "",
 				progress: null,
 			},
@@ -209,15 +212,16 @@ export default {
 			data.forEach((item, key) => {
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
+				console.log(item);
 				this.table.data[key] = item;
-				this.table.data[key].target = normalizeText(item.target);
+				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
+				this.table.data[key].type = this.$t(normalizeText(item.type));
+				this.table.data[key].target = this.$t(normalizeText(item.target));
 			});
 			this.table.progress += 10;
 
 			this.prepareLocationForTable(locationIds);
-
 			this.prepareCommodityForTable(assistanceIds);
-
 			this.prepareStatisticsForTable(assistanceIds);
 		},
 

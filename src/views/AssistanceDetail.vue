@@ -240,7 +240,9 @@ export default {
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id, true, dateOfDistribution,
+						beneficiary.generalReliefItem.id,
+						true,
+						dateOfDistribution,
 					).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;

@@ -14,7 +14,14 @@
 			</b-field>
 
 			<b-field :label="$t('Date of Birth')">
-				<b-input v-model="formModel.dateOfBirth" disabled />
+				<b-datepicker
+					v-model="formModel.dateOfBirth"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					disabled
+				/>
 			</b-field>
 
 			<b-field :label="$t('Residency Status')">

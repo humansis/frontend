@@ -13,9 +13,10 @@
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
-					:placeholder="$t('Click to select')"
+					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
 		</div>

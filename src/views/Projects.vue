@@ -209,8 +209,8 @@ export default {
 				target,
 				targetType,
 				numberOfHouseholds: 0,
-				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
-				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
+				startDate: startDate.toISOString(),
+				endDate: endDate.toISOString(),
 				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};
