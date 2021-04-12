@@ -367,6 +367,7 @@ export default {
 							{ key: "value", label: this.$t("Value") },
 						];
 						break;
+					case consts.COMMODITY.SMARTCARD:
 					default:
 						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
 						additionalColumns = [
