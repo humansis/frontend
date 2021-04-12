@@ -23,13 +23,21 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getTargetTypes() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/targets" });
+	async getTargetTypes(type) {
+		const filter = type ? `&filter[type]=${type}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/targets?${filter}`,
+		});
 		return { data, totalCount };
 	},
 
-	async getAssistanceTypes() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "assistances/types" });
+	async getAssistanceTypes(subsector) {
+		const filter = subsector ? `&filter[subsector]=${subsector}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/types?${filter}`,
+		});
 		return { data, totalCount };
 	},
 
