@@ -347,6 +347,7 @@ export default {
 		await this.fetchShelterStatuses();
 		await this.fetchSupportReceivedTypes();
 		await this.fetchCountrySpecificOptions();
+
 		if (this.isEditing) {
 			await this.mapDetailOfHouseholdToFormModel();
 
