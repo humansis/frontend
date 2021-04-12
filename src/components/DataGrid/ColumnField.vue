@@ -67,6 +67,11 @@
 			{{ formattedDate }}
 		</template>
 
+		<!-- Show DateTime -->
+		<template v-if="column.type === 'datetime'">
+			{{ formattedDateTime }}
+		</template>
+
 		<!-- Show Custom Field for Selection Criteria Group -->
 		<template v-if="column.type === 'customValue'">
 			{{ customValue }}
@@ -115,6 +120,10 @@ export default {
 		},
 
 		formattedDate() {
+			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD")}`;
+		},
+
+		formattedDateTime() {
 			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD hh:mm")}`;
 		},
 	},
