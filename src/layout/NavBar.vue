@@ -160,6 +160,7 @@ export default {
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
 					this.updateLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
+					this.$router.go();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
