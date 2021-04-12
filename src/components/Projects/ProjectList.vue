@@ -149,7 +149,7 @@ export default {
 		},
 
 		prepareDonors(item, donors) {
-			if (!donors?.length) return "none";
+			if (!donors?.length) return this.$t("None");
 			let result = "";
 
 			item.donorIds.forEach((id) => {

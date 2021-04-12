@@ -7,7 +7,7 @@
 
 		<!-- Simple Text -->
 		<template v-if="column.type === 'textOrNone'">
-			{{ data.row[column.field] || "none" }}
+			{{ data.row[column.field] || this.$t("None") }}
 		</template>
 
 		<!-- Count array items -->

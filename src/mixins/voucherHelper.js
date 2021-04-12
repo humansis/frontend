@@ -15,8 +15,8 @@ export default {
 			const beneficiaryIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].beneficiary = "none";
-				this.table.data[key].assistance = "none";
+				this.table.data[key].beneficiary = this.$t("None");
+				this.table.data[key].assistance = this.$t("None");
 				if (item.projectId) {
 					projectIds.push(item.projectId);
 				}
@@ -40,7 +40,12 @@ export default {
 			this.table.progress += 20;
 			if (!beneficiaries.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries, "localGivenName", "none");
+				this.table.data[key].beneficiary = this.prepareEntityForTable(
+					item.beneficiaryId,
+					beneficiaries,
+					"localGivenName",
+					"None",
+				);
 			});
 			this.table.progress += 15;
 		},
@@ -50,7 +55,7 @@ export default {
 			this.table.progress += 20;
 			if (!projects.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "none");
+				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
 			});
 			this.table.progress += 15;
 		},
@@ -60,7 +65,7 @@ export default {
 			this.table.progress += 20;
 			if (!assistances.length) return;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "none");
+				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "None");
 			});
 			this.table.progress += 15;
 		},

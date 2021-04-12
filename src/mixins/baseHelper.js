@@ -6,7 +6,7 @@ export default {
 			if (!entities?.length) return emptyValue;
 			const entity = entities.find((item) => item.id === id);
 			if (!entity) {
-				return (emptyValue === "none") ? i18n.t(emptyValue) : emptyValue;
+				return (emptyValue === "None") ? i18n.t("None") : emptyValue;
 			}
 			if (returnedParam) {
 				return entity[returnedParam];

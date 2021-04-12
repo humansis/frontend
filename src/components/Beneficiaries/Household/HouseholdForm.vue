@@ -47,13 +47,32 @@
 							- {{ $t('Optional') }}
 						</span>
 					</template>
-					<MultiSelect
+					<b-numberinput
 						v-model="formModel.livelihood.incomeLevel"
-						searchable
-						label="value"
-						track-by="id"
-						:placeholder="$t('Click to select')"
-						:options="options.incomeLevel"
+						expanded
+						min="0"
+						type="is-dark"
+						controls-alignment="right"
+						controls-position="compact"
+						:placeholder="countryCurrency"
+					/>
+				</b-field>
+
+				<b-field>
+					<template #label>
+						<span>{{ $t('Income Spent On Food') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-numberinput
+						v-model="formModel.livelihood.incomeSpentOnFood"
+						expanded
+						min="0"
+						type="is-dark"
+						controls-alignment="right"
+						controls-position="compact"
+						:placeholder="countryCurrency"
 					/>
 				</b-field>
 
@@ -71,6 +90,7 @@
 						type="is-dark"
 						controls-alignment="right"
 						controls-position="compact"
+						:placeholder="countryCurrency"
 					/>
 				</b-field>
 
@@ -229,6 +249,7 @@ import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeCountrySpecifics } from "@/utils/datagrid";
 import Validation from "@/mixins/validation";
+import getters from "@/store/getters";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 
 export default {
@@ -262,11 +283,12 @@ export default {
 				isCurrentLocationOtherThanAddress: false,
 				livelihood: {
 					livelihood: [],
-					incomeLevel: [],
-					debtLevel: 0,
+					incomeLevel: null,
+					incomeSpentOnFood: null,
+					debtLevel: null,
 					assets: [],
-					foodConsumptionScore: 0,
-					copingStrategiesIndex: 0,
+					foodConsumptionScore: null,
+					copingStrategiesIndex: null,
 				},
 				externalSupport: {
 					externalSupportReceivedType: [],
@@ -279,13 +301,6 @@ export default {
 			},
 			options: {
 				livelihood: [],
-				incomeLevel: [
-					{ code: 0, value: "Very Low (Income < 100 USD)" },
-					{ code: 1, value: "Low (100 USD < Income < 100 USD)" },
-					{ code: 2, value: "Average (150 USD < Income < 250 USD)" },
-					{ code: 3, value: "High (250 USD < Income < 300 USD)" },
-					{ code: 4, value: "Very High (300 USD < Income)" },
-				],
 				assets: [],
 				externalSupportReceivedType: [],
 				shelterStatuses: [],
@@ -298,6 +313,7 @@ export default {
 			livelihood: {
 				livelihood: {},
 				incomeLevel: {},
+				incomeSpentOnFood: {},
 				debtLevel: {},
 				assets: {},
 				foodConsumptionScore: {},
@@ -310,6 +326,12 @@ export default {
 			},
 			countrySpecificOptions: {},
 			shelterStatus: {},
+		},
+	},
+
+	computed: {
+		countryCurrency() {
+			return getters.getCountryFromLocalStorage()?.currency;
 		},
 	},
 
@@ -389,7 +411,8 @@ export default {
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
 					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code", true),
 					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
-					incomeLevel: getArrayOfCodeListByKey([this.detailOfHousehold.incomeLevel], this.options.incomeLevel, "code"),
+					incomeLevel: this.detailOfHousehold.incomeLevel,
+					incomeSpentOnFood: this.detailOfHousehold.incomeSpentOnFood,
 					debtLevel: this.detailOfHousehold.debtLevel,
 					copingStrategiesIndex: this.detailOfHousehold.copingStrategiesIndex,
 				},

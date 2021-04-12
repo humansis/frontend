@@ -56,8 +56,9 @@
 					</b-button>
 					<b-button
 						v-if="activeStep === 3"
-						type="is-danger"
+						type="is-primary"
 						icon-left="save"
+						:loading="saveButtonLoading"
 						@click="save"
 					>
 						{{ isEditing ? $t('Update') : $t('Save') }}
@@ -106,6 +107,7 @@ export default {
 			selectedProjects: [],
 			location: "",
 			address: "",
+			saveButtonLoading: false,
 		};
 	},
 
@@ -166,6 +168,7 @@ export default {
 				livelihood: {
 					livelihood, assets, incomeLevel, debtLevel,
 					foodConsumptionScore, copingStrategiesIndex,
+					incomeSpentOnFood,
 				},
 				externalSupport: {
 					externalSupportReceivedType,
@@ -189,20 +192,21 @@ export default {
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel: incomeLevel?.code,
+				incomeLevel,
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
 				supportDateReceived: supportDateReceived.toISOString(),
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code", true),
 				supportOrganizationName,
-				// TODO Resolve incomeSpentOnFood and houseIncome
-				incomeSpentOnFood: 0,
+				incomeSpentOnFood,
 				houseIncome: 0,
 				countrySpecificAnswers:
 					this.prepareCountrySpecificsForHousehold(this.household.countrySpecificOptions),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
+
+			console.log(householdBody);
 
 			if (this.$refs.householdSummary.submit()) {
 				if (this.isEditing && this.$route.params.householdId) {
@@ -225,6 +229,8 @@ export default {
 		},
 
 		async updateHousehold(id, householdBody) {
+			this.saveButtonLoading = true;
+
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Household Successfully Updated"), "is-success");
@@ -233,9 +239,13 @@ export default {
 			}).catch((e) => {
 				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
+
+			this.saveButtonLoading = false;
 		},
 
 		async createHousehold(householdBody) {
+			this.saveButtonLoading = true;
+
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Household Successfully Created"), "is-success");
@@ -244,6 +254,8 @@ export default {
 			}).catch((e) => {
 				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
+
+			this.saveButtonLoading = false;
 		},
 
 		async getDetailOfHousehold(id) {
@@ -258,7 +270,7 @@ export default {
 			const membersData = [];
 			if (members.length) {
 				members.forEach((member) => {
-					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : "none";
+					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
 					membersData.push({
 						firstName: member.nameLocal.firstName,
 						familyName: member.nameLocal.familyName,

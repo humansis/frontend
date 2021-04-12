@@ -405,7 +405,7 @@ export default {
 					this.table.progress += 5;
 					this.table.data.forEach((item, key) => {
 						this.table.data[key]
-							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "none");
+							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "None");
 					});
 				});
 		},
@@ -490,10 +490,10 @@ export default {
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
-			let result = "none";
+			let result = "None";
 			if (vulnerabilities) {
 				vulnerabilities.forEach((item) => {
-					if (result === "none") {
+					if (result === "None") {
 						result = normalizeText(item);
 					} else {
 						result += `, ${normalizeText(item)}`;

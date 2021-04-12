@@ -211,13 +211,13 @@ export default {
 		},
 
 		prepareVulnerabilities(vulnerabilities) {
-			let result = "none";
+			let result = "None";
 			if (vulnerabilities) {
 				vulnerabilities.forEach((item) => {
-					if (result === "none") {
-						result = this.$t(normalizeText(item));
+					if (result === "None") {
+						result = this.$t(item);
 					} else {
-						result += `, ${this.$t(normalizeText(item))}`;
+						result += `, ${normalizeText(item)}`;
 					}
 				});
 			}
@@ -231,7 +231,7 @@ export default {
 				this.table.data[key].phone = !item.phoneIds.length
 					? this.$t("None")
 					: this.prepareEntityForTable(item.phoneIds[0], phones,
-						"number", this.$t("None"));
+						"number", "None");
 			});
 			this.table.progress += 15;
 		},
@@ -243,7 +243,7 @@ export default {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? this.$t("None")
 					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", this.$t("None"));
+						nationalIds, "number", "None");
 			});
 			this.table.progress += 15;
 		},
