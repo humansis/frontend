@@ -37,7 +37,14 @@
 			</b-field>
 
 			<b-field :label="$t('Support Date Received')">
-				<b-input v-model="formModel.supportDateReceived" disabled />
+				<b-datepicker
+					v-model="formModel.supportDateReceived"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					disabled
+				/>
 			</b-field>
 
 			<b-field :label="$t('Assets')">

@@ -193,7 +193,7 @@ export default {
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived: this.$moment(supportDateReceived).format("YYYY-MM-DD"),
+				supportDateReceived: supportDateReceived.toISOString(),
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code", true),
 				supportOrganizationName,
 				// TODO Resolve incomeSpentOnFood and houseIncome
@@ -367,7 +367,7 @@ export default {
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
 					const preparedBeneficiary = {
-						dateOfBirth: this.$moment(beneficiary.personalInformation.dateOfBirth).format("YYYY-MM-DD"),
+						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
 						localFamilyName: beneficiary.nameLocal.familyName,
 						localGivenName: beneficiary.nameLocal.firstName,
 						localParentsName: beneficiary.nameLocal.parentsName,
