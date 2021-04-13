@@ -50,12 +50,12 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["loadIconsToState"]),
+		...mapActions(["storeIcons"]),
 
 		async fetchIcons() {
 			await IconService.getIcons()
 				.then(({ data }) => {
-					this.loadIconsToState(data);
+					this.storeIcons(data);
 				}).catch((e) => {
 					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});

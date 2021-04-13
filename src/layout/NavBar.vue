@@ -135,8 +135,8 @@ export default {
 
 	methods: {
 		...mapActions([
-			"updateCountry",
-			"updateLanguage",
+			"storeCountry",
+			"storeLanguage",
 		]),
 
 		menuToggle() {
@@ -158,7 +158,7 @@ export default {
 					this.$i18n.locale = language.key.toLowerCase();
 					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-					this.updateLanguage(language);
+					this.storeLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
 					this.$router.go();
 				}
