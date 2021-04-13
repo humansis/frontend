@@ -50,7 +50,7 @@ import Modal from "@/components/Modal";
 import ProjectService from "@/services/ProjectService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import ProjectList from "@/components/Projects/ProjectList";
+import ProjectList from "@/components/Projects/ProjectsList";
 
 export default {
 	name: "ProjectPage",
@@ -209,8 +209,8 @@ export default {
 				target,
 				targetType,
 				numberOfHouseholds: 0,
-				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
-				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
+				startDate: startDate.toISOString(),
+				endDate: endDate.toISOString(),
 				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};

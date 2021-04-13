@@ -91,9 +91,10 @@
 					<b-datepicker
 						v-model="formModel.personalInformation.dateOfBirth"
 						show-week-number
-						:placeholder="$t('Click to select')"
+						locale="en-CA"
 						icon="calendar-day"
 						trap-focus
+						:placeholder="$t('Click to select')"
 						@blur="validate('personalInformation.dateOfBirth')"
 					/>
 				</b-field>

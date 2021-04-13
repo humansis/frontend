@@ -6,7 +6,15 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">{{ $t('Sectors') }}</p>
-					<svg-icon :items="projectSummary.sectors" />
+					<span>
+						<svg-icon
+							v-if="projectSummary.sectors.length"
+							:items="projectSummary.sectors"
+						/>
+						<p v-else class="has-text-weight-bold is-size-5">
+							{{ $t("None") }}
+						</p>
+					</span>
 				</div>
 			</div>
 
@@ -14,7 +22,7 @@
 				<div class="box">
 					<p class="heading">{{ $t('Start Date') }}</p>
 					<p class="has-text-weight-bold is-size-5">
-						{{ new Date(projectSummary.startDate).toLocaleDateString() }}
+						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
 				</div>
 			</div>
@@ -23,7 +31,7 @@
 				<div class="box">
 					<p class="heading">{{ $t('End Date') }}</p>
 					<p class="has-text-weight-bold is-size-5">
-						{{ new Date(projectSummary.endDate).toLocaleDateString() }}
+						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
 				</div>
 			</div>
@@ -64,6 +72,7 @@
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectSummary",
@@ -89,6 +98,10 @@ export default {
 			}).catch((e) => {
 				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 			});
+		},
+
+		normalizeText(value) {
+			return normalizeText(value);
 		},
 	},
 };

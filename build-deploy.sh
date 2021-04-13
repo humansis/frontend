@@ -55,28 +55,25 @@ echo "Upload starting"
 # aws configure set default.region eu-central-1
 
 if [[ $1 == "prod" ]]; then
-    echo "Not supported yet."
-    # aws s3 rm s3://pin.humansis.org --recursive
-    # aws s3 cp ./dist/bms-front_gzip s3://pin.humansis.org --recursive --acl public-read --content-encoding gzip
-    # aws cloudfront create-invalidation --distribution-id E2CS9FD9XA4VY8 --paths '/*'
+    aws s3 rm s3://prod-pin.humansis.org --recursive
+    aws s3 cp ./dist/bms-front_gzip s3://prod-pin.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E2Y6W09FNZ68XW --paths '/*'
 elif [[ $1 == "test" ]]; then
-    aws s3 rm s3://test2.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://test2.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws s3 rm s3://test-pin.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://test-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3RKOVT9Z18TQC --paths '/*'
 elif [[ $1 == "test3" ]]; then
     aws s3 rm s3://test3.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://test3.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3UIKQJ6I7SYO4 --paths '/*'
 elif [[ $1 == "dev" ]]; then
-    echo "Not supported yet."
-    # aws s3 rm s3://dev.humansis.org --recursive
-    # aws s3 cp ./dist/bms-front_gzip s3://dev.humansis.org --recursive --acl public-read --content-encoding gzip
-    # aws cloudfront create-invalidation --distribution-id E1FDBGHL3DD0Y8 --paths '/*'
+    aws s3 rm s3://dev-pin.humansis.org --recursive
+    aws s3 cp ./dist/bms-front_gzip s3://dev-pin.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id EBG5G8O7ZSVBV --paths '/*'
 elif [[ $1 == "stage" ]]; then
-    echo "Not supported yet."
-    # aws s3 rm s3://stage.humansis.org --recursive
-    # aws s3 cp ./dist/bms-front_gzip s3://stage.humansis.org --recursive --acl public-read --content-encoding gzip
-    # aws cloudfront create-invalidation --distribution-id E32V5GMMFAUJ37 --paths '/*'
+    aws s3 rm s3://stage-pin.humansis.org --recursive
+    aws s3 cp ./dist/bms-front_gzip s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E3T4ZDIOJ7A023 --paths '/*'
 elif [[ $1 == "demo" ]]; then
     echo "Not supported yet."
     # aws s3 rm s3://demo.humansis.org --recursive

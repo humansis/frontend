@@ -47,32 +47,31 @@
 			:active="addToProjectModal.isOpened"
 			@close="closeAddToProjectModal"
 		>
-			<form>
-				<section class="modal-card-body">
-					<b-field label="Projects">
-						<MultiSelect
-							v-model="selectedProject"
-							searchable
-							label="name"
-							track-by="id"
-							:placeholder="$t('Click to select')"
-							:loading="loading.projects"
-							:options="options.projects"
-						/>
-					</b-field>
-				</section>
-				<footer class="modal-card-foot">
-					<b-button  @click="closeAddToProjectModal">
-						{{ $t('Close') }}
-					</b-button>
-					<b-button
-						type="is-primary"
-						@click="addHouseholdsToProject"
-					>
-						{{ $t('Confirm') }}
-					</b-button>
-				</footer>
-			</form>
+			<section class="modal-card-body overflow-visible">
+				<b-field label="Projects">
+					<MultiSelect
+						v-model="selectedProject"
+						searchable
+						label="name"
+						track-by="id"
+						:placeholder="$t('Click to select')"
+						:loading="loading.projects"
+						:options="options.projects"
+					/>
+				</b-field>
+			</section>
+			<footer class="modal-card-foot">
+				<b-button  @click="closeAddToProjectModal">
+					{{ $t('Close') }}
+				</b-button>
+				<b-button
+					type="is-primary"
+					:loading="confirmButtonLoading"
+					@click="addHouseholdsToProject"
+				>
+					{{ $t('Confirm') }}
+				</b-button>
+			</footer>
 		</Modal>
 
 		<Modal
@@ -246,7 +245,7 @@ export default {
 					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
-					{ key: "vulnerabilities", width: "30" },
+					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
 					{ key: "idNumber", label: "ID Number", width: "30", sortKey: "nationalId" },
 					{ key: "projects", label: "Projects", width: "30" },
 					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
@@ -274,6 +273,7 @@ export default {
 				projects: [],
 			},
 			actionsButtonVisible: false,
+			confirmButtonLoading: false,
 			selectedProject: null,
 			loading: {
 				projects: false,
@@ -321,6 +321,8 @@ export default {
 		},
 
 		async addHouseholdsToProject() {
+			this.confirmButtonLoading = true;
+
 			if (this.table.checkedRows?.length && this.selectedProject) {
 				const householdsIds = this.table.checkedRows.map((household) => household.id);
 
@@ -337,6 +339,7 @@ export default {
 					});
 
 				this.closeAddToProjectModal();
+				this.confirmButtonLoading = false;
 			}
 		},
 
@@ -405,7 +408,7 @@ export default {
 					this.table.progress += 5;
 					this.table.data.forEach((item, key) => {
 						this.table.data[key]
-							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "none");
+							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "None");
 					});
 				});
 		},
@@ -489,21 +492,6 @@ export default {
 				});
 		},
 
-		prepareVulnerabilities(vulnerabilities) {
-			let result = "none";
-			if (vulnerabilities) {
-				vulnerabilities.forEach((item) => {
-					if (result === "none") {
-						result = normalizeText(item);
-					} else {
-						result += `, ${normalizeText(item)}`;
-					}
-				});
-			}
-
-			return result;
-		},
-
 		prepareBeneficiaries(id, beneficiaries) {
 			if (!beneficiaries?.length) return "";
 			const result = {
@@ -518,8 +506,7 @@ export default {
 				result.givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
-				result.vulnerabilities = this
-					.prepareVulnerabilities(beneficiary.vulnerabilityCriteria);
+				result.vulnerabilities = beneficiary.vulnerabilityCriteria;
 			}
 
 			return result;

@@ -23,7 +23,8 @@
 						v-if="filter.type === 'date'"
 						v-model="selectedFiltersOptions[name]"
 						trap-focus
-						icon="calendar"
+						locale="en-CA"
+						icon="calendar-day"
 						:placeholder="filter.placeholder"
 						@input="filterChanged"
 					/>

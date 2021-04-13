@@ -1,6 +1,5 @@
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
-import { normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { mapActions, mapState } from "vuex";
 
@@ -66,7 +65,7 @@ export default {
 					);
 
 					this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits?.[0]?.distributed
-						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
+						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
 						: this.$t("Not Distributed");
 					this.table.data[beneficiaryItemIndex].value = `
 						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
@@ -109,8 +108,10 @@ export default {
 					this.table.data[beneficiaryItemIndex].booklet = booklets?.[0]?.code || this.$t("None");
 					this.table.data[beneficiaryItemIndex].status = booklets?.[0]?.distributed
 						? this.$t("Distributed") : this.$t("Not Distributed");
-					this.table.data[beneficiaryItemIndex].quantity = booklets?.[0]?.quantityOfVouchers
-						|| this.$t("None");
+					this.table.data[beneficiaryItemIndex]
+						.used =	booklets?.[0]
+							? `${booklets[0].quantityOfUsedVouchers}/${booklets[0].quantityOfVouchers}`
+							: this.$t("None");
 					this.table.data[beneficiaryItemIndex].value = booklets?.[0]
 						? `${booklets[0].totalValue} ${booklets[0].currency}` : this.$t("None");
 
@@ -182,7 +183,7 @@ export default {
 
 						this.table.data[beneficiaryItemIndex].distributed =	generalReliefItems[0]
 							.dateOfDistribution
-							? this.$moment(generalReliefItems[0].dateOfDistribution).format("DD-MM-YYYY h:mm")
+							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
 							: this.$t("Not Distributed");
 
 						this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
@@ -210,20 +211,6 @@ export default {
 				});
 		},
 
-		prepareVulnerabilities(vulnerabilities) {
-			let result = "none";
-			if (vulnerabilities) {
-				vulnerabilities.forEach((item) => {
-					if (result === "none") {
-						result = this.$t(normalizeText(item));
-					} else {
-						result += `, ${this.$t(normalizeText(item))}`;
-					}
-				});
-			}
-			return result;
-		},
-
 		async preparePhoneForTable(phoneIds) {
 			const phones = await this.getPhones(phoneIds);
 			this.table.progress += 20;
@@ -231,7 +218,7 @@ export default {
 				this.table.data[key].phone = !item.phoneIds.length
 					? this.$t("None")
 					: this.prepareEntityForTable(item.phoneIds[0], phones,
-						"number", this.$t("None"));
+						"number", "None");
 			});
 			this.table.progress += 15;
 		},
@@ -243,7 +230,7 @@ export default {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? this.$t("None")
 					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", this.$t("None"));
+						nationalIds, "number", "None");
 			});
 			this.table.progress += 15;
 		},
@@ -299,7 +286,10 @@ export default {
 		},
 
 		showDetail(beneficiary) {
-			this.beneficiaryModel = beneficiary;
+			this.beneficiaryModel = {
+				...beneficiary,
+				dateOfBirth: new Date(beneficiary.dateOfBirth),
+			};
 			this.beneficiaryModal = {
 				isOpened: true,
 				isEditing: false,

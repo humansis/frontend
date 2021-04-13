@@ -1,6 +1,6 @@
 <template>
 	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
+		<section class="modal-card-body overflow-visible">
 			<p v-if="!formModel.removingId" class="mb-5">
 				{{ $t('Please select the beneficiaries that you want to add to the') }}
 				<strong>{{ assistance.name }}</strong>{{ $t('distribution') }}.

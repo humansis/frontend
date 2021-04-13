@@ -13,9 +13,10 @@
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
 					show-week-number
-					:placeholder="$t('Click to select')"
+					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
 		</div>
@@ -193,12 +194,13 @@ export default {
 	},
 
 	watch: {
-		formModel: "mapTargets",
+		async formModel() {
+			await this.mapTargets();
+		},
 	},
 
 	async mounted() {
 		await this.fetchSectors();
-		await this.mapTargets();
 	},
 
 	updated() {
@@ -251,17 +253,17 @@ export default {
 			this.fetchSubsectors(code);
 		},
 
-		onSubsectorSelect() {
+		onSubsectorSelect({ code }) {
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("subsector");
-			this.fetchAssistanceTypes();
+			this.fetchAssistanceTypes(code);
 		},
 
-		onAssistanceTypeSelect() {
+		onAssistanceTypeSelect({ code }) {
 			this.formModel.targetType = [];
 			this.validate("assistanceType");
-			this.fetchTargetTypes();
+			this.fetchTargetTypes(code);
 		},
 
 		async onTargetTypeSelect(targetType) {
@@ -363,9 +365,9 @@ export default {
 			this.loading.subsectors = false;
 		},
 
-		async fetchAssistanceTypes() {
+		async fetchAssistanceTypes(code) {
 			this.loading.assistanceTypes = true;
-			await AssistancesService.getAssistanceTypes()
+			await AssistancesService.getAssistanceTypes(code)
 				.then(({ data }) => {
 					this.options.assistanceTypes = data;
 				})
@@ -375,9 +377,9 @@ export default {
 			this.loading.assistanceTypes = false;
 		},
 
-		async fetchTargetTypes() {
+		async fetchTargetTypes(code) {
 			this.loading.targetTypes = true;
-			await AssistancesService.getTargetTypes()
+			await AssistancesService.getTargetTypes(code)
 				.then(({ data }) => {
 					this.options.targetTypes = data;
 				})

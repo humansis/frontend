@@ -67,9 +67,10 @@
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
 					v-model="formModel.value"
 					show-week-number
-					:placeholder="$t('Click to select')"
+					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 					@input="validate('value')"
 				/>
 

@@ -86,11 +86,13 @@ export default {
 				visibleColumns: [
 					{ key: "id", width: "90", sortable: true },
 					{ key: "name", width: "434", sortable: true },
+					{ key: "sectors", width: "150", type: "svgIcon" },
+					{ key: "startDate", type: "datetime", width: "120", sortable: true },
+					{ key: "endDate", type: "datetime", width: "120", sortable: true },
 					{ key: "donors", width: "150" },
-					{ key: "startDate", type: "date", width: "120", sortable: true },
-					{ key: "endDate", type: "date", width: "120", sortable: true },
-					{ key: "target", width: "90" },
-					{ key: "numberOfHouseholds", label: "Number of Households", width: "130", sortable: true },
+					{ key: "target", label: "Target Households", width: "90" },
+					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
+					{ key: "beneficiariesReached", label: "Beneficiaries Reached", width: "130", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
@@ -149,11 +151,12 @@ export default {
 		},
 
 		prepareDonors(item, donors) {
-			if (!donors?.length) return "none";
+			if (!donors?.length || !item.donorIds?.length) return this.$t("None");
 			let result = "";
 
 			item.donorIds.forEach((id) => {
 				const foundDonor = donors.find((donor) => donor.id === id);
+
 				if (foundDonor) {
 					if (result === "") {
 						result = foundDonor.shortname;

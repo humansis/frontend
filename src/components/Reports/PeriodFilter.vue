@@ -39,7 +39,8 @@
 					<b-datepicker
 						v-model="from"
 						placeholder="From"
-						icon="calendar"
+						icon="calendar-day"
+						locale="en-CA"
 						editable
 						@input="choosePeriod"
 					/>
@@ -48,7 +49,8 @@
 					<b-datepicker
 						v-model="to"
 						placeholder="To"
-						icon="calendar"
+						icon="calendar-day"
+						locale="en-CA"
 						editable
 						@input="choosePeriod"
 					/>
