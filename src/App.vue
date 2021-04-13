@@ -26,7 +26,6 @@ export default {
 		setCountryAndLanguage() {
 			if (!localStorage.getItem("vuex")) {
 				this.storeCountry(CONST.DEFAULT_COUNTRY);
-
 				this.storeLanguage(this.defaultLanguage);
 			}
 		},

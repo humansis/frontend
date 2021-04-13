@@ -14,4 +14,10 @@ export default {
 	perPage: 10,
 	icons: null,
 	translations: null,
+	languages: [
+		{ name: "English", key: "en" },
+		{ name: "Arabic", key: "ar" },
+		{ name: "Russian", key: "ru" },
+		{ name: "Amrahic", key: "am" },
+	],
 };

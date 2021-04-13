@@ -17,6 +17,18 @@ export default {
 		}
 	},
 
+	storeCountries: ({ commit }, countries) => {
+		if (countries?.length) {
+			commit(CONST.STORE_COUNTRIES, countries);
+		}
+	},
+
+	storeTranslations: ({ commit }, translations) => {
+		if (translations) {
+			commit(CONST.STORE_TRANSLATIONS, translations);
+		}
+	},
+
 	storeLanguage: ({ commit }, language) => {
 		if (language) {
 			commit(CONST.STORE_LANGUAGE, language);
