@@ -8,7 +8,7 @@
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t(typeOfAssistance) }} {{ $t('Progress') }}:
+					{{ $t(distributionOrActivity) }} {{ $t('Progress') }}:
 					<strong>{{ assistanceProgress }} %</strong>
 				</div>
 			</div>
@@ -21,11 +21,48 @@
 					<span>{{ totalAmount }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
-				<div class="column is-3">
+
+				<div
+					v-if="typeOfCommodity !== consts.COMMODITY.MOBILE_MONEY"
+					class="column is-3"
+				>
 					<div class="has-text-weight-bold">
 						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
 					</div>
 					<span>{{ amountCompleted }} </span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
+				</div>
+
+				<div
+					v-if="typeOfCommodity === consts.COMMODITY.QR_CODE_VOUCHER"
+					class="column is-3"
+				>
+					<div class="has-text-weight-bold">
+						{{ $t('Amount Used') }}:
+					</div>
+					<span>{{ amountUsed }} </span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
+				</div>
+
+				<div
+					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					class="column is-3"
+				>
+					<div class="has-text-weight-bold">
+						{{ $t('Amount Sent') }}:
+					</div>
+					<span>{{ amountSent }} </span>
+					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
+				</div>
+
+				<div
+					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					class="column is-3"
+				>
+					<div class="has-text-weight-bold">
+						{{ $t('Amount Picked Up') }}:
+					</div>
+					<span>{{ amountPickedUp }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 			</div>
@@ -97,6 +134,7 @@ export default {
 
 	data() {
 		return {
+			consts,
 			assistance: null,
 			statistics: null,
 			project: null,
@@ -130,7 +168,7 @@ export default {
 			return "";
 		},
 
-		typeOfAssistance() {
+		distributionOrActivity() {
 			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution";
 			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
 			return "";
@@ -150,11 +188,49 @@ export default {
 			return this.assistance?.completed;
 		},
 
+		typeOfAssistance() {
+			return this.assistance?.type;
+		},
+
+		typeOfCommodity() {
+			return this.commodities?.[0]?.modalityType;
+		},
+
 		assistanceProgress() {
 			if (!this.totalAmount || !this.amountCompleted) return 0;
 			const result = (100 / this.totalAmount) * this.amountCompleted;
 			if (result === Infinity) return 0;
-			return (result > 100) ? 100 : Math.round(result);
+			return Math.round(result);
+		},
+
+		totalAmount() {
+			let result = 0;
+
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
+					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
+				}
+			}
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
+				return this.$refs.beneficiariesList.table.total;
+			}
+
+			return result;
+		},
+
+		amountSent() {
+			// TODO Send correct value after BE update
+			return 0;
+		},
+
+		amountPickedUp() {
+			// TODO Send correct value after BE update
+			return 0;
+		},
+
+		amountUsed() {
+			// TODO Send correct value after BE update
+			return 0;
 		},
 
 		amountCompleted() {
@@ -172,21 +248,6 @@ export default {
 			 */
 
 			return this.statistics?.summaryOfDistributedItems || 0;
-		},
-
-		totalAmount() {
-			let result = 0;
-
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
-					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
-				}
-			}
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				return this.$refs.beneficiariesList.table.total;
-			}
-
-			return result;
 		},
 	},
 
@@ -285,7 +346,7 @@ export default {
 		closeAssistance() {
 			this.$buefy.dialog.confirm({
 				title: this.$t("Close Assistance"),
-				message: this.$t("Are You Sure You Want To Close This Assistance?"),
+				message: this.$t("Are you sure you want to close this Assistance?"),
 				confirmText: this.$t("Confirm"),
 				type: "is-primary",
 				onConfirm: async () => {
