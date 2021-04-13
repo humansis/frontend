@@ -85,6 +85,7 @@ export default {
 		addMember() {
 			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
 				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
+
 				const newCollapseIndex = (this.collapses.length - 1) + 1;
 
 				this.collapses.push(newCollapseIndex);

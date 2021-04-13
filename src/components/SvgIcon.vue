@@ -1,12 +1,16 @@
 <template>
 	<span>
-		<svg
+		<b-tooltip
 			v-for="icon in selectedIcons"
 			:key="icon.key"
-			width="30"
-			height="30"
-			v-html="icon.svg"
-		/>
+			:label="$t(icon.key)" :active="icon !== undefined"
+		>
+			<svg
+				width="30"
+				height="30"
+				v-html="icon.svg"
+			/>
+		</b-tooltip>
 	</span>
 </template>
 
@@ -26,8 +30,8 @@ export default {
 		...mapState(["icons"]),
 
 		selectedIcons() {
-			return this.fetchedIcons
-				.filter((icon) => this.items.find((item) => item === icon.key));
+			return this.items?.length ? this.fetchedIcons
+				.filter((icon) => this.items.find((item) => item === icon.key)) : [];
 		},
 	},
 

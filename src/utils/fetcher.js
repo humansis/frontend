@@ -65,6 +65,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 
 	headers = {
 		"Content-Type": contentType || "application/json;charset=utf-8",
+		"Accept-Language": getters.getLanguageFromLocalStorage()?.key || CONST.DEFAULT_LANGUAGE,
 	};
 
 	if (auth) {
@@ -76,7 +77,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	}
 
 	const country = getters.getCountryFromLocalStorage();
-	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
+	headers.Country = country?.iso3 || store.state.country.iso3;
 
 	const config = { headers };
 
@@ -107,7 +108,7 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	}
 
 	const country = getters.getCountryFromLocalStorage();
-	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
+	headers.Country = country?.iso3 || store.state.country.iso3;
 
 	const config = { headers };
 

@@ -46,10 +46,10 @@
 			:backend-pagination="backendPagination"
 			selectable
 			pagination-position="bottom"
-			default-sort-direction="asc"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
-			default-sort="id"
+			:default-sort-direction="defaultSortDirection"
+			:default-sort="defaultSortKey"
 			:aria-next-label="$t('Next Page')"
 			:aria-previous-label="$t('Previous Page')"
 			:aria-page-label="$t('Page')"
@@ -110,6 +110,14 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		defaultSortDirection: {
+			type: String,
+			default: "desc",
+		},
+		defaultSortKey: {
+			type: String,
+			default: "id",
+		},
 		backendSorting: {
 			type: Boolean,
 			default: true,
@@ -155,7 +163,7 @@ export default {
 	data() {
 		return {
 			options: {
-				perPageNumbers: [5, 10, 15],
+				perPageNumbers: [10, 20, 50, 100],
 			},
 			searchedData: null,
 		};

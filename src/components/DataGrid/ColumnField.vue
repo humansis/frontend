@@ -7,7 +7,7 @@
 
 		<!-- Simple Text -->
 		<template v-if="column.type === 'textOrNone'">
-			{{ data.row[column.field] || "none" }}
+			{{ data.row[column.field] || this.$t("None") }}
 		</template>
 
 		<!-- Count array items -->
@@ -16,7 +16,7 @@
 				{{ data.row[column.field].length }}
 			</p>
 			<p v-else>
-				{{ $t('none') }}
+				{{ $t('None') }}
 			</p>
 		</template>
 
@@ -67,6 +67,11 @@
 			{{ formattedDate }}
 		</template>
 
+		<!-- Show DateTime -->
+		<template v-if="column.type === 'datetime'">
+			{{ formattedDateTime }}
+		</template>
+
 		<!-- Show Custom Field for Selection Criteria Group -->
 		<template v-if="column.type === 'customValue'">
 			{{ customValue }}
@@ -75,20 +80,28 @@
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
-		<!-- Column for commodity  -->
-		<CommodityColumn v-if="column.type === 'commodity'" :commodity="data.row[column.field]" />
+		<!-- Column for svg icons  -->
+		<template v-if="column.type === 'svgIcon'">
+			<SvgIcon
+				v-if="data.row[column.field] && data.row[column.field].length > 0"
+				:items="data.row[column.field]"
+			/>
+			<p v-else>
+				{{ $t('None') }}
+			</p>
+		</template>
 	</div>
 </template>
 
 <script>
 import ImageColumn from "@/components/DataGrid/ImageColumn";
-import CommodityColumn from "@/components/DataGrid/CommodityColumn";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "TableColumn",
 
 	components: {
-		CommodityColumn,
+		SvgIcon,
 		ImageColumn,
 	},
 
@@ -100,28 +113,26 @@ export default {
 		customValue() {
 			const value = this.data.row[this.column.field];
 
-			if (!value) {
-				return "";
-			}
+			if (!value) return "";
 
 			if (typeof value === "object") {
-				if (value.value) {
-					return value.value;
-				}
+				if (value.value) return value.value;
 
-				const newDate = new Date(this.data.row[this.column.field]);
+				const newDate = this.$moment(this.data.row[this.column.field])
+					.format("YYYY-MM-DD hh:mm");
 
-				if (newDate.toLocaleDateString()) {
-					return newDate.toLocaleDateString();
-				}
+				if (newDate.isValid()) return newDate;
 			}
 
 			return value;
 		},
 
 		formattedDate() {
-			const newDate = new Date(this.data.row[this.column.field]);
-			return newDate.toLocaleDateString();
+			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD")}`;
+		},
+
+		formattedDateTime() {
+			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD hh:mm")}`;
 		},
 	},
 

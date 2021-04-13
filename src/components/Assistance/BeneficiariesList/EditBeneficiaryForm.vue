@@ -14,7 +14,14 @@
 			</b-field>
 
 			<b-field :label="$t('Date of Birth')">
-				<b-input v-model="formModel.dateOfBirth" disabled />
+				<b-datepicker
+					v-model="formModel.dateOfBirth"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					disabled
+				/>
 			</b-field>
 
 			<b-field :label="$t('Residency Status')">
@@ -33,6 +40,7 @@
 				<MultiSelect
 					v-model="formModel.referralType"
 					searchable
+					:loading="referralTypeLoading"
 					:disabled="disabled"
 					:placeholder="$t('Click to select')"
 					:options="options.referralType"
@@ -63,6 +71,9 @@
 </template>
 
 <script>
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+
 export default {
 	name: "EditBeneficiaryForm",
 
@@ -77,15 +88,9 @@ export default {
 		return {
 			addAReferral: false,
 			options: {
-				// TODO Fetch Referral types
-				referralType: [
-					this.$t("Health"),
-					this.$t("Protection"),
-					this.$t("Shelter"),
-					this.$t("Nutrition"),
-					this.$t("Other"),
-				],
+				referralType: [],
 			},
+			referralTypeLoading: false,
 		};
 	},
 
@@ -96,6 +101,18 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+		},
+
+		async fetchReferralTypes() {
+			this.referralTypeLoading = true;
+
+			await BeneficiariesService.getListOfReferralTypes()
+				.then(({ data }) => { this.options.referralType = data; })
+				.catch((e) => {
+					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
+				});
+
+			this.referralTypeLoading = false;
 		},
 
 	},

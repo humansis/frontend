@@ -119,7 +119,7 @@ export default {
 
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].dateTime = this.$moment(item.date).format("DD-MM-YYYY HH:mm:ss");
+				this.table.data[key].dateTime = this.$moment(item.date).format("YYYY-MM-DD hh:mm");
 				this.table.data[key].amount = `${item.quantity} Unit`;
 				this.table.data[key].price = `${item.value} ${item.currency}`;
 				this.table.data[key].commodity = item.source;

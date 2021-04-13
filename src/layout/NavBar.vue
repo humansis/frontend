@@ -64,11 +64,11 @@
 				<b-dropdown-item
 					v-for="language in languages"
 					:key="language.key"
-					:value="language.name"
+					:value="language.key"
 					@click="handleChangeLanguage(language)"
 				>
 					<b-icon class="mr-1" icon="language" />
-					{{ $t(language.key) }}
+					{{ $t(language.name) }}
 				</b-dropdown-item>
 			</b-dropdown>
 
@@ -160,6 +160,7 @@ export default {
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
 					this.updateLanguage(language);
 					sessionStorage.setItem("translations", JSON.stringify(response.data));
+					this.$router.go();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
@@ -192,9 +193,10 @@ export default {
 		async fetchLanguages() {
 			if (!sessionStorage.getItem("languages")) {
 				const languages = [
-					{ name: "EN", key: "en" },
-					{ name: "AR", key: "ar" },
-					{ name: "RU", key: "ru" },
+					{ name: "English", key: "en" },
+					{ name: "Arabic", key: "ar" },
+					{ name: "Russian", key: "ru" },
+					{ name: "Amrahic", key: "am" },
 				];
 				this.languages = languages;
 				sessionStorage.setItem("languages", JSON.stringify(languages));
