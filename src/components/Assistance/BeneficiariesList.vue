@@ -130,8 +130,9 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
-						icon="edit"
-						:tooltip="$t('Edit')"
+						icon="search"
+						type="is-primary"
+						:tooltip="$t('View')"
 						@click.native="showEdit(props.row)"
 					/>
 					<ActionButton
