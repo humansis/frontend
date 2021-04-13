@@ -72,22 +72,6 @@
 		}
 	}
 
-	.small-modal {
-		overflow: visible !important;
-
-		.modal-card-body {
-			overflow: visible !important;
-		}
-
-		.modal-card {
-			overflow: visible !important;
-		}
-
-		.modal-content {
-			overflow: visible !important;
-		}
-	}
-
 	.modal-card-foot {
 		display: flex;
 		justify-content: flex-end;
@@ -152,3 +136,4 @@
 		opacity: .5;
 	}
 }
+

@@ -4,7 +4,7 @@
 			can-cancel
 			:header="addBeneficiaryModel.removingId ?
 				$t('Remove Beneficiary From This Assistance')
-				: $t('Add Beneficiaries To This Assistance')
+				: $t('Add Beneficiaries to This Assistance')
 			"
 			:active="addBeneficiaryModal.isOpened"
 			@close="closeAddBeneficiaryModal"

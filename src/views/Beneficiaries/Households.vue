@@ -47,32 +47,31 @@
 			:active="addToProjectModal.isOpened"
 			@close="closeAddToProjectModal"
 		>
-			<form>
-				<section class="modal-card-body">
-					<b-field label="Projects">
-						<MultiSelect
-							v-model="selectedProject"
-							searchable
-							label="name"
-							track-by="id"
-							:placeholder="$t('Click to select')"
-							:loading="loading.projects"
-							:options="options.projects"
-						/>
-					</b-field>
-				</section>
-				<footer class="modal-card-foot">
-					<b-button  @click="closeAddToProjectModal">
-						{{ $t('Close') }}
-					</b-button>
-					<b-button
-						type="is-primary"
-						@click="addHouseholdsToProject"
-					>
-						{{ $t('Confirm') }}
-					</b-button>
-				</footer>
-			</form>
+			<section class="modal-card-body overflow-visible">
+				<b-field label="Projects">
+					<MultiSelect
+						v-model="selectedProject"
+						searchable
+						label="name"
+						track-by="id"
+						:placeholder="$t('Click to select')"
+						:loading="loading.projects"
+						:options="options.projects"
+					/>
+				</b-field>
+			</section>
+			<footer class="modal-card-foot">
+				<b-button  @click="closeAddToProjectModal">
+					{{ $t('Close') }}
+				</b-button>
+				<b-button
+					type="is-primary"
+					:loading="confirmButtonLoading"
+					@click="addHouseholdsToProject"
+				>
+					{{ $t('Confirm') }}
+				</b-button>
+			</footer>
 		</Modal>
 
 		<Modal
@@ -274,6 +273,7 @@ export default {
 				projects: [],
 			},
 			actionsButtonVisible: false,
+			confirmButtonLoading: false,
 			selectedProject: null,
 			loading: {
 				projects: false,
@@ -321,6 +321,8 @@ export default {
 		},
 
 		async addHouseholdsToProject() {
+			this.confirmButtonLoading = true;
+
 			if (this.table.checkedRows?.length && this.selectedProject) {
 				const householdsIds = this.table.checkedRows.map((household) => household.id);
 
@@ -337,6 +339,7 @@ export default {
 					});
 
 				this.closeAddToProjectModal();
+				this.confirmButtonLoading = false;
 			}
 		},
 
