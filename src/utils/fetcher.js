@@ -65,18 +65,18 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 
 	headers = {
 		"Content-Type": contentType || "application/json;charset=utf-8",
-		"Accept-Language": getters.getLanguageFromLocalStorage()?.key || CONST.DEFAULT_LANGUAGE,
+		"Accept-Language": getters.getLanguageFromVuexStorage()?.key || CONST.DEFAULT_LANGUAGE,
 	};
 
 	if (auth) {
-		const user = JSON.parse(localStorage.getItem("user"));
+		const user = getters.getUserFromVuexStorage();
 
 		if (user?.authdata) {
 			headers.Authorization = `Basic ${user.authdata}`;
 		}
 	}
 
-	const country = getters.getCountryFromLocalStorage();
+	const country = getters.getCountryFromVuexStorage();
 	headers.Country = country?.iso3 || store.state.country.iso3;
 
 	const config = { headers };
@@ -100,14 +100,14 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	const headers = {};
 
 	if (auth) {
-		const user = JSON.parse(localStorage.getItem("user"));
+		const user = getters.getUserFromVuexStorage();
 
 		if (user?.authdata) {
 			headers.Authorization = `Basic ${user.authdata}`;
 		}
 	}
 
-	const country = getters.getCountryFromLocalStorage();
+	const country = getters.getCountryFromVuexStorage();
 	headers.Country = country?.iso3 || store.state.country.iso3;
 
 	const config = { headers };

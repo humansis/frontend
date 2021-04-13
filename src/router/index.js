@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import getters from "@/store/getters";
 
 Vue.use(VueRouter);
 
@@ -36,7 +37,7 @@ const routes = [
 		path: "/logout",
 		name: "Logout",
 		beforeEnter: ({ query }, from, next) => {
-			localStorage.removeItem("user");
+			// TODO Remove from vuex storage user auth token
 			next({ name: "Login", query });
 		},
 	},
@@ -311,7 +312,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !localStorage.getItem("user")) {
+	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !getters.getUserFromVuexStorage()) {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Logout", query: { redirect } });
 	} else {

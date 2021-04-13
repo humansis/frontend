@@ -39,7 +39,7 @@ export default {
 
 	methods: {
 		async setLocales() {
-			const { key: languageKey } = getters.getLanguageFromLocalStorage()
+			const { key: languageKey } = getters.getLanguageFromVuexStorage()
 			|| this.language;
 
 			if (!sessionStorage.getItem("translations")) {

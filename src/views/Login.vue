@@ -124,8 +124,7 @@ export default {
 					console.log(response);
 
 					// TODO Different usage of window.btoa with credentials -> after BE will work
-					// user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					// localStorage.setItem("user", JSON.stringify(user));
+					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
 
 					this.storeUser(user);
 
