@@ -156,7 +156,7 @@ export default {
 
 			item.donorIds.forEach((id) => {
 				const foundDonor = donors.find((donor) => donor.id === id);
-				console.log(foundDonor);
+
 				if (foundDonor) {
 					if (result === "") {
 						result = foundDonor.shortname;

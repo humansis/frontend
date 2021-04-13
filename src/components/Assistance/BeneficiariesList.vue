@@ -394,8 +394,6 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
-			console.log(data);
-
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
 					// TODO Set data to table for COMMUNITY

@@ -94,7 +94,6 @@ export default {
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
-				console.log(data.sectors.map((sector) => normalizeText(sector)));
 				this.projectSummary = data;
 			}).catch((e) => {
 				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
