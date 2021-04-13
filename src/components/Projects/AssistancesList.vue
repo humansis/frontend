@@ -212,7 +212,6 @@ export default {
 			data.forEach((item, key) => {
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
-				console.log(item);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
