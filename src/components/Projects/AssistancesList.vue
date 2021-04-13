@@ -135,7 +135,7 @@ export default {
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date of Distribution", type: "datetime", sortable: true },
 					{ key: "target", sortable: true },
-					{ key: "commodity", label: "Commodity", type: "commodity" },
+					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -237,7 +237,8 @@ export default {
 			const commodities = await this.getCommodities(assistanceIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].commodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
+				const preparedCommodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
+				this.table.data[key].commodity = [preparedCommodity];
 			});
 			this.table.progress += 10;
 		},

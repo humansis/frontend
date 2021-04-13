@@ -86,7 +86,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", width: "90", sortable: true },
 					{ key: "name", width: "434", sortable: true },
-					{ key: "sectors", width: "150" },
+					{ key: "sectors", width: "150", type: "svgIcon" },
 					{ key: "startDate", type: "datetime", width: "120", sortable: true },
 					{ key: "endDate", type: "datetime", width: "120", sortable: true },
 					{ key: "donors", width: "150" },

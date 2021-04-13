@@ -80,20 +80,20 @@
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
-		<!-- Column for commodity  -->
-		<CommodityColumn v-if="column.type === 'commodity'" :commodity="data.row[column.field]" />
+		<!-- Column for svg icons  -->
+		<SvgIcon v-if="column.type === 'svgIcon'" :items="data.row[column.field]" />
 	</div>
 </template>
 
 <script>
 import ImageColumn from "@/components/DataGrid/ImageColumn";
-import CommodityColumn from "@/components/DataGrid/CommodityColumn";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "TableColumn",
 
 	components: {
-		CommodityColumn,
+		SvgIcon,
 		ImageColumn,
 	},
 

@@ -50,7 +50,7 @@ import Modal from "@/components/Modal";
 import ProjectService from "@/services/ProjectService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import ProjectList from "@/components/Projects/ProjecstList";
+import ProjectList from "@/components/Projects/ProjectsList";
 
 export default {
 	name: "ProjectPage",

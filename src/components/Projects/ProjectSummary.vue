@@ -64,6 +64,7 @@
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectSummary",
@@ -85,10 +86,15 @@ export default {
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
+				console.log(data.sectors.map((sector) => normalizeText(sector)));
 				this.projectSummary = data;
 			}).catch((e) => {
 				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 			});
+		},
+
+		normalizeText(value) {
+			return normalizeText(value);
 		},
 	},
 };
