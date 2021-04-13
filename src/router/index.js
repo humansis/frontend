@@ -37,7 +37,7 @@ const routes = [
 		path: "/logout",
 		name: "Logout",
 		beforeEnter: ({ query }, from, next) => {
-			// TODO Remove from vuex storage user auth token
+			// TODO Remove from vuex storage user's auth token
 			next({ name: "Login", query });
 		},
 	},
