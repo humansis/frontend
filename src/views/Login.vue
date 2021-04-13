@@ -65,6 +65,8 @@
 import { mapState, mapActions } from "vuex";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import LoginService from "@/services/LoginService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Login",
@@ -118,24 +120,26 @@ export default {
 				return;
 			}
 
-			// TODO Uncomment bellow after Login service on BE will be DONE
 			this.loading = true;
-			// await LoginService.logUserIn(this.formModel).then((response) => {
-			// if (response.status === 200) {
-			// const { data: user } = response;
-			const user = {};
-			// TODO Different usage of window.btoa with credentials
-			user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-			localStorage.setItem("user", JSON.stringify(user));
-			this.storeUser(user);
+			await LoginService.logUserIn(this.formModel).then(async (response) => {
+				if (response.status === 200) {
+					// TODO Uncomment this after login will be implemented by BE
+					const user = {};
+					console.log(response);
 
-			this.$router.push(this.$route.query.redirect?.toString() || "/");
-			// }
-			// }).catch((e) => {
-			// Notification(`Login ${e}`, "is-danger");
-			// this.loading = false;
-			// this.$v.$reset();
-			// });
+					// TODO Different usage of window.btoa with credentials -> after BE will work
+					// user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
+					// localStorage.setItem("user", JSON.stringify(user));
+
+					this.storeUser(user);
+
+					this.$router.push(this.$route.query.redirect?.toString() || "/");
+				}
+			}).catch((e) => {
+				Notification(`Login ${e}`, "is-danger");
+				this.loading = false;
+				this.$v.$reset();
+			});
 		},
 	},
 };
