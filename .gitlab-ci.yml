@@ -35,11 +35,10 @@ deploy dev:
   stage: deploy_dev
   environment:
     name: dev
-    url: https://test2.humansis.org
+    url: https://dev-pin.humansis.org
   <<: *prepare_aws
   script:
-    - ./build-deploy.sh test #for testing pourposes before DEV ENV is set up
-    # - ./build-deploy.sh dev
+     - ./build-deploy.sh dev
   only:
     - branches
   when: manual
@@ -48,7 +47,7 @@ deploy test:
   stage: deploy_test
   environment:
     name: test
-    url: https://test2.humansis.org
+    url: https://test-pin.humansis.org
   <<: *prepare_aws
   script:
     - ./build-deploy.sh test
@@ -73,7 +72,7 @@ deploy stage:
   stage: deploy_stage
   environment:
     name: stage
-    url: https://TBD.humansis.org
+    url: https://stage-pin.humansis.org
   <<: *prepare_aws
   script:
     - ./build-deploy.sh stage
@@ -86,7 +85,7 @@ deploy prod:
   stage: deploy_prod
   environment:
     name: production
-    url: https://TBD.humansis.org
+    url: https://prod-pin.humansis.org
   <<: *prepare_aws
   script:
     - yarn install
