@@ -151,11 +151,12 @@ export default {
 		},
 
 		prepareDonors(item, donors) {
-			if (!donors?.length) return this.$t("None");
+			if (!donors?.length || !item.donorIds?.length) return this.$t("None");
 			let result = "";
 
 			item.donorIds.forEach((id) => {
 				const foundDonor = donors.find((donor) => donor.id === id);
+				console.log(foundDonor);
 				if (foundDonor) {
 					if (result === "") {
 						result = foundDonor.shortname;
