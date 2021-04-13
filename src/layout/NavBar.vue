@@ -108,6 +108,7 @@ import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
 import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
+import IconService from "@/services/IconService";
 
 export default {
 	name: "NavBar",
@@ -137,6 +138,7 @@ export default {
 		...mapActions([
 			"storeCountry",
 			"storeLanguage",
+			"storeIcons",
 		]),
 
 		menuToggle() {
@@ -204,11 +206,23 @@ export default {
 				this.languages = JSON.parse(sessionStorage.getItem("languages"));
 			}
 		},
+
+		async fetchIcons() {
+			if (!this.icons) {
+				await IconService.getIcons()
+					.then(({ data }) => {
+						this.storeIcons(data);
+					}).catch((e) => {
+						Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+					});
+			}
+		},
 	},
 
 	async created() {
 		await this.fetchLanguages();
 		await this.fetchCountries();
+		await this.fetchIcons();
 	},
 
 	computed: {
@@ -217,6 +231,7 @@ export default {
 			"isAsideExpanded",
 			"country",
 			"language",
+			"icons",
 		]),
 
 		menuToggleIcon() {
