@@ -224,9 +224,9 @@ export default {
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", sortable: true, sortKey: "localFamilyName" },
 					{ key: "gender" },
-					{ key: "dateOfBirth", label: "Date of Birth" },
+					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
 					{ key: "residencyStatus" },
-					{ key: "vulnerabilities" },
+					{ key: "vulnerabilities", type: "svgIcon" },
 				],
 				householdsAndIndividualDetailColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
@@ -393,6 +393,8 @@ export default {
 			const nationalIdIds = [];
 			const beneficiaryIds = [];
 
+			console.log(data);
+
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
 					// TODO Set data to table for COMMUNITY
@@ -411,8 +413,8 @@ export default {
 						this.table.data[key].familyName = this
 							.prepareName(item.localFamilyName, item.enFamilyName);
 						this.table.data[key].gender = this.prepareGender(item.gender);
-						this.table.data[key].vulnerabilities = this
-							.prepareVulnerabilities(item.vulnerabilityCriteria);
+
+						this.table.data[key].vulnerabilities = item.vulnerabilityCriteria;
 
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
 						if (item.phoneIds.length) phoneIds.push(item.phoneIds);

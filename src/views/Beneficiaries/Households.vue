@@ -246,7 +246,7 @@ export default {
 					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
-					{ key: "vulnerabilities", width: "30" },
+					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
 					{ key: "idNumber", label: "ID Number", width: "30", sortKey: "nationalId" },
 					{ key: "projects", label: "Projects", width: "30" },
 					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
@@ -489,21 +489,6 @@ export default {
 				});
 		},
 
-		prepareVulnerabilities(vulnerabilities) {
-			let result = "None";
-			if (vulnerabilities) {
-				vulnerabilities.forEach((item) => {
-					if (result === "None") {
-						result = normalizeText(item);
-					} else {
-						result += `, ${normalizeText(item)}`;
-					}
-				});
-			}
-
-			return result;
-		},
-
 		prepareBeneficiaries(id, beneficiaries) {
 			if (!beneficiaries?.length) return "";
 			const result = {
@@ -518,8 +503,7 @@ export default {
 				result.givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
-				result.vulnerabilities = this
-					.prepareVulnerabilities(beneficiary.vulnerabilityCriteria);
+				result.vulnerabilities = beneficiary.vulnerabilityCriteria;
 			}
 
 			return result;

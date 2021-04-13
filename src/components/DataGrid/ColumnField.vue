@@ -16,7 +16,7 @@
 				{{ data.row[column.field].length }}
 			</p>
 			<p v-else>
-				{{ $t('none') }}
+				{{ $t('None') }}
 			</p>
 		</template>
 
@@ -81,7 +81,15 @@
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
 		<!-- Column for svg icons  -->
-		<SvgIcon v-if="column.type === 'svgIcon'" :items="data.row[column.field]" />
+		<template v-if="column.type === 'svgIcon'">
+			<SvgIcon
+				v-if="data.row[column.field] && data.row[column.field].length > 0"
+				:items="data.row[column.field]"
+			/>
+			<p v-else>
+				{{ $t('None') }}
+			</p>
+		</template>
 	</div>
 </template>
 

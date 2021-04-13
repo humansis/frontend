@@ -1,6 +1,5 @@
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
-import { normalizeText } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { mapActions, mapState } from "vuex";
 
@@ -208,20 +207,6 @@ export default {
 				.catch((e) => {
 					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
 				});
-		},
-
-		prepareVulnerabilities(vulnerabilities) {
-			let result = "None";
-			if (vulnerabilities) {
-				vulnerabilities.forEach((item) => {
-					if (result === "None") {
-						result = this.$t(item);
-					} else {
-						result += `, ${normalizeText(item)}`;
-					}
-				});
-			}
-			return result;
 		},
 
 		async preparePhoneForTable(phoneIds) {

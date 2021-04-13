@@ -6,7 +6,15 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">{{ $t('Sectors') }}</p>
-					<svg-icon :items="projectSummary.sectors" />
+					<span>
+						<svg-icon
+							v-if="projectSummary.sectors.length"
+							:items="projectSummary.sectors"
+						/>
+						<p v-else class="has-text-weight-bold is-size-5">
+							{{ $t("None") }}
+						</p>
+					</span>
 				</div>
 			</div>
 
