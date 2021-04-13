@@ -364,7 +364,7 @@ export default {
 						additionalColumns = [
 							{ key: "booklet", label: "Booklet" },
 							{ key: "status", label: "Status" },
-							{ key: "quantity", label: "Quantity" },
+							{ key: "used", label: "Used" },
 							{ key: "value", label: "Value" },
 						];
 						break;

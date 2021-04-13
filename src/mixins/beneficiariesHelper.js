@@ -108,8 +108,10 @@ export default {
 					this.table.data[beneficiaryItemIndex].booklet = booklets?.[0]?.code || this.$t("None");
 					this.table.data[beneficiaryItemIndex].status = booklets?.[0]?.distributed
 						? this.$t("Distributed") : this.$t("Not Distributed");
-					this.table.data[beneficiaryItemIndex].quantity = booklets?.[0]?.quantityOfVouchers
-						|| this.$t("None");
+					this.table.data[beneficiaryItemIndex]
+						.used =	booklets?.[0]
+							? `${booklets[0].quantityOfUsedVouchers}/${booklets[0].quantityOfVouchers}`
+							: this.$t("None");
 					this.table.data[beneficiaryItemIndex].value = booklets?.[0]
 						? `${booklets[0].totalValue} ${booklets[0].currency}` : this.$t("None");
 
