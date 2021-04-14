@@ -32,28 +32,35 @@ export default {
 		state.isAsideExpanded = isExpand;
 	},
 
-	[CONST.CHANGE_COUNTRY]: (state, countryToChange) => {
-		state.country = { ...countryToChange };
+	[CONST.STORE_COUNTRIES]: (state, countries) => {
+		state.countries = countries;
 	},
 
-	[CONST.CHANGE_LANGUAGE]: (state, languageToChange) => {
-		state.language = { ...languageToChange };
+	[CONST.STORE_COUNTRY]: (state, country) => {
+		state.country = { ...country };
 	},
 
-	[CONST.SET_PERMISSIONS]: (state, { storedPermissions }) => {
-		// TODO: decode storedPermissions and replace state.auth with it
-		state.auth = { ...storedPermissions };
+	[CONST.STORE_LANGUAGE]: (state, language) => {
+		state.language = { ...language };
+	},
+
+	[CONST.STORE_TRANSLATIONS]: (state, translations) => {
+		state.translations = translations;
+	},
+
+	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
+		state.permissions = permissions;
 	},
 
 	[CONST.APP_LOADING]: (state, boolean) => {
 		state.isAppLoading = boolean;
 	},
 
-	[CONST.UPDATE_PER_PAGE]: (state, perPage) => {
+	[CONST.STORE_PER_PAGE]: (state, perPage) => {
 		state.perPage = perPage;
 	},
 
-	[CONST.LOGIN_SUCCEEDED]: (state, { user }) => {
+	[CONST.STORE_USER]: (state, user) => {
 		state.user = user;
 	},
 
@@ -61,7 +68,7 @@ export default {
 		state.user = null;
 	},
 
-	[CONST.LOAD_ICONS]: (state, icons) => {
+	[CONST.STORE_ICONS]: (state, icons) => {
 		state.icons = icons;
 	},
 };

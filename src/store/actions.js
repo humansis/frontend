@@ -1,35 +1,47 @@
 import CONST from "@/store/const";
 
 export default {
-	storeUser: ({ commit }, user) => {
-		if (user) {
-			commit(CONST.LOGIN_SUCCEEDED, user);
-		}
-	},
-
 	appLoading: ({ commit }, boolean) => {
 		commit(CONST.APP_LOADING, boolean);
 	},
 
-	updateCountry: ({ commit }, country) => {
+	storeUser: ({ commit }, user) => {
+		if (user) {
+			commit(CONST.STORE_USER, user);
+		}
+	},
+
+	storeCountry: ({ commit }, country) => {
 		if (country) {
-			commit(CONST.CHANGE_COUNTRY, country);
+			commit(CONST.STORE_COUNTRY, country);
 		}
 	},
 
-	updateLanguage: ({ commit }, language) => {
+	storeCountries: ({ commit }, countries) => {
+		if (countries?.length) {
+			commit(CONST.STORE_COUNTRIES, countries);
+		}
+	},
+
+	storeTranslations: ({ commit }, translations) => {
+		if (translations) {
+			commit(CONST.STORE_TRANSLATIONS, translations);
+		}
+	},
+
+	storeLanguage: ({ commit }, language) => {
 		if (language) {
-			commit(CONST.CHANGE_LANGUAGE, language);
+			commit(CONST.STORE_LANGUAGE, language);
 		}
 	},
 
-	changePerPage: ({ commit }, perPage) => {
+	storePerPage: ({ commit }, perPage) => {
 		if (perPage) {
-			commit(CONST.UPDATE_PER_PAGE, perPage);
+			commit(CONST.STORE_PER_PAGE, perPage);
 		}
 	},
 
-	loadIconsToState: ({ commit }, icons) => {
-		commit(CONST.LOAD_ICONS, icons);
+	storeIcons: ({ commit }, icons) => {
+		commit(CONST.STORE_ICONS, icons);
 	},
 };

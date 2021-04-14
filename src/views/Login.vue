@@ -44,13 +44,9 @@
 								<b-button
 									type="is-primary"
 									native-type="submit"
-									:disabled="loading === true"
+									:loading="loginButtonLoading"
 								>
-									<span :class="{ 'is-invisible': loading }">Login</span>
-									<b-loading
-										v-model="loading"
-										:is-full-page="false"
-									/>
+									<span :class="{ 'is-invisible': loginButtonLoading }">Login</span>
 								</b-button>
 							</b-field>
 						</form>
@@ -79,7 +75,7 @@ export default {
 				login: "",
 				password: "",
 			},
-			loading: false,
+			loginButtonLoading: false,
 		};
 	},
 
@@ -120,29 +116,26 @@ export default {
 				return;
 			}
 
-			this.loading = true;
+			this.loginButtonLoading = true;
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
 					// TODO Uncomment this after login will be implemented by BE
-					// const { data: user } = response;
 					const user = {};
+					console.log(response);
 
 					// TODO Different usage of window.btoa with credentials -> after BE will work
 					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					localStorage.setItem("user", JSON.stringify(user));
-
 					user.role = "ROLE_ADMIN";
 
 					const permissions = await this.getRolePermissions(user.role);
 					console.log(permissions);
-					// TODO store permissions for this user
 					this.storeUser(user);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
 				Notification(`Login ${e}`, "is-danger");
-				this.loading = false;
+				this.loginButtonLoading = false;
 				this.$v.$reset();
 			});
 		},

@@ -331,7 +331,7 @@ export default {
 
 	computed: {
 		countryCurrency() {
-			return getters.getCountryFromLocalStorage()?.currency;
+			return getters.getCountryFromVuexStorage()?.currency;
 		},
 	},
 

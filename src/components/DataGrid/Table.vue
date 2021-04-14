@@ -180,7 +180,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["changePerPage"]),
+		...mapActions(["storePerPage"]),
 
 		onClick(row, column) {
 			if (column.$options.propsData.label !== "Actions") {
@@ -209,8 +209,8 @@ export default {
 		},
 
 		onChangePerPage(value) {
-			this.changePerPage(value);
-			this.$emit("changePerPage");
+			this.storePerPage(value);
+			this.$emit("storePerPage");
 		},
 
 		onResetSort() {
