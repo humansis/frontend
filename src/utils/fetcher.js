@@ -27,11 +27,6 @@ export const getResponseJSON = async (response) => {
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
 	const notFound = response.status === 404;
-	const noContent = response.status === 204;
-
-	if (noContent) {
-		return { data: null, status: response.status };
-	}
 
 	if (forbidden) {
 		router.push({ name: "NotFound" });

@@ -70,6 +70,12 @@ export default {
 
 	[CONST.LOGOUT]: (state) => {
 		state.user = null;
+
+		const permissionsCopy = { ...state.permissions };
+
+		Object.keys(permissionsCopy).forEach((permission) => {
+			state.permissions[permission] = false;
+		});
 	},
 
 	[CONST.STORE_ICONS]: (state, icons) => {

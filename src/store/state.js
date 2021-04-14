@@ -47,7 +47,6 @@ export default {
 		countryReport: false,
 		projectReport: false,
 		distributionReport: false,
-		authoriseElectronicCashTransfer: false,
 		countrySettings: false,
 		addEditUsers: false,
 		adminSettings: false,
