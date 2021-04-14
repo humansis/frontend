@@ -170,7 +170,6 @@ export default {
 				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
 				.then(() => {
 					Toast(successMessage, "is-success");
-					this.fetchData();
 				})
 				.catch((e) => {
 					Notification(
