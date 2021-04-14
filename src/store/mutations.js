@@ -32,6 +32,13 @@ export default {
 		state.isAsideExpanded = isExpand;
 	},
 
+	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
+		state.permissions = CONST.PERMISSIONS.map(({ key, value }) => ({
+			key,
+			value: permissions.includes(value),
+		}));
+	},
+
 	[CONST.STORE_COUNTRIES]: (state, countries) => {
 		state.countries = countries;
 	},
@@ -46,10 +53,6 @@ export default {
 
 	[CONST.STORE_TRANSLATIONS]: (state, translations) => {
 		state.translations = translations;
-	},
-
-	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
-		state.permissions = permissions;
 	},
 
 	[CONST.APP_LOADING]: (state, boolean) => {

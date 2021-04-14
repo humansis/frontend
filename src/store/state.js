@@ -7,7 +7,7 @@ export default {
 	isAsideVisible: true,
 	isAsideExpanded: false,
 	user: null,
-	permissions: null,
+	permissions: [],
 	countries: null,
 	country: null,
 	language: null,

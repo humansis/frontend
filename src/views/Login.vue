@@ -109,7 +109,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeUser"]),
+		...mapActions(["storeUser", "storePermissions"]),
 		async submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -125,11 +125,19 @@ export default {
 
 					// TODO Different usage of window.btoa with credentials -> after BE will work
 					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					user.role = "ROLE_ADMIN";
+					user.role = "GLOBAL_ADMIN";
 
-					const permissions = await this.getRolePermissions(user.role);
-					console.log(permissions);
+					// let permissions = await this.getRolePermissions(user.role);
+
+					const permissions = [
+						"addProject",
+						"editProject",
+						"deleteProject",
+						"viewProject",
+					];
+
 					this.storeUser(user);
+					this.storePermissions(permissions);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
