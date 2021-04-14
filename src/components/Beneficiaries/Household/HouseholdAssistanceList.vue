@@ -110,6 +110,7 @@ export default {
 			const assistanceIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+				this.table.data[key].dateOfDistribution = this.$moment(item.dateOfDistribution).format("YYYY-MM-DD hh:mm:ss");
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
 			});

@@ -9,6 +9,7 @@
 		>
 			<b-step-item step="1" :label="$t('Household')">
 				<HouseholdForm
+					v-if="steps[1]"
 					ref="householdForm"
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
@@ -17,20 +18,27 @@
 
 			<b-step-item step="2" :label="$t('Household Head')">
 				<HouseholdHeadForm
+					v-if="steps[2]"
 					ref="householdHeadForm"
-					show-type-of-beneficiary
 					is-household-head
+					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
 				/>
 			</b-step-item>
 
 			<b-step-item step="3" :label="$t('Members')">
-				<Members :detailOfHousehold="detailOfHousehold" ref="householdMembers" />
+				<Members
+					v-if="steps[3]"
+					ref="householdMembers"
+					:is-editing="isEditing"
+					:detailOfHousehold="detailOfHousehold"
+				/>
 			</b-step-item>
 
 			<b-step-item step="4" :label="$t('Summary')">
 				<Summary
+					v-if="steps[4]"
 					ref="householdSummary"
 					:detailOfHousehold="detailOfHousehold"
 					:members="summaryMembers"
@@ -108,6 +116,12 @@ export default {
 			location: "",
 			address: "",
 			saveButtonLoading: false,
+			steps: {
+				1: false,
+				2: false,
+				3: false,
+				4: false,
+			},
 		};
 	},
 
@@ -117,8 +131,9 @@ export default {
 
 	async created() {
 		if (this.isEditing) {
-			await this.getDetailOfHousehold(this.$route.params.householdId);
+			await this.fetchHouseholdDetail(this.$route.params.householdId);
 		}
+		this.steps[1] = true;
 	},
 
 	methods: {
@@ -127,6 +142,7 @@ export default {
 		},
 
 		nextPage(next) {
+			this.steps[this.activeStep + 2] = true;
 			switch (this.activeStep) {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
@@ -183,7 +199,7 @@ export default {
 				iso3: this.country.iso3,
 				livelihood: livelihood?.code,
 				assets: getArrayOfIdsByParam(assets, "code"),
-				shelterStatus: parseInt(shelterStatus?.code, 10),
+				shelterStatus: shelterStatus?.code,
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				// TODO Resolve longitude and latitude
@@ -197,7 +213,7 @@ export default {
 				copingStrategiesIndex,
 				debtLevel,
 				supportDateReceived: supportDateReceived.toISOString(),
-				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code", true),
+				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				incomeSpentOnFood,
 				houseIncome: 0,
@@ -220,7 +236,7 @@ export default {
 			Object.keys(countrySpecificAnswers).forEach((key) => {
 				preparedAnswers.push({
 					countrySpecificId: Number(key),
-					answer: countrySpecificAnswers[key],
+					answer: `${countrySpecificAnswers[key]}`,
 				});
 			});
 			return preparedAnswers;
@@ -256,7 +272,7 @@ export default {
 			this.saveButtonLoading = false;
 		},
 
-		async getDetailOfHousehold(id) {
+		async fetchHouseholdDetail(id) {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {

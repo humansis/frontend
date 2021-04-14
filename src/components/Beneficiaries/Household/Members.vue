@@ -2,6 +2,7 @@
 	<div>
 		<b-collapse
 			v-for="(collapse, index) of collapses"
+			ref="members"
 			class="card"
 			animation="slide"
 			:key="index"
@@ -64,12 +65,22 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	watch: {
 		detailOfHousehold(household) {
 			this.mapDetailOfHouseholdToFormModel(household);
 		},
+	},
+
+	async created() {
+		if (this.isEditing) {
+			await this.mapDetailOfHouseholdToFormModel();
+		}
 	},
 
 	data() {
@@ -82,6 +93,29 @@ export default {
 	},
 
 	methods: {
+		async mapDetailOfHouseholdToFormModel() {
+			const promises = [];
+			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
+				if (this.detailOfHousehold.householdHeadId !== id) {
+					const promise = BeneficiariesService.getBeneficiary(id).then((data) => {
+						this.preparedMembers[this.collapses.length] = data;
+						this.collapses.push(this.collapses.length);
+					});
+					promises.push(promise);
+				}
+			});
+			await Promise.all(promises);
+			this.reloadMemberForm();
+		},
+
+		reloadMemberForm() {
+			if (this.$refs.member) {
+				this.$refs.member.forEach((form) => {
+					form.map();
+				});
+			}
+		},
+
 		addMember() {
 			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
 				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
@@ -93,20 +127,6 @@ export default {
 			} else {
 				this.collapses.push(this.collapses.length);
 			}
-		},
-
-		async mapDetailOfHouseholdToFormModel() {
-			const promises = [];
-			await this.detailOfHousehold.beneficiaryIds.forEach((id) => {
-				if (this.detailOfHousehold.householdHeadId !== id) {
-					const promise = BeneficiariesService.getBeneficiary(id).then((data) => {
-						this.preparedMembers[this.collapses.length] = data;
-						this.collapses.push(this.collapses.length);
-					});
-					promises.push(promise);
-				}
-			});
-			await Promise.all(promises);
 		},
 
 		removeMember(index) {
