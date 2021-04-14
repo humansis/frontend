@@ -4,40 +4,31 @@ import getters from "@/store/getters";
 
 Vue.use(VueRouter);
 
-// TODO Prepare auth system after login will be implemented by BE
-// https://blog.sqreen.com/authentication-best-practices-vue/
-// eslint-disable-next-line max-len
-// https://www.digitalocean.com/community/tutorials/how-to-set-up-vue-js-authentication-and-route-handling-using-vue-router
-// const ifAuthenticated = (to, from, next) => {
-// 	next();
-//	 if (store.getters.isAuthenticated) {
-//	 	next()
-//	 	return
-//	 }
-//	 next('/login')
-// };
+// const permissions = getters.getPermissionsFromVuexStorage();
 
-// const ifNotAuthenticated = (to, from, next) => {
-// 	next();
-//	 if (!store.getters.isAuthenticated) {
-//	 	next()
-//	 	return
-//	 }
-//	 next('/')
-// };
+const ifAuthenticated = (to, from, next) => {
+	const user = getters.getUserFromVuexStorage();
+
+	if (user?.authdata && to.meta.permissions) {
+		next();
+	} else if (!user?.authdata) {
+		const redirect = to.query?.redirect || to.fullPath;
+		next({ name: "Login", query: { redirect } });
+	} else {
+		next({ name: "NotFound" });
+	}
+};
 
 const routes = [
 	{
 		path: "/login",
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
-		// beforeEnter: ifNotAuthenticated,
 	},
 	{
 		path: "/logout",
 		name: "Logout",
 		beforeEnter: ({ query }, from, next) => {
-			// TODO Remove from vuex storage user's auth token
 			next({ name: "Login", query });
 		},
 	},
@@ -49,7 +40,9 @@ const routes = [
 				path: "/",
 				name: "Home",
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
+				beforeEnter: ifAuthenticated,
 				meta: {
+					permissions: true,
 					breadcrumb: "Home",
 					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's distributions and a summary of the last ones.",
 				},
@@ -62,6 +55,7 @@ const routes = [
 						path: "",
 						name: "Projects",
 						component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
+						// permissions: true,
 						meta: {
 							breadcrumb: "Projects",
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
@@ -75,6 +69,7 @@ const routes = [
 								path: "",
 								name: "Project",
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Project",
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
@@ -84,6 +79,7 @@ const routes = [
 								path: "assistance/:assistanceId",
 								name: "AssistanceEdit",
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Assistance Edit",
 									description: "",
@@ -93,6 +89,7 @@ const routes = [
 								path: "assistance/detail/:assistanceId",
 								name: "AssistanceDetail",
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Assistance Detail",
 									description: "",
@@ -102,6 +99,7 @@ const routes = [
 								path: "add-assistance",
 								name: "AddAssistance",
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new distribution to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
@@ -131,6 +129,7 @@ const routes = [
 								path: "",
 								name: "Households",
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Households",
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
@@ -140,6 +139,7 @@ const routes = [
 								path: "add",
 								name: "AddHousehold",
 								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
@@ -149,6 +149,7 @@ const routes = [
 								path: "import",
 								name: "ImportHousehold",
 								component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Import Household",
 									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
@@ -158,6 +159,7 @@ const routes = [
 								path: "edit/:householdId",
 								name: "EditHousehold",
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Edit Household",
 									description: "",
@@ -167,6 +169,7 @@ const routes = [
 								path: "summary/:householdId",
 								name: "HouseholdInformationSummary",
 								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+								// permissions: true,
 								meta: {
 									breadcrumb: "Household Information Summary",
 									description: "",
@@ -179,6 +182,7 @@ const routes = [
 						path: "communities",
 						name: "Communities",
 						component: () => import(/* webpackChunkName: "Communities" */ "@/views/Beneficiaries/Communities"),
+						// permissions: true,
 						meta: {
 							breadcrumb: "Communities",
 							description: "",
@@ -188,6 +192,7 @@ const routes = [
 						path: "institutions",
 						name: "Institutions",
 						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+						// permissions: true,
 						meta: {
 							breadcrumb: "Institutions",
 							description: "",
@@ -197,6 +202,7 @@ const routes = [
 						path: "vendors",
 						name: "Vendors",
 						component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
+						// permissions: true,
 						meta: {
 							breadcrumb: "Vendors",
 							description: "",
@@ -208,6 +214,7 @@ const routes = [
 				path: "/reports",
 				name: "Reports",
 				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Reports",
 					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions",
@@ -217,6 +224,7 @@ const routes = [
 				path: "/vouchers",
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
@@ -231,6 +239,8 @@ const routes = [
 						path: "products",
 						name: "Products",
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/Configuration/Products"),
+						// permissions: true,
+						beforeEnter: ifAuthenticated,
 						meta: {
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -240,6 +250,7 @@ const routes = [
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Configuration/CountrySpecificOptions"),
+						// permissions: true,
 						meta: {
 							breadcrumb: "Country Specifics",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -251,6 +262,7 @@ const routes = [
 				path: "/administrative-settings",
 				name: "Administrative Settings",
 				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Administrative Settings",
 					description: "This page is where you can manage users, donors and your organization's specifics",
@@ -260,6 +272,7 @@ const routes = [
 				path: "/transactions",
 				name: "Transactions",
 				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/Transactions"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Transactions",
 					description: "",
@@ -269,6 +282,7 @@ const routes = [
 				path: "/jobs",
 				name: "Jobs",
 				component: () => import(/* webpackChunkName: "Jobs" */ "@/views/Jobs"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Jobs",
 					description: "",
@@ -278,6 +292,7 @@ const routes = [
 				path: "/logs",
 				name: "Logs",
 				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Logs",
 					description: "",
@@ -287,6 +302,7 @@ const routes = [
 				path: "/profile",
 				name: "Profile",
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
+				// permissions: true,
 				meta: {
 					breadcrumb: "Profile",
 					description: "This page is where you can change your password",
@@ -298,10 +314,12 @@ const routes = [
 		path: "/not-found",
 		name: "NotFound",
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+		// permissions: true,
 	},
 	{
 		path: "/*",
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+		// permissions: true,
 	},
 ];
 
@@ -312,11 +330,17 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !getters.getUserFromVuexStorage()) {
-		const redirect = to.query?.redirect || to.fullPath;
-		next({ name: "Logout", query: { redirect } });
+	const user = getters.getUserFromVuexStorage();
+
+	window.document.title = to.meta && to.meta.breadcrumb
+		? `${to.meta.breadcrumb} | Humansis` : "Humansis";
+
+	if (
+		to.name === "Login"
+		&& user?.authdata
+	) {
+		next({ name: "Home" });
 	} else {
-		window.document.title = to.meta && to.meta.breadcrumb ? `${to.meta.breadcrumb} | Humansis` : "Humansis";
 		next();
 	}
 });

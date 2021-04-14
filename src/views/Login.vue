@@ -110,13 +110,13 @@ export default {
 
 	methods: {
 		...mapActions(["storeUser", "storePermissions"]),
+
 		async submitForm() {
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				return;
-			}
+			if (this.$v.$invalid) return;
 
 			this.loginButtonLoading = true;
+
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
 					// TODO Uncomment this after login will be implemented by BE
@@ -131,15 +131,16 @@ export default {
 					const { privileges } = await LoginService.getRolePermissions(user.role)
 						.then(({ data }) => data);
 
-					this.storePermissions(privileges);
+					await this.storePermissions(privileges);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
 				Notification(`Login ${e}`, "is-danger");
-				this.loginButtonLoading = false;
 				this.$v.$reset();
 			});
+
+			this.loginButtonLoading = false;
 		},
 	},
 };
