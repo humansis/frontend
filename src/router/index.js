@@ -9,7 +9,7 @@ const ifAuthenticated = (to, from, next) => {
 	const permissions = getters.getPermissionsFromVuexStorage();
 
 	const canGoNext = to.meta.permissions.length ? to.meta.permissions
-		.every((permission) => permissions[permission]) : true;
+		.every((permission) => permissions?.[permission]) : true;
 
 	if (user?.authdata && to.meta.permissions && canGoNext) {
 		next();
@@ -26,13 +26,6 @@ const routes = [
 		path: "/login",
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
-	},
-	{
-		path: "/logout",
-		name: "Logout",
-		beforeEnter: ({ query }, from, next) => {
-			next({ name: "Login", query });
-		},
 	},
 	{
 		path: "",

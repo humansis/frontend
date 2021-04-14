@@ -41,7 +41,7 @@ export const getResponseJSON = async (response) => {
 	if (unauthorized) {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
-		router.push({ name: "Logout", query: { redirect } });
+		router.push({ name: "Login", query: { redirect } });
 		throw new Error("You need to login to continue");
 	}
 

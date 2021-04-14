@@ -11,6 +11,10 @@ export default {
 		}
 	},
 
+	logoutUser: ({ commit }) => {
+		commit(CONST.LOGOUT);
+	},
+
 	storeCountry: ({ commit }, country) => {
 		if (country) {
 			commit(CONST.STORE_COUNTRY, country);
