@@ -33,9 +33,11 @@ export default {
 	},
 
 	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
-		state.permissions = CONST.PERMISSIONS.map(({ key, value }) => ({
-			[key]: permissions.includes(value),
-		}));
+		const permissionsCopy = { ...state.permissions };
+
+		Object.keys(permissionsCopy).forEach((permission) => {
+			state.permissions[permission] = permissions.includes(permission);
+		});
 	},
 
 	[CONST.STORE_COUNTRIES]: (state, countries) => {

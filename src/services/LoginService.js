@@ -12,7 +12,7 @@ export default {
 		const { data, status } = await fetcher({
 			uri: `acl/roles/${role}`,
 		});
-		console.log(data);
+
 		return { data, status };
 	},
 };
