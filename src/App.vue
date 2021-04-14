@@ -21,13 +21,12 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["updateCountry", "updateLanguage"]),
+		...mapActions(["storeCountry", "storeLanguage"]),
 
 		setCountryAndLanguage() {
 			if (!localStorage.getItem("vuex")) {
-				this.updateCountry(CONST.DEFAULT_COUNTRY);
-
-				this.updateLanguage(this.defaultLanguage);
+				this.storeCountry(CONST.DEFAULT_COUNTRY);
+				this.storeLanguage(this.defaultLanguage);
 			}
 		},
 	},

@@ -108,14 +108,13 @@ import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
 import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
+import IconService from "@/services/IconService";
 
 export default {
 	name: "NavBar",
 
 	data() {
 		return {
-			countries: [],
-			languages: [],
 			tooltip: {
 				label: "",
 				active: false,
@@ -128,87 +127,9 @@ export default {
 	},
 
 	async mounted() {
-		await this.fetchCountries();
-		await this.fetchLanguages();
+		if (!this.countries) await this.fetchCountries();
+		if (!this.icons) await this.fetchIcons();
 		this.setTooltip();
-	},
-
-	methods: {
-		...mapActions([
-			"updateCountry",
-			"updateLanguage",
-		]),
-
-		menuToggle() {
-			this.$store.commit("asideStateToggle");
-		},
-
-		handleChangeCountry(country) {
-			this.updateCountry(country);
-			this.$router.push({ name: "Home" });
-			this.$router.go();
-		},
-
-		async handleChangeLanguage(language) {
-			this.$store.dispatch("appLoading", true);
-			this.$router.push({ name: "Home" });
-
-			await TranslationService.getTranslations(language.key).then((response) => {
-				if (response.status === 200) {
-					this.$i18n.locale = language.key.toLowerCase();
-					this.$i18n.fallbackLocale = language.key.toLowerCase();
-					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-					this.updateLanguage(language);
-					sessionStorage.setItem("translations", JSON.stringify(response.data));
-					this.$router.go();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-				this.$store.dispatch("appLoading", false);
-			});
-
-			this.$store.dispatch("appLoading", false);
-		},
-
-		setTooltip() {
-			this.tooltip.active = !!this.$route.meta.description;
-			this.tooltip.label = this.$route.meta.description;
-		},
-
-		async fetchCountries() {
-			if (!sessionStorage.getItem("countries")) {
-				await CountriesService.getListOfCountries()
-					.then(({ data }) => {
-						this.countries = data;
-						sessionStorage.setItem("countries", JSON.stringify(data));
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Countries")} ${e}`, "is-danger");
-					});
-			} else {
-				this.countries = JSON.parse(sessionStorage.getItem("countries"));
-			}
-		},
-
-		async fetchLanguages() {
-			if (!sessionStorage.getItem("languages")) {
-				const languages = [
-					{ name: "English", key: "en" },
-					{ name: "Arabic", key: "ar" },
-					{ name: "Russian", key: "ru" },
-					{ name: "Amrahic", key: "am" },
-				];
-				this.languages = languages;
-				sessionStorage.setItem("languages", JSON.stringify(languages));
-			} else {
-				this.languages = JSON.parse(sessionStorage.getItem("languages"));
-			}
-		},
-	},
-
-	async created() {
-		await this.fetchLanguages();
-		await this.fetchCountries();
 	},
 
 	computed: {
@@ -217,6 +138,9 @@ export default {
 			"isAsideExpanded",
 			"country",
 			"language",
+			"languages",
+			"countries",
+			"icons",
 		]),
 
 		menuToggleIcon() {
@@ -225,6 +149,72 @@ export default {
 
 		toggleTooltip() {
 			return this.isAsideExpanded ? this.$t("Collapse") : this.$t("Expand");
+		},
+	},
+
+	methods: {
+		...mapActions([
+			"storeCountry",
+			"storeCountries",
+			"storeLanguage",
+			"storeTranslations",
+			"storeIcons",
+			"appLoading",
+		]),
+
+		menuToggle() {
+			this.$store.commit("asideStateToggle");
+		},
+
+		async handleChangeCountry(country) {
+			await this.storeCountry(country);
+			this.$router.push({ name: "Home" });
+			this.$router.go();
+		},
+
+		async handleChangeLanguage(language) {
+			this.appLoading(true);
+
+			await TranslationService.getTranslations(language.key).then((response) => {
+				if (response.status === 200) {
+					this.$i18n.locale = language.key.toLowerCase();
+					this.$i18n.fallbackLocale = language.key.toLowerCase();
+					this.$root.$i18n.setLocaleMessage(language.key, response.data);
+
+					this.storeLanguage(language);
+					this.storeTranslations(response.data);
+
+					this.$router.go();
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+			});
+
+			this.appLoading(false);
+		},
+
+		setTooltip() {
+			this.tooltip.active = !!this.$route.meta.description;
+			this.tooltip.label = this.$route.meta.description;
+		},
+
+		async fetchCountries() {
+			await CountriesService.getListOfCountries()
+				.then(({ data }) => {
+					this.storeCountries(data);
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchIcons() {
+			await IconService.getIcons()
+				.then(({ data }) => {
+					this.storeIcons(data);
+				}).catch((e) => {
+					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+				});
 		},
 	},
 

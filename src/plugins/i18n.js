@@ -16,4 +16,5 @@ export default new VueI18n({
 	locale: language.toLowerCase(),
 	fallbackLocale: language.toLowerCase(),
 	messages: {},
+	silentTranslationWarn: true,
 });

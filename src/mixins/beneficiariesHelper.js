@@ -16,7 +16,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["changePerPage"]),
+		...mapActions(["storePerPage"]),
 
 		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(beneficiaryIds) {

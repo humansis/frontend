@@ -15,9 +15,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import IconService from "@/services/IconService";
-import { Notification } from "@/utils/UI";
+import { mapState } from "vuex";
 
 export default {
 	name: "SvgIcon",
@@ -30,35 +28,8 @@ export default {
 		...mapState(["icons"]),
 
 		selectedIcons() {
-			return this.items?.length ? this.fetchedIcons
+			return this.items?.length ? this.icons
 				.filter((icon) => this.items.find((item) => item === icon.key)) : [];
-		},
-	},
-
-	data() {
-		return {
-			fetchedIcons: [],
-		};
-	},
-
-	mounted() {
-		if (this.icons) {
-			this.fetchedIcons = this.icons;
-		} else {
-			this.fetchIcons();
-		}
-	},
-
-	methods: {
-		...mapActions(["loadIconsToState"]),
-
-		async fetchIcons() {
-			await IconService.getIcons()
-				.then(({ data }) => {
-					this.loadIconsToState(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
-				});
 		},
 	},
 };

@@ -13,7 +13,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["changePerPage"]),
+		...mapActions(["storePerPage"]),
 
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;

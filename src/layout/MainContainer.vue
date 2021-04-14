@@ -14,10 +14,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
-import getters from "@/store/getters";
 import TranslationService from "@/services/TranslationService";
 import { Notification } from "@/utils/UI";
 
@@ -30,7 +29,11 @@ export default {
 	},
 
 	computed: {
-		...mapState(["isAppLoading", "language"]),
+		...mapState([
+			"isAppLoading",
+			"language",
+			"translations",
+		]),
 	},
 
 	created() {
@@ -38,16 +41,17 @@ export default {
 	},
 
 	methods: {
-		async setLocales() {
-			const { key: languageKey } = getters.getLanguageFromLocalStorage()
-			|| this.language;
+		...mapActions(["storeTranslations", "appLoading"]),
 
-			if (!sessionStorage.getItem("translations")) {
-				this.$store.dispatch("appLoading", true);
+		async setLocales() {
+			const { key: languageKey } = this.language;
+
+			if (!this.translations) {
+				this.appLoading(true);
 
 				await TranslationService.getTranslations(languageKey).then((response) => {
 					if (response.status === 200) {
-						sessionStorage.setItem("translations", JSON.stringify(response.data));
+						this.storeTranslations(response.data);
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {
@@ -55,11 +59,9 @@ export default {
 					this.$store.dispatch("appLoading", false);
 				});
 
-				this.$store.dispatch("appLoading", false);
+				this.appLoading(false);
 			} else {
-				this.$root.$i18n.setLocaleMessage(languageKey, JSON.parse(
-					sessionStorage.getItem("translations"),
-				));
+				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
 			}
 		},
 	},
