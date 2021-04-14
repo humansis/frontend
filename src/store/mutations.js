@@ -34,8 +34,7 @@ export default {
 
 	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
 		state.permissions = CONST.PERMISSIONS.map(({ key, value }) => ({
-			key,
-			value: permissions.includes(value),
+			[key]: permissions.includes(value),
 		}));
 	},
 

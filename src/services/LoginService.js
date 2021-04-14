@@ -9,9 +9,10 @@ export default {
 	},
 
 	async getRolePermissions(role) {
-		const { data: { data, totalCount } } = await fetcher({
+		const { data, status } = await fetcher({
 			uri: `acl/roles/${role}`,
 		});
-		return { data, totalCount };
+		console.log(data);
+		return { data, status };
 	},
 };

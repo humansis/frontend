@@ -121,23 +121,17 @@ export default {
 				if (response.status === 200) {
 					// TODO Uncomment this after login will be implemented by BE
 					const user = {};
-					console.log(response);
 
 					// TODO Different usage of window.btoa with credentials -> after BE will work
 					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					user.role = "GLOBAL_ADMIN";
+					user.role = "ROLE_ADMIN";
 
-					// let permissions = await this.getRolePermissions(user.role);
+					await this.storeUser(user);
 
-					const permissions = [
-						"addProject",
-						"editProject",
-						"deleteProject",
-						"viewProject",
-					];
+					const { privileges } = await LoginService.getRolePermissions(user.role)
+						.then(({ data }) => data);
 
-					this.storeUser(user);
-					this.storePermissions(permissions);
+					this.storePermissions(privileges);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
@@ -145,12 +139,6 @@ export default {
 				Notification(`Login ${e}`, "is-danger");
 				this.loginButtonLoading = false;
 				this.$v.$reset();
-			});
-		},
-
-		async getRolePermissions(role) {
-			return LoginService.getRolePermissions(role).then(({ data }) => data).catch((e) => {
-				Notification(`Permissions ${e}`, "is-danger");
 			});
 		},
 	},
