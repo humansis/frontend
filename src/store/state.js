@@ -20,35 +20,35 @@ export default {
 		{ name: "Amrahic", key: "am" },
 	],
 	permissions: {
-		addProject: false,
-		editProject: false,
-		deleteProject: false,
-		viewProject: false,
-		addDistribution: false,
-		editDistribution: false,
+		addProject: false, // button -
+		editProject: false, // button -
+		deleteProject: false, // button -
+		viewProject: false, // button -
+		addDistribution: false, // view, button -
+		editDistribution: false, // view, button -
 		deleteDistribution: false,
-		viewDistribution: false,
+		viewDistribution: false, // view, button -
 		assignDistributionItems: false,
-		addBeneficiary: false,
-		editBeneficiary: false,
+		addBeneficiary: false, // view, button -
+		editBeneficiary: false, // view, button -
 		deleteBeneficiary: false,
-		viewBeneficiary: false,
-		importBeneficiaries: false,
+		viewBeneficiary: false, // view -
+		importBeneficiaries: false, // view, button -
 		exportBeneficiaries: false,
-		viewVouchers: false,
+		viewVouchers: false, // view -
 		exportPrintVouchers: false,
-		addVouchers: false,
-		viewVendors: false,
-		addEditVendors: false,
-		viewDonors: false,
-		addEditDonors: false,
-		viewProducts: false,
-		addEditProducts: false,
-		countryReport: false,
-		projectReport: false,
-		distributionReport: false,
-		countrySettings: false,
+		addVouchers: false, // button -
+		viewVendors: false, // button -
+		addEditVendors: false, // button -
+		viewDonors: false, // view, button -
+		addEditDonors: false, // button -
+		viewProducts: false, // view -
+		addEditProducts: false, // button -
+		countryReport: false, // tab -
+		projectReport: false, // tab -
+		distributionReport: false, // tab -
+		countrySettings: false, // view - OK
 		addEditUsers: false,
-		adminSettings: false,
+		adminSettings: false, // view - OK
 	},
 };

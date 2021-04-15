@@ -8,7 +8,7 @@ const ifAuthenticated = (to, from, next) => {
 	const user = getters.getUserFromVuexStorage();
 	const permissions = getters.getPermissionsFromVuexStorage();
 
-	const canGoNext = to.meta.permissions.length ? to.meta.permissions
+	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
 		.every((permission) => permissions?.[permission]) : true;
 
 	if (user?.authdata && to.meta.permissions && canGoNext) {
@@ -262,7 +262,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Configuration/CountrySpecificOptions"),
 						beforeEnter: ifAuthenticated,
 						meta: {
-							permissions: [],
+							permissions: ["countrySettings"],
 							breadcrumb: "Country Specifics",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},
@@ -275,7 +275,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 				beforeEnter: ifAuthenticated,
 				meta: {
-					permissions: [],
+					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
 					description: "This page is where you can manage users, donors and your organization's specifics",
 				},

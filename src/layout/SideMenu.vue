@@ -139,6 +139,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
+								v-if="userCan.countrySettings"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -152,6 +153,7 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
+							v-if="userCan.adminSettings"
 							icon="wrench"
 							exact-active-class="is-active"
 							tag="router-link"
