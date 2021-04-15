@@ -251,7 +251,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/Configuration/Products"),
 						beforeEnter: ifAuthenticated,
 						meta: {
-							permissions: [],
+							permissions: ["viewProducts"],
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},

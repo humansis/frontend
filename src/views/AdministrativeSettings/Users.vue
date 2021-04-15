@@ -19,6 +19,7 @@
 			/>
 		</Modal>
 		<b-button
+			v-if="userCan.addEditUsers"
 			class="mb-4"
 			type="is-primary"
 			icon-left="plus"
@@ -42,9 +43,12 @@ import Modal from "@/components/Modal";
 import UsersService from "@/services/UsersService";
 import { Toast } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "UsersPage",
+
+	mixins: [permissions],
 
 	components: {
 		UsersList,

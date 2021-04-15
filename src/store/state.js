@@ -40,15 +40,15 @@ export default {
 		addVouchers: false, // button -
 		viewVendors: false, // button -
 		addEditVendors: false, // button -
-		viewDonors: false, // view, button -
+		viewDonors: false, // tab -
 		addEditDonors: false, // button -
-		viewProducts: false, // view -
-		addEditProducts: false, // button -
-		countryReport: false, // tab -
-		projectReport: false, // tab -
-		distributionReport: false, // tab -
-		countrySettings: false, // view - OK
-		addEditUsers: false,
-		adminSettings: false, // view - OK
+		viewProducts: false, // OK
+		addEditProducts: false, // OK
+		countryReport: false, // OK
+		projectReport: false, // OK
+		distributionReport: false, // OK
+		countrySettings: false, // OK
+		addEditUsers: false, // OK
+		adminSettings: false, // OK
 	},
 };

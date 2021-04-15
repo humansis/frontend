@@ -127,6 +127,7 @@
 								</b-tooltip>
 							</template>
 							<b-menu-item
+								v-if="userCan.viewProducts"
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
