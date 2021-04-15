@@ -82,6 +82,8 @@ export default {
 				visibleColumns: [
 					{ key: "username" },
 					{ key: "name" },
+					{ key: "vendorNo", label: this.$t("Vendor No.") },
+					{ key: "contractNo", label: this.$t("Contract No.") },
 					{ key: "addressNumber" },
 					{ key: "addressPostcode" },
 					{ key: "addressStreet" },

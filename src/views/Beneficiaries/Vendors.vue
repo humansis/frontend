@@ -83,6 +83,8 @@ export default {
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				vendorNo: "",
+				contractNo: "",
 				userId: null,
 			},
 		};
@@ -137,6 +139,8 @@ export default {
 				adm2Id: "",
 				adm3Id: "",
 				adm4Id: "",
+				vendorNo: "",
+				contractNo: "",
 				userId: null,
 			};
 		},
@@ -167,6 +171,8 @@ export default {
 				adm3Id,
 				adm4Id,
 				userId,
+				vendorNo,
+				contractNo,
 			},
 		) {
 			const { data } = await UsersService.getDetailOfUser(userId);
@@ -187,6 +193,8 @@ export default {
 				adm4Id,
 				userId,
 				user: data,
+				vendorNo,
+				contractNo,
 			};
 		},
 
@@ -206,6 +214,8 @@ export default {
 				adm3Id,
 				adm4Id,
 				user,
+				vendorNo,
+				contractNo,
 			} = vendorForm;
 			let locationId = null;
 			if (adm4Id) {
@@ -223,6 +233,8 @@ export default {
 				addressNumber,
 				addressPostcode,
 				locationId,
+				vendorNo,
+				contractNo,
 				shop,
 				userId: user?.id || null,
 			};
