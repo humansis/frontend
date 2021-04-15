@@ -210,9 +210,12 @@
 
 <script>
 import { mapState } from "vuex";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "SideMenu",
+
+	mixins: [permissions],
 
 	computed: {
 		...mapState([

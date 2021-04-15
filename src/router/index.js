@@ -37,7 +37,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				beforeEnter: ifAuthenticated,
 				meta: {
-					permissions: ["viewProject"],
+					permissions: [],
 					breadcrumb: "Home",
 					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's distributions and a summary of the last ones.",
 				},
