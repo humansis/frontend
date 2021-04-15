@@ -446,7 +446,7 @@ export default {
 			const result = [];
 			Object.keys(vulnerabilities).forEach((key) => {
 				if (vulnerabilities[key]) {
-					result.push(Number(key));
+					result.push(key);
 				}
 			});
 			return result;
