@@ -163,9 +163,8 @@
 								</b-tooltip>
 							</template>
 						</b-menu-item>
-						<!--
 						<b-menu-item
-							icon="credit-card"
+							icon="exchange-alt"
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Transactions' }"
@@ -176,6 +175,7 @@
 								</b-tooltip>
 							</template>
 						</b-menu-item>
+						<!--
 						<b-menu-item
 							icon="briefcase"
 							exact-active-class="is-active"

@@ -135,8 +135,7 @@ export default {
 	},
 
 	async mounted() {
-		const promise = this.fetchProvinces();
-		await Promise.all([promise]);
+		await Promise.all([this.fetchProvinces()]);
 		if (this.formModel) {
 			await this.mapLocations();
 		}

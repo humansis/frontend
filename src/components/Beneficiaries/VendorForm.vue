@@ -61,6 +61,32 @@
 
 			<b-field>
 				<template #label>
+					{{ $t('Vendor No.') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.vendorNo"
+					:disabled="formDisabled"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('Contract No.') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.contractNo"
+					:disabled="formDisabled"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
 					{{ $t('Address Street') }}
 					<span class="optional-text has-text-weight-normal is-italic">
 						- {{ $t('Optional') }}
@@ -105,6 +131,7 @@
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 		</section>
 		<footer class="modal-card-foot">
@@ -113,10 +140,9 @@
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
 				class="is-primary"
-				native-type="submit"
-				:value="submitButtonLabel"
+				:label="submitButtonLabel"
+				:disabled="mapping"
 			/>
 		</footer>
 	</form>
@@ -155,7 +181,15 @@ export default {
 			adm2Id: {},
 			adm3Id: {},
 			adm4Id: {},
+			vendorNo: {},
+			contractNo: {},
 		},
+	},
+
+	data() {
+		return {
+			mapping: true,
+		};
 	},
 
 	methods: {

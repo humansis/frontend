@@ -205,7 +205,19 @@
 							- {{ $t('Optional') }}
 						</span>
 					</template>
-					<b-input v-model="formModel.countrySpecificOptions[option.id]" />
+					<b-input
+						v-if="option.type === 'text'"
+						v-model="formModel.countrySpecificOptions[option.id]"
+					/>
+					<b-numberinput
+						v-if="option.type === 'number'"
+						v-model="formModel.countrySpecificOptions[option.id]"
+						expanded
+						min="0"
+						type="is-dark"
+						controls-alignment="right"
+						controls-position="compact"
+					/>
 				</b-field>
 			</div>
 		</div>
@@ -251,11 +263,12 @@ import { normalizeCountrySpecifics } from "@/utils/datagrid";
 import Validation from "@/mixins/validation";
 import getters from "@/store/getters";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import addressHelper from "@/mixins/addressHelper";
 
 export default {
 	name: "HouseholdForm",
 
-	mixins: [Validation],
+	mixins: [Validation, addressHelper],
 
 	props: {
 		detailOfHousehold: Object,
@@ -341,19 +354,20 @@ export default {
 				container: this.$refs.householdFormComponent,
 			});
 		}
-
-		await this.fetchLivelihoods();
-		await this.fetchAssets();
-		await this.fetchShelterStatuses();
-		await this.fetchSupportReceivedTypes();
-		await this.fetchCountrySpecificOptions();
+		await Promise.all([
+			this.fetchLivelihoods(),
+			this.fetchAssets(),
+			this.fetchShelterStatuses(),
+			this.fetchSupportReceivedTypes(),
+			this.fetchCountrySpecificOptions(),
+		]);
 
 		if (this.isEditing) {
 			await this.mapDetailOfHouseholdToFormModel();
 
 			this.loadingComponent.close();
 
-			await this.mapCurrentLocation().then((response) => {
+			this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = response;
 			});
 		}
@@ -364,21 +378,9 @@ export default {
 			return normalizeCountrySpecifics(text);
 		},
 
-		getAddressTypeAndId() {
-			const {
-				temporarySettlementAddressId,
-				residenceAddressId,
-				campAddressId,
-			} = this.detailOfHousehold;
-			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
-			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
-			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
-			return "";
-		},
-
-		mapCurrentLocation() {
+		async mapCurrentLocation() {
 			if (this.detailOfHousehold) {
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId();
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
 
 				switch (typeOfLocation) {
 					case "camp":
@@ -410,7 +412,7 @@ export default {
 				livelihood: {
 					...this.formModel.livelihood,
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
-					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code", true),
+					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code"),
 					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
 					incomeLevel: this.detailOfHousehold.incomeLevel,
 					incomeSpentOnFood: this.detailOfHousehold.incomeSpentOnFood,
@@ -419,7 +421,7 @@ export default {
 				},
 				externalSupport: {
 					...this.formModel.externalSupport,
-					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code", false, true),
+					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code"),
 					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
@@ -440,7 +442,11 @@ export default {
 					.then(({ data: { answer, countrySpecificOptionId } }) => {
 						const temp = this.countrySpecificOptions
 							.find((option) => option.id === countrySpecificOptionId);
-						preparedAnswer[temp.id] = answer;
+						if (temp.type === "number") {
+							preparedAnswer[temp.id] = Number(answer);
+						} else {
+							preparedAnswer[temp.id] = answer;
+						}
 					});
 			});
 			await Promise.all(promise);
