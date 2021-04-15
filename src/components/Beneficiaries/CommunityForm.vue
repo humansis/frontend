@@ -236,11 +236,10 @@
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
 				class="is-primary"
-				native-type="submit"
+				:label="submitButtonLabel"
 				:disabled="mapping"
-			>{{ submitButtonLabel }}</b-button>
+			/>
 		</footer>
 	</form>
 </template>
