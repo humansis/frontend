@@ -26,11 +26,22 @@
 			</b-step-item>
 
 			<b-step-item clickable step="3" :label="$t('Export Random Sample')">
-				<ExportRandomSample />
+				<BeneficiariesList
+					changeButton
+					export-button
+					:add-button="false"
+					:assistance="assistance"
+					@beneficiariesCounted="beneficiaries = $event"
+				/>
 			</b-step-item>
 
 			<b-step-item clickable step="4" :label="$t('Validate and Lock')">
-				<ValidateAndLock />
+				<BeneficiariesList
+					:add-button="false"
+					:export-button="false"
+					:assistance="assistance"
+					@beneficiariesCounted="beneficiaries = $event"
+				/>
 			</b-step-item>
 
 			<template #navigation="{previous, next}">
@@ -84,8 +95,6 @@
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
-import ExportRandomSample from "@/components/Assistance/ExportRandomSample";
-import ValidateAndLock from "@/components/Assistance/ValidateAndLock";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
@@ -98,8 +107,6 @@ export default {
 		AssistanceSummary,
 		BeneficiariesList,
 		ImportAndCompare,
-		ExportRandomSample,
-		ValidateAndLock,
 	},
 
 	data() {
