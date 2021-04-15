@@ -14,7 +14,14 @@
 			</b-field>
 
 			<b-field :label="$t('Vulnerabilities')">
-				<b-input v-model="formModel.vulnerabilities" disabled />
+				<MultiSelect
+					v-model="formModel.vulnerabilities"
+					multiple
+					disabled
+					label="value"
+					track-by="code"
+					:options="options.vulnerabilities"
+				/>
 			</b-field>
 
 			<b-field :label="$t('Projects')">
@@ -98,16 +105,22 @@ export default {
 		return {
 			options: {
 				assets: [],
+				vulnerabilities: [],
 				shelterStatuses: [],
 				externalSupportReceivedType: [],
 			},
 		};
 	},
 
+	watch: {
+		formModel: "mapSelects",
+	},
+
 	async mounted() {
 		await this.fetchAssets();
 		await this.fetchShelterStatuses();
 		await this.fetchSupportReceivedTypes();
+		await this.fetchVulnerabilities();
 		this.mapSelects();
 	},
 
@@ -121,12 +134,17 @@ export default {
 			this.formModel.shelterStatus = getArrayOfCodeListByKey(
 				[this.formModel.shelterStatus],
 				this.options.shelterStatuses,
-				"code", false, true,
+				"code",
 			);
 			this.formModel.supportReceivedTypes = getArrayOfCodeListByKey(
 				this.formModel.supportReceivedTypes,
 				this.options.externalSupportReceivedType,
-				"code", false, true,
+				"code",
+			);
+			this.formModel.vulnerabilities = getArrayOfCodeListByKey(
+				this.formModel.vulnerabilities,
+				this.options.vulnerabilities,
+				"code",
 			);
 		},
 
@@ -157,6 +175,14 @@ export default {
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
 					Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchVulnerabilities() {
+			await BeneficiariesService.getListOfVulnerabilities()
+				.then(({ data }) => { this.options.vulnerabilities = data; })
+				.catch((e) => {
+					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 	},

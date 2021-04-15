@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div ref="summary">
 		<h4 class="title is-4 has-text-centered mt-5">
 			{{ $t('Please add this household to one or more project') }}
 		</h4>
@@ -96,6 +96,7 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			formModel: {
 				selectedProjects: [],
 			},
@@ -117,7 +118,11 @@ export default {
 	},
 
 	async mounted() {
+		this.loadingComponent = this.$buefy.loading.open({
+			container: this.$refs.summary,
+		});
 		await this.fetchProjects();
+		this.loadingComponent.close();
 	},
 
 	computed: {

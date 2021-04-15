@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form ref="householdHeadForm">
 		<div class="columns is-multiline">
 			<div class="column is-one-quarter">
 				<h4 class="title is-5">{{ $t('Name') }}</h4>
@@ -276,7 +276,7 @@
 				:native-value="vulnerability.code"
 				:key="vulnerability.code"
 			>
-				{{ prepareVulnerability(vulnerability.value) }}
+				{{ normalizeText(vulnerability.value) }}
 			</b-checkbox>
 		</div>
 	</form>
@@ -336,6 +336,7 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			formModel: {
 				nameLocal: {
 					familyName: "",
@@ -395,24 +396,41 @@ export default {
 		};
 	},
 
+	watch: {
+		detailOfHousehold: "map",
+		beneficiary: "map",
+	},
+
 	async mounted() {
-		await this.fetchNationalCardTypes();
-		await this.fetchVulnerabilities();
-		await this.fetchPhoneTypes();
-		await this.fetchResidenceStatus();
-		await this.fetchReferralTypes();
 		if (this.isEditing) {
-			if (this.beneficiary) {
-				await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
-			} else {
-				const data = await BeneficiariesService
-					.getBeneficiary(this.detailOfHousehold.householdHeadId);
-				await this.mapDetailOfHouseholdToFormModel(data);
-			}
+			this.loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.householdHeadForm,
+			});
 		}
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchPhoneTypes(),
+			this.fetchVulnerabilities(),
+			this.fetchResidenceStatus(),
+			this.fetchReferralTypes(),
+		]);
+		await this.map();
 	},
 
 	methods: {
+		async map() {
+			if (this.isEditing) {
+				if (this.beneficiary) {
+					await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
+				} else {
+					const data = await BeneficiariesService
+						.getBeneficiary(this.detailOfHousehold.householdHeadId);
+					await this.mapDetailOfHouseholdToFormModel(data);
+				}
+				this.loadingComponent.close();
+			}
+		},
+
 		async mapDetailOfHouseholdToFormModel(beneficiary) {
 			const {
 				dateOfBirth,
@@ -461,16 +479,12 @@ export default {
 				phone1,
 				phone2,
 				isHead,
-				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "value"),
+				vulnerabilities: getObjectForCheckboxes(vulnerabilityCriteria, this.options.vulnerabilities, "code"),
 			};
 		},
 
 		normalizeText(text) {
 			return normalizeText(text);
-		},
-
-		prepareVulnerability(name) {
-			return normalizeText(name);
 		},
 
 		async getPhones(ids) {
