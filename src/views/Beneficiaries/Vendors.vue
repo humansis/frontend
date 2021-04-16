@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addEditVendors"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewVendor"
@@ -50,6 +51,7 @@ import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "VendorPage",
@@ -59,6 +61,8 @@ export default {
 		Modal,
 		VendorForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

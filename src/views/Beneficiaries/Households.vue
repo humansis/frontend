@@ -15,6 +15,7 @@
 						{{ $t('Create') }}
 					</b-button>
 					<b-dropdown-item
+						v-if="userCan.importBeneficiaries"
 						:value="false"
 						@click="goToImportPage"
 					>
@@ -215,6 +216,7 @@ import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
 import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
+import permissions from "@/mixins/permissions";
 
 const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
 
@@ -232,7 +234,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [grid, addressHelper],
+	mixins: [grid, addressHelper, permissions],
 
 	data() {
 		return {

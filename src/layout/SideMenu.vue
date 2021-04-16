@@ -81,6 +81,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
+								v-if="userCan.viewVendors"
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -106,6 +107,7 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
+							v-if="userCan.viewVouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
 							tag="router-link"

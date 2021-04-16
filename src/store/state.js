@@ -33,15 +33,15 @@ export default {
 		editBeneficiary: false, // view, button -
 		deleteBeneficiary: false,
 		viewBeneficiary: false, // view -
-		importBeneficiaries: false, // view, button -
-		exportBeneficiaries: false,
-		viewVouchers: false, // view -
-		exportPrintVouchers: false,
-		addVouchers: false, // button -
-		viewVendors: false, // button -
-		addEditVendors: false, // button -
-		viewDonors: false, // tab -
-		addEditDonors: false, // button -
+		importBeneficiaries: false, // OK
+		exportBeneficiaries: false, // TODO Add for export button in Beneficiaries
+		viewVouchers: false, // OK
+		exportPrintVouchers: false, // TODO Add for export button in Vouchers
+		addVouchers: false, // OK
+		viewVendors: false, // OK
+		addEditVendors: false, // OK
+		viewDonors: false, // OK
+		addEditDonors: false, // OK
 		viewProducts: false, // OK
 		addEditProducts: false, // OK
 		countryReport: false, // OK

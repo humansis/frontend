@@ -153,7 +153,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["importBeneficiaries"],
 									breadcrumb: "Import Household",
 									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
 								},
@@ -211,7 +211,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
 						beforeEnter: ifAuthenticated,
 						meta: {
-							permissions: [],
+							permissions: ["viewVendors"],
 							breadcrumb: "Vendors",
 							description: "",
 						},
@@ -235,7 +235,7 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				beforeEnter: ifAuthenticated,
 				meta: {
-					permissions: [],
+					permissions: ["viewVouchers"],
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
 				},
