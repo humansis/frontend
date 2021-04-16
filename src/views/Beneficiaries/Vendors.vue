@@ -20,7 +20,6 @@
 			can-cancel
 			:active="vendorModal.isOpened"
 			:header="modalHeader"
-			:is-waiting="vendorModal.isWaiting"
 			@close="closeVendorModal"
 		>
 			<VendorForm
@@ -29,6 +28,7 @@
 				:formModel="vendorModel"
 				:submit-button-label="vendorModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="vendorModal.isDetail"
+				:form-loading="vendorModal.isWaiting"
 				@formSubmitted="submitVendorForm"
 				@formClosed="closeVendorModal"
 			/>
@@ -198,7 +198,8 @@ export default {
 			};
 		},
 
-		submitVendorForm(vendorForm) {
+		async submitVendorForm(vendorForm) {
+			this.vendorModal.isWaiting = true;
 			const {
 				id,
 				username,
@@ -249,10 +250,11 @@ export default {
 				changePassword: false,
 			};
 			if (this.vendorModal.isEditing && id) {
-				this.updateVendor(id, userBody, vendorBody);
+				await this.updateVendor(id, userBody, vendorBody);
 			} else {
-				this.createVendor(userBody, vendorBody);
+				await this.createVendor(userBody, vendorBody);
 			}
+			this.vendorModal.isWaiting = false;
 		},
 
 		async createVendor(userBody, vendorBody) {
@@ -270,19 +272,15 @@ export default {
 								}
 							}).catch((e) => {
 								Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
-								this.vendorModal.isWaiting = false;
 							});
 					}
 				})
 				.catch((e) => {
 					Toast(`${this.$t("User")} ${e}`, "is-danger");
-					this.vendorModal.isWaiting = false;
 				});
 		},
 
 		async updateVendor(id, userBody, vendorBody) {
-			this.vendorModal.isWaiting = true;
-
 			await UsersService.updateUser(userBody.id, userBody)
 				.then(async (userResponse) => {
 					if (userResponse.status === 200) {
@@ -294,18 +292,14 @@ export default {
 							}
 						}).catch((e) => {
 							Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
-							this.vendorModal.isWaiting = false;
 						});
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("User")} ${e}`, "is-danger");
-					this.vendorModal.isWaiting = false;
 				});
 		},
 
 		async onVendorRemove(id) {
-			this.vendorModal.isWaiting = true;
-
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Vendor Successfully Deleted"), "is-success");
