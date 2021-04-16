@@ -7,10 +7,10 @@
 			ref="projectSummaryLoading"
 			:closable="false"
 		/>
-		<div class="level-left">
+		<div class="columns is-multiline">
 			<div
 				v-for="{id, name, target} in projectSummary"
-				class="level-item has-text-centered"
+				class="column is-2 has-text-centered"
 				:key="id"
 			>
 				<div class="box">
