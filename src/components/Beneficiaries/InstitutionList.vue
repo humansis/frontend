@@ -28,17 +28,20 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					v-if="userCan.viewBeneficiary"
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.editBeneficiary"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.deleteBeneficiary"
 					icon="trash"
 					:entity="$t('Institution')"
 					:tooltip="$t('Delete')"
@@ -73,6 +76,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import InstitutionFilter from "@/components/Beneficiaries/InstitutionFilter";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "InstitutionList",
@@ -84,7 +88,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {
@@ -144,6 +148,10 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			await this.fetchData();
+		},
+
+		showDetail(entity) {
+			if (this.userCan.viewBeneficiary) this.$emit("onShowDetail", entity);
 		},
 	},
 };

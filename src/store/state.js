@@ -30,9 +30,9 @@ export default {
 		viewDistribution: false, // view, button -
 		assignDistributionItems: false,
 		addBeneficiary: false, // view, button -
-		editBeneficiary: false, // view, button -
-		deleteBeneficiary: false,
-		viewBeneficiary: false, // view -
+		editBeneficiary: false, // OK
+		deleteBeneficiary: false, // OK
+		viewBeneficiary: false, // OK
 		importBeneficiaries: false, // OK
 		exportBeneficiaries: false, // TODO Add for export button in Beneficiaries
 		viewVouchers: false, // OK

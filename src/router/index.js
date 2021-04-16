@@ -142,7 +142,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["addBeneficiary"],
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
 								},
@@ -164,7 +164,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["viewBeneficiary", "editBeneficiary"],
 									breadcrumb: "Edit Household",
 									description: "",
 								},
@@ -175,7 +175,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["viewBeneficiary"],
 									breadcrumb: "Household Information Summary",
 									description: "",
 									parent: "Households",

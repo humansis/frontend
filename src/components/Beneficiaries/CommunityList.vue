@@ -28,17 +28,20 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					v-if="userCan.viewBeneficiary"
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.editBeneficiary"
 					icon="edit"
 					tooltip="Edit"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.deleteBeneficiary"
 					icon="trash"
 					:entity="$t('Community')"
 					:tooltip="$t('Delete')"
@@ -76,6 +79,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import CommunityFilter from "@/components/Beneficiaries/CommunityFilter";
 import addressHelper from "@/mixins/addressHelper";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "CommunityList",
@@ -87,7 +91,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid, addressHelper],
+	mixins: [grid, addressHelper, permissions],
 
 	data() {
 		return {
@@ -168,6 +172,10 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			await this.fetchData();
+		},
+
+		showDetail(entity) {
+			if (this.userCan.viewBeneficiary) this.$emit("onShowDetail", entity);
 		},
 	},
 };

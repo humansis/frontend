@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addBeneficiary"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewInstitution"
@@ -52,6 +53,7 @@ import Modal from "@/components/Modal";
 import InstitutionService from "@/services/InstitutionService";
 import { Toast } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "InstitutionPage",
@@ -61,6 +63,8 @@ export default {
 		Modal,
 		InstitutionForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

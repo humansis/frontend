@@ -8,6 +8,7 @@
 			<div class="level-right">
 				<b-dropdown position="is-bottom-left">
 					<b-button
+						v-if="userCan.addBeneficiary"
 						type="is-primary"
 						icon-left="plus"
 						slot="trigger"
@@ -129,17 +130,20 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
+						v-if="userCan.viewBeneficiary"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Show Detail')"
 						@click.native="showDetail(props.row.id)"
 					/>
 					<ActionButton
+						v-if="userCan.viewBeneficiary"
 						icon="edit"
 						:tooltip="$t('Edit')"
 						@click.native="editHousehold(props.row.id)"
 					/>
 					<SafeDelete
+						v-if="userCan.deleteBeneficiary"
 						icon="trash"
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
