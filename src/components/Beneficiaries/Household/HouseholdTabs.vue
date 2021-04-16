@@ -410,7 +410,7 @@ export default {
 						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,
-						vulnerabilityCriteriaIds: this.mapVulnerabilities(beneficiary.vulnerabilities),
+						vulnerabilityCriteria: this.mapVulnerabilities(beneficiary.vulnerabilities),
 					};
 					if (beneficiary.addAReferral) {
 						preparedBeneficiary.referralType = beneficiary.referral.referralType.code;
