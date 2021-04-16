@@ -1,5 +1,5 @@
 <template>
-	<div class="mb-5">
+	<div class="px-5 pb-5 has-border-bottom">
 		<div class="columns is-multiline">
 			<div v-for="(filter, name) in filters" :key="name" class="column is-half">
 				<b-field :label="filter.label">
@@ -13,8 +13,8 @@
 						@input="filterChanged"
 					>
 						<template
-							slot="singleLabel"
-							slot-scope="option"
+							#singleLabel
+							v-slot:default="option"
 						>
 							{{ option }}
 						</template>
@@ -23,7 +23,8 @@
 						v-if="filter.type === 'date'"
 						v-model="selectedFiltersOptions[name]"
 						trap-focus
-						icon="calendar"
+						locale="en-CA"
+						icon="calendar-day"
 						:placeholder="filter.placeholder"
 						@input="filterChanged"
 					/>
@@ -50,31 +51,31 @@ export default {
 				beneficiary: {
 					label: "Beneficiary",
 					type: "multiselect",
-					placeholder: "Select Beneficiary ...",
+					placeholder: this.$t("Select Beneficiary"),
 					data: [],
 				},
 				type: {
 					label: "Type",
 					type: "multiselect",
-					placeholder: "Select Type ...",
+					placeholder: this.$t("Select Type"),
 					data: [],
 				},
 				from: {
 					label: "From",
 					type: "date",
-					placeholder: "Select Date ...",
+					placeholder: this.$t("Select Date"),
 					data: [],
 				},
 				to: {
 					label: "To",
 					type: "date",
-					placeholder: "Select Date ...",
+					placeholder: this.$t("Select Date"),
 					data: [],
 				},
 				reedem: {
 					label: "Reedem",
 					type: "multiselect",
-					placeholder: "Select Reedem ...",
+					placeholder: this.$t("Select Reedem"),
 					data: [],
 				},
 			},

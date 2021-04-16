@@ -1,4 +1,4 @@
-// TODO uncomment methods after implementing this endpoint
+// TODO Not used for now
 
 export default {
 	// eslint-disable-next-line no-unused-vars

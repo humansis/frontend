@@ -1,61 +1,68 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field label="First Name">
-				<b-input v-model="formModel.firstName" disabled />
+			<b-field :label="$t('First Name')">
+				<b-input v-model="formModel.givenName" disabled />
 			</b-field>
 
-			<b-field label="Family Name">
+			<b-field :label="$t('Family Name')">
 				<b-input v-model="formModel.familyName" disabled />
 			</b-field>
 
-			<b-field label="Gender">
+			<b-field :label="$t('Gender')">
 				<b-input v-model="formModel.gender" disabled />
 			</b-field>
 
-			<b-field label="Date Of Birth">
-				<b-input v-model="formModel.dateOfBirth" disabled />
+			<b-field :label="$t('Date of Birth')">
+				<b-datepicker
+					v-model="formModel.dateOfBirth"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					disabled
+				/>
 			</b-field>
 
-			<b-field label="Residency Status">
+			<b-field :label="$t('Residency Status')">
 				<b-input v-model="formModel.residencyStatus" disabled />
 			</b-field>
 
-			<b-field label="Status">
+			<b-field :label="$t('Status')">
 				<b-input v-model="formModel.residencyStatus" disabled />
 			</b-field>
 
-			<b-field label="Add A Referral Type">
-				<b-checkbox v-model="addAReferral" />
+			<b-field :label="$t('Add a Referral Type')">
+				<b-checkbox v-model="addAReferral" :disabled="disabled" />
 			</b-field>
 
-			<b-field v-if="addAReferral" label="Referral Type">
+			<b-field v-if="addAReferral" :label="$t('Referral Type')">
 				<MultiSelect
 					v-model="formModel.referralType"
 					searchable
-					placeholder="Click to select..."
+					:loading="referralTypeLoading"
+					:disabled="disabled"
+					:placeholder="$t('Click to select')"
 					:options="options.referralType"
 				/>
 			</b-field>
 
-			<b-field v-if="addAReferral" label="Comment">
-				<b-input v-model="formModel.comment" />
+			<b-field v-if="addAReferral" :label="$t('Comment')">
+				<b-input v-model="formModel.comment" :disabled="disabled" />
 			</b-field>
 
-			<b-field label="Justification For Adding">
-				<b-input
-					v-model="formModel.justificationForAdding"
-					disabled
-				/>
+			<b-field :label="$t('Justification for Adding')">
+				<b-input v-model="formModel.justificationForAdding" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
-				Close
-			</button>
+			<b-button v-if="closeButton" @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
+				v-if="!disabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -64,6 +71,9 @@
 </template>
 
 <script>
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
+
 export default {
 	name: "EditBeneficiaryForm",
 
@@ -71,14 +81,16 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+		disabled: Boolean,
 	},
 
 	data() {
 		return {
 			addAReferral: false,
 			options: {
-				referralType: ["Health", "Protection", "Shelter", "Nutrition", "Other"],
+				referralType: [],
 			},
+			referralTypeLoading: false,
 		};
 	},
 
@@ -89,6 +101,18 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+		},
+
+		async fetchReferralTypes() {
+			this.referralTypeLoading = true;
+
+			await BeneficiariesService.getListOfReferralTypes()
+				.then(({ data }) => { this.options.referralType = data; })
+				.catch((e) => {
+					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
+				});
+
+			this.referralTypeLoading = false;
 		},
 
 	},

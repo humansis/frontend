@@ -1,4 +1,4 @@
-// TODO implement after voucher endpoint
+// TODO Not used for now
 export default {
 	async getListOfVouchers() {
 		return {

@@ -1,86 +1,133 @@
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="Contact Name"
-				:type="validateType('contactGivenName')"
-				:message="validateMsg('contactGivenName')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Contact Name') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.contactGivenName"
 					:disabled="formDisabled"
-					@blur="validate('contactGivenName')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Contact Family Name"
-				:type="validateType('contactFamilyName')"
-				:message="validateMsg('contactFamilyName')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Contact Family Name') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.contactFamilyName"
 					:disabled="formDisabled"
-					@blur="validate('contactFamilyName')"
 				/>
 			</b-field>
 
-			<b-field label="Phone">
+			<b-field>
+				<template #label>
+					{{ $t('Phone') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-field grouped>
 					<b-field
-						:type="validateType('phonePrefix')"
+						:type="validateType('phonePrefix', true)"
 						:message="validateMsg('phonePrefix')"
 					>
 						<MultiSelect
 							v-model="formModel.phonePrefix"
 							searchable
-							placeholder="Phone Ext"
+							:placeholder="$t('Phone Ext')"
 							label="value"
 							track-by="code"
 							:disabled="formDisabled"
 							:options="options.phonePrefixes"
-							:class="validateMultiselect('phonePrefix')"
+							:class="validateMultiselect('phonePrefix', true)"
 							@select="validate('phonePrefix')"
 						/>
 					</b-field>
 					<b-field
+						grouped
+						:type="validateType('phoneType', true)"
+						:message="validateMsg('phoneType')"
+					>
+						<MultiSelect
+							v-model="formModel.phoneType"
+							searchable
+							selectLabel=""
+							deselectLabel=""
+							label="value"
+							track-by="code"
+							:placeholder="$t('Phone Type')"
+							:disabled="formDisabled"
+							:loading="phoneTypesLoading"
+							:options="options.phoneTypes"
+							:class="validateMultiselect('phoneType', true)"
+							@select="validate('phoneType')"
+						/>
+
+					</b-field>
+					<b-field
 						expanded
-						:type="validateType('phoneNumber')"
-						:message="validateMsg('phoneNumber', 'Required number')"
+						:type="validateType('phoneNumber', true)"
+						:message="validateMsg('phoneNumber')"
 					>
 						<b-input
 							v-model="formModel.phoneNumber"
-							placeholder="Phone No."
+							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
 							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
 				</b-field>
 			</b-field>
+			<b-checkbox
+				v-model="formModel.phoneProxy"
+				class="mb-4"
+				:disabled="formDisabled"
+			>
+				{{ $t('Proxy') }}
+			</b-checkbox>
 
 			<b-field
-				label="Contact ID Type"
-				:type="validateType('nationalCardType')"
+				:type="validateType('nationalCardType', true)"
 				:message="validateMsg('nationalCardType')"
 			>
+				<template #label>
+					{{ $t('Contact ID Type') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.nationalCardType"
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
+					:loading="nationalCardTypesLoading"
 					:disabled="formDisabled"
 					:options="options.nationalCardTypes"
-					:class="validateMultiselect('nationalCardType')"
+					:class="validateMultiselect('nationalCardType', true)"
 					@select="validate('nationalCardType')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Contact ID Number"
-				:type="validateType('nationalCardNumber')"
-				:message="validateMsg('nationalCardNumber', 'Required number')"
+				:type="validateType('nationalCardNumber', true)"
+				:message="validateMsg('nationalCardNumber')"
 			>
+				<template #label>
+					{{ $t('Contact ID Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
@@ -89,41 +136,66 @@
 				/>
 			</b-field>
 
+			<b-field
+				:label="$t('Projects')"
+				:type="validateType('projects')"
+				:message="validateMsg('projects')"
+			>
+				<MultiSelect
+					v-model="formModel.projects"
+					searchable
+					multiple
+					label="name"
+					track-by="id"
+					:placeholder="$t('Click to select')"
+					:loading="projectsLoading"
+					:disabled="formDisabled"
+					:options="options.projects"
+					:class="validateMultiselect('projects')"
+					@select="validate('projects')"
+				/>
+			</b-field>
+
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 
-			<b-field
-				label="Address Number"
-				:type="validateType('addressNumber')"
-				:message="validateMsg('addressNumber')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Address Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.addressNumber"
 					:disabled="formDisabled"
-					@blur="validate('addressNumber')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Street"
-				:type="validateType('addressStreet')"
-				:message="validateMsg('addressStreet')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Address Street') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.addressStreet"
 					:disabled="formDisabled"
-					@blur="validate('addressStreet')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Address Postcode"
-				:type="validateType('addressPostCode')"
-				:message="validateMsg('addressPostCode')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Address Postcode') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.addressPostCode"
 					:disabled="formDisabled"
@@ -132,52 +204,55 @@
 			</b-field>
 
 			<b-field grouped>
-				<b-field
-					label="Latitude"
-					:type="validateType('latitude')"
-					:message="validateMsg('latitude')"
-				>
+				<b-field>
+					<template #label>
+						{{ $t('Latitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-input
 						v-model="formModel.latitude"
 						:disabled="formDisabled"
-						@blur="validate('latitude')"
 					/>
 				</b-field>
-				<b-field
-					label="Longitude"
-					:type="validateType('longitude')"
-					:message="validateMsg('longitude')"
-				>
+				<b-field>
+					<template #label>
+						{{ $t('Longitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-input
 						v-model="formModel.longitude"
 						:disabled="formDisabled"
-						@blur="validate('longitude')"
 					/>
 				</b-field>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
-				Close
-			</button>
+			<b-button v-if="closeButton" @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
-				class="is-success"
-				native-type="submit"
-				:value="submitButtonLabel"
+				class="is-primary"
+				:label="submitButtonLabel"
+				:disabled="mapping"
 			/>
 		</footer>
 	</form>
 </template>
 
 <script>
-import { required, numeric } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import PhoneCodes from "@/utils/phoneCodes";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "CommunityForm",
@@ -195,17 +270,20 @@ export default {
 
 	validations: {
 		formModel: {
-			longitude: { required },
-			latitude: { required },
-			contactGivenName: { required },
-			contactFamilyName: { required },
-			phonePrefix: { required },
-			phoneNumber: { required, numeric },
-			addressStreet: { required },
-			addressNumber: { required },
-			addressPostCode: { required },
-			nationalCardNumber: { required, numeric },
-			nationalCardType: { required },
+			longitude: {},
+			latitude: {},
+			contactGivenName: {},
+			contactFamilyName: {},
+			phonePrefix: { required: requiredIf((form) => form.phoneNumber || form.phoneType) },
+			phoneNumber: { required: requiredIf((form) => form.phonePrefix || form.phoneType) },
+			phoneType: { required: requiredIf((form) => form.phoneNumber || form.phonePrefix) },
+			phoneProxy: {},
+			addressStreet: {},
+			addressNumber: {},
+			addressPostCode: {},
+			nationalCardNumber: { required: requiredIf((form) => form.nationalCardType) },
+			nationalCardType: { required: requiredIf((form) => form.nationalCardNumber) },
+			projects: { required },
 			adm1Id: { required },
 			adm2Id: {},
 			adm3Id: {},
@@ -215,18 +293,53 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
+			phoneTypesLoading: true,
+			nationalCardTypesLoading: true,
+			projectsLoading: true,
 			options: {
 				nationalCardTypes: [],
 				phonePrefixes: PhoneCodes,
+				phoneTypes: [],
+				projects: [],
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchNationalCardTypes();
+	watch: {
+		formModel: "mapSelects",
+	},
+
+	async created() {
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchProjects(),
+			this.fetchPhoneTypes(),
+		]);
+		this.mapSelects();
 	},
 
 	methods: {
+		mapSelects() {
+			const { phonePrefix, nationalCardType, phoneType, projectIds } = this.formModel;
+			if (phonePrefix && typeof phonePrefix !== "object") {
+				this.formModel.phonePrefix = PhoneCodes
+					.find((item) => item.code === phonePrefix);
+			}
+			if (nationalCardType && typeof nationalCardType !== "object") {
+				this.formModel.nationalCardType = this.options.nationalCardTypes
+					.find((item) => item.code === nationalCardType);
+			}
+			if (phoneType && typeof phoneType !== "object") {
+				this.formModel.phoneType = this.options.phoneTypes
+					.find((item) => item.code === phoneType);
+			}
+			if (projectIds) {
+				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
+			}
+			this.mapping = this.$refs.locationForm.mapping;
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			this.$refs.locationForm.submitLocationForm();
@@ -242,13 +355,39 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.nationalCardTypes = data; })
 				.catch((e) => {
-					Notification(`National IDs ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
+
+			this.nationalCardTypesLoading = false;
 		},
 
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
+		},
+
+		async fetchPhoneTypes() {
+			await BeneficiariesService.getListOfTypesOfPhones()
+				.then(({ data }) => {
+					this.options.phoneTypes = data;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+				});
+
+			this.phoneTypesLoading = false;
+		},
+
+		async fetchProjects() {
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.options.projects = data;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+
+			this.projectsLoading = false;
 		},
 	},
 };

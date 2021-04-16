@@ -1,85 +1,81 @@
 <template>
-	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
+	<Table
+		has-reset-sort
+		has-search
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		:export-format="{xlsx: true, csv: true, ods: true}"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@search="onSearch"
+		@resetSort="resetSort"
+	>
+		<template v-for="column in table.columns">
+			<b-table-column v-bind="column" sortable :key="column.id">
+				<template v-slot="props">
+					{{ props.row[column.field] }}
+				</template>
+			</b-table-column>
+		</template>
+		<b-table-column
+			v-slot="props"
+			:label="$t('Actions')"
+			centered
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="history"
+					type="is-link"
+					:tooltip="$t('Send History')"
+					@click.native="sendHistory(props.row.id)"
+				/>
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					:tooltip="$t('Show Detail')"
+					@click.native="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					:tooltip="$t('Edit')"
+					@click.native="showEdit(props.row.id)"
+				/>
+				<SafeDelete
+					icon="trash"
+					:entity="$t('User')"
+					:tooltip="$t('Delete')"
+					:id="props.row.id"
+					@submitted="remove"
+				/>
+			</div>
+		</b-table-column>
+		<template #export>
 			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
 				space-between
 				:formats="{ xlsx: true, csv: true, ods: true}"
 			/>
-		</div>
-		<Table
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				label="Actions"
-				centered
-			>
-				<div class="block">
-					<ActionButton
-						icon="history"
-						type="is-link"
-						tooltip="Send History"
-						@click.native="sendHistory(props.row.id)"
-					/>
-					<ActionButton
-						icon="search"
-						type="is-link"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						tooltip="Edit"
-						@click.native="showEdit(props.row.id)"
-					/>
-					<SafeDelete
-						icon="trash"
-						entity="User"
-						tooltip="Delete"
-						:id="props.row.id"
-						@submitted="remove"
-					/>
-				</div>
-			</b-table-column>
-		</Table>
-	</div>
+		</template>
+	</Table>
 </template>
 
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import Search from "@/components/Search";
-import ExportButton from "@/components/ExportButton";
 import UsersService from "@/services/UsersService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "UsersList",
 
 	components: {
-		Search,
 		ExportButton,
 		SafeDelete,
 		Table,
@@ -96,8 +92,8 @@ export default {
 				visibleColumns: [
 					{ key: "email" },
 					{ key: "rights" },
-					{ key: "prefix" },
-					{ key: "phoneNumber" },
+					{ key: "phonePrefix", label: "Prefix", sortKey: "prefix" },
+					{ key: "phoneNumber", sortKey: "phone" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -126,14 +122,29 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.total = totalCount;
+				this.table.data = this.prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`Users ${e}`, "is-danger");
+				Notification(`${this.$t("Users")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		prepareDataForTable(data) {
+			const filledData = [];
+			data.forEach((item, key) => {
+				filledData[key] = item;
+				filledData[key].rights = this.prepareRights(item.roles);
+			});
+			return filledData;
+		},
+
+		// eslint-disable-next-line no-unused-vars
+		prepareRights(rights) {
+			// TODO Prepare rights for this table
+			return "Officer Manager";
 		},
 
 		sendHistory(id) {

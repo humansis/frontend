@@ -1,12 +1,13 @@
 <template>
-	<b-tooltip :label="tooltip" :active="isActive">
-		<button :disabled="disabled" class="button is-light table-action" @click="confirmDelete">
-			<b-icon
-				:icon="icon"
-				type="is-danger"
-				size="is-medium"
-			/>
-		</button>
+	<b-tooltip :label="tooltip" :active="isActive" type="is-danger">
+		<b-button
+			type="is-danger"
+			size="is-small"
+			:disabled="disabled"
+			@click="confirmDelete"
+		>
+			<b-icon :icon="icon" />
+		</b-button>
 	</b-tooltip>
 </template>
 
@@ -15,7 +16,10 @@ export default {
 	name: "SafeDelete",
 
 	props: {
-		icon: String,
+		icon: {
+			type: String,
+			required: true,
+		},
 		entity: String,
 		tooltip: String,
 		id: Number,
@@ -28,24 +32,26 @@ export default {
 
 	computed: {
 		isActive() {
-			return !!(this.tooltip && this.tooltip.length !== 0);
+			return this.tooltip?.length !== 0;
 		},
 	},
 
 	methods: {
 		confirmDelete() {
-			let message = "Are you sure";
-			let title = "Deleting";
-			let confirmMessage = "Deleted";
+			let message = this.$t("Are you sure");
+			let title = this.$t("Deleting");
+			let confirmMessage = this.$t("Deleted");
+
 			if (this.entity) {
-				message = `${message} you want to delete ${this.entity}`;
+				message = `${message} ${this.$t("you want to delete")} ${this.entity}`;
 				title = `${title} ${this.entity}`;
 				confirmMessage = `${this.entity} ${confirmMessage}`;
 			}
+
 			this.$buefy.dialog.confirm({
 				title,
 				message: `${message}?`,
-				confirmText: "Delete",
+				confirmText: this.$t("Delete"),
 				type: "is-danger",
 				hasIcon: true,
 				onConfirm: () => {
@@ -58,5 +64,4 @@ export default {
 		},
 	},
 };
-
 </script>

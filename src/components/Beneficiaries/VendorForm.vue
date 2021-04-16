@@ -2,20 +2,32 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Username"
+				:label="$t('Username')"
 				:type="validateType('username')"
 				:message="validateMsg('username')"
 			>
 				<b-input
 					v-model="formModel.username"
-					:disabled="formDisabled"
+					:disabled="formDisabled || !formModel.creating"
 					@blur="validate('username')"
 				/>
 			</b-field>
 
 			<b-field
+				:label="$t('Email')"
+				:type="validateType('email')"
+				:message="validateMsg('email')"
+			>
+				<b-input
+					v-model="formModel.email"
+					:disabled="formDisabled || !formModel.creating"
+					@blur="validate('email')"
+				/>
+			</b-field>
+
+			<b-field
 				v-if="formModel.creating"
-				label="Password"
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
@@ -29,7 +41,7 @@
 			</b-field>
 
 			<b-field
-				label="Name"
+				:label="$t('Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -40,21 +52,45 @@
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					Description<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
-				</template>
+			<b-field :label="$t('Shop')">
 				<b-input
-					v-model="formModel.description"
+					v-model="formModel.shop"
 					:disabled="formDisabled"
-					@blur="validate('description')"
 				/>
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Address Street
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Vendor No.') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.vendorNo"
+					:disabled="formDisabled"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('Contract No.') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.contractNo"
+					:disabled="formDisabled"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('Address Street') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressStreet"
@@ -65,8 +101,10 @@
 
 			<b-field>
 				<template #label>
-					Address Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressNumber"
@@ -77,8 +115,10 @@
 
 			<b-field>
 				<template #label>
-					Address Postcode
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Address Postcode') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.addressPostcode"
@@ -91,25 +131,25 @@
 				ref="locationForm"
 				:form-model="formModel"
 				:form-disabled="formDisabled"
+				@mapped="mapping = false"
 			/>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
-				Close
-			</button>
+			<b-button v-if="closeButton" @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
-				class="is-success"
-				native-type="submit"
-				:value="submitButtonLabel"
+				class="is-primary"
+				:label="submitButtonLabel"
+				:disabled="mapping"
 			/>
 		</footer>
 	</form>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf, email } from "vuelidate/lib/validators";
 import locationForm from "@/components/LocationForm";
 import Validation from "@/mixins/validation";
 
@@ -130,9 +170,10 @@ export default {
 	validations: {
 		formModel: {
 			username: { required },
+			email: { required, email },
 			password: { required: requiredIf((form) => form.creating) },
 			name: { required },
-			description: {},
+			shop: {},
 			addressStreet: {},
 			addressNumber: {},
 			addressPostcode: {},
@@ -140,7 +181,15 @@ export default {
 			adm2Id: {},
 			adm3Id: {},
 			adm4Id: {},
+			vendorNo: {},
+			contractNo: {},
 		},
+	},
+
+	data() {
+		return {
+			mapping: true,
+		};
 	},
 
 	methods: {

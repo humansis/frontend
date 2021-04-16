@@ -1,11 +1,16 @@
 <template>
-	<b-navbar>
-		<template slot="start">
-			<b-navbar-item>
-				<Breadcrumbs />
-			</b-navbar-item>
+	<b-navbar v-show="isNavBarVisible" id="navbar-main" class="navbar is-fixed-top">
+		<template #brand>
+			<a @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
+				<b-icon :icon="menuToggleIcon" />
+			</a>
 		</template>
-		<template slot="end">
+
+		<template #start>
+			<Breadcrumbs />
+		</template>
+
+		<template #end>
 			<b-navbar-item>
 				<b-tooltip
 					multilined
@@ -13,12 +18,10 @@
 					:label="tooltip.label"
 					:active="tooltip.active"
 				>
-					<b-icon
-						icon="question"
-						size="is-medium"
-					/>
+					<b-icon icon="question" size="is-medium" />
 				</b-tooltip>
 			</b-navbar-item>
+
 			<b-dropdown
 				v-model="country.iso3"
 				position="is-bottom-left"
@@ -32,6 +35,7 @@
 				>
 					<b-icon icon="globe-africa" size="is-medium" />
 				</a>
+
 				<b-dropdown-item
 					v-for="country in countries"
 					:key="country.name"
@@ -39,7 +43,7 @@
 					@click="handleChangeCountry(country)"
 				>
 					<b-icon class="mr-1" icon="globe" />
-					{{ country.iso3 }}
+					{{ $t(country.iso3)  }}
 				</b-dropdown-item>
 			</b-dropdown>
 
@@ -56,14 +60,15 @@
 				>
 					<b-icon icon="language" size="is-medium" />
 				</a>
+
 				<b-dropdown-item
 					v-for="language in languages"
 					:key="language.key"
-					:value="language.name"
+					:value="language.key"
 					@click="handleChangeLanguage(language)"
 				>
 					<b-icon class="mr-1" icon="language" />
-					{{ language.name }}
+					{{ $t(language.name) }}
 				</b-dropdown-item>
 			</b-dropdown>
 
@@ -79,16 +84,20 @@
 				>
 					<b-icon icon="user" size="is-medium" />
 				</a>
-				<router-link to="/profile">
+
+				<router-link :to="{ name: 'Profile' }">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
-						Profile
+						{{ $t('Profile') }}
 					</b-dropdown-item>
 				</router-link>
-				<b-dropdown-item value="logout">
-					<b-icon class="mr-1" icon="sign-out-alt" />
-					Log out
-				</b-dropdown-item>
+
+				<router-link :to="{ name: 'Logout' }">
+					<b-dropdown-item value="logout">
+						<b-icon class="mr-1" icon="sign-out-alt" />
+						{{ $t('Log out') }}
+					</b-dropdown-item>
+				</router-link>
 			</b-dropdown>
 		</template>
 	</b-navbar>
@@ -97,16 +106,15 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
+import IconService from "@/services/IconService";
 
 export default {
 	name: "NavBar",
 
 	data() {
 		return {
-			countries: [],
-			languages: [],
 			tooltip: {
 				label: "",
 				active: false,
@@ -119,36 +127,70 @@ export default {
 	},
 
 	async mounted() {
-		await this.fetchCountries();
-		await this.fetchLanguages();
+		if (!this.countries) await this.fetchCountries();
+		if (!this.icons) await this.fetchIcons();
 		this.setTooltip();
 	},
 
-	methods: {
-		...mapActions(["updateCountry", "updateLanguage"]),
+	computed: {
+		...mapState([
+			"isNavBarVisible",
+			"isAsideExpanded",
+			"country",
+			"language",
+			"languages",
+			"countries",
+			"icons",
+		]),
 
-		handleChangeCountry(country) {
-			this.updateCountry(country);
+		menuToggleIcon() {
+			return this.isAsideExpanded ? "arrow-left" : "arrow-right";
+		},
+
+		toggleTooltip() {
+			return this.isAsideExpanded ? this.$t("Collapse") : this.$t("Expand");
+		},
+	},
+
+	methods: {
+		...mapActions([
+			"storeCountry",
+			"storeCountries",
+			"storeLanguage",
+			"storeTranslations",
+			"storeIcons",
+			"appLoading",
+		]),
+
+		menuToggle() {
+			this.$store.commit("asideStateToggle");
+		},
+
+		async handleChangeCountry(country) {
+			await this.storeCountry(country);
+			this.$router.push({ name: "Home" });
 			this.$router.go();
 		},
 
 		async handleChangeLanguage(language) {
-			this.$store.commit("appLoading", true);
+			this.appLoading(true);
 
 			await TranslationService.getTranslations(language.key).then((response) => {
 				if (response.status === 200) {
-					this.$i18n.locale = language.key;
-					this.$i18n.fallbackLocale = language.key;
+					this.$i18n.locale = language.key.toLowerCase();
+					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-					this.updateLanguage(language);
-					sessionStorage.setItem("translations", JSON.stringify(response.data));
+
+					this.storeLanguage(language);
+					this.storeTranslations(response.data);
+
+					this.$router.go();
 				}
 			}).catch((e) => {
-				Notification(`Translations ${e}`, "is-danger");
-				this.$store.commit("appLoading", false);
+				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 
-			this.$store.commit("appLoading", false);
+			this.appLoading(false);
 		},
 
 		setTooltip() {
@@ -157,43 +199,23 @@ export default {
 		},
 
 		async fetchCountries() {
-			if (!sessionStorage.getItem("countries")) {
-				await CountriesService.getListOfCountries()
-					.then(({ data }) => {
-						this.countries = data;
-						sessionStorage.setItem("countries", JSON.stringify(data));
-					})
-					.catch((e) => {
-						Toast(`(Countries) ${e}`, "is-danger");
-					});
-			} else {
-				this.countries = JSON.parse(sessionStorage.getItem("countries"));
-			}
+			await CountriesService.getListOfCountries()
+				.then(({ data }) => {
+					this.storeCountries(data);
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+				});
 		},
 
-		async fetchLanguages() {
-			if (!sessionStorage.getItem("languages")) {
-				// TODO Get languages from API
-				const languages = [
-					{ name: "EN", key: "en" },
-					{ name: "AR", key: "ar" },
-					{ name: "RU", key: "ru" },
-				];
-				this.languages = languages;
-				sessionStorage.setItem("languages", JSON.stringify(languages));
-			} else {
-				this.languages = JSON.parse(sessionStorage.getItem("languages"));
-			}
+		async fetchIcons() {
+			await IconService.getIcons()
+				.then(({ data }) => {
+					this.storeIcons(data);
+				}).catch((e) => {
+					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+				});
 		},
-	},
-
-	async created() {
-		await this.fetchLanguages();
-		await this.fetchCountries();
-	},
-
-	computed: {
-		...mapState(["country", "language"]),
 	},
 
 };

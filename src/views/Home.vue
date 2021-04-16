@@ -1,14 +1,17 @@
 <template>
 	<div>
-		<div class="columns">
-			<div class="column is-three-fifths">
+		<div class="columns is-multiline">
+			<div class="column is-full is-half-fullhd">
 				<DistributionMap />
 			</div>
-			<div class="column">
+
+			<div class="column is-full is-half-fullhd">
 				<Summary />
 			</div>
 		</div>
-		<ProjectsSummary />
+
+		<ProjectSummary />
+
 		<UpcomingAssistances />
 	</div>
 </template>
@@ -16,17 +19,17 @@
 <script>
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import DistributionMap from "@/components/Home/DistributionMap";
-import ProjectsSummary from "@/components/Home/ProjectsSummary";
 import Summary from "@/components/Home/Summary";
+import ProjectSummary from "@/components/Home/ProjectSummary";
 
 export default {
 	name: "Home",
 
 	components: {
+		ProjectSummary,
 		DistributionMap,
 		Summary,
 		UpcomingAssistances,
-		ProjectsSummary,
 	},
 };
 </script>

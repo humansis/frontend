@@ -1,59 +1,93 @@
-// TODO uncomment methods after implementing this endpoint
+import { fetcher, idsToUri } from "@/utils/fetcher";
+import { Toast } from "@/utils/UI";
+import CryptoJS from "crypto-js";
 
 export default {
-	// eslint-disable-next-line no-unused-vars
-	async getListOfUsers(page, size, sort, search = null) {
-		// const fulltext = search ? `&fulltext=${search}` : "";
-		// const sortText = sort ? `&sort=${sort}` : "";
-		//
-		// const { data: { data, totalCount } } = await fetcher({
-		// 	uri: `users?page=${page}&size=${size + sortText + fulltext}`,
-		// });
-		// return { data, totalCount };
-		return { data: [], totalCount: 0 };
+	async getListOfUsers(page, size, sort, search = null, ids = null, param = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `users?${pageText + sizeText + sortText + fulltext + idsText}`,
+		});
+		return { data, totalCount };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async createUser(body) {
-		// const { data, status } = await fetcher({ uri: "users", method: "POST", body });
-		// return { data, status };
-		return { data: [], status: 200 };
+		return this.initializeUser(body.username)
+			.then(async ({ data: { salt, userId } }) => {
+				const userBody = body;
+				userBody.password = userBody.password
+					? this.saltPassword(salt, userBody.password)
+					: null;
+
+				const { data, status } = await fetcher({ uri: `users/${userId}`, method: "POST", body: userBody });
+				return { data, status };
+			})
+			.catch((e) => {
+				Toast(`Initialize User ${e}`, "is-danger");
+			});
 	},
 
-	// eslint-disable-next-line no-unused-vars
+	async initializeUser(username) {
+		return fetcher({ uri: "users/initialize", method: "POST", body: { username } });
+	},
+
+	async requestSalt(username) {
+		const { data, status } = await fetcher({ uri: `users/salt/${username}`, method: "GET" });
+		return { data, status };
+	},
+
+	saltPassword(salt, password) {
+		const salted = `${password}{${salt}`;
+		let digest = CryptoJS.SHA512(salted);
+
+		for (let i = 1; i < 5000; i += 1) {
+			digest = CryptoJS.SHA512(digest.concat(CryptoJS.enc.Utf8.parse(salted)));
+		}
+
+		return CryptoJS.enc.Base64.stringify(digest);
+	},
+
 	async getDetailOfUser(id) {
-		// const { data: { data } } = await fetcher({
-		// 	uri: `users/${id}`,
-		// });
-		// return { data };
-		return { data: {}, totalCount: 0 };
+		const { data, status } = await fetcher({
+			uri: `users/${id}`,
+		});
+		return { data, status };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async updateUser(id, body) {
-		// const { data, status } = await fetcher({
-		// 	uri: `users/${id}`, method: "PUT", body,
-		// });
-		// return { data, status };
-		return { data: {}, status: 200 };
+		return this.requestSalt(body.username)
+			.then(async ({ data: { salt } }) => {
+				const userBody = body;
+				userBody.password = userBody.password
+					? this.saltPassword(salt, userBody.password)
+					: null;
+				const { data, status } = await fetcher({
+					uri: `users/${id}`, method: "PUT", body: userBody,
+				});
+				return { data, status };
+			})
+			.catch((e) => {
+				Toast(`Update User ${e}`, "is-danger");
+			});
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async deleteUser(id) {
-		// const { data, status } = await fetcher({
-		// 	uri: `users/${id}`, method: "DELETE",
-		// });
-		// return { data, status };
-		return { data: {}, status: 204 };
+		const { data, status } = await fetcher({
+			uri: `users/${id}`, method: "DELETE",
+		});
+		return { data, status };
 	},
 
-	// eslint-disable-next-line no-unused-vars
 	async sendHistory(id) {
-		// const { data: { data } } = await fetcher({
-		// 	uri: `users/${id}/logs`,
-		// });
-		// return { data };
-		return { data: {} };
+		const { data: { data } } = await fetcher({
+			uri: `users/${id}/logs`,
+		});
+		return { data };
 	},
 
 };

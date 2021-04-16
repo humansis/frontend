@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Project Name"
+				:label="$t('Project Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -13,11 +13,13 @@
 				/>
 			</b-field>
 
-			<b-field
-				label="Internal ID"
-				:type="validateType('internalId')"
-				:message="validateMsg('internalId', 'Required number')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Internal ID') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.internalId"
 					:disabled="formDisabled"
@@ -26,7 +28,7 @@
 			</b-field>
 
 			<b-field
-				label="Sectors"
+				:label="$t('Sectors')"
 				:type="validateType('selectedSectors')"
 				:message="validateMsg('selectedSectors')"
 			>
@@ -36,79 +38,83 @@
 					label="code"
 					track-by="value"
 					multiple
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
 					:class="validateMultiselect('selectedSectors')"
 					@select="validate('selectedSectors')"
 				>
-					<template
-						slot="singleLabel"
-						slot-scope="option"
-					>
-						{{ option.code }}
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #tag="props">
+						<MultiSelectTag
+							:props="props"
+							:items="formModel.selectedSectors"
+							@optionRemoved="formModel.selectedSectors = $event"
+						/>
 					</template>
 				</MultiSelect>
 			</b-field>
 
 			<b-field
-				label="Start date"
+				:label="$t('Start date')"
 				:type="validateType('startDate')"
 				:message="validateMsg('startDate')"
 			>
 				<b-datepicker
 					v-model="formModel.startDate"
 					show-week-number
-					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					locale="en-CA"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('startDate')"
 				/>
 			</b-field>
 
 			<b-field
-				label="End Date"
+				:label="$t('End Date')"
 				:type="validateType('endDate')"
 				:message="validateMsg(
 					'endDate',
-					`Required and must be greater than Start Date`
-				)"
+					$t('Required and must be greater than Start Date'))"
 			>
 				<b-datepicker
 					v-model="formModel.endDate"
 					show-week-number
-					placeholder="Click to select..."
 					icon="calendar-day"
 					trap-focus
+					locale="en-CA"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('endDate')"
 				/>
 			</b-field>
 
-			<b-field
-				label="Donors"
-				:type="validateType('selectedDonors')"
-				:message="validateMsg('selectedDonors')"
-			>
+			<b-field>
+				<template #label>
+					{{ $t('Donors') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<MultiSelect
 					v-model="formModel.selectedDonors"
 					searchable
-					label="shortname"
+					label="fullname"
 					track-by="id"
 					multiple
-					placeholder="Click to select..."
-					:class="validateMultiselect('selectedDonors')"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.donors"
 					:loading="donorsLoading"
-					@select="validate('selectedDonors')"
 				>
-					<template
-						slot="singleLabel"
-						slot-scope="option"
-					>
+					<template #singleLabel v-slot:default="option">
 						{{ option.shortname }}
 					</template>
 				</MultiSelect>
@@ -116,27 +122,42 @@
 
 			<b-field>
 				<template #label>
-					Target Type<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Target Type') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
-					label="code"
-					track-by="value"
-					placeholder="Click to select..."
+					label="value"
+					track-by="code"
+					:placeholder="$t('Click to select')"
 					:options="options.targetTypes"
 					:searchable="false"
 					:disabled="formDisabled"
 					:loading="targetTypesLoading"
-				/>
+				>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #singleLabel="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
 				label="Total Target"
 				:type="validateType('totalTarget')"
-				:message="validateMsg('totalTarget', 'Required, min length is 1')"
+				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
 					expanded
@@ -149,7 +170,10 @@
 
 			<b-field>
 				<template #label>
-					Notes<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Notes') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.notes"
@@ -159,13 +183,13 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
-				Close
-			</button>
+			<b-button v-if="closeButton" @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				type="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -175,17 +199,21 @@
 
 <script>
 import { required, minValue } from "vuelidate/lib/validators";
-import HomeService from "@/services/HomeService";
+import DonorService from "@/services/DonorService";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import { normalizeText } from "@/utils/datagrid";
+import MultiSelectTag from "@/components/MultiSelectTag";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
+
+	components: { MultiSelectTag },
 
 	mixins: [Validation],
 
@@ -212,14 +240,14 @@ export default {
 	validations: {
 		formModel: {
 			name: { required },
-			internalId: { required },
+			internalId: {},
 			selectedSectors: { required },
 			startDate: { required },
 			endDate: {
 				required,
 				minValue: minDate,
 			},
-			selectedDonors: { required },
+			selectedDonors: {},
 			selectedTargetType: {},
 			totalTarget: { required, minValue: minValue(1) },
 		},
@@ -232,6 +260,10 @@ export default {
 	},
 
 	methods: {
+		normalizeText(value) {
+			return normalizeText(value);
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -248,10 +280,10 @@ export default {
 		},
 
 		async fetchSectors() {
-			await SectorsService.getListOfSectors().then((response) => {
-				this.options.sectors = response.data;
+			await SectorsService.getListOfSectors().then(({ data }) => {
+				this.options.sectors = data;
 			}).catch((e) => {
-				Notification(`Sectors ${e}`, "is-danger");
+				Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
@@ -259,10 +291,10 @@ export default {
 		},
 
 		async fetchDonors() {
-			await HomeService.getListOfDonors().then((response) => {
-				this.options.donors = response.data;
+			await DonorService.getListOfDonors().then(({ data }) => {
+				this.options.donors = data;
 			}).catch((e) => {
-				Notification(`Donors ${e}`, "is-danger");
+				Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedDonors = getArrayOfCodeListByKey(this.formModel.donorIds, this.options.donors, "id");
@@ -270,10 +302,10 @@ export default {
 		},
 
 		async fetchTargetTypes() {
-			await AssistancesService.getListOfTargetTypesForAssistances().then((response) => {
-				this.options.targetTypes = response.data;
+			await AssistancesService.getTargetTypes().then(({ data }) => {
+				this.options.targetTypes = data;
 			}).catch((e) => {
-				Notification(`Target Types ${e}`, "is-danger");
+				Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");

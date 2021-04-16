@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">Edit Household</h2>
+		<h2 class="title">{{ $t('Edit Household') }}</h2>
 		<HouseholdTabs is-editing />
 	</div>
 </template>

@@ -2,23 +2,23 @@
 	<div>
 		<b-loading
 			is-full-page
-			:active="isAppLoading"
+			:active="this.isAppLoading"
 			:can-cancel="false"
 		/>
+		<NavBar />
 		<SideMenu />
-		<section class="main-content is-fullheight">
-			<div class="container">
-				<NavBar />
-				<router-view />
-			</div>
+		<section class="section">
+			<router-view />
 		</section>
 	</div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
+import TranslationService from "@/services/TranslationService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "MainContainer",
@@ -29,13 +29,41 @@ export default {
 	},
 
 	computed: {
-		...mapState(["isAppLoading"]),
+		...mapState([
+			"isAppLoading",
+			"language",
+			"translations",
+		]),
+	},
+
+	created() {
+		this.setLocales();
+	},
+
+	methods: {
+		...mapActions(["storeTranslations", "appLoading"]),
+
+		async setLocales() {
+			const { key: languageKey } = this.language;
+
+			if (!this.translations) {
+				this.appLoading(true);
+
+				await TranslationService.getTranslations(languageKey).then((response) => {
+					if (response.status === 200) {
+						this.storeTranslations(response.data);
+						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
+					}
+				}).catch((e) => {
+					Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+					this.$store.dispatch("appLoading", false);
+				});
+
+				this.appLoading(false);
+			} else {
+				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
+			}
+		},
 	},
 };
 </script>
-
-<style scoped>
-.main-content {
-	margin-left: 60px;
-}
-</style>

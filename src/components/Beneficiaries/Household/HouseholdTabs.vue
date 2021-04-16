@@ -1,69 +1,80 @@
 <template>
-	<div>
+	<card-component>
+		<b-progress :value="100" />
 		<b-steps
 			v-model="activeStep"
 			animated
 			rounded
 			has-navigation
 		>
-			<b-step-item step="1" label="Household">
-				<HouseholdForm :detailOfHousehold="detailOfHousehold" ref="householdForm" />
+			<b-step-item step="1" :label="$t('Household')">
+				<HouseholdForm
+					v-if="steps[1]"
+					ref="householdForm"
+					:is-editing="isEditing"
+					:detailOfHousehold="detailOfHousehold"
+				/>
 			</b-step-item>
 
-			<b-step-item step="2" label="Household Head">
+			<b-step-item step="2" :label="$t('Household Head')">
 				<HouseholdHeadForm
+					v-if="steps[2]"
 					ref="householdHeadForm"
+					is-household-head
 					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" label="Members">
-				<Members :detailOfHousehold="detailOfHousehold" ref="householdMembers" />
+			<b-step-item step="3" :label="$t('Members')">
+				<Members
+					v-if="steps[3]"
+					ref="householdMembers"
+					:is-editing="isEditing"
+					:detailOfHousehold="detailOfHousehold"
+				/>
 			</b-step-item>
 
-			<b-step-item step="4" label="Summary">
+			<b-step-item step="4" :label="$t('Summary')">
 				<Summary
+					v-if="steps[4]"
 					ref="householdSummary"
 					:detailOfHousehold="detailOfHousehold"
 					:members="summaryMembers"
 					:address="address"
 					:location="location"
+					:is-editing="isEditing"
 				/>
 			</b-step-item>
-			<template
-				v-if="true"
-				slot="navigation"
-				slot-scope="{previous, next}"
-			>
+			<template #navigation="{previous, next}">
 				<div class="buttons flex-end">
 					<b-button
-						type="is-danger is-light"
-						:disabled="previous.disabled"
+						v-show="!previous.disabled"
 						@click.prevent="previous.action"
 					>
-						Back
+						{{ $t('Back') }}
 					</b-button>
 					<b-button
-						type="is-success"
+						type="is-primary"
 						:disabled="next.disabled"
 						@click.prevent="nextPage(next)"
 					>
-						Next
+						{{ $t('Next') }}
 					</b-button>
 					<b-button
 						v-if="activeStep === 3"
-						type="is-danger"
+						type="is-primary"
 						icon-left="save"
+						:loading="saveButtonLoading"
 						@click="save"
 					>
-						{{ isEditing ? "Update" : "Save" }}
+						{{ isEditing ? $t('Update') : $t('Save') }}
 					</b-button>
 				</div>
 			</template>
 		</b-steps>
-	</div>
+	</card-component>
 </template>
 
 <script>
@@ -73,6 +84,7 @@ import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 
@@ -84,6 +96,7 @@ export default {
 	},
 
 	components: {
+		CardComponent,
 		HouseholdHeadForm,
 		HouseholdForm,
 		Members,
@@ -92,6 +105,7 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			activeStep: 0,
 			detailOfHousehold: null,
 			household: null,
@@ -101,6 +115,13 @@ export default {
 			selectedProjects: [],
 			location: "",
 			address: "",
+			saveButtonLoading: false,
+			steps: {
+				1: false,
+				2: false,
+				3: false,
+				4: false,
+			},
 		};
 	},
 
@@ -108,18 +129,20 @@ export default {
 		...mapState(["country"]),
 	},
 
-	created() {
+	async created() {
 		if (this.isEditing) {
-			this.getDetailOfHousehold(this.$route.params.householdId);
+			await this.fetchHouseholdDetail(this.$route.params.householdId);
 		}
+		this.steps[1] = true;
 	},
 
 	methods: {
 		close() {
-			this.$router.go(-1);
+			this.$router.push({ name: "Households" });
 		},
 
 		nextPage(next) {
+			this.steps[this.activeStep + 2] = true;
 			switch (this.activeStep) {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
@@ -152,12 +175,16 @@ export default {
 		},
 
 		save() {
-			// TODO Mapping form models to householdBody
+			if (!this.$refs.householdSummary.submit()) {
+				return;
+			}
+
 			const {
 				shelterStatus,
 				livelihood: {
 					livelihood, assets, incomeLevel, debtLevel,
 					foodConsumptionScore, copingStrategiesIndex,
+					incomeSpentOnFood,
 				},
 				externalSupport: {
 					externalSupportReceivedType,
@@ -167,29 +194,31 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
+
 			const householdBody = {
 				iso3: this.country.iso3,
-				livelihood: livelihood.code,
+				livelihood: livelihood?.code,
 				assets: getArrayOfIdsByParam(assets, "code"),
-				shelterStatus: parseInt(shelterStatus.code, 10),
-				projectIds: getArrayOfIdsByParam(this.selectedProjects, "code"),
+				shelterStatus: shelterStatus?.code,
+				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				// TODO Resolve longitude and latitude
-				longitude: "string",
-				latitude: "string",
+				longitude: "",
+				latitude: "",
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel: incomeLevel.code,
+				incomeLevel,
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived: this.$moment(supportDateReceived).format("YYYY-MM-DD"),
+				supportDateReceived: supportDateReceived.toISOString(),
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
-				// TODO Resolve incomeSpentOnFood and houseIncome
-				incomeSpentOnFood: 0,
+				incomeSpentOnFood,
 				houseIncome: 0,
+				countrySpecificAnswers:
+					this.prepareCountrySpecificsForHousehold(this.household.countrySpecificOptions),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -202,48 +231,67 @@ export default {
 			}
 		},
 
+		prepareCountrySpecificsForHousehold(countrySpecificAnswers) {
+			const preparedAnswers = [];
+			Object.keys(countrySpecificAnswers).forEach((key) => {
+				preparedAnswers.push({
+					countrySpecificId: Number(key),
+					answer: `${countrySpecificAnswers[key]}`,
+				});
+			});
+			return preparedAnswers;
+		},
+
 		async updateHousehold(id, householdBody) {
+			this.saveButtonLoading = true;
+
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Household Successfully Updated", "is-success");
+					Toast(this.$t("Household Successfully Updated"), "is-success");
+					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
+
+			this.saveButtonLoading = false;
 		},
 
 		async createHousehold(householdBody) {
+			this.saveButtonLoading = true;
+
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Household Successfully Created", "is-success");
+					Toast(this.$t("Household Successfully Created"), "is-success");
+					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
+
+			this.saveButtonLoading = false;
 		},
 
-		async getDetailOfHousehold(id) {
-			// TODO Loading on data container
-
+		async fetchHouseholdDetail(id) {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
-				Notification(`Household ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 		},
 
 		prepareSummaryMembers(members) {
 			const membersData = [];
-
 			if (members.length) {
 				members.forEach((member) => {
+					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
 					membersData.push({
 						firstName: member.nameLocal.firstName,
 						familyName: member.nameLocal.familyName,
 						parentsName: member.nameLocal.parentsName,
 						gender: member.personalInformation.gender,
 						dateBirth: member.personalInformation.dateOfBirth,
-						phone: `${member.phone1.ext} ${member.phone1.phoneNo}`,
+						phone,
 						nationalId: member.id.idNumber,
 					});
 				});
@@ -257,14 +305,14 @@ export default {
 				typeOfLocation,
 				campName,
 				tentNumber,
-				addressNumber,
-				addressStreet,
-				addressPostcode,
+				number,
+				street,
+				postcode,
 			} = this.household.currentLocation;
 			if (typeOfLocation.code === "camp") {
 				return `${campName}, ${tentNumber}`;
 			}
-			return `${addressNumber}, ${addressStreet}, ${addressPostcode}`;
+			return `${number}, ${street}, ${postcode}`;
 		},
 
 		prepareLocationForSummary() {
@@ -290,55 +338,49 @@ export default {
 		prepareAddressForHousehold(
 			{
 				typeOfLocation,
-				addressNumber,
-				addressPostcode,
-				addressStreet,
-				adm1Id: { id: adm1Id },
-				adm2Id: { id: adm2Id },
-				adm3Id: { id: adm3Id },
-				adm4Id: { id: adm4Id },
+				number,
+				postcode,
+				street,
+				adm1Id,
+				adm2Id,
+				adm3Id,
+				adm4Id,
 				campName,
 				tentNumber,
-				locationId,
+				camp,
 			},
 		) {
+			let locationId = null;
+			if (adm4Id) {
+				locationId = adm4Id.locationId;
+			} else if (adm3Id) {
+				locationId = adm3Id.locationId;
+			} else if (adm2Id) {
+				locationId = adm2Id.locationId;
+			} else if (adm1Id) {
+				locationId = adm1Id.locationId;
+			}
 			const address = {};
 			if (typeOfLocation.code === "camp") {
 				address.campAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
-					name: campName,
 					tentNumber,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
-					locationId,
+					camp: {
+						name: camp?.name || campName,
+						locationId: camp?.locationId || locationId,
+					},
 				};
 			} else if (typeOfLocation.code === "residence") {
 				address.residenceAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
-					number: addressNumber,
-					street: addressStreet,
-					postCode: addressPostcode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
+					number,
+					street,
+					postcode,
 					locationId,
 				};
 			} else if (typeOfLocation.code === "temporary_settlement") {
 				address.temporarySettlementAddress = {
-					type: typeOfLocation.code,
-					locationGroup: "current",
-					number: addressNumber,
-					street: addressStreet,
-					postCode: addressPostcode,
-					adm1Id,
-					adm2Id,
-					adm3Id,
-					adm4Id,
+					number,
+					street,
+					postcode,
 					locationId,
 				};
 			}
@@ -351,7 +393,7 @@ export default {
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
 					const preparedBeneficiary = {
-						dateOfBirth: this.$moment(beneficiary.personalInformation.dateOfBirth).format("YYYY-MM-DD"),
+						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
 						localFamilyName: beneficiary.nameLocal.familyName,
 						localGivenName: beneficiary.nameLocal.firstName,
 						localParentsName: beneficiary.nameLocal.parentsName,
@@ -365,6 +407,7 @@ export default {
 								type: beneficiary.id.idType.code,
 							},
 						],
+						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteriaIds: this.mapVulnerabilities(beneficiary.vulnerabilities),
@@ -374,7 +417,6 @@ export default {
 						preparedBeneficiary.referralComment = beneficiary.referral.comment;
 					}
 					if (beneficiary.phone1.phoneNo !== "") {
-						preparedBeneficiary.phones = [];
 						preparedBeneficiary.phones.push({
 							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
@@ -389,12 +431,7 @@ export default {
 							type: beneficiary.phone2.type.code,
 							proxy: beneficiary.phone2.proxy,
 						};
-						if (preparedBeneficiary.phones.length !== 0) {
-							preparedBeneficiary.phones.push(phone2);
-						} else {
-							preparedBeneficiary.phones = [];
-							preparedBeneficiary.phones.push(phone2);
-						}
+						preparedBeneficiary.phones.push(phone2);
 					}
 					beneficiariesData.push(preparedBeneficiary);
 				});

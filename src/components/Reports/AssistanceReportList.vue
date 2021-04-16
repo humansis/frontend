@@ -1,38 +1,12 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<ReportNavbar
 			@periodChanged="onPeriodFilterChange"
 			@choosePeriodChanged="onChoosePeriodFilterChange"
 		/>
-		<div class="ml-1 columns box" style="width: 80%">
-			<div class="column is-half">
-				<label class="typo__label">Projects</label>
-				<MultiSelect
-					v-model="selectedProjectsForFilter"
-					tag-placeholder="Add this as new tag"
-					placeholder="Search"
-					label="name"
-					track-by="id"
-					:loading="isProjectsLoading"
-					:options="projects"
-					@input="fetchAssistance"
-				/>
-			</div>
-			<div class="column is-half">
-				<label class="typo__label">Assistance</label>
-				<MultiSelect
-					v-model="selectedAssistanceForFilter"
-					tag-placeholder="Add this as new tag"
-					placeholder="Search"
-					label="name"
-					track-by="id"
-					:loading="isAssistanceLoading"
-					:options="options.assistance"
-					@input="fetchAssistancesReports"
-				/>
-			</div>
-		</div>
 		<Table
+			has-reset-sort
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -41,6 +15,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -52,12 +27,46 @@
 			<b-table-column
 				label="Actions"
 			>
-				<div class="block">
-					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+				<div class="buttons is-right">
+					<ActionButton icon="search" type="is-primary" tooltip="Show Detail" />
 					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
+			<template #filterButton>
+				<div class="level-item level">
+					<div class="level-item">
+						<b-field label="Projects">
+							<MultiSelect
+								v-model="selectedProjectsForFilter"
+								tag-placeholder="Add this as new tag"
+								placeholder="Search"
+								label="name"
+								track-by="id"
+								style="min-width: 16rem"
+								:loading="isProjectsLoading"
+								:options="projects"
+								@input="fetchAssistance"
+							/>
+						</b-field>
+					</div>
+					<div class="level-item">
+						<b-field label="Assistance">
+							<MultiSelect
+								v-model="selectedAssistanceForFilter"
+								tag-placeholder="Add this as new tag"
+								placeholder="Search"
+								label="name"
+								track-by="id"
+								style="min-width: 16rem"
+								:loading="isAssistanceLoading"
+								:options="options.assistance"
+								@input="fetchAssistancesReports"
+							/>
+						</b-field>
+					</div>
+				</div>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -66,7 +75,7 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ReportNavbar from "@/components/Reports/ReportNavbar";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import AssistancesService from "@/services/AssistancesService";
 import AssistanceReportService from "@/services/AssistanceReportService";
 import { Notification } from "@/utils/UI";
@@ -94,10 +103,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Name",
-					},
+					{ key: "name", label: "Name" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -149,7 +155,7 @@ export default {
 		async fetchProjects() {
 			this.isProjectsLoading = true;
 
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then((response) => {
 					this.options.projects = response.data;
 				}).catch((e) => {
@@ -173,9 +179,7 @@ export default {
 			this.isAssistanceLoading = false;
 		},
 
-		goToDetail() {
-			// TODO go to detail
-		},
+		goToDetail() {},
 
 		onPeriodFilterChange(period) {
 			this.selectedPeriod = period;

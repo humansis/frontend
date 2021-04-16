@@ -1,8 +1,22 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<div class="columns">
 			<Search class="column is-two-fifths" @search="onSearch" />
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				Advanced Search
+			</b-button>
 		</div>
+		<b-collapse v-model="advancedSearchVisible">
+			<VoucherFilters
+				@filtersChanged="onFiltersChange"
+			/>
+		</b-collapse>
+		<b-progress :value="table.progress" format="percent" />
 		<div class="batches-container" ref="batches">
 			<b-collapse
 				v-for="(batch, index) of getBatches()"
@@ -45,7 +59,10 @@
 								:key="column.id"
 								v-slot="props"
 							>
-								<ColumnField :data="props" :column="column" />
+								<template v-if="column.field === 'status'">
+									{{ getStatus(props.row[column.field]) }}
+								</template>
+								<ColumnField v-else :data="props" :column="column" />
 							</b-table-column>
 						</template>
 						<b-table-column
@@ -54,10 +71,10 @@
 							width="145"
 							centered
 						>
-							<div class="block">
+							<div class="buttons is-right">
 								<ActionButton
 									icon="search"
-									type="is-info"
+									type="is-primary"
 									tooltip="Show Detail"
 									@click.native="showDetailWithId(props.row.id)"
 								/>
@@ -80,7 +97,6 @@
 </template>
 
 <script>
-import { prepareDataForTable } from "@/mappers/voucherMapper";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
@@ -90,11 +106,15 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import VoucherFilters from "@/components/Voucher/VoucherFilters";
+import voucherHelper from "@/mixins/voucherHelper";
+import { getBookletStatus } from "@/utils/helpers";
 
 export default {
 	name: "BatchList",
 
 	components: {
+		VoucherFilters,
 		Search,
 		SafeDelete,
 		Table,
@@ -102,28 +122,31 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, voucherHelper],
 
 	data() {
 		return {
 			batches: [],
 			isOpen: 0,
+			advancedSearchVisible: false,
+			filters: {},
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
 					{ key: "project" },
 					{ key: "code" },
-					{ key: "numberVouchers", label: "Quantity Of Vouchers" },
-					{ key: "value", label: "Total Value", attribute: "totalValue", type: "different" },
+					{ key: "quantityOfVouchers", label: "Quantity of Vouchers" },
+					{ key: "totalValue", sortKey: "value" },
 					{ key: "currency" },
 					{ key: "status" },
 					{ key: "beneficiary" },
-					{ key: "distribution" },
+					{ key: "assistance", sortable: true, sortKey: "distribution" },
 				],
 				total: 0,
 				currentPage: 1,
 				searchPhrase: "",
+				progress: null,
 			},
 		};
 	},
@@ -138,7 +161,7 @@ export default {
 			if (this.voucherModal.isDetail) {
 				result = "Detail of Voucher";
 			} else {
-				result = "Create new Voucher";
+				result = "Create New Voucher";
 			}
 			return result;
 		},
@@ -151,6 +174,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			const loadingComponent = this.$buefy.loading.open({
 				container: this.$refs.batches,
@@ -158,9 +182,18 @@ export default {
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await BookletsService.getListOfBooklets(
+				null,
+				null,
+				null,
+				this.table.searchPhrase,
+				this.filters,
 			).then(async ({ data, totalCount }) => {
-				this.table.data = await prepareDataForTable(data);
+				this.table.data = [];
+				this.table.progress = 0;
 				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				Notification(`Booklet ${e}`, "is-danger");
 			});
@@ -192,12 +225,21 @@ export default {
 			return batches;
 		},
 
-		onPageChange() {
-			// TODO on table page change
+		onPageChange() {},
+
+		onSort() {},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		onSort() {
-			// TODO on table sort
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			await this.fetchData();
+		},
+
+		getStatus(code) {
+			return getBookletStatus(code).value;
 		},
 	},
 };

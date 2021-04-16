@@ -2,20 +2,31 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Email"
+				:label="$t('Email')"
 				:type="validateType('email')"
 			>
 				<b-input
 					v-model="formModel.email"
 					type="email"
-					:disabled="formDisabled"
+					:disabled="formDisabled || isEditing"
 					@blur="validate('email')"
 				/>
 			</b-field>
 
-			<!-- TODO add rules to password -->
 			<b-field
-				label="Password"
+				:label="$t('Username')"
+				:type="validateType('username')"
+			>
+				<b-input
+					v-model="formModel.username"
+					:disabled="formDisabled || isEditing"
+					@blur="validate('username')"
+				/>
+			</b-field>
+
+			<!-- TODO Add rules to password -->
+			<b-field
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
@@ -29,25 +40,7 @@
 			</b-field>
 
 			<b-field
-				label="Organization"
-				:type="validateType('organization')"
-				:message="validateMsg('organization')"
-			>
-				<MultiSelect
-					v-model="formModel.organization"
-					searchable
-					label="value"
-					track-by="code"
-					placeholder="Click to select..."
-					:disabled="formDisabled"
-					:options="options.organizations"
-					:class="validateMultiselect('organization')"
-					@select="validate('organization')"
-				/>
-			</b-field>
-
-			<b-field
-				label="Rights"
+				:label="$t('Rights')"
 				:type="validateType('rights')"
 				:message="validateMsg('rights')"
 			>
@@ -56,7 +49,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.rights"
 					:class="validateMultiselect('rights')"
@@ -66,27 +59,27 @@
 
 			<b-field
 				v-show="!formModel.disabledProject"
-				label="Project"
-				:type="validateType('projects')"
-				:message="validateMsg('projects')"
+				:label="$t('Project')"
+				:type="validateType('projectIds')"
+				:message="validateMsg('projectIds')"
 			>
 				<MultiSelect
-					v-model="formModel.projects"
+					v-model="formModel.projectIds"
 					searchable
 					label="name"
 					track-by="id"
-					placeholder="Click to select..."
-					:multiple="true"
+					:placeholder="$t('Click to select')"
+					multiple
 					:disabled="formDisabled || formModel.disabledProject"
 					:options="options.projects"
-					:class="validateMultiselect('projects')"
-					@select="validate('projects')"
+					:class="validateMultiselect('projectIds')"
+					@select="validate('projectIds')"
 				/>
 			</b-field>
 
 			<b-field
 				v-show="!formModel.disabledCountry"
-				label="Country"
+				:label="$t('Country')"
 				:type="validateType('countries')"
 				:message="validateMsg('countries')"
 			>
@@ -95,7 +88,7 @@
 					searchable
 					label="name"
 					track-by="iso3"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="options.countries"
@@ -103,38 +96,61 @@
 					@select="validate('countries')"
 				/>
 				<small v-if="onlyOneCountry" class="ml-2">
-					<strong>You can select only one country</strong>
+					<strong>{{ $t('You can select only one country') }}</strong>
 				</small>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('Language') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<MultiSelect
+					v-model="formModel.language"
+					searchable
+					label="value"
+					track-by="code"
+					:placeholder="$t('Click to select')"
+					:disabled="formDisabled"
+					:options="options.languages"
+				/>
 			</b-field>
 
 			<b-field
 				v-if="!formDisabled"
-				label="Update Password On Next Login"
+				:label="$t('Update password on next login')"
 			>
 				<b-checkbox v-model="formModel.updatePasswordOnNextLogin" />
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Prefix<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Prefix') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
-					v-model="formModel.prefix"
+					v-model="formModel.phonePrefix"
 					searchable
-					placeholder="Phone Ext"
+					:placeholder="$t('Phone Ext')"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
 					:options="options.phonePrefixes"
-					:class="validateMultiselect('prefix')"
-					@select="validate('prefix')"
+					:class="validateMultiselect('phonePrefix')"
+					@select="validate('phonePrefix')"
 				/>
 			</b-field>
 
 			<b-field>
 				<template #label>
-					Phone Number
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Phone Number') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.phoneNumber"
@@ -144,13 +160,13 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button v-if="closeButton" class="button" type="button" @click="closeForm">
-				Close
-			</button>
+			<b-button v-if="closeButton" @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -160,11 +176,11 @@
 
 <script>
 import { required, requiredIf, email } from "vuelidate/lib/validators";
-import MyOrganizationsService from "@/services/MyOrganizationsService";
 import CountriesService from "@/services/CountriesService";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 
 export default {
@@ -177,18 +193,20 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
 	},
 
 	validations: {
 		formModel: {
 			email: { required, email },
-			password: { required },
+			username: { required },
+			password: { required: requiredIf((form) => !form.newUser) },
 			rights: { required },
-			organization: { required },
-			projects: { required: requiredIf((form) => !form.disabledProject) },
+			language: {},
+			projectIds: { required: requiredIf((form) => !form.disabledProject) },
 			countries: { required: requiredIf((form) => !form.disabledCountry) },
 			phoneNumber: {},
-			prefix: {},
+			phonePrefix: {},
 			updatePasswordOnNextLogin: {},
 		},
 	},
@@ -196,48 +214,54 @@ export default {
 	data() {
 		return {
 			options: {
-				// TODO fix after implementing real api or roleService or something like that
+				// TODO Fix after implementing real api or roleService or something like that
 				rights: [
 					{
 						code: 0,
-						value: "Administrator",
+						value: this.$t("Administrator"),
 					},
 					{
 						code: 1,
-						value: "Field Officer",
+						value: this.$t("Field Officer"),
 					},
 					{
 						code: 2,
-						value: "Project Officer",
+						value: this.$t("Project Officer"),
 					},
 					{
 						code: 3,
-						value: "Project Manager",
+						value: this.$t("Project Manager"),
 					},
 					{
-						value: "Country Manager",
+						value: this.$t("Country Manager"),
 						code: 4,
 					},
 					{
-						value: "Regional Manager",
+						value: this.$t("Regional Manager"),
 						code: 5,
 					},
 					{
-						value: "Enumerator",
+						value: this.$t("Enumerator"),
 						code: 6,
 					},
 				],
 				projects: [],
 				countries: [],
-				organizations: [],
 				phonePrefixes: PhoneCodes,
+				languages: [
+					{ value: "EN", code: "en" },
+					{ value: "AR", code: "ar" },
+					{ value: "RU", code: "ru" },
+				],
 			},
 			onlyOneCountry: false,
 		};
 	},
 
 	mounted() {
-		this.fetchOrganizations();
+		this.mapSelects();
+		this.fetchProjects();
+		this.fetchCountries();
 	},
 
 	methods: {
@@ -251,27 +275,31 @@ export default {
 			this.$v.$reset();
 		},
 
-		onRightsSelect({ code }) {
+		onRightsSelect(right) {
 			this.validate("rights");
+			this.mapRights(right);
+		},
+
+		mapRights({ code }) {
 			if (code === 1 || code === 2 || code === 3 || code === 6) {
-				this.fetchProjects();
 				this.formModel.disabledProject = false;
 				this.formModel.disabledCountry = true;
 			} else if (code === 4 || code === 5) {
 				this.onlyOneCountry = (code === 4);
-				this.fetchCountries();
 				this.formModel.disabledProject = true;
 				this.formModel.disabledCountry = false;
 			}
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects(1, 15, "desc")
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
+
+			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
 		},
 
 		async fetchCountries() {
@@ -279,17 +307,22 @@ export default {
 				.then(({ data }) => {
 					this.options.countries = data;
 				}).catch((e) => {
-					Notification(`Countries ${e}`, "is-danger");
+					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 				});
+
+			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
 		},
 
-		async fetchOrganizations() {
-			await MyOrganizationsService.getListOfMyOrganizations()
-				.then(({ data }) => {
-					this.options.organizations = data;
-				}).catch((e) => {
-					Notification(`Organizations ${e}`, "is-danger");
-				});
+		mapSelects() {
+			if (typeof this.formModel.phonePrefix !== "object") {
+				this.formModel.phonePrefix = getArrayOfCodeListByKey([this.formModel.phonePrefix], this.options.phonePrefixes, "code");
+			}
+			if (typeof this.formModel.language !== "object") {
+				this.formModel.language = this.options.languages
+					.find((item) => item.code === this.formModel.language);
+			}
+			// TODO Map Rights on select after add permissions
+			this.mapRights(this.formModel.rights);
 		},
 
 		closeForm() {

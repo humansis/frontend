@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Name"
+				:label="$t('Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -15,7 +15,10 @@
 
 			<b-field>
 				<template #label>
-					Unit<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Unit') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.unit"
@@ -25,22 +28,19 @@
 			</b-field>
 
 			<b-field
-				label="Image"
-				:type="validateType('image')"
-				:message="validateMsg('image')"
+				:label="$t('Image')"
+				:type="validateType('uploadedImage')"
+				:message="validateMsg('uploadedImage')"
 			>
 				<b-field
 					v-if="!formDisabled"
 					class="file"
 				>
-					<b-upload
-						v-model="uploadedImage"
-						expanded
-					>
+					<b-upload v-model="formModel.uploadedImage" expanded>
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ uploadedImage ? uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
 							</span>
 						</a>
 					</b-upload>
@@ -57,18 +57,16 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -77,19 +75,13 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 
 export default {
 	name: "ProductForm",
 
 	mixins: [Validation],
-
-	data() {
-		return {
-			uploadedImage: null,
-		};
-	},
 
 	props: {
 		formModel: Object,
@@ -103,17 +95,12 @@ export default {
 		formModel: {
 			name: { required },
 			unit: {},
-			image: { required },
+			uploadedImage: { required: requiredIf((form) => !form.image) },
 		},
 	},
 
 	methods: {
 		submitForm() {
-			if (this.uploadedImage) {
-				// TODO uncomment and delete after upload image
-				// this.formModel.image = this.uploadedImage;
-				this.formModel.image = "https://www.hello.com/img_/hellowithwaves.png";
-			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

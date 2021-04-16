@@ -1,46 +1,44 @@
 <template>
-	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-		</div>
-		<Table
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			@clicked="showDetail"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					sortable
-					v-bind="column"
-					v-slot="props"
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
-		</Table>
-	</div>
+	<Table
+		has-reset-sort
+		has-search
+		checkable
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
+			<b-table-column
+				sortable
+				v-bind="column"
+				v-slot="props"
+				:key="column.id"
+			>
+				<ColumnField :column="column" :data="props" />
+			</b-table-column>
+		</template>
+	</Table>
 </template>
 
 <script>
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Search from "@/components/Search";
 import VoucherService from "@/services/VoucherService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "ImportList",
+	name: "VoucherList",
 
 	components: {
-		Search,
 		ColumnField,
 		Table,
 	},

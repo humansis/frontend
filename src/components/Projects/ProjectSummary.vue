@@ -1,55 +1,66 @@
 <template>
 	<div v-if="projectSummary" ref="projectSummary">
-		<h2 class="title has-text-centered">
-			{{ projectSummary.name }}
-		</h2>
-		<nav class="level is-mobile">
+		<h1 class="title has-text-centered">{{ projectSummary.name }}</h1>
+
+		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Sectors</p>
-					<p class="title">{{ projectSummary.sectors.length }}</p>
+					<p class="heading">{{ $t('Sectors') }}</p>
+					<span>
+						<svg-icon
+							v-if="projectSummary.sectors.length"
+							:items="projectSummary.sectors"
+						/>
+						<p v-else class="has-text-weight-bold is-size-5">
+							{{ $t("None") }}
+						</p>
+					</span>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Start Date</p>
-					<p class="title">{{ new Date(projectSummary.startDate).toLocaleDateString() }}</p>
+					<p class="heading">{{ $t('Start Date') }}</p>
+					<p class="has-text-weight-bold is-size-5">
+						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
+					</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">End Date</p>
-					<p class="title">{{ new Date(projectSummary.endDate).toLocaleDateString() }}</p>
+					<p class="heading">{{ $t('End Date') }}</p>
+					<p class="has-text-weight-bold is-size-5">
+						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
+					</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Number of households</p>
-					<p class="title">{{ projectSummary.numberOfHouseholds }}</p>
+					<p class="heading">{{ $t('Number of Households') }}</p>
+					<p class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Donors</p>
-					<p class="title">{{ projectSummary.donorIds.length }}</p>
+					<p class="heading">{{ $t('Donors') }}</p>
+					<p class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Total target beneficiaries</p>
-					<p class="title">{{ projectSummary.target }}</p>
+					<p class="heading">{{ $t('Total target beneficiaries') }}</p>
+					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">Beneficiaries reached</p>
-					<p class="title">{{ projectSummary.target }}</p>
+					<p class="heading"> {{ $t('Beneficiaries Reached') }}</p>
+					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>
 		</nav>
@@ -58,12 +69,15 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import ProjectsService from "@/services/ProjectsService";
-import { Toast } from "@/utils/UI";
+import ProjectService from "@/services/ProjectService";
+import { Notification } from "@/utils/UI";
+import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "ProjectSummary",
+
+	components: { SvgIcon },
 
 	data() {
 		return {
@@ -71,26 +85,30 @@ export default {
 		};
 	},
 
-	computed: {
-		...mapState(["temporaryProject"]),
-	},
-
-	async mounted() {
-		if (this.temporaryProject) {
-			this.projectSummary = this.temporaryProject;
-		} else {
-			await this.fetchData();
-		}
+	mounted() {
+		this.fetchData();
 	},
 
 	methods: {
 		async fetchData() {
-			await ProjectsService.getDetailOfProject(
+			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.projectSummary = data;
-			}).catch((e) => { Toast(e, "is-danger"); });
+			}).catch((e) => {
+				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
+			});
+		},
+
+		normalizeText(value) {
+			return normalizeText(value);
 		},
 	},
 };
 </script>
+
+<style scoped>
+.box {
+	height: 90px;
+}
+</style>

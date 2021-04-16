@@ -1,55 +1,25 @@
 <template>
 	<div>
-		<Modal
-			can-cancel
-			header="Assistance Detail"
-			:active="assistanceModal.isOpened"
-			@close="closeAssistanceModal"
-		>
-			<AssistanceForm
-				close-button
-				:formModel="assistanceModel"
-				:editing="assistanceModal.isEditing"
-				@formClosed="closeAssistanceModal"
-				@formSubmitted="editAssistance"
-			/>
-		</Modal>
-		<h2 class="title">Project assistances</h2>
-		<b-button
-			class="mb-5"
-			size="is-medium"
-			type="is-danger"
-			icon-left="plus"
-			@click="goToAddAssistance"
-		>
-			New
-		</b-button>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<ExportButton
-				class="column"
-				type="is-success"
-				size="is-default"
-				space-between
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@exportData="exportAssistance"
-			/>
-		</div>
-		<b-progress :value="table.progress" format="percent" />
+		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
 		<Table
+			has-reset-sort
+			default-sort-key="dateDistribution"
+			:has-search="!upcoming"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
-			@clicked="goToValidateAndLock"
+			@clicked="onRowClick"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
 					v-bind="column"
+					:sortable="column.sortable"
 					:key="column.id"
 					v-slot="props"
 				>
@@ -58,79 +28,99 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				label="Actions"
 				centered
 				width="230"
+				:label="$t('Actions')"
+				:visible="!upcoming"
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<ActionButton
+						v-if="!props.row.validated"
 						icon="search"
-						type="is-info"
-						tooltip="Show Detail"
-						@click.native="showDetailWithId(props.row.id)"
-					/>
-					<ActionButton
-						icon="edit"
-						type="is-link"
-						tooltip="Edit"
+						type="is-primary"
+						:tooltip="$t('Edit')"
 						@click.native="showEdit(props.row.id)"
 					/>
 					<ActionButton
+						v-if="!props.row.validated"
+						icon="edit"
+						:tooltip="$t('Update')"
+						@click.native="goToUpdate(props.row.id)"
+					/>
+					<ActionButton
+						v-if="props.row.validated && !props.row.completed"
 						icon="lock"
-						type="is-danger"
-						tooltip="Lock"
-						@click.native="goToValidateAndLockWithId(props.row.id)"
+						type="is-warning"
+						:tooltip="$t('Update')"
+						@click.native="goToDetail(props.row.id)"
+					/>
+					<ActionButton
+						v-if="props.row.completed"
+						icon="check"
+						type="is-success"
+						:tooltip="$t('View')"
+						@click.native="goToDetail(props.row.id)"
 					/>
 					<SafeDelete
+						v-if="!props.row.validated"
 						icon="trash"
-						entity="Project"
-						tooltip="Delete"
+						:entity="$t('Assistance')"
+						:tooltip="$t('Delete')"
 						:id="props.row.id"
-						@submitted="removeAssistance"
+						@submitted="$emit('onRemove', $event)"
 					/>
 					<ActionButton
 						icon="copy"
 						type="is-dark"
-						tooltip="Print"
-						@click.native="printAssistance(props.row.id)"
+						:tooltip="$t('Duplicate')"
+						@click.native="duplicate(props.row.id)"
 					/>
 				</div>
 			</b-table-column>
+			<template v-if="!upcoming" #export>
+				<ExportButton
+					type="is-primary"
+					space-between
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@exportData="exportAssistance"
+				/>
+			</template>
+			<template #progress>
+				<b-progress :value="table.progress" format="percent" />
+			</template>
 		</Table>
 	</div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import AssistanceForm from "@/components/Assistance/AssistanceForm";
-import Modal from "@/components/Modal";
-import Search from "@/components/Search";
 import AssistancesService from "@/services/AssistancesService";
 import LocationsService from "@/services/LocationsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
 	name: "AssistancesList",
 
 	components: {
-		Search,
-		AssistanceForm,
 		Table,
 		ActionButton,
 		SafeDelete,
 		ColumnField,
 		ExportButton,
-		Modal,
 	},
 
-	mixins: [grid],
+	props: {
+		upcoming: Boolean,
+	},
+
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -138,48 +128,21 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "id",
-						label: "Assistance ID",
-					},
-					{ key: "name" },
-					{
-						key: "location",
-						label: "Location",
-					},
-					{
-						key: "beneficiaries",
-						label: "Beneficiaries",
-					},
-					{
-						key: "dateDistribution",
-						label: "Date Of Distribution",
-						type: "date",
-					},
-					{ key: "target" },
-					{
-						key: "commodity",
-						label: "Commodity",
-					},
+					{ key: "id", label: "Assistance ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "type", sortable: true },
+					{ key: "location", label: "Location", sortable: true },
+					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
+					{ key: "dateDistribution", label: "Date of Distribution", type: "datetime", sortable: true },
+					{ key: "target", sortable: true },
+					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "dateDistribution",
 				searchPhrase: "",
 				progress: null,
-			},
-			assistanceModal: {
-				isOpened: false,
-				isEditing: false,
-			},
-			assistanceModel: {
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				dateDistribution: new Date(),
-				target: "",
 			},
 		};
 	},
@@ -188,18 +151,25 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 
 	methods: {
-		...mapActions(["addAssistanceToState"]),
-
 		async fetchData() {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			if (this.upcoming) {
+				await this.fetchUpcomingAssistances();
+			} else {
+				await this.fetchProjectAssistances();
+			}
+			this.isLoadingList = false;
+		},
+
+		async fetchProjectAssistances() {
 			await AssistancesService.getListOfProjectAssistances(
 				this.$route.params.projectId,
 				this.table.currentPage,
@@ -207,200 +177,139 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
-				if (totalCount !== 0) {
-					this.table.data = await this.prepareDataForTable(data);
+				if (totalCount > 0) {
+					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
+				Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
-
-			this.isLoadingList = false;
 		},
 
-		async prepareDataForTable(data) {
-			const filledData = [];
+		async fetchUpcomingAssistances() {
+			await AssistancesService.getListOfAssistances(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				true,
+			).then(({ data, totalCount }) => {
+				this.table.data = [];
+				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+			});
+		},
+
+		prepareDataForTable(data) {
+			this.table.progress += 15;
 			const locationIds = [];
 			const assistanceIds = [];
-			const commodityIds = [];
-			let promise = data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].target = normalizeText(item.target);
+			data.forEach((item, key) => {
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
-				commodityIds.push(item.commodityIds);
+				this.table.data[key] = item;
+				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
+				this.table.data[key].type = this.$t(normalizeText(item.type));
+				this.table.data[key].target = this.$t(normalizeText(item.target));
 			});
-			const locations = await this.getLocations(locationIds);
-			const commodities = await this.getCommodities(assistanceIds);
+			this.table.progress += 10;
+
+			this.prepareLocationForTable(locationIds);
+			this.prepareCommodityForTable(assistanceIds);
+			this.prepareStatisticsForTable(assistanceIds);
+		},
+
+		async prepareStatisticsForTable(assistanceIds) {
 			const statistics = await this.getStatistics(assistanceIds);
-
-			await Promise.all(promise);
-			promise = data.map(async (item, key) => {
-				filledData[key] = item;
-				filledData[key].location = await this.prepareLocation(item.locationId, locations);
-				filledData[key].commodity = await this.prepareCommodity(item.id, commodities);
-				filledData[key].beneficiaries = await this.prepareBeneficiaries(item.id, statistics);
-				filledData[key].target = normalizeText(item.target);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].beneficiaries = this.prepareEntityForTable(item.id, statistics, "numberOfBeneficiaries", 0);
 			});
+			this.table.progress += 10;
+		},
 
-			await Promise.all(promise);
-			this.table.progress = 100;
-			return filledData;
+		async prepareCommodityForTable(assistanceIds) {
+			const commodities = await this.getCommodities(assistanceIds);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				const preparedCommodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
+				this.table.data[key].commodity = [preparedCommodity];
+			});
+			this.table.progress += 10;
+		},
+
+		async prepareLocationForTable(locationIds) {
+			const locations = await this.getLocations(locationIds);
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].location = this
+					.prepareLocationEntityForTable(item.locationId, locations);
+			});
+			this.table.progress += 10;
 		},
 
 		async getLocations(ids) {
+			if (!ids.length) return [];
 			return LocationsService.getLocations(ids)
-				.then(({ data }) => {
-					this.table.progress += 5;
-					return data;
-				})
+				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Locations ${e}`, "is-danger");
+					Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
 		async getCommodities(ids) {
+			if (!ids.length) return [];
 			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => {
-					this.table.progress += 5;
-					return data;
-				})
+				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 
 		async getStatistics(ids) {
+			if (!ids.length) return [];
 			return AssistancesService.getStatistics(ids)
-				.then(({ data }) => {
-					this.table.progress += 5;
-					return data;
-				})
+				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`Commodities ${e}`, "is-danger");
+					Notification(`${this.$t("Statistics")} ${e}`, "is-danger");
 				});
 		},
 
-		async prepareLocation(id, locations) {
-			if (!locations) return "";
-			const location = await locations.find((item) => item.id === id);
-			this.table.progress += 1;
-			return location ? location.adm.name : "";
-		},
-
-		async prepareCommodity(id, commodities) {
-			if (!commodities) return "";
-			const commodity = await commodities.find((item) => item.id === id);
-			this.table.progress += 1;
-			return commodity ? commodity.modalityType : "";
-		},
-
-		async prepareBeneficiaries(id, statistics) {
-			if (!statistics) return "";
-			const assistanceStatistic = await statistics.find((item) => item.id === id);
-			this.table.progress += 1;
-			return assistanceStatistic ? assistanceStatistic.numberOfBeneficiaries : 0;
-		},
-
-		async removeAssistance(id) {
-			await AssistancesService.removeAssistance(id).then((response) => {
-				if (response.status === 204) {
-					Toast("Assistance Successfully Deleted", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
-		},
-
-		async printAssistance(id) {
-			await AssistancesService.printAssistance(id).then((response) => {
-				if (response.status === 200) {
-					Toast("Download starting", "is-success");
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
-		},
-
-		goToAddAssistance() {
-			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
-		},
-
-		goToValidateAndLockWithId(id) {
-			const assistance = this.table.data.find((item) => item.id === id);
-			this.goToValidateAndLock(assistance);
-		},
-
-		goToValidateAndLock(assistance) {
-			this.addAssistanceToState(assistance);
-			this.$router.push({ name: "Assistance",
+		goToDetail(id) {
+			this.$router.push({
+				name: "AssistanceDetail",
 				params: {
-					assistanceId: assistance.id,
+					assistanceId: id,
 				},
 			});
 		},
 
-		showDetailWithId(id) {
-			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: false,
-			};
+		onRowClick({ id }) {
+			this.showDetailWithId(id);
 		},
 
-		showEdit(id) {
-			this.assistanceModel = this.mapToFormModel(this.table.data.find((item) => item.id === id));
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: true,
-			};
+		goToUpdate(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+
+			if (this.upcoming) {
+				this.showDetail(assistance);
+			} else {
+				this.$router.push({
+					name: "AssistanceEdit",
+					params: {
+						assistanceId: assistance.id,
+					},
+				});
+			}
 		},
 
-		mapToFormModel(
-			{
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-				id,
-				commodityIds,
-				dateDistribution,
-				name,
-				projectId,
-				target,
-				type,
-			},
-		) {
-			return {
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
-				dateDistribution: new Date(dateDistribution),
-				target,
-				id,
-				commodityIds,
-				name,
-				projectId,
-				type,
-			};
-		},
-
-		closeAssistanceModal() {
-			this.assistanceModal.isOpened = false;
-		},
-
-		async editAssistance(body) {
-			await AssistancesService.updateAssistance(body.id, body).then((response) => {
-				if (response.status === 200) {
-					Toast("Assistance Successfully Updated", "is-success");
-					this.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`Assistance ${e}`, "is-danger");
-			});
+		duplicate(id) {
+			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
 		exportAssistance(format) {

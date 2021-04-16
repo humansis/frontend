@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			label="Type Of Location"
+			:label="$t('Type of Location')"
 			:type="validateType('typeOfLocation')"
 			:message="validateMsg('typeOfLocation')"
 		>
@@ -9,23 +9,36 @@
 				v-model="formModel.typeOfLocation"
 				label="value"
 				track-by="code"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select')"
 				:loading="locationTypesLoading"
 				:options="options.typeOfLocation"
 				:searchable="false"
 				:class="validateMultiselect('typeOfLocation')"
-				@select="validate('typeOfLocation')"
-			/>
+				@select="selectTypeOfLocation"
+			>
+				<template slot="singleLabel" slot-scope="props">
+					<div class="option__desc">
+						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+					</div>
+				</template>
+				<template slot="option" slot-scope="props">
+					<div class="option__desc">
+						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+					</div>
+				</template>
+			</MultiSelect>
 		</b-field>
-		<div v-if="formModel.type && formModel.type === 'camp'">
+		<div v-if="campSelected">
 			<b-field
-				label="Camp"
+				:label="$t('Camp')"
 				:type="validateType('camp')"
 				:message="validateMsg('camp')"
 			>
 				<MultiSelect
 					v-model="formModel.camp"
-					placeholder="Click to select..."
+					label="name"
+					track-by="id"
+					:placeholder="$t('Click to select')"
 					:options="options.camps"
 					:searchable="false"
 					:class="validateMultiselect('camp')"
@@ -35,64 +48,64 @@
 
 			<b-field
 				grouped
-				label="Camp Name"
+				:label="$t('Camp Name')"
 				:type="validateType('campName')"
 				:message="validateMsg('campName')"
 			>
-				<b-checkbox v-model="createCamp">Create A Camp</b-checkbox>
+				<b-checkbox v-model="createCamp">{{ $t('Create a Camp') }}</b-checkbox>
 				<b-input
 					v-if="createCamp"
 					v-model="formModel.campName"
-					placeholder="Camp name"
+					:placeholder="$t('Camp Name')"
 					@blur="validate('campName')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Tent Number"
+				:label="$t('Tent Number')"
 				:type="validateType('tentNumber')"
 				:message="validateMsg('tentNumber')"
 			>
 				<b-input
 					v-model="formModel.tentNumber"
-					placeholder="Tent Number"
+					:placeholder="$t('Tent Number')"
 					@blur="validate('tentNumber')"
 				/>
 			</b-field>
 		</div>
 		<div v-else>
 			<b-field
-				label="Address Number"
+				:label="$t('Address Number')"
 				:type="validateType('number')"
 				:message="validateMsg('number')"
 			>
 				<b-input
 					v-model="formModel.number"
-					placeholder="Address Number"
+					:placeholder="$t('Address Number')"
 					@blur="validate('number')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Address Street"
+				:label="$t('Address Street')"
 				:type="validateType('street')"
 				:message="validateMsg('street')"
 			>
 				<b-input
 					v-model="formModel.street"
-					placeholder="Address Street"
+					:placeholder="$t('Address Street')"
 					@blur="validate('street')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Address Postcode"
+				:label="$t('Address Postcode')"
 				:type="validateType('postcode')"
 				:message="validateMsg('postcode')"
 			>
 				<b-input
 					v-model="formModel.postcode"
-					placeholder="Address Postcode"
+					:placeholder="$t('Address Postcode')"
 					@blur="validate('postcode')"
 				/>
 			</b-field>
@@ -105,6 +118,8 @@ import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
+import { normalizeText } from "@/utils/datagrid";
+import AddressService from "@/services/AddressService";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -125,48 +140,79 @@ export default {
 
 	data() {
 		return {
-			locationTypesLoading: false,
+			locationTypesLoading: true,
 			createCamp: false,
+			campSelected: false,
 			options: {
 				typeOfLocation: [],
-				// TODO camps
 				camps: [],
 			},
+			campsLoading: true,
 		};
 	},
 
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
-			campName: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
-			tentNumber: { required: requiredIf((form) => form.typeOfLocation.code === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
-			street: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation.code !== "camp") },
+			camp: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.campName) },
+			campName: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.camp) },
+			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.code === "camp") },
+			number: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
+			street: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
+			postcode: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
 		},
 	},
 
 	async mounted() {
 		await this.fetchLocationsTypes();
+		await this.fetchCamps();
 	},
 
 	methods: {
+		normalizeText(text) {
+			return normalizeText(text);
+		},
+
 		async fetchLocationsTypes() {
 			this.locationTypesLoading = true;
 			await BeneficiariesService.getListOfLocationsTypes()
-				.then((result) => { this.options.typeOfLocation = result.data; })
+				.then((result) => {
+					this.options.typeOfLocation = result.data;
+				})
 				.catch((e) => {
-					Notification(`Location Types ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
 				});
 			this.locationTypesLoading = false;
 		},
 
+		async fetchCamps() {
+			this.campsLoading = true;
+			await AddressService.getCamps()
+				.then(({ data }) => {
+					this.options.camps = data;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+				});
+			this.campsLoading = false;
+		},
+
 		mapLocations() {
 			if (this.formModel.type) {
+				this.campSelected = this.formModel.type === "camp";
 				this.formModel.typeOfLocation = this.options.typeOfLocation
 					.find((item) => this.formModel.type === item.code);
 			}
+			if (this.formModel.campId) {
+				this.campSelected = this.formModel.type === "camp";
+				this.formModel.camp = this.options.camps
+					.find((item) => this.formModel.campId === item.id);
+			}
+		},
+
+		selectTypeOfLocation(value) {
+			this.campSelected = value.code === "camp";
+			this.validate("typeOfLocation");
 		},
 
 		submitTypeOfLocationForm() {

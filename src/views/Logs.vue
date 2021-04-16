@@ -1,6 +1,9 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
-		<b-tabs v-model="selectedTab" size="is-medium">
+		<h1 class="title has-text-centered">Logs</h1>
+
+		<b-tabs v-model="selectedTab">
 			<b-tab-item
 				label="Distributions"
 				icon="clipboard"

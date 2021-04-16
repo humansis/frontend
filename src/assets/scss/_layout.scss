@@ -1,0 +1,110 @@
+.container {
+	max-width: 100% !important;
+	padding: .2rem 1.8rem 1.8rem;
+}
+
+.breadcrumb {
+	display: flex;
+
+	.breadcrumb-item span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 .75em;
+	}
+
+	.active {
+		font-weight: bold;
+	}
+}
+
+.table-wrapper {
+	overflow-x: scroll;
+}
+
+.loading-overlay.is-active.is-full-page {
+	z-index: 200;
+
+	.loading-background {
+		background: #ffffff;
+	}
+}
+
+html.has-aside-left.has-aside-expanded {
+	nav.navbar,
+	body {
+		padding-left: 15rem;
+	}
+}
+
+@media screen and (max-width: 1023px) {
+	html.has-aside-left aside.aside {
+		display: none;
+	}
+
+	html.has-aside-left.has-aside-expanded aside.aside {
+		display: block;
+	}
+}
+
+aside.aside {
+	.bms-logo {
+		flex-shrink: 0;
+		width: 2rem;
+		height: 2rem;
+		font-size: 2rem;
+		box-sizing: content-box;
+		border-radius: 50%;
+		padding: .25rem;
+		background: #fbfcfc;
+	}
+
+	&.is-expanded {
+		width: 15rem;
+
+		.menu-list {
+			.icon {
+				width: 3rem;
+			}
+
+			li a {
+				.tooltip-content {
+					display: none;
+				}
+			}
+		}
+	}
+
+	&:not(.is-expanded) .menu-list {
+		li a {
+			.tooltip-trigger {
+				display: none;
+			}
+
+			&:not(:hover) .tooltip-content {
+				display: none;
+			}
+		}
+
+		ul {
+			.icon {
+				width: 3.5rem;
+			}
+
+			.tooltip-content {
+				margin-left: .75rem;
+			}
+		}
+	}
+
+
+	.menu-list a {
+		display: flex;
+		align-items: center;
+		white-space: nowrap;
+
+		&.is-expanded + ul {
+			display: block;
+		}
+	}
+}

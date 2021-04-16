@@ -1,25 +1,12 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<ReportNavbar
 			@periodChanged="onPeriodFilterChange"
 			@choosePeriodChanged="onChoosePeriodFilterChange"
 		/>
-		<div class="columns">
-			<div class="box column is-four-fifths ml-4" style="width: 78%">
-				<label class="typo__label">Projects</label>
-				<MultiSelect
-					v-model="selectedProjectsForFilter"
-					tag-placeholder="Add this as new tag"
-					placeholder="Search"
-					label="name"
-					track-by="id"
-					multiple
-					:options="projects"
-					@input="fetchProjectReports"
-				/>
-			</div>
-		</div>
 		<Table
+			has-reset-sort
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -28,6 +15,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -37,12 +25,27 @@
 				</b-table-column>
 			</template>
 			<b-table-column label="Actions">
-				<div class="block">
-					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+				<div class="buttons is-right">
+					<ActionButton icon="search" type="is-primary" tooltip="Show Detail" />
 					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
+			<template #filterButton>
+				<b-field label="Projects">
+					<MultiSelect
+						v-model="selectedProjectsForFilter"
+						tag-placeholder="Add this as new tag"
+						placeholder="Search"
+						label="name"
+						track-by="id"
+						multiple
+						style="min-width: 16rem"
+						:options="projects"
+						@input="fetchProjectReports"
+					/>
+				</b-field>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -77,10 +80,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Name",
-					},
+					{ key: "name", label: "Name" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -123,9 +123,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		goToDetail() {
-			// TODO go to detail
-		},
+		goToDetail() {},
 
 		onPeriodFilterChange(period) {
 			this.selectedPeriod = period;

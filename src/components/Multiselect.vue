@@ -1,23 +1,20 @@
 <template>
-	<div>
-		<b-select
-			v-if="!multiple"
-			class="custom-select"
-			size="is-default"
-			:disabled="disabled"
-			:loading="loading"
-			:expanded="expanded"
-			@select="$emit('select', $event)"
+	<b-select
+		v-if="!multiple"
+		class="custom-select"
+		:disabled="disabled"
+		:loading="loading"
+		:expanded="expanded"
+		@select="$emit('select', $event)"
+	>
+		<option
+			v-for="option in options"
+			:key="option.code"
+			:value="option.code"
 		>
-			<option
-				v-for="option in options"
-				:key="option.code"
-				:value="option.code"
-			>
-				{{ option.value }}
-			</option>
-		</b-select>
-	</div>
+			{{ option.value }}
+		</option>
+	</b-select>
 </template>
 
 <script>
@@ -43,9 +40,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.custom-select {
-
-}
-</style>

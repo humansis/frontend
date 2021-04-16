@@ -1,14 +1,14 @@
 <template>
-	<div>
+	<div ref="summary">
 		<h4 class="title is-4 has-text-centered mt-5">
-			Please Add This Household To One Or More Project
+			{{ $t('Please add this household to one or more project') }}
 		</h4>
 		<div class="columns mb-5">
 			<div class="column is-half is-offset-one-quarter">
 				<b-field
-					label="Projects"
+					:label="$t('Projects')"
 					:type="validateType('selectedProjects')"
-					:message="validateMsg('selectedProjects', 'Projects are Required')"
+					:message="validateMsg('selectedProjects', )"
 				>
 					<MultiSelect
 						v-model="formModel.selectedProjects"
@@ -16,28 +16,30 @@
 						track-by="id"
 						label="name"
 						multiple
-						placeholder="Click to select..."
+						:placeholder="$t('Click to select')"
 						:options="options.projects"
+						:class="validateMultiselect('selectedProjects')"
+						@select="validate('selectedProjects')"
 					/>
 				</b-field>
 			</div>
 		</div>
-		<h4 class="title is-4 has-text-centered">Household Information Summary</h4>
+		<h4 class="title is-4 has-text-centered">{{ $t('Household Information Summary') }}</h4>
 		<div class="columns mb-5">
 			<div class="column is-half">
 				<div class="box">
-					<p class="title is-6">Current Address</p>
+					<p class="title is-6">{{ $t('Current Address') }}</p>
 					<p class="subtitle is-4">{{ address }}</p>
 				</div>
 			</div>
 			<div class="column is-half">
 				<div class="box">
-					<p class="title is-6">Current Location</p>
+					<p class="title is-6">{{ $t('Current Location') }}</p>
 					<p class="subtitle is-4">{{ location }}</p>
 				</div>
 			</div>
 		</div>
-		<h4 class="title is-4 has-text-centered">Household Members</h4>
+		<h4 class="title is-4 has-text-centered">{{ $t('Household Members') }}</h4>
 		<Table
 			:data="membersData"
 			:total="table.total"
@@ -60,7 +62,7 @@
 import { required } from "vuelidate/lib/validators";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
@@ -80,6 +82,10 @@ export default {
 		detailOfHousehold: Object,
 		location: String,
 		address: String,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	validations: {
@@ -90,34 +96,21 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
 			formModel: {
-				selectedProjects: null,
+				selectedProjects: [],
 			},
 			options: {
 				projects: [],
 			},
 			table: {
 				columns: [
-					{
-						field: "firstName",
-						label: "First Name (Local)",
-					},
-					{
-						field: "familyName",
-						label: "Family Name (Local)",
-					},
-					{
-						field: "gender",
-						label: "Gender",
-						type: "object",
-					},
-					{
-						field: "dateBirth",
-						label: "Date Of Birth",
-						type: "date",
-					},
-					{ field: "phone", label: "Phone" },
-					{ field: "nationalId", label: "National ID" },
+					{ field: "firstName", label: this.$t("First Name") },
+					{ field: "familyName", label: this.$t("Family Name") },
+					{ field: "gender", label: this.$t("Gender"), type: "object" },
+					{ field: "dateBirth", label: this.$t("Date of Birth"), type: "date" },
+					{ field: "phone", label: this.$t("Phone") },
+					{ field: "nationalId", label: this.$t("National ID") },
 				],
 				total: 0,
 			},
@@ -125,7 +118,11 @@ export default {
 	},
 
 	async mounted() {
+		this.loadingComponent = this.$buefy.loading.open({
+			container: this.$refs.summary,
+		});
 		await this.fetchProjects();
+		this.loadingComponent.close();
 	},
 
 	computed: {
@@ -136,15 +133,17 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then((response) => {
 					this.options.projects = response.data;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
-			this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+			if (this.isEditing) {
+				this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+			}
 		},
 
 		submit() {

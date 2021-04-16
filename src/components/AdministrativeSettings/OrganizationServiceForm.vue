@@ -1,111 +1,56 @@
-<!-- TODO edit after real api-->
 <template>
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
-			<b-field
-				label="Service Name"
-				:type="validateType('name')"
-			>
-				<b-input
-					v-model="formModel.name"
-					disabled
-				/>
+			<b-field :label="$t('Service Name')">
+				<b-input v-model="formModel.name" disabled />
+			</b-field>
+
+			<b-field :label="$t('Country')">
+				<b-input v-model="formModel.iso3" disabled />
 			</b-field>
 
 			<b-field
-				label="Country"
-				:type="validateType('country')"
+				v-if="fields.token"
+				:label="$t('Token')"
 			>
-				<b-input
-					v-model="formModel.country"
-					disabled
-				/>
+				<b-input v-model="formModel.parameters.token" :disabled="formDisabled" />
 			</b-field>
 
-			<b-field
-				v-if="formModel.password"
-				label="Password"
-				:type="validateType('password')"
-				:message="validateMsg('password')"
-			>
+			<b-field v-if="fields.username" :label="$t('Username')">
+				<b-input v-model="formModel.parameters.username" :disabled="formDisabled" />
+			</b-field>
+
+			<b-field v-if="fields.email" :label="$t('Email')">
+				<b-input v-model="formModel.parameters.email" :disabled="formDisabled" />
+			</b-field>
+
+			<b-field v-if="fields.password" :label="$t('Password')">
 				<b-input
-					v-model="formModel.password"
+					v-model="formModel.parameters.password"
 					type="password"
-					password-reveal
-					:disabled="formDisabled"
-					@blur="validate('password')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.username"
-				label="Username"
-				:type="validateType('username')"
-				:message="validateMsg('username')"
-			>
-				<b-input
-					v-model="formModel.username"
-					:disabled="formDisabled"
-					@blur="validate('username')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.email"
-				label="Email"
-				:type="validateType('email')"
-				:message="validateMsg('email')"
-			>
-				<b-input
-					v-model="formModel.email"
-					:disabled="formDisabled"
-					@blur="validate('email')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.token"
-				label="Token"
-				:type="validateType('token')"
-				:message="validateMsg('token')"
-			>
-				<b-input
-					v-model="formModel.token"
-					:disabled="formDisabled"
-					@blur="validate('token')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="formModel.production !== null"
-				label="Production"
-			>
-				<b-checkbox
-					v-model="formModel.production"
 					:disabled="formDisabled"
 				/>
 			</b-field>
 
-			<b-field label="Enabled">
-				<b-checkbox
-					v-model="formModel.enabled"
-					:disabled="formDisabled"
-				/>
+			<b-field :label="$t('Enabled')">
+				<b-checkbox v-model="formModel.enabled" :disabled="formDisabled" />
+			</b-field>
+
+			<b-field v-if="fields.username" :label="$t('Production')">
+				<b-checkbox v-model="formModel.parameters.production" :disabled="formDisabled" />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -131,15 +76,30 @@ export default {
 
 	validations: {
 		formModel: {
-			name: { required },
-			country: { required },
 			enabled: { required },
-			password: {},
-			username: {},
-			token: {},
-			email: {},
-			production: {},
 		},
+	},
+
+	data() {
+		return {
+			fields: {
+				token: false,
+				email: false,
+				username: false,
+				password: false,
+				production: false,
+			},
+		};
+	},
+
+	mounted() {
+		const fields = Object.keys(this.fields);
+		Object.keys(this.formModel.parameters).forEach((key) => {
+			this.fields[key] = !!fields.find((value) => value === key);
+			if (key === "production") {
+				this.formModel.production = !!this.formModel.parameters.production;
+			}
+		});
 	},
 
 	methods: {
