@@ -67,8 +67,6 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "Login",
 
-	mixins: [Validation],
-
 	data() {
 		return {
 			formModel: {
@@ -78,6 +76,8 @@ export default {
 			loginButtonLoading: false,
 		};
 	},
+
+	mixins: [Validation],
 
 	validations: {
 		formModel: {

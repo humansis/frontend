@@ -171,8 +171,7 @@
 					@exportData="exportHousehold"
 				/>
 			</template>
-
-			<template v-if="actionsButtonVisible" #actions>
+			<template v-if="actionsButtonVisible && userCan.editBeneficiary" #actions>
 				<div class="column">
 					<b-dropdown aria-role="list">
 						<template #trigger>
@@ -182,7 +181,9 @@
 								:label="$t('Actions')"
 							/>
 						</template>
-						<b-dropdown-item @click="showAddToProjectModal">
+						<b-dropdown-item
+							@click="showAddToProjectModal"
+						>
 							<b-icon class="mr-1" icon="plus" />
 							{{ $t('Add to Project') }}
 						</b-dropdown-item>

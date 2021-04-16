@@ -70,12 +70,12 @@ import Validation from "@/mixins/validation";
 export default {
 	name: "Summary",
 
-	mixins: [Validation],
-
 	components: {
 		Table,
 		ColumnField,
 	},
+
+	mixins: [Validation],
 
 	props: {
 		members: Array,

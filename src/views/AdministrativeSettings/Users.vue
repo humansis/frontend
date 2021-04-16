@@ -48,13 +48,13 @@ import permissions from "@/mixins/permissions";
 export default {
 	name: "UsersPage",
 
-	mixins: [permissions],
-
 	components: {
 		UsersList,
 		Modal,
 		UserForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

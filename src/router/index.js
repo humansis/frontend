@@ -78,7 +78,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["editDistribution"],
 									breadcrumb: "Assistance Edit",
 									description: "",
 								},
@@ -89,7 +89,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["viewDistribution", "editDistribution"],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},
@@ -100,7 +100,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: [],
+									permissions: ["addDistribution"],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new distribution to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",

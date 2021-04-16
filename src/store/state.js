@@ -20,35 +20,36 @@ export default {
 		{ name: "Amrahic", key: "am" },
 	],
 	permissions: {
-		addProject: false, // button -
-		editProject: false, // button -
-		deleteProject: false, // button -
-		viewProject: false, // button -
-		addDistribution: false, // view, button -
-		editDistribution: false, // view, button -
+		addProject: false,
+		editProject: false,
+		deleteProject: false,
+		viewProject: false,
+		addDistribution: false,
+		editDistribution: false,
 		deleteDistribution: false,
-		viewDistribution: false, // view, button -
+		viewDistribution: false,
 		assignDistributionItems: false,
-		addBeneficiary: false, // view, button -
-		editBeneficiary: false, // OK
-		deleteBeneficiary: false, // OK
-		viewBeneficiary: false, // OK
-		importBeneficiaries: false, // OK
+		authoriseElectronicCashTransfer: false,
+		addBeneficiary: false,
+		editBeneficiary: false,
+		deleteBeneficiary: false,
+		viewBeneficiary: false,
+		importBeneficiaries: false,
 		exportBeneficiaries: false, // TODO Add for export button in Beneficiaries
-		viewVouchers: false, // OK
+		viewVouchers: false,
 		exportPrintVouchers: false, // TODO Add for export button in Vouchers
-		addVouchers: false, // OK
-		viewVendors: false, // OK
-		addEditVendors: false, // OK
-		viewDonors: false, // OK
-		addEditDonors: false, // OK
-		viewProducts: false, // OK
-		addEditProducts: false, // OK
-		countryReport: false, // OK
-		projectReport: false, // OK
-		distributionReport: false, // OK
-		countrySettings: false, // OK
-		addEditUsers: false, // OK
-		adminSettings: false, // OK
+		addVouchers: false,
+		viewVendors: false,
+		addEditVendors: false,
+		viewDonors: false,
+		addEditDonors: false,
+		viewProducts: false,
+		addEditProducts: false,
+		countryReport: false,
+		projectReport: false,
+		distributionReport: false,
+		countrySettings: false,
+		addEditUsers: false,
+		adminSettings: false,
 	},
 };

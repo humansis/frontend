@@ -37,11 +37,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.editProject"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="edit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.deleteProject"
 					icon="trash"
 					:entity="$t('Project')"
 					:tooltip="$t('Delete')"
@@ -65,11 +67,10 @@ import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "ProjectList",
-
-	mixins: [grid, baseHelper],
 
 	components: {
 		SafeDelete,
@@ -77,6 +78,8 @@ export default {
 		ActionButton,
 		ColumnField,
 	},
+
+	mixins: [permissions, grid, baseHelper],
 
 	data() {
 		return {
@@ -178,7 +181,7 @@ export default {
 		},
 
 		goToDetail(project) {
-			this.$router.push({ name: "Project", params: { projectId: project.id } });
+			if (this.userCan.viewProject) this.$router.push({ name: "Project", params: { projectId: project.id } });
 		},
 
 		edit(id) {
