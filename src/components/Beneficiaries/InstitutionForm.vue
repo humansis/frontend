@@ -284,6 +284,7 @@
 			<b-button
 				v-if="!formDisabled"
 				class="is-primary"
+				native-type="submit"
 				:label="submitButtonLabel"
 				:disabled="mapping"
 			/>

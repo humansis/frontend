@@ -12,7 +12,8 @@ async function getErrorsFromResponse(data) {
 			errors += `${error.message} (${error.source}), `;
 		});
 	}
-
+	// Please remove this code before release because it reads
+	// data that is not supposed to be visible for user
 	if (data.debug && data.debug.length) {
 		data.debug.forEach((debug) => {
 			debugs += `${debug.message}. `;
