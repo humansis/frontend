@@ -1,45 +1,46 @@
 <template>
-	<div class="modal-card-body">
-		<form>
-			<b-field label="Name">
+	<form>
+		<section class="modal-card-body">
+			<b-field :label="$t('Name')">
 				<b-input v-model="formModel.name" disabled />
 			</b-field>
 
 			<LocationForm
 				v-if="!editing"
 				ref="locationForm"
-				:form-disabled="true"
+				form-disabled
 				:form-model="formModel"
 			/>
 
-			<b-field label="Date of Assistance">
+			<b-field :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateDistribution"
 					show-week-number
-					placeholder="Click to select..."
+					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
 			</b-field>
 
-			<b-field label="Target">
+			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
-			<footer class="modal-card-foot">
-				<button class="button" type="button" @click="closeForm">
-					Close
-				</button>
-				<b-button
-					v-if="editing"
-					value="Update"
-					tag="input"
-					class="is-success"
-					@click="submitForm"
-				/>
-			</footer>
-		</form>
-	</div>
+		</section>
+		<footer class="modal-card-foot">
+			<b-button @click="closeForm">
+				{{ $t('Close') }}
+			</b-button>
+			<b-button
+				v-if="editing"
+				:value="$t('Update')"
+				tag="input"
+				class="is-primary"
+				@click="submitForm"
+			/>
+		</footer>
+	</form>
 </template>
 
 <script>

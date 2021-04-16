@@ -1,17 +1,16 @@
 <template>
 	<Table
+		has-reset-sort
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
-				sortable
 				v-bind="column"
 				v-slot="props"
 				:key="column.id"
@@ -21,27 +20,26 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			label="Actions"
+			:label="$t('Actions')"
 			width="150"
 			centered
 		>
-			<div class="block">
+			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
-					type="is-info"
-					tooltip="Show Detail"
+					type="is-primary"
+					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					type="is-link"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<ActionButton
 					icon="print"
 					type="is-dark"
-					tooltip="Print"
+					:tooltip="$t('Print')"
 					@click.native="print(props.row.id)"
 				/>
 			</div>
@@ -75,34 +73,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Organization Name",
-					},
-					{
-						type: "image",
-						key: "logo",
-						label: "Organization Logo",
-					},
-					{
-						type: "font",
-						key: "font",
-						label: "Font To Apply To The Pdf",
-					},
-					{
-						type: "color",
-						key: "primaryColor",
-						label: "Organization Primary Color",
-					},
-					{
-						type: "color",
-						key: "secondaryColor",
-						label: "Organization Secondary Color",
-					},
-					{
-						key: "footerContent",
-						label: "Pdf Footer Content",
-					},
+					{ key: "name", label: "Organization Name" },
+					{ type: "image", key: "logo", label: "Organization Logo" },
+					{ type: "font", key: "font", label: "Font to Apply to The PDF" },
+					{ type: "color", key: "primaryColor", label: "Organization Primary Color" },
+					{ type: "color", key: "secondaryColor", label: "Organization Secondary Color" },
+					{ key: "footerContent", label: "PDF Footer Content" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -125,16 +101,13 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await MyOrganizationsService.getListOfMyOrganizations(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`Organizations ${e}`, "is-danger");
-			});
+			await MyOrganizationsService.getListOfMyOrganizations()
+				.then((response) => {
+					this.table.data = response.data;
+					this.table.total = response.totalCount;
+				}).catch((e) => {
+					Notification(`${this.$t("Organizations")} ${e}`, "is-danger");
+				});
 
 			this.isLoadingList = false;
 		},

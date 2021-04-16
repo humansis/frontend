@@ -1,23 +1,46 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import getters from "@/store/getters";
 
 Vue.use(VueRouter);
 
+// TODO Prepare auth system after login will be implemented by BE
+// https://blog.sqreen.com/authentication-best-practices-vue/
+// eslint-disable-next-line max-len
+// https://www.digitalocean.com/community/tutorials/how-to-set-up-vue-js-authentication-and-route-handling-using-vue-router
+// const ifAuthenticated = (to, from, next) => {
+// 	next();
+//	 if (store.getters.isAuthenticated) {
+//	 	next()
+//	 	return
+//	 }
+//	 next('/login')
+// };
+
+// const ifNotAuthenticated = (to, from, next) => {
+// 	next();
+//	 if (!store.getters.isAuthenticated) {
+//	 	next()
+//	 	return
+//	 }
+//	 next('/')
+// };
+
 const routes = [
-	// {
-	// 	path: "/login",
-	// 	name: "Login",
-	// 	component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
-	// },
-	// {
-	// 	path: "/logout",
-	// 	name: "Logout",
-	// 	beforeEnter: ({ query }, from, next) => {
-	// 		localStorage.removeItem("user");
-	// 		localStorage.removeItem("user-token");
-	// 		next({ name: "Login", query });
-	// 	},
-	// },
+	{
+		path: "/login",
+		name: "Login",
+		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
+		// beforeEnter: ifNotAuthenticated,
+	},
+	{
+		path: "/logout",
+		name: "Logout",
+		beforeEnter: ({ query }, from, next) => {
+			// TODO Remove from vuex storage user's auth token
+			next({ name: "Login", query });
+		},
+	},
 	{
 		path: "",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
@@ -33,40 +56,45 @@ const routes = [
 			},
 			{
 				path: "/projects",
-				component: () => import(/* webpackChunkName: "Projects" */ "@/views/Project/ProjectsView"),
-				meta: {
-					breadcrumb: "Projects",
-				},
+				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "",
 						name: "Projects",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectPage"),
+						component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
 						meta: {
+							breadcrumb: "Projects",
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
 					{
 						path: "/project/:projectId",
-						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project/ProjectView"),
-						meta: {
-							breadcrumb: "Project",
-						},
+						component: { render(c) { return c("router-view"); } },
 						children: [
 							{
 								path: "",
-								name: "ProjectDetail",
-								component: () => import(/* webpackChunkName: "ProjectList" */ "@/components/Projects/ProjectDetail"),
+								name: "Project",
+								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 								meta: {
+									breadcrumb: "Project",
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
 							{
 								path: "assistance/:assistanceId",
-								name: "Assistance",
-								component: () => import(/* webpackChunkName: "Assistance" */ "@/views/AssistanceUpdate"),
+								name: "AssistanceEdit",
+								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
 								meta: {
-									breadcrumb: "Assistance",
+									breadcrumb: "Assistance Edit",
+									description: "",
+								},
+							},
+							{
+								path: "assistance/detail/:assistanceId",
+								name: "AssistanceDetail",
+								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
+								meta: {
+									breadcrumb: "Assistance Detail",
 									description: "",
 								},
 							},
@@ -84,31 +112,34 @@ const routes = [
 					},
 				],
 			},
-
 			{
 				path: "/beneficiaries",
-				component: () => import(/* webpackChunkName: "Beneficiaries" */ "@/views/BeneficiariesView"),
+				redirect: { name: "Households" },
+				component: { render(c) { return c("router-view"); } },
+				meta: {
+					breadcrumb: "Beneficiaries",
+				},
 				children: [
 					{
 						path: "households",
-						component: () => import(/* webpackChunkName: "BeneficiariesHouseholds" */ "@/views/Beneficiaries/HouseholdsView"),
+						component: { render(c) { return c("router-view"); } },
 						meta: {
-							breadcrumb: "Households",
 							parent: "Beneficiaries",
 						},
 						children: [
 							{
 								path: "",
 								name: "Households",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdPage" */ "@/views/Beneficiaries/HouseholdPage"),
+								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
+									breadcrumb: "Households",
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
 							{
 								path: "add",
 								name: "AddHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsAddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								meta: {
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
@@ -117,7 +148,7 @@ const routes = [
 							{
 								path: "import",
 								name: "ImportHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
+								component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
 								meta: {
 									breadcrumb: "Import Household",
 									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
@@ -126,7 +157,7 @@ const routes = [
 							{
 								path: "edit/:householdId",
 								name: "EditHousehold",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsEditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								meta: {
 									breadcrumb: "Edit Household",
 									description: "",
@@ -135,7 +166,7 @@ const routes = [
 							{
 								path: "summary/:householdId",
 								name: "HouseholdInformationSummary",
-								component: () => import(/* webpackChunkName: "BeneficiariesHouseholdsHouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								meta: {
 									breadcrumb: "Household Information Summary",
 									description: "",
@@ -147,7 +178,7 @@ const routes = [
 					{
 						path: "communities",
 						name: "Communities",
-						component: () => import(/* webpackChunkName: "BeneficiariesCommunities" */ "@/views/Beneficiaries/CommunitiesPage"),
+						component: () => import(/* webpackChunkName: "Communities" */ "@/views/Beneficiaries/Communities"),
 						meta: {
 							breadcrumb: "Communities",
 							description: "",
@@ -156,7 +187,7 @@ const routes = [
 					{
 						path: "institutions",
 						name: "Institutions",
-						component: () => import(/* webpackChunkName: "BeneficiariesInstitutions" */ "@/views/Beneficiaries/InstitutionsPage"),
+						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
 							breadcrumb: "Institutions",
 							description: "",
@@ -165,7 +196,7 @@ const routes = [
 					{
 						path: "vendors",
 						name: "Vendors",
-						component: () => import(/* webpackChunkName: "BeneficiariesVendors" */ "@/views/Beneficiaries/VendorsPage"),
+						component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
 						meta: {
 							breadcrumb: "Vendors",
 							description: "",
@@ -176,16 +207,16 @@ const routes = [
 			{
 				path: "/reports",
 				name: "Reports",
-				component: () => import(/* webpackChunkName: "Reports" */ "@/views/ReportsPage"),
+				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
 				meta: {
 					breadcrumb: "Reports",
-					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions...",
+					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions",
 				},
 			},
 			{
 				path: "/vouchers",
 				name: "Vouchers",
-				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/VouchersPage"),
+				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				meta: {
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
@@ -194,12 +225,12 @@ const routes = [
 			{
 				path: "/configuration",
 				name: "Configuration",
-				component: () => import(/* webpackChunkName: "Configuration" */ "@/views/ConfigurationView"),
+				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "ConfigurationProducts" */ "@/views/Configuration/ProductsPage"),
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/Configuration/Products"),
 						meta: {
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -208,7 +239,7 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "ConfigurationCountrySpecificOption" */ "@/views/Configuration/CountrySpecificOptionPage"),
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Configuration/CountrySpecificOptions"),
 						meta: {
 							breadcrumb: "Country Specifics",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
@@ -219,7 +250,7 @@ const routes = [
 			{
 				path: "/administrative-settings",
 				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettingsPage"),
+				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 				meta: {
 					breadcrumb: "Administrative Settings",
 					description: "This page is where you can manage users, donors and your organization's specifics",
@@ -228,7 +259,7 @@ const routes = [
 			{
 				path: "/transactions",
 				name: "Transactions",
-				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/TransactionsPage"),
+				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/Transactions"),
 				meta: {
 					breadcrumb: "Transactions",
 					description: "",
@@ -278,6 +309,16 @@ const router = new VueRouter({
 	mode: "history",
 	base: process.env.BASE_URL,
 	routes,
+});
+
+router.beforeEach((to, from, next) => {
+	if (to.name !== "Login" && to.name !== "Logout" && to.name !== "NotFound" && !getters.getUserFromVuexStorage()) {
+		const redirect = to.query?.redirect || to.fullPath;
+		next({ name: "Logout", query: { redirect } });
+	} else {
+		window.document.title = to.meta && to.meta.breadcrumb ? `${to.meta.breadcrumb} | Humansis` : "Humansis";
+		next();
+	}
 });
 
 export default router;

@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Donor Name"
+				:label="$t('Donor Name')"
 				:type="validateType('fullname')"
 				:message="validateMsg('fullname')"
 			>
@@ -15,7 +15,10 @@
 
 			<b-field>
 				<template #label>
-					Short Name<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Short Name') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.shortname"
@@ -29,7 +32,10 @@
 				:type="validateType('logo')"
 			>
 				<template #label>
-					Image<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Image') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-field class="file">
 					<b-upload
@@ -39,7 +45,8 @@
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage
+									? formModel.uploadedImage.name : $t("Click to Upload") }}
 							</span>
 						</a>
 					</b-upload>
@@ -48,7 +55,7 @@
 
 			<b-field
 				v-if="formDisabled && formModel.logo"
-				label="Image"
+				:label="$t('Image')"
 				:type="validateType('logo')"
 			>
 				<b-image
@@ -60,7 +67,9 @@
 
 			<b-field>
 				<template #label>
-					Notes<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Notes') }}<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-input
 					v-model="formModel.notes"
@@ -70,18 +79,16 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -97,12 +104,6 @@ export default {
 	name: "DonorForm",
 
 	mixins: [Validation],
-
-	date() {
-		return {
-			uploadedImage: null,
-		};
-	},
 
 	props: {
 		formModel: Object,
@@ -122,9 +123,6 @@ export default {
 
 	methods: {
 		submitForm() {
-			if (this.uploadedImage) {
-				this.formModel.logo = this.uploadedImage;
-			}
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				return;

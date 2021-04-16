@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Organization Name"
+				:label="$t('Organization Name')"
 				:type="validateType('name')"
 				:message="validateMsg('name')"
 			>
@@ -18,8 +18,10 @@
 				:type="validateType('logo')"
 			>
 				<template #label>
-					Organizational Logo
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Logo') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<b-field class="file">
 					<b-upload
@@ -29,7 +31,7 @@
 						<a class="button is-primary is-fullwidth">
 							<b-icon icon="upload" />
 							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : "Click to upload"}}
+								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
 							</span>
 						</a>
 					</b-upload>
@@ -38,7 +40,7 @@
 
 			<b-field
 				v-if="formDisabled && formModel.logo"
-				label="Image"
+				:label="$t('Image')"
 			>
 				<b-image
 					alt="Image"
@@ -49,20 +51,22 @@
 
 			<b-field>
 				<template #label>
-					Font To Apply To The Pdf
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Font To Apply To The Pdf') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<MultiSelect
 					v-model="formModel.font"
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="fonts"
 					@blur="validate('font')"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<div class="option__desc">
 							<span
 								class="option__title"
@@ -72,7 +76,7 @@
 							</span>
 						</div>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<div class="option__desc">
 							<span
 								class="option__title"
@@ -87,8 +91,10 @@
 
 			<b-field>
 				<template #label>
-					Organization Primary Color
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Primary Color') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<VSwatches
 					v-model="formModel.primaryColor"
@@ -102,8 +108,10 @@
 
 			<b-field>
 				<template #label>
-					Organization Secondary Color
-					<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+					{{ $t('Organization Secondary Color') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
 				</template>
 				<VSwatches
 					v-model="formModel.secondaryColor"
@@ -117,7 +125,7 @@
 			</b-field>
 
 			<b-field
-				label="Pdf Footer Content"
+				:label="$t('PDF Footer Content')"
 				:type="validateType('footerContent')"
 			>
 				<b-input
@@ -128,18 +136,16 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -177,9 +183,9 @@ export default {
 	data() {
 		return {
 			fonts: [
-				{ code: "arial", value: "Arial" },
-				{ code: "helvetica", value: "Helvetica" },
-				{ code: "courier", value: "Courier" },
+				{ code: "Arial", value: "Arial" },
+				{ code: "Helvetica", value: "Helvetica" },
+				{ code: "Courier", value: "Courier" },
 			],
 		};
 	},
@@ -190,7 +196,17 @@ export default {
 		},
 	},
 
+	mounted() {
+		this.mapSelects();
+	},
+
 	methods: {
+		mapSelects() {
+			if (typeof this.formModel.font !== "object") {
+				this.formModel.font = this.fonts.find((item) => item.code === this.formModel.font);
+			}
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {

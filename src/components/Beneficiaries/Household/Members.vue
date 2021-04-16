@@ -2,6 +2,7 @@
 	<div>
 		<b-collapse
 			v-for="(collapse, index) of collapses"
+			ref="members"
 			class="card"
 			animation="slide"
 			:key="index"
@@ -15,15 +16,16 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
-					<span class="ml-3">Member</span>
+					<span class="ml-3">{{ $t('Member') }}</span>
 				</p>
 				<a class="card-header-icon">
-					<button
-						class="button button is-danger is-light mr-4"
+					<b-button
+						type="is-danger"
+						class="is-light mr-4"
 						@click="removeMember(index)"
 					>
 						<b-icon icon="trash" />
-					</button>
+					</b-button>
 					<b-icon icon="arrow-down" />
 				</a>
 			</div>
@@ -44,7 +46,7 @@
 			icon-left="plus"
 			@click="addMember"
 		>
-			New
+			{{ $t('New') }}
 		</b-button>
 		<hr>
 	</div>
@@ -63,12 +65,22 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	watch: {
 		detailOfHousehold(household) {
 			this.mapDetailOfHouseholdToFormModel(household);
 		},
+	},
+
+	async created() {
+		if (this.isEditing) {
+			await this.mapDetailOfHouseholdToFormModel();
+		}
 	},
 
 	data() {
@@ -81,21 +93,9 @@ export default {
 	},
 
 	methods: {
-		addMember() {
-			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
-				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
-				const newCollapseIndex = (this.collapses.length - 1) + 1;
-
-				this.collapses.push(newCollapseIndex);
-				this.isOpen = newCollapseIndex;
-			} else {
-				this.collapses.push(this.collapses.length);
-			}
-		},
-
 		async mapDetailOfHouseholdToFormModel() {
 			const promises = [];
-			await this.detailOfHousehold.beneficiaryIds.forEach((id) => {
+			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
 				if (this.detailOfHousehold.householdHeadId !== id) {
 					const promise = BeneficiariesService.getBeneficiary(id).then((data) => {
 						this.preparedMembers[this.collapses.length] = data;
@@ -105,6 +105,28 @@ export default {
 				}
 			});
 			await Promise.all(promises);
+			this.reloadMemberForm();
+		},
+
+		reloadMemberForm() {
+			if (this.$refs.member) {
+				this.$refs.member.forEach((form) => {
+					form.map();
+				});
+			}
+		},
+
+		addMember() {
+			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
+				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
+
+				const newCollapseIndex = (this.collapses.length - 1) + 1;
+
+				this.collapses.push(newCollapseIndex);
+				this.isOpen = newCollapseIndex;
+			} else {
+				this.collapses.push(this.collapses.length);
+			}
 		},
 
 		removeMember(index) {
@@ -115,15 +137,19 @@ export default {
 		submit() {
 			this.members = [];
 			let result = 0;
-			this.$refs.member.forEach((form) => {
-				if (form.submit()) {
-					result += 1;
-				}
-			});
-			if (result === this.$refs.member.length) {
+			if (this.$refs.member) {
 				this.$refs.member.forEach((form) => {
-					this.members.push(form.formModel);
+					if (form.submit()) {
+						result += 1;
+					}
 				});
+				if (result === this.$refs.member.length) {
+					this.$refs.member.forEach((form) => {
+						this.members.push(form.formModel);
+					});
+					return true;
+				}
+			} else {
 				return true;
 			}
 

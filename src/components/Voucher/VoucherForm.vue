@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Project"
+				:label="$t('Project')"
 				:type="validateType('projectId')"
 				:message="validateMsg('projectId')"
 			>
@@ -10,9 +10,9 @@
 					v-model="formModel.projectId"
 					v-if="!formDisabled"
 					searchable
-					placeholder="Click to select..."
 					label="name"
 					track-by="id"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="projects"
 					:class="validateMultiselect('projectId')"
@@ -27,7 +27,7 @@
 
 			<b-field
 				v-if="!formDisabled"
-				label="Quantity Of Booklets"
+				:label="$t('Quantity of Booklets')"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
 			>
@@ -35,9 +35,10 @@
 					v-model="formModel.quantityOfBooklets"
 					expanded
 					min="0"
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					placeholder="Quantity Of Booklets"
+					:placeholder="$t('Quantity of Booklets')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfBooklets')"
@@ -45,7 +46,7 @@
 			</b-field>
 
 			<b-field
-				label="Quantity Of Vouchers"
+				label="Quantity of Vouchers"
 				:type="validateType('quantityOfVouchers')"
 				:message="validateMsg('quantityOfVouchers')"
 			>
@@ -53,9 +54,10 @@
 					v-model="formModel.quantityOfVouchers"
 					expanded
 					min="0"
-					placeholder="Quantity Of Vouchers"
+					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
+					:placeholder="$t('Quantity Of Vouchers')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfVouchers')"
@@ -63,74 +65,68 @@
 			</b-field>
 
 			<b-field
-				label="Individual Value"
+				:label="$t('Individual Value')"
 				:type="validateType('values')"
 				:message="validateMsg('values')"
 			>
 				<b-taginput
 					v-model="formModel.values"
-					placeholder="Values"
+					:placeholder="$t('Values')"
 					:disabled="formDisabled"
+					:before-adding="beforeAdding"
 					@blur="validate('values')"
 				/>
 			</b-field>
 
 			<b-field
-				label="Currency"
+				:label="$t('Currency')"
 				:type="validateType('currency')"
 				:message="validateMsg('currency')"
 			>
 				<MultiSelect
 					v-model="formModel.currency"
 					searchable
-					placeholder="Click to select..."
-					label="code"
+					label="value"
 					track-by="value"
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
-					:options="currencies"
+					:options="options.currencies"
 					:class="validateMultiselect('currency')"
 					@select="validate('currency')"
 				/>
 			</b-field>
 
-			<b-field
-				v-if="!formDisabled"
-				label="Define A Password"
-			>
-				<b-checkbox
-					v-model="formModel.defineAPassword"
-				/>
+			<b-field v-if="!formDisabled" :label="$t('Define a Password')">
+				<b-checkbox v-model="formModel.defineAPassword" />
 			</b-field>
 
 			<b-field
 				v-if="formModel.defineAPassword && !formDisabled"
-				label="Password"
+				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
 			>
 				<b-input
 					v-model="formModel.password"
 					type="password"
-					placeholder="Password"
 					password-reveal
+					:placeholder="$t('Password')"
 					:disabled="formDisabled"
 					@blur="validate('password')"
 				/>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -140,10 +136,10 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
-import ProjectsService from "@/services/ProjectsService";
+import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import currencies from "@/utils/currencies";
 
 export default {
 	name: "VoucherForm",
@@ -161,6 +157,9 @@ export default {
 		return {
 			projects: [],
 			currencies: [],
+			options: {
+				currencies,
+			},
 		};
 	},
 
@@ -178,10 +177,15 @@ export default {
 
 	async mounted() {
 		await this.fetchProjects();
-		await this.fetchCurrencies();
 	},
 
 	methods: {
+		beforeAdding(tag) {
+			// Values length must be lower or equal than quantityOfVoucher and value must be number
+			return this.formModel.values.length < this.formModel.quantityOfVouchers
+				&& !Number.isNaN(Number(tag));
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -198,39 +202,12 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.projects = data;
 				}).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
-		},
-
-		async fetchCurrencies() {
-			// TODO fill currencies
-			this.currencies = [
-				{
-					code: "CZK",
-					value: "CZK",
-				},
-				{
-					code: "USD",
-					value: "USD",
-				},
-				{
-					code: "GBP",
-					value: "GBP",
-				},
-				{
-					code: "EUR",
-					value: "EUR",
-				},
-				{
-					code: "KHR",
-					value: "KHR",
-				},
-			];
-			this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], this.currencies, "code");
 		},
 	},
 };

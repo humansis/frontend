@@ -1,35 +1,47 @@
+import CONST from "@/store/const";
+
 export default {
-	updateCountry: ({ commit }, country) => {
-		commit("changeCountry", country);
+	appLoading: ({ commit }, boolean) => {
+		commit(CONST.APP_LOADING, boolean);
 	},
 
-	updateLanguage: ({ commit }, language) => {
-		commit("changeLanguage", language);
+	storeUser: ({ commit }, user) => {
+		if (user) {
+			commit(CONST.STORE_USER, user);
+		}
 	},
 
-	changePerPage: ({ commit }, perPage) => {
+	storeCountry: ({ commit }, country) => {
+		if (country) {
+			commit(CONST.STORE_COUNTRY, country);
+		}
+	},
+
+	storeCountries: ({ commit }, countries) => {
+		if (countries?.length) {
+			commit(CONST.STORE_COUNTRIES, countries);
+		}
+	},
+
+	storeTranslations: ({ commit }, translations) => {
+		if (translations) {
+			commit(CONST.STORE_TRANSLATIONS, translations);
+		}
+	},
+
+	storeLanguage: ({ commit }, language) => {
+		if (language) {
+			commit(CONST.STORE_LANGUAGE, language);
+		}
+	},
+
+	storePerPage: ({ commit }, perPage) => {
 		if (perPage) {
-			commit("updatePerPage", perPage);
+			commit(CONST.STORE_PER_PAGE, perPage);
 		}
 	},
 
-	addAssistanceToState: ({ commit }, assistance) => {
-		if (assistance) {
-			commit("updateAssistance", assistance);
-		}
-	},
-
-	addProjectToState: ({ commit }, project) => {
-		if (project) {
-			commit("updateProject", project);
-		}
-	},
-
-	removeAssistanceFromState: ({ commit }) => {
-		commit("updateAssistance", null);
-	},
-
-	removeProjectFromState: ({ commit }) => {
-		commit("updateProject", null);
+	storeIcons: ({ commit }, icons) => {
+		commit(CONST.STORE_ICONS, icons);
 	},
 };

@@ -1,5 +1,6 @@
 <template>
 	<Table
+		has-reset-sort
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -8,6 +9,7 @@
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
@@ -24,16 +26,15 @@
 			label="Actions"
 			centered
 		>
-			<div class="block">
+			<div class="buttons is-right">
 				<ActionButton
 					icon="search"
-					type="is-link"
+					type="is-primary"
 					tooltip="Show Detail"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					icon="edit"
-					type="is-link"
 					tooltip="Edit"
 					@click.native="showEdit(props.row.id)"
 				/>
@@ -77,19 +78,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-					},
-					{
-						key: "iso3",
-					},
-					{
-						key: "availableCurrencies",
-					},
-					{
-						type: "flag",
-						key: "countryFlag",
-					},
+					{ key: "name" },
+					{ key: "iso3" },
+					{ key: "availableCurrencies" },
+					{ type: "flag", key: "countryFlag" },
 				],
 				total: 0,
 				currentPage: 1,

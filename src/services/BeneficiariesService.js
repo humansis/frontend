@@ -2,12 +2,14 @@ import { fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort=${sort}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?page=${page}&size=${size + sortText + fulltext + filtersUri}`,
+			uri: `households?${pageText + sizeText + sortText + fulltext + filtersUri}`,
 		});
 
 		return { data, totalCount };
@@ -106,8 +108,8 @@ export default {
 		return data;
 	},
 
-	async getBeneficiaries(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
+	async getBeneficiaries(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
 
 		const { data } = await fetcher({
 			uri: `beneficiaries?${idsText}`,
@@ -116,6 +118,7 @@ export default {
 	},
 
 	async getPhone(id) {
+		if (!id) return null;
 		const { data } = await fetcher({
 			uri: `beneficiaries/phones/${id}`,
 		});
@@ -123,6 +126,7 @@ export default {
 	},
 
 	async getNationalId(id) {
+		if (!id) return null;
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids/${id}`,
 		});
@@ -131,6 +135,8 @@ export default {
 
 	async getNationalIds(ids, param = null) {
 		const idsText = ids ? idsToUri(ids, param) : "";
+
+		if (!idsText) return [];
 
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids?${idsText}`,
@@ -152,5 +158,54 @@ export default {
 			uri: "households/referrals/types",
 		});
 		return data;
+	},
+
+	async getSupportReceivedTypes() {
+		const { data } = await fetcher({
+			uri: "households/support-received-types",
+		});
+		return data;
+	},
+
+	async getBeneficiariesByProject(id, target) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `projects/${id}/beneficiaries?target=${target}`,
+		});
+		return { data, totalCount };
+	},
+
+	async addHouseholdsToProject(projectId, ids) {
+		const { data } = await fetcher({
+			uri: `projects/${projectId}/households`,
+			auth: true,
+			method: "PUT",
+			body: {
+				householdIds: ids,
+			},
+		});
+		return data;
+	},
+
+	async addOrRemoveBeneficiaryFromAssistance(assistanceId, body) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/beneficiaries`,
+			method: "PUT",
+			body,
+		});
+		return { data, status };
+	},
+
+	async getListOfHouseholdPurchases(id) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `households/${id}/purchased-items`,
+		});
+		return { data, totalCount };
+	},
+
+	async getListOfDistributedItems(id) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `households/${id}/distributed-items`,
+		});
+		return { data, totalCount };
 	},
 };

@@ -1,40 +1,25 @@
 <template>
-	<div class="mb-5 box">
-		<div class="columns is-multiline">
-			<div v-for="(options, filter) in filtersOptions" :key="filter" class="column is-half">
-				<b-field :label="options.name">
-					<MultiSelect
-						v-model="selectedFiltersOptions[filter]"
-						searchable
-						:label="options.label || 'value'"
-						:track-by="options.trackBy || 'code'"
-						:multiple="options.multiple"
-						:placeholder="options.placeholder || 'Click to select...'"
-						:loading="options.loading"
-						:options="options.data"
-						@input="filterChanged(filter)"
-					>
-						<template
-							slot="singleLabel"
-							slot-scope="options"
-						>
-							{{ options.option.name }}
-						</template>
-					</MultiSelect>
-				</b-field>
-			</div>
-		</div>
-	</div>
+	<AdvancedFilter
+		multiline
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		@filtersChanged="filterChanged"
+	/>
 </template>
 
 <script>
-import ProjectsService from "@/services/ProjectsService";
+import AdvancedFilter from "@/components/AdvancedFilter";
+import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-
+// TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "HouseholdsFilters",
+
+	components: {
+		AdvancedFilter,
+	},
 
 	data() {
 		return {
@@ -42,18 +27,19 @@ export default {
 				projects: [],
 				vulnerabilities: [],
 				gender: [],
-				residencies: [],
-				referrals: [],
+				residencyStatuses: [],
+				referralTypes: [],
 				livelihoods: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
 				adm4: [],
+				locations: [],
 			},
 			filtersOptions: {
 				projects: {
 					name: "Project",
-					placeholder: "Select Project",
+					placeholder: this.$t("Select Project"),
 					multiple: true,
 					trackBy: "id",
 					label: "name",
@@ -62,68 +48,73 @@ export default {
 				},
 				vulnerabilities: {
 					name: "Vulnerability",
-					placeholder: "Select Vulnerability",
+					placeholder: this.$t("Select Vulnerability"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				gender: {
 					name: "Gender",
-					placeholder: "Select Gender",
+					placeholder: this.$t("Select Gender"),
 					data: [
-						{ code: "M", value: "Male" },
-						{ code: "F", value: "Female" },
+						{ code: "M", value: this.$t("Male") },
+						{ code: "F", value: this.$t("Female") },
 					],
 				},
-				residencies: {
-					name: "Residence Status",
-					placeholder: "Select Residence",
+				residencyStatuses: {
+					name: "Residency Status",
+					placeholder: this.$t("Select Residence"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
-				referrals: {
+				referralTypes: {
 					name: "Referral",
-					placeholder: "Select Referral",
+					placeholder: this.$t("Select Referral"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				livelihoods: {
 					name: "Livelihood",
-					placeholder: "Select Livelihood",
+					placeholder: this.$t("Select Livelihood"),
 					multiple: true,
 					loading: true,
 					data: [],
 				},
 				adm1: {
 					name: "Province",
-					placeholder: "Select Province",
+					placeholder: this.$t("Select Province"),
 					trackBy: "id",
 					label: "name",
 					loading: true,
 					data: [],
+					selectValue: "locationId",
+					filterForSend: "locations",
 				},
 				adm2: {
 					name: "District",
-					placeholder: "Select District",
+					placeholder: this.$t("Select District"),
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 				adm3: {
 					name: "Commune",
-					placeholder: "Select Commune",
+					placeholder: this.$t("Select Commune"),
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 				adm4: {
 					name: "Village",
-					placeholder: "Select Village",
+					placeholder: this.$t("Select Village"),
 					trackBy: "id",
 					label: "name",
 					data: [],
+					selectValue: "locationId",
 				},
 			},
 		};
@@ -139,36 +130,67 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filter) {
-			switch (filter) {
+		filterChanged(filters, filterName) {
+			switch (filterName) {
 				case "adm1":
-					this.fetchDistricts(this.selectedFiltersOptions[filter].id);
 					this.selectedFiltersOptions.adm2 = null;
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
 					break;
 				case "adm2":
-					this.fetchCommunes(this.selectedFiltersOptions[filter].id);
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
 					break;
 				case "adm3":
-					this.fetchVillages(this.selectedFiltersOptions[filter].id);
 					this.selectedFiltersOptions.adm4 = null;
+					if (!this.selectedFiltersOptions[filterName]) break;
+					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
+					break;
+				case "adm4":
+					if (!this.selectedFiltersOptions[filterName]) break;
 					break;
 				default: break;
 			}
-			this.$emit("filtersChanged", this.selectedFiltersOptions);
+			let location = null;
+			if (this.selectedFiltersOptions.adm4) {
+				const [a] = filters.adm4;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm3) {
+				const [a] = filters.adm3;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm2) {
+				const [a] = filters.adm2;
+				location = a;
+			} else
+			if (this.selectedFiltersOptions.adm1) {
+				const [a] = filters.adm1;
+				location = a;
+			}
+			this.$emit("filtersChanged", {
+				projects: filters.projects,
+				vulnerabilities: filters.vulnerabilities,
+				gender: filters.gender ? filters.gender[0] : null,
+				residencyStatuses: filters.residencyStatuses,
+				referralTypes: filters.referralTypes,
+				livelihoods: filters.livelihoods,
+				locations: location ? [location] : [],
+			});
 		},
 
 		async fetchProjects() {
-			await ProjectsService.getListOfProjects()
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.filtersOptions.projects.data = data;
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
@@ -179,7 +201,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Provinces ${e}`, "is-danger");
+					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
 				});
 		},
 
@@ -191,7 +213,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Districts ${e}`, "is-danger");
+					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
 				});
 		},
 
@@ -203,7 +225,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Communes ${e}`, "is-danger");
+					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
 				});
 		},
 
@@ -215,7 +237,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Villages ${e}`, "is-danger");
+					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
 				});
 		},
 
@@ -226,7 +248,7 @@ export default {
 					this.filtersOptions.livelihoods.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Livelihoods ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 		},
 
@@ -237,29 +259,29 @@ export default {
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Vulnerability ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 
 		async fetchResidenceStatuses() {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => {
-					this.filtersOptions.residencies.data = data;
-					this.filtersOptions.residencies.loading = false;
+					this.filtersOptions.residencyStatuses.data = data;
+					this.filtersOptions.residencyStatuses.loading = false;
 				})
 				.catch((e) => {
-					Notification(`Residence Status ${e}`, "is-danger");
+					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 		},
 
 		async fetchReferralTypes() {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => {
-					this.filtersOptions.referrals.loading = false;
-					this.filtersOptions.referrals.data = data;
+					this.filtersOptions.referralTypes.loading = false;
+					this.filtersOptions.referralTypes.data = data;
 				})
 				.catch((e) => {
-					Notification(`Referral Types ${e}`, "is-danger");
+					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
 		},
 	},

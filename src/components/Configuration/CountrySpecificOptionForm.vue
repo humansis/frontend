@@ -2,7 +2,7 @@
 	<form @submit.prevent="submitForm">
 		<section class="modal-card-body">
 			<b-field
-				label="Field"
+				:label="$t('Field')"
 				:type="validateType('field')"
 				:message="validateMsg('field')"
 			>
@@ -14,7 +14,7 @@
 			</b-field>
 
 			<b-field
-				label="Type"
+				:label="$t('Type')"
 				:type="validateType('type')"
 				:message="validateMsg('type')"
 			>
@@ -24,7 +24,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.types"
 					:class="validateMultiselect('type')"
@@ -33,7 +33,8 @@
 			</b-field>
 
 			<b-field
-				label="Target"
+				v-if="false"
+				:label="$t('Target')"
 				:type="validateType('target')"
 				:message="validateMsg('target')"
 			>
@@ -43,7 +44,7 @@
 					is-relative
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.targets"
 					:loading="loadingTargets"
@@ -53,18 +54,16 @@
 			</b-field>
 		</section>
 		<section class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
-				Close
-			</button>
+				{{ $t('Close') }}
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>
@@ -96,11 +95,11 @@ export default {
 				types: [
 					{
 						code: "number",
-						value: "Number",
+						value: this.$t("Number"),
 					},
 					{
 						code: "text",
-						value: "Text",
+						value: this.$t("Text"),
 					},
 				],
 				targets: [],
@@ -113,7 +112,7 @@ export default {
 		formModel: {
 			field: { required },
 			type: { required },
-			target: { required },
+			target: {},
 		},
 	},
 
@@ -143,10 +142,10 @@ export default {
 		},
 
 		async fetchTargets() {
-			await AssistancesService.getListOfTargetsForAssistances()
+			await AssistancesService.getTargetTypes()
 				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
-					Notification(`Target Types ${e}`, "is-danger");
+					Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 
 			this.formModel.target = this.options.targets

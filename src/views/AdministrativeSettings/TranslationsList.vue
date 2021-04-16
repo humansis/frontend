@@ -1,25 +1,16 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
-		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
-			<div class="column is-pulled-right">
-				<b-field>
-					<b-button
-						type="is-success"
-						icon-left="plus"
-						@click="addTranslation"
-					>
-						Add Translation
-					</b-button>
-				</b-field>
-			</div>
-		</div>
 		<Table
+			has-reset-sort
+			has-search
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
+			@resetSort="resetSort"
+			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -36,7 +27,7 @@
 				label="Actions"
 				centered
 			>
-				<div class="block">
+				<div class="buttons is-right">
 					<SafeDelete
 						tabindex="-1"
 						icon="trash"
@@ -46,25 +37,33 @@
 					/>
 				</div>
 			</b-table-column>
+			<template #export>
+				<b-button
+					type="is-primary"
+					icon-left="plus"
+					@click="addTranslation"
+				>
+					Add Translation
+				</b-button>
+			</template>
 		</Table>
-		<b-button
-			class="mb-5"
-			size="is-normal"
-			type="is-danger"
-			icon-left="save"
-			@click="submit"
-		>
-			Save
-		</b-button>
+
+		<div class="buttons flex-end">
+			<b-button
+				type="is-primary"
+				icon-left="save"
+				@click="submit"
+			>
+				Save
+			</b-button>
+		</div>
 	</div>
 </template>
 
 <script>
-// TODO Fix translations and check all functionalities in table
 import ColumnField from "@/components/DataGrid/ColumnField";
 import SafeDelete from "@/components/SafeDelete";
 import Table from "@/components/DataGrid/Table";
-import Search from "@/components/Search";
 import TranslationService from "@/services/TranslationService";
 import { generateColumns } from "@/utils/datagrid";
 import { Toast, Notification } from "@/utils/UI";
@@ -74,7 +73,6 @@ export default {
 	name: "TranslationsList",
 
 	components: {
-		Search,
 		SafeDelete,
 		Table,
 		ColumnField,
@@ -88,20 +86,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						type: "editable",
-						key: "key",
-					},
-					{
-						type: "editable",
-						key: "en",
-						label: "English",
-					},
-					{
-						type: "editable",
-						key: "de",
-						label: "Deutsch",
-					},
+					{ type: "editable", key: "key" },
+					{ type: "editable", key: "en", label: "English" },
+					{ type: "editable", key: "de", label: "Deutsch" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -122,8 +109,6 @@ export default {
 
 	methods: {
 		async fetchData() {
-			// TODO Loading on data container
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TranslationService.getTranslations(
 				this.table.currentPage,
@@ -139,7 +124,6 @@ export default {
 		},
 
 		async submit() {
-			// TODO send data via API service
 			// const data = this.table.data.filter((item) => item.key);
 			await TranslationService.saveTranslation()
 				.then((response) => {
@@ -148,7 +132,7 @@ export default {
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`Translations ${e}`, "is-danger");
+					Toast(`Translations ${e}`, "is-danger");
 				});
 		},
 

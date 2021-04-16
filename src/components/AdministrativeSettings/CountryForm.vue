@@ -28,7 +28,7 @@
 			<b-field
 				label="Available Currencies"
 				:type="validateType('availableCurrencies')"
-				:message="validateMsg('availableCurrencies', 'Required')"
+				:message="validateMsg('availableCurrencies' )"
 			>
 				<MultiSelect
 					v-model="formModel.availableCurrencies"
@@ -36,7 +36,7 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					placeholder="Click to select"
 					:disabled="formDisabled"
 					:class="validateMultiselect('availableCurrencies')"
 					:options="currencies"
@@ -54,19 +54,19 @@
 					searchable
 					label="value"
 					track-by="code"
-					placeholder="Click to select..."
+					placeholder="Click to select"
 					:disabled="formDisabled"
 					:options="flags"
 					:class="validateMultiselect('countryFlag')"
 					@select="validate('countryFlag')"
 				>
-					<template slot="singleLabel" slot-scope="props">
+					<template #singleLabel="props">
 						<CountryFlag :country="props.option.code" size="normal" />
 						<span class="option__desc ml-2">
 							<span class="option__title">{{ props.option.value }}</span>
 						</span>
 					</template>
-					<template slot="option" slot-scope="props">
+					<template #option="props">
 						<CountryFlag :country="props.option.code" size="normal" />
 						<div class="option__desc">
 							<span class="option__title">{{ props.option.value }}</span>
@@ -76,18 +76,16 @@
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
-			<button
+			<b-button
 				v-if="closeButton"
-				class="button"
-				type="button"
 				@click="closeForm"
 			>
 				Close
-			</button>
+			</b-button>
 			<b-button
 				v-if="!formDisabled"
 				tag="input"
-				class="is-success"
+				class="is-primary"
 				native-type="submit"
 				:value="submitButtonLabel"
 			/>

@@ -1,3 +1,4 @@
+<!-- TODO Not used for now -->
 <template>
 	<div>
 		<ReportNavbar
@@ -5,6 +6,7 @@
 			@choosePeriodChanged="onChoosePeriodFilterChange"
 		/>
 		<Table
+			has-reset-sort
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -13,6 +15,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
+			@resetSort="resetSort"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -24,10 +27,10 @@
 			<b-table-column
 				label="Actions"
 			>
-				<div class="block">
-					<ActionButton icon="search" type="is-info" tooltip="Show Detail" />
+				<div class="buttons is-right">
+					<ActionButton icon="search" type="is-primary" tooltip="Show Detail" />
 					<ActionButton icon="trash" type="is-danger" tooltip="Delete" />
-					<ActionButton icon="copy" type="is-dark" tooltip="Print" />
+					<ActionButton icon="print" type="is-dark" tooltip="Print" />
 				</div>
 			</b-table-column>
 		</Table>
@@ -60,10 +63,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{
-						key: "name",
-						label: "Name",
-					},
+					{ key: "name", label: "Name" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -104,9 +104,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		goToDetail() {
-			// TODO go to detail
-		},
+		goToDetail() {},
 
 		onPeriodFilterChange(period) {
 			this.selectedPeriod = period;

@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			label="Province"
+			:label="$t('Province')"
 			:type="validateType('adm1Id')"
 			:message="validateMsg('adm1Id', 'Required')"
 		>
@@ -10,7 +10,7 @@
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select')"
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="options.provinces"
@@ -21,14 +21,17 @@
 
 		<b-field>
 			<template #label>
-				District<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('District') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm2Id"
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select')"
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="options.districts"
@@ -38,14 +41,17 @@
 
 		<b-field>
 			<template #label>
-				Commune<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('Commune') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm3Id"
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select')"
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="options.communes"
@@ -55,18 +61,22 @@
 
 		<b-field>
 			<template #label>
-				Village<span class="optional-text has-text-weight-normal is-italic"> - Optional</span>
+				{{ $t('Village') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
 			</template>
 			<MultiSelect
 				v-model="formModel.adm4Id"
+				:key="componentKey"
 				searchable
 				label="name"
 				track-by="id"
-				placeholder="Click to select..."
+				:placeholder="$t('Click to select')"
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="options.villages"
-				@select="validate('adm4Id')"
+				@select="onVillageSelect"
 			/>
 		</b-field>
 	</section>
@@ -80,7 +90,7 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 
 export default {
-	name: "locationForm",
+	name: "LocationForm",
 
 	mixins: [Validation],
 
@@ -95,6 +105,9 @@ export default {
 
 	data() {
 		return {
+			mapping: true,
+			locationId: null,
+			componentKey: 0,
 			options: {
 				provinces: [],
 				districts: [],
@@ -122,7 +135,7 @@ export default {
 	},
 
 	async mounted() {
-		await this.fetchProvinces();
+		await Promise.all([this.fetchProvinces()]);
 		if (this.formModel) {
 			await this.mapLocations();
 		}
@@ -134,22 +147,31 @@ export default {
 			return this.$v.$invalid;
 		},
 
-		onProvinceSelect({ id }) {
+		onProvinceSelect({ id, locationId }) {
+			this.locationId = locationId;
 			this.validate("adm1Id");
 			this.eraseData("adm1");
 			this.fetchDistricts(id);
 		},
 
-		onDistrictSelect({ id }) {
+		onDistrictSelect({ id, locationId }) {
+			this.locationId = locationId;
 			this.validate("adm2Id");
 			this.eraseData("adm2");
 			this.fetchCommunes(id);
 		},
 
-		onCommuneSelect({ id }) {
+		onCommuneSelect({ id, locationId }) {
+			this.locationId = locationId;
 			this.validate("adm3Id");
 			this.eraseData("adm3");
 			this.fetchVillages(id);
+		},
+
+		onVillageSelect({ locationId }) {
+			this.locationId = locationId;
+			this.validate("adm4Id");
+			this.componentKey += 1;
 		},
 
 		async fetchProvinces() {
@@ -157,7 +179,7 @@ export default {
 			await LocationsService.getListOfAdm1()
 				.then((result) => { this.options.provinces = result.data; })
 				.catch((e) => {
-					Notification(`Adm1 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
 				});
 			this.provincesLoading = false;
 		},
@@ -167,7 +189,7 @@ export default {
 			await LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.options.districts = result.data; })
 				.catch((e) => {
-					Notification(`Adm2 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
 				});
 			this.districtsLoading = false;
 		},
@@ -177,7 +199,7 @@ export default {
 			await LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.options.communes = result.data; })
 				.catch((e) => {
-					Notification(`Adm3 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
 				});
 			this.communesLoading = false;
 		},
@@ -187,28 +209,36 @@ export default {
 			await LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.options.villages = result.data; })
 				.catch((e) => {
-					Notification(`Adm4 ${e}`, "is-danger");
+					Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
 		},
 
 		async mapLocations() {
+			this.mapping = true;
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
+				this.locationId = this.formModel.adm1Id.locationId;
 				await this.fetchDistricts(adm1Id);
 			}
 			if (adm2Id && typeof adm2Id !== "object") {
 				this.formModel.adm2Id = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
+				this.locationId = this.formModel.adm2Id.locationId;
 				await this.fetchCommunes(adm2Id);
 			}
 			if (adm3Id && typeof adm3Id !== "object") {
 				this.formModel.adm3Id = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
+				this.locationId = this.formModel.adm3Id.locationId;
 				await this.fetchVillages(adm3Id);
 			}
 			if (adm4Id && typeof adm4Id !== "object") {
 				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
+				this.locationId = this.formModel.adm4Id.locationId;
 			}
+			this.mapping = false;
+			this.$emit("mapped");
+			this.mapping = false;
 		},
 
 		eraseData(type) {

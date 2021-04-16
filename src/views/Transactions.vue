@@ -1,0 +1,53 @@
+<template>
+	<div>
+		<div>
+			<h1 class="title has-text-centered">{{ $t('Transactions') }}</h1>
+			<b-tabs v-model="selectedTab" @input="nextTab">
+				<b-tab-item icon="helicopter" :label="$t('Distributions')">
+					<Distributions v-if="tabs[0]" />
+				</b-tab-item>
+
+				<b-tab-item icon="dollar-sign" :label="$t('Purchases')">
+					<Purchases v-if="tabs[1]" />
+				</b-tab-item>
+
+				<b-tab-item icon="balance-scale" :label="$t('Balances')">
+					<Balances v-if="tabs[2]" />
+				</b-tab-item>
+			</b-tabs>
+		</div>
+	</div>
+</template>
+
+<script>
+import Distributions from "@/components/Transactions/Distributions";
+import Purchases from "@/components/Transactions/Purchases";
+import Balances from "@/components/Transactions/Balances";
+
+export default {
+	name: "TransactionsPage",
+
+	components: {
+		Balances,
+		Purchases,
+		Distributions,
+	},
+
+	data() {
+		return {
+			selectedTab: 0,
+			tabs: {
+				0: true,
+				1: false,
+				2: false,
+			},
+		};
+	},
+
+	methods: {
+		nextTab(data) {
+			this.tabs[data] = true;
+		},
+	},
+};
+</script>

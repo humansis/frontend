@@ -5,7 +5,7 @@
 		alt="Image"
 		:src="image"
 	/>
-	<p v-else>None</p>
+	<p v-else>none</p>
 </template>
 
 <script>
