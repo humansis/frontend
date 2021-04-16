@@ -38,7 +38,8 @@ deploy dev:
     url: https://dev-pin.humansis.org
   <<: *prepare_aws
   script:
-     - ./build-deploy.sh dev
+    - yarn install
+    - ./build-deploy.sh dev
   only:
     - branches
   when: manual
@@ -50,6 +51,7 @@ deploy test:
     url: https://test-pin.humansis.org
   <<: *prepare_aws
   script:
+    - yarn install
     - ./build-deploy.sh test
   only:
     - /^develop$/
@@ -63,6 +65,7 @@ deploy test3:
     url: https://test3.humansis.org
   <<: *prepare_aws
   script:
+    - yarn install
     - ./build-deploy.sh test3
   only:
     - branches
@@ -75,6 +78,7 @@ deploy stage:
     url: https://stage-pin.humansis.org
   <<: *prepare_aws
   script:
+    - yarn install
     - ./build-deploy.sh stage
   only:
     - /^release\/.*$/
