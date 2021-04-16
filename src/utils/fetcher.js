@@ -131,14 +131,14 @@ export const download = async ({ uri }) => {
 
 	const headers = {};
 
-	const user = JSON.parse(localStorage.getItem("user"));
+	const user = getters.getUserFromVuexStorage();
 
 	if (user?.authdata) {
 		headers.Authorization = `Basic ${user.authdata}`;
 	}
 
-	const country = getters.getCountryFromLocalStorage();
-	headers.Country = country?.iso3 || store.state.country.iso3 || CONST.DEFAULT_COUNTRY;
+	const country = getters.getCountryFromVuexStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3;
 
 	const config = {
 		headers,
