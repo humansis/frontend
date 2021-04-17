@@ -2,6 +2,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { mapActions, mapState } from "vuex";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	data() {
@@ -96,7 +97,21 @@ export default {
 		async setAssignedBooklets(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					let booklets = [];
+
+					// TODO Finish this after BE will prepare similar endpoints
+					switch (this.assistance.target) {
+						case consts.TARGET.COMMUNITY:
+							// TODO booklets = this.getBookletsForCommunity(beneficiaryId);
+							break;
+						case consts.TARGET.INSTITUTION:
+							// TODO booklets = await this.getBookletsForInstitution(beneficiaryId);
+							break;
+						case consts.TARGET.HOUSEHOLD:
+						case consts.TARGET.INDIVIDUAL:
+						default:
+							booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
@@ -168,7 +183,22 @@ export default {
 		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
+					let generalReliefItems = [];
+
+					// TODO Finish this after BE will prepare similar endpoints
+					switch (this.assistance.target) {
+						case consts.TARGET.COMMUNITY:
+							// TODO generalReliefItems = this.getGeneralReliefItemsForCommunity(beneficiaryId);
+							break;
+						case consts.TARGET.INSTITUTION:
+							// TODO generalReliefItems =
+							//  await this.getGeneralReliefItemsForInstitution(beneficiaryId);
+							break;
+						case consts.TARGET.HOUSEHOLD:
+						case consts.TARGET.INDIVIDUAL:
+						default:
+							generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
+					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,

@@ -220,6 +220,7 @@ export default {
 					assignVoucherAction: false,
 					checkableTable: false,
 				},
+				visibleColumns: [],
 				householdsAndIndividualEditColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
@@ -236,15 +237,17 @@ export default {
 					{ key: "nationalId", label: "National ID", sortable: true },
 				],
 				communityColumns: [
-					{ key: "name" },
-					{ key: "contactGivenName", label: "Contact Name" },
-					{ key: "contactFamilyName" },
+					{ key: "id", label: "ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactFamilyName", sortable: true },
 				],
 				institutionColumns: [
-					{ key: "name" },
-					{ key: "type" },
-					{ key: "contactGivenName", label: "Contact Name" },
-					{ key: "contactFamilyName" },
+					{ key: "id", label: "ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "type", sortable: true },
+					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactFamilyName", sortable: true },
 				],
 			},
 			addBeneficiaryModal: {
@@ -269,6 +272,12 @@ export default {
 				referralType: null,
 				comment: null,
 				justificationForAdding: null,
+			},
+			communityModel: {
+				// TODO Add community model
+			},
+			institutionModel: {
+				// TODO Add community model
 			},
 			randomSampleSize: 10,
 			assignVoucherModal: {
@@ -304,13 +313,46 @@ export default {
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO Call AssistancesService.getListOfCommunities()
+					await AssistancesService.getListOfCommunities(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					});
 					break;
 				case consts.TARGET.INSTITUTION:
-					// TODO Call AssistancesService.getListOfInstitutions()
+					await AssistancesService.getListOfInstitutions(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					});
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					await AssistancesService.getListOfBeneficiaries(
 						this.$route.params.assistanceId,
 						page || this.table.currentPage,
@@ -344,8 +386,9 @@ export default {
 				case consts.TARGET.INSTITUTION:
 					baseColumns = this.table.institutionColumns;
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					baseColumns = this.isAssistanceDetail
 						? this.table.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
@@ -355,36 +398,37 @@ export default {
 				switch (this.commodities[0]?.modalityType) {
 					case consts.COMMODITY.MOBILE_MONEY:
 						additionalColumns = [
-							{ key: "phone", label: "Phone" },
-							{ key: "status", label: "Status" },
-							{ key: "value", label: "Value" },
+							{ key: "phone" },
+							{ key: "status" },
+							{ key: "value" },
 						];
 						break;
 					case consts.COMMODITY.QR_CODE_VOUCHER:
 						additionalColumns = [
-							{ key: "booklet", label: "Booklet" },
-							{ key: "status", label: "Status" },
-							{ key: "used", label: "Used" },
-							{ key: "value", label: "Value" },
+							{ key: "booklet" },
+							{ key: "status" },
+							{ key: "used" },
+							{ key: "value" },
 						];
 						break;
 					case consts.COMMODITY.SMARTCARD:
 					default:
 						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
 						additionalColumns = [
-							{ key: "distributed", label: "Distributed" },
-							{ key: "value", label: "Value" },
+							{ key: "distributed" },
+							{ key: "value" },
 						];
 				}
 			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
 				additionalColumns = [
-					{ key: "distributed", label: "Distributed" },
-					{ key: "value", label: "Value" },
+					{ key: "distributed" },
+					{ key: "value" },
 				];
 			}
 
+			this.visibleColumns = [...baseColumns, ...additionalColumns];
 			this.table.columns = generateColumns([...baseColumns, ...additionalColumns]);
 		},
 
@@ -396,13 +440,26 @@ export default {
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO Set data to table for COMMUNITY
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
+
+						this.table.data[key] = item;
+					});
+
+					this.table.progress += 15;
 					break;
 				case consts.TARGET.INSTITUTION:
-					// TODO Set data to table for INSTITUTION
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
+
+						this.table.data[key] = item;
+					});
+
+					this.table.progress += 15;
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					data.forEach((item, key) => {
 						beneficiaryIds.push(item.id);
 
