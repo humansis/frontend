@@ -52,6 +52,23 @@
 				@formClosed="closeBeneficiaryModal"
 			/>
 		</Modal>
+		<Modal
+			can-cancel
+			:header="institutionModal.isEditing ? $t('Edit This Institution')
+				: $t('Detail of Institution')"
+			:active="institutionModal.isOpened"
+			@close="closeInstitutionModal"
+		>
+			<EditInstitutionForm
+				close-button
+				:submit-button-label="$t('Save')"
+				class="modal-card"
+				:disabled="!institutionModal.isEditing"
+				:formModel="institutionModel"
+				@formSubmitted="submitEditInstitutionForm"
+				@formClosed="closeInstitutionModal"
+			/>
+		</Modal>
 		<div class="buttons space-between">
 			<b-button
 				v-if="addButton"
@@ -165,6 +182,7 @@ import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
+import EditInstitutionForm from "@/components/Assistance/BeneficiariesList/EditInstitutionForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
@@ -193,6 +211,7 @@ export default {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
+		EditInstitutionForm,
 		Table,
 		ActionButton,
 		Modal,
@@ -262,6 +281,10 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			},
+			institutionModal: {
+				isOpened: false,
+				isEditing: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -277,7 +300,10 @@ export default {
 				// TODO Add community model
 			},
 			institutionModel: {
-				// TODO Add community model
+				addressStreet: null,
+				addressNumber: null,
+				addressPostCode: null,
+				notes: null,
 			},
 			randomSampleSize: 10,
 			assignVoucherModal: {

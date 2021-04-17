@@ -316,6 +316,36 @@ export default {
 		},
 
 		showDetail(beneficiary) {
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO
+					break;
+				case consts.TARGET.INSTITUTION:
+					this.showInstitutionDetail(beneficiary);
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					this.showBeneficiaryDetail(beneficiary);
+			}
+		},
+
+		showEdit({ id }) {
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					// TODO
+					break;
+				case consts.TARGET.INSTITUTION:
+					this.showInstitutionEdit(id);
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					this.showBeneficiaryEdit(id);
+			}
+		},
+
+		showBeneficiaryDetail(beneficiary) {
 			this.beneficiaryModel = {
 				...beneficiary,
 				dateOfBirth: new Date(beneficiary.dateOfBirth),
@@ -326,9 +356,30 @@ export default {
 			};
 		},
 
-		showEdit({ id }) {
-			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
+		showInstitutionDetail(institution) {
+			this.institutionModel = institution;
+			this.institutionModal = {
+				isOpened: true,
+				isEditing: false,
+			};
+		},
+
+		showBeneficiaryEdit(id) {
+			const beneficiary = this.table.data.find((item) => item.id === id);
+			this.beneficiaryModel = {
+				...beneficiary,
+				dateOfBirth: new Date(beneficiary.dateOfBirth),
+			};
 			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: true,
+			};
+		},
+
+		showInstitutionEdit(id) {
+			this.institutionModel = this.table.data.find((item) => item.id === id);
+			console.log(this.institutionModel);
+			this.institutionModal = {
 				isOpened: true,
 				isEditing: true,
 			};
@@ -336,6 +387,13 @@ export default {
 
 		closeBeneficiaryModal() {
 			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+		},
+
+		closeInstitutionModal() {
+			this.institutionModal = {
 				isOpened: false,
 				isEditing: false,
 			};
@@ -363,6 +421,15 @@ export default {
 		async submitEditBeneficiaryForm() {
 			// TODO Update Beneficiary in this assistance
 			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+			await this.reloadBeneficiariesList();
+		},
+
+		async submitEditInstitutionForm() {
+			// TODO Update Institution in this assistance
+			this.institutionModal = {
 				isOpened: false,
 				isEditing: false,
 			};
