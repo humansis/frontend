@@ -82,7 +82,7 @@
 					type="is-primary"
 					space-between
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportAssistance"
+					@exportData="exportAssistances"
 				/>
 			</template>
 			<template #progress>
