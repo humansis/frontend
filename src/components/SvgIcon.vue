@@ -28,7 +28,7 @@ export default {
 		...mapState(["icons"]),
 
 		selectedIcons() {
-			return this.items?.length ? this.icons
+			return (this.items?.length && this.icons?.length) ? this.icons
 				.filter((icon) => this.items.find((item) => item === icon.key)) : [];
 		},
 	},
