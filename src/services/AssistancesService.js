@@ -138,6 +138,30 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfCommunities(id, page, size, sort, search = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${id}/communities?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getListOfInstitutions(id, page, size, sort, search = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances/${id}/institutions?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
+
 	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,

@@ -70,8 +70,8 @@
 		<BeneficiariesList
 			ref="beneficiariesList"
 			export-button
-			add-button
 			isAssistanceDetail
+			:add-button="isAddButtonVisible"
 			:assistance="assistance"
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
@@ -185,16 +185,17 @@ export default {
 			return "";
 		},
 
+		isAddButtonVisible() {
+			return this.assistance?.target === consts.TARGET.INDIVIDUAL
+				|| this.assistance?.target === consts.TARGET.HOUSEHOLD;
+		},
+
 		isAssistanceValidated() {
 			return this.assistance?.validated;
 		},
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
-		},
-
-		typeOfAssistance() {
-			return this.assistance?.type;
 		},
 
 		typeOfCommodity() {

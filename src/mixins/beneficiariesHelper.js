@@ -2,6 +2,8 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { mapActions, mapState } from "vuex";
+import consts from "@/utils/assistanceConst";
+import AddressService from "@/services/AddressService";
 
 export default {
 	data() {
@@ -96,7 +98,21 @@ export default {
 		async setAssignedBooklets(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					let booklets = [];
+
+					// TODO Finish this after BE will prepare similar endpoints
+					switch (this.assistance.target) {
+						case consts.TARGET.COMMUNITY:
+							// TODO booklets = this.getBookletsForCommunity(beneficiaryId);
+							break;
+						case consts.TARGET.INSTITUTION:
+							// TODO booklets = await this.getBookletsForInstitution(beneficiaryId);
+							break;
+						case consts.TARGET.HOUSEHOLD:
+						case consts.TARGET.INDIVIDUAL:
+						default:
+							booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
@@ -168,7 +184,22 @@ export default {
 		async setAssignedGeneralRelief(beneficiaryIds) {
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
+					let generalReliefItems = [];
+
+					// TODO Finish this after BE will prepare similar endpoints
+					switch (this.assistance.target) {
+						case consts.TARGET.COMMUNITY:
+							// TODO generalReliefItems = this.getGeneralReliefItemsForCommunity(beneficiaryId);
+							break;
+						case consts.TARGET.INSTITUTION:
+							// TODO generalReliefItems =
+							//  await this.getGeneralReliefItemsForInstitution(beneficiaryId);
+							break;
+						case consts.TARGET.HOUSEHOLD:
+						case consts.TARGET.INDIVIDUAL:
+						default:
+							generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
+					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
 						({ id }) => id === beneficiaryId,
@@ -285,16 +316,149 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
+		showDetail(beneficiary) {
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					this.showCommunityDetail(beneficiary);
+					break;
+				case consts.TARGET.INSTITUTION:
+					this.showInstitutionDetail(beneficiary);
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					this.showBeneficiaryDetail(beneficiary);
+			}
+		},
+
 		showEdit({ id }) {
-			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					this.showCommunityEdit(id);
+					break;
+				case consts.TARGET.INSTITUTION:
+					this.showInstitutionEdit(id);
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					this.showBeneficiaryEdit(id);
+			}
+		},
+
+		showBeneficiaryDetail(beneficiary) {
+			this.beneficiaryModel = {
+				...beneficiary,
+				dateOfBirth: new Date(beneficiary.dateOfBirth),
+			};
+			this.beneficiaryModal = {
+				isOpened: true,
+				isEditing: false,
+			};
+		},
+
+		async showInstitutionDetail(institution) {
+			this.institutionModal = {
+				isOpened: true,
+				isEditing: false,
+				isWaiting: true,
+			};
+
+			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+
+			this.institutionModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.institutionModal.isWaiting = false;
+		},
+
+		async showCommunityDetail(community) {
+			this.communityModal = {
+				isOpened: true,
+				isEditing: false,
+				isWaiting: true,
+			};
+
+			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
+
+			this.communityModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.communityModal.isWaiting = false;
+		},
+
+		showBeneficiaryEdit(id) {
+			const beneficiary = this.table.data.find((item) => item.id === id);
+			this.beneficiaryModel = {
+				...beneficiary,
+				dateOfBirth: new Date(beneficiary.dateOfBirth),
+			};
 			this.beneficiaryModal = {
 				isOpened: true,
 				isEditing: true,
 			};
 		},
 
+		async showInstitutionEdit(id) {
+			this.institutionModal = {
+				isOpened: true,
+				isEditing: true,
+				isWaiting: true,
+			};
+
+			const institution = this.table.data.find((item) => item.id === id);
+			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+
+			this.institutionModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.institutionModal.isWaiting = false;
+		},
+
+		async showCommunityEdit(id) {
+			this.communityModal = {
+				isOpened: true,
+				isEditing: true,
+				isWaiting: true,
+			};
+
+			const community = this.table.data.find((item) => item.id === id);
+			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
+
+			this.communityModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.communityModal.isWaiting = false;
+		},
+
 		closeBeneficiaryModal() {
 			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+		},
+
+		closeInstitutionModal() {
+			this.institutionModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+		},
+
+		closeCommunityModal() {
+			this.communityModal = {
 				isOpened: false,
 				isEditing: false,
 			};
@@ -322,6 +486,24 @@ export default {
 		async submitEditBeneficiaryForm() {
 			// TODO Update Beneficiary in this assistance
 			this.beneficiaryModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+			await this.reloadBeneficiariesList();
+		},
+
+		async submitEditInstitutionForm() {
+			// TODO Update Institution in this assistance
+			this.institutionModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+			await this.reloadBeneficiariesList();
+		},
+
+		async submitEditCommunityForm() {
+			// TODO Update Community in this assistance
+			this.communityModal = {
 				isOpened: false,
 				isEditing: false,
 			};
@@ -361,6 +543,11 @@ export default {
 				this.table.sortDirection = "";
 				await this.reloadBeneficiariesList();
 			}
+		},
+
+		getAddress(id) {
+			return AddressService.getAddress(id)
+				.then((response) => response);
 		},
 	},
 };
