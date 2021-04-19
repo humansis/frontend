@@ -12,7 +12,7 @@ async function getErrorsFromResponse(data) {
 			errors += `${error.message} (${error.source}), `;
 		});
 	}
-	// Please remove this code before release because it reads
+	// TODO Please remove this code before release because it reads
 	// data that is not supposed to be visible for user
 	if (data.debug && data.debug.length) {
 		data.debug.forEach((debug) => {
@@ -44,7 +44,9 @@ export const getResponseJSON = async (response, download = false) => {
 	if (notFound) {
 		throw new Error(response.statusText);
 	}
+
 	let data = null;
+
 	if (download) {
 		data = await response.blob();
 	} else {
@@ -58,8 +60,8 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
-	const url = `${CONST.API}/${uri}`;
+export const fetcher = async ({ uri, jwt = false, auth = true, method, body, contentType }) => {
+	const url = jwt ? `${CONST.API_JWT}/${uri}` : `${CONST.API}/${uri}`;
 
 	let headers = {};
 
@@ -147,6 +149,7 @@ export const download = async ({ uri }) => {
 
 export const filtersToUri = (filters) => {
 	let query = "";
+
 	Object.keys(filters).forEach((key) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
@@ -156,6 +159,7 @@ export const filtersToUri = (filters) => {
 			query += `&filter[${key}]=${filters[key]}`;
 		}
 	});
+
 	return query;
 };
 

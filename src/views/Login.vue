@@ -16,13 +16,13 @@
 							<b-field
 								label="Username"
 								label-position="inside"
-								:type="validateType('login')"
-								:message="validateMsg('login', 'Required')"
+								:type="validateType('username')"
+								:message="validateMsg('username', 'Required')"
 							>
 								<b-input
-									v-model="formModel.login"
+									v-model="formModel.username"
 									autofocus
-									@blur="validate('login')"
+									@blur="validate('username')"
 								/>
 							</b-field>
 
@@ -70,7 +70,7 @@ export default {
 	data() {
 		return {
 			formModel: {
-				login: "",
+				username: "",
 				password: "",
 			},
 			loginButtonLoading: false,
@@ -81,7 +81,7 @@ export default {
 
 	validations: {
 		formModel: {
-			login: {
+			username: {
 				required,
 			},
 			password: {
@@ -122,8 +122,12 @@ export default {
 					// TODO Uncomment this after login will be implemented by BE
 					const user = {};
 
+					console.log("LOGIN");
+					console.log(response);
+
 					// TODO Different usage of window.btoa with credentials -> after BE will work
-					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
+					// user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
+					user.authdata = null;
 					user.role = "ROLE_ADMIN";
 
 					await this.storeUser(user);
