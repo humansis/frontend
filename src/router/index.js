@@ -60,6 +60,9 @@ const routes = [
 					{
 						path: "/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
+						meta: {
+							breadcrumb: "Project",
+						},
 						children: [
 							{
 								path: "",
@@ -68,7 +71,6 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: [],
-									breadcrumb: "Project",
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
@@ -122,6 +124,7 @@ const routes = [
 						path: "households",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
+							breadcrumb: "Households",
 							parent: "Beneficiaries",
 						},
 						children: [
@@ -132,7 +135,6 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: [],
-									breadcrumb: "Households",
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
