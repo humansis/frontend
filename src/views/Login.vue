@@ -63,6 +63,8 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
+/* eslint-disable camelcase */
+import jwt_decode from "jwt-decode";
 
 export default {
 	name: "Login",
@@ -119,21 +121,16 @@ export default {
 
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
-					// TODO Uncomment this after login will be implemented by BE
-					const user = {};
+					const { data: { token } } = response;
 
-					console.log("LOGIN");
-					console.log(response);
-
-					// TODO Different usage of window.btoa with credentials -> after BE will work
-					// user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					user.authdata = null;
-					user.role = "ROLE_ADMIN";
+					const user = await jwt_decode(token);
+					user.token = token;
 
 					await this.storeUser(user);
 
-					const { privileges } = await LoginService.getRolePermissions(user.role)
-						.then(({ data }) => data);
+					const { privileges } = user.roles?.[0]
+						? await LoginService.getRolePermissions(user.roles[0]) : {}
+							.then(({ data }) => data);
 
 					await this.storePermissions(privileges);
 

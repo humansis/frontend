@@ -73,8 +73,8 @@ export const fetcher = async ({ uri, jwt = false, auth = true, method, body, con
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Basic ${user.token}`;
 		}
 	}
 
@@ -104,8 +104,8 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Basic ${user.token}`;
 		}
 	}
 
@@ -130,8 +130,8 @@ export const download = async ({ uri }) => {
 
 	const user = getters.getUserFromVuexStorage();
 
-	if (user?.authdata) {
-		headers.Authorization = `Basic ${user.authdata}`;
+	if (user?.token) {
+		headers.Authorization = `Basic ${user.token}`;
 	}
 
 	const country = getters.getCountryFromVuexStorage();
