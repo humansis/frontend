@@ -163,7 +163,7 @@ import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBen
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
@@ -453,16 +453,6 @@ export default {
 			this.setAssignedGeneralRelief(beneficiaryIds);
 		},
 
-		getGeneralReliefForBeneficiary(beneficiaryId) {
-			return AssistancesService
-				.getGeneralReliefItemsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId, beneficiaryId,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
-				});
-		},
-
 		async exportData(format) {
 			this.exportLoading = true;
 			if (!this.changeButton) {
@@ -491,28 +481,6 @@ export default {
 					});
 			}
 			this.exportLoading = false;
-		},
-
-		async removeBeneficiaryFromAssistance({ justification, removingId }) {
-			const body = {
-				beneficiaryIds: [removingId],
-				justification,
-			};
-
-			await BeneficiariesService
-				.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
-				.then(() => {
-					Toast(this.$t("Beneficiary Successfully Removed"), "is-success");
-					this.fetchData();
-				})
-				.catch((e) => {
-					Notification(
-						`${this.$t("Beneficiary")} ${e}`,
-						"is-danger",
-					);
-				});
-
-			this.closeAddBeneficiaryModal();
 		},
 	},
 };
