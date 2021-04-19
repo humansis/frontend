@@ -1,4 +1,4 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getSummariesForProject(id, code) {
@@ -41,5 +41,12 @@ export default {
 	async deleteProject(id) {
 		const { data, status } = await fetcher({ uri: `projects/${id}`, method: "DELETE" });
 		return { data, status };
+	},
+
+	async exportProjects(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `projects/exports?${formatText}` });
+		return { data };
 	},
 };

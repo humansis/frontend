@@ -158,15 +158,6 @@
 				</b-button>
 			</template>
 
-			<template #export>
-				<ExportButton
-					class="ml-3"
-					space-between
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportHousehold"
-				/>
-			</template>
-
 			<template v-if="actionsButtonVisible" #actions>
 				<div class="column">
 					<b-dropdown aria-role="list">
@@ -212,7 +203,6 @@ import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 
@@ -223,7 +213,6 @@ export default {
 
 	components: {
 		HouseholdDetail,
-		ExportButton,
 		Table,
 		ActionButton,
 		HouseholdsFilters,
@@ -236,6 +225,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			advancedSearchVisible: false,
 			table: {
 				data: [],
@@ -603,11 +593,6 @@ export default {
 					Toast(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 			}
-		},
-
-		exportHousehold(format) {
-			console.log(format);
-			console.log(this.$refs.householdList.checkedRows);
 		},
 
 		async onFiltersChange(selectedFilters) {

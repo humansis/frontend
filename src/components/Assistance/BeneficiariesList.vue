@@ -77,12 +77,6 @@
 					icon-right="percent"
 				/>
 			</b-field>
-			<ExportButton
-				v-if="exportButton"
-				class="is-pulled-right"
-				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-				@exportData="exportAssistance"
-			/>
 		</div>
 		<Table
 			has-reset-sort
@@ -117,8 +111,10 @@
 			<template #export>
 				<ExportButton
 					v-if="exportButton"
+					type="is-primary"
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-					@exportData="exportAssistance"
+					@onExport="exportData"
 				/>
 			</template>
 			<b-table-column
@@ -169,6 +165,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
@@ -204,6 +201,8 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
+			advancedSearchVisible: false,
 			commodities: [],
 			table: {
 				data: [],
@@ -452,6 +451,36 @@ export default {
 
 		settingsOfBeneficiaryActivity(beneficiaryIds) {
 			this.setAssignedGeneralRelief(beneficiaryIds);
+		},
+
+		async exportData(format) {
+			this.exportLoading = true;
+			if (!this.changeButton) {
+				await BeneficiariesService.exportBeneficiaries(format, this.$route.params.assistanceId)
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			} else {
+				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			}
+			this.exportLoading = false;
 		},
 	},
 };

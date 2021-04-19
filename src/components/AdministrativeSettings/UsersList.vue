@@ -56,7 +56,10 @@
 		<template #export>
 			<ExportButton
 				space-between
+				type="is-primary"
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportUsers"
 			/>
 		</template>
 	</Table>
@@ -86,6 +89,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -149,6 +153,22 @@ export default {
 
 		sendHistory(id) {
 			UsersService.sendHistory(id);
+		},
+
+		async exportUsers(format) {
+			this.exportLoading = true;
+			await UsersService.exportUsers(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `users.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };
