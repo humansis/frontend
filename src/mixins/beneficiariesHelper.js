@@ -3,6 +3,7 @@ import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { mapActions, mapState } from "vuex";
 import consts from "@/utils/assistanceConst";
+import AddressService from "@/services/AddressService";
 
 export default {
 	data() {
@@ -356,20 +357,40 @@ export default {
 			};
 		},
 
-		showInstitutionDetail(institution) {
-			this.institutionModel = institution;
+		async showInstitutionDetail(institution) {
 			this.institutionModal = {
 				isOpened: true,
 				isEditing: false,
+				isWaiting: true,
 			};
+
+			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+
+			this.institutionModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.institutionModal.isWaiting = false;
 		},
 
-		showCommunityDetail(community) {
-			this.communitynModel = community;
+		async showCommunityDetail(community) {
 			this.communityModal = {
 				isOpened: true,
 				isEditing: false,
+				isWaiting: true,
 			};
+
+			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
+
+			this.communityModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.communityModal.isWaiting = false;
 		},
 
 		showBeneficiaryEdit(id) {
@@ -384,20 +405,42 @@ export default {
 			};
 		},
 
-		showInstitutionEdit(id) {
-			this.institutionModel = this.table.data.find((item) => item.id === id);
+		async showInstitutionEdit(id) {
 			this.institutionModal = {
 				isOpened: true,
 				isEditing: true,
+				isWaiting: true,
 			};
+
+			const institution = this.table.data.find((item) => item.id === id);
+			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+
+			this.institutionModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.institutionModal.isWaiting = false;
 		},
 
-		showCommunityEdit(id) {
-			this.communityModel = this.table.data.find((item) => item.id === id);
+		async showCommunityEdit(id) {
 			this.communityModal = {
 				isOpened: true,
 				isEditing: true,
+				isWaiting: true,
 			};
+
+			const community = this.table.data.find((item) => item.id === id);
+			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
+
+			this.communityModel = {
+				addressStreet: address?.street,
+				addressNumber: address?.number,
+				addressPostCode: address?.postcode,
+			};
+
+			this.communityModal.isWaiting = false;
 		},
 
 		closeBeneficiaryModal() {
@@ -500,6 +543,11 @@ export default {
 				this.table.sortDirection = "";
 				await this.reloadBeneficiariesList();
 			}
+		},
+
+		getAddress(id) {
+			return AddressService.getAddress(id)
+				.then((response) => response);
 		},
 	},
 };

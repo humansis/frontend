@@ -26,7 +26,7 @@
 				<template #label>
 					{{ $t('Notes') }}
 				</template>
-				<b-input v-model="formModel.notes" />
+				<b-input v-model="notes" />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
@@ -55,9 +55,15 @@ export default {
 		disabled: Boolean,
 	},
 
+	data() {
+		return {
+			notes: "",
+		};
+	},
+
 	methods: {
 		submitForm() {
-			this.$emit("formSubmitted", this.formModel);
+			this.$emit("formSubmitted", this.notes);
 		},
 
 		closeForm() {

@@ -40,6 +40,7 @@
 			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
 				: $t('Detail of Beneficiary')"
 			:active="beneficiaryModal.isOpened"
+			:is-waiting="beneficiaryModal.isWaiting"
 			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
@@ -57,6 +58,7 @@
 			:header="institutionModal.isEditing ? $t('Edit This Institution')
 				: $t('Detail of Institution')"
 			:active="institutionModal.isOpened"
+			:is-waiting="institutionModal.isWaiting"
 			@close="closeInstitutionModal"
 		>
 			<EditInstitutionForm
@@ -74,6 +76,7 @@
 			:header="communityModal.isEditing ? $t('Edit This Community')
 				: $t('Detail of Community')"
 			:active="communityModal.isOpened"
+			:is-waiting="communityModal.isWaiting"
 			@close="closeCommunityModal"
 		>
 			<EditCommunityForm
@@ -302,14 +305,17 @@ export default {
 			beneficiaryModal: {
 				isOpened: false,
 				isEditing: false,
+				isWaiting: false,
 			},
 			institutionModal: {
 				isOpened: false,
 				isEditing: false,
+				isWaiting: false,
 			},
 			communityModal: {
 				isOpened: false,
 				isEditing: false,
+				isWaiting: false,
 			},
 			beneficiaryModel: {
 				firstName: null,
@@ -326,13 +332,11 @@ export default {
 				addressStreet: null,
 				addressNumber: null,
 				addressPostCode: null,
-				notes: null,
 			},
 			communityModel: {
 				addressStreet: null,
 				addressNumber: null,
 				addressPostCode: null,
-				notes: null,
 			},
 			randomSampleSize: 10,
 			assignVoucherModal: {
