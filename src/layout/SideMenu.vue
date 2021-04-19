@@ -6,7 +6,9 @@
 	>
 		<div ref="container" class="aside-container">
 			<div class="image">
-				<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
+				<router-link to="/">
+					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
+				</router-link>
 			</div>
 			<div class="menu">
 				<b-menu>
