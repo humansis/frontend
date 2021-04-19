@@ -501,7 +501,7 @@ export default {
 						this.table.data[key] = item;
 					});
 
-					this.table.progress += 15;
+					this.table.progress += 85;
 					break;
 				case consts.TARGET.INSTITUTION:
 					data.forEach((item, key) => {
@@ -510,7 +510,7 @@ export default {
 						this.table.data[key] = item;
 					});
 
-					this.table.progress += 15;
+					this.table.progress += 85;
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
