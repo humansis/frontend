@@ -231,7 +231,6 @@ export default {
 
 	data() {
 		return {
-			exportLoading: false,
 			advancedSearchVisible: false,
 			table: {
 				data: [],
