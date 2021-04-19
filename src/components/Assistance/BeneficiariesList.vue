@@ -569,19 +569,6 @@ export default {
 			}
 			this.exportLoading = false;
 		},
-
-		showDetail(beneficiary) {
-			if (this.userCan.viewBeneficiary) {
-				this.beneficiaryModel = {
-					...beneficiary,
-					dateOfBirth: new Date(beneficiary.dateOfBirth),
-				};
-				this.beneficiaryModal = {
-					isOpened: true,
-					isEditing: false,
-				};
-			}
-		},
 	},
 };
 </script>
