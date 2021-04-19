@@ -12,4 +12,5 @@ export default {
 	getCountryFromVuexStorage: () => parseVuexStorageValue("country"),
 	getLanguageFromVuexStorage: () => parseVuexStorageValue("language"),
 	getTranslationsFromVuexStorage: () => parseVuexStorageValue("translations"),
+	getPermissionsFromVuexStorage: () => parseVuexStorageValue("permissions"),
 };

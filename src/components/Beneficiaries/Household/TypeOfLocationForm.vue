@@ -124,6 +124,8 @@ import AddressService from "@/services/AddressService";
 export default {
 	name: "TypeOfLocationForm",
 
+	mixins: [Validation],
+
 	props: {
 		formModel: Object,
 		isEditing: {
@@ -131,8 +133,6 @@ export default {
 			default: false,
 		},
 	},
-
-	mixins: [Validation],
 
 	watch: {
 		formModel: "mapLocations",

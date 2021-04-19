@@ -32,6 +32,14 @@ export default {
 		state.isAsideExpanded = isExpand;
 	},
 
+	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
+		const permissionsCopy = { ...state.permissions };
+
+		Object.keys(permissionsCopy).forEach((permission) => {
+			state.permissions[permission] = permissions.includes(permission);
+		});
+	},
+
 	[CONST.STORE_COUNTRIES]: (state, countries) => {
 		state.countries = countries;
 	},
@@ -48,10 +56,6 @@ export default {
 		state.translations = translations;
 	},
 
-	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
-		state.permissions = permissions;
-	},
-
 	[CONST.APP_LOADING]: (state, boolean) => {
 		state.isAppLoading = boolean;
 	},
@@ -66,6 +70,11 @@ export default {
 
 	[CONST.LOGOUT]: (state) => {
 		state.user = null;
+		const permissionsCopy = { ...state.permissions };
+
+		Object.keys(permissionsCopy).forEach((permission) => {
+			state.permissions[permission] = false;
+		});
 	},
 
 	[CONST.STORE_ICONS]: (state, icons) => {

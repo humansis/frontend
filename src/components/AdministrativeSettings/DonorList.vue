@@ -38,11 +38,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.addEditDonors"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.addEditDonors"
 					icon="trash"
 					:entity="$t('Donor')"
 					:id="props.row.id"
@@ -73,6 +75,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DonorList",
@@ -85,7 +88,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {

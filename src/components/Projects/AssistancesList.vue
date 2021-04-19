@@ -35,34 +35,41 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
-						v-if="!props.row.validated"
+						v-if="!props.row.validated
+							&& userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Edit')"
 						@click.native="showEdit(props.row.id)"
 					/>
 					<ActionButton
-						v-if="!props.row.validated"
+						v-if="!props.row.validated
+							&& userCan.editDistribution"
 						icon="edit"
 						:tooltip="$t('Update')"
 						@click.native="goToUpdate(props.row.id)"
 					/>
 					<ActionButton
-						v-if="props.row.validated && !props.row.completed"
+						v-if="props.row.validated
+							&& !props.row.completed
+							&& (userCan.editDistribution
+								|| userCan.viewDistribution )"
 						icon="lock"
 						type="is-warning"
 						:tooltip="$t('Update')"
 						@click.native="goToDetail(props.row.id)"
 					/>
 					<ActionButton
-						v-if="props.row.completed"
+						v-if="props.row.completed
+							&& (userCan.editDistribution
+								|| userCan.viewDistribution)"
 						icon="check"
 						type="is-success"
 						:tooltip="$t('View')"
 						@click.native="goToDetail(props.row.id)"
 					/>
 					<SafeDelete
-						v-if="!props.row.validated"
+						v-if="!props.row.validated && userCan.deleteDistribution"
 						icon="trash"
 						:entity="$t('Assistance')"
 						:tooltip="$t('Delete')"
@@ -70,6 +77,7 @@
 						@submitted="$emit('onRemove', $event)"
 					/>
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="copy"
 						type="is-dark"
 						:tooltip="$t('Duplicate')"
@@ -104,6 +112,7 @@ import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "AssistancesList",
@@ -120,7 +129,7 @@ export default {
 		upcoming: Boolean,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [permissions, grid, baseHelper],
 
 	data() {
 		return {

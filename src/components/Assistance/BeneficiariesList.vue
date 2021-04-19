@@ -54,7 +54,7 @@
 		</Modal>
 		<div class="buttons space-between">
 			<b-button
-				v-if="addButton"
+				v-if="addButton && userCan.editDistribution"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null)"
@@ -110,7 +110,7 @@
 			</template>
 			<template #export>
 				<ExportButton
-					v-if="exportButton"
+					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
@@ -126,19 +126,22 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
 						@click.native="showEdit(props.row)"
 					/>
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 					<ActionButton
-						v-if="table.settings.assignVoucherAction"
+						v-if="table.settings.assignVoucherAction
+							&& userCan.assignDistributionItems"
 						icon="qrcode"
 						type="is-dark"
 						:disabled="!props.row.canAssignVoucher"
@@ -170,6 +173,7 @@ import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "BeneficiariesList",
@@ -197,7 +201,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [baseHelper, beneficiariesHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper],
 
 	data() {
 		return {
@@ -481,6 +485,19 @@ export default {
 					});
 			}
 			this.exportLoading = false;
+		},
+
+		showDetail(beneficiary) {
+			if (this.userCan.viewBeneficiary) {
+				this.beneficiaryModel = {
+					...beneficiary,
+					dateOfBirth: new Date(beneficiary.dateOfBirth),
+				};
+				this.beneficiaryModal = {
+					isOpened: true,
+					isEditing: false,
+				};
+			}
 		},
 	},
 };

@@ -285,17 +285,6 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		showDetail(beneficiary) {
-			this.beneficiaryModel = {
-				...beneficiary,
-				dateOfBirth: new Date(beneficiary.dateOfBirth),
-			};
-			this.beneficiaryModal = {
-				isOpened: true,
-				isEditing: false,
-			};
-		},
-
 		showEdit({ id }) {
 			this.beneficiaryModel = this.table.data.find((item) => item.id === id);
 			this.beneficiaryModal = {

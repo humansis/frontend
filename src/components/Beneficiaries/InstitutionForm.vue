@@ -306,7 +306,9 @@ import LocationForm from "@/components/LocationForm";
 
 export default {
 	name: "InstitutionForm",
+
 	components: { LocationForm },
+
 	mixins: [Validation],
 
 	props: {

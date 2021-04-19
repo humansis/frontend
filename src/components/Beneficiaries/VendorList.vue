@@ -35,11 +35,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.addEditVendors"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.addEditVendors"
 					icon="trash"
 					:entity="$t('Vendor')"
 					:tooltip="$t('Delete')"
@@ -71,6 +73,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import UsersService from "@/services/UsersService";
 import baseHelper from "@/mixins/baseHelper";
+import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 
 export default {
@@ -83,7 +86,7 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [grid, baseHelper, permissions],
 
 	data() {
 		return {

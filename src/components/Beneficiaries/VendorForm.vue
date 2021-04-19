@@ -164,9 +164,9 @@ import Validation from "@/mixins/validation";
 export default {
 	name: "vendorForm",
 
-	mixins: [Validation],
-
 	components: { locationForm },
+
+	mixins: [Validation],
 
 	props: {
 		formModel: Object,

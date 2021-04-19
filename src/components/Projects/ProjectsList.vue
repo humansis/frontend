@@ -37,11 +37,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.editProject"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="edit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.deleteProject"
 					icon="trash"
 					:entity="$t('Project')"
 					:tooltip="$t('Delete')"
@@ -74,12 +76,11 @@ import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
+import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "ProjectList",
-
-	mixins: [grid, baseHelper],
 
 	components: {
 		ExportButton,
@@ -89,6 +90,8 @@ export default {
 		ColumnField,
 	},
 
+	mixins: [permissions, grid, baseHelper],
+
 	data() {
 		return {
 			exportLoading: false,
@@ -97,7 +100,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", width: "90", sortable: true },
-					{ key: "name", width: "434", sortable: true },
+					{ key: "name", width: "200", sortable: true },
 					{ key: "sectors", width: "150", type: "svgIcon" },
 					{ key: "startDate", type: "datetime", width: "120", sortable: true },
 					{ key: "endDate", type: "datetime", width: "120", sortable: true },
@@ -190,7 +193,7 @@ export default {
 		},
 
 		goToDetail(project) {
-			this.$router.push({ name: "Project", params: { projectId: project.id } });
+			if (this.userCan.viewProject) this.$router.push({ name: "Project", params: { projectId: project.id } });
 		},
 
 		edit(id) {

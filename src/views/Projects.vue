@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addProject"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewProject"
@@ -51,6 +52,7 @@ import ProjectService from "@/services/ProjectService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import ProjectList from "@/components/Projects/ProjectsList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "ProjectPage",
@@ -60,6 +62,8 @@ export default {
 		Modal,
 		ProjectForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

@@ -63,7 +63,7 @@
 						{{ $t('Next') }}
 					</b-button>
 					<b-button
-						v-if="activeStep === 3"
+						v-if="activeStep === 3 && userCan.editBeneficiary"
 						type="is-primary"
 						icon-left="save"
 						:loading="saveButtonLoading"
@@ -87,6 +87,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "HouseholdTabs",
@@ -102,6 +103,8 @@ export default {
 		Members,
 		Summary,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

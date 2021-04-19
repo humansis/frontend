@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addEditProducts"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewProduct"
@@ -51,6 +52,7 @@ import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Toast } from "@/utils/UI";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "ProductPage",
@@ -60,6 +62,8 @@ export default {
 		Modal,
 		ProductForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {
