@@ -110,7 +110,7 @@
 			</template>
 			<template #export>
 				<ExportButton
-					v-if="exportButton"
+					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"

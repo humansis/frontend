@@ -35,9 +35,9 @@ export default {
 		deleteBeneficiary: false,
 		viewBeneficiary: false,
 		importBeneficiaries: false,
-		exportBeneficiaries: false, // TODO Add for export button in Beneficiaries
+		exportBeneficiaries: false,
 		viewVouchers: false,
-		exportPrintVouchers: false, // TODO Add for export button in Vouchers
+		exportPrintVouchers: false,
 		addVouchers: false,
 		viewVendors: false,
 		addEditVendors: false,

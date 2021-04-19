@@ -46,7 +46,12 @@
 					:id="props.row.id"
 					@submitted="remove"
 				/>
-				<ActionButton icon="print" type="is-dark" :tooltip="$t('Print')" />
+				<ActionButton
+					v-if="userCan.exportPrintVouchers"
+					icon="print"
+					type="is-dark"
+					:tooltip="$t('Print')"
+				/>
 			</div>
 		</b-table-column>
 		<template #filterButton>
@@ -70,6 +75,7 @@
 		</template>
 		<template #export>
 			<ExportButton
+				v-if="userCan.exportPrintVouchers"
 				class="ml-3"
 				space-between
 				type="is-primary"
@@ -94,6 +100,7 @@ import VoucherFilters from "@/components/Voucher/VoucherFilters";
 import voucherHelper from "@/mixins/voucherHelper";
 import { Notification } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "VoucherList",
@@ -107,7 +114,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, voucherHelper],
+	mixins: [permissions, grid, voucherHelper],
 
 	data() {
 		return {
