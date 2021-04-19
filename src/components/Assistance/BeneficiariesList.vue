@@ -69,6 +69,23 @@
 				@formClosed="closeInstitutionModal"
 			/>
 		</Modal>
+		<Modal
+			can-cancel
+			:header="communityModal.isEditing ? $t('Edit This Community')
+				: $t('Detail of Community')"
+			:active="communityModal.isOpened"
+			@close="closeCommunityModal"
+		>
+			<EditCommunityForm
+				close-button
+				:submit-button-label="$t('Save')"
+				class="modal-card"
+				:disabled="!communityModal.isEditing"
+				:formModel="communityModel"
+				@formSubmitted="submitEditCommunityForm"
+				@formClosed="closeCommunityModal"
+			/>
+		</Modal>
 		<div class="buttons space-between">
 			<b-button
 				v-if="addButton && userCan.editDistribution"
@@ -182,6 +199,7 @@ import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
 import EditInstitutionForm from "@/components/Assistance/BeneficiariesList/EditInstitutionForm";
+import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
@@ -213,6 +231,7 @@ export default {
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
 		EditInstitutionForm,
+		EditCommunityForm,
 		Table,
 		ActionButton,
 		Modal,
@@ -288,6 +307,10 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			},
+			communityModal: {
+				isOpened: false,
+				isEditing: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -299,10 +322,13 @@ export default {
 				comment: null,
 				justificationForAdding: null,
 			},
-			communityModel: {
-				// TODO Add community model
-			},
 			institutionModel: {
+				addressStreet: null,
+				addressNumber: null,
+				addressPostCode: null,
+				notes: null,
+			},
+			communityModel: {
 				addressStreet: null,
 				addressNumber: null,
 				addressPostCode: null,

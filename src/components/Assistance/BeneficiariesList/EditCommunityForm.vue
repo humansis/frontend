@@ -46,7 +46,7 @@
 
 <script>
 export default {
-	name: "EditInstitutionForm",
+	name: "EditCommunityForm",
 
 	props: {
 		formModel: Object,

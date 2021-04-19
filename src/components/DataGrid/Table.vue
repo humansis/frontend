@@ -210,7 +210,7 @@ export default {
 
 		onChangePerPage(value) {
 			this.storePerPage(value);
-			this.$emit("storePerPage");
+			this.$emit("pageChanged");
 		},
 
 		onResetSort() {

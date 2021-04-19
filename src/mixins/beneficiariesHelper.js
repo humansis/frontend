@@ -318,7 +318,7 @@ export default {
 		showDetail(beneficiary) {
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO
+					this.showCommunityDetail(beneficiary);
 					break;
 				case consts.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
@@ -333,7 +333,7 @@ export default {
 		showEdit({ id }) {
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO
+					this.showCommunityEdit(id);
 					break;
 				case consts.TARGET.INSTITUTION:
 					this.showInstitutionEdit(id);
@@ -364,6 +364,14 @@ export default {
 			};
 		},
 
+		showCommunityDetail(community) {
+			this.communitynModel = community;
+			this.communityModal = {
+				isOpened: true,
+				isEditing: false,
+			};
+		},
+
 		showBeneficiaryEdit(id) {
 			const beneficiary = this.table.data.find((item) => item.id === id);
 			this.beneficiaryModel = {
@@ -378,8 +386,15 @@ export default {
 
 		showInstitutionEdit(id) {
 			this.institutionModel = this.table.data.find((item) => item.id === id);
-			console.log(this.institutionModel);
 			this.institutionModal = {
+				isOpened: true,
+				isEditing: true,
+			};
+		},
+
+		showCommunityEdit(id) {
+			this.communityModel = this.table.data.find((item) => item.id === id);
+			this.communityModal = {
 				isOpened: true,
 				isEditing: true,
 			};
@@ -394,6 +409,13 @@ export default {
 
 		closeInstitutionModal() {
 			this.institutionModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+		},
+
+		closeCommunityModal() {
+			this.communityModal = {
 				isOpened: false,
 				isEditing: false,
 			};
@@ -430,6 +452,15 @@ export default {
 		async submitEditInstitutionForm() {
 			// TODO Update Institution in this assistance
 			this.institutionModal = {
+				isOpened: false,
+				isEditing: false,
+			};
+			await this.reloadBeneficiariesList();
+		},
+
+		async submitEditCommunityForm() {
+			// TODO Update Community in this assistance
+			this.communityModal = {
 				isOpened: false,
 				isEditing: false,
 			};
