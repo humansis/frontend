@@ -1,10 +1,12 @@
 <template>
 	<section class="modal-card-body">
-		<Search class="column is-two-fifths" @search="onSearch" />
 		<Table
+			has-search
 			:data="data"
 			:total="data.length"
+			:columns="table.visibleColumns"
 			:backend-pagination="false"
+			:backend-searching="false"
 			:backend-sorting="false"
 		>
 			<template v-for="column in table.columns">
@@ -23,14 +25,12 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import Search from "@/components/Search";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "BeneficiariesModalList",
 
 	components: {
-		Search,
 		ColumnField,
 		Table,
 	},
@@ -44,10 +44,10 @@ export default {
 			table: {
 				columns: [],
 				visibleColumns: [
-					{ key: "id", sortable: true },
-					{ key: "localFamilyName", label: "Family Name", sortable: true },
-					{ key: "localGivenName", label: "First Name", sortable: true },
-					{ key: "vulnerability", sortable: true },
+					{ key: "id", sortable: true, searchable: true },
+					{ key: "localFamilyName", label: "Family Name", sortable: true, searchable: true },
+					{ key: "localGivenName", label: "First Name", sortable: true, searchable: true },
+					{ key: "vulnerability", sortable: true, searchable: true },
 				],
 				total: 0,
 			},
@@ -61,10 +61,6 @@ export default {
 	methods: {
 		fetchData() {
 			this.table.columns = generateColumns(this.table.visibleColumns);
-		},
-
-		onSearch() {
-			// TODO Search in this.data and update result in the table
 		},
 	},
 };

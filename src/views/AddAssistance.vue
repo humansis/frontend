@@ -42,7 +42,7 @@
 
 		<div class="buttons flex-end">
 			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
-			<b-button type="is-primary" @click="submitAddingAssistance">
+			<b-button type="is-primary" :loading="loading" @click="submitAddingAssistance">
 				{{ $t('Create') }}
 			</b-button>
 		</div>
@@ -102,6 +102,7 @@ export default {
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
 			},
+			loading: false,
 			duplicate: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
@@ -147,6 +148,7 @@ export default {
 
 	methods: {
 		async submitAddingAssistance() {
+			this.loading = true;
 			if (!this.$refs.newAssistanceForm.submit()) return;
 			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
 
@@ -180,6 +182,7 @@ export default {
 			}).catch((e) => {
 				Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 			});
+			this.loading = false;
 		},
 
 		async mapAssistance(assistance) {
