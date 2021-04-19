@@ -92,12 +92,10 @@
 					</b-dropdown-item>
 				</router-link>
 
-				<router-link :to="{ name: 'Logout' }">
-					<b-dropdown-item value="logout">
-						<b-icon class="mr-1" icon="sign-out-alt" />
-						{{ $t('Log out') }}
-					</b-dropdown-item>
-				</router-link>
+				<b-dropdown-item @click="logout" value="logout">
+					<b-icon class="mr-1" icon="sign-out-alt" />
+					{{ $t('Log out') }}
+				</b-dropdown-item>
 			</b-dropdown>
 		</template>
 	</b-navbar>
@@ -160,6 +158,7 @@ export default {
 			"storeTranslations",
 			"storeIcons",
 			"appLoading",
+			"logoutUser",
 		]),
 
 		menuToggle() {
@@ -215,6 +214,11 @@ export default {
 				}).catch((e) => {
 					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});
+		},
+
+		logout() {
+			this.logoutUser();
+			this.$router.push({ name: "Login" });
 		},
 	},
 

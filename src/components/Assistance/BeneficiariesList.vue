@@ -71,7 +71,7 @@
 		</Modal>
 		<div class="buttons space-between">
 			<b-button
-				v-if="addButton"
+				v-if="addButton && userCan.editDistribution"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null)"
@@ -94,12 +94,6 @@
 					icon-right="percent"
 				/>
 			</b-field>
-			<ExportButton
-				v-if="exportButton"
-				class="is-pulled-right"
-				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-				@exportData="exportAssistance"
-			/>
 		</div>
 		<Table
 			has-reset-sort
@@ -133,9 +127,11 @@
 			</template>
 			<template #export>
 				<ExportButton
-					v-if="exportButton"
+					v-if="exportButton && userCan.exportBeneficiaries"
+					type="is-primary"
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-					@exportData="exportAssistance"
+					@onExport="exportData"
 				/>
 			</template>
 			<b-table-column
@@ -147,19 +143,22 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
 						@click.native="showEdit(props.row)"
 					/>
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 					<ActionButton
-						v-if="table.settings.assignVoucherAction"
+						v-if="table.settings.assignVoucherAction
+							&& userCan.assignDistributionItems"
 						icon="qrcode"
 						type="is-dark"
 						:disabled="!props.row.canAssignVoucher"
@@ -187,10 +186,12 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "BeneficiariesList",
@@ -219,10 +220,12 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [baseHelper, beneficiariesHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper],
 
 	data() {
 		return {
+			exportLoading: false,
+			advancedSearchVisible: false,
 			commodities: [],
 			table: {
 				data: [],
@@ -535,6 +538,49 @@ export default {
 
 		settingsOfBeneficiaryActivity(beneficiaryIds) {
 			this.setAssignedGeneralRelief(beneficiaryIds);
+		},
+
+		async exportData(format) {
+			this.exportLoading = true;
+			if (!this.changeButton) {
+				await BeneficiariesService.exportBeneficiaries(format, this.$route.params.assistanceId)
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			} else {
+				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			}
+			this.exportLoading = false;
+		},
+
+		showDetail(beneficiary) {
+			if (this.userCan.viewBeneficiary) {
+				this.beneficiaryModel = {
+					...beneficiary,
+					dateOfBirth: new Date(beneficiary.dateOfBirth),
+				};
+				this.beneficiaryModal = {
+					isOpened: true,
+					isEditing: false,
+				};
+			}
 		},
 	},
 };

@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addBeneficiary"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewCommunity"
@@ -52,6 +53,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Toast } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "CommunityPage",
@@ -61,6 +63,8 @@ export default {
 		Modal,
 		CommunityForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

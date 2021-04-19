@@ -1,4 +1,4 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfAssistances(page, size, sort, upcoming, search = null) {
@@ -265,5 +265,19 @@ export default {
 			uri: `assistances/${id}/selection-criteria`,
 		});
 		return { data, totalCount };
+	},
+
+	async exportAssistances(format, projectId) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
+		return { data };
+	},
+
+	async exportAssistance(format, assistanceId) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `assistances/${assistanceId}/exports?${formatText}` });
+		return { data };
 	},
 };

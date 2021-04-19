@@ -67,8 +67,6 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "Login",
 
-	mixins: [Validation],
-
 	data() {
 		return {
 			formModel: {
@@ -78,6 +76,8 @@ export default {
 			loginButtonLoading: false,
 		};
 	},
+
+	mixins: [Validation],
 
 	validations: {
 		formModel: {
@@ -109,32 +109,38 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeUser"]),
+		...mapActions(["storeUser", "storePermissions"]),
+
 		async submitForm() {
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				return;
-			}
+			if (this.$v.$invalid) return;
 
 			this.loginButtonLoading = true;
+
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
 					// TODO Uncomment this after login will be implemented by BE
 					const user = {};
-					console.log(response);
 
 					// TODO Different usage of window.btoa with credentials -> after BE will work
 					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
+					user.role = "ROLE_ADMIN";
 
-					this.storeUser(user);
+					await this.storeUser(user);
+
+					const { privileges } = await LoginService.getRolePermissions(user.role)
+						.then(({ data }) => data);
+
+					await this.storePermissions(privileges);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
 				Notification(`Login ${e}`, "is-danger");
-				this.loginButtonLoading = false;
 				this.$v.$reset();
 			});
+
+			this.loginButtonLoading = false;
 		},
 	},
 };

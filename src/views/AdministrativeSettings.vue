@@ -7,7 +7,7 @@
 				<Users />
 			</b-tab-item>
 
-			<b-tab-item icon="dollar-sign" :label="$t('Donors')">
+			<b-tab-item v-if="userCan.viewDonors" icon="dollar-sign" :label="$t('Donors')">
 				<Donors />
 			</b-tab-item>
 
@@ -56,6 +56,7 @@ import Users from "@/views/AdministrativeSettings/Users";
 import Donors from "@/views/AdministrativeSettings/Donors";
 import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
 import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
+import permissions from "@/mixins/permissions";
 /*
 import Countries from "@/views/AdministrativeSettings/Countries";
 import Languages from "@/views/AdministrativeSettings/Languages";
@@ -78,6 +79,8 @@ export default {
 		Donors,
 		Users,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

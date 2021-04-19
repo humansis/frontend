@@ -18,6 +18,7 @@
 			/>
 		</Modal>
 		<b-button
+			v-if="userCan.addEditDonors"
 			class="mb-4"
 			type="is-primary"
 			icon-left="plus"
@@ -40,6 +41,7 @@ import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import DonorService from "@/services/DonorService";
 import { Toast } from "@/utils/UI";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DonorPage",
@@ -49,6 +51,8 @@ export default {
 		DonorForm,
 		DonorList,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

@@ -38,11 +38,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.addEditDonors"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.addEditDonors"
 					icon="trash"
 					:entity="$t('Donor')"
 					:id="props.row.id"
@@ -54,7 +56,10 @@
 		<template #export>
 			<ExportButton
 				space-between
+				type="is-primary"
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportDonors"
 			/>
 		</template>
 	</Table>
@@ -70,6 +75,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DonorList",
@@ -82,10 +88,11 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -130,6 +137,22 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async exportDonors(format) {
+			this.exportLoading = true;
+			await DonorService.exportDonors(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `donors.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

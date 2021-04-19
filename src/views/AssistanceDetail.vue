@@ -91,7 +91,8 @@
 				</b-button>
 				<b-button
 					v-if="setAtDistributedButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)"
+						&& (isAssistanceValidated && !isAssistanceCompleted)
+						&& userCan.assignDistributionItems"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -102,7 +103,8 @@
 				</b-button>
 				<b-button
 					v-if="startTransactionButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)"
+						&& (isAssistanceValidated && !isAssistanceCompleted)
+						&& userCan.authoriseElectronicCashTransfer"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -123,6 +125,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "AssistanceDetail",
@@ -131,6 +134,8 @@ export default {
 		BeneficiariesList,
 		AssistanceSummary,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {
