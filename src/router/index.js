@@ -359,4 +359,10 @@ router.beforeEach((to, from, next) => {
 	}
 });
 
+router.onError((error) => {
+	if (/Loading chunk [^\s]+ failed./i.test(error.message)) {
+		window.location.reload();
+	}
+});
+
 export default router;

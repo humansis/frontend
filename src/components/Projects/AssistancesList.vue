@@ -90,7 +90,7 @@
 					type="is-primary"
 					space-between
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportAssistance"
+					@exportData="exportAssistances"
 				/>
 			</template>
 			<template #progress>
@@ -133,6 +133,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -321,9 +322,20 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		exportAssistance(format) {
-			// TODO Export assistance
-			console.log(format);
+		async exportAssistances(format) {
+			this.exportLoading = true;
+			await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `assistances.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

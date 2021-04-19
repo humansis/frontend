@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 
 export default {
 	async getListOfCountrySpecificOptions(page, size, sort, search = null) {
@@ -45,6 +45,13 @@ export default {
 		const { data } = await fetcher({
 			uri: `country-specifics/answers/${id}`,
 		});
+		return { data };
+	},
+
+	async exportCountrySpecificOptions(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `donors/exports?${formatText}` });
 		return { data };
 	},
 };

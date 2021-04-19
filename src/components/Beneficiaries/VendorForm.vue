@@ -52,7 +52,13 @@
 				/>
 			</b-field>
 
-			<b-field :label="$t('Shop')">
+			<b-field>
+				<template #label>
+					{{ $t('Shop') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
 				<b-input
 					v-model="formModel.shop"
 					:disabled="formDisabled"
@@ -141,8 +147,10 @@
 			<b-button
 				v-if="!formDisabled"
 				class="is-primary"
+				native-type="submit"
 				:label="submitButtonLabel"
-				:disabled="mapping"
+				:loading="formLoading"
+				:disabled="mapping || formLoading"
 			/>
 		</footer>
 	</form>
@@ -165,6 +173,7 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		formLoading: Boolean,
 	},
 
 	validations: {

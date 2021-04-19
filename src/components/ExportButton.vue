@@ -3,7 +3,7 @@
 		v-model="currentFormat"
 		aria-role="list"
 	>
-		<b-button icon-left="file-download" slot="trigger" :size="size" :type="type">
+		<b-button :loading="loading" icon-left="file-download" slot="trigger" :size="size" :type="type">
 			<template>
 				<span>{{ $t('Export') }}</span>
 			</template>
@@ -34,24 +34,28 @@ export default {
 		type: String,
 		formats: Object,
 		spaceBetween: Boolean,
+		loading: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			currentFormat: null,
 			formatMenu: [
-				{ name: ".xlsx", disabled: this.formats.xlsx },
-				{ name: ".csv", disabled: this.formats.csv },
-				{ name: ".odt", disabled: this.formats.odt },
-				{ name: ".ods", disabled: this.formats.ods },
-				{ name: ".pdf", disabled: this.formats.pdf },
+				{ name: "xlsx", disabled: this.formats.xlsx },
+				{ name: "csv", disabled: this.formats.csv },
+				{ name: "odt", disabled: this.formats.odt },
+				{ name: "ods", disabled: this.formats.ods },
+				{ name: "pdf", disabled: this.formats.pdf },
 			],
 		};
 	},
 
 	methods: {
 		exportData() {
-			this.$emit("exportData", this.currentFormat.name);
+			this.$emit("onExport", this.currentFormat.name);
 		},
 	},
 };

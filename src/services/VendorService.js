@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 
 export default {
 	async getListOfVendors(page, size, sort, search = null) {
@@ -51,5 +51,12 @@ export default {
 			uri: `vendors/${id}/export`,
 		});
 		return { data, totalCount };
+	},
+
+	async exportVendors(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `vendors/exports?${formatText}` });
+		return { data };
 	},
 };

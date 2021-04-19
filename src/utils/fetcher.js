@@ -12,7 +12,8 @@ async function getErrorsFromResponse(data) {
 			errors += `${error.message} (${error.source}), `;
 		});
 	}
-
+	// Please remove this code before release because it reads
+	// data that is not supposed to be visible for user
 	if (data.debug && data.debug.length) {
 		data.debug.forEach((debug) => {
 			debugs += `${debug.message}. `;
@@ -22,7 +23,7 @@ async function getErrorsFromResponse(data) {
 	return errors || debugs || "Something went wrong";
 }
 
-export const getResponseJSON = async (response) => {
+export const getResponseJSON = async (response, download = false) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
@@ -43,8 +44,12 @@ export const getResponseJSON = async (response) => {
 	if (notFound) {
 		throw new Error(response.statusText);
 	}
-
-	const data = await response.json();
+	let data = null;
+	if (download) {
+		data = await response.blob();
+	} else {
+		data = await response.json();
+	}
 
 	if (success) {
 		return { data, status: response.status };
@@ -114,6 +119,30 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	const response = await fetch(url, config);
 
 	return getResponseJSON(response);
+};
+
+export const download = async ({ uri }) => {
+	const url = `${CONST.API}/${uri}`;
+
+	const headers = {};
+
+	const user = getters.getUserFromVuexStorage();
+
+	if (user?.authdata) {
+		headers.Authorization = `Basic ${user.authdata}`;
+	}
+
+	const country = getters.getCountryFromVuexStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3;
+
+	const config = {
+		headers,
+		method: "GET",
+	};
+
+	const response = await fetch(url, config);
+
+	return getResponseJSON(response, true);
 };
 
 export const filtersToUri = (filters) => {
