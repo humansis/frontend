@@ -60,8 +60,8 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async ({ uri, jwt = false, auth = true, method, body, contentType }) => {
-	const url = jwt ? `${CONST.API_JWT}/${uri}` : `${CONST.API}/${uri}`;
+export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+	const url = `${CONST.API}/${uri}`;
 
 	let headers = {};
 
@@ -74,7 +74,7 @@ export const fetcher = async ({ uri, jwt = false, auth = true, method, body, con
 		const user = getters.getUserFromVuexStorage();
 
 		if (user?.token) {
-			headers.Authorization = `Basic ${user.token}`;
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -105,7 +105,7 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 		const user = getters.getUserFromVuexStorage();
 
 		if (user?.token) {
-			headers.Authorization = `Basic ${user.token}`;
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -131,7 +131,7 @@ export const download = async ({ uri }) => {
 	const user = getters.getUserFromVuexStorage();
 
 	if (user?.token) {
-		headers.Authorization = `Basic ${user.token}`;
+		headers.Authorization = `Bearer ${user.token}`;
 	}
 
 	const country = getters.getCountryFromVuexStorage();
