@@ -54,4 +54,8 @@ export default {
 			commit(CONST.STORE_PERMISSIONS, permissions);
 		}
 	},
+
+	storeAdmNames: ({ commit }, admNames) => {
+		commit(CONST.STORE_ADM_NAMES, admNames);
+	},
 };

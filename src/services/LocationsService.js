@@ -52,4 +52,9 @@ export default {
 		const { data } = await fetcher({ uri: `locations?${idsText}` });
 		return data;
 	},
+
+	async getAdmNames() {
+		const data = await fetcher({ uri: `adms` });
+		return data;
+	},
 };
