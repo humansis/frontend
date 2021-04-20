@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addVouchers"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewVoucher"
@@ -57,6 +58,7 @@ import BatchList from "@/components/Voucher/BatchList";
 import Modal from "@/components/Modal";
 import BookletsService from "@/services/BookletsService";
 import { Toast, Notification } from "@/utils/UI";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "VouchersPage",
@@ -67,6 +69,8 @@ export default {
 		VoucherForm,
 		BatchList,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

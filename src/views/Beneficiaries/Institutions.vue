@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addBeneficiary"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewInstitution"
@@ -52,6 +53,7 @@ import Modal from "@/components/Modal";
 import InstitutionService from "@/services/InstitutionService";
 import { Toast } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "InstitutionPage",
@@ -61,6 +63,8 @@ export default {
 		Modal,
 		InstitutionForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {
@@ -112,24 +116,17 @@ export default {
 	},
 
 	methods: {
-		async editInstitution(institution) {
-			await this.mapToFormModel(institution);
+		editInstitution(institution) {
 			this.institutionModal = {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
 				isWaiting: false,
 			};
+			this.mapToFormModel(institution);
 		},
 
-		addNewInstitution() {
-			this.institutionModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
+		eraseFormModel() {
 			this.institutionModel = {
 				...this.institutionModel,
 				id: null,
@@ -157,18 +154,29 @@ export default {
 			};
 		},
 
-		closeInstitutionModal() {
-			this.institutionModel = null;
-			this.institutionModal.isOpened = false;
+		addNewInstitution() {
+			this.institutionModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.eraseFormModel();
 		},
 
-		async showDetail(institution) {
-			await this.mapToFormModel(institution);
+		closeInstitutionModal() {
+			this.institutionModal.isOpened = false;
+			this.eraseFormModel();
+		},
+
+		showDetail(institution) {
 			this.institutionModal = {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
 			};
+			this.mapToFormModel(institution);
 		},
 
 		async mapToFormModel(

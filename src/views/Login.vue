@@ -16,13 +16,13 @@
 							<b-field
 								label="Username"
 								label-position="inside"
-								:type="validateType('login')"
-								:message="validateMsg('login', 'Required')"
+								:type="validateType('username')"
+								:message="validateMsg('username', 'Required')"
 							>
 								<b-input
-									v-model="formModel.login"
+									v-model="formModel.username"
 									autofocus
-									@blur="validate('login')"
+									@blur="validate('username')"
 								/>
 							</b-field>
 
@@ -63,25 +63,26 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
+import JWTDecode from "jwt-decode";
 
 export default {
 	name: "Login",
 
-	mixins: [Validation],
-
 	data() {
 		return {
 			formModel: {
-				login: "",
+				username: "",
 				password: "",
 			},
 			loginButtonLoading: false,
 		};
 	},
 
+	mixins: [Validation],
+
 	validations: {
 		formModel: {
-			login: {
+			username: {
 				required,
 			},
 			password: {
@@ -109,32 +110,37 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeUser"]),
+		...mapActions(["storeUser", "storePermissions"]),
+
 		async submitForm() {
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				return;
-			}
+			if (this.$v.$invalid) return;
 
 			this.loginButtonLoading = true;
+
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
-					// TODO Uncomment this after login will be implemented by BE
-					const user = {};
-					console.log(response);
+					const { data: { token } } = response;
 
-					// TODO Different usage of window.btoa with credentials -> after BE will work
-					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
+					const user = await JWTDecode(token);
+					user.token = token;
 
-					this.storeUser(user);
+					await this.storeUser(user);
+
+					const { data: { privileges } } = user.roles[0]
+						? await LoginService.getRolePermissions(user.roles[0]) : {}
+							.then(({ data }) => data);
+
+					await this.storePermissions(privileges);
 
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
 				Notification(`Login ${e}`, "is-danger");
-				this.loginButtonLoading = false;
 				this.$v.$reset();
 			});
+
+			this.loginButtonLoading = false;
 		},
 	},
 };

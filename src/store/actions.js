@@ -11,6 +11,10 @@ export default {
 		}
 	},
 
+	logoutUser: ({ commit }) => {
+		commit(CONST.LOGOUT);
+	},
+
 	storeCountry: ({ commit }, country) => {
 		if (country) {
 			commit(CONST.STORE_COUNTRY, country);
@@ -43,5 +47,15 @@ export default {
 
 	storeIcons: ({ commit }, icons) => {
 		commit(CONST.STORE_ICONS, icons);
+	},
+
+	storePermissions: ({ commit }, permissions) => {
+		if (permissions) {
+			commit(CONST.STORE_PERMISSIONS, permissions);
+		}
+	},
+
+	storeAdmNames: ({ commit }, admNames) => {
+		commit(CONST.STORE_ADM_NAMES, admNames);
 	},
 };

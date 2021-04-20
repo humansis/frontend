@@ -92,12 +92,10 @@
 					</b-dropdown-item>
 				</router-link>
 
-				<router-link :to="{ name: 'Logout' }">
-					<b-dropdown-item value="logout">
-						<b-icon class="mr-1" icon="sign-out-alt" />
-						{{ $t('Log out') }}
-					</b-dropdown-item>
-				</router-link>
+				<b-dropdown-item @click="logout" value="logout">
+					<b-icon class="mr-1" icon="sign-out-alt" />
+					{{ $t('Log out') }}
+				</b-dropdown-item>
 			</b-dropdown>
 		</template>
 	</b-navbar>
@@ -109,6 +107,7 @@ import CountriesService from "@/services/CountriesService";
 import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
 import IconService from "@/services/IconService";
+import LocationsService from "@/services/LocationsService";
 
 export default {
 	name: "NavBar",
@@ -129,6 +128,7 @@ export default {
 	async mounted() {
 		if (!this.countries) await this.fetchCountries();
 		if (!this.icons) await this.fetchIcons();
+		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
 	},
 
@@ -141,6 +141,7 @@ export default {
 			"languages",
 			"countries",
 			"icons",
+			"admNames",
 		]),
 
 		menuToggleIcon() {
@@ -160,6 +161,8 @@ export default {
 			"storeTranslations",
 			"storeIcons",
 			"appLoading",
+			"logoutUser",
+			"storeAdmNames",
 		]),
 
 		menuToggle() {
@@ -168,6 +171,7 @@ export default {
 
 		async handleChangeCountry(country) {
 			await this.storeCountry(country);
+			this.storeAdmNames(null);
 			this.$router.push({ name: "Home" });
 			this.$router.go();
 		},
@@ -215,6 +219,20 @@ export default {
 				}).catch((e) => {
 					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});
+		},
+
+		async fetchAdmNames() {
+			await LocationsService.getAdmNames()
+				.then(({ data }) => {
+					this.storeAdmNames(data);
+				}).catch((e) => {
+					Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
+				});
+		},
+
+		logout() {
+			this.logoutUser();
+			this.$router.push({ name: "Login" });
 		},
 	},
 

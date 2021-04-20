@@ -40,11 +40,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.addEditUsers"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.addEditUsers"
 					icon="trash"
 					:entity="$t('User')"
 					:tooltip="$t('Delete')"
@@ -56,7 +58,10 @@
 		<template #export>
 			<ExportButton
 				space-between
+				type="is-primary"
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportUsers"
 			/>
 		</template>
 	</Table>
@@ -71,6 +76,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "UsersList",
@@ -82,10 +88,11 @@ export default {
 		ActionButton,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -149,6 +156,22 @@ export default {
 
 		sendHistory(id) {
 			UsersService.sendHistory(id);
+		},
+
+		async exportUsers(format) {
+			this.exportLoading = true;
+			await UsersService.exportUsers(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `users.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

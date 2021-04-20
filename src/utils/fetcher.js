@@ -12,7 +12,8 @@ async function getErrorsFromResponse(data) {
 			errors += `${error.message} (${error.source}), `;
 		});
 	}
-
+	// TODO Please remove this code before release because it reads
+	// data that is not supposed to be visible for user
 	if (data.debug && data.debug.length) {
 		data.debug.forEach((debug) => {
 			debugs += `${debug.message}. `;
@@ -22,7 +23,7 @@ async function getErrorsFromResponse(data) {
 	return errors || debugs || "Something went wrong";
 }
 
-export const getResponseJSON = async (response) => {
+export const getResponseJSON = async (response, download = false) => {
 	const success = response.status < 400;
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
@@ -41,7 +42,8 @@ export const getResponseJSON = async (response) => {
 	if (unauthorized) {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
-		router.push({ name: "Logout", query: { redirect } });
+
+		router.push({ name: "Login", query: { redirect } });
 		throw new Error("You need to login to continue");
 	}
 
@@ -49,7 +51,13 @@ export const getResponseJSON = async (response) => {
 		throw new Error(response.statusText);
 	}
 
-	const data = await response.json();
+	let data = null;
+
+	if (download) {
+		data = await response.blob();
+	} else {
+		data = await response.json();
+	}
 
 	if (success) {
 		return { data, status: response.status };
@@ -71,8 +79,8 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -102,8 +110,8 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -121,8 +129,33 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	return getResponseJSON(response);
 };
 
+export const download = async ({ uri }) => {
+	const url = `${CONST.API}/${uri}`;
+
+	const headers = {};
+
+	const user = getters.getUserFromVuexStorage();
+
+	if (user?.token) {
+		headers.Authorization = `Bearer ${user.token}`;
+	}
+
+	const country = getters.getCountryFromVuexStorage();
+	headers.Country = country?.iso3 || store.state.country.iso3;
+
+	const config = {
+		headers,
+		method: "GET",
+	};
+
+	const response = await fetch(url, config);
+
+	return getResponseJSON(response, true);
+};
+
 export const filtersToUri = (filters) => {
 	let query = "";
+
 	Object.keys(filters).forEach((key) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
@@ -132,6 +165,7 @@ export const filtersToUri = (filters) => {
 			query += `&filter[${key}]=${filters[key]}`;
 		}
 	});
+
 	return query;
 };
 

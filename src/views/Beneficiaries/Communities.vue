@@ -7,6 +7,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addBeneficiary"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewCommunity"
@@ -52,6 +53,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Toast } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "CommunityPage",
@@ -61,6 +63,8 @@ export default {
 		Modal,
 		CommunityForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {
@@ -110,24 +114,17 @@ export default {
 	},
 
 	methods: {
-		async editCommunity(community) {
-			await this.mapToFormModel(community);
+		editCommunity(community) {
 			this.communityModal = {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
 				isWaiting: false,
 			};
+			this.mapToFormModel(community);
 		},
 
-		addNewCommunity() {
-			this.communityModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
+		eraseFormModel() {
 			this.communityModel = {
 				...this.communityModel,
 				id: null,
@@ -155,18 +152,30 @@ export default {
 			};
 		},
 
-		closeCommunityModal() {
-			this.communityModal.isOpened = false;
+		addNewCommunity() {
+			this.communityModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.eraseFormModel();
 		},
 
-		async showDetail(community) {
-			await this.mapToFormModel(community);
+		closeCommunityModal() {
+			this.communityModal.isOpened = false;
+			this.eraseFormModel();
+		},
+
+		showDetail(community) {
 			this.communityModal = {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
 				isWaiting: false,
 			};
+			this.mapToFormModel(community);
 		},
 
 		async mapToFormModel(

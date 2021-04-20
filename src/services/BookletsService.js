@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfBooklets(page, size, sort, search = null, filters = null) {
@@ -33,5 +33,12 @@ export default {
 			uri: `booklets/${id}`, method: "DELETE",
 		});
 		return { data, status };
+	},
+
+	async exportBooklets(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `booklets/exports?${formatText}` });
+		return { data };
 	},
 };

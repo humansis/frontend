@@ -53,9 +53,11 @@
 		</b-table-column>
 		<template #export>
 			<ExportButton
-				type="is-primary"
 				space-between
+				type="is-primary"
+				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportCountrySpecifics"
 			/>
 		</template>
 	</Table>
@@ -87,6 +89,7 @@ export default {
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -130,6 +133,22 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		async exportCountrySpecifics(format) {
+			this.exportLoading = true;
+			await CountrySpecificOptionsService.exportCountrySpecificOptions(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `country_specific_options.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };

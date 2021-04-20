@@ -131,13 +131,10 @@ export default {
 			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
-				this.isTargetHouseholdOrIndividual = data.target
-					=== consts.TARGET.HOUSEHOLD
+				this.isTargetHouseholdOrIndividual = data.target === consts.TARGET.HOUSEHOLD
 					|| data.target === consts.TARGET.INDIVIDUAL;
 
-				this.$nextTick(() => {
-					this.assistance = data;
-				});
+				this.assistance = data;
 			});
 		},
 

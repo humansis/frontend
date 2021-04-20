@@ -40,6 +40,7 @@
 			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
 				: $t('Detail of Beneficiary')"
 			:active="beneficiaryModal.isOpened"
+			:is-waiting="beneficiaryModal.isWaiting"
 			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
@@ -52,9 +53,45 @@
 				@formClosed="closeBeneficiaryModal"
 			/>
 		</Modal>
+		<Modal
+			can-cancel
+			:header="institutionModal.isEditing ? $t('Edit This Institution')
+				: $t('Detail of Institution')"
+			:active="institutionModal.isOpened"
+			:is-waiting="institutionModal.isWaiting"
+			@close="closeInstitutionModal"
+		>
+			<EditInstitutionForm
+				close-button
+				:submit-button-label="$t('Save')"
+				class="modal-card"
+				:disabled="!institutionModal.isEditing"
+				:formModel="institutionModel"
+				@formSubmitted="submitEditInstitutionForm"
+				@formClosed="closeInstitutionModal"
+			/>
+		</Modal>
+		<Modal
+			can-cancel
+			:header="communityModal.isEditing ? $t('Edit This Community')
+				: $t('Detail of Community')"
+			:active="communityModal.isOpened"
+			:is-waiting="communityModal.isWaiting"
+			@close="closeCommunityModal"
+		>
+			<EditCommunityForm
+				close-button
+				:submit-button-label="$t('Save')"
+				class="modal-card"
+				:disabled="!communityModal.isEditing"
+				:formModel="communityModel"
+				@formSubmitted="submitEditCommunityForm"
+				@formClosed="closeCommunityModal"
+			/>
+		</Modal>
 		<div class="buttons space-between">
 			<b-button
-				v-if="addButton"
+				v-if="addButton && userCan.editDistribution"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null)"
@@ -77,12 +114,6 @@
 					icon-right="percent"
 				/>
 			</b-field>
-			<ExportButton
-				v-if="exportButton"
-				class="is-pulled-right"
-				:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-				@exportData="exportAssistance"
-			/>
 		</div>
 		<Table
 			has-reset-sort
@@ -116,9 +147,11 @@
 			</template>
 			<template #export>
 				<ExportButton
-					v-if="exportButton"
+					v-if="exportButton && userCan.exportBeneficiaries"
+					type="is-primary"
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-					@exportData="exportAssistance"
+					@onExport="exportData"
 				/>
 			</template>
 			<b-table-column
@@ -130,19 +163,22 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
 						@click.native="showEdit(props.row)"
 					/>
 					<ActionButton
+						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
 					<ActionButton
-						v-if="table.settings.assignVoucherAction"
+						v-if="table.settings.assignVoucherAction
+							&& userCan.assignDistributionItems"
 						icon="qrcode"
 						type="is-dark"
 						:disabled="!props.row.canAssignVoucher"
@@ -165,14 +201,18 @@ import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
+import EditInstitutionForm from "@/components/Assistance/BeneficiariesList/EditInstitutionForm";
+import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "BeneficiariesList",
@@ -193,6 +233,8 @@ export default {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
+		EditInstitutionForm,
+		EditCommunityForm,
 		Table,
 		ActionButton,
 		Modal,
@@ -200,10 +242,12 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [baseHelper, beneficiariesHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper],
 
 	data() {
 		return {
+			exportLoading: false,
+			advancedSearchVisible: false,
 			commodities: [],
 			table: {
 				data: [],
@@ -220,6 +264,7 @@ export default {
 					assignVoucherAction: false,
 					checkableTable: false,
 				},
+				visibleColumns: [],
 				householdsAndIndividualEditColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
@@ -236,15 +281,17 @@ export default {
 					{ key: "nationalId", label: "National ID", sortable: true },
 				],
 				communityColumns: [
-					{ key: "name" },
-					{ key: "contactGivenName", label: "Contact Name" },
-					{ key: "contactFamilyName" },
+					{ key: "id", label: "ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactFamilyName", sortable: true },
 				],
 				institutionColumns: [
-					{ key: "name" },
-					{ key: "type" },
-					{ key: "contactGivenName", label: "Contact Name" },
-					{ key: "contactFamilyName" },
+					{ key: "id", label: "ID", sortable: true },
+					{ key: "name", sortable: true },
+					{ key: "type", sortable: true },
+					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactFamilyName", sortable: true },
 				],
 			},
 			addBeneficiaryModal: {
@@ -258,6 +305,17 @@ export default {
 			beneficiaryModal: {
 				isOpened: false,
 				isEditing: false,
+				isWaiting: false,
+			},
+			institutionModal: {
+				isOpened: false,
+				isEditing: false,
+				isWaiting: false,
+			},
+			communityModal: {
+				isOpened: false,
+				isEditing: false,
+				isWaiting: false,
 			},
 			beneficiaryModel: {
 				firstName: null,
@@ -270,6 +328,16 @@ export default {
 				comment: null,
 				justificationForAdding: null,
 			},
+			institutionModel: {
+				addressStreet: null,
+				addressNumber: null,
+				addressPostCode: null,
+			},
+			communityModel: {
+				addressStreet: null,
+				addressNumber: null,
+				addressPostCode: null,
+			},
 			randomSampleSize: 10,
 			assignVoucherModal: {
 				isOpened: false,
@@ -280,6 +348,7 @@ export default {
 	},
 
 	async created() {
+		await this.reloadBeneficiariesList();
 		await this.getAssistanceCommodities();
 	},
 
@@ -293,24 +362,58 @@ export default {
 
 	methods: {
 		async reloadBeneficiariesList() {
-			await this.fetchData();
-			await this.prepareTableColumns();
+			if (this.assistance) {
+				this.prepareTableColumns();
+				await this.fetchData();
+			}
 		},
 
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
-
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO Call AssistancesService.getListOfCommunities()
+					await AssistancesService.getListOfCommunities(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					});
 					break;
 				case consts.TARGET.INSTITUTION:
-					// TODO Call AssistancesService.getListOfInstitutions()
+					await AssistancesService.getListOfInstitutions(
+						this.$route.params.assistanceId,
+						page || this.table.currentPage,
+						size || this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+					).then(async ({ data, totalCount }) => {
+						this.table.data = [];
+						this.table.progress = 0;
+						this.$emit("beneficiariesCounted", totalCount);
+						this.table.total = totalCount;
+						if (totalCount > 0) {
+							await this.prepareDataForTable(data);
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					});
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					await AssistancesService.getListOfBeneficiaries(
 						this.$route.params.assistanceId,
 						page || this.table.currentPage,
@@ -344,8 +447,9 @@ export default {
 				case consts.TARGET.INSTITUTION:
 					baseColumns = this.table.institutionColumns;
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					baseColumns = this.isAssistanceDetail
 						? this.table.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
@@ -355,37 +459,37 @@ export default {
 				switch (this.commodities[0]?.modalityType) {
 					case consts.COMMODITY.MOBILE_MONEY:
 						additionalColumns = [
-							{ key: "phone", label: "Phone" },
-							{ key: "status", label: "Status" },
-							{ key: "value", label: "Value" },
+							{ key: "phone" },
+							{ key: "status" },
+							{ key: "value" },
 						];
 						break;
 					case consts.COMMODITY.QR_CODE_VOUCHER:
 						additionalColumns = [
-							{ key: "booklet", label: "Booklet" },
-							{ key: "status", label: "Status" },
-							{ key: "used", label: "Used" },
-							{ key: "value", label: "Value" },
+							{ key: "booklet" },
+							{ key: "status" },
+							{ key: "used" },
+							{ key: "value" },
 						];
 						break;
 					case consts.COMMODITY.SMARTCARD:
 					default:
 						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
 						additionalColumns = [
-							{ key: "distributed", label: "Distributed" },
-							{ key: "value", label: "Value" },
+							{ key: "distributed" },
+							{ key: "value" },
 						];
 				}
 			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
 				additionalColumns = [
-					{ key: "distributed", label: "Distributed" },
-					{ key: "value", label: "Value" },
+					{ key: "distributed" },
+					{ key: "value" },
 				];
 			}
-
-			this.table.columns = generateColumns([...baseColumns, ...additionalColumns]);
+			this.table.visibleColumns = [...baseColumns, ...additionalColumns];
+			this.table.columns = generateColumns(this.table.visibleColumns);
 		},
 
 		async prepareDataForTable(data) {
@@ -396,13 +500,26 @@ export default {
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					// TODO Set data to table for COMMUNITY
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
+
+						this.table.data[key] = item;
+					});
+
+					this.table.progress += 85;
 					break;
 				case consts.TARGET.INSTITUTION:
-					// TODO Set data to table for INSTITUTION
+					data.forEach((item, key) => {
+						beneficiaryIds.push(item.id);
+
+						this.table.data[key] = item;
+					});
+
+					this.table.progress += 85;
 					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
 				default:
-					/** @summary For target HOUSEHOLD and INDIVIDUAL */
 					data.forEach((item, key) => {
 						beneficiaryIds.push(item.id);
 
@@ -452,6 +569,36 @@ export default {
 
 		settingsOfBeneficiaryActivity(beneficiaryIds) {
 			this.setAssignedGeneralRelief(beneficiaryIds);
+		},
+
+		async exportData(format) {
+			this.exportLoading = true;
+			if (!this.changeButton) {
+				await BeneficiariesService.exportBeneficiaries(format, this.$route.params.assistanceId)
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			} else {
+				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `beneficiaries.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+					});
+			}
+			this.exportLoading = false;
 		},
 	},
 };

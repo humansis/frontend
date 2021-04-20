@@ -6,7 +6,9 @@
 	>
 		<div ref="container" class="aside-container">
 			<div class="image">
-				<img src="../assets/images/bms_logo.png" alt="" class="bms-logo">
+				<router-link to="/">
+					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
+				</router-link>
 			</div>
 			<div class="menu">
 				<b-menu>
@@ -81,6 +83,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
+								v-if="userCan.viewVendors"
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -106,6 +109,7 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
+							v-if="userCan.viewVouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -127,6 +131,7 @@
 								</b-tooltip>
 							</template>
 							<b-menu-item
+								v-if="userCan.viewProducts"
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -139,6 +144,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
+								v-if="userCan.countrySettings"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -152,6 +158,7 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
+							v-if="userCan.adminSettings"
 							icon="wrench"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -210,9 +217,12 @@
 
 <script>
 import { mapState } from "vuex";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "SideMenu",
+
+	mixins: [permissions],
 
 	computed: {
 		...mapState([

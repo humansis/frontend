@@ -1,4 +1,4 @@
-import { fetcher, idsToUri, upload } from "@/utils/fetcher";
+import { fetcher, idsToUri, upload, download } from "@/utils/fetcher";
 
 export default {
 	async getListOfDonors(page, size, sort, search = null, ids = null) {
@@ -32,6 +32,13 @@ export default {
 	async getDetailOfDonor(id) {
 		const { data: { data, totalCount } } = await fetcher({ uri: `donors/${id}` });
 		return { data, totalCount };
+	},
+
+	async exportDonors(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `donors/exports?${formatText}` });
+		return { data };
 	},
 
 	async uploadImage(id, image) {

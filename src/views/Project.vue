@@ -9,6 +9,7 @@
 
 			<div class="level-right">
 				<b-button
+					v-if="userCan.addDistribution"
 					type="is-primary"
 					icon-left="plus"
 					@click="goToAddAssistance"
@@ -50,6 +51,7 @@ import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "Project",
@@ -60,6 +62,8 @@ export default {
 		ProjectSummary,
 		Modal,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

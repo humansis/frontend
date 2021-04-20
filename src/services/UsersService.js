@@ -1,4 +1,4 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, idsToUri } from "@/utils/fetcher";
 import { Toast } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
@@ -87,6 +87,13 @@ export default {
 		const { data: { data } } = await fetcher({
 			uri: `users/${id}/logs`,
 		});
+		return { data };
+	},
+
+	async exportUsers(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `users/exports?${formatText}` });
 		return { data };
 	},
 

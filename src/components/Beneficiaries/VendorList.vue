@@ -35,11 +35,13 @@
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
+					v-if="userCan.addEditVendors"
 					icon="edit"
 					:tooltip="$t('Edit')"
 					@click.native="showEdit(props.row.id)"
 				/>
 				<SafeDelete
+					v-if="userCan.addEditVendors"
 					icon="trash"
 					:entity="$t('Vendor')"
 					:tooltip="$t('Delete')"
@@ -48,6 +50,15 @@
 				/>
 			</div>
 		</b-table-column>
+		<template #export>
+			<ExportButton
+				space-between
+				type="is-primary"
+				:loading="exportLoading"
+				:formats="{ xlsx: true, csv: true, ods: true}"
+				@onExport="exportVendors"
+			/>
+		</template>
 	</Table>
 </template>
 
@@ -62,20 +73,24 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import UsersService from "@/services/UsersService";
 import baseHelper from "@/mixins/baseHelper";
+import permissions from "@/mixins/permissions";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "VendorList",
 
 	components: {
+		ExportButton,
 		SafeDelete,
 		Table,
 		ActionButton,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [grid, baseHelper, permissions],
 
 	data() {
 		return {
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -163,6 +178,22 @@ export default {
 				.then(({ data }) => data).catch((e) => {
 					Notification(`${this.$t("Users")} ${e}`, "is-danger");
 				});
+		},
+
+		async exportVendors(format) {
+			this.exportLoading = true;
+			await VendorService.exportVendors(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `vendors.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
 		},
 	},
 };
