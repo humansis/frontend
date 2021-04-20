@@ -2,6 +2,7 @@ import router from "@/router";
 import CONST from "@/const";
 import store from "@/store/index";
 import getters from "@/store/getters";
+import { Notification } from "@/utils/UI";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
@@ -30,15 +31,24 @@ export const getResponseJSON = async (response, download = false) => {
 	const notFound = response.status === 404;
 
 	if (forbidden) {
-		router.push({ name: "NotFound" });
-		throw new Error("You don't have a access to continue");
+		Notification("You don't have a access to continue", "is-warning");
+		await router.push({ name: "NotFound" });
 	}
 
 	if (unauthorized) {
+		const now = new Date();
+		const { exp } = getters.getUserFromVuexStorage();
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
-		router.push({ name: "Login", query: { redirect } });
-		throw new Error("You need to login to continue");
+
+		if (exp && now > exp) {
+			await store.dispatch("logoutUser");
+			Notification("Your session has expired. Please log in again", "is-warning");
+		} else {
+			Notification("You need to login to continue", "is-warning");
+		}
+
+		await router.push({ name: "Login", query: { redirect } });
 	}
 
 	if (notFound) {
@@ -60,8 +70,8 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async ({ uri, jwt = false, auth = true, method, body, contentType }) => {
-	const url = jwt ? `${CONST.API_JWT}/${uri}` : `${CONST.API}/${uri}`;
+export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+	const url = `${CONST.API}/${uri}`;
 
 	let headers = {};
 
@@ -74,7 +84,7 @@ export const fetcher = async ({ uri, jwt = false, auth = true, method, body, con
 		const user = getters.getUserFromVuexStorage();
 
 		if (user?.token) {
-			headers.Authorization = `Basic ${user.token}`;
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -105,7 +115,7 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 		const user = getters.getUserFromVuexStorage();
 
 		if (user?.token) {
-			headers.Authorization = `Basic ${user.token}`;
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -131,7 +141,7 @@ export const download = async ({ uri }) => {
 	const user = getters.getUserFromVuexStorage();
 
 	if (user?.token) {
-		headers.Authorization = `Basic ${user.token}`;
+		headers.Authorization = `Bearer ${user.token}`;
 	}
 
 	const country = getters.getCountryFromVuexStorage();

@@ -69,7 +69,13 @@ export default {
 	},
 
 	[CONST.LOGOUT]: (state) => {
-		state.user = null;
+		state.user = {
+			iat: null,
+			exp: null,
+			roles: [],
+			username: null,
+			token: null,
+		};
 		const permissionsCopy = { ...state.permissions };
 
 		Object.keys(permissionsCopy).forEach((permission) => {

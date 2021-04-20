@@ -56,7 +56,6 @@ export default {
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-					this.$store.dispatch("appLoading", false);
 				});
 
 				this.appLoading(false);

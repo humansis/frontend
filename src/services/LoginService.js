@@ -4,7 +4,6 @@ export default {
 	async logUserIn(body) {
 		const { data, status } = await fetcher({
 			uri: "login",
-			jwt: true,
 			method: "POST",
 			body,
 		});
