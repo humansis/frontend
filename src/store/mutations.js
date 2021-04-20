@@ -80,4 +80,8 @@ export default {
 	[CONST.STORE_ICONS]: (state, icons) => {
 		state.icons = icons;
 	},
+
+	[CONST.STORE_ADM_NAMES]: (state, admNames) => {
+		state.admNames = admNames;
+	},
 };

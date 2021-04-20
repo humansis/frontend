@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<b-field
-			:label="$t('Province')"
+			:label="$t(admNames.adm1)"
 			:type="validateType('adm1Id')"
 			:message="validateMsg('adm1Id', 'Required')"
 		>
@@ -21,7 +21,7 @@
 
 		<b-field>
 			<template #label>
-				{{ $t('District') }}
+				{{ $t(admNames.adm2) }}
 				<span class="optional-text has-text-weight-normal is-italic">
 					- {{ $t('Optional') }}
 				</span>
@@ -41,7 +41,7 @@
 
 		<b-field>
 			<template #label>
-				{{ $t('Commune') }}
+				{{ $t(admNames.adm3) }}
 				<span class="optional-text has-text-weight-normal is-italic">
 					- {{ $t('Optional') }}
 				</span>
@@ -61,7 +61,7 @@
 
 		<b-field>
 			<template #label>
-				{{ $t('Village') }}
+				{{ $t(admNames.adm4) }}
 				<span class="optional-text has-text-weight-normal is-italic">
 					- {{ $t('Optional') }}
 				</span>
@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import { required } from "vuelidate/lib/validators";
 import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
@@ -101,6 +102,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+	},
+
+	computed: {
+		...mapState(["admNames"]),
 	},
 
 	data() {

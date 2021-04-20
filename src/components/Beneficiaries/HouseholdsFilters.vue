@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		v-if="admNames"
 		multiline
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
@@ -8,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
@@ -120,7 +122,12 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["admNames"]),
+	},
+
 	mounted() {
+		this.setLocationNames();
 		this.fetchProjects();
 		this.fetchProvinces();
 		this.fetchLivelihoods();
@@ -130,6 +137,20 @@ export default {
 	},
 
 	methods: {
+		setLocationNames() {
+			this.filtersOptions.adm1.name = this.admNames.adm1;
+			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
+
+			this.filtersOptions.adm2.name = this.admNames.adm2;
+			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
+
+			this.filtersOptions.adm3.name = this.admNames.adm3;
+			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
+
+			this.filtersOptions.adm4.name = this.admNames.adm4;
+			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
+		},
+
 		filterChanged(filters, filterName) {
 			switch (filterName) {
 				case "adm1":
@@ -201,7 +222,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
 				});
 		},
 
@@ -213,7 +234,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
 				});
 		},
 
@@ -225,7 +246,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
 		},
 
@@ -237,7 +258,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 

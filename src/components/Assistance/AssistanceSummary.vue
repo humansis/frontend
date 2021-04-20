@@ -20,7 +20,7 @@
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Province') }}</p>
+					<p class="heading">{{ $t(admNames.adm1) }}</p>
 					<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Loading from "@/components/Loading";
 import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
@@ -135,6 +136,8 @@ export default {
 	},
 
 	computed: {
+		...mapState(["admNames"]),
+
 		assistanceName() {
 			return this.assistance?.name || "";
 		},

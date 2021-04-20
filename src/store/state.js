@@ -13,6 +13,7 @@ export default {
 	perPage: 10,
 	icons: null,
 	translations: null,
+	admNames: null,
 	languages: [
 		{ name: "English", key: "en" },
 		{ name: "Arabic", key: "ar" },
