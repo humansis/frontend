@@ -212,12 +212,13 @@ export default {
 
 	async sendVerificationEmailForTransactions(assistanceId) {
 		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/transactions/emails`,
+			uri: `assistances/${assistanceId}/transactions/emails`, method: "POST",
 		});
 		return { data, status };
 	},
 
 	async createTransactionsForBeneficiaries(assistanceId, body) {
+		// TODO Add beneficiary IDs
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/transactions`, method: "POST", body,
 		});

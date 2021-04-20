@@ -6,19 +6,17 @@
 			:project="project"
 		/>
 		<Modal
-			can-cancel
-			:header="transactionsModal.isEditing ? $t('Edit This Institution')
-				: $t('Detail of Institution')"
-			:active="transactionsModal.isOpened"
-			:is-waiting="transactionsModal.isWaiting"
-			@close="closeTransactionsModal"
+			:header="$t('Start Transaction')"
+			:active="transactionModal.isOpened"
+			:is-waiting="transactionModal.isWaiting"
+			@close="closeTransactionModal"
 		>
-			<StartTransactionsForm
+			<StartTransactionForm
 				close-button
 				:submit-button-label="$t('Confirm')"
 				class="modal-card"
-				@formSubmitted="confirmTransactions"
-				@formClosed="closeTransactionsModal"
+				@formSubmitted="confirmTransaction"
+				@formClosed="closeTransactionModal"
 			/>
 		</Modal>
 		<div class="m-6">
@@ -120,10 +118,11 @@
 				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer"
+					"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
+					:loading="startTransactionButtonLoading"
 					@click="startTransaction"
 				>
 					{{ $t("Start Transaction") }} ({{ beneficiariesCount }})
@@ -141,15 +140,17 @@ import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
-import StartTransactionsForm from "@/components/Assistance/BeneficiariesList/StartTransactionsForm";
+import Modal from "@/components/Modal";
+import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
 
 export default {
 	name: "AssistanceDetail",
 
 	components: {
-		StartTransactionsForm,
+		StartTransactionForm,
 		BeneficiariesList,
 		AssistanceSummary,
+		Modal,
 	},
 
 	mixins: [permissions],
@@ -165,7 +166,8 @@ export default {
 			commodities: [],
 			setAtDistributedButtonVisible: false,
 			setAtDistributedButtonLoading: false,
-			transactionsModal: {
+			startTransactionButtonLoading: false,
+			transactionModal: {
 				isOpened: false,
 				isEditing: false,
 				isWaiting: false,
@@ -351,23 +353,49 @@ export default {
 			}
 		},
 
-		closeTransactionsModal() {
-			this.transactionsModal.isOpened = false;
+		closeTransactionModal() {
+			this.transactionModal.isOpened = false;
 		},
 
 		async startTransaction() {
-			this.transactionsModal.isOpened = true;
-			// 0. Date validation
-			// 1. Open modal window
-			// 2. Send request "code to email"
-			// 3. After code is typed, send another request
+			this.startTransactionButtonLoading = true;
+
+			// TODO Date validation
+
+			await AssistancesService.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
+				.then((response) => {
+					if (response.status === 204) {
+						this.transactionModal.isOpened = true;
+					}
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+				});
+
+			this.startTransactionButtonLoading = false;
 		},
 
-		async confirmTransactions() {
-			// 0. Date validation
-			// 1. Open modal window
-			// 2. Send request "code to email"
-			// 3. After code is typed, send another request
+		async confirmTransaction(code) {
+			// TODO filter[beneficiaryId]
+			this.transactionModal.isWaiting = true;
+
+			const body = {
+				code,
+			};
+
+			await AssistancesService.createTransactionsForBeneficiaries(
+				this.$route.params.assistanceId,
+				body,
+			).then(({ status }) => {
+				if (status === 204) {
+					Toast(this.$t("Successful Transaction"), "is-success");
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+			});
+
+			this.transactionModal.isWaiting = false;
+			this.closeTransactionModal();
 		},
 
 		async fetchCommodity() {
