@@ -63,8 +63,7 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
-/* eslint-disable camelcase */
-import jwt_decode from "jwt-decode";
+import JWTDecode from "jwt-decode";
 
 export default {
 	name: "Login",
@@ -123,7 +122,7 @@ export default {
 				if (response.status === 200) {
 					const { data: { token } } = response;
 
-					const user = await jwt_decode(token);
+					const user = await JWTDecode(token);
 					user.token = token;
 
 					await this.storeUser(user);

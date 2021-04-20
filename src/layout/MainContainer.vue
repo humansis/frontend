@@ -42,10 +42,6 @@ export default {
 		this.setLocales();
 	},
 
-	updated() {
-		this.jwtExpiration();
-	},
-
 	methods: {
 		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
 
