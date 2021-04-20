@@ -38,7 +38,6 @@
 					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					:placeholder="$t('Quantity of Booklets')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfBooklets')"
@@ -57,7 +56,6 @@
 					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					:placeholder="$t('Quantity Of Vouchers')"
 					:disabled="formDisabled"
 					:controls="!formDisabled"
 					@input="validate('quantityOfVouchers')"
@@ -110,7 +108,6 @@
 					v-model="formModel.password"
 					type="password"
 					password-reveal
-					:placeholder="$t('Password')"
 					:disabled="formDisabled"
 					@blur="validate('password')"
 				/>

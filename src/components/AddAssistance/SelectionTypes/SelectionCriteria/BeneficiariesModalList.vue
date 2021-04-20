@@ -47,7 +47,7 @@ export default {
 					{ key: "id", sortable: true, searchable: true },
 					{ key: "localFamilyName", label: "Family Name", sortable: true, searchable: true },
 					{ key: "localGivenName", label: "First Name", sortable: true, searchable: true },
-					{ key: "vulnerability", sortable: true, searchable: true },
+					{ key: "vulnerabilityCriteria", type: "svgIcon", sortable: true, searchable: true },
 				],
 				total: 0,
 			},

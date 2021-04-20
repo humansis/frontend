@@ -2,6 +2,7 @@
 	<div class="mb-6">
 		<Modal
 			can-cancel
+			:header="$t('Selected Beneficiaries')"
 			:active="detailModal.isOpened"
 			@close="closeCriteriaGroupModal"
 		>
