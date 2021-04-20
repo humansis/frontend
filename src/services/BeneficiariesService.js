@@ -177,7 +177,6 @@ export default {
 	async addHouseholdsToProject(projectId, ids) {
 		const { data } = await fetcher({
 			uri: `projects/${projectId}/households`,
-			auth: true,
 			method: "PUT",
 			body: {
 				householdIds: ids,

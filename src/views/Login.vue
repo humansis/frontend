@@ -16,13 +16,13 @@
 							<b-field
 								label="Username"
 								label-position="inside"
-								:type="validateType('login')"
-								:message="validateMsg('login', 'Required')"
+								:type="validateType('username')"
+								:message="validateMsg('username', 'Required')"
 							>
 								<b-input
-									v-model="formModel.login"
+									v-model="formModel.username"
 									autofocus
-									@blur="validate('login')"
+									@blur="validate('username')"
 								/>
 							</b-field>
 
@@ -63,6 +63,7 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
+import JWTDecode from "jwt-decode";
 
 export default {
 	name: "Login",
@@ -70,7 +71,7 @@ export default {
 	data() {
 		return {
 			formModel: {
-				login: "",
+				username: "",
 				password: "",
 			},
 			loginButtonLoading: false,
@@ -81,7 +82,7 @@ export default {
 
 	validations: {
 		formModel: {
-			login: {
+			username: {
 				required,
 			},
 			password: {
@@ -119,17 +120,16 @@ export default {
 
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
-					// TODO Uncomment this after login will be implemented by BE
-					const user = {};
+					const { data: { token } } = response;
 
-					// TODO Different usage of window.btoa with credentials -> after BE will work
-					user.authdata = window.btoa(`${this.formModel.login}:${this.formModel.password}`);
-					user.role = "ROLE_ADMIN";
+					const user = await JWTDecode(token);
+					user.token = token;
 
 					await this.storeUser(user);
 
-					const { privileges } = await LoginService.getRolePermissions(user.role)
-						.then(({ data }) => data);
+					const { data: { privileges } } = user.roles[0]
+						? await LoginService.getRolePermissions(user.roles[0]) : {}
+							.then(({ data }) => data);
 
 					await this.storePermissions(privileges);
 

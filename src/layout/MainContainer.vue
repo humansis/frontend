@@ -33,15 +33,27 @@ export default {
 			"isAppLoading",
 			"language",
 			"translations",
+			"user",
 		]),
 	},
 
 	created() {
+		this.jwtExpiration();
 		this.setLocales();
 	},
 
 	methods: {
-		...mapActions(["storeTranslations", "appLoading"]),
+		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
+
+		jwtExpiration() {
+			const now = Math.round(new Date().getTime() / 1000);
+			const { exp } = this.user;
+
+			if (now > exp) {
+				this.logoutUser();
+				Notification(`${this.$t("Your session has expired")}. ${this.$t("Please login again")}`, "is-danger");
+			}
+		},
 
 		async setLocales() {
 			const { key: languageKey } = this.language;
@@ -56,7 +68,6 @@ export default {
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-					this.$store.dispatch("appLoading", false);
 				});
 
 				this.appLoading(false);

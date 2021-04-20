@@ -11,9 +11,9 @@ const ifAuthenticated = (to, from, next) => {
 	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
 		.every((permission) => permissions?.[permission]) : true;
 
-	if (user?.authdata && to.meta.permissions && canGoNext) {
+	if (user?.token && to.meta.permissions && canGoNext) {
 		next();
-	} else if (!user?.authdata) {
+	} else if (!user?.token) {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Login", query: { redirect } });
 	} else {
@@ -353,7 +353,7 @@ router.beforeEach((to, from, next) => {
 
 	if (
 		to.name === "Login"
-		&& user?.authdata
+		&& user?.token
 	) {
 		next({ name: "Home" });
 	} else {

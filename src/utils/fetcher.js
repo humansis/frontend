@@ -12,7 +12,7 @@ async function getErrorsFromResponse(data) {
 			errors += `${error.message} (${error.source}), `;
 		});
 	}
-	// Please remove this code before release because it reads
+	// TODO Please remove this code before release because it reads
 	// data that is not supposed to be visible for user
 	if (data.debug && data.debug.length) {
 		data.debug.forEach((debug) => {
@@ -42,6 +42,7 @@ export const getResponseJSON = async (response, download = false) => {
 	if (unauthorized) {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
+
 		router.push({ name: "Login", query: { redirect } });
 		throw new Error("You need to login to continue");
 	}
@@ -49,7 +50,9 @@ export const getResponseJSON = async (response, download = false) => {
 	if (notFound) {
 		throw new Error(response.statusText);
 	}
+
 	let data = null;
+
 	if (download) {
 		data = await response.blob();
 	} else {
@@ -76,8 +79,8 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -107,8 +110,8 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
 
-		if (user?.authdata) {
-			headers.Authorization = `Basic ${user.authdata}`;
+		if (user?.token) {
+			headers.Authorization = `Bearer ${user.token}`;
 		}
 	}
 
@@ -133,8 +136,8 @@ export const download = async ({ uri }) => {
 
 	const user = getters.getUserFromVuexStorage();
 
-	if (user?.authdata) {
-		headers.Authorization = `Basic ${user.authdata}`;
+	if (user?.token) {
+		headers.Authorization = `Bearer ${user.token}`;
 	}
 
 	const country = getters.getCountryFromVuexStorage();
@@ -152,6 +155,7 @@ export const download = async ({ uri }) => {
 
 export const filtersToUri = (filters) => {
 	let query = "";
+
 	Object.keys(filters).forEach((key) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
@@ -161,6 +165,7 @@ export const filtersToUri = (filters) => {
 			query += `&filter[${key}]=${filters[key]}`;
 		}
 	});
+
 	return query;
 };
 
