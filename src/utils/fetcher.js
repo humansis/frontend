@@ -2,7 +2,6 @@ import router from "@/router";
 import CONST from "@/const";
 import store from "@/store/index";
 import getters from "@/store/getters";
-import { Notification } from "@/utils/UI";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
