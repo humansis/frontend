@@ -5,6 +5,22 @@
 			:assistance="assistance"
 			:project="project"
 		/>
+		<Modal
+			can-cancel
+			:header="transactionsModal.isEditing ? $t('Edit This Institution')
+				: $t('Detail of Institution')"
+			:active="transactionsModal.isOpened"
+			:is-waiting="transactionsModal.isWaiting"
+			@close="closeTransactionsModal"
+		>
+			<StartTransactionsForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				class="modal-card"
+				@formSubmitted="confirmTransactions"
+				@formClosed="closeTransactionsModal"
+			/>
+		</Modal>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
@@ -108,7 +124,6 @@
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
-					:loading="startTransactionButtonLoading"
 					@click="startTransaction"
 				>
 					{{ $t("Start Transaction") }} ({{ beneficiariesCount }})
@@ -126,11 +141,13 @@ import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
+import StartTransactionsForm from "@/components/Assistance/BeneficiariesList/StartTransactionsForm";
 
 export default {
 	name: "AssistanceDetail",
 
 	components: {
+		StartTransactionsForm,
 		BeneficiariesList,
 		AssistanceSummary,
 	},
@@ -148,7 +165,11 @@ export default {
 			commodities: [],
 			setAtDistributedButtonVisible: false,
 			setAtDistributedButtonLoading: false,
-			startTransactionButtonLoading: false,
+			transactionsModal: {
+				isOpened: false,
+				isEditing: false,
+				isWaiting: false,
+			},
 		};
 	},
 
@@ -330,13 +351,23 @@ export default {
 			}
 		},
 
+		closeTransactionsModal() {
+			this.transactionsModal.isOpened = false;
+		},
+
 		async startTransaction() {
-			this.startTransactionButtonLoading = true;
+			this.transactionsModal.isOpened = true;
+			// 0. Date validation
+			// 1. Open modal window
+			// 2. Send request "code to email"
+			// 3. After code is typed, send another request
+		},
 
-			// TODO Call endpoint for Start Transaction in this assistance
-			// TODO Hide button if transaction was already done
-
-			this.startTransactionButtonLoading = false;
+		async confirmTransactions() {
+			// 0. Date validation
+			// 1. Open modal window
+			// 2. Send request "code to email"
+			// 3. After code is typed, send another request
 		},
 
 		async fetchCommodity() {
