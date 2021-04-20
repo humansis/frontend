@@ -33,15 +33,31 @@ export default {
 			"isAppLoading",
 			"language",
 			"translations",
+			"user",
 		]),
 	},
 
 	created() {
+		this.jwtExpiration();
 		this.setLocales();
 	},
 
+	updated() {
+		this.jwtExpiration();
+	},
+
 	methods: {
-		...mapActions(["storeTranslations", "appLoading"]),
+		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
+
+		jwtExpiration() {
+			const now = Math.round(new Date().getTime() / 1000);
+			const { exp } = this.user;
+
+			if (now > exp) {
+				this.logoutUser();
+				Notification(`${this.$t("Your session has expired")}. ${this.$t("Please login again")}`, "is-danger");
+			}
+		},
 
 		async setLocales() {
 			const { key: languageKey } = this.language;

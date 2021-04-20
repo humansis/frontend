@@ -31,24 +31,16 @@ export const getResponseJSON = async (response, download = false) => {
 	const notFound = response.status === 404;
 
 	if (forbidden) {
-		Notification("You don't have a access to continue", "is-warning");
-		await router.push({ name: "NotFound" });
+		router.push({ name: "NotFound" });
+		throw new Error("You don't have a access to continue");
 	}
 
 	if (unauthorized) {
-		const now = new Date();
-		const { exp } = getters.getUserFromVuexStorage();
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
 
-		if (exp && now > exp) {
-			await store.dispatch("logoutUser");
-			Notification("Your session has expired. Please log in again", "is-warning");
-		} else {
-			Notification("You need to login to continue", "is-warning");
-		}
-
-		await router.push({ name: "Login", query: { redirect } });
+		router.push({ name: "Login", query: { redirect } });
+		throw new Error("You need to login to continue");
 	}
 
 	if (notFound) {

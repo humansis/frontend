@@ -128,7 +128,7 @@ export default {
 
 					await this.storeUser(user);
 
-					const { privileges } = user.roles?.[0]
+					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
 							.then(({ data }) => data);
 
