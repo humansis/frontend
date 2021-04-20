@@ -119,14 +119,7 @@ export default {
 			};
 		},
 
-		addNewVendor() {
-			this.vendorModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
+		eraseFormModel() {
 			this.vendorModel = {
 				...this.vendorModel,
 				creating: true,
@@ -149,8 +142,20 @@ export default {
 			};
 		},
 
+		addNewVendor() {
+			this.vendorModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.eraseFormModel();
+		},
+
 		closeVendorModal() {
 			this.vendorModal.isOpened = false;
+			this.eraseFormModel();
 		},
 
 		showDetail(vendor) {

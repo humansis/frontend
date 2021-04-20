@@ -114,24 +114,17 @@ export default {
 	},
 
 	methods: {
-		async editCommunity(community) {
-			await this.mapToFormModel(community);
+		editCommunity(community) {
 			this.communityModal = {
 				isEditing: true,
 				isOpened: true,
 				isDetail: false,
 				isWaiting: false,
 			};
+			this.mapToFormModel(community);
 		},
 
-		addNewCommunity() {
-			this.communityModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
+		eraseFormModel() {
 			this.communityModel = {
 				...this.communityModel,
 				id: null,
@@ -159,18 +152,30 @@ export default {
 			};
 		},
 
-		closeCommunityModal() {
-			this.communityModal.isOpened = false;
+		addNewCommunity() {
+			this.communityModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.eraseFormModel();
 		},
 
-		async showDetail(community) {
-			await this.mapToFormModel(community);
+		closeCommunityModal() {
+			this.communityModal.isOpened = false;
+			this.eraseFormModel();
+		},
+
+		showDetail(community) {
 			this.communityModal = {
 				isEditing: false,
 				isOpened: true,
 				isDetail: true,
 				isWaiting: false,
 			};
+			this.mapToFormModel(community);
 		},
 
 		async mapToFormModel(

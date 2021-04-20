@@ -468,10 +468,6 @@ export default {
 			this.$emit("rowsChecked", rows);
 		},
 
-		exportAssistance(format) {
-			console.log(format);
-		},
-
 		async randomSample() {
 			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
 			const randomPage = this.rnd(1, this.table.total / size);

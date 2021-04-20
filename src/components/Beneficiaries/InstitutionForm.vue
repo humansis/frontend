@@ -173,7 +173,6 @@
 				<b-input
 					v-model="formModel.nationalCardNumber"
 					expanded
-					:placeholder="$t('Contact ID Number')"
 					:disabled="formDisabled"
 					@blur="validate('nationalCardNumber')"
 				/>
@@ -215,7 +214,6 @@
 				</template>
 				<b-input
 					v-model="formModel.addressNumber"
-					:placeholder="$t('Address Number')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
@@ -229,7 +227,6 @@
 				</template>
 				<b-input
 					v-model="formModel.addressStreet"
-					:placeholder="$t('Address Street')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
@@ -243,7 +240,6 @@
 				</template>
 				<b-input
 					v-model="formModel.addressPostCode"
-					:placeholder="$t('Address Postcode')"
 					:disabled="formDisabled"
 				/>
 			</b-field>
@@ -258,7 +254,6 @@
 					</template>
 					<b-input
 						v-model="formModel.latitude"
-						:placeholder="$t('Latitude')"
 						:disabled="formDisabled"
 					/>
 				</b-field>
@@ -271,7 +266,6 @@
 					</template>
 					<b-input
 						v-model="formModel.longitude"
-						:placeholder="$t('Longitude')"
 						:disabled="formDisabled"
 					/>
 				</b-field>

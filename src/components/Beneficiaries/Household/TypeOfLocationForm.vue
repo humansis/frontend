@@ -48,7 +48,6 @@
 
 			<b-field
 				grouped
-				:label="$t('Camp Name')"
 				:type="validateType('campName')"
 				:message="validateMsg('campName')"
 			>
@@ -68,7 +67,6 @@
 			>
 				<b-input
 					v-model="formModel.tentNumber"
-					:placeholder="$t('Tent Number')"
 					@blur="validate('tentNumber')"
 				/>
 			</b-field>
@@ -81,7 +79,6 @@
 			>
 				<b-input
 					v-model="formModel.number"
-					:placeholder="$t('Address Number')"
 					@blur="validate('number')"
 				/>
 			</b-field>
@@ -93,7 +90,6 @@
 			>
 				<b-input
 					v-model="formModel.street"
-					:placeholder="$t('Address Street')"
 					@blur="validate('street')"
 				/>
 			</b-field>
@@ -105,7 +101,6 @@
 			>
 				<b-input
 					v-model="formModel.postcode"
-					:placeholder="$t('Address Postcode')"
 					@blur="validate('postcode')"
 				/>
 			</b-field>

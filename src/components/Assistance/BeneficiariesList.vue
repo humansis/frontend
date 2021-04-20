@@ -348,6 +348,7 @@ export default {
 	},
 
 	async created() {
+		await this.reloadBeneficiariesList();
 		await this.getAssistanceCommodities();
 	},
 
@@ -361,15 +362,16 @@ export default {
 
 	methods: {
 		async reloadBeneficiariesList() {
-			await this.fetchData();
-			await this.prepareTableColumns();
+			if (this.assistance) {
+				this.prepareTableColumns();
+				await this.fetchData();
+			}
 		},
 
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
-
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
 					await AssistancesService.getListOfCommunities(
@@ -486,9 +488,8 @@ export default {
 					{ key: "value" },
 				];
 			}
-
-			this.visibleColumns = [...baseColumns, ...additionalColumns];
-			this.table.columns = generateColumns([...baseColumns, ...additionalColumns]);
+			this.table.visibleColumns = [...baseColumns, ...additionalColumns];
+			this.table.columns = generateColumns(this.table.visibleColumns);
 		},
 
 		async prepareDataForTable(data) {
