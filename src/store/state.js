@@ -53,6 +53,7 @@ export default {
 		addEditProducts: false,
 		countryReport: false,
 		projectReport: false,
+		authoriseElectronicCashTransfer: false,
 		distributionReport: false,
 		countrySettings: false,
 		addEditUsers: false,

@@ -118,7 +118,7 @@
 				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.assignDistributionItems
+						&& userCan.authoriseElectronicCashTransfer
 					"
 					class="flex-end ml-3"
 					type="is-primary"
