@@ -64,7 +64,7 @@ export default {
 				return;
 			}
 
-			this.$emit("formSubmitted", this.code);
+			this.$emit("formSubmitted", this.formModel.code);
 			this.$v.$reset();
 		},
 

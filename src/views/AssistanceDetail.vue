@@ -359,21 +359,29 @@ export default {
 		},
 
 		async startTransaction() {
-			this.startTransactionButtonLoading = true;
+			const now = new Date().toISOString();
+			const dateOfDistribution = this.assistance.dateDistribution;
+			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
 
-			// TODO Date validation
+			if (isAfter) {
+				this.startTransactionButtonLoading = true;
 
-			await AssistancesService.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
-				.then((response) => {
-					if (response.status === 204) {
-						this.transactionModal.isOpened = true;
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
-				});
+				await AssistancesService
+					.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
+					.then((response) => {
+						if (response.status === 204) this.transactionModal.isOpened = true;
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+					});
 
-			this.startTransactionButtonLoading = false;
+				this.startTransactionButtonLoading = false;
+			} else {
+				Notification(
+					`${this.$t("Date of the distribution is in the future")}.`,
+					"is-danger",
+				);
+			}
 		},
 
 		async confirmTransaction(code) {
@@ -389,6 +397,9 @@ export default {
 			).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Successful Transaction"), "is-success");
+
+					this.$refs.beneficiariesList.fetchData();
+					this.fetchAssistanceStatistics();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
