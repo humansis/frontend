@@ -36,7 +36,6 @@ export default {
 		deleteDistribution: false,
 		viewDistribution: false,
 		assignDistributionItems: false,
-		authoriseElectronicCashTransfer: false,
 		addBeneficiary: false,
 		editBeneficiary: false,
 		deleteBeneficiary: false,

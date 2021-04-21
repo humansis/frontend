@@ -218,7 +218,6 @@ export default {
 	},
 
 	async createTransactionsForBeneficiaries(assistanceId, body) {
-		// TODO Add beneficiary IDs
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/transactions`, method: "POST", body,
 		});

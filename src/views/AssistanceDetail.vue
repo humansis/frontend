@@ -118,7 +118,7 @@
 				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer
+						&& userCan.assignDistributionItems
 					"
 					class="flex-end ml-3"
 					type="is-primary"
@@ -377,7 +377,6 @@ export default {
 		},
 
 		async confirmTransaction(code) {
-			// TODO filter[beneficiaryId]
 			this.transactionModal.isWaiting = true;
 
 			const body = {
