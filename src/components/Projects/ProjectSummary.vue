@@ -60,7 +60,9 @@
 			<div class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading"> {{ $t('Beneficiaries Reached') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
+					<p class="has-text-weight-bold is-size-5">
+						{{ projectSummary.beneficiariesReached }}
+					</p>
 				</div>
 			</div>
 		</nav>

@@ -5,6 +5,20 @@
 			:assistance="assistance"
 			:project="project"
 		/>
+		<Modal
+			:header="$t('Start Transaction')"
+			:active="transactionModal.isOpened"
+			:is-waiting="transactionModal.isWaiting"
+			@close="closeTransactionModal"
+		>
+			<StartTransactionForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				class="modal-card"
+				@formSubmitted="confirmTransaction"
+				@formClosed="closeTransactionModal"
+			/>
+		</Modal>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
@@ -104,7 +118,8 @@
 				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer"
+						&& userCan.authoriseElectronicCashTransfer
+					"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -126,13 +141,17 @@ import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
+import Modal from "@/components/Modal";
+import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
 
 export default {
 	name: "AssistanceDetail",
 
 	components: {
+		StartTransactionForm,
 		BeneficiariesList,
 		AssistanceSummary,
+		Modal,
 	},
 
 	mixins: [permissions],
@@ -149,6 +168,11 @@ export default {
 			setAtDistributedButtonVisible: false,
 			setAtDistributedButtonLoading: false,
 			startTransactionButtonLoading: false,
+			transactionModal: {
+				isOpened: false,
+				isEditing: false,
+				isWaiting: false,
+			},
 		};
 	},
 
@@ -330,13 +354,59 @@ export default {
 			}
 		},
 
+		closeTransactionModal() {
+			this.transactionModal.isOpened = false;
+		},
+
 		async startTransaction() {
-			this.startTransactionButtonLoading = true;
+			const now = new Date().toISOString();
+			const dateOfDistribution = this.assistance.dateDistribution;
+			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
 
-			// TODO Call endpoint for Start Transaction in this assistance
-			// TODO Hide button if transaction was already done
+			if (isAfter) {
+				this.startTransactionButtonLoading = true;
 
-			this.startTransactionButtonLoading = false;
+				await AssistancesService
+					.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
+					.then((response) => {
+						if (response.status === 204) this.transactionModal.isOpened = true;
+					})
+					.catch((e) => {
+						Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+					});
+
+				this.startTransactionButtonLoading = false;
+			} else {
+				Notification(
+					`${this.$t("Date of the distribution is in the future")}.`,
+					"is-danger",
+				);
+			}
+		},
+
+		async confirmTransaction(code) {
+			this.transactionModal.isWaiting = true;
+
+			const body = {
+				code,
+			};
+
+			await AssistancesService.createTransactionsForBeneficiaries(
+				this.$route.params.assistanceId,
+				body,
+			).then(({ status }) => {
+				if (status === 204) {
+					Toast(this.$t("Successful Transaction"), "is-success");
+
+					this.$refs.beneficiariesList.fetchData();
+					this.fetchAssistanceStatistics();
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+			});
+
+			this.transactionModal.isWaiting = false;
+			this.closeTransactionModal();
 		},
 
 		async fetchCommodity() {
