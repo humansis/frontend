@@ -72,8 +72,9 @@
 			<slot />
 
 			<template v-if="paginated" #bottom-left>
-				<p style="width: 120px;">{{ $t('Per Page') }}: </p>
+				<p style="white-space: nowrap">{{ $t('Per Page') }}: </p>
 				<MultiSelect
+					class="ml-2 mr-2"
 					hide-selected
 					open-direction="above"
 					:value="perPage"
@@ -82,6 +83,7 @@
 					:show-labels="false"
 					@input="onChangePerPage"
 				/>
+				<p style="white-space: nowrap">{{ $t('Total Count') }}: {{ total }}</p>
 			</template>
 		</b-table>
 	</CardComponent>
