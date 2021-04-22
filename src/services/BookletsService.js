@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfBooklets(page, size, sort, search = null, filters = null) {
@@ -35,10 +35,11 @@ export default {
 		return { data, status };
 	},
 
-	async exportBooklets(format) {
+	async exportBooklets(format, ids = []) {
 		const formatText = format ? `type=${format}` : "";
+		const idsText = ids.length ? idsToUri(ids) : "";
 
-		const { data } = await download({ uri: `booklets/exports?${formatText}` });
+		const { data } = await download({ uri: `booklets/exports?${formatText}&${idsText}` });
 		return { data };
 	},
 };

@@ -51,6 +51,7 @@
 					icon="print"
 					type="is-dark"
 					:tooltip="$t('Print')"
+					@click.native="printBooklets(props.row.id)"
 				/>
 			</div>
 		</b-table-column>
@@ -213,6 +214,22 @@ export default {
 				})
 				.catch((e) => {
 					Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
+		},
+
+		async printBooklets(id) {
+			this.exportLoading = true;
+			await BookletsService.exportBooklets("pdf", [id])
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `booklets.pdf`;
+					link.click();
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Print Booklets")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},
