@@ -39,6 +39,7 @@ deploy dev:
   <<: *prepare_aws
   script:
     - yarn install
+    - ./get-info.sh
     - ./build-deploy.sh dev
   only:
     - branches
@@ -52,6 +53,7 @@ deploy test:
   <<: *prepare_aws
   script:
     - yarn install
+    - ./get-info.sh
     - ./build-deploy.sh test
   only:
     - /^develop$/
@@ -66,6 +68,7 @@ deploy test3:
   <<: *prepare_aws
   script:
     - yarn install
+    - ./get-info.sh
     - ./build-deploy.sh test3
   only:
     - branches
@@ -79,6 +82,7 @@ deploy stage:
   <<: *prepare_aws
   script:
     - yarn install
+    - ./get-info.sh
     - ./build-deploy.sh stage
   only:
     - /^release\/.*$/
@@ -93,6 +97,7 @@ deploy prod:
   <<: *prepare_aws
   script:
     - yarn install
+    - ./get-info.sh
     - ./build-deploy.sh prod
   only:
     - /^v.*$/
