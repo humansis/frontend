@@ -36,7 +36,7 @@
 import Loading from "@/components/Loading";
 import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
+import errorHandler from "@/mixins/errorHandler";
 
 export default {
 	name: "Summary",
@@ -73,6 +73,8 @@ export default {
 		};
 	},
 
+	mixins: [errorHandler],
+
 	watch: {
 		$route: "fetchData",
 	},
@@ -105,7 +107,7 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
+						this.handleError(e, "Summaries", "is-danger");
 					});
 			});
 		},

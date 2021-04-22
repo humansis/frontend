@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import getters from "@/store/getters";
 import store from "@/store/index";
+import { Notification } from "@/utils/UI";
 
 Vue.use(VueRouter);
 
@@ -33,6 +34,15 @@ const routes = [
 		name: "Logout",
 		beforeEnter: ({ query }, from, next) => {
 			store.dispatch("logoutUser");
+
+			let showNotification = true;
+
+			console.log(query);
+			if (showNotification && query?.notification === "login") {
+				showNotification = false;
+				Notification("You need to login to continue", "is-success");
+			}
+
 			next({ name: "Login", query });
 			Vue.$router.go();
 		},

@@ -42,9 +42,9 @@ export const getResponseJSON = async (response, download = false) => {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
 
-		router.push({ name: "Logout", query: { redirect } });
+		router.push({ name: "Logout", query: { redirect, notification: "login" } });
 
-		throw new Error("You need to login to continue");
+		throw new Error("");
 	}
 
 	if (notFound) {
