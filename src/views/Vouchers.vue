@@ -83,7 +83,7 @@ export default {
 				id: null,
 				quantityOfBooklets: 0,
 				quantityOfVouchers: 0,
-				individualValue: "",
+				values: "",
 				projectId: 0,
 				project: "",
 				password: "",
@@ -124,12 +124,12 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				totalValue,
 				projectId,
 				password,
 				status,
 				code,
 				currency,
+				individualValues,
 			},
 		) {
 			this.voucherModel = {
@@ -138,12 +138,12 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				individualValue: totalValue,
 				projectId,
 				password,
 				status,
 				code,
 				currency,
+				values: individualValues,
 			};
 		},
 

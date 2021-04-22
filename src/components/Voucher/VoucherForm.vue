@@ -181,7 +181,7 @@ export default {
 	methods: {
 		mapToFormModel() {
 			if (this.formModel.currency) {
-				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], this.options.currencies, "value");
+				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], currencies, "value");
 			}
 		},
 
