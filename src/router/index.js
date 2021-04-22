@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import getters from "@/store/getters";
+import store from "@/store/index";
 
 Vue.use(VueRouter);
 
@@ -15,7 +16,7 @@ const ifAuthenticated = (to, from, next) => {
 		next();
 	} else if (!user?.token) {
 		const redirect = to.query?.redirect || to.fullPath;
-		next({ name: "Login", query: { redirect } });
+		next({ name: "Logout", query: { redirect } });
 	} else {
 		next({ name: "NotFound" });
 	}
@@ -26,6 +27,15 @@ const routes = [
 		path: "/login",
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
+	},
+	{
+		path: "/logout",
+		name: "Logout",
+		beforeEnter: ({ query }, from, next) => {
+			store.dispatch("logoutUser");
+			next({ name: "Login", query });
+			Vue.$router.go();
+		},
 	},
 	{
 		path: "",

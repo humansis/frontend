@@ -231,8 +231,7 @@ export default {
 		},
 
 		logout() {
-			this.logoutUser();
-			this.$router.push({ name: "Login" });
+			this.$router.push({ name: "Logout" });
 		},
 	},
 
