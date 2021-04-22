@@ -385,15 +385,15 @@ export default {
 				switch (typeOfLocation) {
 					case "camp":
 						return AddressService.getCampAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 						});
 					case "residence":
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 						});
 					case "temporary_settlement":
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
 						});
 					default:
 						return null;
@@ -457,7 +457,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
 				});
 		},
 
@@ -465,7 +465,7 @@ export default {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 			this.livelihoodLoading = false;
 		},
@@ -474,7 +474,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
 				});
 			this.assetsLoading = false;
 		},
@@ -483,7 +483,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -492,7 +492,7 @@ export default {
 			await CountrySpecificOptionsService.getListOfCountrySpecificOptions()
 				.then(({ data }) => { this.countrySpecificOptions = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
 				});
 		},
 

@@ -146,7 +146,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Assistance Reports ${e}`, "is-danger");
+				if (e.message) Notification(`Assistance Reports ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -159,7 +159,7 @@ export default {
 				.then((response) => {
 					this.options.projects = response.data;
 				}).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					if (e.message) Notification(`Projects ${e}`, "is-danger");
 				});
 
 			this.isProjectsLoading = false;
@@ -173,7 +173,7 @@ export default {
 				.then((response) => {
 					this.options.assistance = response.data;
 				}).catch((e) => {
-					Notification(`Project Assistances ${e}`, "is-danger");
+					if (e.message) Notification(`Project Assistances ${e}`, "is-danger");
 				});
 
 			this.isAssistanceLoading = false;

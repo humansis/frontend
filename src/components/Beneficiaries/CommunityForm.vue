@@ -356,7 +356,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.nationalCardTypes = data; })
 				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 
 			this.nationalCardTypesLoading = false;
@@ -373,7 +373,7 @@ export default {
 					this.options.phoneTypes = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
 				});
 
 			this.phoneTypesLoading = false;
@@ -385,7 +385,7 @@ export default {
 					this.options.projects = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.projectsLoading = false;

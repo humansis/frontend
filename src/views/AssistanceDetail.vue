@@ -372,7 +372,7 @@ export default {
 						if (response.status === 204) this.transactionModal.isOpened = true;
 					})
 					.catch((e) => {
-						Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
 					});
 
 				this.startTransactionButtonLoading = false;
@@ -402,7 +402,7 @@ export default {
 					this.fetchAssistanceStatistics();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
 			});
 
 			this.transactionModal.isWaiting = false;
@@ -415,7 +415,7 @@ export default {
 					this.commodities = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

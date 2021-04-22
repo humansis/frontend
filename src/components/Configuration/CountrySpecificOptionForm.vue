@@ -145,7 +145,7 @@ export default {
 			await AssistancesService.getTargetTypes()
 				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
-					Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 
 			this.formModel.target = this.options.targets

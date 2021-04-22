@@ -108,7 +108,7 @@ export default {
 					this.table.visibleColumns,
 				);
 			}).catch((e) => {
-				Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

@@ -236,7 +236,7 @@ export default {
 					this.closeProjectModal();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 				this.projectModal.isWaiting = false;
 			});
 		},
@@ -251,7 +251,7 @@ export default {
 					this.closeProjectModal();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 				this.projectModal.isWaiting = false;
 			});
 		},
@@ -263,7 +263,7 @@ export default {
 					this.$refs.projectList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 			});
 		},
 	},

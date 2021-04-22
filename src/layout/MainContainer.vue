@@ -70,7 +70,7 @@ export default {
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 				});
 
 				this.appLoading(false);

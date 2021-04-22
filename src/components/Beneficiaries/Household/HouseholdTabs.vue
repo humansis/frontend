@@ -254,7 +254,7 @@ export default {
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 
 			this.saveButtonLoading = false;
@@ -269,7 +269,7 @@ export default {
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 
 			this.saveButtonLoading = false;
@@ -279,7 +279,7 @@ export default {
 			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			});
 		},
 

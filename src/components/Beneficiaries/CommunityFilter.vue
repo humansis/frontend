@@ -53,7 +53,7 @@ export default {
 					this.filtersOptions.projects.data = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.filtersOptions.projects.loading = false;

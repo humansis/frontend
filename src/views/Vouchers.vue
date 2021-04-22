@@ -215,7 +215,7 @@ export default {
 					this.closeVoucherModal();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
 				this.voucherModal.isWaiting = false;
 			});
 		},

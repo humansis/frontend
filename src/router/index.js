@@ -37,7 +37,6 @@ const routes = [
 
 			let showNotification = true;
 
-			console.log(query);
 			if (showNotification && query?.notification === "login") {
 				showNotification = false;
 				Notification("You need to login to continue", "is-success");

@@ -203,7 +203,7 @@ export default {
 				.then(({ data }) => {
 					this.projects = data;
 				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 	},
