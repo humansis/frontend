@@ -17,7 +17,7 @@ const ifAuthenticated = (to, from, next) => {
 		next();
 	} else if (!user?.token) {
 		const redirect = to.query?.redirect || to.fullPath;
-		next({ name: "Logout", query: { redirect } });
+		next({ name: "Login", query: { redirect } });
 	} else {
 		next({ name: "NotFound" });
 	}
@@ -32,17 +32,14 @@ const routes = [
 	{
 		path: "/logout",
 		name: "Logout",
-		beforeEnter: ({ query }, from, next) => {
+		beforeEnter: (to, from, next) => {
 			store.dispatch("logoutUser");
 
-			let showNotification = true;
-
-			if (showNotification && query?.notification === "login") {
-				showNotification = false;
-				Notification("You need to login to continue", "is-success");
+			if (from.name !== "Login" && to.query?.notification === "login") {
+				Notification("You need to login to continue", "is-warning");
 			}
 
-			next({ name: "Login", query });
+			next({ name: "Login", query: to.query });
 			Vue.$router.go();
 		},
 	},
