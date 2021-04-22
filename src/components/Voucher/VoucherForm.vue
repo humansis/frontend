@@ -137,6 +137,7 @@ import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import currencies from "@/utils/currencies";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
 
 export default {
 	name: "VoucherForm",
@@ -174,9 +175,16 @@ export default {
 
 	async mounted() {
 		await this.fetchProjects();
+		this.mapToFormModel();
 	},
 
 	methods: {
+		mapToFormModel() {
+			if (this.formModel.currency) {
+				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], currencies, "value");
+			}
+		},
+
 		beforeAdding(tag) {
 			// Values length must be lower or equal than quantityOfVoucher and value must be number
 			return this.formModel.values.length < this.formModel.quantityOfVouchers
