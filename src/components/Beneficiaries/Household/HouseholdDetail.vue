@@ -156,7 +156,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
 				});
 			this.assetsLoading = false;
 		},
@@ -165,7 +165,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -174,7 +174,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
 				});
 		},
 
@@ -182,7 +182,7 @@ export default {
 			await BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 	},

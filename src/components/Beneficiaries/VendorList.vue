@@ -138,7 +138,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 			});
 			this.isLoadingList = false;
 		},
@@ -168,7 +168,7 @@ export default {
 			if (!vendors?.length) return [];
 			return LocationsService.getLocations(vendors, "locationId")
 				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("Locations")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
@@ -176,7 +176,7 @@ export default {
 			if (!vendors?.length) return [];
 			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
 				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("Users")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
 				});
 		},
 
@@ -191,7 +191,7 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

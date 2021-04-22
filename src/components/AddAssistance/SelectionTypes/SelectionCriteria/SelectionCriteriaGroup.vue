@@ -134,7 +134,7 @@ export default {
 					this.criteriaLocation = data?.code;
 				})
 				.catch((e) => {
-					Notification(`Location ${e}`, "is-danger");
+					if (e.message) Notification(`Location ${e}`, "is-danger");
 				});
 		},
 

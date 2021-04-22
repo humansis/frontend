@@ -289,7 +289,7 @@ export default {
 						}
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 				});
 		},
 

@@ -191,7 +191,7 @@ export default {
 					this.$router.go();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 
 			this.appLoading(false);
@@ -208,7 +208,7 @@ export default {
 					this.storeCountries(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 				});
 		},
 
@@ -217,7 +217,7 @@ export default {
 				.then(({ data }) => {
 					this.storeIcons(data);
 				}).catch((e) => {
-					Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});
 		},
 
@@ -226,13 +226,12 @@ export default {
 				.then(({ data }) => {
 					this.storeAdmNames(data);
 				}).catch((e) => {
-					Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
 				});
 		},
 
 		logout() {
-			this.logoutUser();
-			this.$router.push({ name: "Login" });
+			this.$router.push({ name: "Logout" });
 		},
 	},
 

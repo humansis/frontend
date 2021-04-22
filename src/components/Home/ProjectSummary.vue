@@ -59,7 +59,7 @@ export default {
 			).then((response) => {
 				this.projectSummary = response.data;
 			}).catch((e) => {
-				Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 			});
 
 			this.projectSummaryLoading = false;

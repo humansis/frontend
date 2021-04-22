@@ -64,7 +64,7 @@ export default {
 		async fetchProjects() {
 			await ProjectService.getListOfProjects()
 				.then((response) => { this.projects = response.data; }).catch((e) => {
-					Notification(`Projects ${e}`, "is-danger");
+					if (e.message) Notification(`Projects ${e}`, "is-danger");
 				});
 		},
 	},

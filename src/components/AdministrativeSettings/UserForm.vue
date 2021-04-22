@@ -296,7 +296,7 @@ export default {
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
@@ -307,7 +307,7 @@ export default {
 				.then(({ data }) => {
 					this.options.countries = data;
 				}).catch((e) => {
-					Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 				});
 
 			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");

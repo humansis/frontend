@@ -13,7 +13,7 @@ export default {
 			return AddressService.getAddresses(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${i18n.t("Addresses")} ${e}`, "is-danger");
+					if (e.message) Notification(`${i18n.t("Addresses")} ${e}`, "is-danger");
 				});
 		},
 
@@ -22,7 +22,7 @@ export default {
 			return LocationsService.getLocations(addresses, "locationId")
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${i18n.t("Locations")} ${e}`, "is-danger");
+					if (e.message) Notification(`${i18n.t("Locations")} ${e}`, "is-danger");
 				});
 		},
 

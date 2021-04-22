@@ -212,7 +212,7 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

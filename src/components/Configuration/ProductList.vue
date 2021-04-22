@@ -144,7 +144,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`${this.$t("Products")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -161,7 +161,7 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

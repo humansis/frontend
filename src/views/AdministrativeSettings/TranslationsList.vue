@@ -119,7 +119,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Translations ${e}`, "is-danger");
+				if (e.message) Notification(`Translations ${e}`, "is-danger");
 			});
 		},
 

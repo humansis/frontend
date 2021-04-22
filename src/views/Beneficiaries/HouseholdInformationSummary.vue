@@ -70,7 +70,7 @@ export default {
 					this.household = data;
 					this.prepareData(data);
 				}).catch((e) => {
-					Notification(`${this.$t("Household")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 		},
 
@@ -93,7 +93,7 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
 			if (type === "residence") {
@@ -103,7 +103,7 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 					});
 			}
 			if (type === "temporary_settlement") {
@@ -113,10 +113,12 @@ export default {
 							address = item;
 						});
 					}).catch((e) => {
-						Notification(
-							`${this.$t("Temporary Settlement Address")} ${e}`,
-							"is-danger",
-						);
+						if (e.message) {
+							Notification(
+								`${this.$t("Temporary Settlement Address")} ${e}`,
+								"is-danger",
+							);
+						}
 					});
 			}
 			return address;

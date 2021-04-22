@@ -195,7 +195,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`Booklet ${e}`, "is-danger");
+				if (e.message) Notification(`Booklet ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

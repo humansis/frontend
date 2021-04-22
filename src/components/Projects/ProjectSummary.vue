@@ -98,7 +98,7 @@ export default {
 			).then(({ data }) => {
 				this.projectSummary = data;
 			}).catch((e) => {
-				Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 			});
 		},
 

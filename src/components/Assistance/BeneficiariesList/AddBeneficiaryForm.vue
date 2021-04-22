@@ -136,7 +136,7 @@ export default {
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
-					Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
 				});
 			this.loading.beneficiaries = false;
 		},
@@ -172,10 +172,12 @@ export default {
 					Toast(successMessage, "is-success");
 				})
 				.catch((e) => {
-					Notification(
-						`${this.$t("Beneficiary")} ${e}`,
-						"is-danger",
-					);
+					if (e.message) {
+						Notification(
+							`${this.$t("Beneficiary")} ${e}`,
+							"is-danger",
+						);
+					}
 				});
 
 			this.submitButtonLoading = false;

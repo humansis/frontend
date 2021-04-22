@@ -306,7 +306,7 @@ export default {
 				}
 				this.isLoadingList = false;
 			}).catch((e) => {
-				Notification(`${this.$t("Households")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Households")} ${e}`, "is-danger");
 			});
 		},
 
@@ -330,7 +330,7 @@ export default {
 						this.fetchData();
 					})
 					.catch((e) => {
-						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					});
 
 				this.closeAddToProjectModal();
@@ -346,7 +346,7 @@ export default {
 					this.options.projects = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
 			this.loading.projects = false;
@@ -429,7 +429,7 @@ export default {
 		async getNationalIds(ids) {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 		},
 
@@ -443,7 +443,7 @@ export default {
 							addresses.push({ locationId, id, type: "camp" });
 						});
 					}).catch((e) => {
-						Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.residence.length) {
@@ -453,7 +453,7 @@ export default {
 							addresses.push({ locationId, id, type: "residence" });
 						});
 					}).catch((e) => {
-						Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.temporary_settlement.length) {
@@ -463,10 +463,12 @@ export default {
 							addresses.push({ locationId, id, type: "temporary_settlement" });
 						});
 					}).catch((e) => {
-						Notification(
-							`${this.$t("Temporary Settlement Address")} ${e}`,
-							"is-danger",
-						);
+						if (e.message) {
+							Notification(
+								`${this.$t("Temporary Settlement Address")} ${e}`,
+								"is-danger",
+							);
+						}
 					});
 			}
 			return addresses;
@@ -476,7 +478,7 @@ export default {
 			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
@@ -484,7 +486,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 				});
 		},
 

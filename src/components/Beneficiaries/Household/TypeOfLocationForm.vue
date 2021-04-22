@@ -175,7 +175,7 @@ export default {
 					this.options.typeOfLocation = result.data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
 				});
 			this.locationTypesLoading = false;
 		},
@@ -187,7 +187,7 @@ export default {
 					this.options.camps = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
 				});
 			this.campsLoading = false;
 		},

@@ -184,7 +184,7 @@ export default {
 			await LocationsService.getListOfAdm1()
 				.then((result) => { this.options.provinces = result.data; })
 				.catch((e) => {
-					Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
 				});
 			this.provincesLoading = false;
 		},
@@ -194,7 +194,7 @@ export default {
 			await LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.options.districts = result.data; })
 				.catch((e) => {
-					Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
 				});
 			this.districtsLoading = false;
 		},
@@ -204,7 +204,7 @@ export default {
 			await LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.options.communes = result.data; })
 				.catch((e) => {
-					Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
 				});
 			this.communesLoading = false;
 		},
@@ -214,7 +214,7 @@ export default {
 			await LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.options.villages = result.data; })
 				.catch((e) => {
-					Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
 				});
 			this.villagesLoading = false;
 		},

@@ -194,7 +194,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -211,7 +211,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
 			});
 		},
 
@@ -268,7 +268,7 @@ export default {
 			return LocationsService.getLocations(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Locations")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
@@ -277,7 +277,7 @@ export default {
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -286,7 +286,7 @@ export default {
 			return AssistancesService.getStatistics(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Statistics")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Statistics")} ${e}`, "is-danger");
 				});
 		},
 
@@ -333,7 +333,7 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

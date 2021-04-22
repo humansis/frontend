@@ -52,7 +52,7 @@ export default {
 					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
 				});
 		},
 
@@ -90,7 +90,7 @@ export default {
 					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
 				});
 		},
 
@@ -149,7 +149,7 @@ export default {
 					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
 				});
 		},
 
@@ -170,10 +170,12 @@ export default {
 					this.closeAssignVoucherModal();
 				}
 			}).catch((e) => {
-				Notification(
-					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
-					"is-danger",
-				);
+				if (e.message) {
+					Notification(
+						`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
+						"is-danger",
+					);
+				}
 				this.closeAssignVoucherModal();
 			});
 
@@ -238,7 +240,7 @@ export default {
 					beneficiaryId,
 				).then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
 				});
 		},
 
@@ -275,7 +277,7 @@ export default {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 		},
 
@@ -284,7 +286,7 @@ export default {
 			return BeneficiariesService.getPhones(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Phones")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Phones")} ${e}`, "is-danger");
 				});
 		},
 
@@ -292,7 +294,7 @@ export default {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

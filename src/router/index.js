@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import getters from "@/store/getters";
+import store from "@/store/index";
+import { Notification } from "@/utils/UI";
 
 Vue.use(VueRouter);
 
@@ -26,6 +28,20 @@ const routes = [
 		path: "/login",
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
+	},
+	{
+		path: "/logout",
+		name: "Logout",
+		beforeEnter: (to, from, next) => {
+			store.dispatch("logoutUser");
+
+			if (from.name !== "Login" && to.query?.notification === "login") {
+				Notification("You need to login to continue", "is-warning");
+			}
+
+			next({ name: "Login", query: to.query });
+			Vue.$router.go();
+		},
 	},
 	{
 		path: "",

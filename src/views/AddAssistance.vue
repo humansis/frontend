@@ -133,7 +133,7 @@ export default {
 					this.assistanceSelectionCriteria = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
 				});
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
 				.then((data) => {
@@ -141,7 +141,7 @@ export default {
 					this.mapAssistance(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 				});
 		}
 	},
@@ -286,7 +286,7 @@ export default {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
 				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

@@ -389,7 +389,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 					});
 					break;
 				case consts.TARGET.INSTITUTION:
@@ -408,7 +408,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 					});
 					break;
 				case consts.TARGET.HOUSEHOLD:
@@ -429,7 +429,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					});
 			}
 
@@ -583,7 +583,7 @@ export default {
 						link.click();
 					})
 					.catch((e) => {
-						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
 					});
 			} else {
 				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
@@ -595,7 +595,7 @@ export default {
 						link.click();
 					})
 					.catch((e) => {
-						Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
 					});
 			}
 			this.exportLoading = false;
