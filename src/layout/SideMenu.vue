@@ -11,8 +11,12 @@
 				</router-link>
 			</div>
 			<div class="git-info">
-				<p>{{ gitinfo.appVersion }}</p>
-				<small>{{ gitinfo.hash }}</small>
+				<p v-if="gitinfo.appVersion !== '__APP_VERSION__'">
+					{{ gitinfo.appVersion }}
+				</p>
+				<small v-if="gitinfo.hash !== '__COMMIT_HASH__'">
+					{{ gitinfo.hash }}
+				</small>
 			</div>
 			<div class="menu">
 				<b-menu>

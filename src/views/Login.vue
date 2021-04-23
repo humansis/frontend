@@ -12,7 +12,13 @@
 							<h1 class="title is-6 has-text-centered mb-4">Beneficiary Management System</h1>
 
 							<div class="has-text-light has-text-centered mb-4">
-								{{ gitinfo.appVersion }} - {{ gitinfo.hash }}
+								<span v-if="gitinfo.appVersion !== '__APP_VERSION__'">
+									{{ gitinfo.appVersion }}
+								</span>
+								-
+								<span v-if="gitinfo.hash !== '__COMMIT_HASH__'">
+									{{ gitinfo.hash }}
+								</span>
 							</div>
 
 							<b-field
