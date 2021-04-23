@@ -32,23 +32,23 @@
 					<div class="has-text-weight-bold">
 						{{ $t('Total Amount') }}:
 					</div>
-					<span>{{ totalAmount }} </span>
+					<span>{{ amountTotal }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 
 				<div
-					v-if="typeOfCommodity !== consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType !== consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
 						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
 					</div>
-					<span>{{ amountCompleted }} </span>
+					<span>{{ amountDistributed }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.QR_CODE_VOUCHER"
+					v-if="modalityType === consts.COMMODITY.QR_CODE_VOUCHER"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -59,7 +59,7 @@
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -70,7 +70,7 @@
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -222,62 +222,54 @@ export default {
 			return this.assistance?.completed;
 		},
 
-		typeOfCommodity() {
+		modalityType() {
 			return this.commodities?.[0]?.modalityType;
 		},
 
 		assistanceProgress() {
-			if (!this.totalAmount || !this.amountCompleted) return 0;
-			const result = (100 / this.totalAmount) * this.amountCompleted;
-			if (result === Infinity) return 0;
-			return Math.round(result);
-		},
-
-		totalAmount() {
 			let result = 0;
 
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
-					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
+			if (this.modalityType) {
+				switch (this.modalityType) {
+					case consts.COMMODITY.MOBILE_MONEY:
+						if (this.amountTotal && this.amountPickedUp) {
+							result = (100 / this.amountTotal) * this.amountPickedUp;
+						}
+						break;
+					case consts.COMMODITY.QR_CODE_VOUCHER:
+						if (this.amountTotal && this.amountUsed) {
+							result = (100 / this.amountTotal) * this.amountUsed;
+						}
+						break;
+					case consts.COMMODITY.SMARTCARD:
+					default:
+						if (this.amountTotal && this.amountDistributed) {
+							result = (100 / this.amountTotal) * this.amountDistributed;
+						}
 				}
 			}
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				return this.$refs.beneficiariesList.table.total;
-			}
 
-			return result;
+			return (result !== Infinity) ? Math.round(result) : 0;
+		},
+
+		amountTotal() {
+			return this.statistics?.amountTotal || 0;
 		},
 
 		amountSent() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountSent || 0;
 		},
 
 		amountPickedUp() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountPickedUp || 0;
 		},
 
 		amountUsed() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountUsed || 0;
 		},
 
-		amountCompleted() {
-			// TODO Resolve this when logic of behaviour will be explained
-			/*
-			const result = 0;
-
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfUsedItems)
-					? this.commodities.[0].value * this.statistics.summaryOfUsedItems : 0;
-			}
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				result = this.statistics?.summaryOfUsedItems || 0;
-			}
-			 */
-
-			return this.statistics?.summaryOfDistributedItems || 0;
+		amountDistributed() {
+			return this.statistics?.amountDistributed || 0;
 		},
 	},
 
@@ -304,6 +296,7 @@ export default {
 			AssistancesService.getAssistanceStatistics(
 				this.$route.params.assistanceId,
 			).then((data) => {
+				console.log("statistics", data);
 				this.statistics = data;
 			});
 		},
