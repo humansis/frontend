@@ -296,7 +296,6 @@ export default {
 			AssistancesService.getAssistanceStatistics(
 				this.$route.params.assistanceId,
 			).then((data) => {
-				console.log("statistics", data);
 				this.statistics = data;
 			});
 		},
