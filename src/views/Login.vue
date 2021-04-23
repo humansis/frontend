@@ -11,7 +11,9 @@
 
 							<h1 class="title is-6 has-text-centered mb-4">Beneficiary Management System</h1>
 
-							<div class="has-text-light has-text-centered mb-4">{{ version}}</div>
+							<div class="has-text-light has-text-centered mb-4">
+								{{ gitinfo.appVersion }} - {{ gitinfo.hash }}
+							</div>
 
 							<b-field
 								label="Username"
@@ -59,17 +61,19 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
-import JWTDecode from "jwt-decode";
+import gitinfo from "@/gitinfo";
 
 export default {
 	name: "Login",
 
 	data() {
 		return {
+			gitinfo,
 			formModel: {
 				username: "",
 				password: "",
