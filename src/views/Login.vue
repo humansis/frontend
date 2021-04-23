@@ -15,9 +15,8 @@
 								<span v-if="gitinfo.appVersion !== '__APP_VERSION__'">
 									{{ gitinfo.appVersion }}
 								</span>
-								-
 								<span v-if="gitinfo.hash !== '__COMMIT_HASH__'">
-									{{ gitinfo.hash }}
+									- {{ gitinfo.hash }}
 								</span>
 							</div>
 
