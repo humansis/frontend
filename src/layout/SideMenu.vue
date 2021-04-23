@@ -11,11 +11,11 @@
 				</router-link>
 			</div>
 			<div class="git-info">
-				<p v-if="gitinfo.appVersion !== '__APP_VERSION__'">
-					{{ gitinfo.appVersion }}
+				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
+					{{ gitInfo.appVersion }}
 				</p>
-				<small v-if="gitinfo.hash !== '__COMMIT_HASH__'">
-					{{ gitinfo.hash }}
+				<small v-if="gitInfo.hash !== '__COMMIT_HASH__'">
+					{{ gitInfo.hash }}
 				</small>
 			</div>
 			<div class="menu">
@@ -226,7 +226,7 @@
 <script>
 import { mapState } from "vuex";
 import permissions from "@/mixins/permissions";
-import gitinfo from "@/gitinfo";
+import gitInfo from "@/gitInfo";
 
 export default {
 	name: "SideMenu",
@@ -235,7 +235,7 @@ export default {
 
 	data() {
 		return {
-			gitinfo,
+			gitInfo,
 		};
 	},
 
