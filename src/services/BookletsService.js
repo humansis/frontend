@@ -41,7 +41,7 @@ export default {
 		return { data };
 	},
 
-	async exportORVouchers(bookletId) {
+	async exportQRVouchers(bookletId) {
 		const { data } = await download({ uri: `booklets/${bookletId}/exports` });
 		return { data };
 	},

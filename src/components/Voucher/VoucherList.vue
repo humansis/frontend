@@ -221,7 +221,7 @@ export default {
 		async printBooklets({ code, id }) {
 			this.exportLoading = true;
 
-			await BookletsService.exportORVouchers(id)
+			await BookletsService.exportQRVouchers(id)
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
