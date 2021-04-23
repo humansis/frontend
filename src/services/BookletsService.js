@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfBooklets(page, size, sort, search = null, filters = null) {
