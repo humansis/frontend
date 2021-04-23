@@ -35,11 +35,14 @@ export default {
 		return { data, status };
 	},
 
-	async exportBooklets(format, ids = []) {
+	async exportBooklets(format) {
 		const formatText = format ? `type=${format}` : "";
-		const idsText = ids.length ? idsToUri(ids) : "";
+		const { data } = await download({ uri: `booklets/exports?${formatText}` });
+		return { data };
+	},
 
-		const { data } = await download({ uri: `booklets/exports?${formatText}&${idsText}` });
+	async exportORVouchers(bookletId) {
+		const { data } = await download({ uri: `booklets/${bookletId}/exports` });
 		return { data };
 	},
 };
