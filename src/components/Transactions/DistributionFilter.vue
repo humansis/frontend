@@ -110,7 +110,6 @@ export default {
 
 	methods: {
 		filterChanged(filters, filterName) {
-			console.log(filterName);
 			switch (filterName) {
 				case "adm1":
 					this.selectedFiltersOptions.adm2 = null;
@@ -154,10 +153,10 @@ export default {
 				location = a;
 			}
 			this.$emit("filtersChanged", {
-				projects: filters.project,
-				types: filters.beneficiaryType,
-				commodity: filters.commodity,
-				distribution: filters.distribution,
+				projects: filters.project || [],
+				types: filters.beneficiaryType || [],
+				modalityTypes: filters.commodity || [],
+				assistances: filters.distribution || [],
 				locations: location ? [location] : [],
 			});
 		},

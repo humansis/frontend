@@ -163,7 +163,7 @@ export default {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
 						this.table.data[key].location = this
-							.prepareLocationEntityForTable(item.locationId, locations);
+							.prepareLocationEntityForTable(item.locationId, locations, "name");
 					});
 					this.reload();
 				});
