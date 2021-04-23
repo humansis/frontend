@@ -10,6 +10,14 @@
 					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
 				</router-link>
 			</div>
+			<div class="git-info">
+				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
+					{{ gitInfo.appVersion }}
+				</p>
+				<small v-if="gitInfo.hash !== '__COMMIT_HASH__'">
+					{{ gitInfo.hash }}
+				</small>
+			</div>
 			<div class="menu">
 				<b-menu>
 					<b-menu-list>
@@ -218,11 +226,18 @@
 <script>
 import { mapState } from "vuex";
 import permissions from "@/mixins/permissions";
+import gitInfo from "@/gitInfo";
 
 export default {
 	name: "SideMenu",
 
 	mixins: [permissions],
+
+	data() {
+		return {
+			gitInfo,
+		};
+	},
 
 	computed: {
 		...mapState([
@@ -238,3 +253,16 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.git-info {
+	position: absolute;
+	bottom: 20px;
+	padding: 4px;
+	color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+</style>

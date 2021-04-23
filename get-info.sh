@@ -18,9 +18,9 @@ else
     APPVERSION=$COMMIT
 fi
 
-sed -i -e "s|__COMMIT_HASH__|$COMMIT|g" src/gitinfo.js
-sed -i -e "s|__APP_VERSION__|$APPVERSION|g" src/gitinfo.js
-sed -i -e "s|__TAG__|$TAG|g" src/gitinfo.js
-sed -i -e "s|__BRANCH__|$BRANCH|g" src/gitinfo.js
+sed -i -e "s|__COMMIT_HASH__|$COMMIT|g" src/gitInfo.js
+sed -i -e "s|__APP_VERSION__|$APPVERSION|g" src/gitInfo.js
+sed -i -e "s|__TAG__|$TAG|g" src/gitInfo.js
+sed -i -e "s|__BRANCH__|$BRANCH|g" src/gitInfo.js
 
-cat src/gitinfo.js
+cat src/gitInfo.js
