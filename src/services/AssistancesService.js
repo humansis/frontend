@@ -133,7 +133,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/beneficiaries?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-beneficiaries?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -145,7 +145,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/communities?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-communities?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -157,14 +157,16 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/institutions?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-institutions?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getGeneralReliefItemsForAssistance(generalReliefItemIds) {
+		const idsText = generalReliefItemIds ? idsToUri(generalReliefItemIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
+			uri: `general-relief-items?${idsText}`,
 		});
 		return { data, totalCount };
 	},
@@ -188,9 +190,18 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getTransactionsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getTransactionsForAssistance(transactionIds) {
+		const idsText = transactionIds ? idsToUri(transactionIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/transactions`,
+			uri: `transactions?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getTransactionStatuses() {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "transactions/statuses",
 		});
 		return { data, totalCount };
 	},

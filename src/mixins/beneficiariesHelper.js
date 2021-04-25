@@ -21,38 +21,42 @@ export default {
 		...mapActions(["storePerPage"]),
 
 		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
-		async setAssignedTransactions(beneficiaryIds) {
-			if (beneficiaryIds.length) {
-				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const transactions = await this.getTransactions(beneficiaryId);
+		async setAssignedTransactions(transactionIds) {
+			const transactionStatuses = await this.getTransactionStatuses();
+			const transactions = await this.getTransactions(transactionIds);
 
-					const beneficiaryItemIndex = this.table.data.findIndex(
-						({ id }) => id === beneficiaryId,
-					);
+			this.table.data.map(async (item, key) => {
+				const transaction = transactions?.find(({ id }) => id === transactionIds[0]);
 
-					this.table.data[beneficiaryItemIndex].status = transactions?.[0]?.status || this.$t("None");
-					this.table.data[beneficiaryItemIndex].value = `
-						${this.commodities[0].value} ${this.commodities[0].unit}`;
+				this.table.data[key].status = transactionStatuses
+					?.find(({ code }) => code === transaction.status)?.value;
+				this.table.data[key].value = transaction.amountSent;
+			});
 
-					this.table.data = [...this.table.data];
+			this.table.settings = {
+				assignVoucherAction: false,
+				checkableTable: false,
+			};
 
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: false,
-					};
-				}));
-			}
+			this.table.progress += 15;
 		},
 
 		/** @summary Obtaining information about the beneficiary MOBILE MONEY */
-		getTransactions(beneficiaryId) {
+		getTransactions(transactionIds) {
 			return AssistancesService
-				.getTransactionsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId,
-					beneficiaryId,
+				.getTransactionsForAssistance(
+					transactionIds,
 				).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+				});
+		},
+
+		getTransactionStatuses() {
+			return AssistancesService
+				.getTransactionStatuses().then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Transaction Statuses")} ${e}`, "is-danger");
 				});
 		},
 
@@ -183,7 +187,20 @@ export default {
 		},
 
 		/** @summary Setting the BNF if the GENERAL RELIEF ITEMS was already distributed to him */
-		async setAssignedGeneralRelief(beneficiaryIds) {
+		async setAssignedGeneralRelief(generalReliefItemIds) {
+			console.log(generalReliefItemIds);
+
+			const generalReliefItems = await this.getGeneralReliefItems(generalReliefItemIds);
+			this.table.progress += 20;
+			// TODO set generalReliefItems for beneficiaries
+			console.log("generalReliefItems", generalReliefItems);
+
+			this.table.data.forEach((item, key) => {
+				console.log(item, key);
+			});
+
+			this.table.progress += 15;
+			/*
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					let generalReliefItems = [];
@@ -191,7 +208,8 @@ export default {
 					// TODO Finish this after BE will prepare similar endpoints
 					switch (this.assistance.target) {
 						case consts.TARGET.COMMUNITY:
-							// TODO generalReliefItems = this.getGeneralReliefItemsForCommunity(beneficiaryId);
+							// TODO generalReliefItems =
+							    this.getGeneralReliefItemsForCommunity(beneficiaryId);
 							break;
 						case consts.TARGET.INSTITUTION:
 							// TODO generalReliefItems =
@@ -200,7 +218,7 @@ export default {
 						case consts.TARGET.HOUSEHOLD:
 						case consts.TARGET.INDIVIDUAL:
 						default:
-							generalReliefItems = await this.getGeneralReliefItemsForBeneficiary(beneficiaryId);
+							generalReliefItems = await this.getGeneralReliefItems(beneficiaryId);
 					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
@@ -212,14 +230,17 @@ export default {
 							this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
 						}
 
-						this.table.data[beneficiaryItemIndex].generalReliefItem = { ...generalReliefItems[0] };
+						this.table.data[beneficiaryItemIndex]
+						.generalReliefItem = { ...generalReliefItems[0] };
 
-						this.table.data[beneficiaryItemIndex].distributed =	generalReliefItems[0]
+						this.table.data[beneficiaryItemIndex]
+						.distributed =	generalReliefItems[0]
 							.dateOfDistribution
 							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
 							: this.$t("Not Distributed");
 
-						this.table.data[beneficiaryItemIndex].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
+						this.table.data[beneficiaryItemIndex]
+						.value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
 					}
 
 					this.table.data = [...this.table.data];
@@ -230,12 +251,13 @@ export default {
 					};
 				}));
 			}
+			*/
 		},
 
 		/** @summary Obtaining information about the beneficiary GENERAL RELIEF */
-		getGeneralReliefItemsForBeneficiary(beneficiaryId) {
+		getGeneralReliefItems(beneficiaryId) {
 			return AssistancesService
-				.getGeneralReliefItemsForBeneficiaryInAssistance(
+				.getGeneralReliefItemsForAssistance(
 					this.$route.params.assistanceId,
 					beneficiaryId,
 				).then(({ data }) => data)

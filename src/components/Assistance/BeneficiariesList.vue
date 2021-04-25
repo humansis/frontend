@@ -348,8 +348,8 @@ export default {
 	},
 
 	async created() {
-		await this.reloadBeneficiariesList();
 		await this.getAssistanceCommodities();
+		await this.reloadBeneficiariesList();
 	},
 
 	watch: {
@@ -494,9 +494,18 @@ export default {
 
 		async prepareDataForTable(data) {
 			this.table.progress += 15;
+			let beneficiaryIds = [];
+			let beneficiaries = [];
+
 			const phoneIds = [];
 			const nationalIdIds = [];
-			const beneficiaryIds = [];
+
+			const distributionItems = {
+				bookletIds: [],
+				generalReliefItemIds: [],
+				smartcardDepositIds: [],
+				transactionIds: [],
+			};
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
@@ -520,8 +529,15 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					data.forEach((item, key) => {
-						beneficiaryIds.push(item.id);
+					beneficiaryIds = data.map((item) => item.beneficiaryId);
+					beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+
+					data.forEach((beneficiary, key) => {
+						const foundBeneficiary = beneficiaries.find(
+							(bnf) => bnf.id === beneficiary.beneficiaryId,
+						);
+
+						const item = { ...beneficiary, ...foundBeneficiary };
 
 						this.table.data[key] = item;
 						this.table.data[key].givenName = this
@@ -529,46 +545,69 @@ export default {
 						this.table.data[key].familyName = this
 							.prepareName(item.localFamilyName, item.enFamilyName);
 						this.table.data[key].gender = this.prepareGender(item.gender);
-
 						this.table.data[key].vulnerabilities = item.vulnerabilityCriteria;
 
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
 						if (item.phoneIds.length) phoneIds.push(item.phoneIds);
+
+						if (item.bookletIds.length) {
+							distributionItems.bookletIds.push(item.bookletIds[0]);
+						}
+						if (item.generalReliefItemIds.length) {
+							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
+						}
+						if (item.smartcardDepositIds.length) {
+							distributionItems.smartcardDepositIds.push(item.smartcardDepositIds[0]);
+						}
+						if (item.transactionIds.length) {
+							distributionItems.transactionIds.push(item.transactionIds[0]);
+						}
 					});
 
-					this.table.progress += 15;
+					this.table.data = [...this.table.data];
 
 					this.preparePhoneForTable(phoneIds);
 					this.prepareNationalIdForTable(nationalIdIds);
 			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
-				await this.settingsOfBeneficiaryDistribution(beneficiaryIds);
+				await this.settingOfBeneficiariesDistribution(distributionItems);
 			}
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
-				await this.settingsOfBeneficiaryActivity(beneficiaryIds);
+				await this.settingOfBeneficiariesActivity(distributionItems);
 			}
 		},
 
-		settingsOfBeneficiaryDistribution(beneficiaryIds) {
+		async getBeneficiaries(ids) {
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+				});
+		},
+
+		settingOfBeneficiariesDistribution(
+			{ bookletIds, generalReliefItemIds, smartcardDepositIds, transactionIds },
+		) {
+			console.log(this.commodities[0].modalityType);
 			switch (this.commodities[0].modalityType) {
 				case consts.COMMODITY.SMARTCARD:
-					this.setAssignedSmartCards(beneficiaryIds);
+					this.setAssignedSmartCards(smartcardDepositIds);
 					break;
 				case consts.COMMODITY.MOBILE_MONEY:
-					this.setAssignedTransactions(beneficiaryIds);
+					this.setAssignedTransactions(transactionIds);
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
-					this.setAssignedBooklets(beneficiaryIds);
+					this.setAssignedBooklets(bookletIds);
 					break;
 				default:
-					this.setAssignedGeneralRelief(beneficiaryIds);
+					this.setAssignedGeneralRelief(generalReliefItemIds);
 			}
 		},
 
-		settingsOfBeneficiaryActivity(beneficiaryIds) {
-			this.setAssignedGeneralRelief(beneficiaryIds);
+		settingOfBeneficiariesActivity({ generalReliefItemIds }) {
+			this.setAssignedGeneralRelief(generalReliefItemIds);
 		},
 
 		async exportData(format) {

@@ -185,8 +185,8 @@ export default {
 		},
 
 		async fetchCommodity(assistanceId) {
-			await AssistancesService.getCommodities(
-				[assistanceId],
+			await AssistancesService.getAssistanceCommodities(
+				assistanceId,
 			).then(({ data }) => {
 				this.commodity = data.map((item) => item.modalityType);
 			});
