@@ -1,25 +1,11 @@
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { mapActions, mapState } from "vuex";
 import consts from "@/utils/assistanceConst";
 import AddressService from "@/services/AddressService";
 
 export default {
-	data() {
-		return {
-			show: true,
-			isLoadingList: false,
-		};
-	},
-
-	computed: {
-		...mapState(["perPage"]),
-	},
-
 	methods: {
-		...mapActions(["storePerPage"]),
-
 		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(transactionIds) {
 			const transactionStatuses = await this.getTransactionStatuses();

@@ -213,6 +213,7 @@ import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
+import { mapState } from "vuex";
 
 export default {
 	name: "BeneficiariesList",
@@ -246,6 +247,7 @@ export default {
 
 	data() {
 		return {
+			isLoadingList: false,
 			exportLoading: false,
 			advancedSearchVisible: false,
 			commodities: [],
@@ -345,6 +347,10 @@ export default {
 			},
 			assignVoucherToBeneficiaryId: null,
 		};
+	},
+
+	computed: {
+		...mapState(["perPage"]),
 	},
 
 	async created() {
