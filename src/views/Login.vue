@@ -145,7 +145,7 @@ export default {
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
-				Notification(`Login ${e}`, "is-danger");
+				Notification(`${this.$t("Invalid Credentials")} ${e}`, "is-danger");
 				this.$v.$reset();
 			});
 
