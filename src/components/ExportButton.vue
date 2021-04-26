@@ -5,7 +5,7 @@
 	>
 		<b-button :loading="loading" icon-left="file-download" slot="trigger" :size="size" :type="type">
 			<template>
-				<span>{{ $t('Export') }}</span>
+				<span>{{ label || $t('Export') }}</span>
 			</template>
 			<b-icon icon="arrow-down" />
 		</b-button>
@@ -34,6 +34,10 @@ export default {
 		type: String,
 		formats: Object,
 		spaceBetween: Boolean,
+		label: {
+			type: String,
+			default: null,
+		},
 		loading: {
 			type: Boolean,
 			default: false,
