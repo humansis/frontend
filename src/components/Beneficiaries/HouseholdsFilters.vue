@@ -211,7 +211,7 @@ export default {
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
@@ -222,7 +222,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
 				});
 		},
 
@@ -234,7 +234,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
 				});
 		},
 
@@ -246,7 +246,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
 		},
 
@@ -258,7 +258,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 
@@ -269,7 +269,7 @@ export default {
 					this.filtersOptions.livelihoods.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 		},
 
@@ -280,7 +280,7 @@ export default {
 					this.filtersOptions.vulnerabilities.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -291,7 +291,7 @@ export default {
 					this.filtersOptions.residencyStatuses.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 		},
 
@@ -302,7 +302,7 @@ export default {
 					this.filtersOptions.referralTypes.data = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
 		},
 	},

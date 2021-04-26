@@ -210,6 +210,20 @@ export default {
 		return { data, status };
 	},
 
+	async sendVerificationEmailForTransactions(assistanceId) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/transactions/emails`, method: "POST",
+		});
+		return { data, status };
+	},
+
+	async createTransactionsForBeneficiaries(assistanceId, body) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/transactions`, method: "POST", body,
+		});
+		return { data, status };
+	},
+
 	async getListOfModalities() {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `modalities`,

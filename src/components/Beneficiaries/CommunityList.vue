@@ -137,7 +137,7 @@ export default {
 				this.table.total = totalCount;
 				this.table.data = await this.prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`${this.$t("Communities")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

@@ -51,6 +51,7 @@
 					icon="print"
 					type="is-dark"
 					:tooltip="$t('Print')"
+					@click.native="printBooklets(props.row)"
 				/>
 			</div>
 		</b-table-column>
@@ -208,12 +209,29 @@ export default {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
 					link.href = window.URL.createObjectURL(blob);
-					link.download = `booklets.${format}`;
+					link.download = `Booklets.${format}`;
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
 				});
+			this.exportLoading = false;
+		},
+
+		async printBooklets({ code, id }) {
+			this.exportLoading = true;
+
+			await BookletsService.exportQRVouchers(id)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `Booklet-${code}.pdf`;
+					link.click();
+				}).catch((e) => {
+					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
+				});
+
 			this.exportLoading = false;
 		},
 	},

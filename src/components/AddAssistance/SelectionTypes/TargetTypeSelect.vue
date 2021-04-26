@@ -149,7 +149,7 @@ export default {
 					this.options.institutions = this.prepareInstitutionsForSelect(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 				});
 			this.loading.institutions = false;
 		},
@@ -160,7 +160,7 @@ export default {
 					this.options.communities = await this.prepareCommunitiesForSelect(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Communities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 				});
 			this.loading.communities = false;
 		},

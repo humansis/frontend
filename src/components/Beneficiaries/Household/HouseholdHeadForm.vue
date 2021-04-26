@@ -503,7 +503,7 @@ export default {
 							phoneNo: number,
 						};
 					}).catch((e) => {
-						Notification(`${this.$t("Phone")} ${key + 1} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Phone")} ${key + 1} ${e}`, "is-danger");
 					});
 				promises.push(promise);
 			});
@@ -521,7 +521,7 @@ export default {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
 					nationalIdCard.idNumber = number;
 				}).catch((e) => {
-					Notification(`${this.$t("National ID")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("National ID")} ${e}`, "is-danger");
 				});
 			}
 
@@ -532,7 +532,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
 				});
 
 			this.idTypeLoading = false;
@@ -542,7 +542,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfPhones()
 				.then(({ data }) => { this.options.phoneType = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
 				});
 
 			this.phoneTypesLoading = false;
@@ -552,7 +552,7 @@ export default {
 			await BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
 				});
 		},
 
@@ -560,7 +560,7 @@ export default {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 
 			this.residenceStatusesLoading = false;
@@ -570,7 +570,7 @@ export default {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => { this.options.referralType = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
 
 			this.referralTypeLoading = false;

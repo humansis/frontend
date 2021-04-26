@@ -117,7 +117,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				Notification(`Project Reports ${e}`, "is-danger");
+				if (e.message) Notification(`Project Reports ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

@@ -35,7 +35,6 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (forbidden) {
-		router.push({ name: "NotFound" });
 		throw new Error("You don't have a access to continue");
 	}
 
@@ -43,8 +42,9 @@ export const getResponseJSON = async (response, download = false) => {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
 
-		router.push({ name: "Login", query: { redirect } });
-		throw new Error("You need to login to continue");
+		router.push({ name: "Logout", query: { redirect, notification: "login" } });
+
+		throw new Error("");
 	}
 
 	if (notFound) {

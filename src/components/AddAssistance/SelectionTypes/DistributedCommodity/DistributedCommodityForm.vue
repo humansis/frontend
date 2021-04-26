@@ -269,7 +269,7 @@ export default {
 			await AssistancesService.getListOfModalities()
 				.then(({ data }) => { this.options.modalities = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
 				});
 
 			this.loading.modalities = false;
@@ -283,7 +283,7 @@ export default {
 					this.options.types = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
 				});
 
 			this.loading.types = false;

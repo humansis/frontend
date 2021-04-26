@@ -105,7 +105,7 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
 					});
 			});
 		},

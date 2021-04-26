@@ -5,6 +5,20 @@
 			:assistance="assistance"
 			:project="project"
 		/>
+		<Modal
+			:header="$t('Start Transaction')"
+			:active="transactionModal.isOpened"
+			:is-waiting="transactionModal.isWaiting"
+			@close="closeTransactionModal"
+		>
+			<StartTransactionForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				class="modal-card"
+				@formSubmitted="confirmTransaction"
+				@formClosed="closeTransactionModal"
+			/>
+		</Modal>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
@@ -18,23 +32,23 @@
 					<div class="has-text-weight-bold">
 						{{ $t('Total Amount') }}:
 					</div>
-					<span>{{ totalAmount }} </span>
+					<span>{{ amountTotal }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 
 				<div
-					v-if="typeOfCommodity !== consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType !== consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
 						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
 					</div>
-					<span>{{ amountCompleted }} </span>
+					<span>{{ amountDistributed }} </span>
 					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.QR_CODE_VOUCHER"
+					v-if="modalityType === consts.COMMODITY.QR_CODE_VOUCHER"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -45,7 +59,7 @@
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -56,7 +70,7 @@
 				</div>
 
 				<div
-					v-if="typeOfCommodity === consts.COMMODITY.MOBILE_MONEY"
+					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
 					class="column is-3"
 				>
 					<div class="has-text-weight-bold">
@@ -104,7 +118,8 @@
 				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer"
+						&& userCan.authoriseElectronicCashTransfer
+					"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -126,13 +141,17 @@ import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
+import Modal from "@/components/Modal";
+import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
 
 export default {
 	name: "AssistanceDetail",
 
 	components: {
+		StartTransactionForm,
 		BeneficiariesList,
 		AssistanceSummary,
+		Modal,
 	},
 
 	mixins: [permissions],
@@ -149,6 +168,11 @@ export default {
 			setAtDistributedButtonVisible: false,
 			setAtDistributedButtonLoading: false,
 			startTransactionButtonLoading: false,
+			transactionModal: {
+				isOpened: false,
+				isEditing: false,
+				isWaiting: false,
+			},
 		};
 	},
 
@@ -198,62 +222,54 @@ export default {
 			return this.assistance?.completed;
 		},
 
-		typeOfCommodity() {
+		modalityType() {
 			return this.commodities?.[0]?.modalityType;
 		},
 
 		assistanceProgress() {
-			if (!this.totalAmount || !this.amountCompleted) return 0;
-			const result = (100 / this.totalAmount) * this.amountCompleted;
-			if (result === Infinity) return 0;
-			return Math.round(result);
-		},
-
-		totalAmount() {
 			let result = 0;
 
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				if (this.$refs.beneficiariesList?.table.total && this.commodities?.[0]?.value) {
-					result = this.$refs.beneficiariesList.table.total * this.commodities[0].value;
+			if (this.modalityType) {
+				switch (this.modalityType) {
+					case consts.COMMODITY.MOBILE_MONEY:
+						if (this.amountTotal && this.amountPickedUp) {
+							result = (100 / this.amountTotal) * this.amountPickedUp;
+						}
+						break;
+					case consts.COMMODITY.QR_CODE_VOUCHER:
+						if (this.amountTotal && this.amountUsed) {
+							result = (100 / this.amountTotal) * this.amountUsed;
+						}
+						break;
+					case consts.COMMODITY.SMARTCARD:
+					default:
+						if (this.amountTotal && this.amountDistributed) {
+							result = (100 / this.amountTotal) * this.amountDistributed;
+						}
 				}
 			}
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				return this.$refs.beneficiariesList.table.total;
-			}
 
-			return result;
+			return (result !== Infinity) ? Math.round(result) : 0;
+		},
+
+		amountTotal() {
+			return this.statistics?.amountTotal || 0;
 		},
 
 		amountSent() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountSent || 0;
 		},
 
 		amountPickedUp() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountPickedUp || 0;
 		},
 
 		amountUsed() {
-			// TODO Send correct value after BE update
-			return 0;
+			return this.statistics?.amountUsed || 0;
 		},
 
-		amountCompleted() {
-			// TODO Resolve this when logic of behaviour will be explained
-			/*
-			const result = 0;
-
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				result = (this.commodities?.[0]?.value && this.statistics?.summaryOfUsedItems)
-					? this.commodities.[0].value * this.statistics.summaryOfUsedItems : 0;
-			}
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) {
-				result = this.statistics?.summaryOfUsedItems || 0;
-			}
-			 */
-
-			return this.statistics?.summaryOfDistributedItems || 0;
+		amountDistributed() {
+			return this.statistics?.amountDistributed || 0;
 		},
 	},
 
@@ -330,13 +346,59 @@ export default {
 			}
 		},
 
+		closeTransactionModal() {
+			this.transactionModal.isOpened = false;
+		},
+
 		async startTransaction() {
-			this.startTransactionButtonLoading = true;
+			const now = new Date().toISOString();
+			const dateOfDistribution = this.assistance.dateDistribution;
+			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
 
-			// TODO Call endpoint for Start Transaction in this assistance
-			// TODO Hide button if transaction was already done
+			if (isAfter) {
+				this.startTransactionButtonLoading = true;
 
-			this.startTransactionButtonLoading = false;
+				await AssistancesService
+					.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
+					.then((response) => {
+						if (response.status === 204) this.transactionModal.isOpened = true;
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+					});
+
+				this.startTransactionButtonLoading = false;
+			} else {
+				Notification(
+					`${this.$t("Date of the distribution is in the future")}.`,
+					"is-danger",
+				);
+			}
+		},
+
+		async confirmTransaction(code) {
+			this.transactionModal.isWaiting = true;
+
+			const body = {
+				code,
+			};
+
+			await AssistancesService.createTransactionsForBeneficiaries(
+				this.$route.params.assistanceId,
+				body,
+			).then(({ status }) => {
+				if (status === 204) {
+					Toast(this.$t("Successful Transaction"), "is-success");
+
+					this.$refs.beneficiariesList.fetchData();
+					this.fetchAssistanceStatistics();
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+			});
+
+			this.transactionModal.isWaiting = false;
+			this.closeTransactionModal();
 		},
 
 		async fetchCommodity() {
@@ -345,7 +407,7 @@ export default {
 					this.commodities = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
 		},
 

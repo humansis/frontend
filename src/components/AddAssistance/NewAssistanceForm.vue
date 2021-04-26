@@ -348,7 +348,7 @@ export default {
 					this.options.sectors = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 				});
 			this.loading.sectors = false;
 		},
@@ -360,7 +360,7 @@ export default {
 					this.options.subsectors = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
 				});
 			this.loading.subsectors = false;
 		},
@@ -372,7 +372,7 @@ export default {
 					this.options.assistanceTypes = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
 				});
 			this.loading.assistanceTypes = false;
 		},
@@ -384,7 +384,7 @@ export default {
 					this.options.targetTypes = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 			this.loading.targetTypes = false;
 		},

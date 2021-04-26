@@ -101,7 +101,7 @@ export default {
 						this.$refs.assistancesList.fetchData();
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				});
 		},
 
@@ -112,7 +112,7 @@ export default {
 					this.$refs.assistancesList.fetchData();
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 

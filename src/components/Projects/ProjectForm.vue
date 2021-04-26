@@ -283,7 +283,7 @@ export default {
 			await SectorsService.getListOfSectors().then(({ data }) => {
 				this.options.sectors = data;
 			}).catch((e) => {
-				Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
@@ -294,7 +294,7 @@ export default {
 			await DonorService.getListOfDonors().then(({ data }) => {
 				this.options.donors = data;
 			}).catch((e) => {
-				Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedDonors = getArrayOfCodeListByKey(this.formModel.donorIds, this.options.donors, "id");
@@ -305,7 +305,7 @@ export default {
 			await AssistancesService.getTargetTypes().then(({ data }) => {
 				this.options.targetTypes = data;
 			}).catch((e) => {
-				Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 			});
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");

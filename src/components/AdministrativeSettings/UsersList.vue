@@ -133,7 +133,7 @@ export default {
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
 			}).catch((e) => {
-				Notification(`${this.$t("Users")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
@@ -169,7 +169,7 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

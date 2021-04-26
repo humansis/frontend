@@ -37,8 +37,12 @@ export default {
 
 	async exportBooklets(format) {
 		const formatText = format ? `type=${format}` : "";
-
 		const { data } = await download({ uri: `booklets/exports?${formatText}` });
+		return { data };
+	},
+
+	async exportQRVouchers(bookletId) {
+		const { data } = await download({ uri: `booklets/${bookletId}/exports` });
 		return { data };
 	},
 };

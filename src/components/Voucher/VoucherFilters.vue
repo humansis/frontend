@@ -90,7 +90,7 @@ export default {
 					this.filtersOptions.assistances.data = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
 				});
 
 			this.filtersOptions.assistances.loading = false;
@@ -110,7 +110,7 @@ export default {
 							});
 						})
 						.catch((e) => {
-							Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+							if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 						});
 				});
 				await Promise.all(promise);

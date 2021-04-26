@@ -87,7 +87,9 @@ export default {
 				.then((response) => {
 					this.table.data = response.data;
 					this.table.total = response.totalCount;
-				}).catch((e) => { Notification(e, "is-danger"); });
+				}).catch((e) => {
+					if (e.message) Notification(e, "is-danger");
+				});
 
 			this.isLoadingList = false;
 		},

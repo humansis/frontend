@@ -279,7 +279,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaTargets()
 				.then(({ data }) => { this.options.criteriaTargets = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
 				});
 
 			this.criteriaTargetLoading = false;
@@ -291,7 +291,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
 				.then(({ data }) => { this.options.criteria = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
 				});
 
 			this.criteriaLoading = false;
@@ -309,7 +309,7 @@ export default {
 					}
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
 				});
 
 			this.criteriaConditionsLoading = false;
@@ -323,7 +323,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;
@@ -337,7 +337,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;
@@ -349,7 +349,7 @@ export default {
 			await BeneficiariesService.getListOfLocationsTypes()
 				.then(({ data }) => { this.valueSelectOptions = data; })
 				.catch((e) => {
-					Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
 				});
 
 			this.valueSelectLoading = false;
