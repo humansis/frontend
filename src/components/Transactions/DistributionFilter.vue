@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
@@ -113,7 +114,12 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["admNames"]),
+	},
+
 	created() {
+		this.setLocationNames();
 		this.fetchProjects();
 		this.fetchModality();
 		this.fetchTargetType();
@@ -121,6 +127,20 @@ export default {
 	},
 
 	methods: {
+		setLocationNames() {
+			this.filtersOptions.adm1.name = this.admNames.adm1;
+			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
+
+			this.filtersOptions.adm2.name = this.admNames.adm2;
+			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
+
+			this.filtersOptions.adm3.name = this.admNames.adm3;
+			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
+
+			this.filtersOptions.adm4.name = this.admNames.adm4;
+			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
+		},
+
 		filterChanged(filters, filterName) {
 			switch (filterName) {
 				case "adm1":
@@ -164,7 +184,7 @@ export default {
 				const [a] = filters.adm1;
 				location = a;
 			}
-			console.log(filters);
+
 			this.$emit("filtersChanged", {
 				projects: filters.project || [],
 				dateFrom: filters.dateFrom || null,
