@@ -515,19 +515,29 @@ export default {
 
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					data.forEach((item, key) => {
-						beneficiaryIds.push(item.id);
+					beneficiaryIds = data.map((item) => item.communityId);
+					beneficiaries = await this.getCommunities(beneficiaryIds);
 
-						this.table.data[key] = item;
+					data.forEach((community, key) => {
+						const foundCommunity = beneficiaries.find(
+							(bnf) => bnf.id === community.communityId,
+						);
+
+						this.table.data[key] = { ...community, ...foundCommunity };
 					});
 
 					this.table.progress += 85;
 					break;
 				case consts.TARGET.INSTITUTION:
-					data.forEach((item, key) => {
-						beneficiaryIds.push(item.id);
+					beneficiaryIds = data.map((item) => item.institutionId);
+					beneficiaries = await this.getInstitutions(beneficiaryIds);
 
-						this.table.data[key] = item;
+					data.forEach((institution, key) => {
+						const foundInstitution = beneficiaries.find(
+							(bnf) => bnf.id === institution.institutionId,
+						);
+
+						this.table.data[key] = { ...institution, ...foundInstitution };
 					});
 
 					this.table.progress += 85;
@@ -585,6 +595,24 @@ export default {
 			}
 		},
 
+		async getCommunities(ids) {
+			// TODO Get communities
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+				});
+		},
+
+		async getInstitutions(ids) {
+			// TODO Get institutions
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+				});
+		},
+
 		async getBeneficiaries(ids) {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
@@ -596,7 +624,6 @@ export default {
 		settingOfBeneficiariesDistribution(
 			{ bookletIds, generalReliefItemIds, smartcardDepositIds, transactionIds },
 		) {
-			console.log(this.commodities[0].modalityType);
 			switch (this.commodities[0].modalityType) {
 				case consts.COMMODITY.SMARTCARD:
 					this.setAssignedSmartCards(smartcardDepositIds);

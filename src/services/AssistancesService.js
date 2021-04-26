@@ -183,9 +183,11 @@ export default {
 		return { data, status };
 	},
 
-	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
+		const idsText = smartcardDepositIds ? idsToUri(smartcardDepositIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+			uri: `smartcard-deposits?${idsText}`,
 		});
 		return { data, totalCount };
 	},

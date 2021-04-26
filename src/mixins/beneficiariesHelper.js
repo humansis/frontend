@@ -14,7 +14,7 @@ export default {
 			this.table.data.map(async (item, key) => {
 				const transaction = transactions?.find(({ id }) => id === transactionIds[0]);
 
-				this.table.data[key].status = transaction ? transactionStatuses
+				this.table.data[key].status = transaction.status ? transactionStatuses
 					?.find(({ code }) => code === transaction.status)?.value : this.$t("Not Sent");
 				this.table.data[key].value = transaction?.amountSent || `
 						${this.commodities[0].value} ${this.commodities[0].unit}`;
@@ -48,45 +48,55 @@ export default {
 		},
 
 		/** @summary Setting the BNF if the SMART CARD was already distributed to him */
-		async setAssignedSmartCards(beneficiaryIds) {
-			if (beneficiaryIds.length) {
-				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					const smartCardDeposits = await this.getSmartCardDeposits(beneficiaryId);
+		async setAssignedSmartCards(smartcardDepositIds) {
+			const smartCardDeposits = await this.getSmartCardDeposits(smartcardDepositIds);
 
-					const beneficiaryItemIndex = this.table.data.findIndex(
-						({ id }) => id === beneficiaryId,
-					);
+			this.table.data.map(async (item, key) => {
+				const smartCardDeposit = smartCardDeposits
+					?.find(({ id }) => id === item.smartcardDepositIds[0]);
 
-					this.table.data[beneficiaryItemIndex].distributed =	smartCardDeposits?.[0]?.distributed
-						? this.$moment(smartCardDeposits[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
-						: this.$t("Not Distributed");
-					this.table.data[beneficiaryItemIndex].value = `
+				this.table.data[key].distributed = smartCardDeposit.dateOfDistribution
+					? this.$moment(smartCardDeposit.dateOfDistribution)
+						.format("YYYY-MM-DD hh:mm")
+					: this.$t("Not Distributed");
+				this.table.data[key].value = `
 						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
+			});
 
-					this.table.data = [...this.table.data];
+			this.table.settings = {
+				assignVoucherAction: false,
+				checkableTable: false,
+			};
 
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: false,
-					};
-				}));
-			}
+			this.table.progress += 15;
 		},
 
 		/** @summary Obtaining information about the beneficiary SMART CARD */
-		getSmartCardDeposits(beneficiaryId) {
+		getSmartCardDeposits(smartcardDepositIds) {
 			return AssistancesService
-				.getSmartCardDepositForBeneficiaryInAssistance(
-					this.$route.params.assistanceId,
-					beneficiaryId,
-				).then(({ data }) => data)
+				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
 				});
 		},
 
 		/** @summary Setting the BNF if the QR VOUCHER CODE was already distributed to him */
-		async setAssignedBooklets(beneficiaryIds) {
+		async setAssignedBooklets(bookletIds) {
+			// TODO Get booklets by multiget !!!!!!!!!!!!!!!!!!!!
+			// const transactionStatuses = await this.getTransactionStatuses();
+			// const transactions = await this.getTransactions(bookletIds);
+
+			this.table.data.map(async (item, key) => {
+				console.log(key, item.bookletIds, bookletIds);
+			});
+
+			this.table.settings = {
+				assignVoucherAction: true,
+				checkableTable: false,
+			};
+
+			this.table.progress += 15;
+			/*
 			if (beneficiaryIds.length) {
 				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
 					let booklets = [];
@@ -102,7 +112,7 @@ export default {
 						case consts.TARGET.HOUSEHOLD:
 						case consts.TARGET.INDIVIDUAL:
 						default:
-							booklets = await this.getBookletsForBeneficiary(beneficiaryId);
+							booklets = await this.getBooklets(beneficiaryId);
 					}
 
 					const beneficiaryItemIndex = this.table.data.findIndex(
@@ -130,14 +140,15 @@ export default {
 					};
 				}));
 			}
+			*/
 		},
 
 		/** @summary Obtaining information about the beneficiary QR VOUCHER CODE */
-		getBookletsForBeneficiary(beneficiaryId) {
+		getBooklets(bookletIds) {
 			return AssistancesService
 				.getBookletsForBeneficiaryInAssistance(
 					this.$route.params.assistanceId,
-					beneficiaryId,
+					bookletIds,
 				).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
@@ -175,78 +186,34 @@ export default {
 
 		/** @summary Setting the BNF if the GENERAL RELIEF ITEMS was already distributed to him */
 		async setAssignedGeneralRelief(generalReliefItemIds) {
-			console.log(generalReliefItemIds);
-
 			const generalReliefItems = await this.getGeneralReliefItems(generalReliefItemIds);
-			this.table.progress += 20;
-			// TODO set generalReliefItems for beneficiaries
-			console.log("generalReliefItems", generalReliefItems);
 
-			this.table.data.forEach((item, key) => {
-				console.log(item, key);
+			this.table.data.map(async (item, key) => {
+				const generalReliefItem = generalReliefItems
+					?.find(({ id }) => id === item.generalReliefItemIds[0]);
+
+				this.table.data[key].distributed = generalReliefItem.dateOfDistribution
+					? this.$moment(generalReliefItem.dateOfDistribution).format("YYYY-MM-DD hh:mm")
+					: this.$t("Not Distributed");
+
+				this.table.data[key].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
+
+				if (generalReliefItem.distributed) this.table.checkedRows.push(this.table.data[key]);
 			});
 
-			this.table.progress += 15;
-			/*
-			if (beneficiaryIds.length) {
-				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					let generalReliefItems = [];
+			this.table.settings = {
+				assignVoucherAction: false,
+				checkableTable: true,
+			};
 
-					// TODO Finish this after BE will prepare similar endpoints
-					switch (this.assistance.target) {
-						case consts.TARGET.COMMUNITY:
-							// TODO generalReliefItems =
-							    this.getGeneralReliefItemsForCommunity(beneficiaryId);
-							break;
-						case consts.TARGET.INSTITUTION:
-							// TODO generalReliefItems =
-							//  await this.getGeneralReliefItemsForInstitution(beneficiaryId);
-							break;
-						case consts.TARGET.HOUSEHOLD:
-						case consts.TARGET.INDIVIDUAL:
-						default:
-							generalReliefItems = await this.getGeneralReliefItems(beneficiaryId);
-					}
-
-					const beneficiaryItemIndex = this.table.data.findIndex(
-						({ id }) => id === beneficiaryId,
-					);
-
-					if (generalReliefItems?.length) {
-						if (generalReliefItems[0].distributed) {
-							this.table.checkedRows.push(this.table.data[beneficiaryItemIndex]);
-						}
-
-						this.table.data[beneficiaryItemIndex]
-						.generalReliefItem = { ...generalReliefItems[0] };
-
-						this.table.data[beneficiaryItemIndex]
-						.distributed =	generalReliefItems[0]
-							.dateOfDistribution
-							? this.$moment(generalReliefItems[0].dateOfDistribution).format("YYYY-MM-DD hh:mm")
-							: this.$t("Not Distributed");
-
-						this.table.data[beneficiaryItemIndex]
-						.value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
-					}
-
-					this.table.data = [...this.table.data];
-
-					this.table.settings = {
-						assignVoucherAction: false,
-						checkableTable: true,
-					};
-				}));
-			}
-			*/
+			this.table.progress += 25;
 		},
 
 		/** @summary Obtaining information about the beneficiary GENERAL RELIEF */
-		getGeneralReliefItems(beneficiaryId) {
+		getGeneralReliefItems(generalReliefItemIds) {
 			return AssistancesService
 				.getGeneralReliefItemsForAssistance(
-					this.$route.params.assistanceId,
-					beneficiaryId,
+					generalReliefItemIds,
 				).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("General Relief")} ${e}`, "is-danger");

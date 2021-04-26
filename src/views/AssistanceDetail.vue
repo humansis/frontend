@@ -323,7 +323,7 @@ export default {
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id,
+						beneficiary.generalReliefItemIds[0],
 						true,
 						dateOfDistribution,
 					).then(({ status }) => {
