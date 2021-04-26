@@ -47,6 +47,7 @@
 					class="ml-2"
 					space-between
 					:formats="{ xlsx: true, csv: true}"
+					@onExport="exportDistributions"
 				/>
 			</template>
 		</Table>
@@ -325,6 +326,22 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
+		async exportDistributions(format) {
+			this.exportLoading = true;
+			await TransactionService.exportDistributions(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `distributions.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
+		},
+
 		async onFiltersChange(selectedFilters) {
 			Object.keys(selectedFilters).forEach((key) => {
 				if (Array.isArray(selectedFilters[key])) {
@@ -337,7 +354,6 @@ export default {
 					this.filters[key] = [date.toISOString()];
 				}
 			});
-			console.log(this.filters);
 			await this.fetchData();
 		},
 	},

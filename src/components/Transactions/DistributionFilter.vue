@@ -30,6 +30,8 @@ export default {
 				adm2: [],
 				adm3: [],
 				adm4: [],
+				dateForm: null,
+				dateTo: null,
 			},
 			filtersOptions: {
 				beneficiaryType: {
@@ -97,6 +99,16 @@ export default {
 					data: [],
 					selectValue: "locationId",
 				},
+				dateFrom: {
+					name: "Date From",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
+				dateTo: {
+					name: "Date To",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
 			},
 		};
 	},
@@ -152,8 +164,11 @@ export default {
 				const [a] = filters.adm1;
 				location = a;
 			}
+			console.log(filters);
 			this.$emit("filtersChanged", {
 				projects: filters.project || [],
+				dateFrom: filters.dateFrom || null,
+				dateTo: filters.dateTo || null,
 				types: filters.beneficiaryType || [],
 				modalityTypes: filters.commodity || [],
 				assistances: filters.distribution || [],

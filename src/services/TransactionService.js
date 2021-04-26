@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfDistributedItems(page, size, sort, search, filters) {
@@ -13,6 +13,13 @@ export default {
 		});
 
 		return { data, totalCount };
+	},
+
+	async exportDistributions(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `distributed-items/exports?${formatText}` });
+		return { data };
 	},
 
 };
