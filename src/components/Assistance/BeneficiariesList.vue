@@ -598,20 +598,18 @@ export default {
 		},
 
 		async getCommunities(ids) {
-			// TODO Get communities
-			return BeneficiariesService.getBeneficiaries(ids)
+			return BeneficiariesService.getCommunities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 				});
 		},
 
 		async getInstitutions(ids) {
-			// TODO Get institutions
-			return BeneficiariesService.getBeneficiaries(ids)
+			return BeneficiariesService.getInstitutions(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 				});
 		},
 

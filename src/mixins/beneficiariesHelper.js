@@ -92,7 +92,7 @@ export default {
 				this.table.data[key].booklet = booklet?.code || this.$t("None");
 				this.table.data[key].status = booklet?.status ? bookletStatuses
 					?.find(({ code }) => code === booklet.status)?.value : this.$t("Not Distributed");
-				this.table.data[key].used = booklet?.quantityOfUsedVouchers
+				this.table.data[key].used = booklet
 					? `${booklet.quantityOfUsedVouchers}/${booklet.quantityOfVouchers}`
 					: this.$t("None");
 				this.table.data[key].value = booklet?.totalValue

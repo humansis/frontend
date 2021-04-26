@@ -117,6 +117,24 @@ export default {
 		return data;
 	},
 
+	async getCommunities(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({
+			uri: `communities?${idsText}`,
+		});
+		return data;
+	},
+
+	async getInstitutions(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({
+			uri: `institutions?${idsText}`,
+		});
+		return data;
+	},
+
 	async getPhone(id) {
 		if (!id) return null;
 		const { data } = await fetcher({
