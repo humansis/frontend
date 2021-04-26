@@ -6,7 +6,6 @@ import AddressService from "@/services/AddressService";
 
 export default {
 	methods: {
-		/** @summary Setting the BNF if the MOBILE MONEY was already distributed to him */
 		async setAssignedTransactions(transactionIds) {
 			const transactionStatuses = await this.getTransactionStatuses();
 			const transactions = await this.getTransactions(transactionIds);
@@ -28,7 +27,6 @@ export default {
 			this.table.progress += 25;
 		},
 
-		/** @summary Obtaining information about the beneficiary MOBILE MONEY */
 		getTransactions(transactionIds) {
 			return AssistancesService
 				.getTransactionsForAssistance(
@@ -47,7 +45,6 @@ export default {
 				});
 		},
 
-		/** @summary Setting the BNF if the SMART CARD was already distributed to him */
 		async setAssignedSmartCards(smartcardDepositIds) {
 			const smartCardDeposits = await this.getSmartCardDeposits(smartcardDepositIds);
 
@@ -71,7 +68,6 @@ export default {
 			this.table.progress += 25;
 		},
 
-		/** @summary Obtaining information about the beneficiary SMART CARD */
 		getSmartCardDeposits(smartcardDepositIds) {
 			return AssistancesService
 				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
@@ -80,7 +76,6 @@ export default {
 				});
 		},
 
-		/** @summary Setting the BNF if the QR VOUCHER CODE was already distributed to him */
 		async setAssignedBooklets(bookletIds) {
 			const bookletStatuses = await this.getBookletStatuses();
 			const booklets = await this.getBooklets(bookletIds);
@@ -107,7 +102,6 @@ export default {
 			this.table.progress += 25;
 		},
 
-		/** @summary Obtaining information about the beneficiary QR VOUCHER CODE */
 		getBooklets(bookletIds) {
 			return AssistancesService
 				.getBookletsForAssistance(
@@ -126,7 +120,6 @@ export default {
 				});
 		},
 
-		/** @summary Setting the BNF that the QR VOUCHER CODE is now distributed to him */
 		async assignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
 			let target = "";
@@ -170,7 +163,6 @@ export default {
 			this.assignVoucherModal.isWaiting = false;
 		},
 
-		/** @summary Setting the BNF if the GENERAL RELIEF ITEMS was already distributed to him */
 		async setAssignedGeneralRelief(generalReliefItemIds) {
 			const generalReliefItems = await this.getGeneralReliefItems(generalReliefItemIds);
 
@@ -195,7 +187,6 @@ export default {
 			this.table.progress += 25;
 		},
 
-		/** @summary Obtaining information about the beneficiary GENERAL RELIEF */
 		getGeneralReliefItems(generalReliefItemIds) {
 			return AssistancesService
 				.getGeneralReliefItemsForAssistance(
