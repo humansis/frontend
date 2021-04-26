@@ -219,9 +219,11 @@ export default {
 			this.table.progress += 15;
 			const locationIds = [];
 			const assistanceIds = [];
+			const commodityIds = [];
 			data.forEach((item, key) => {
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
+				commodityIds.push(...item.commodityIds);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
@@ -230,7 +232,7 @@ export default {
 			this.table.progress += 10;
 
 			this.prepareLocationForTable(locationIds);
-			this.prepareCommodityForTable(assistanceIds);
+			this.prepareCommodityForTable(commodityIds);
 			this.prepareStatisticsForTable(assistanceIds);
 		},
 
@@ -247,7 +249,8 @@ export default {
 			const commodities = await this.getCommodities(assistanceIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				const preparedCommodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
+				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0])
+					?.modalityType || this.$t("None");
 				this.table.data[key].commodity = [preparedCommodity];
 			});
 			this.table.progress += 10;

@@ -14,9 +14,10 @@ export default {
 			this.table.data.map(async (item, key) => {
 				const transaction = transactions?.find(({ id }) => id === transactionIds[0]);
 
-				this.table.data[key].status = transactionStatuses
-					?.find(({ code }) => code === transaction.status)?.value;
-				this.table.data[key].value = transaction.amountSent;
+				this.table.data[key].status = transaction ? transactionStatuses
+					?.find(({ code }) => code === transaction.status)?.value : this.$t("Not Sent");
+				this.table.data[key].value = transaction?.amountSent || `
+						${this.commodities[0].value} ${this.commodities[0].unit}`;
 			});
 
 			this.table.settings = {
@@ -254,7 +255,7 @@ export default {
 
 		async preparePhoneForTable(phoneIds) {
 			const phones = await this.getPhones(phoneIds);
-			this.table.progress += 20;
+			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
 					? this.$t("None")
