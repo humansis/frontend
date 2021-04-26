@@ -87,20 +87,14 @@ export default {
 
 			this.table.data.map(async (item, key) => {
 				const booklet = booklets?.find(({ id }) => id === item.bookletIds[0]);
-				console.log(booklet);
 
-				// TODO Decide if voucher can be sent
-				this.table.data[key].canAssignVoucher = true;
-
+				this.table.data[key].canAssignVoucher = booklet?.status === "0";
 				this.table.data[key].booklet = booklet?.code || this.$t("None");
-
 				this.table.data[key].status = booklet?.status ? bookletStatuses
 					?.find(({ code }) => code === booklet.status)?.value : this.$t("Not Distributed");
-
 				this.table.data[key].used = booklet?.quantityOfUsedVouchers
 					? `${booklet.quantityOfUsedVouchers}/${booklet.quantityOfVouchers}`
 					: this.$t("None");
-
 				this.table.data[key].value = booklet?.totalValue
 					? `${booklet.totalValue} ${booklet.currency}` : this.$t("None");
 			});
@@ -135,7 +129,6 @@ export default {
 		/** @summary Setting the BNF that the QR VOUCHER CODE is now distributed to him */
 		async assignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
-
 			let target = "";
 
 			switch (this.assistance.target) {
