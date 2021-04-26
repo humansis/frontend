@@ -435,7 +435,6 @@ export default {
 		},
 
 		async submitEditBeneficiaryForm() {
-			// TODO Update Beneficiary in this assistance
 			this.beneficiaryModal = {
 				isOpened: false,
 				isEditing: false,
@@ -444,7 +443,6 @@ export default {
 		},
 
 		async submitEditInstitutionForm() {
-			// TODO Update Institution in this assistance
 			this.institutionModal = {
 				isOpened: false,
 				isEditing: false,
@@ -453,7 +451,6 @@ export default {
 		},
 
 		async submitEditCommunityForm() {
-			// TODO Update Community in this assistance
 			this.communityModal = {
 				isOpened: false,
 				isEditing: false,

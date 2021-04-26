@@ -78,6 +78,7 @@ import { Notification, Toast } from "@/utils/UI";
 import validation from "@/mixins/validation";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AddBeneficiaryForm",
@@ -144,30 +145,70 @@ export default {
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
 			const body = {
 				removed: true,
-				beneficiaryIds: [removingId],
 				justification,
 			};
 
-			await this.addOrRemoveBeneficiaryFromAssistance(body,
-				this.$t("Beneficiary Successfully Removed"));
+			let target = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					body.communityIds = [removingId];
+					target = "communities";
+					break;
+				case consts.TARGET.INSTITUTION:
+					body.institutionIds = [removingId];
+					target = "institutions";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = [removingId];
+					target = "beneficiaries";
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				target,
+				this.$t("Beneficiary Successfully Removed"),
+			);
 		},
 
 		async addBeneficiaryToAssistance({ beneficiaries, justification }) {
 			const body = {
 				added: true,
-				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
 				justification,
 			};
 
-			await this.addOrRemoveBeneficiaryFromAssistance(body,
-				this.$t("Beneficiary Successfully Added"));
+			let target = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
+					target = "communities";
+					break;
+				case consts.TARGET.INSTITUTION:
+					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
+					target = "institutions";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = getArrayOfIdsByParam(beneficiaries, "id");
+					target = "beneficiaries";
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				target,
+				this.$t("Beneficiary Successfully Added"),
+			);
 		},
 
-		async addOrRemoveBeneficiaryFromAssistance(body, successMessage) {
+		async addOrRemoveBeneficiaryFromAssistance(body, target, successMessage) {
 			this.submitButtonLoading = true;
 
 			await BeneficiariesService
-				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
+				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
 				.then(() => {
 					Toast(successMessage, "is-success");
 				})
