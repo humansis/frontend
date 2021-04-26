@@ -224,9 +224,9 @@ export default {
 		return { data, totalCount };
 	},
 
-	async assignBookletForBeneficiaryInAssistance(assistanceId, beneficiaryId, bookletCode) {
+	async assignBookletInAssistance(assistanceId, target, beneficiaryId, bookletCode) {
 		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets/${bookletCode}`,
+			uri: `assistances/${assistanceId}/${target}/${beneficiaryId}/booklets/${bookletCode}`,
 			method: "PUT",
 		});
 		return { data, status };

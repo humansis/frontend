@@ -136,8 +136,24 @@ export default {
 		async assignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
 
-			await AssistancesService.assignBookletForBeneficiaryInAssistance(
+			let target = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					target = "communities";
+					break;
+				case consts.TARGET.INSTITUTION:
+					target = "institutions";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					target = "beneficiaries";
+			}
+
+			await AssistancesService.assignBookletInAssistance(
 				this.$route.params.assistanceId,
+				target,
 				booklet.beneficiaryId,
 				booklet.code,
 			).then(({ status }) => {
