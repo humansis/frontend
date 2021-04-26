@@ -2,10 +2,13 @@
 	<Table
 		has-reset-sort
 		has-search
+		checkable
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:checked-rows="table.checkedRows"
+		@checked="onRowsChecked"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
@@ -36,13 +39,14 @@
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
+					:disabled="!bookletsSelects"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
 					:entity="$t('Voucher')"
 					:tooltip="$t('Delete')"
-					:disabled="!props.row.deletable"
+					:disabled="!props.row.deletable || !bookletsSelects"
 					:id="props.row.id"
 					@submitted="remove"
 				/>
@@ -50,6 +54,7 @@
 					v-if="userCan.exportPrintVouchers"
 					icon="print"
 					type="is-dark"
+					:disabled="!bookletsSelects"
 					:tooltip="$t('Print')"
 					@click.native="printBooklets(props.row)"
 				/>
@@ -78,12 +83,24 @@
 			<ExportButton
 				v-if="userCan.exportPrintVouchers"
 				class="ml-3"
+				:label="!bookletsSelects ? $t('Export selection') : null"
 				space-between
 				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportBooklets"
 			/>
+			<b-button
+				v-show="!bookletsSelects"
+				type="is-primary"
+				class="ml-3"
+				:loading="printSelectionLoading"
+				@click="printSelection"
+			>
+				<template>
+					<span>{{ $t('Print Selection') }}</span>
+				</template>
+			</b-button>
 		</template>
 	</Table>
 </template>
@@ -122,6 +139,9 @@ export default {
 			advancedSearchVisible: false,
 			filters: [],
 			exportLoading: false,
+			printLoading: false,
+			printSelectionLoading: false,
+			bookletsSelects: true,
 			table: {
 				data: [],
 				columns: [],
@@ -135,6 +155,7 @@ export default {
 					{ key: "beneficiary", sortable: true },
 					{ key: "assistance", sortable: true, sortKey: "distribution" },
 				],
+				checkedRows: [],
 				total: 0,
 				currentPage: 1,
 				searchPhrase: "",
@@ -204,7 +225,11 @@ export default {
 
 		async exportBooklets(format) {
 			this.exportLoading = true;
-			await BookletsService.exportBooklets(format)
+			let ids = null;
+			if (!this.bookletsSelects) {
+				ids = this.table.checkedRows.map((item) => item.id);
+			}
+			await BookletsService.exportBooklets(format, ids)
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
@@ -218,10 +243,32 @@ export default {
 			this.exportLoading = false;
 		},
 
-		async printBooklets({ code, id }) {
-			this.exportLoading = true;
+		onRowsChecked(rows) {
+			this.table.checkedRows = rows;
+			this.bookletsSelects = !rows?.length;
+		},
 
-			await BookletsService.exportQRVouchers(id)
+		async printSelection() {
+			this.printSelectionLoading = true;
+			const ids = this.table.checkedRows.map((item) => item.id);
+
+			await BookletsService.exportQRVouchers(ids)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `Booklets.pdf`;
+					link.click();
+				}).catch((e) => {
+					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
+				});
+			this.printSelectionLoading = false;
+		},
+
+		async printBooklets({ code, id }) {
+			Notification(`${this.$t("Your Voucher Download is Starting")}`, "is-success");
+
+			await BookletsService.exportQRVouchers([id])
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
@@ -231,8 +278,6 @@ export default {
 				}).catch((e) => {
 					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
 				});
-
-			this.exportLoading = false;
 		},
 	},
 };
