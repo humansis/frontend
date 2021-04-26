@@ -47,11 +47,12 @@
 				<MultiSelect
 					v-model="formModel.rights"
 					searchable
-					label="value"
+					label="name"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.rights"
+					:loading="rolesLoading"
 					:class="validateMultiselect('rights')"
 					@select="onRightsSelect"
 				/>
@@ -66,11 +67,12 @@
 				<MultiSelect
 					v-model="formModel.projectIds"
 					searchable
+					multiple
 					label="name"
 					track-by="id"
 					:placeholder="$t('Click to select')"
-					multiple
 					:disabled="formDisabled || formModel.disabledProject"
+					:loading="projectsLoading"
 					:options="options.projects"
 					:class="validateMultiselect('projectIds')"
 					@select="validate('projectIds')"
@@ -92,6 +94,7 @@
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="options.countries"
+					:loading="countriesLoading"
 					:class="validateMultiselect('countries')"
 					@select="validate('countries')"
 				/>
@@ -182,6 +185,8 @@ import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import roles from "@/utils/roleConst";
+import SystemService from "@/services/SystemService";
 
 export default {
 	name: "userForm",
@@ -200,7 +205,7 @@ export default {
 		formModel: {
 			email: { required, email },
 			username: { required },
-			password: { required: requiredIf((form) => !form.newUser) },
+			password: { required: requiredIf((form) => form.newUser) },
 			rights: { required },
 			language: {},
 			projectIds: { required: requiredIf((form) => !form.disabledProject) },
@@ -214,37 +219,7 @@ export default {
 	data() {
 		return {
 			options: {
-				// TODO Fix after implementing real api or roleService or something like that
-				rights: [
-					{
-						code: 0,
-						value: this.$t("Administrator"),
-					},
-					{
-						code: 1,
-						value: this.$t("Field Officer"),
-					},
-					{
-						code: 2,
-						value: this.$t("Project Officer"),
-					},
-					{
-						code: 3,
-						value: this.$t("Project Manager"),
-					},
-					{
-						value: this.$t("Country Manager"),
-						code: 4,
-					},
-					{
-						value: this.$t("Regional Manager"),
-						code: 5,
-					},
-					{
-						value: this.$t("Enumerator"),
-						code: 6,
-					},
-				],
+				rights: [],
 				projects: [],
 				countries: [],
 				phonePrefixes: PhoneCodes,
@@ -254,14 +229,20 @@ export default {
 					{ value: "RU", code: "ru" },
 				],
 			},
+			countriesLoading: true,
+			projectsLoading: true,
+			rolesLoading: true,
 			onlyOneCountry: false,
 		};
 	},
 
-	mounted() {
+	async mounted() {
+		await Promise.all([
+			this.fetchRoles(),
+			this.fetchProjects(),
+			this.fetchCountries(),
+		]);
 		this.mapSelects();
-		this.fetchProjects();
-		this.fetchCountries();
 	},
 
 	methods: {
@@ -281,13 +262,19 @@ export default {
 		},
 
 		mapRights({ code }) {
-			if (code === 1 || code === 2 || code === 3 || code === 6) {
+			if (code === roles.FIELD_OFFICER
+				|| code === roles.PROJECT_OFFICER
+				|| code === roles.PROJECT_MANAGER
+				|| code === roles.ENUMERATOR) {
 				this.formModel.disabledProject = false;
 				this.formModel.disabledCountry = true;
-			} else if (code === 4 || code === 5) {
-				this.onlyOneCountry = (code === 4);
+			} else if (code === roles.COUNTRY_MANAGER || code === roles.REGIONAL_MANAGER) {
+				this.onlyOneCountry = (code === roles.COUNTRY_MANAGER);
 				this.formModel.disabledProject = true;
 				this.formModel.disabledCountry = false;
+			} else {
+				this.formModel.disabledCountry = true;
+				this.formModel.disabledProject = true;
 			}
 		},
 
@@ -300,6 +287,18 @@ export default {
 				});
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
+			this.projectsLoading = false;
+		},
+
+		async fetchRoles() {
+			await SystemService.getRoles()
+				.then(({ data }) => {
+					this.options.rights = data;
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Roles")} ${e}`, "is-danger");
+				});
+			this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
+			this.rolesLoading = false;
 		},
 
 		async fetchCountries() {
@@ -311,6 +310,7 @@ export default {
 				});
 
 			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
+			this.countriesLoading = false;
 		},
 
 		mapSelects() {
@@ -318,10 +318,8 @@ export default {
 				this.formModel.phonePrefix = getArrayOfCodeListByKey([this.formModel.phonePrefix], this.options.phonePrefixes, "code");
 			}
 			if (typeof this.formModel.language !== "object") {
-				this.formModel.language = this.options.languages
-					.find((item) => item.code === this.formModel.language);
+				this.formModel.language = getArrayOfCodeListByKey([this.formModel.language], this.options.languages, "code");
 			}
-			// TODO Map Rights on select after add permissions
 			this.mapRights(this.formModel.rights);
 		},
 

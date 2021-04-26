@@ -83,13 +83,6 @@ export default {
 		return { data, status };
 	},
 
-	async sendHistory(id) {
-		const { data: { data } } = await fetcher({
-			uri: `users/${id}/logs`,
-		});
-		return { data };
-	},
-
 	async exportUsers(format) {
 		const formatText = format ? `type=${format}` : "";
 
