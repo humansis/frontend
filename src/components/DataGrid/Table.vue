@@ -39,15 +39,14 @@
 
 		<b-table
 			ref="table"
-			striped
 			hoverable
 			scrollable
-			:backend-sorting="backendSorting"
-			:backend-pagination="backendPagination"
 			selectable
 			pagination-position="bottom"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
+			:backend-sorting="backendSorting"
+			:backend-pagination="backendPagination"
 			:default-sort-direction="defaultSortDirection"
 			:default-sort="defaultSortKey"
 			:aria-next-label="$t('Next Page')"
@@ -64,6 +63,7 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
+			:row-class="rowClass"
 			@check="checkboxChecked"
 			@cellclick="onClick"
 			@page-change="$emit('pageChanged', $event)"
@@ -143,6 +143,10 @@ export default {
 		disablePrecheckedRows: {
 			type: Boolean,
 			default: false,
+		},
+		rowClass: {
+			type: Function,
+			default: () => "",
 		},
 		isLoading: {
 			type: Boolean,

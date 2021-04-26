@@ -127,6 +127,7 @@
 			:is-loading="isLoadingList"
 			:checkable="table.settings.checkableTable"
 			:checked-rows="table.checkedRows"
+			:row-class="(row) => row.removed && 'removed-row'"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -173,6 +174,7 @@
 						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
+						:disabled="props.row.removed"
 						:tooltip="$t('Delete')"
 						@click.native="openAddBeneficiaryModal(props.row.id)"
 					/>
@@ -679,5 +681,9 @@ export default {
 <style>
 .table-wrapper {
 	min-height: 75px;
+}
+
+.removed-row {
+	background-color: #f3f3f3 !important;
 }
 </style>

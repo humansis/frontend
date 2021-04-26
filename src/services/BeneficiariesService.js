@@ -187,7 +187,7 @@ export default {
 
 	async addOrRemoveBeneficiaryFromAssistance(assistanceId, body) {
 		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries`,
+			uri: `assistances/${assistanceId}/assistances-beneficiaries`,
 			method: "PUT",
 			body,
 		});

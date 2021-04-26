@@ -12,9 +12,9 @@ export default {
 			const transactions = await this.getTransactions(transactionIds);
 
 			this.table.data.map(async (item, key) => {
-				const transaction = transactions?.find(({ id }) => id === transactionIds[0]);
+				const transaction = transactions?.find(({ id }) => id === item.transactionIds[0]);
 
-				this.table.data[key].status = transaction.status ? transactionStatuses
+				this.table.data[key].status = transaction?.status ? transactionStatuses
 					?.find(({ code }) => code === transaction.status)?.value : this.$t("Not Sent");
 				this.table.data[key].value = transaction?.amountSent || `
 						${this.commodities[0].value} ${this.commodities[0].unit}`;
@@ -25,7 +25,7 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 15;
+			this.table.progress += 25;
 		},
 
 		/** @summary Obtaining information about the beneficiary MOBILE MONEY */
@@ -55,7 +55,7 @@ export default {
 				const smartCardDeposit = smartCardDeposits
 					?.find(({ id }) => id === item.smartcardDepositIds[0]);
 
-				this.table.data[key].distributed = smartCardDeposit.dateOfDistribution
+				this.table.data[key].distributed = smartCardDeposit?.dateOfDistribution
 					? this.$moment(smartCardDeposit.dateOfDistribution)
 						.format("YYYY-MM-DD hh:mm")
 					: this.$t("Not Distributed");
@@ -68,7 +68,7 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 15;
+			this.table.progress += 25;
 		},
 
 		/** @summary Obtaining information about the beneficiary SMART CARD */
@@ -82,12 +82,27 @@ export default {
 
 		/** @summary Setting the BNF if the QR VOUCHER CODE was already distributed to him */
 		async setAssignedBooklets(bookletIds) {
-			// TODO Get booklets by multiget !!!!!!!!!!!!!!!!!!!!
-			// const transactionStatuses = await this.getTransactionStatuses();
-			// const transactions = await this.getTransactions(bookletIds);
+			const bookletStatuses = await this.getBookletStatuses();
+			const booklets = await this.getBooklets(bookletIds);
 
 			this.table.data.map(async (item, key) => {
-				console.log(key, item.bookletIds, bookletIds);
+				const booklet = booklets?.find(({ id }) => id === item.bookletIds[0]);
+				console.log(booklet);
+
+				// TODO Decide if voucher can be sent
+				this.table.data[key].canAssignVoucher = true;
+
+				this.table.data[key].booklet = booklet?.code || this.$t("None");
+
+				this.table.data[key].status = booklet?.status ? bookletStatuses
+					?.find(({ code }) => code === booklet.status)?.value : this.$t("Not Distributed");
+
+				this.table.data[key].used = booklet?.quantityOfUsedVouchers
+					? `${booklet.quantityOfUsedVouchers}/${booklet.quantityOfVouchers}`
+					: this.$t("None");
+
+				this.table.data[key].value = booklet?.totalValue
+					? `${booklet.totalValue} ${booklet.currency}` : this.$t("None");
 			});
 
 			this.table.settings = {
@@ -95,63 +110,25 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 15;
-			/*
-			if (beneficiaryIds.length) {
-				await Promise.all(beneficiaryIds.map(async (beneficiaryId) => {
-					let booklets = [];
-
-					// TODO Finish this after BE will prepare similar endpoints
-					switch (this.assistance.target) {
-						case consts.TARGET.COMMUNITY:
-							// TODO booklets = this.getBookletsForCommunity(beneficiaryId);
-							break;
-						case consts.TARGET.INSTITUTION:
-							// TODO booklets = await this.getBookletsForInstitution(beneficiaryId);
-							break;
-						case consts.TARGET.HOUSEHOLD:
-						case consts.TARGET.INDIVIDUAL:
-						default:
-							booklets = await this.getBooklets(beneficiaryId);
-					}
-
-					const beneficiaryItemIndex = this.table.data.findIndex(
-						({ id }) => id === beneficiaryId,
-					);
-
-					this.table.data[beneficiaryItemIndex].canAssignVoucher = !booklets?.[0]?.distributed
-						|| booklets?.length === 0;
-
-					this.table.data[beneficiaryItemIndex].booklet = booklets?.[0]?.code || this.$t("None");
-					this.table.data[beneficiaryItemIndex].status = booklets?.[0]?.distributed
-						? this.$t("Distributed") : this.$t("Not Distributed");
-					this.table.data[beneficiaryItemIndex]
-						.used =	booklets?.[0]
-							? `${booklets[0].quantityOfUsedVouchers}/${booklets[0].quantityOfVouchers}`
-							: this.$t("None");
-					this.table.data[beneficiaryItemIndex].value = booklets?.[0]
-						? `${booklets[0].totalValue} ${booklets[0].currency}` : this.$t("None");
-
-					this.table.data = [...this.table.data];
-
-					this.table.settings = {
-						assignVoucherAction: true,
-						checkableTable: false,
-					};
-				}));
-			}
-			*/
+			this.table.progress += 25;
 		},
 
 		/** @summary Obtaining information about the beneficiary QR VOUCHER CODE */
 		getBooklets(bookletIds) {
 			return AssistancesService
-				.getBookletsForBeneficiaryInAssistance(
-					this.$route.params.assistanceId,
+				.getBookletsForAssistance(
 					bookletIds,
 				).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+				});
+		},
+
+		getBookletStatuses() {
+			return AssistancesService
+				.getBookletStatuses().then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Booklet Statuses")} ${e}`, "is-danger");
 				});
 		},
 

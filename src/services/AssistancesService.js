@@ -208,9 +208,18 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getBookletsForAssistance(bookletIds) {
+		const idsText = bookletIds ? idsToUri(bookletIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,
+			uri: `booklets?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getBookletStatuses() {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "booklets/statuses",
 		});
 		return { data, totalCount };
 	},
