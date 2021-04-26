@@ -85,6 +85,9 @@
 				/>
 				<p style="white-space: nowrap">{{ $t('Total Count') }}: {{ total }}</p>
 			</template>
+			<template #footer>
+				<slot name="footer" />
+			</template>
 		</b-table>
 	</CardComponent>
 </template>

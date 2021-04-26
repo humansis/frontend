@@ -29,16 +29,16 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					icon="hand-holding-usd"
+					tooltip="Show Vendor Summary"
+					@click.native="showSummary(props.row)"
+				/>
+				<ActionButton
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
-					<ActionButton
-						icon="hand-holding-usd"
-						tooltip="Show Vendor Summary"
-						@click.native="showSummary(props.row.id)"
-					/>
 				<ActionButton
 					v-if="userCan.addEditVendors"
 					icon="edit"
@@ -169,8 +169,8 @@ export default {
 				});
 		},
 
-		showSummary(id) {
-			this.$emit("onShowSummary", id);
+		showSummary(vendor) {
+			this.$emit("onShowSummary", vendor);
 		},
 
 		async getLocations(vendors) {
