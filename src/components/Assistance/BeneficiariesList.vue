@@ -330,7 +330,7 @@ export default {
 				status: null,
 				referralType: null,
 				comment: null,
-				justificationForAdding: null,
+				justification: null,
 			},
 			institutionModel: {
 				addressStreet: null,
@@ -594,6 +594,10 @@ export default {
 
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
 				await this.settingOfBeneficiariesActivity(distributionItems);
+			}
+
+			if (!this.isAssistanceDetail) {
+				this.table.progress += 25;
 			}
 		},
 
