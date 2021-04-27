@@ -197,6 +197,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import ExportButton from "@/components/ExportButton";
@@ -215,7 +216,6 @@ import consts from "@/utils/assistanceConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
-import { mapState } from "vuex";
 
 export default {
 	name: "BeneficiariesList",
