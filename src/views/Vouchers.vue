@@ -30,6 +30,7 @@
 				:submit-button-label="$t('Create')"
 				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"
+				:is-editing="voucherModal.isEditing"
 				@formSubmitted="submitVoucherForm"
 				@formClosed="closeVoucherModal"
 			/>
@@ -46,6 +47,7 @@
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
+			@onShowEdit="showEdit"
 		/>
 	</div>
 </template>
@@ -78,6 +80,7 @@ export default {
 				isOpened: false,
 				isDetail: false,
 				isWaiting: false,
+				isEditing: false,
 			},
 			voucherModel: {
 				id: null,
@@ -99,6 +102,8 @@ export default {
 			let result = "";
 			if (this.voucherModal.isDetail) {
 				result = this.$t("Detail of This Voucher Booklets");
+			} else if (this.voucherModal.isEditing) {
+				result = this.$t("Edit This Voucher Booklets");
 			} else {
 				result = this.$t("Create New Voucher Booklets");
 			}
@@ -114,6 +119,17 @@ export default {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
+				isEditing: false,
+			};
+		},
+
+		showEdit(voucher) {
+			this.mapToFormModel(voucher);
+			this.voucherModal = {
+				isEditing: true,
+				isOpened: true,
+				isDetail: false,
 				isWaiting: false,
 			};
 		},

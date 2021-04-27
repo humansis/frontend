@@ -42,6 +42,12 @@
 					:disabled="!bookletsSelects"
 					@click.native="showDetailWithId(props.row.id)"
 				/>
+				<ActionButton
+					icon="edit"
+					:tooltip="$t('Edit')"
+					:disabled="!bookletsSelects"
+					@click.native="showEdit(props.row.id)"
+				/>
 				<SafeDelete
 					icon="trash"
 					:entity="$t('Voucher')"
@@ -168,18 +174,6 @@ export default {
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.voucherModal.isDetail) {
-				result = this.$t("Detail of Voucher");
-			} else {
-				result = this.$t("Create New Voucher");
-			}
-			return result;
-		},
 	},
 
 	mounted() {
