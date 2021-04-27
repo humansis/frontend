@@ -16,7 +16,7 @@
 				</p>
 			</div>
 			<div class="menu">
-				<b-menu>
+				<b-menu :activable="false">
 					<b-menu-list>
 						<b-menu-item
 							icon="home"
@@ -45,6 +45,8 @@
 						<b-menu-item
 							icon="user-friends"
 							class="to-dropdown-item"
+							:active="beneficiariesActive"
+							@click="beneficiariesActive = !beneficiariesActive"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Beneficiaries')" position="is-right" always>
@@ -129,6 +131,8 @@
 						<b-menu-item
 							icon="cog"
 							class="to-dropdown-item"
+							:active="configurationActive"
+							@click="configurationActive = !configurationActive"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Configuration')" position="is-right" always>
@@ -233,6 +237,8 @@ export default {
 	data() {
 		return {
 			gitInfo,
+			beneficiariesActive: false,
+			configurationActive: false,
 		};
 	},
 
