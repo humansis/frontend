@@ -20,8 +20,8 @@
 					v-model="formModel.beneficiaries"
 					searchable
 					multiple
-					label="localGivenName"
 					track-by="id"
+					:label="multiselectLabel"
 					:placeholder="$t('Click to select')"
 					:loading="loading.beneficiaries"
 					:disabled="formDisabled"
@@ -31,15 +31,23 @@
 				>
 					<template #singleLabel="props">
 						<div class="option__desc">
+
 							<span class="option__title">
-								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+								{{ getOptionTitle(props.option) }}
+								<!--{{ `${props.option.localFamilyName}
+								${props.option.localGivenName}` }}
+								-->
 							</span>
 						</div>
 					</template>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">
-								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+								{{ getOptionTitle(props.option) }}
+								<!--
+								{{ `${props.option.localFamilyName}
+${props.option.localGivenName}` }}
+-->
 							</span>
 						</div>
 					</template>
@@ -100,6 +108,7 @@ export default {
 
 	data() {
 		return {
+			target: "",
 			options: {
 				beneficiaries: [],
 			},
@@ -112,7 +121,40 @@ export default {
 
 	mixins: [validation],
 
+	computed: {
+		multiselectLabel() {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+				case consts.TARGET.INSTITUTION:
+					result = "name";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					result = "localGivenName";
+			}
+
+			return result;
+		},
+	},
+
 	mounted() {
+		console.log(this.assistance.target);
+		switch (this.assistance.target) {
+			case consts.TARGET.COMMUNITY:
+				this.target = "communities";
+				break;
+			case consts.TARGET.INSTITUTION:
+				this.target = "institutions";
+				break;
+			case consts.TARGET.HOUSEHOLD:
+			case consts.TARGET.INDIVIDUAL:
+			default:
+				this.target = "beneficiaries";
+		}
+
 		if (!this.formModel.removingId) this.fetchBeneficiariesByProject();
 		this.formModel.justification = "";
 		this.formModel.beneficiaries = [];
@@ -130,10 +172,30 @@ export default {
 			}
 		},
 
+		getOptionTitle(option) {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+				case consts.TARGET.INSTITUTION:
+					result = option.name;
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					result = `${option.localFamilyName} ${option.localGivenName}`;
+			}
+
+			return result;
+		},
+
 		async fetchBeneficiariesByProject() {
 			const { projectId } = this.$route.params;
 
-			await BeneficiariesService.getBeneficiariesByProject(projectId, this.assistance.target)
+			await BeneficiariesService.getBeneficiariesByProject(
+				projectId,
+				this.target,
+			)
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
@@ -148,27 +210,22 @@ export default {
 				justification,
 			};
 
-			let target = "";
-
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
 					body.communityIds = [removingId];
-					target = "communities";
 					break;
 				case consts.TARGET.INSTITUTION:
 					body.institutionIds = [removingId];
-					target = "institutions";
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					body.beneficiaryIds = [removingId];
-					target = "beneficiaries";
 			}
 
 			await this.addOrRemoveBeneficiaryFromAssistance(
 				body,
-				target,
+				this.target,
 				this.$t("Beneficiary Successfully Removed"),
 			);
 		},
@@ -179,27 +236,22 @@ export default {
 				justification,
 			};
 
-			let target = "";
-
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
 					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
-					target = "communities";
 					break;
 				case consts.TARGET.INSTITUTION:
 					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
-					target = "institutions";
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					body.beneficiaryIds = getArrayOfIdsByParam(beneficiaries, "id");
-					target = "beneficiaries";
 			}
 
 			await this.addOrRemoveBeneficiaryFromAssistance(
 				body,
-				target,
+				this.target,
 				this.$t("Beneficiary Successfully Added"),
 			);
 		},
