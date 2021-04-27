@@ -27,7 +27,7 @@
 			<VoucherForm
 				close-button
 				class="modal-card"
-				:submit-button-label="$t('Create')"
+				:submit-button-label="voucherModal.isEditing ? $t('Update') : $t('Create')"
 				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"
 				:is-editing="voucherModal.isEditing"
@@ -191,6 +191,7 @@ export default {
 
 		submitVoucherForm(voucherForm) {
 			const {
+				id,
 				quantityOfBooklets,
 				quantityOfVouchers,
 				values,
@@ -212,28 +213,55 @@ export default {
 				currency: currency.value,
 			};
 
-			this.createVoucher(voucherBody);
+			if (this.voucherModal.isEditing && id) {
+				this.updateVoucher(voucherBody, id);
+			} else {
+				this.createVoucher(voucherBody);
+			}
 		},
 
 		async createVoucher(voucherBody) {
 			this.voucherModal.isWaiting = true;
 
-			await BookletsService.createBooklet(voucherBody).then((response) => {
-				if (response.status === 204) {
-					Toast(this.$t("Booklet Successfully Created"), "is-success");
-					if (this.$refs.voucherList) {
-						this.$refs.voucherList.fetchData();
-					} else if (this.$refs.batchList) {
-						this.$refs.batchList.fetchData();
-					} else {
-						this.$router.go();
+			await BookletsService.createBooklet(voucherBody)
+				.then((response) => {
+					if (response.status === 204) {
+						Toast(this.$t("Booklet Successfully Created"), "is-success");
+						if (this.$refs.voucherList) {
+							this.$refs.voucherList.fetchData();
+						} else if (this.$refs.batchList) {
+							this.$refs.batchList.fetchData();
+						} else {
+							this.$router.go();
+						}
+						this.closeVoucherModal();
 					}
-					this.closeVoucherModal();
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
-				this.voucherModal.isWaiting = false;
-			});
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+					this.voucherModal.isWaiting = false;
+				});
+		},
+
+		async updateVoucher(voucherBody, id) {
+			this.voucherModal.isWaiting = true;
+
+			await BookletsService.updateBooklet(voucherBody, id)
+				.then((response) => {
+					if (response.status === 204) {
+						Toast(this.$t("Booklet Successfully Updated"), "is-success");
+						if (this.$refs.voucherList) {
+							this.$refs.voucherList.fetchData();
+						} else if (this.$refs.batchList) {
+							this.$refs.batchList.fetchData();
+						} else {
+							this.$router.go();
+						}
+						this.closeVoucherModal();
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+					this.voucherModal.isWaiting = false;
+				});
 		},
 
 		async onRemoveVoucher(id) {

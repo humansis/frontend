@@ -38,7 +38,7 @@
 		<ProjectList
 			ref="projectList"
 			@onShowDetail="showDetail"
-			@onEdit="editProject"
+			@onShowEdit="showEdit"
 			@onDelete="onProjectDelete"
 		/>
 	</div>
@@ -109,7 +109,7 @@ export default {
 	},
 
 	methods: {
-		editProject(project) {
+		showEdit(project) {
 			this.projectModal = {
 				isEditing: true,
 				isOpened: true,

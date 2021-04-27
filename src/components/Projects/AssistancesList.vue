@@ -40,14 +40,14 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Edit')"
-						@click.native="showEdit(props.row.id)"
+						@click="showEdit(props.row.id)"
 					/>
 					<ActionButton
 						v-if="!props.row.validated
 							&& userCan.editDistribution"
 						icon="edit"
 						:tooltip="$t('Update')"
-						@click.native="goToUpdate(props.row.id)"
+						@click="goToUpdate(props.row.id)"
 					/>
 					<ActionButton
 						v-if="props.row.validated
@@ -57,7 +57,7 @@
 						icon="lock"
 						type="is-warning"
 						:tooltip="$t('Update')"
-						@click.native="goToDetail(props.row.id)"
+						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
 						v-if="props.row.completed
@@ -66,7 +66,7 @@
 						icon="check"
 						type="is-success"
 						:tooltip="$t('View')"
-						@click.native="goToDetail(props.row.id)"
+						@click="goToDetail(props.row.id)"
 					/>
 					<SafeDelete
 						v-if="!props.row.validated && userCan.deleteDistribution"
@@ -81,7 +81,7 @@
 						icon="copy"
 						type="is-dark"
 						:tooltip="$t('Duplicate')"
-						@click.native="duplicate(props.row.id)"
+						@click="duplicate(props.row.id)"
 					/>
 				</div>
 			</b-table-column>

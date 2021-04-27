@@ -168,7 +168,7 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
-						@click.native="showEdit(props.row)"
+						@click="showEdit(props.row)"
 					/>
 					<ActionButton
 						v-if="userCan.editDistribution"
@@ -186,7 +186,7 @@
 						type="is-dark"
 						:disabled="!props.row.canAssignVoucher"
 						:tooltip="$t('Assign Voucher')"
-						@click.native="openAssignVoucherModal(props.row.id, props.row.canAssignVoucher)"
+						@click="openAssignVoucherModal(props.row.id, props.row.canAssignVoucher)"
 					/>
 				</div>
 			</b-table-column>

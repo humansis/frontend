@@ -30,7 +30,7 @@
 			</b-field>
 
 			<b-field
-				v-if="!formDisabled || isEditing"
+				v-if="!formDisabled && !isEditing"
 				:label="$t('Quantity of Booklets')"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
@@ -182,7 +182,10 @@ export default {
 
 	validations: {
 		formModel: {
-			quantityOfBooklets: { required },
+			// eslint-disable-next-line func-names
+			quantityOfBooklets: { required: requiredIf(function () {
+				return !this.isEditing;
+			}) },
 			quantityOfVouchers: { required },
 			values: { required },
 			projectId: { required },

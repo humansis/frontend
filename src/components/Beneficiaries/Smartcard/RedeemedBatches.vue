@@ -26,7 +26,7 @@
 						icon="search"
 						type="is-primary"
 						tooltip="Vendor Redemption Summary"
-						@click.native="$emit('showRedemptionSummary', props.row)"
+						@click="$emit('showRedemptionSummary', props.row)"
 					/>
 				</div>
 			</b-table-column>

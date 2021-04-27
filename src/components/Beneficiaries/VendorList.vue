@@ -31,19 +31,19 @@
 				<ActionButton
 					icon="hand-holding-usd"
 					tooltip="Show Vendor Summary"
-					@click.native="showSummary(props.row)"
+					@click="showSummary(props.row)"
 				/>
 				<ActionButton
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
-					@click.native="showDetailWithId(props.row.id)"
+					@click="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					v-if="userCan.addEditVendors"
 					icon="edit"
 					:tooltip="$t('Edit')"
-					@click.native="showEdit(props.row.id)"
+					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					v-if="userCan.addEditVendors"
