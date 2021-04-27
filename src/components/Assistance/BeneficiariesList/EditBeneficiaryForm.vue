@@ -52,7 +52,7 @@
 			</b-field>
 
 			<b-field :label="$t('Justification for Adding')">
-				<b-input v-model="formModel.justificationForAdding" disabled />
+				<b-input v-model="formModel.justification" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">

@@ -1,7 +1,7 @@
-import { version } from "../../package.json";
+import gitInfo from "@/gitInfo";
 
 export default {
-	packageVersion: version || "0.0.0",
+	appVersion: gitInfo.appVersion,
 	isAppLoading: false,
 	isNavBarVisible: true,
 	isAsideVisible: true,

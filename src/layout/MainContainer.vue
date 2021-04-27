@@ -34,29 +34,32 @@ export default {
 			"language",
 			"translations",
 			"user",
+			"isAsideVisible",
+			"isNavBarVisible",
 		]),
 	},
 
 	created() {
-		// this.jwtExpiration();
+		this.jwtExpiration();
 		this.setLocales();
+
+		if (!this.isAsideVisible && !this.isNavBarVisible) {
+			this.$store.commit("fullPage", false);
+		}
 	},
 
 	methods: {
 		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
 
-		/*
 		jwtExpiration() {
 			const now = Math.round(new Date().getTime() / 1000);
 			const { exp } = this.user;
 
-			if (now > exp) {
+			if (now > (exp - 100)) {
 				this.logoutUser();
-				Notification(`${this.$t("Your session has expired")}.
-				${this.$t("Please login again")}`, "is-danger");
+				Notification(`${this.$t("Your session has expired")}`, "is-warning");
 			}
 		},
-		 */
 
 		async setLocales() {
 			const { key: languageKey } = this.language;
