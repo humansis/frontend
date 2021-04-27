@@ -349,9 +349,8 @@ export default {
 					selectedFilters[key].forEach((value) => {
 						this.filters[key].push(value);
 					});
-				} else if (selectedFilters[key]) {
-					const date = new Date(selectedFilters[key]);
-					this.filters[key] = [date.toISOString()];
+				} else {
+					this.filters[key] = selectedFilters[key];
 				}
 			});
 			await this.fetchData();

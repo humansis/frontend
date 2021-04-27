@@ -14,6 +14,7 @@ import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
 	name: "DistributionFilter",
@@ -31,7 +32,7 @@ export default {
 				adm2: [],
 				adm3: [],
 				adm4: [],
-				dateForm: null,
+				dateFrom: null,
 				dateTo: null,
 			},
 			filtersOptions: {
@@ -122,7 +123,7 @@ export default {
 		this.setLocationNames();
 		this.fetchProjects();
 		this.fetchModality();
-		this.fetchTargetType();
+		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
 	},
 
@@ -142,6 +143,7 @@ export default {
 		},
 
 		filterChanged(filters, filterName) {
+			const preparedFilters = { ...filters };
 			switch (filterName) {
 				case "adm1":
 					this.selectedFiltersOptions.adm2 = null;
@@ -166,32 +168,33 @@ export default {
 					break;
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
+					preparedFilters.distribution = null;
 					this.fetchAssistance();
 					break;
 				default: break;
 			}
 			let location = null;
 			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filters.adm4;
+				const [a] = preparedFilters.adm4;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm3) {
-				const [a] = filters.adm3;
+				const [a] = preparedFilters.adm3;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm2) {
-				const [a] = filters.adm2;
+				const [a] = preparedFilters.adm2;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm1) {
-				const [a] = filters.adm1;
+				const [a] = preparedFilters.adm1;
 				location = a;
 			}
-
+			console.log(preparedFilters);
 			this.$emit("filtersChanged", {
-				projects: filters.project || [],
-				dateFrom: filters.dateFrom || null,
-				dateTo: filters.dateTo || null,
-				beneficiaryTypes: filters.beneficiaryType || [],
-				modalityTypes: filters.commodity || [],
-				assistances: filters.distribution || [],
+				projects: preparedFilters.project || [],
+				dateFrom: preparedFilters.dateFrom || null,
+				dateTo: preparedFilters.dateTo || null,
+				beneficiaryTypes: preparedFilters.beneficiaryType || [],
+				modalityTypes: preparedFilters.commodity || [],
+				assistances: preparedFilters.distribution || [],
 				locations: location ? [location] : [],
 			});
 		},
@@ -207,14 +210,14 @@ export default {
 				});
 		},
 
-		async fetchTargetType() {
-			await AssistancesService.getTargetTypes()
+		async fetchBeneficiaryTypes() {
+			await BeneficiariesService.getBeneficiaryTypes()
 				.then(({ data }) => {
 					this.filtersOptions.beneficiaryType.data = data;
 					this.filtersOptions.beneficiaryType.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
 				});
 		},
 
