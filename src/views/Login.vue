@@ -136,7 +136,7 @@ export default {
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Invalid Credentials")} ${e}`, "is-danger");
+				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
 				this.$v.$reset();
 			});
 
