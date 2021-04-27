@@ -75,6 +75,9 @@ export default {
 					placeholder: this.$t("Select Vendor"),
 					data: [],
 				},
+				empty: {
+					type: "empty",
+				},
 				adm1: {
 					name: "Province",
 					placeholder: this.$t("Select Province"),
@@ -108,6 +111,16 @@ export default {
 					label: "name",
 					data: [],
 					selectValue: "locationId",
+				},
+				dateFrom: {
+					name: "Date From",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
+				dateTo: {
+					name: "Date To",
+					placeholder: this.$t("Select Date"),
+					type: "date",
 				},
 			},
 		};
@@ -167,7 +180,9 @@ export default {
 			}
 			this.$emit("filtersChanged", {
 				projects: filters.project,
-				types: filters.beneficiaryType,
+				dateFrom: filters.dateFrom || null,
+				dateTo: filters.dateTo || null,
+				beneficiaryTypes: filters.beneficiaryType || [],
 				commodity: filters.commodity,
 				distribution: filters.distribution,
 				vendor: filters.vendor,
