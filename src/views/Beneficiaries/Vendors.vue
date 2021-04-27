@@ -18,6 +18,20 @@
 		</div>
 
 		<Modal
+			custom-header
+			:active="vendorSummary.isOpened"
+			:is-waiting="vendorSummary.isWaiting"
+			@close="closeVendorSummary"
+		>
+			<VendorSummary
+				:vendor="selectedVendor"
+				@loaded="vendorSummary.isWaiting = false"
+				@close="closeVendorSummary"
+				@changedPage="changedSummaryPage"
+			/>
+		</Modal>
+
+		<Modal
 			can-cancel
 			:active="vendorModal.isOpened"
 			:header="modalHeader"
@@ -40,6 +54,7 @@
 			@onRemove="onVendorRemove"
 			@onShowEdit="editVendor"
 			@onShowDetail="showDetail"
+			@onShowSummary="showVendorSummary"
 		/>
 	</div>
 </template>
@@ -52,11 +67,13 @@ import { Toast } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import permissions from "@/mixins/permissions";
+import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 
 export default {
-	name: "VendorPage",
+	name: "Vendors",
 
 	components: {
+		VendorSummary,
 		VendorList,
 		Modal,
 		VendorForm,
@@ -71,6 +88,12 @@ export default {
 				isEditing: false,
 				isDetail: false,
 				isWaiting: false,
+			},
+			vendorSummary: {
+				isOpened: false,
+				isWaiting: false,
+				header: "Vendor Transaction Summary",
+				show: true,
 			},
 			vendorModel: {
 				creating: false,
@@ -91,6 +114,7 @@ export default {
 				contractNo: "",
 				userId: null,
 			},
+			selectedVendor: null,
 		};
 	},
 
@@ -109,6 +133,10 @@ export default {
 	},
 
 	methods: {
+		changedSummaryPage(title) {
+			this.vendorSummary.header = title;
+		},
+
 		editVendor(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
@@ -116,6 +144,20 @@ export default {
 				isOpened: true,
 				isDetail: false,
 				isWaiting: false,
+			};
+		},
+
+		closeVendorSummary() {
+			this.vendorSummary.isOpened = false;
+			this.selectedVendor = null;
+		},
+
+		showVendorSummary(vendor) {
+			this.vendorSummary.isWaiting = true;
+			this.selectedVendor = vendor;
+			this.vendorSummary = {
+				isWaiting: false,
+				isOpened: true,
 			};
 		},
 

@@ -29,6 +29,11 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					icon="hand-holding-usd"
+					tooltip="Show Vendor Summary"
+					@click.native="showSummary(props.row)"
+				/>
+				<ActionButton
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
@@ -162,6 +167,10 @@ export default {
 					});
 					this.reload();
 				});
+		},
+
+		showSummary(vendor) {
+			this.$emit("onShowSummary", vendor);
 		},
 
 		async getLocations(vendors) {
