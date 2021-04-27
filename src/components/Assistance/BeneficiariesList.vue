@@ -156,11 +156,10 @@
 				/>
 			</template>
 			<b-table-column
-				v-if="table.columns.length"
 				v-slot="props"
-				:label="$t('Actions')"
 				centered
 				width="140"
+				:label="table.columns.length ? $t('Actions') : ''"
 			>
 				<div class="buttons is-right">
 					<ActionButton
