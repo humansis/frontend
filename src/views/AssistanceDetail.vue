@@ -289,6 +289,9 @@ export default {
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
 					this.fetchCommodity();
 				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
 			});
 		},
 
@@ -297,6 +300,8 @@ export default {
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.statistics = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
 			});
 		},
 
@@ -305,6 +310,8 @@ export default {
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.project = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
