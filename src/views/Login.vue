@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
