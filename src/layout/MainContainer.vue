@@ -34,12 +34,18 @@ export default {
 			"language",
 			"translations",
 			"user",
+			"isAsideVisible",
+			"isNavBarVisible",
 		]),
 	},
 
 	created() {
 		this.jwtExpiration();
 		this.setLocales();
+
+		if (!this.isAsideVisible && !this.isNavBarVisible) {
+			this.$store.commit("fullPage", false);
+		}
 	},
 
 	methods: {
