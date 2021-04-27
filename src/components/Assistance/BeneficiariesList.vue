@@ -525,8 +525,18 @@ export default {
 							(bnf) => bnf.id === community.communityId,
 						);
 
-						this.table.data[key] = { ...community, ...foundCommunity };
+						const item = { ...community, ...foundCommunity };
+						this.table.data[key] = item;
+
+						if (item.bookletIds.length) {
+							distributionItems.bookletIds.push(item.bookletIds[0]);
+						}
+						if (item.generalReliefItemIds.length) {
+							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
+						}
 					});
+
+					this.table.data = [...this.table.data];
 
 					this.table.progress += 85;
 					break;
@@ -539,8 +549,18 @@ export default {
 							(bnf) => bnf.id === institution.institutionId,
 						);
 
-						this.table.data[key] = { ...institution, ...foundInstitution };
+						const item = { ...institution, ...foundInstitution };
+						this.table.data[key] = item;
+
+						if (item.bookletIds.length) {
+							distributionItems.bookletIds.push(item.bookletIds[0]);
+						}
+						if (item.generalReliefItemIds.length) {
+							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
+						}
 					});
+
+					this.table.data = [...this.table.data];
 
 					this.table.progress += 85;
 					break;
