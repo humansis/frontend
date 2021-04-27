@@ -66,7 +66,7 @@ export default {
 					});
 				} else if (this.selectedFiltersOptions[key]) {
 					if (this.filtersOptions[key].type === "date") {
-						filters[filterKey] = [this.$moment(this.selectedFiltersOptions[key]).format("YYYY-MM-DD")];
+						filters[filterKey] = [new Date(this.selectedFiltersOptions[key]).toISOString()];
 					} else {
 						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];

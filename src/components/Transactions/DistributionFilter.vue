@@ -189,7 +189,7 @@ export default {
 				projects: filters.project || [],
 				dateFrom: filters.dateFrom || null,
 				dateTo: filters.dateTo || null,
-				types: filters.beneficiaryType || [],
+				beneficiaryTypes: filters.beneficiaryType || [],
 				modalityTypes: filters.commodity || [],
 				assistances: filters.distribution || [],
 				locations: location ? [location] : [],
