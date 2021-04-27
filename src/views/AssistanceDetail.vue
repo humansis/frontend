@@ -210,7 +210,7 @@ export default {
 		},
 
 		isAddButtonVisible() {
-			return true;
+			return !this.isAssistanceCompleted;
 		},
 
 		isAssistanceValidated() {

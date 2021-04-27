@@ -262,9 +262,11 @@ export default {
 			this.assignVoucherModal.isOpened = false;
 		},
 
-		openAddBeneficiaryModal(id) {
-			this.addBeneficiaryModel.removingId = id;
-			this.addBeneficiaryModal.isOpened = true;
+		openAddBeneficiaryModal(id, canBeOpened) {
+			if (canBeOpened) {
+				this.addBeneficiaryModel.removingId = id;
+				this.addBeneficiaryModal.isOpened = true;
+			}
 		},
 
 		closeAddBeneficiaryModal() {

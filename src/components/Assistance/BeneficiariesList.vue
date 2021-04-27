@@ -94,7 +94,7 @@
 				v-if="addButton && userCan.editDistribution"
 				type="is-primary"
 				icon-left="plus"
-				@click="openAddBeneficiaryModal(null)"
+				@click="openAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
 			</b-button>
@@ -174,9 +174,10 @@
 						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
-						:disabled="props.row.removed"
+						:disabled="props.row.removed || isAssistanceCompleted"
 						:tooltip="$t('Delete')"
-						@click.native="openAddBeneficiaryModal(props.row.id)"
+						@click.native="openAddBeneficiaryModal(props.row.id, !(props.row.removed
+							|| isAssistanceCompleted))"
 					/>
 					<ActionButton
 						v-if="table.settings.assignVoucherAction
@@ -353,6 +354,10 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+
+		isAssistanceCompleted() {
+			return this.assistance?.completed;
+		},
 	},
 
 	async created() {
