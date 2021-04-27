@@ -14,9 +14,6 @@
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 					{{ gitInfo.appVersion }}
 				</p>
-				<small v-if="gitInfo.hash !== '__COMMIT_HASH__'">
-					{{ gitInfo.hash }}
-				</small>
 			</div>
 			<div class="menu">
 				<b-menu>

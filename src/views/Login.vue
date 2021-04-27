@@ -15,9 +15,6 @@
 								<span v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 									{{ gitInfo.appVersion }}
 								</span>
-								<span v-if="gitInfo.hash !== '__COMMIT_HASH__'">
-									- {{ gitInfo.hash }}
-								</span>
 							</div>
 
 							<b-field
@@ -98,12 +95,6 @@ export default {
 				required,
 			},
 		},
-	},
-
-	computed: {
-		...mapState({
-			version: (state) => `v${state.packageVersion}`,
-		}),
 	},
 
 	mounted() {

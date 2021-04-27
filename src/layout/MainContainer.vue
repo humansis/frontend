@@ -38,14 +38,13 @@ export default {
 	},
 
 	created() {
-		// this.jwtExpiration();
+		this.jwtExpiration();
 		this.setLocales();
 	},
 
 	methods: {
 		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
 
-		/*
 		jwtExpiration() {
 			const now = Math.round(new Date().getTime() / 1000);
 			const { exp } = this.user;
@@ -56,7 +55,6 @@ export default {
 				${this.$t("Please login again")}`, "is-danger");
 			}
 		},
-		 */
 
 		async setLocales() {
 			const { key: languageKey } = this.language;
