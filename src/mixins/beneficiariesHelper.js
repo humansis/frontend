@@ -11,7 +11,8 @@ export default {
 			const transactions = await this.getTransactions(transactionIds);
 
 			this.table.data.map(async (item, key) => {
-				const transaction = transactions?.find(({ id }) => id === item.transactionIds[0]);
+				const transaction = transactions?.find(({ id }) => id
+					=== item.transactionIds[item.transactionIds.length - 1]);
 
 				this.table.data[key].status = transaction?.status ? transactionStatuses
 					?.find(({ code }) => code === transaction.status)?.value : this.$t("Not Sent");
