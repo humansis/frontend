@@ -283,7 +283,7 @@ export default {
 			this.filtersOptions.distribution.loading = true;
 
 			this.selectedAssistanceForFilter = [];
-			await AssistancesService.getListOfProjectAssistances(this.selectedFiltersOptions.project.id)
+			await AssistancesService.getListOfProjectAssistancesByType(this.selectedFiltersOptions.project.id, "distribution")
 				.then(({ data }) => {
 					this.filtersOptions.distribution.data = data;
 					this.filtersOptions.distribution.loading = false;
