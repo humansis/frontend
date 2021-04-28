@@ -4,6 +4,7 @@
 			<div v-for="(options, filter) in filtersOptions" :key="filter" :class="filterClass">
 				<b-field :label="options.name">
 					<MultiSelect
+						v-if="!options.type || options.type === 'multiselect'"
 						v-model="selectedFiltersOptions[filter]"
 						searchable
 						:label="options.label || 'value'"
@@ -17,6 +18,19 @@
 						:closeOnSelect="!options.multiple"
 						@input="filterChanged(filter)"
 					/>
+					<b-field v-else-if="options.type === 'date'">
+						<b-datepicker
+							v-model="selectedFiltersOptions[filter]"
+							expanded
+							icon-right="calendar"
+							:placeholder="options.placeholder || $t('')"
+							@input="filterChanged(filter)"
+						/>
+						<b-button
+							icon-left="times"
+							@click="removeDate(filter)"
+						/>
+					</b-field>
 				</b-field>
 			</div>
 		</div>
@@ -51,11 +65,20 @@ export default {
 						filters[filterKey].push(value[select]);
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
-					filters[filterKey] = [this.selectedFiltersOptions[key][select]];
+					if (this.filtersOptions[key].type === "date") {
+						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
+					} else {
+						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
+						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
+					}
 				}
 			});
 			this.$emit("filtersChanged", filters, filterName);
+		},
+
+		removeDate(filter) {
+			this.selectedFiltersOptions[filter] = null;
+			this.filterChanged(filter);
 		},
 	},
 };

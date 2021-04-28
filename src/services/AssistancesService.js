@@ -14,6 +14,16 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfProjectAssistancesByType(projectId, type) {
+		const projectText = projectId ? `&filter[projects][]=${projectId}` : "";
+		const typeText = projectId ? `&filter[type]=${type}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances?${projectText + typeText}`,
+		});
+		return { data, totalCount };
+	},
+
 	async getAssistances(ids) {
 		const idsText = ids ? idsToUri(ids) : "";
 

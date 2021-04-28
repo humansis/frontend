@@ -33,10 +33,17 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<TransactionFilter
+					<PurchaseFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
+			</template>
+			<template #export>
+				<ExportButton
+					class="ml-2"
+					space-between
+					:formats="{ xlsx: true, csv: true}"
+				/>
 			</template>
 		</Table>
 	</div>
@@ -48,15 +55,17 @@ import TransactionService from "@/services/TransactionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
+import ExportButton from "@/components/ExportButton";
 
-const TransactionFilter = () => import("@/components/Transactions/TransactionFilter");
+const PurchaseFilter = () => import("@/components/Transactions/PurchaseFilter");
 
 export default {
 	name: "Purchases",
 
 	components: {
+		ExportButton,
 		Table,
-		TransactionFilter,
+		PurchaseFilter,
 	},
 
 	mixins: [grid],
@@ -70,9 +79,21 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "beneficiary" },
-					{ key: "type" },
-					{ key: "item" },
-					{ key: "value" },
+					{ key: "localGivenName" },
+					{ key: "localFamilyName" },
+					{ key: "project" },
+					{ key: "name" },
+					{ key: "adm1" },
+					{ key: "adm2" },
+					{ key: "adm3" },
+					{ key: "adm4" },
+					{ key: "purchasedDate" },
+					{ key: "purchasedItem" },
+					{ key: "total" },
+					{ key: "currency" },
+					{ key: "vendor" },
+					{ key: "vendorNo" },
+					{ key: "invoiceNo" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -136,7 +157,3 @@ export default {
 };
 
 </script>
-
-<style scoped>
-
-</style>

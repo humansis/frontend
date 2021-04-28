@@ -19,11 +19,11 @@ export default {
 			return preparedName;
 		},
 
-		prepareLocationEntityForTable(id, entities) {
+		prepareLocationEntityForTable(id, entities, returnedParam = null) {
 			if (!entities?.length) return "";
 			const entity = entities.find((item) => item.locationId === id);
 
-			return entity.name;
+			return returnedParam ? entity[returnedParam] : entity;
 		},
 	},
 };

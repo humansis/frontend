@@ -247,4 +247,11 @@ export default {
 		const { data } = await download({ uri: `beneficiaries/exports?${formatText + idsText}` });
 		return { data };
 	},
+
+	async getBeneficiaryTypes() {
+		const { data } = await fetcher({
+			uri: "beneficiaries/types",
+		});
+		return data;
+	},
 };

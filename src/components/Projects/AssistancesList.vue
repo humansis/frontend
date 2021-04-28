@@ -262,7 +262,7 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].location = this
-					.prepareLocationEntityForTable(item.locationId, locations);
+					.prepareLocationEntityForTable(item.locationId, locations, "name");
 			});
 			this.table.progress += 10;
 		},
