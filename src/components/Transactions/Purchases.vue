@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Table
+			v-show="show"
 			has-reset-sort
 			has-search
 			:data="table.data"
@@ -13,10 +14,13 @@
 			@search="onSearch"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
+				<b-table-column
+					v-bind="column"
+					:sortable="column.sortable"
+					:key="column.id"
+					v-slot="props"
+				>
+					<ColumnField :data="props" :column="column" />
 				</b-table-column>
 			</template>
 			<template #filterButton>
@@ -57,6 +61,8 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import transactionHelper from "@/mixins/transactionHelper";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 const PurchaseFilter = () => import("@/components/Transactions/PurchaseFilter");
 
@@ -67,9 +73,10 @@ export default {
 		ExportButton,
 		Table,
 		PurchaseFilter,
+		ColumnField,
 	},
 
-	mixins: [grid],
+	mixins: [grid, transactionHelper],
 
 	data() {
 		return {
@@ -83,18 +90,18 @@ export default {
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
-					{ key: "name" },
+					{ key: "assistance", label: "distribution" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },
 					{ key: "adm4" },
-					{ key: "purchasedDate" },
-					{ key: "purchasedItem" },
-					{ key: "total" },
+					{ key: "datePurchase", label: "Purchased Date", type: "datetime" },
+					{ key: "product", label: "Purchased Item" },
+					{ key: "value", label: "Total" },
 					{ key: "currency" },
 					{ key: "vendor" },
 					{ key: "vendorNo" },
-					{ key: "invoiceNo" },
+					{ key: "invoiceNumber", label: "Invoice No" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -150,6 +157,7 @@ export default {
 			const commodityIds = [];
 			const projectIds = [];
 			const vendorIds = [];
+			const productIds = [];
 
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
@@ -159,6 +167,7 @@ export default {
 				assistanceIds.push(item.assistanceId);
 				commodityIds.push(item.commodityId);
 				vendorIds.push(item.vendorId);
+				productIds.push(item.productId);
 				adm1Ids.push(item.adm1Id);
 				adm2Ids.push(item.adm2Id);
 				adm3Ids.push(item.adm3Id);
@@ -171,6 +180,7 @@ export default {
 			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.prepareVendorForTable([...new Set(vendorIds)]);
+			this.prepareProductForTable([...new Set(productIds)]);
 			this.prepareAdm1ForTable([...new Set(adm1Ids)]);
 			this.prepareAdm2ForTable([...new Set(adm2Ids)]);
 			this.prepareAdm3ForTable([...new Set(adm3Ids)]);
@@ -202,11 +212,10 @@ export default {
 				if (Array.isArray(selectedFilters[key])) {
 					this.filters[key] = [];
 					selectedFilters[key].forEach((value) => {
-						this.filters[key].push(value.id);
+						this.filters[key].push(value);
 					});
-				} else if (selectedFilters[key]) {
-					const date = new Date(selectedFilters[key]);
-					this.filters[key] = [date.toISOString()];
+				} else {
+					this.filters[key] = selectedFilters[key];
 				}
 			});
 			await this.fetchData();

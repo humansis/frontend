@@ -198,6 +198,7 @@ export default {
 				const [a] = preparedFilters.adm1;
 				location = a;
 			}
+
 			this.$emit("filtersChanged", {
 				projects: preparedFilters.project || [],
 				dateFrom: preparedFilters.dateFrom || null,
@@ -205,7 +206,7 @@ export default {
 				beneficiaryTypes: preparedFilters.beneficiaryType || [],
 				modalityTypes: preparedFilters.commodity || [],
 				assistances: preparedFilters.distribution || [],
-				vendor: preparedFilters.vendor || [],
+				vendors: preparedFilters.vendor || [],
 				locations: location ? [location] : [],
 			});
 		},

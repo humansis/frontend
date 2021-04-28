@@ -5,6 +5,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
 import baseHelper from "@/mixins/baseHelper";
 import VendorService from "@/services/VendorService";
+import ProductService from "@/services/ProductService";
 
 export default {
 	mixins: [baseHelper],
@@ -83,7 +84,7 @@ export default {
 		},
 
 		async prepareVendorForTable(vendorIds) {
-			const vendors = await this.getAssistances(vendorIds);
+			const vendors = await this.getVendors(vendorIds);
 			this.table.data.forEach((item, key) => {
 				const vendor = this.prepareEntityForTable(item.vendorId, vendors);
 				this.table.data[key].vendor = vendor.name;
@@ -92,12 +93,39 @@ export default {
 			this.reload();
 		},
 
+		async prepareProductForTable(productIds) {
+			const products = await this.getProducts(productIds);
+			this.table.data.forEach((item, key) => {
+				const product = this.prepareEntityForTable(item.productId, products);
+				this.table.data[key].product = product.name;
+			});
+			this.reload();
+		},
+
+		async getProducts(ids) {
+			if (!ids.length) return [];
+			return ProductService.getProducts(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
+				});
+		},
+
 		async getCommodities(ids) {
 			if (!ids.length) return [];
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+				});
+		},
+
+		async getVendors(ids) {
+			if (!ids.length) return [];
+			return VendorService.getListOfVendors(null, null, null, null, ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 				});
 		},
 
