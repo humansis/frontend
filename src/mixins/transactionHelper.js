@@ -4,11 +4,13 @@ import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
 import baseHelper from "@/mixins/baseHelper";
+import VendorService from "@/services/VendorService";
 
 export default {
 	mixins: [baseHelper],
 
 	methods: {
+		// Methods for Data Grid
 		async prepareProjectForTable(projectIds) {
 			const projects = await this.getProjects(projectIds);
 			this.table.data.forEach((item, key) => {
@@ -157,6 +159,115 @@ export default {
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+		},
+
+		// Methods for Filters
+		async fetchProjects() {
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.filtersOptions.project.data = data;
+					this.filtersOptions.project.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchModality() {
+			await AssistancesService.getListOfModalities()
+				.then(({ data }) => {
+					this.filtersOptions.commodity.data = data;
+					this.filtersOptions.commodity.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Modality")}${e}`, "is-danger");
+				});
+		},
+
+		async fetchVendors() {
+			await VendorService.getListOfVendors()
+				.then(({ data }) => {
+					this.filtersOptions.vendor.data = data.map((item) => {
+						const vendor = { ...item };
+						vendor.vendorName = `${item.name} ${item.shop ? `(${item.shop})` : ""}`;
+						return vendor;
+					});
+					this.filtersOptions.vendor.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Vendor")}${e}`, "is-danger");
+				});
+		},
+
+		async fetchProvinces() {
+			await LocationsService.getListOfAdm1()
+				.then(({ data }) => {
+					this.filtersOptions.adm1.data = data;
+					this.filtersOptions.adm1.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchDistricts(id) {
+			this.filtersOptions.adm2.loading = true;
+			await LocationsService.getListOfAdm2(id)
+				.then(({ data }) => {
+					this.filtersOptions.adm2.data = data;
+					this.filtersOptions.adm2.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchCommunes(id) {
+			this.filtersOptions.adm3.loading = true;
+			await LocationsService.getListOfAdm3(id)
+				.then(({ data }) => {
+					this.filtersOptions.adm3.data = data;
+					this.filtersOptions.adm3.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchVillages(id) {
+			this.filtersOptions.adm4.loading = true;
+			await LocationsService.getListOfAdm4(id)
+				.then(({ data }) => {
+					this.filtersOptions.adm4.data = data;
+					this.filtersOptions.adm4.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchBeneficiaryTypes() {
+			await BeneficiariesService.getBeneficiaryTypes()
+				.then(({ data }) => {
+					this.filtersOptions.beneficiaryType.data = data;
+					this.filtersOptions.beneficiaryType.loading = false;
+				})
+				.catch((e) => {
+					Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchAssistance() {
+			this.filtersOptions.distribution.loading = true;
+
+			this.selectedAssistanceForFilter = [];
+			await AssistancesService.getListOfProjectAssistancesByType(this.selectedFiltersOptions.project.id, "distribution")
+				.then(({ data }) => {
+					this.filtersOptions.distribution.data = data;
+					this.filtersOptions.distribution.loading = false;
+				}).catch((e) => {
+					Notification(`Project Assistances ${e}`, "is-danger");
 				});
 		},
 	},
