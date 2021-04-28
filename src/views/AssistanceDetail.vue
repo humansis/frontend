@@ -84,7 +84,7 @@
 		<BeneficiariesList
 			ref="beneficiariesList"
 			export-button
-			isAssistanceDetail
+			is-assistance-detail
 			:add-button="isAddButtonVisible"
 			:assistance="assistance"
 			:project="project"
@@ -210,8 +210,7 @@ export default {
 		},
 
 		isAddButtonVisible() {
-			return this.assistance?.target === consts.TARGET.INDIVIDUAL
-				|| this.assistance?.target === consts.TARGET.HOUSEHOLD;
+			return !this.isAssistanceCompleted;
 		},
 
 		isAssistanceValidated() {

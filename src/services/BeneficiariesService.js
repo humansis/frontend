@@ -187,7 +187,7 @@ export default {
 
 	async getBeneficiariesByProject(id, target) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/beneficiaries?target=${target}`,
+			uri: `projects/${id}/${target}`,
 		});
 		return { data, totalCount };
 	},

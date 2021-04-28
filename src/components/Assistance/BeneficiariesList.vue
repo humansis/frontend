@@ -94,7 +94,7 @@
 				v-if="addButton && userCan.editDistribution"
 				type="is-primary"
 				icon-left="plus"
-				@click="openAddBeneficiaryModal(null)"
+				@click="openAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
 			</b-button>
@@ -156,11 +156,11 @@
 				/>
 			</template>
 			<b-table-column
-				v-if="table.columns.length"
 				v-slot="props"
-				:label="$t('Actions')"
 				centered
 				width="140"
+				:visible="!!table.columns.length"
+				:label="$t('Actions')"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -174,9 +174,10 @@
 						v-if="userCan.editDistribution"
 						icon="trash"
 						type="is-danger"
-						:disabled="props.row.removed"
+						:disabled="props.row.removed || isAssistanceCompleted"
 						:tooltip="$t('Delete')"
-						@click.native="openAddBeneficiaryModal(props.row.id)"
+						@click.native="openAddBeneficiaryModal(props.row.id, !(props.row.removed
+							|| isAssistanceCompleted))"
 					/>
 					<ActionButton
 						v-if="table.settings.assignVoucherAction
@@ -353,6 +354,10 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+
+		isAssistanceCompleted() {
+			return this.assistance?.completed;
+		},
 	},
 
 	async created() {
@@ -501,7 +506,7 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
-			this.table.progress += 15;
+			this.table.progress += 25;
 			let beneficiaryIds = [];
 			let beneficiaries = [];
 
@@ -538,7 +543,7 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.table.progress += 85;
+					this.table.progress += 55;
 					break;
 				case consts.TARGET.INSTITUTION:
 					beneficiaryIds = data.map((item) => item.institutionId);
@@ -562,7 +567,7 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.table.progress += 85;
+					this.table.progress += 55;
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
@@ -617,7 +622,7 @@ export default {
 			}
 
 			if (!this.isAssistanceDetail) {
-				this.table.progress += 25;
+				this.table.progress = 100;
 			}
 		},
 
