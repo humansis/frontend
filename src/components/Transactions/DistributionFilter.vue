@@ -187,7 +187,7 @@ export default {
 				const [a] = preparedFilters.adm1;
 				location = a;
 			}
-			console.log(preparedFilters);
+
 			this.$emit("filtersChanged", {
 				projects: preparedFilters.project || [],
 				dateFrom: preparedFilters.dateFrom || null,
