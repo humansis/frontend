@@ -31,7 +31,6 @@
 				>
 					<template #singleLabel="props">
 						<div class="option__desc">
-
 							<span class="option__title">
 								{{ getOptionTitle(props.option) }}
 							</span>
@@ -134,7 +133,6 @@ export default {
 	},
 
 	mounted() {
-		console.log(this.assistance.target);
 		switch (this.assistance.target) {
 			case consts.TARGET.COMMUNITY:
 				this.target = "communities";
