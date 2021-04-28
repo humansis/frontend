@@ -44,6 +44,7 @@
 				:submit-button-label="vendorModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="vendorModal.isDetail"
 				:form-loading="vendorModal.isWaiting"
+				:is-editing="vendorModal.isEditing"
 				@formSubmitted="submitVendorForm"
 				@formClosed="closeVendorModal"
 			/>
@@ -96,7 +97,6 @@ export default {
 				show: true,
 			},
 			vendorModel: {
-				creating: false,
 				id: null,
 				username: "",
 				email: "",
@@ -164,7 +164,6 @@ export default {
 		eraseFormModel() {
 			this.vendorModel = {
 				...this.vendorModel,
-				creating: true,
 				id: null,
 				username: "",
 				email: "",
@@ -229,7 +228,6 @@ export default {
 			const { data } = await UsersService.getDetailOfUser(userId);
 			this.vendorModel = {
 				...this.vendorModel,
-				creating: !this.vendorModal.isEditing && !this.vendorModal.isDetail,
 				id,
 				shop,
 				username: data.username,

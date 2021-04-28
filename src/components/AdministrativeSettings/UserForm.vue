@@ -168,11 +168,10 @@
 			</b-button>
 			<b-button
 				v-if="!formDisabled"
-				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+				:disabled="mapping"
+			>{{ submitButtonLabel }}</b-button>
 		</footer>
 	</form>
 </template>
@@ -205,7 +204,10 @@ export default {
 		formModel: {
 			email: { required, email },
 			username: { required },
-			password: { required: requiredIf((form) => form.newUser) },
+			// eslint-disable-next-line func-names
+			password: { required: requiredIf(function () {
+				return !this.isEditing;
+			}) },
 			rights: { required },
 			language: {},
 			projectIds: { required: requiredIf((form) => !form.disabledProject) },
@@ -229,6 +231,7 @@ export default {
 					{ value: "RU", code: "ru" },
 				],
 			},
+			mapping: true,
 			countriesLoading: true,
 			projectsLoading: true,
 			rolesLoading: true,
@@ -243,6 +246,7 @@ export default {
 			this.fetchCountries(),
 		]);
 		this.mapSelects();
+		this.mapping = false;
 	},
 
 	methods: {

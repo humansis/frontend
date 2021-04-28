@@ -3,15 +3,24 @@ import { Toast } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
-	async getListOfUsers(page, size, sort, search = null, ids = null, param = null) {
+	async getListOfUsers(
+		page,
+		size,
+		sort,
+		search = null,
+		ids = null,
+		param = null,
+		showVendors = true,
+	) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
 		const idsText = ids ? idsToUri(ids, param) : "";
+		const showVendorsText = `&filter[showVendors]=${showVendors}`;
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `users?${pageText + sizeText + sortText + fulltext + idsText}`,
+			uri: `users?${pageText + sizeText + sortText + fulltext + idsText + showVendorsText}`,
 		});
 		return { data, totalCount };
 	},

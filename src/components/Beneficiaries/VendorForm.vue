@@ -174,13 +174,17 @@ export default {
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		formLoading: Boolean,
+		isEditing: Boolean,
 	},
 
 	validations: {
 		formModel: {
 			username: { required },
 			email: { required, email },
-			password: { required: requiredIf((form) => form.creating) },
+			// eslint-disable-next-line func-names
+			password: { required: requiredIf(function () {
+				return !this.isEditing;
+			}) },
 			name: { required },
 			shop: {},
 			addressStreet: {},

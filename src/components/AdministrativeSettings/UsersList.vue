@@ -126,6 +126,9 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				null,
+				null,
+				false,
 			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
