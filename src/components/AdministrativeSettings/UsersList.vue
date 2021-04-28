@@ -28,12 +28,6 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
-					icon="history"
-					type="is-link"
-					:tooltip="$t('Send History')"
-					@click.native="sendHistory(props.row.id)"
-				/>
-				<ActionButton
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
@@ -77,6 +71,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
+import SystemService from "@/services/SystemService";
 
 export default {
 	name: "UsersList",
@@ -93,12 +88,13 @@ export default {
 	data() {
 		return {
 			exportLoading: false,
+			roles: [],
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
 					{ key: "email" },
-					{ key: "rights" },
+					{ key: "role", label: "Rights", sortKey: "rights" },
 					{ key: "phonePrefix", label: "Prefix", sortKey: "prefix" },
 					{ key: "phoneNumber", sortKey: "phone" },
 				],
@@ -115,8 +111,9 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
-		this.fetchData();
+	async mounted() {
+		await this.fetchRoles();
+		await this.fetchData();
 	},
 
 	methods: {
@@ -129,6 +126,9 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				null,
+				null,
+				false,
 			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
@@ -143,19 +143,23 @@ export default {
 			const filledData = [];
 			data.forEach((item, key) => {
 				filledData[key] = item;
-				filledData[key].rights = this.prepareRights(item.roles);
+				filledData[key].role = this.prepareRights(item.roles);
 			});
 			return filledData;
 		},
 
-		// eslint-disable-next-line no-unused-vars
 		prepareRights(rights) {
-			// TODO Prepare rights for this table
-			return "Officer Manager";
+			const role = this.roles.find((item) => item.code === rights[0]);
+			return role?.name;
 		},
 
-		sendHistory(id) {
-			UsersService.sendHistory(id);
+		async fetchRoles() {
+			await SystemService.getRoles()
+				.then(({ data }) => {
+					this.roles = data;
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Roles")} ${e}`, "is-danger");
+				});
 		},
 
 		async exportUsers(format) {
