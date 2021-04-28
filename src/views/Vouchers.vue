@@ -27,9 +27,10 @@
 			<VoucherForm
 				close-button
 				class="modal-card"
-				:submit-button-label="$t('Create')"
+				:submit-button-label="voucherModal.isEditing ? $t('Update') : $t('Create')"
 				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"
+				:is-editing="voucherModal.isEditing"
 				@formSubmitted="submitVoucherForm"
 				@formClosed="closeVoucherModal"
 			/>
@@ -46,6 +47,7 @@
 			ref="voucherList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
+			@onShowEdit="showEdit"
 		/>
 	</div>
 </template>
@@ -78,6 +80,7 @@ export default {
 				isOpened: false,
 				isDetail: false,
 				isWaiting: false,
+				isEditing: false,
 			},
 			voucherModel: {
 				id: null,
@@ -99,6 +102,8 @@ export default {
 			let result = "";
 			if (this.voucherModal.isDetail) {
 				result = this.$t("Detail of This Voucher Booklets");
+			} else if (this.voucherModal.isEditing) {
+				result = this.$t("Edit This Voucher Booklets");
 			} else {
 				result = this.$t("Create New Voucher Booklets");
 			}
@@ -114,6 +119,17 @@ export default {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: true,
+				isWaiting: false,
+				isEditing: false,
+			};
+		},
+
+		showEdit(voucher) {
+			this.mapToFormModel(voucher);
+			this.voucherModal = {
+				isEditing: true,
+				isOpened: true,
+				isDetail: false,
 				isWaiting: false,
 			};
 		},
@@ -175,6 +191,7 @@ export default {
 
 		submitVoucherForm(voucherForm) {
 			const {
+				id,
 				quantityOfBooklets,
 				quantityOfVouchers,
 				values,
@@ -196,15 +213,44 @@ export default {
 				currency: currency.value,
 			};
 
-			this.createVoucher(voucherBody);
+			if (this.voucherModal.isEditing && id) {
+				this.updateVoucher(voucherBody, id);
+			} else {
+				this.createVoucher(voucherBody);
+			}
 		},
 
 		async createVoucher(voucherBody) {
 			this.voucherModal.isWaiting = true;
 
-			await BookletsService.createBooklet(voucherBody).then((response) => {
-				if (response.status === 204) {
-					Toast(this.$t("Booklet Successfully Created"), "is-success");
+			await BookletsService.createBooklet(voucherBody)
+				.then((response) => {
+					if (response.status === 204) {
+						Toast(this.$t("Booklet Successfully Created"), "is-success");
+						if (this.$refs.voucherList) {
+							this.$refs.voucherList.fetchData();
+						} else if (this.$refs.batchList) {
+							this.$refs.batchList.fetchData();
+						} else {
+							this.$router.go();
+						}
+						this.closeVoucherModal();
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+				});
+			this.voucherModal.isWaiting = false;
+		},
+
+		async updateVoucher({ currency, values, quantityOfVouchers, password }, id) {
+			this.voucherModal.isWaiting = true;
+
+			await BookletsService.updateBooklet(
+				{ currency, values, quantityOfVouchers, password },
+				id,
+			).then((response) => {
+				if (response.status === 200) {
+					Toast(this.$t("Booklet Successfully Updated"), "is-success");
 					if (this.$refs.voucherList) {
 						this.$refs.voucherList.fetchData();
 					} else if (this.$refs.batchList) {
@@ -216,8 +262,8 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
-				this.voucherModal.isWaiting = false;
 			});
+			this.voucherModal.isWaiting = false;
 		},
 
 		async onRemoveVoucher(id) {

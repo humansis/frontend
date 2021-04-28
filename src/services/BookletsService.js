@@ -21,6 +21,13 @@ export default {
 		return { data, status };
 	},
 
+	async updateBooklet(body, id) {
+		const { data, status } = await fetcher({
+			uri: `booklets/${id}`, method: "PUT", body,
+		});
+		return { data, status };
+	},
+
 	async getDetailOfBooklet(id) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `booklets/${id}`,

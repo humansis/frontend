@@ -31,7 +31,7 @@
 		<b-table-column
 			v-slot="props"
 			:label="$t('Actions')"
-			width="145"
+			width="180"
 			centered
 		>
 			<div class="buttons is-right">
@@ -40,7 +40,13 @@
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
 					:disabled="!bookletsSelects"
-					@click.native="showDetailWithId(props.row.id)"
+					@click="showDetailWithId(props.row.id)"
+				/>
+				<ActionButton
+					icon="edit"
+					:tooltip="$t('Edit')"
+					:disabled="!bookletsSelects"
+					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					icon="trash"
@@ -56,7 +62,7 @@
 					type="is-dark"
 					:disabled="!bookletsSelects"
 					:tooltip="$t('Print')"
-					@click.native="printBooklets(props.row)"
+					@click="printBooklets(props.row)"
 				/>
 			</div>
 		</b-table-column>
@@ -168,18 +174,6 @@ export default {
 
 	watch: {
 		$route: "fetchData",
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.voucherModal.isDetail) {
-				result = this.$t("Detail of Voucher");
-			} else {
-				result = this.$t("Create New Voucher");
-			}
-			return result;
-		},
 	},
 
 	mounted() {

@@ -31,13 +31,13 @@
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
-					@click.native="showDetailWithId(props.row.id)"
+					@click="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					v-if="userCan.addEditUsers"
 					icon="edit"
 					:tooltip="$t('Edit')"
-					@click.native="showEdit(props.row.id)"
+					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					v-if="userCan.addEditUsers"
