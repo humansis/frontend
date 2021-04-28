@@ -238,30 +238,32 @@ export default {
 					}
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
-					this.voucherModal.isWaiting = false;
 				});
+			this.voucherModal.isWaiting = false;
 		},
 
-		async updateVoucher(voucherBody, id) {
+		async updateVoucher({ currency, values, quantityOfVouchers, password }, id) {
 			this.voucherModal.isWaiting = true;
 
-			await BookletsService.updateBooklet(voucherBody, id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast(this.$t("Booklet Successfully Updated"), "is-success");
-						if (this.$refs.voucherList) {
-							this.$refs.voucherList.fetchData();
-						} else if (this.$refs.batchList) {
-							this.$refs.batchList.fetchData();
-						} else {
-							this.$router.go();
-						}
-						this.closeVoucherModal();
+			await BookletsService.updateBooklet(
+				{ currency, values, quantityOfVouchers, password },
+				id,
+			).then((response) => {
+				if (response.status === 200) {
+					Toast(this.$t("Booklet Successfully Updated"), "is-success");
+					if (this.$refs.voucherList) {
+						this.$refs.voucherList.fetchData();
+					} else if (this.$refs.batchList) {
+						this.$refs.batchList.fetchData();
+					} else {
+						this.$router.go();
 					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
-					this.voucherModal.isWaiting = false;
-				});
+					this.closeVoucherModal();
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+			});
+			this.voucherModal.isWaiting = false;
 		},
 
 		async onRemoveVoucher(id) {

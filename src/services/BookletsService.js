@@ -23,7 +23,7 @@ export default {
 
 	async updateBooklet(body, id) {
 		const { data, status } = await fetcher({
-			uri: `booklets/batches/${id}`, method: "PUT", body,
+			uri: `booklets/${id}`, method: "PUT", body,
 		});
 		return { data, status };
 	},
