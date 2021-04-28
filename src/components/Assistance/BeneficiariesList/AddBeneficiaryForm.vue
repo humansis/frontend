@@ -34,9 +34,6 @@
 
 							<span class="option__title">
 								{{ getOptionTitle(props.option) }}
-								<!--{{ `${props.option.localFamilyName}
-								${props.option.localGivenName}` }}
-								-->
 							</span>
 						</div>
 					</template>
@@ -44,10 +41,6 @@
 						<div class="option__desc">
 							<span class="option__title">
 								{{ getOptionTitle(props.option) }}
-								<!--
-								{{ `${props.option.localFamilyName}
-${props.option.localGivenName}` }}
--->
 							</span>
 						</div>
 					</template>

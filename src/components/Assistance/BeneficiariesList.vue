@@ -159,7 +159,8 @@
 				v-slot="props"
 				centered
 				width="140"
-				:label="table.columns.length ? $t('Actions') : ''"
+				:visible="!!table.columns.length"
+				:label="$t('Actions')"
 			>
 				<div class="buttons is-right">
 					<ActionButton
@@ -505,7 +506,7 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
-			this.table.progress += 15;
+			this.table.progress += 25;
 			let beneficiaryIds = [];
 			let beneficiaries = [];
 
@@ -542,7 +543,7 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.table.progress += 85;
+					this.table.progress += 55;
 					break;
 				case consts.TARGET.INSTITUTION:
 					beneficiaryIds = data.map((item) => item.institutionId);
@@ -566,7 +567,7 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.table.progress += 85;
+					this.table.progress += 55;
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
@@ -621,7 +622,7 @@ export default {
 			}
 
 			if (!this.isAssistanceDetail) {
-				this.table.progress += 25;
+				this.table.progress = 100;
 			}
 		},
 

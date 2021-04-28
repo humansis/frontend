@@ -8,7 +8,8 @@ export default {
 	methods: {
 		async setAssignedTransactions(transactionIds) {
 			const transactionStatuses = await this.getTransactionStatuses();
-			const transactions = await this.getTransactions(transactionIds);
+			const transactions = transactionIds.length
+				? await this.getTransactions(transactionIds) : [];
 
 			this.table.data.map(async (item, key) => {
 				const transaction = transactions?.find(({ id }) => id
@@ -25,7 +26,7 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 25;
+			this.table.progress = 100;
 		},
 
 		getTransactions(transactionIds) {
@@ -47,7 +48,8 @@ export default {
 		},
 
 		async setAssignedSmartCards(smartcardDepositIds) {
-			const smartCardDeposits = await this.getSmartCardDeposits(smartcardDepositIds);
+			const smartCardDeposits = smartcardDepositIds.length
+				? await this.getSmartCardDeposits(smartcardDepositIds) : [];
 
 			this.table.data.map(async (item, key) => {
 				const smartCardDeposit = smartCardDeposits
@@ -57,8 +59,8 @@ export default {
 					? this.$moment(smartCardDeposit.dateOfDistribution)
 						.format("YYYY-MM-DD hh:mm")
 					: this.$t("Not Distributed");
-				this.table.data[key].value = `
-						${smartCardDeposits[0].value} ${this.commodities[0].unit}`;
+				this.table.data[key].value = smartCardDeposit?.value ? `
+						${smartCardDeposit.value} ${this.commodities[0].unit}` : this.$t("None");
 			});
 
 			this.table.settings = {
@@ -66,7 +68,7 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 25;
+			this.table.progress = 100;
 		},
 
 		getSmartCardDeposits(smartcardDepositIds) {
@@ -79,7 +81,7 @@ export default {
 
 		async setAssignedBooklets(bookletIds) {
 			const bookletStatuses = await this.getBookletStatuses();
-			const booklets = await this.getBooklets(bookletIds);
+			const booklets = bookletIds.length ? await this.getBooklets(bookletIds) : [];
 
 			this.table.data.map(async (item, key) => {
 				const booklet = booklets?.find(({ id }) => id === item.bookletIds[0]);
@@ -100,7 +102,7 @@ export default {
 				checkableTable: false,
 			};
 
-			this.table.progress += 25;
+			this.table.progress = 100;
 		},
 
 		getBooklets(bookletIds) {
@@ -165,7 +167,8 @@ export default {
 		},
 
 		async setAssignedGeneralRelief(generalReliefItemIds) {
-			const generalReliefItems = await this.getGeneralReliefItems(generalReliefItemIds);
+			const generalReliefItems = generalReliefItemIds.length
+				? await this.getGeneralReliefItems(generalReliefItemIds) : [];
 
 			this.table.data.map(async (item, key) => {
 				const generalReliefItem = generalReliefItems
@@ -185,7 +188,7 @@ export default {
 				checkableTable: true,
 			};
 
-			this.table.progress += 25;
+			this.table.progress = 100;
 		},
 
 		getGeneralReliefItems(generalReliefItemIds) {
@@ -200,7 +203,6 @@ export default {
 
 		async preparePhoneForTable(phoneIds) {
 			const phones = await this.getPhones(phoneIds);
-			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
 					? this.$t("None")
@@ -212,7 +214,6 @@ export default {
 
 		async prepareNationalIdForTable(ids) {
 			const nationalIds = await this.getNationalIds(ids);
-			this.table.progress += 20;
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? this.$t("None")
