@@ -149,7 +149,6 @@ export default {
 
 	methods: {
 		async submitAddingAssistance() {
-			this.loading = true;
 			if (!this.$refs.newAssistanceForm.submit()) return;
 			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
 
@@ -172,6 +171,7 @@ export default {
 				if (!this.$refs.selectionCriteria.submit()) return;
 			}
 
+			this.loading = true;
 			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
 				if (status === 200) {
 					Toast(this.$t("Assistance Successfully Created"), "is-success");

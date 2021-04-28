@@ -12,7 +12,7 @@
 			</div>
 			<div class="git-info">
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
-					{{ gitInfo.appVersion }}
+					{{ appVersion }}
 				</p>
 			</div>
 			<div class="menu">
@@ -247,6 +247,17 @@ export default {
 			"isAsideVisible",
 			"isAsideExpanded",
 		]),
+
+		appVersion() {
+			if (gitInfo.appVersion.includes("-")) {
+				if (this.isAsideExpanded) {
+					return gitInfo.appVersion;
+				}
+				const temp = gitInfo.appVersion.split("-");
+				return temp[0];
+			}
+			return gitInfo.appVersion;
+		},
 	},
 
 	created() {
