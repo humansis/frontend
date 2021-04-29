@@ -33,6 +33,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -41,6 +42,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm1 = this.prepareEntityForTable(item.adm1Id, adm1s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -49,6 +51,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm2 = this.prepareEntityForTable(item.adm2Id, adm2s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -57,6 +60,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm3 = this.prepareEntityForTable(item.adm3Id, adm3s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -65,6 +69,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm4 = this.prepareEntityForTable(item.adm4Id, adm4s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -75,6 +80,7 @@ export default {
 				this.table.data[key].commodity = commodity.modalityType;
 				this.table.data[key].unit = commodity.unit;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -87,6 +93,7 @@ export default {
 					this.table.data[key].localFamilyName = beneficiary.localFamilyName;
 				}
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -96,6 +103,7 @@ export default {
 				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
 				this.table.data[key].assistance = assistance.name;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -106,6 +114,7 @@ export default {
 				this.table.data[key].vendor = vendor.name;
 				this.table.data[key].vendorNo = vendor.vendorNo;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -115,6 +124,7 @@ export default {
 				const product = this.prepareEntityForTable(item.productId, products);
 				this.table.data[key].product = product.name;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
