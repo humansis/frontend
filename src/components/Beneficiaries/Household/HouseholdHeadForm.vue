@@ -107,7 +107,11 @@
 						- {{ $t('Optional') }}
 					</span>
 				</h4>
-				<b-field :label="$t('ID Type')">
+				<b-field
+					:label="$t('ID Type')"
+					:type="validateType('id.idType', true)"
+					:message="validateMsg('id.idType')"
+				>
 					<MultiSelect
 						v-model="formModel.id.idType"
 						label="value"
@@ -116,11 +120,18 @@
 						:placeholder="$t('Click to select')"
 						:loading="idTypeLoading"
 						:options="options.idType"
+						:class="validateMultiselect('id.idType', true)"
+						@select="validate('id.idType')"
 					/>
 				</b-field>
-				<b-field :label="$t('ID Number')">
+				<b-field
+					:label="$t('ID Number')"
+					:type="validateType('id.idNumber', true)"
+					:message="validateMsg('id.idNumber')"
+				>
 					<b-input
 						v-model="formModel.id.idNumber"
+						@blur="validate('id.idNumber', true)"
 					/>
 				</b-field>
 			</div>
@@ -277,7 +288,7 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
@@ -321,8 +332,8 @@ export default {
 				dateOfBirth: { required },
 			},
 			id: {
-				idType: {},
-				idNumber: {},
+				idType: { required: requiredIf((form) => form.idNumber) },
+				idNumber: { required: requiredIf((form) => form.idType) },
 			},
 			residencyStatus: { required },
 		},
