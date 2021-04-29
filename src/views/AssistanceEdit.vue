@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiaries"
 			:assistance="assistance"
 			:project="project"
 		/>
@@ -14,10 +13,11 @@
 		>
 			<b-step-item clickable step="1" :label="$t('Assistance List of Beneficiaries')">
 				<BeneficiariesList
+					ref="assistanceListOfBeneficiariesGrid"
 					export-button
 					add-button
 					:assistance="assistance"
-					@beneficiariesCounted="beneficiaries = $event"
+					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
 
@@ -27,20 +27,22 @@
 
 			<b-step-item clickable step="3" :label="$t('Export Random Sample')">
 				<BeneficiariesList
+					ref="exportRandomSampleGrid"
 					changeButton
 					export-button
 					:add-button="false"
 					:assistance="assistance"
-					@beneficiariesCounted="beneficiaries = $event"
+					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
 
 			<b-step-item clickable step="4" :label="$t('Validate and Lock')">
 				<BeneficiariesList
+					ref="validateAndLockGrid"
 					:add-button="false"
 					:export-button="false"
 					:assistance="assistance"
-					@beneficiariesCounted="beneficiaries = $event"
+					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
 
@@ -74,7 +76,6 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
-				@beneficiariesCounted="beneficiaries = $event"
 			/>
 			<div class="buttons mt-3 flex-end">
 				<b-button
@@ -115,7 +116,6 @@ export default {
 			project: null,
 			activeStep: 0,
 			target: "",
-			beneficiaries: 0,
 			validateAssistanceButtonLoading: false,
 			isTargetHouseholdOrIndividual: false,
 		};
@@ -127,6 +127,19 @@ export default {
 	},
 
 	methods: {
+		reloadOtherTabs(component) {
+			const lists = [
+				this.$refs.assistanceListOfBeneficiariesGrid,
+				this.$refs.exportRandomSampleGrid,
+				this.$refs.validateAndLockGrid,
+			];
+			lists.forEach((list) => {
+				if (list !== component) {
+					list.reloadBeneficiariesList(false);
+				}
+			});
+		},
+
 		async fetchAssistance() {
 			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,

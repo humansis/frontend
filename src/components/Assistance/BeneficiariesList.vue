@@ -362,7 +362,7 @@ export default {
 
 	async created() {
 		await this.getAssistanceCommodities();
-		await this.reloadBeneficiariesList();
+		await this.reloadBeneficiariesList(false);
 	},
 
 	watch: {
@@ -374,8 +374,9 @@ export default {
 	},
 
 	methods: {
-		async reloadBeneficiariesList() {
+		async reloadBeneficiariesList(emit = true) {
 			if (this.assistance) {
+				if (emit) this.$emit("beneficiariesReloaded", this);
 				this.prepareTableColumns();
 				await this.fetchData();
 			}
@@ -591,7 +592,7 @@ export default {
 						this.table.data[key].vulnerabilities = item.vulnerabilityCriteria;
 
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
-						if (item.phoneIds.length) phoneIds.push(item.phoneIds);
+						if (item.phoneIds.length) phoneIds.push(item.phoneIds[0]);
 
 						if (item.bookletIds.length) {
 							distributionItems.bookletIds.push(item.bookletIds[0]);

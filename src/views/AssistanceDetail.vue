@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiariesCount"
 			:assistance="assistance"
 			:project="project"
 		/>
