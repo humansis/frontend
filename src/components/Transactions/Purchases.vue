@@ -50,6 +50,9 @@
 					@onExport="exportPurchases"
 				/>
 			</template>
+			<template slot="progress">
+				<b-progress	:value="table.progress" format="percent" />
+			</template>
 		</Table>
 	</div>
 </template>
@@ -107,6 +110,7 @@ export default {
 				currentPage: 1,
 				sortDirection: "",
 				sortColumn: "",
+				progress: null,
 			},
 			filters: {},
 		};
@@ -124,6 +128,8 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
+			this.table.progress = null;
+
 			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TransactionService.getListOfPurchasedItems(
@@ -134,7 +140,7 @@ export default {
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
-				this.table.progress = 0;
+				this.table.progress = 10;
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
