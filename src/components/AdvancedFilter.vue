@@ -2,7 +2,7 @@
 	<div class="px-5 pb-5 has-border-bottom">
 		<div class="columns is-multiline">
 			<div v-for="(options, filter) in filtersOptions" :key="filter" :class="filterClass">
-				<b-field v-if="filter.type === 'empty'" />
+				<b-field v-if="options.type === 'empty'" />
 				<b-field v-else :label="options.name">
 					<MultiSelect
 						v-if="!options.type || options.type === 'multiselect'"

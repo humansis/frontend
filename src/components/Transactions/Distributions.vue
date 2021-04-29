@@ -47,8 +47,12 @@
 					class="ml-2"
 					space-between
 					:formats="{ xlsx: true, csv: true}"
+					:loading="exportLoading"
 					@onExport="exportDistributions"
 				/>
+			</template>
+			<template slot="progress">
+				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>
 	</div>
@@ -104,7 +108,9 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
+			exportLoading: false,
 			filters: {},
 		};
 	},
@@ -121,6 +127,9 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
+			this.table.progress = null;
+
+			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TransactionService.getListOfDistributedItems(
 				this.table.currentPage,
@@ -130,7 +139,7 @@ export default {
 				this.filters,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = [];
-				this.table.progress = 0;
+				this.table.progress = 20;
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
