@@ -8,17 +8,16 @@
 </template>
 
 <script>
-import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
-import LocationsService from "@/services/LocationsService";
+import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
-import AssistancesService from "@/services/AssistancesService";
-import VendorService from "@/services/VendorService";
+import transactionHelper from "@/mixins/transactionHelper";
 
 export default {
 	name: "PurchaseFilter",
 
 	components: { AdvancedFilter },
+
+	mixins: [transactionHelper],
 
 	data() {
 		return {
@@ -70,10 +69,13 @@ export default {
 					name: "Vendor",
 					type: "multiselect",
 					trackBy: "id",
-					label: "name",
+					label: "vendorName",
 					loading: true,
 					placeholder: this.$t("Select Vendor"),
 					data: [],
+				},
+				empty: {
+					type: "empty",
 				},
 				adm1: {
 					name: "Province",
@@ -109,20 +111,50 @@ export default {
 					data: [],
 					selectValue: "locationId",
 				},
+				dateFrom: {
+					name: "Date From",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
+				dateTo: {
+					name: "Date To",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
 			},
 		};
 	},
 
+	computed: {
+		...mapState(["admNames"]),
+	},
+
 	created() {
+		this.setLocationNames();
 		this.fetchProjects();
 		this.fetchModality();
-		this.fetchTargetType();
+		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
 		this.fetchVendors();
 	},
 
 	methods: {
+		setLocationNames() {
+			this.filtersOptions.adm1.name = this.admNames.adm1;
+			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
+
+			this.filtersOptions.adm2.name = this.admNames.adm2;
+			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
+
+			this.filtersOptions.adm3.name = this.admNames.adm3;
+			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
+
+			this.filtersOptions.adm4.name = this.admNames.adm4;
+			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
+		},
+
 		filterChanged(filters, filterName) {
+			const preparedFilters = { ...filters };
 			switch (filterName) {
 				case "adm1":
 					this.selectedFiltersOptions.adm2 = null;
@@ -147,136 +179,36 @@ export default {
 					break;
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
+					preparedFilters.distribution = null;
 					this.fetchAssistance();
 					break;
 				default: break;
 			}
 			let location = null;
 			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filters.adm4;
+				const [a] = preparedFilters.adm4;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm3) {
-				const [a] = filters.adm3;
+				const [a] = preparedFilters.adm3;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm2) {
-				const [a] = filters.adm2;
+				const [a] = preparedFilters.adm2;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm1) {
-				const [a] = filters.adm1;
+				const [a] = preparedFilters.adm1;
 				location = a;
 			}
+
 			this.$emit("filtersChanged", {
-				projects: filters.project,
-				types: filters.beneficiaryType,
-				commodity: filters.commodity,
-				distribution: filters.distribution,
-				vendor: filters.vendor,
+				projects: preparedFilters.project || [],
+				dateFrom: preparedFilters.dateFrom || null,
+				dateTo: preparedFilters.dateTo || null,
+				beneficiaryTypes: preparedFilters.beneficiaryType || [],
+				modalityTypes: preparedFilters.commodity || [],
+				assistances: preparedFilters.distribution || [],
+				vendors: preparedFilters.vendor || [],
 				locations: location ? [location] : [],
 			});
-		},
-
-		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filtersOptions.project.data = data;
-					this.filtersOptions.project.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchTargetType() {
-			await AssistancesService.getTargetTypes()
-				.then(({ data }) => {
-					this.filtersOptions.beneficiaryType.data = data;
-					this.filtersOptions.beneficiaryType.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchModality() {
-			await AssistancesService.getListOfModalities()
-				.then(({ data }) => {
-					this.filtersOptions.commodity.data = data;
-					this.filtersOptions.commodity.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Modality")}${e}`, "is-danger");
-				});
-		},
-
-		async fetchVendors() {
-			await VendorService.getListOfVendors()
-				.then(({ data }) => {
-					this.filtersOptions.vendor.data = data;
-					this.filtersOptions.vendor.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Vendor")}${e}`, "is-danger");
-				});
-		},
-
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchDistricts(id) {
-			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchCommunes(id) {
-			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchVillages(id) {
-			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchAssistance() {
-			this.filtersOptions.distribution.loading = true;
-
-			this.selectedAssistanceForFilter = [];
-			await AssistancesService.getListOfProjectAssistances(this.selectedFiltersOptions.project.id)
-				.then(({ data }) => {
-					this.filtersOptions.distribution.data = data;
-					this.filtersOptions.distribution.loading = false;
-				}).catch((e) => {
-					Notification(`Project Assistances ${e}`, "is-danger");
-				});
 		},
 	},
 };
