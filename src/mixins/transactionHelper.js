@@ -1,3 +1,4 @@
+import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
@@ -10,13 +11,29 @@ import ProductService from "@/services/ProductService";
 export default {
 	mixins: [baseHelper],
 
+	computed: {
+		...mapState(["admNames"]),
+	},
+
 	methods: {
+		renameAdms() {
+			const adms = [...Object.keys(this.admNames)];
+			this.table.visibleColumns = this.table.visibleColumns.map((item) => {
+				const column = { ...item };
+				if (adms.includes(column.key)) {
+					column.label = this.admNames[column.key];
+				}
+				return column;
+			});
+		},
+
 		// Methods for Data Grid
 		async prepareProjectForTable(projectIds) {
 			const projects = await this.getProjects(projectIds);
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -25,6 +42,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm1 = this.prepareEntityForTable(item.adm1Id, adm1s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -33,6 +51,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm2 = this.prepareEntityForTable(item.adm2Id, adm2s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -41,6 +60,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm3 = this.prepareEntityForTable(item.adm3Id, adm3s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -49,6 +69,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm4 = this.prepareEntityForTable(item.adm4Id, adm4s, "name", "None");
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -59,6 +80,7 @@ export default {
 				this.table.data[key].commodity = commodity.modalityType;
 				this.table.data[key].unit = commodity.unit;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -71,6 +93,7 @@ export default {
 					this.table.data[key].localFamilyName = beneficiary.localFamilyName;
 				}
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -80,6 +103,7 @@ export default {
 				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
 				this.table.data[key].assistance = assistance.name;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -90,6 +114,7 @@ export default {
 				this.table.data[key].vendor = vendor.name;
 				this.table.data[key].vendorNo = vendor.vendorNo;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -99,6 +124,7 @@ export default {
 				const product = this.prepareEntityForTable(item.productId, products);
 				this.table.data[key].product = product.name;
 			});
+			this.table.progress += 10;
 			this.reload();
 		},
 
@@ -134,7 +160,7 @@ export default {
 			return LocationsService.getAdm1s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
 				});
 		},
 
@@ -143,7 +169,7 @@ export default {
 			return LocationsService.getAdm2s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
 				});
 		},
 
@@ -152,7 +178,7 @@ export default {
 			return LocationsService.getAdm3s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
 		},
 
@@ -161,7 +187,7 @@ export default {
 			return LocationsService.getAdm4s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 

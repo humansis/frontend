@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import transactionHelper from "@/mixins/transactionHelper";
 
@@ -111,10 +110,6 @@ export default {
 				},
 			},
 		};
-	},
-
-	computed: {
-		...mapState(["admNames"]),
 	},
 
 	created() {
