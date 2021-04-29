@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
@@ -71,6 +71,7 @@ import { Notification } from "@/utils/UI";
 import gitInfo from "@/gitInfo";
 import UsersService from "@/services/UsersService";
 import CONST from "@/const";
+import TranslationService from "@/services/TranslationService";
 
 export default {
 	name: "Login",
@@ -111,8 +112,14 @@ export default {
 		this.$store.commit("fullPage", false);
 	},
 
+	computed: {
+		...mapState([
+			"languages",
+		]),
+	},
+
 	methods: {
-		...mapActions(["storeUser", "storePermissions", "storeLanguage"]),
+		...mapActions(["storeUser", "storePermissions", "storeLanguage", "appLoading", "storeTranslations"]),
 
 		async submitForm() {
 			this.$v.$touch();
@@ -131,9 +138,12 @@ export default {
 
 					const userDetail = await UsersService.getDetailOfUser(181);
 
-					const language = userDetail.language || CONST.DEFAULT_LANGUAGE;
+					const language = this.languages.find(({ key }) => key === userDetail.language)
+						|| CONST.DEFAULT_LANGUAGE;
 
-					this.storeLanguage(this.languageObject(language));
+					this.storeLanguage(language);
+
+					await this.setLocales(language.key);
 
 					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
@@ -151,11 +161,25 @@ export default {
 			this.loginButtonLoading = false;
 		},
 
-		languageObject(language) {
-			return {
-				name: language,
-				key: language,
-			};
+		async setLocales(languageKey) {
+			if (!this.translations) {
+				this.appLoading(true);
+
+				await TranslationService.getTranslations(languageKey).then((response) => {
+					if (response.status === 200) {
+						this.storeTranslations(response.data);
+						this.$i18n.locale = languageKey;
+						this.$i18n.fallbackLocale = languageKey;
+						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+				});
+
+				this.appLoading(false);
+			} else {
+				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
+			}
 		},
 	},
 };

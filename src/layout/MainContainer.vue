@@ -17,7 +17,6 @@
 import { mapActions, mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
-import TranslationService from "@/services/TranslationService";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -31,8 +30,6 @@ export default {
 	computed: {
 		...mapState([
 			"isAppLoading",
-			"language",
-			"translations",
 			"user",
 			"isAsideVisible",
 			"isNavBarVisible",
@@ -41,7 +38,6 @@ export default {
 
 	created() {
 		this.jwtExpiration();
-		this.setLocales();
 
 		if (!this.isAsideVisible && !this.isNavBarVisible) {
 			this.$store.commit("fullPage", false);
@@ -49,7 +45,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeTranslations", "appLoading", "logoutUser"]),
+		...mapActions(["logoutUser"]),
 
 		jwtExpiration() {
 			const now = Math.round(new Date().getTime() / 1000);
@@ -58,29 +54,6 @@ export default {
 			if (now > (exp - 100)) {
 				this.logoutUser();
 				Notification(`${this.$t("Your session has expired")}`, "is-warning");
-			}
-		},
-
-		async setLocales() {
-			const { key: languageKey } = this.language;
-
-			if (!this.translations) {
-				this.appLoading(true);
-
-				await TranslationService.getTranslations(languageKey).then((response) => {
-					if (response.status === 200) {
-						this.storeTranslations(response.data);
-						this.$i18n.locale = languageKey;
-						this.$i18n.fallbackLocale = languageKey;
-						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-				});
-
-				this.appLoading(false);
-			} else {
-				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
 			}
 		},
 	},
