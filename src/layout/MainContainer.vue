@@ -70,6 +70,8 @@ export default {
 				await TranslationService.getTranslations(languageKey).then((response) => {
 					if (response.status === 200) {
 						this.storeTranslations(response.data);
+						this.$i18n.locale = languageKey;
+						this.$i18n.fallbackLocale = languageKey;
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {
