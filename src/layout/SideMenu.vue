@@ -268,6 +268,7 @@ export default {
 			return gitInfo.appVersion;
 		},
 
+		// TODO Remove this condition after after all views will be available in HOT RELEASE !
 		isStageOrProd() {
 			return CONST.ENV === "prod" || CONST.ENV === "stage";
 		},
