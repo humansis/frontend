@@ -69,6 +69,8 @@ import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
 import gitInfo from "@/gitInfo";
+import UsersService from "@/services/UsersService";
+import CONST from "@/const";
 
 export default {
 	name: "Login",
@@ -110,7 +112,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeUser", "storePermissions"]),
+		...mapActions(["storeUser", "storePermissions", "storeLanguage"]),
 
 		async submitForm() {
 			this.$v.$touch();
@@ -127,6 +129,12 @@ export default {
 
 					await this.storeUser(user);
 
+					const userDetail = await UsersService.getDetailOfUser(181);
+
+					const language = userDetail.language || CONST.DEFAULT_LANGUAGE;
+
+					this.storeLanguage(this.languageObject(language));
+
 					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
 							.then(({ data }) => data);
@@ -141,6 +149,13 @@ export default {
 			});
 
 			this.loginButtonLoading = false;
+		},
+
+		languageObject(language) {
+			return {
+				name: language,
+				key: language,
+			};
 		},
 	},
 };
