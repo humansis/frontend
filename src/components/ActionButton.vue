@@ -1,6 +1,6 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive" :type="type">
-		<b-button size="is-small" :class="type" :disabled="disabled">
+		<b-button size="is-small" :class="type" :disabled="disabled" @click="$emit('click')">
 			<b-icon :icon="icon" />
 		</b-button>
 	</b-tooltip>

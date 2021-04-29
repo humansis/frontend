@@ -39,15 +39,14 @@
 
 		<b-table
 			ref="table"
-			striped
 			hoverable
 			scrollable
-			:backend-sorting="backendSorting"
-			:backend-pagination="backendPagination"
 			selectable
 			pagination-position="bottom"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
+			:backend-sorting="backendSorting"
+			:backend-pagination="backendPagination"
 			:default-sort-direction="defaultSortDirection"
 			:default-sort="defaultSortKey"
 			:aria-next-label="$t('Next Page')"
@@ -64,6 +63,7 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
+			:row-class="rowClass"
 			@check="checkboxChecked"
 			@cellclick="onClick"
 			@page-change="$emit('pageChanged', $event)"
@@ -84,6 +84,9 @@
 					@input="onChangePerPage"
 				/>
 				<p style="white-space: nowrap">{{ $t('Total Count') }}: {{ total }}</p>
+			</template>
+			<template #footer>
+				<slot name="footer" />
 			</template>
 		</b-table>
 	</CardComponent>
@@ -144,6 +147,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		rowClass: {
+			type: Function,
+			default: () => "",
+		},
 		isLoading: {
 			type: Boolean,
 			default: false,
@@ -202,6 +209,7 @@ export default {
 		},
 
 		isRowCheckable(row) {
+			if (row.removed) return false;
 			if (this.disablePrecheckedRows) {
 				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
 				return !immediatelyCheckedRows.includes(row.id);

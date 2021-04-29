@@ -75,6 +75,7 @@ export default {
 				language: null,
 				phonePrefix: [],
 				phoneNumber: "",
+				roles: [],
 				updatePasswordOnNextLogin: false,
 				disabledCountry: true,
 				disabledProject: true,
@@ -124,6 +125,7 @@ export default {
 				password: "",
 				rights: [],
 				projectIds: [],
+				roles: [],
 				countries: [],
 				language: null,
 				phonePrefix: null,
@@ -155,8 +157,6 @@ export default {
 				username,
 				email,
 				password,
-				// TODO Map roles to body
-				// eslint-disable-next-line no-unused-vars
 				rights,
 				projectIds,
 				countries,
@@ -164,15 +164,17 @@ export default {
 				phoneNumber,
 				updatePasswordOnNextLogin,
 				language,
+				disabledCountry,
+				disabledProject,
 			} = userForm;
 
 			const userBody = {
 				username,
 				email,
 				password,
-				roles: ["ROLE_USER"],
-				projectIds: getArrayOfIdsByParam(projectIds, "id"),
-				countries: getArrayOfIdsByParam(countries, "iso3"),
+				roles: [rights.code],
+				projectIds: !disabledProject ? getArrayOfIdsByParam(projectIds, "id") : [],
+				countries: !disabledCountry ? getArrayOfIdsByParam(countries, "iso3") : [],
 				phonePrefix: phonePrefix?.code,
 				phoneNumber,
 				language: language?.code || null,
@@ -196,6 +198,8 @@ export default {
 				countries,
 				phonePrefix,
 				phoneNumber,
+				roles,
+				language,
 				updatePasswordOnNextLogin,
 			},
 		) {
@@ -206,10 +210,12 @@ export default {
 				email,
 				password,
 				rights,
-				projects: projectIds,
+				projectIds,
 				countries,
+				roles,
 				phonePrefix,
 				phoneNumber,
+				language,
 				updatePasswordOnNextLogin,
 			};
 		},

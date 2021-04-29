@@ -18,7 +18,9 @@
 					:label="tooltip.label"
 					:active="tooltip.active"
 				>
-					<b-icon icon="question" size="is-medium" />
+					<a href="https://www.humansis.org/knowledge-base/" target="_blank">
+						<b-icon icon="question" size="is-medium" />
+					</a>
 				</b-tooltip>
 			</b-navbar-item>
 

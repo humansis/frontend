@@ -8,25 +8,29 @@
 			>
 				<MultiSelect
 					v-model="formModel.projectId"
-					v-if="!formDisabled"
 					searchable
 					label="name"
 					track-by="id"
 					:placeholder="$t('Click to select')"
-					:disabled="formDisabled"
-					:options="projects"
+					:disabled="formDisabled || isEditing"
+					:options="options.projects"
 					:class="validateMultiselect('projectId')"
 					@select="validate('projectId')"
-				/>
-				<b-input
-					v-model="formModel.project"
-					v-show="formDisabled"
-					:disabled="formDisabled"
 				/>
 			</b-field>
 
 			<b-field
-				v-if="!formDisabled"
+				v-if="isEditing"
+				:label="$t('Code')"
+			>
+				<b-input
+					v-model="formModel.code"
+					disabled
+				/>
+			</b-field>
+
+			<b-field
+				v-if="!formDisabled && !isEditing"
 				:label="$t('Quantity of Booklets')"
 				:type="validateType('quantityOfBooklets')"
 				:message="validateMsg('quantityOfBooklets')"
@@ -38,8 +42,8 @@
 					type="is-dark"
 					controls-alignment="right"
 					controls-position="compact"
-					:disabled="formDisabled"
-					:controls="!formDisabled"
+					:disabled="formDisabled || isEditing"
+					:controls="!formDisabled || isEditing"
 					@input="validate('quantityOfBooklets')"
 				/>
 			</b-field>
@@ -94,6 +98,19 @@
 				/>
 			</b-field>
 
+			<b-field
+				v-if="formDisabled || isEditing"
+				:label="$t('Status')"
+			>
+				<MultiSelect
+					v-model="formModel.status"
+					label="value"
+					track-by="value"
+					:disabled="formDisabled || isEditing"
+					:options="options.statuses"
+				/>
+			</b-field>
+
 			<b-field v-if="!formDisabled" :label="$t('Define a Password')">
 				<b-checkbox v-model="formModel.defineAPassword" />
 			</b-field>
@@ -138,6 +155,7 @@ import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import currencies from "@/utils/currencies";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { BookletStatusArray } from "@/utils/helpers";
 
 export default {
 	name: "VoucherForm",
@@ -149,21 +167,25 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
 	},
 
 	data() {
 		return {
-			projects: [],
-			currencies: [],
 			options: {
+				projects: [],
 				currencies,
+				statuses: BookletStatusArray,
 			},
 		};
 	},
 
 	validations: {
 		formModel: {
-			quantityOfBooklets: { required },
+			// eslint-disable-next-line func-names
+			quantityOfBooklets: { required: requiredIf(function () {
+				return !this.isEditing;
+			}) },
 			quantityOfVouchers: { required },
 			values: { required },
 			projectId: { required },
@@ -182,6 +204,12 @@ export default {
 		mapToFormModel() {
 			if (this.formModel.currency) {
 				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], currencies, "value");
+			}
+			if (this.formModel.projectId) {
+				this.formModel.projectId = getArrayOfCodeListByKey([this.formModel.projectId], this.options.projects, "id");
+			}
+			if (this.formModel.status) {
+				this.formModel.status = getArrayOfCodeListByKey([this.formModel.status], this.options.statuses, "code");
 			}
 		},
 
@@ -209,7 +237,7 @@ export default {
 		async fetchProjects() {
 			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
-					this.projects = data;
+					this.options.projects = data;
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});

@@ -33,7 +33,7 @@
 					icon="search"
 					type="is-primary"
 					tooltip="Show Detail"
-					@click.native="showDetailWithId(props.row.id)"
+					@click="showDetailWithId(props.row.id)"
 				/>
 			</div>
 		</b-table-column>

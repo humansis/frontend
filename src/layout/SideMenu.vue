@@ -12,14 +12,11 @@
 			</div>
 			<div class="git-info">
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
-					{{ gitInfo.appVersion }}
+					{{ appVersion }}
 				</p>
-				<small v-if="gitInfo.hash !== '__COMMIT_HASH__'">
-					{{ gitInfo.hash }}
-				</small>
 			</div>
 			<div class="menu">
-				<b-menu>
+				<b-menu :activable="false">
 					<b-menu-list>
 						<b-menu-item
 							icon="home"
@@ -48,6 +45,8 @@
 						<b-menu-item
 							icon="user-friends"
 							class="to-dropdown-item"
+							:active="beneficiariesActive"
+							@click="beneficiariesActive = !beneficiariesActive"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Beneficiaries')" position="is-right" always>
@@ -132,6 +131,8 @@
 						<b-menu-item
 							icon="cog"
 							class="to-dropdown-item"
+							:active="configurationActive"
+							@click="configurationActive = !configurationActive"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Configuration')" position="is-right" always>
@@ -236,6 +237,8 @@ export default {
 	data() {
 		return {
 			gitInfo,
+			beneficiariesActive: false,
+			configurationActive: false,
 		};
 	},
 
@@ -244,6 +247,17 @@ export default {
 			"isAsideVisible",
 			"isAsideExpanded",
 		]),
+
+		appVersion() {
+			if (gitInfo.appVersion.includes("-")) {
+				if (this.isAsideExpanded) {
+					return gitInfo.appVersion;
+				}
+				const temp = gitInfo.appVersion.split("-");
+				return temp[0];
+			}
+			return gitInfo.appVersion;
+		},
 	},
 
 	created() {

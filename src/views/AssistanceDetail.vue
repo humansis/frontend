@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<AssistanceSummary
-			:beneficiaries="beneficiariesCount"
 			:assistance="assistance"
 			:project="project"
 		/>
@@ -84,7 +83,7 @@
 		<BeneficiariesList
 			ref="beneficiariesList"
 			export-button
-			isAssistanceDetail
+			is-assistance-detail
 			:add-button="isAddButtonVisible"
 			:assistance="assistance"
 			:project="project"
@@ -210,8 +209,7 @@ export default {
 		},
 
 		isAddButtonVisible() {
-			return this.assistance?.target === consts.TARGET.INDIVIDUAL
-				|| this.assistance?.target === consts.TARGET.HOUSEHOLD;
+			return !this.isAssistanceCompleted;
 		},
 
 		isAssistanceValidated() {
@@ -289,6 +287,9 @@ export default {
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
 					this.fetchCommodity();
 				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
 			});
 		},
 
@@ -297,6 +298,8 @@ export default {
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.statistics = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
 			});
 		},
 
@@ -305,6 +308,8 @@ export default {
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.project = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -323,7 +328,7 @@ export default {
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
 					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItem.id,
+						beneficiary.generalReliefItemIds[0],
 						true,
 						dateOfDistribution,
 					).then(({ status }) => {

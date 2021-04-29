@@ -29,16 +29,21 @@
 		>
 			<div class="buttons is-right">
 				<ActionButton
+					icon="hand-holding-usd"
+					tooltip="Show Vendor Summary"
+					@click="showSummary(props.row)"
+				/>
+				<ActionButton
 					icon="search"
 					type="is-primary"
 					:tooltip="$t('Show Detail')"
-					@click.native="showDetailWithId(props.row.id)"
+					@click="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
 					v-if="userCan.addEditVendors"
 					icon="edit"
 					:tooltip="$t('Edit')"
-					@click.native="showEdit(props.row.id)"
+					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete
 					v-if="userCan.addEditVendors"
@@ -158,10 +163,14 @@ export default {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
 						this.table.data[key].location = this
-							.prepareLocationEntityForTable(item.locationId, locations);
+							.prepareLocationEntityForTable(item.locationId, locations, "name");
 					});
 					this.reload();
 				});
+		},
+
+		showSummary(vendor) {
+			this.$emit("onShowSummary", vendor);
 		},
 
 		async getLocations(vendors) {

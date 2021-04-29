@@ -1,34 +1,46 @@
-// TODO Not used for now
-/* eslint-disable no-unused-vars */
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfTransactions(page, size, sort, search, filters) {
-		const fulltext = search ? `&fulltext=${search}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
+	async getListOfDistributedItems(page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 
-		// const { data: { data, totalCount } } = await fetcher({
-		// 	uri: `transactions?page=${page}&size=${size}&sort=${sort + fulltext + filtersUri}`,
-		// });
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `distributed-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+		});
 
-		// return { data, totalCount };
-		return {
-			data: [
-				{
-					beneficiary: "Beneficiary One",
-					type: "Distribution",
-					item: "Smartcard",
-					value: "100 $",
-				},
-				{
-					beneficiary: "Beneficiary Two",
-					type: "Purchase",
-					item: "Rice",
-					value: "10 pcs",
-				},
-			],
-			totalCount: 2,
-		};
+		return { data, totalCount };
+	},
+
+	async getListOfPurchasedItems(page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `purchased-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+		});
+
+		return { data, totalCount };
+	},
+
+	async exportDistributions(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `distributed-items/exports?${formatText}` });
+		return { data };
+	},
+
+	async exportPurchases(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `purchased-items/exports?${formatText}` });
+		return { data };
 	},
 
 };

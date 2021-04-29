@@ -20,8 +20,8 @@
 					v-model="formModel.beneficiaries"
 					searchable
 					multiple
-					label="localGivenName"
 					track-by="id"
+					:label="multiselectLabel"
 					:placeholder="$t('Click to select')"
 					:loading="loading.beneficiaries"
 					:disabled="formDisabled"
@@ -32,14 +32,14 @@
 					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">
-								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+								{{ getOptionTitle(props.option) }}
 							</span>
 						</div>
 					</template>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">
-								{{ `${props.option.localFamilyName} ${props.option.localGivenName}` }}
+								{{ getOptionTitle(props.option) }}
 							</span>
 						</div>
 					</template>
@@ -78,6 +78,7 @@ import { Notification, Toast } from "@/utils/UI";
 import validation from "@/mixins/validation";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AddBeneficiaryForm",
@@ -99,6 +100,7 @@ export default {
 
 	data() {
 		return {
+			target: "",
 			options: {
 				beneficiaries: [],
 			},
@@ -111,7 +113,39 @@ export default {
 
 	mixins: [validation],
 
+	computed: {
+		multiselectLabel() {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+				case consts.TARGET.INSTITUTION:
+					result = "name";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					result = "localGivenName";
+			}
+
+			return result;
+		},
+	},
+
 	mounted() {
+		switch (this.assistance.target) {
+			case consts.TARGET.COMMUNITY:
+				this.target = "communities";
+				break;
+			case consts.TARGET.INSTITUTION:
+				this.target = "institutions";
+				break;
+			case consts.TARGET.HOUSEHOLD:
+			case consts.TARGET.INDIVIDUAL:
+			default:
+				this.target = "beneficiaries";
+		}
+
 		if (!this.formModel.removingId) this.fetchBeneficiariesByProject();
 		this.formModel.justification = "";
 		this.formModel.beneficiaries = [];
@@ -129,10 +163,30 @@ export default {
 			}
 		},
 
+		getOptionTitle(option) {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+				case consts.TARGET.INSTITUTION:
+					result = option.name;
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					result = `${option.localFamilyName} ${option.localGivenName}`;
+			}
+
+			return result;
+		},
+
 		async fetchBeneficiariesByProject() {
 			const { projectId } = this.$route.params;
 
-			await BeneficiariesService.getBeneficiariesByProject(projectId, this.assistance.target)
+			await BeneficiariesService.getBeneficiariesByProject(
+				projectId,
+				this.target,
+			)
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
@@ -144,30 +198,60 @@ export default {
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
 			const body = {
 				removed: true,
-				beneficiaryIds: [removingId],
 				justification,
 			};
 
-			await this.addOrRemoveBeneficiaryFromAssistance(body,
-				this.$t("Beneficiary Successfully Removed"));
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					body.communityIds = [removingId];
+					break;
+				case consts.TARGET.INSTITUTION:
+					body.institutionIds = [removingId];
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = [removingId];
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				this.target,
+				this.$t("Beneficiary Successfully Removed"),
+			);
 		},
 
 		async addBeneficiaryToAssistance({ beneficiaries, justification }) {
 			const body = {
 				added: true,
-				beneficiaryIds: getArrayOfIdsByParam(beneficiaries, "id"),
 				justification,
 			};
 
-			await this.addOrRemoveBeneficiaryFromAssistance(body,
-				this.$t("Beneficiary Successfully Added"));
+			switch (this.assistance.target) {
+				case consts.TARGET.COMMUNITY:
+					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
+					break;
+				case consts.TARGET.INSTITUTION:
+					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = getArrayOfIdsByParam(beneficiaries, "id");
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				this.target,
+				this.$t("Beneficiary Successfully Added"),
+			);
 		},
 
-		async addOrRemoveBeneficiaryFromAssistance(body, successMessage) {
+		async addOrRemoveBeneficiaryFromAssistance(body, target, successMessage) {
 			this.submitButtonLoading = true;
 
 			await BeneficiariesService
-				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, body)
+				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
 				.then(() => {
 					Toast(successMessage, "is-success");
 				})

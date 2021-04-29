@@ -48,7 +48,7 @@
 					icon="trash"
 					type="is-danger"
 					:tooltip="$t('Delete')"
-					@click.native="removeCommodity(props.index)"
+					@click="removeCommodity(props.index)"
 				/>
 			</b-table-column>
 		</Table>

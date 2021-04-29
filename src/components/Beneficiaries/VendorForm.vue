@@ -8,7 +8,7 @@
 			>
 				<b-input
 					v-model="formModel.username"
-					:disabled="formDisabled || !formModel.creating"
+					:disabled="formDisabled || isEditing"
 					@blur="validate('username')"
 				/>
 			</b-field>
@@ -20,13 +20,12 @@
 			>
 				<b-input
 					v-model="formModel.email"
-					:disabled="formDisabled || !formModel.creating"
+					:disabled="formDisabled || isEditing"
 					@blur="validate('email')"
 				/>
 			</b-field>
 
 			<b-field
-				v-if="formModel.creating"
 				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
@@ -47,7 +46,7 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					:disabled="formDisabled || !formModel.creating"
+					:disabled="formDisabled || isEditing"
 					@blur="validate('name')"
 				/>
 			</b-field>
@@ -174,13 +173,17 @@ export default {
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		formLoading: Boolean,
+		isEditing: Boolean,
 	},
 
 	validations: {
 		formModel: {
 			username: { required },
 			email: { required, email },
-			password: { required: requiredIf((form) => form.creating) },
+			// eslint-disable-next-line func-names
+			password: { required: requiredIf(function () {
+				return !this.isEditing;
+			}) },
 			name: { required },
 			shop: {},
 			addressStreet: {},

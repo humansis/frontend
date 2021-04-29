@@ -1,7 +1,15 @@
-import { version } from "../../package.json";
+import gitInfo from "@/gitInfo";
+
+function setPackageVersion() {
+	const oldAppVersion = JSON.parse(localStorage.getItem("vuex"))?.appVersion;
+	if (gitInfo.appVersion !== oldAppVersion) {
+		localStorage.removeItem("vuex");
+	}
+	return gitInfo.appVersion;
+}
 
 export default {
-	packageVersion: version || "0.0.0",
+	appVersion: setPackageVersion(),
 	isAppLoading: false,
 	isNavBarVisible: true,
 	isAsideVisible: true,

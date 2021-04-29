@@ -40,14 +40,14 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Edit')"
-						@click.native="showEdit(props.row.id)"
+						@click="showEdit(props.row.id)"
 					/>
 					<ActionButton
 						v-if="!props.row.validated
 							&& userCan.editDistribution"
 						icon="edit"
 						:tooltip="$t('Update')"
-						@click.native="goToUpdate(props.row.id)"
+						@click="goToUpdate(props.row.id)"
 					/>
 					<ActionButton
 						v-if="props.row.validated
@@ -57,7 +57,7 @@
 						icon="lock"
 						type="is-warning"
 						:tooltip="$t('Update')"
-						@click.native="goToDetail(props.row.id)"
+						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
 						v-if="props.row.completed
@@ -66,7 +66,7 @@
 						icon="check"
 						type="is-success"
 						:tooltip="$t('View')"
-						@click.native="goToDetail(props.row.id)"
+						@click="goToDetail(props.row.id)"
 					/>
 					<SafeDelete
 						v-if="!props.row.validated && userCan.deleteDistribution"
@@ -81,7 +81,7 @@
 						icon="copy"
 						type="is-dark"
 						:tooltip="$t('Duplicate')"
-						@click.native="duplicate(props.row.id)"
+						@click="duplicate(props.row.id)"
 					/>
 				</div>
 			</b-table-column>
@@ -195,6 +195,7 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
 			});
 		},
 
@@ -219,9 +220,11 @@ export default {
 			this.table.progress += 15;
 			const locationIds = [];
 			const assistanceIds = [];
+			const commodityIds = [];
 			data.forEach((item, key) => {
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
+				commodityIds.push(...item.commodityIds);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
@@ -230,7 +233,7 @@ export default {
 			this.table.progress += 10;
 
 			this.prepareLocationForTable(locationIds);
-			this.prepareCommodityForTable(assistanceIds);
+			this.prepareCommodityForTable(commodityIds);
 			this.prepareStatisticsForTable(assistanceIds);
 		},
 
@@ -247,7 +250,8 @@ export default {
 			const commodities = await this.getCommodities(assistanceIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				const preparedCommodity = this.prepareEntityForTable(item.id, commodities, "modalityType");
+				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0])
+					?.modalityType || this.$t("None");
 				this.table.data[key].commodity = [preparedCommodity];
 			});
 			this.table.progress += 10;
@@ -258,7 +262,7 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].location = this
-					.prepareLocationEntityForTable(item.locationId, locations);
+					.prepareLocationEntityForTable(item.locationId, locations, "name");
 			});
 			this.table.progress += 10;
 		},

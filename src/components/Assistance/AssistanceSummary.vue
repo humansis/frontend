@@ -113,7 +113,6 @@ export default {
 	},
 
 	props: {
-		beneficiaries: Number,
 		assistance: Object,
 		project: Object,
 	},
@@ -123,6 +122,7 @@ export default {
 			consts,
 			province: null,
 			commodity: null,
+			statistics: null,
 		};
 	},
 
@@ -131,6 +131,7 @@ export default {
 			if (newAssistance) {
 				this.fetchLocation(newAssistance.adm1Id);
 				this.fetchCommodity(newAssistance.id);
+				this.fetchStatistics(newAssistance.id);
 			}
 		},
 	},
@@ -171,7 +172,7 @@ export default {
 		},
 
 		beneficiariesCount() {
-			return this.beneficiaries || 0;
+			return this.statistics?.numberOfBeneficiaries || 0;
 		},
 	},
 
@@ -185,10 +186,18 @@ export default {
 		},
 
 		async fetchCommodity(assistanceId) {
-			await AssistancesService.getCommodities(
-				[assistanceId],
+			await AssistancesService.getAssistanceCommodities(
+				assistanceId,
 			).then(({ data }) => {
 				this.commodity = data.map((item) => item.modalityType);
+			});
+		},
+
+		async fetchStatistics(assistanceId) {
+			await AssistancesService.getAssistanceStatistics(
+				assistanceId,
+			).then((data) => {
+				this.statistics = data;
 			});
 		},
 	},

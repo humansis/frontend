@@ -15,9 +15,6 @@
 								<span v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 									{{ gitInfo.appVersion }}
 								</span>
-								<span v-if="gitInfo.hash !== '__COMMIT_HASH__'">
-									- {{ gitInfo.hash }}
-								</span>
 							</div>
 
 							<b-field
@@ -65,7 +62,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
@@ -98,12 +95,6 @@ export default {
 				required,
 			},
 		},
-	},
-
-	computed: {
-		...mapState({
-			version: (state) => `v${state.packageVersion}`,
-		}),
 	},
 
 	mounted() {
@@ -145,7 +136,7 @@ export default {
 					this.$router.push(this.$route.query.redirect?.toString() || "/");
 				}
 			}).catch((e) => {
-				Notification(`Login ${e}`, "is-danger");
+				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
 				this.$v.$reset();
 			});
 

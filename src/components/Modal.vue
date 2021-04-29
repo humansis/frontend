@@ -11,7 +11,7 @@
 	>
 		<div class="modal-card">
 			<b-loading :is-full-page="false" :active="isWaiting" />
-			<header class="modal-card-head">
+			<header v-if="!customHeader" class="modal-card-head">
 				<h2 class="modal-card-title title is-5 mb-0">{{ header }}</h2>
 				<button
 					type="button"
@@ -30,6 +30,10 @@ export default {
 	name: "Modal",
 
 	props: {
+		customHeader: {
+			type: Boolean,
+			default: false,
+		},
 		active: Boolean,
 		header: String,
 		canCancel: Boolean,

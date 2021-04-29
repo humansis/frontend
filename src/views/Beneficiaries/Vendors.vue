@@ -18,6 +18,20 @@
 		</div>
 
 		<Modal
+			custom-header
+			:active="vendorSummary.isOpened"
+			:is-waiting="vendorSummary.isWaiting"
+			@close="closeVendorSummary"
+		>
+			<VendorSummary
+				:vendor="selectedVendor"
+				@loaded="vendorSummary.isWaiting = false"
+				@close="closeVendorSummary"
+				@changedPage="changedSummaryPage"
+			/>
+		</Modal>
+
+		<Modal
 			can-cancel
 			:active="vendorModal.isOpened"
 			:header="modalHeader"
@@ -30,6 +44,7 @@
 				:submit-button-label="vendorModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="vendorModal.isDetail"
 				:form-loading="vendorModal.isWaiting"
+				:is-editing="vendorModal.isEditing"
 				@formSubmitted="submitVendorForm"
 				@formClosed="closeVendorModal"
 			/>
@@ -40,6 +55,7 @@
 			@onRemove="onVendorRemove"
 			@onShowEdit="editVendor"
 			@onShowDetail="showDetail"
+			@onShowSummary="showVendorSummary"
 		/>
 	</div>
 </template>
@@ -52,11 +68,13 @@ import { Toast } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import permissions from "@/mixins/permissions";
+import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 
 export default {
-	name: "VendorPage",
+	name: "Vendors",
 
 	components: {
+		VendorSummary,
 		VendorList,
 		Modal,
 		VendorForm,
@@ -72,8 +90,13 @@ export default {
 				isDetail: false,
 				isWaiting: false,
 			},
+			vendorSummary: {
+				isOpened: false,
+				isWaiting: false,
+				header: "Vendor Transaction Summary",
+				show: true,
+			},
 			vendorModel: {
-				creating: false,
 				id: null,
 				username: "",
 				email: "",
@@ -91,6 +114,7 @@ export default {
 				contractNo: "",
 				userId: null,
 			},
+			selectedVendor: null,
 		};
 	},
 
@@ -109,6 +133,10 @@ export default {
 	},
 
 	methods: {
+		changedSummaryPage(title) {
+			this.vendorSummary.header = title;
+		},
+
 		editVendor(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
@@ -119,10 +147,23 @@ export default {
 			};
 		},
 
+		closeVendorSummary() {
+			this.vendorSummary.isOpened = false;
+			this.selectedVendor = null;
+		},
+
+		showVendorSummary(vendor) {
+			this.vendorSummary.isWaiting = true;
+			this.selectedVendor = vendor;
+			this.vendorSummary = {
+				isWaiting: false,
+				isOpened: true,
+			};
+		},
+
 		eraseFormModel() {
 			this.vendorModel = {
 				...this.vendorModel,
-				creating: true,
 				id: null,
 				username: "",
 				email: "",
@@ -187,7 +228,6 @@ export default {
 			const { data } = await UsersService.getDetailOfUser(userId);
 			this.vendorModel = {
 				...this.vendorModel,
-				creating: !this.vendorModal.isEditing && !this.vendorModal.isDetail,
 				id,
 				shop,
 				username: data.username,

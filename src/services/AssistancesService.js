@@ -14,6 +14,16 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfProjectAssistancesByType(projectId, type) {
+		const projectText = projectId ? `&filter[projects][]=${projectId}` : "";
+		const typeText = projectId ? `&filter[type]=${type}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `assistances?${projectText + typeText}`,
+		});
+		return { data, totalCount };
+	},
+
 	async getAssistances(ids) {
 		const idsText = ids ? idsToUri(ids) : "";
 
@@ -133,7 +143,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/beneficiaries?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-beneficiaries?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -145,7 +155,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/communities?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-communities?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -157,14 +167,16 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/institutions?${pageText + sizeText + sortText + fulltext}`,
+			uri: `assistances/${id}/assistances-institutions?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefItemsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getGeneralReliefItemsForAssistance(generalReliefItemIds) {
+		const idsText = generalReliefItemIds ? idsToUri(generalReliefItemIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/general-relief-items`,
+			uri: `general-relief-items?${idsText}`,
 		});
 		return { data, totalCount };
 	},
@@ -181,30 +193,50 @@ export default {
 		return { data, status };
 	},
 
-	async getSmartCardDepositForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
+		const idsText = smartcardDepositIds ? idsToUri(smartcardDepositIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/smartcard-deposits`,
+			uri: `smartcard-deposits?${idsText}`,
 		});
 		return { data, totalCount };
 	},
 
-	async getTransactionsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getTransactionsForAssistance(transactionIds) {
+		const idsText = transactionIds ? idsToUri(transactionIds) : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/transactions`,
+			uri: `transactions?${idsText}`,
 		});
 		return { data, totalCount };
 	},
 
-	async getBookletsForBeneficiaryInAssistance(assistanceId, beneficiaryId) {
+	async getTransactionStatuses() {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets`,
+			uri: "transactions/statuses",
 		});
 		return { data, totalCount };
 	},
 
-	async assignBookletForBeneficiaryInAssistance(assistanceId, beneficiaryId, bookletCode) {
+	async getBookletsForAssistance(bookletIds) {
+		const idsText = bookletIds ? idsToUri(bookletIds) : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `booklets?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getBookletStatuses() {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: "booklets/statuses",
+		});
+		return { data, totalCount };
+	},
+
+	async assignBookletInAssistance(assistanceId, target, beneficiaryId, bookletCode) {
 		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/beneficiaries/${beneficiaryId}/booklets/${bookletCode}`,
+			uri: `assistances/${assistanceId}/${target}/${beneficiaryId}/booklets/${bookletCode}`,
 			method: "PUT",
 		});
 		return { data, status };

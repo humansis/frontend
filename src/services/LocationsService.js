@@ -53,6 +53,34 @@ export default {
 		return data;
 	},
 
+	async getAdm1s(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({ uri: `adm1?${idsText}` });
+		return data;
+	},
+
+	async getAdm2s(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({ uri: `adm2?${idsText}` });
+		return data;
+	},
+
+	async getAdm3s(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({ uri: `adm3?${idsText}` });
+		return data;
+	},
+
+	async getAdm4s(ids, param = null) {
+		const idsText = ids ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({ uri: `adm4?${idsText}` });
+		return data;
+	},
+
 	async getAdmNames() {
 		const data = await fetcher({ uri: `adms` });
 		return data;

@@ -37,7 +37,7 @@
 							centered
 							type="is-danger"
 							:tooltip="$t('Delete')"
-							@click.native="remove(props.index)"
+							@click="remove(props.index)"
 						/>
 					</b-table-column>
 				</Table>
