@@ -101,12 +101,13 @@
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('ID') }}</h4>
-				<b-field
-					:label="$t('ID Type')"
-					:type="validateType('id.idType')"
-					:message="validateMsg('id.idType')"
-				>
+				<h4 class="title is-5">
+					{{ $t('ID') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</h4>
+				<b-field :label="$t('ID Type')">
 					<MultiSelect
 						v-model="formModel.id.idType"
 						label="value"
@@ -115,18 +116,11 @@
 						:placeholder="$t('Click to select')"
 						:loading="idTypeLoading"
 						:options="options.idType"
-						:class="validateMultiselect('id.idType')"
-						@select="validate('id.idType')"
 					/>
 				</b-field>
-				<b-field
-					:label="$t('ID Number')"
-					:type="validateType('id.idNumber')"
-					:message="validateMsg('id.idNumber')"
-				>
+				<b-field :label="$t('ID Number')">
 					<b-input
 						v-model="formModel.id.idNumber"
-						@blur="validate('id.idNumber')"
 					/>
 				</b-field>
 			</div>
@@ -327,8 +321,8 @@ export default {
 				dateOfBirth: { required },
 			},
 			id: {
-				idType: { required },
-				idNumber: { required },
+				idType: {},
+				idNumber: {},
 			},
 			residencyStatus: { required },
 		},
