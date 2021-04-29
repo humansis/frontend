@@ -51,7 +51,7 @@
 				/>
 			</template>
 			<template slot="progress">
-				<b-progress	:value="table.progress" format="percent" />
+				<b-progress :value="table.progress" format="percent" />
 			</template>
 		</Table>
 	</div>
