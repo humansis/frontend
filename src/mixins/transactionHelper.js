@@ -1,3 +1,4 @@
+import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
@@ -10,7 +11,22 @@ import ProductService from "@/services/ProductService";
 export default {
 	mixins: [baseHelper],
 
+	computed: {
+		...mapState(["admNames"]),
+	},
+
 	methods: {
+		renameAdms() {
+			const adms = [...Object.keys(this.admNames)];
+			this.table.visibleColumns = this.table.visibleColumns.map((item) => {
+				const column = { ...item };
+				if (adms.includes(column.key)) {
+					column.label = this.admNames[column.key];
+				}
+				return column;
+			});
+		},
+
 		// Methods for Data Grid
 		async prepareProjectForTable(projectIds) {
 			const projects = await this.getProjects(projectIds);
@@ -134,7 +150,7 @@ export default {
 			return LocationsService.getAdm1s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
 				});
 		},
 
@@ -143,7 +159,7 @@ export default {
 			return LocationsService.getAdm2s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
 				});
 		},
 
@@ -152,7 +168,7 @@ export default {
 			return LocationsService.getAdm3s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
 		},
 
@@ -161,7 +177,7 @@ export default {
 			return LocationsService.getAdm4s(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 

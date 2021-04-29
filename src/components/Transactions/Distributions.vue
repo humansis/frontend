@@ -121,6 +121,7 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
+			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TransactionService.getListOfDistributedItems(
 				this.table.currentPage,

@@ -123,9 +123,9 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-			this.table.columns = generateColumns(
-				this.table.visibleColumns,
-			);
+
+			this.renameAdms();
+			this.table.columns = generateColumns(this.table.visibleColumns);
 			await TransactionService.getListOfPurchasedItems(
 				this.table.currentPage,
 				this.perPage,
