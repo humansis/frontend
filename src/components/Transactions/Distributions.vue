@@ -47,6 +47,7 @@
 					class="ml-2"
 					space-between
 					:formats="{ xlsx: true, csv: true}"
+					:loading="exportLoading"
 					@onExport="exportDistributions"
 				/>
 			</template>
@@ -109,6 +110,7 @@ export default {
 				searchPhrase: "",
 				progress: null,
 			},
+			exportLoading: false,
 			filters: {},
 		};
 	},

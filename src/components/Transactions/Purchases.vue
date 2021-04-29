@@ -47,6 +47,7 @@
 					class="ml-2"
 					space-between
 					:formats="{ xlsx: true, csv: true}"
+					:loading="exportLoading"
 					@onExport="exportPurchases"
 				/>
 			</template>
@@ -112,6 +113,7 @@ export default {
 				sortColumn: "",
 				progress: null,
 			},
+			exportLoading: false,
 			filters: {},
 		};
 	},
