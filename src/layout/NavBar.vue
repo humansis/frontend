@@ -36,6 +36,7 @@
 					role="button"
 				>
 					<b-icon icon="globe-africa" size="is-medium" />
+					<span class="country-name has-text-centered">{{ country.iso3 }}</span>
 				</a>
 
 				<b-dropdown-item
@@ -244,5 +245,14 @@ export default {
 .dropdown-item {
 	display: flex;
 	align-items: center;
+}
+
+.country-name {
+	line-height: 10px;
+	font-size: 12px;
+	position: absolute;
+	background-color: white;
+	width: 50%;
+	padding-left: 5%;
 }
 </style>
