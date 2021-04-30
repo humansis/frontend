@@ -115,6 +115,8 @@ export default {
 	computed: {
 		...mapState([
 			"languages",
+			"language",
+			"translations",
 		]),
 	},
 
@@ -137,13 +139,13 @@ export default {
 					await this.storeUser(user);
 
 					const userDetail = await UsersService.getDetailOfUser(181);
+					userDetail.language = "ru";
 
 					const language = this.languages.find(({ key }) => key === userDetail.language)
 						|| CONST.DEFAULT_LANGUAGE;
 
-					this.storeLanguage(language);
-
 					await this.setLocales(language.key);
+					await this.storeLanguage(language);
 
 					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
@@ -162,7 +164,7 @@ export default {
 		},
 
 		async setLocales(languageKey) {
-			if (!this.translations) {
+			if (!this.translations || languageKey !== this.language.key) {
 				this.appLoading(true);
 
 				await TranslationService.getTranslations(languageKey).then((response) => {
@@ -178,6 +180,8 @@ export default {
 
 				this.appLoading(false);
 			} else {
+				this.$i18n.locale = languageKey;
+				this.$i18n.fallbackLocale = languageKey;
 				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
 			}
 		},

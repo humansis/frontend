@@ -33,11 +33,13 @@ export default {
 			"user",
 			"isAsideVisible",
 			"isNavBarVisible",
+			"translations",
+			"language",
 		]),
 	},
 
 	created() {
-		this.jwtExpiration();
+		this.setLocales();
 
 		if (!this.isAsideVisible && !this.isNavBarVisible) {
 			this.$store.commit("fullPage", false);
@@ -55,6 +57,12 @@ export default {
 				this.logoutUser();
 				Notification(`${this.$t("Your session has expired")}`, "is-warning");
 			}
+		},
+
+		setLocales() {
+			this.$i18n.locale = this.language.key;
+			this.$i18n.fallbackLocale = this.language.key;
+			this.$root.$i18n.setLocaleMessage(this.language.key, this.translations);
 		},
 	},
 };
