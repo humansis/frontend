@@ -143,6 +143,8 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
+				} else {
+					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Distributed Items")} ${e}`, "is-danger");
