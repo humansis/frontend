@@ -130,7 +130,7 @@ export default {
 	async mounted() {
 		if (!this.countries) await this.fetchCountries();
 		if (!this.icons) await this.fetchIcons();
-		if (!this.admNames) await this.fetchAdmNames();
+		await this.fetchAdmNames();
 		this.setTooltip();
 	},
 
@@ -162,8 +162,6 @@ export default {
 			"storeLanguage",
 			"storeTranslations",
 			"storeIcons",
-			"appLoading",
-			"logoutUser",
 			"storeAdmNames",
 		]),
 
@@ -179,24 +177,21 @@ export default {
 		},
 
 		async handleChangeLanguage(language) {
-			this.appLoading(true);
-
-			await TranslationService.getTranslations(language.key).then((response) => {
+			await TranslationService.getTranslations(language.key).then(async (response) => {
 				if (response.status === 200) {
 					this.$i18n.locale = language.key.toLowerCase();
 					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
 
-					this.storeLanguage(language);
-					this.storeTranslations(response.data);
-
-					this.$router.go();
+					await this.storeLanguage(language);
+					await this.storeTranslations(response.data);
+					await this.fetchAdmNames();
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 
-			this.appLoading(false);
+			this.$router.go();
 		},
 
 		setTooltip() {
