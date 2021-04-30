@@ -131,17 +131,16 @@ export default {
 
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
-					const { data: { token } } = response;
+					const { data: { token, userId } } = response;
 
 					const user = await JWTDecode(token);
 					user.token = token;
 
 					await this.storeUser(user);
 
-					const userDetail = await UsersService.getDetailOfUser(181);
-					userDetail.language = "ru";
+					const userDetail = await UsersService.getDetailOfUser(userId);
 
-					const language = this.languages.find(({ key }) => key === userDetail.language)
+					const language = this.languages.find(({ key }) => key === userDetail?.language)
 						|| CONST.DEFAULT_LANGUAGE;
 
 					await this.setLocales(language.key);

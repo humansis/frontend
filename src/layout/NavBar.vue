@@ -130,7 +130,7 @@ export default {
 	async mounted() {
 		if (!this.countries) await this.fetchCountries();
 		if (!this.icons) await this.fetchIcons();
-		await this.fetchAdmNames();
+		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
 	},
 
