@@ -73,7 +73,7 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 
 	headers = {
 		"Content-Type": contentType || "application/json;charset=utf-8",
-		"Accept-Language": getters.getLanguageFromVuexStorage()?.key || CONST.DEFAULT_LANGUAGE,
+		"Accept-Language": getters.getLanguageFromVuexStorage()?.key || CONST.DEFAULT_LANGUAGE.key,
 	};
 
 	if (auth) {
