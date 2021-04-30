@@ -146,6 +146,8 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
+				} else {
+					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
