@@ -170,7 +170,7 @@ export default {
 		async handleChangeCountry(country) {
 			await this.storeCountry(country);
 			this.storeAdmNames(null);
-			this.$router.push({ name: "Home" });
+			await this.$router.push({ name: "Home" });
 			this.$router.go();
 		},
 
