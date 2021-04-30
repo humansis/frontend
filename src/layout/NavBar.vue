@@ -105,7 +105,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import CountriesService from "@/services/CountriesService";
 import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
 import IconService from "@/services/IconService";
@@ -128,7 +127,6 @@ export default {
 	},
 
 	async mounted() {
-		if (!this.countries) await this.fetchCountries();
 		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
@@ -197,16 +195,6 @@ export default {
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta.description;
 			this.tooltip.label = this.$route.meta.description;
-		},
-
-		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.storeCountries(data);
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
-				});
 		},
 
 		async fetchIcons() {

@@ -72,6 +72,7 @@ import gitInfo from "@/gitInfo";
 import UsersService from "@/services/UsersService";
 import CONST from "@/const";
 import TranslationService from "@/services/TranslationService";
+import CountriesService from "@/services/CountriesService";
 
 export default {
 	name: "Login",
@@ -121,7 +122,15 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeUser", "storePermissions", "storeLanguage", "appLoading", "storeTranslations"]),
+		...mapActions([
+			"appLoading",
+			"storeUser",
+			"storePermissions",
+			"storeLanguage",
+			"storeTranslations",
+			"storeCountries",
+			"storeCountry",
+		]),
 
 		async submitForm() {
 			this.$v.$touch();
@@ -138,7 +147,7 @@ export default {
 
 					await this.storeUser(user);
 
-					const userDetail = await UsersService.getDetailOfUser(userId);
+					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
 
 					const language = this.languages.find(({ key }) => key === userDetail?.language)
 						|| CONST.DEFAULT_LANGUAGE;
@@ -146,13 +155,27 @@ export default {
 					await this.setLocales(language.key);
 					await this.storeLanguage(language);
 
+					const countries = await this.fetchCountries();
+
+					const filteredCountries = countries
+						?.filter((country) => userDetail.countries.includes(country.iso3));
+
+					if (filteredCountries.length) {
+						await this.storeCountries(filteredCountries);
+						await this.storeCountry(filteredCountries[0]);
+					}
+
 					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
 							.then(({ data }) => data);
 
 					await this.storePermissions(privileges);
 
-					this.$router.push(this.$route.query.redirect?.toString() || "/");
+					if (filteredCountries.length) {
+						this.$router.push(this.$route.query.redirect?.toString() || "/");
+					} else {
+						Notification(`${this.$t("No Countries")}`, "is-warning");
+					}
 				}
 			}).catch((e) => {
 				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
@@ -160,6 +183,14 @@ export default {
 			});
 
 			this.loginButtonLoading = false;
+		},
+
+		fetchCountries() {
+			return CountriesService.getListOfCountries()
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+				});
 		},
 
 		async setLocales(languageKey) {
@@ -201,7 +232,7 @@ export default {
 	background-color: rgba(161, 160 ,160, .85);
 }
 
-.logo{
+.logo {
 	margin: 0 auto;
 	width: 150px;
 	height: 150px;
