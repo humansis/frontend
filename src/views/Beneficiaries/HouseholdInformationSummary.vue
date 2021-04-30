@@ -71,6 +71,7 @@ export default {
 					this.prepareData(data);
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+					if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
 				});
 		},
 
