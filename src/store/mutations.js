@@ -40,8 +40,8 @@ export default {
 		});
 	},
 
-	[CONST.STORE_PROJECTS]: (state, projects) => {
-		state.projects = projects;
+	[CONST.STORE_AVAILABLE_PROJECTS]: (state, projects) => {
+		state.availableProjects = projects;
 	},
 
 	[CONST.STORE_COUNTRIES]: (state, countries) => {

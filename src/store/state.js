@@ -21,7 +21,7 @@ export default {
 		username: null,
 		token: null,
 	},
-	projects: null,
+	availableProjects: null,
 	countries: null,
 	country: null,
 	language: null,

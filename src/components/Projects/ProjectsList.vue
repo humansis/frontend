@@ -128,7 +128,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["projects"]),
+		...mapState(["availableProjects"]),
 	},
 
 	methods: {
@@ -145,7 +145,7 @@ export default {
 				this.table.data = [];
 
 				const filteredProjects = data
-					?.filter((project) => this.projects.includes(project.id));
+					?.filter((project) => this.availableProjects.includes(project.id));
 
 				this.table.total = filteredProjects.length;
 				if (filteredProjects.length > 0) {

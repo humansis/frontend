@@ -21,8 +21,8 @@ export default {
 		}
 	},
 
-	storeProjects: ({ commit }, projects) => {
-		commit(CONST.STORE_PROJECTS, projects);
+	storeAvailableProjects: ({ commit }, projects) => {
+		commit(CONST.STORE_AVAILABLE_PROJECTS, projects);
 	},
 
 	storeCountries: ({ commit }, countries) => {

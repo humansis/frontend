@@ -130,7 +130,7 @@ export default {
 			"storeTranslations",
 			"storeCountries",
 			"storeCountry",
-			"storeProjects",
+			"storeAvailableProjects",
 		]),
 
 		async submitForm() {
@@ -152,7 +152,7 @@ export default {
 
 					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
 
-					await this.storeProjects(userDetail.projectIds);
+					await this.storeAvailableProjects(userDetail.projectIds);
 
 					const language = this.languages.find(({ key }) => key === userDetail?.language)
 						|| CONST.DEFAULT_LANGUAGE;
