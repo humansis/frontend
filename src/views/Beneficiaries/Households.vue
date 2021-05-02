@@ -334,6 +334,7 @@ export default {
 					});
 
 				this.closeAddToProjectModal();
+				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
 			}
 		},
@@ -600,6 +601,8 @@ export default {
 					Toast(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 			}
+
+			this.table.checkedRows = [];
 		},
 
 		async onFiltersChange(selectedFilters) {
@@ -633,3 +636,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.modal-card-body {
+	min-height: 250px;
+}
+</style>
