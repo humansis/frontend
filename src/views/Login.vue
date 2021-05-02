@@ -130,6 +130,7 @@ export default {
 			"storeTranslations",
 			"storeCountries",
 			"storeCountry",
+			"storeProjects",
 		]),
 
 		async submitForm() {
@@ -143,11 +144,15 @@ export default {
 					const { data: { token, userId } } = response;
 
 					const user = await JWTDecode(token);
+
+					user.userId = userId;
 					user.token = token;
 
 					await this.storeUser(user);
 
 					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+
+					await this.storeProjects(userDetail.projectIds);
 
 					const language = this.languages.find(({ key }) => key === userDetail?.language)
 						|| CONST.DEFAULT_LANGUAGE;

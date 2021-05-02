@@ -40,6 +40,10 @@ export default {
 		});
 	},
 
+	[CONST.STORE_PROJECTS]: (state, projects) => {
+		state.projects = projects;
+	},
+
 	[CONST.STORE_COUNTRIES]: (state, countries) => {
 		state.countries = countries;
 	},

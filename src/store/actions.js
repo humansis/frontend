@@ -21,6 +21,10 @@ export default {
 		}
 	},
 
+	storeProjects: ({ commit }, projects) => {
+		commit(CONST.STORE_PROJECTS, projects);
+	},
+
 	storeCountries: ({ commit }, countries) => {
 		if (countries?.length) {
 			commit(CONST.STORE_COUNTRIES, countries);
