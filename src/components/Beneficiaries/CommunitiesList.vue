@@ -82,7 +82,7 @@ import addressHelper from "@/mixins/addressHelper";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "CommunityList",
+	name: "CommunitiesList",
 
 	components: {
 		CommunityFilter,
