@@ -79,7 +79,7 @@ import InstitutionFilter from "@/components/Beneficiaries/InstitutionFilter";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "InstitutionList",
+	name: "InstitutionsList",
 
 	components: {
 		InstitutionFilter,
