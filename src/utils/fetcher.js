@@ -66,7 +66,15 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async ({ uri, auth = true, method, body, contentType }) => {
+export const fetcher = async (
+	{
+		uri,
+		auth = true,
+		method,
+		body,
+		contentType,
+		tryRequest = false,
+	}) => {
 	const url = `${CONST.API}/${uri}`;
 
 	let headers = {};
@@ -97,6 +105,10 @@ export const fetcher = async ({ uri, auth = true, method, body, contentType }) =
 	}
 
 	const response = await fetch(url, config);
+
+	if (tryRequest) {
+		return response;
+	}
 
 	return getResponseJSON(response);
 };
