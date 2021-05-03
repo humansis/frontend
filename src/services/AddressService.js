@@ -13,7 +13,7 @@ export default {
 	},
 
 	async getTemporarySettlementAddress(id) {
-		const { data } = await fetcher({ uri: `addresses/temporary-settlement/${id}` });
+		const { data } = await fetcher({ uri: `addresses/temporary-settlements/${id}` });
 		return data;
 	},
 
@@ -34,7 +34,7 @@ export default {
 	async getTemporarySettlementAddresses(ids) {
 		const idsText = ids.length ? idsToUri(ids) : "";
 
-		const { data } = await fetcher({ uri: `addresses/temporary-settlement?${idsText}` });
+		const { data } = await fetcher({ uri: `addresses/temporary-settlements?${idsText}` });
 		return data;
 	},
 
