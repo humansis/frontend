@@ -75,7 +75,7 @@ import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "CountrySpecificOptionList",
+	name: "CountrySpecificOptionsList",
 
 	components: {
 		ColumnField,
