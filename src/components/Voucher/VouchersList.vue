@@ -127,7 +127,7 @@ import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "VoucherList",
+	name: "VouchersList",
 
 	components: {
 		ExportButton,
