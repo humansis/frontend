@@ -26,8 +26,8 @@
 		>
 			{{ $t('Add') }}
 		</b-button>
-		<DonorList
-			ref="DonorList"
+		<DonorsList
+			ref="donorsList"
 			@onShowDetail="showDetail"
 			@onRemove="removeDonor"
 			@onShowEdit="editDonor"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import DonorList from "@/components/AdministrativeSettings/DonorList";
+import DonorsList from "@/components/AdministrativeSettings/DonorsList";
 import DonorForm from "@/components/AdministrativeSettings/DonorForm";
 import Modal from "@/components/Modal";
 import DonorService from "@/services/DonorService";
@@ -49,7 +49,7 @@ export default {
 	components: {
 		Modal,
 		DonorForm,
-		DonorList,
+		DonorsList,
 	},
 
 	mixins: [permissions],
@@ -180,7 +180,7 @@ export default {
 					if (status === 200) {
 						await this.uploadImage(data.id, image);
 						Toast(this.$t("Donor Successfully Created"), "is-success");
-						this.$refs.DonorList.fetchData();
+						this.$refs.donorsList.fetchData();
 						this.closeDonorModal();
 					}
 				}).catch((e) => {
@@ -197,7 +197,7 @@ export default {
 					if (status === 200) {
 						await this.uploadImage(data.id, image);
 						Toast(this.$t("Donor Successfully Updated"), "is-success");
-						this.$refs.DonorList.fetchData();
+						this.$refs.donorsList.fetchData();
 						this.closeDonorModal();
 					}
 				}).catch((e) => {
@@ -217,7 +217,7 @@ export default {
 				.then((response) => {
 					if (response.status === 204) {
 						Toast(this.$t("Donor successfully removed"), "is-success");
-						this.$refs.DonorList.removeFromList(id);
+						this.$refs.donorsList.removeFromList(id);
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Donor")} ${e}`, "is-danger");

@@ -78,7 +78,7 @@ import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "DonorList",
+	name: "DonorsList",
 
 	components: {
 		ExportButton,
