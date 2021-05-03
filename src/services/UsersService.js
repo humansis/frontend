@@ -99,4 +99,11 @@ export default {
 		return { data };
 	},
 
+	async patchUser(id, body) {
+		const { data, status } = await fetcher({
+			uri: `users/${id}`, method: "PATCH", body,
+		});
+		return { data, status };
+	},
+
 };
