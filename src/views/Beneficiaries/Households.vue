@@ -187,7 +187,7 @@
 
 			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
-					<HouseholdsFilters
+					<HouseholdsFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -212,7 +212,7 @@ import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import permissions from "@/mixins/permissions";
 
-const HouseholdsFilters = () => import("@/components/Beneficiaries/HouseholdsFilters");
+const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
 export default {
 	name: "HouseholdPage",
@@ -221,7 +221,7 @@ export default {
 		HouseholdDetail,
 		Table,
 		ActionButton,
-		HouseholdsFilters,
+		HouseholdsFilter,
 		SafeDelete,
 		ColumnField,
 		Modal,

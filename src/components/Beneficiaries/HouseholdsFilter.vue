@@ -17,7 +17,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
-	name: "HouseholdsFilters",
+	name: "HouseholdsFilter",
 
 	components: {
 		AdvancedFilter,
