@@ -12,7 +12,7 @@
 			</b-button>
 		</div>
 		<b-collapse v-model="advancedSearchVisible">
-			<VoucherFilters
+			<VouchersFilter
 				@filtersChanged="onFiltersChange"
 			/>
 		</b-collapse>
@@ -106,7 +106,7 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import VoucherFilters from "@/components/Voucher/VoucherFilters";
+import VouchersFilter from "@/components/Voucher/VouchersFilter";
 import voucherHelper from "@/mixins/voucherHelper";
 import { getBookletStatus } from "@/utils/helpers";
 
@@ -114,7 +114,7 @@ export default {
 	name: "BatchList",
 
 	components: {
-		VoucherFilters,
+		VouchersFilter,
 		Search,
 		SafeDelete,
 		Table,
