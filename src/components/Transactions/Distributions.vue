@@ -100,6 +100,7 @@ export default {
 					{ key: "adm4" },
 					{ key: "dateDistribution", label: "Distribution Date", type: "datetime" },
 					{ key: "commodity" },
+					{ key: "carrierNumber" },
 					{ key: "amount" },
 					{ key: "unit" },
 				],

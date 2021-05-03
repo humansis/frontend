@@ -127,7 +127,7 @@ export default {
 	created() {
 		this.setLocationNames();
 		this.fetchProjects();
-		this.fetchModality();
+		this.fetchModalityTypes();
 		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
 		this.fetchVendors();
