@@ -37,7 +37,7 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<PurchaseFilter
+					<PurchasesFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -68,7 +68,7 @@ import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
 
-const PurchaseFilter = () => import("@/components/Transactions/PurchaseFilter");
+const PurchasesFilter = () => import("@/components/Transactions/PurchasesFilter");
 
 export default {
 	name: "Purchases",
@@ -76,7 +76,7 @@ export default {
 	components: {
 		ExportButton,
 		Table,
-		PurchaseFilter,
+		PurchasesFilter,
 		ColumnField,
 	},
 
