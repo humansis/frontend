@@ -41,7 +41,7 @@ import ProductService from "@/services/ProductService";
 import baseHelper from "@/mixins/baseHelper";
 
 export default {
-	name: "HouseholdPurchaseList",
+	name: "HouseholdPurchasesList",
 
 	components: { Table },
 
