@@ -50,7 +50,8 @@ export default {
 			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
 			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
 			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
-			return "";
+
+			return { typeOfLocation: null, addressId: null };
 		},
 
 		async getPreparedLocations(addressesIds) {
