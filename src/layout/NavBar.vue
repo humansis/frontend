@@ -106,7 +106,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import CountriesService from "@/services/CountriesService";
 import { Notification } from "@/utils/UI";
 import TranslationService from "@/services/TranslationService";
 import IconService from "@/services/IconService";
@@ -129,7 +128,6 @@ export default {
 	},
 
 	async mounted() {
-		if (!this.countries) await this.fetchCountries();
 		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
@@ -163,8 +161,6 @@ export default {
 			"storeLanguage",
 			"storeTranslations",
 			"storeIcons",
-			"appLoading",
-			"logoutUser",
 			"storeAdmNames",
 		]),
 
@@ -175,44 +171,31 @@ export default {
 		async handleChangeCountry(country) {
 			await this.storeCountry(country);
 			this.storeAdmNames(null);
-			this.$router.push({ name: "Home" });
+			await this.$router.push({ name: "Home" });
 			this.$router.go();
 		},
 
 		async handleChangeLanguage(language) {
-			this.appLoading(true);
-
-			await TranslationService.getTranslations(language.key).then((response) => {
+			await TranslationService.getTranslations(language.key).then(async (response) => {
 				if (response.status === 200) {
 					this.$i18n.locale = language.key.toLowerCase();
 					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
 
-					this.storeLanguage(language);
-					this.storeTranslations(response.data);
-
-					this.$router.go();
+					await this.storeLanguage(language);
+					await this.storeTranslations(response.data);
+					await this.fetchAdmNames();
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 
-			this.appLoading(false);
+			this.$router.go();
 		},
 
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta.description;
 			this.tooltip.label = this.$route.meta.description;
-		},
-
-		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.storeCountries(data);
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
-				});
 		},
 
 		async fetchIcons() {
