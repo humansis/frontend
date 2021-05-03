@@ -100,6 +100,8 @@ export default {
 					{ key: "adm3" },
 					{ key: "adm4" },
 					{ key: "datePurchase", label: "Purchased Date", type: "datetime" },
+					{ key: "commodity", label: "CommodityType" },
+					{ key: "carrierNumber" },
 					{ key: "product", label: "Purchased Item" },
 					{ key: "value", label: "Total" },
 					{ key: "currency" },
