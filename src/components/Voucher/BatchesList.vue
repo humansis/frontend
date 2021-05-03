@@ -111,7 +111,7 @@ import voucherHelper from "@/mixins/voucherHelper";
 import { getBookletStatus } from "@/utils/helpers";
 
 export default {
-	name: "BatchList",
+	name: "BatchesList",
 
 	components: {
 		VouchersFilter,

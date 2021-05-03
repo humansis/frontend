@@ -37,9 +37,9 @@
 		</Modal>
 
 		<!-- switch between two styles of displaying Batches/Vouchers list -->
-		<BatchList
+		<BatchesList
 			v-if="false"
-			ref="batchList"
+			ref="batchesList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
 		/>
@@ -56,7 +56,7 @@
 import { mapState } from "vuex";
 import VouchersList from "@/components/Voucher/VouchersList";
 import VoucherForm from "@/components/Voucher/VoucherForm";
-import BatchList from "@/components/Voucher/BatchList";
+import BatchesList from "@/components/Voucher/BatchesList";
 import Modal from "@/components/Modal";
 import BookletsService from "@/services/BookletsService";
 import { Toast, Notification } from "@/utils/UI";
@@ -69,7 +69,7 @@ export default {
 		VouchersList,
 		Modal,
 		VoucherForm,
-		BatchList,
+		BatchesList,
 	},
 
 	mixins: [permissions],
@@ -229,8 +229,8 @@ export default {
 						Toast(this.$t("Booklet Successfully Created"), "is-success");
 						if (this.$refs.vouchersList) {
 							this.$refs.vouchersList.fetchData();
-						} else if (this.$refs.batchList) {
-							this.$refs.batchList.fetchData();
+						} else if (this.$refs.batchesList) {
+							this.$refs.batchesList.fetchData();
 						} else {
 							this.$router.go();
 						}
@@ -253,8 +253,8 @@ export default {
 					Toast(this.$t("Booklet Successfully Updated"), "is-success");
 					if (this.$refs.vouchersList) {
 						this.$refs.vouchersList.fetchData();
-					} else if (this.$refs.batchList) {
-						this.$refs.batchList.fetchData();
+					} else if (this.$refs.batchesList) {
+						this.$refs.batchesList.fetchData();
 					} else {
 						this.$router.go();
 					}
