@@ -367,7 +367,12 @@ export default {
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
-				addressIds[typeOfLocation].push(addressId);
+
+				// TODO Fix bug with Informal Settlement (Location Type)
+				if (typeOfLocation && addressId) {
+					addressIds[typeOfLocation].push(addressId);
+				}
+
 				this.table.data[key].addressId = addressId;
 				this.table.data[key].members = item.beneficiaryIds.length;
 			});
