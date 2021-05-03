@@ -61,7 +61,7 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<CommunityFilter
+				<CommunitiesFilter
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
@@ -77,7 +77,7 @@ import CommunityService from "@/services/CommunityService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import CommunityFilter from "@/components/Beneficiaries/CommunityFilter";
+import CommunitiesFilter from "@/components/Beneficiaries/CommunitiesFilter";
 import addressHelper from "@/mixins/addressHelper";
 import permissions from "@/mixins/permissions";
 
@@ -85,7 +85,7 @@ export default {
 	name: "CommunitiesList",
 
 	components: {
-		CommunityFilter,
+		CommunitiesFilter,
 		SafeDelete,
 		Table,
 		ActionButton,

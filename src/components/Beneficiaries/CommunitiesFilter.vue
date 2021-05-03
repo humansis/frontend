@@ -13,7 +13,7 @@ import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
 
 export default {
-	name: "CommunityFilter",
+	name: "CommunitiesFilter",
 
 	components: {
 		AdvancedFilter,
