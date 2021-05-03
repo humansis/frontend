@@ -19,7 +19,6 @@
 				<b-menu :activable="false">
 					<b-menu-list>
 						<b-menu-item
-							v-show="isStageOrProd"
 							icon="home"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -187,7 +186,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="isStageOrProd"
 							icon="exchange-alt"
 							exact-active-class="is-active"
 							tag="router-link"
