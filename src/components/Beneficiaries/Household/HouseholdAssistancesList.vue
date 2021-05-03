@@ -41,7 +41,7 @@ import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
-	name: "HouseholdAssistanceList",
+	name: "HouseholdAssistancesList",
 
 	components: { Table },
 
