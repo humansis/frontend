@@ -33,7 +33,7 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<TransactionFilter
+					<TransactionsFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -49,14 +49,14 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
-const TransactionFilter = () => import("@/components/Transactions/TransactionFilter");
+const TransactionsFilter = () => import("@/components/Transactions/TransactionsFilter");
 
 export default {
 	name: "Balances",
 
 	components: {
 		Table,
-		TransactionFilter,
+		TransactionsFilter,
 	},
 
 	mixins: [grid],

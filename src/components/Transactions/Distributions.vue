@@ -37,7 +37,7 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<DistributionFilter
+					<DistributionsFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -68,7 +68,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
 
-const DistributionFilter = () => import("@/components/Transactions/DistributionFilter");
+const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
 
 export default {
 	name: "Distributions",
@@ -76,7 +76,7 @@ export default {
 	components: {
 		ExportButton,
 		Table,
-		DistributionFilter,
+		DistributionsFilter,
 		ColumnField,
 	},
 

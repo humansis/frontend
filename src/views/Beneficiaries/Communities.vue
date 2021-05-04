@@ -35,8 +35,8 @@
 			/>
 		</Modal>
 
-		<CommunityList
-			ref="communityList"
+		<CommunitiesList
+			ref="communitiesList"
 			@onRemove="removeCommunity"
 			@onShowEdit="editCommunity"
 			@onShowDetail="showDetail"
@@ -46,7 +46,7 @@
 
 <script>
 import CommunityForm from "@/components/Beneficiaries/CommunityForm";
-import CommunityList from "@/components/Beneficiaries/CommunityList";
+import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
 import Modal from "@/components/Modal";
 import CommunityService from "@/services/CommunityService";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -59,7 +59,7 @@ export default {
 	name: "CommunityPage",
 
 	components: {
-		CommunityList,
+		CommunitiesList,
 		Modal,
 		CommunityForm,
 	},
@@ -309,7 +309,7 @@ export default {
 			await CommunityService.createCommunity(communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Community Successfully Created"), "is-success");
-					this.$refs.communityList.fetchData();
+					this.$refs.communitiesList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
@@ -324,7 +324,7 @@ export default {
 			await CommunityService.updateCommunity(id, communityBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Community Successfully Updated"), "is-success");
-					this.$refs.communityList.fetchData();
+					this.$refs.communitiesList.fetchData();
 					this.closeCommunityModal();
 				}
 			}).catch((e) => {
@@ -337,7 +337,7 @@ export default {
 			await CommunityService.deleteCommunity(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Community Successfully Deleted"), "is-success");
-					this.$refs.communityList.removeFromList(id);
+					this.$refs.communitiesList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`${this.$t("Community")} ${e}`, "is-danger");

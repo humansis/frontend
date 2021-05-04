@@ -34,8 +34,8 @@
 			/>
 		</Modal>
 
-		<CountrySpecificOptionList
-			ref="countrySpecificOptionList"
+		<CountrySpecificOptionsList
+			ref="countrySpecificOptionsList"
 			@onRemove="onRemoveCountrySpecificOption"
 			@onShowDetail="showDetail"
 			@onShowEdit="editCountrySpecificOption"
@@ -46,7 +46,7 @@
 <script>
 import { mapState } from "vuex";
 import CountrySpecificOptionForm from "@/components/Configuration/CountrySpecificOptionForm";
-import CountrySpecificOptionList from "@/components/Configuration/CountrySpecificOptionList";
+import CountrySpecificOptionsList from "@/components/Configuration/CountrySpecificOptionsList";
 import Modal from "@/components/Modal";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Toast } from "@/utils/UI";
@@ -55,7 +55,7 @@ export default {
 	name: "CountrySpecificOptionPage",
 
 	components: {
-		CountrySpecificOptionList,
+		CountrySpecificOptionsList,
 		Modal,
 		CountrySpecificOptionForm,
 	},
@@ -187,7 +187,7 @@ export default {
 						Toast(
 							this.$t("Country Specific Option Successfully Created"), "is-success",
 						);
-						this.$refs.countrySpecificOptionList.fetchData();
+						this.$refs.countrySpecificOptionsList.fetchData();
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
@@ -205,7 +205,7 @@ export default {
 						Toast(
 							this.$t("Country Specific Option Successfully Updated"), "is-success",
 						);
-						this.$refs.countrySpecificOptionList.fetchData();
+						this.$refs.countrySpecificOptionsList.fetchData();
 						this.closeCountrySpecificOptionModal();
 					}
 				}).catch((e) => {
@@ -221,7 +221,7 @@ export default {
 						Toast(
 							this.$t("Country Specific Option Successfully Removed"), "is-success",
 						);
-						this.$refs.countrySpecificOptionList.removeFromList(id);
+						this.$refs.countrySpecificOptionsList.removeFromList(id);
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");

@@ -15,7 +15,7 @@
 				@formClosed="closeVoucherModal"
 			/>
 		</Modal>
-		<VoucherList
+		<VouchersList
 			@onShowDetail="showDetail"
 		/>
 	</div>
@@ -23,14 +23,14 @@
 
 <script>
 import VoucherForm from "@/components/Jobs/VoucherForm";
-import VoucherList from "@/components/Jobs/VoucherList";
+import VouchersList from "@/components/Jobs/VouchersList";
 import Modal from "@/components/Modal";
 
 export default {
 	name: "VouchersPage",
 
 	components: {
-		VoucherList,
+		VouchersList,
 		VoucherForm,
 		Modal,
 	},

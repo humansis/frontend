@@ -61,7 +61,7 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionFilter @filtersChanged="onFiltersChange" />
+				<InstitutionsFilter @filtersChanged="onFiltersChange" />
 			</b-collapse>
 		</template>
 	</Table>
@@ -75,14 +75,14 @@ import InstitutionService from "@/services/InstitutionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import InstitutionFilter from "@/components/Beneficiaries/InstitutionFilter";
+import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "InstitutionList",
+	name: "InstitutionsList",
 
 	components: {
-		InstitutionFilter,
+		InstitutionsFilter,
 		SafeDelete,
 		Table,
 		ActionButton,

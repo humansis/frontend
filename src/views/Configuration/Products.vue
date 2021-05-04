@@ -36,8 +36,8 @@
 			/>
 		</Modal>
 
-		<ProductList
-			ref="ProductList"
+		<ProductsList
+			ref="productsList"
 			@onRemove="onRemoveProduct"
 			@onShowEdit="editProduct"
 			@onShowDetail="showDetail"
@@ -47,7 +47,7 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductList from "@/components/Configuration/ProductList";
+import ProductsList from "@/components/Configuration/ProductsList";
 import ProductForm from "@/components/Configuration/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
@@ -58,7 +58,7 @@ export default {
 	name: "ProductPage",
 
 	components: {
-		ProductList,
+		ProductsList,
 		Modal,
 		ProductForm,
 	},
@@ -191,7 +191,7 @@ export default {
 			await ProductService.createProduct(productBody).then(({ status }) => {
 				if (status === 200) {
 					Toast(this.$t("Product Successfully Created"), "is-success");
-					this.$refs.ProductList.fetchData();
+					this.$refs.productsList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
@@ -206,7 +206,7 @@ export default {
 			await ProductService.updateProduct(id, productBody).then(({ status }) => {
 				if (status === 200) {
 					Toast(this.$t("Product Successfully Updated"), "is-success");
-					this.$refs.ProductList.fetchData();
+					this.$refs.productsList.fetchData();
 					this.closeProductModal();
 				}
 			}).catch((e) => {
@@ -227,7 +227,7 @@ export default {
 			await ProductService.removeProduct(id).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Product Successfully Removed"), "is-success");
-					this.$refs.ProductList.removeFromList(id);
+					this.$refs.productsList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`${this.$t("Product")} ${e}`, "is-danger");
