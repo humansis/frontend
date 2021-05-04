@@ -50,8 +50,8 @@
 			/>
 		</Modal>
 
-		<VendorList
-			ref="vendorList"
+		<VendorsList
+			ref="vendorsList"
 			@onRemove="onVendorRemove"
 			@onShowEdit="editVendor"
 			@onShowDetail="showDetail"
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import VendorList from "@/components/Beneficiaries/VendorList";
+import VendorsList from "@/components/Beneficiaries/VendorsList";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
@@ -75,7 +75,7 @@ export default {
 
 	components: {
 		VendorSummary,
-		VendorList,
+		VendorsList,
 		Modal,
 		VendorForm,
 	},
@@ -316,7 +316,7 @@ export default {
 							.then((vendorResponse) => {
 								if (vendorResponse.status === 200) {
 									Toast(this.$t("Vendor Successfully Created"), "is-success");
-									this.$refs.vendorList.fetchData();
+									this.$refs.vendorsList.fetchData();
 									this.closeVendorModal();
 								}
 							}).catch((e) => {
@@ -336,7 +336,7 @@ export default {
 						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
 							if (vendorResponse.status === 200) {
 								Toast(this.$t("Vendor Successfully Updated"), "is-success");
-								this.$refs.vendorList.fetchData();
+								this.$refs.vendorsList.fetchData();
 								this.closeVendorModal();
 							}
 						}).catch((e) => {
@@ -352,7 +352,7 @@ export default {
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Vendor Successfully Deleted"), "is-success");
-					this.$refs.vendorList.removeFromList(id);
+					this.$refs.vendorsList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`${this.$t("Vendor")} ${e}`, "is-danger");

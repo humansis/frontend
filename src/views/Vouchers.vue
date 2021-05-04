@@ -37,14 +37,14 @@
 		</Modal>
 
 		<!-- switch between two styles of displaying Batches/Vouchers list -->
-		<BatchList
+		<BatchesList
 			v-if="false"
-			ref="batchList"
+			ref="batchesList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
 		/>
-		<VoucherList
-			ref="voucherList"
+		<VouchersList
+			ref="vouchersList"
 			@onRemove="onRemoveVoucher"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -54,9 +54,9 @@
 
 <script>
 import { mapState } from "vuex";
-import VoucherList from "@/components/Voucher/VoucherList";
+import VouchersList from "@/components/Voucher/VouchersList";
 import VoucherForm from "@/components/Voucher/VoucherForm";
-import BatchList from "@/components/Voucher/BatchList";
+import BatchesList from "@/components/Voucher/BatchesList";
 import Modal from "@/components/Modal";
 import BookletsService from "@/services/BookletsService";
 import { Toast, Notification } from "@/utils/UI";
@@ -66,10 +66,10 @@ export default {
 	name: "VouchersPage",
 
 	components: {
-		VoucherList,
+		VouchersList,
 		Modal,
 		VoucherForm,
-		BatchList,
+		BatchesList,
 	},
 
 	mixins: [permissions],
@@ -227,10 +227,10 @@ export default {
 				.then((response) => {
 					if (response.status === 204) {
 						Toast(this.$t("Booklet Successfully Created"), "is-success");
-						if (this.$refs.voucherList) {
-							this.$refs.voucherList.fetchData();
-						} else if (this.$refs.batchList) {
-							this.$refs.batchList.fetchData();
+						if (this.$refs.vouchersList) {
+							this.$refs.vouchersList.fetchData();
+						} else if (this.$refs.batchesList) {
+							this.$refs.batchesList.fetchData();
 						} else {
 							this.$router.go();
 						}
@@ -251,10 +251,10 @@ export default {
 			).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Booklet Successfully Updated"), "is-success");
-					if (this.$refs.voucherList) {
-						this.$refs.voucherList.fetchData();
-					} else if (this.$refs.batchList) {
-						this.$refs.batchList.fetchData();
+					if (this.$refs.vouchersList) {
+						this.$refs.vouchersList.fetchData();
+					} else if (this.$refs.batchesList) {
+						this.$refs.batchesList.fetchData();
 					} else {
 						this.$router.go();
 					}
@@ -270,7 +270,7 @@ export default {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Booklet successfully removed"), "is-success");
-					this.$refs.voucherList.removeFromList(id);
+					this.$refs.vouchersList.removeFromList(id);
 				}
 			}).catch((e) => {
 				Toast(`${this.$t("Booklet")} ${e}`, "is-danger");

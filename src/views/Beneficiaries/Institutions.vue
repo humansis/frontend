@@ -35,8 +35,8 @@
 			/>
 		</Modal>
 
-		<InstitutionList
-			ref="institutionList"
+		<InstitutionsList
+			ref="institutionsList"
 			@onRemove="removeInstitution"
 			@onShowEdit="editInstitution"
 			@onShowDetail="showDetail"
@@ -46,7 +46,7 @@
 
 <script>
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
-import InstitutionList from "@/components/Beneficiaries/InstitutionList";
+import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
 import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
@@ -59,7 +59,7 @@ export default {
 	name: "InstitutionPage",
 
 	components: {
-		InstitutionList,
+		InstitutionsList,
 		Modal,
 		InstitutionForm,
 	},
@@ -317,7 +317,7 @@ export default {
 			await InstitutionService.createInstitution(institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Institution Successfully Created"), "is-success");
-					this.$refs.institutionList.fetchData();
+					this.$refs.institutionsList.fetchData();
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
@@ -332,7 +332,7 @@ export default {
 			await InstitutionService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Institution Successfully Updated", "is-success"));
-					this.$refs.institutionList.fetchData();
+					this.$refs.institutionsList.fetchData();
 					this.closeInstitutionModal();
 				}
 			}).catch((e) => {
@@ -345,8 +345,8 @@ export default {
 			await InstitutionService.deleteInstitution(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Institution Successfully Deleted"), "is-success");
-					this.$refs.institutionList.removeFromList(id);
-					this.$refs.institutionList.table.total -= 1;
+					this.$refs.institutionsList.removeFromList(id);
+					this.$refs.institutionsList.table.total -= 1;
 				}
 			}).catch((e) => {
 				Toast(`${this.$t("Institution")} ${e}`, "is-danger");

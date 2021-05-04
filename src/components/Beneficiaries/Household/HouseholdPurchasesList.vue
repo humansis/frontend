@@ -1,7 +1,7 @@
 <template>
 	<Table
 		v-show="show"
-		ref="assistanceList"
+		ref="purchaseList"
 		has-search
 		paginated
 		:data="table.data"
@@ -32,16 +32,16 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import AssistancesService from "@/services/AssistancesService";
-import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import Table from "@/components/DataGrid/Table";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import ProductService from "@/services/ProductService";
+import baseHelper from "@/mixins/baseHelper";
 
 export default {
-	name: "HouseholdAssistanceList",
+	name: "HouseholdPurchasesList",
 
 	components: { Table },
 
@@ -53,10 +53,11 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "commodity", width: "60", searchable: true },
-					{ key: "amount", label: "Amount", width: "60", searchable: true, customSort: this.sortAmount },
-					{ key: "dateOfDistribution", label: "Date", width: "100", searchable: true, customSort: this.sortDate },
-					{ key: "assistance", width: "100", searchable: true },
+					{ key: "dateTime", label: "Date", width: "60", searchable: true, customSort: this.sortDate },
+					{ key: "product", width: "60", searchable: true },
+					{ key: "amount", width: "100", searchable: true, customSort: this.sortAmount },
+					{ key: "price", width: "100", searchable: true, customSort: this.sortPrice },
+					{ key: "commodity", width: "100", searchable: true },
 					{ key: "beneficiary", width: "100", searchable: true },
 				],
 				total: 0,
@@ -75,23 +76,30 @@ export default {
 	methods: {
 		sortAmount(a, b, c) {
 			if (!c) {
-				return a.commodityObject.value - b.commodityObject.value;
+				return a.quantity - b.quantity;
 			}
-			return b.commodityObject.value - a.commodityObject.value;
+			return b.quantity - a.quantity;
+		},
+
+		sortPrice(a, b, c) {
+			if (!c) {
+				return a.value - b.value;
+			}
+			return b.value - a.value;
 		},
 
 		sortDate(a, b, c) {
 			if (!c) {
-				return new Date(a.dateOfDistribution) - new Date(b.dateOfDistribution);
+				return new Date(a.date) - new Date(b.date);
 			}
-			return new Date(b.dateOfDistribution) - new Date(a.dateOfDistribution);
+			return new Date(b.date) - new Date(a.date);
 		},
 
 		async fetchData() {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await BeneficiariesService.getListOfDistributedItems(this.$route.params.householdId)
+			await BeneficiariesService.getListOfHouseholdPurchases(this.$route.params.householdId)
 				.then(async ({ data, totalCount }) => {
 					this.table.total = totalCount;
 					this.table.data = [];
@@ -99,7 +107,7 @@ export default {
 						await this.prepareDataForTable(data);
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Purchases")} ${e}`, "is-danger");
 				});
 
 			this.isLoadingList = false;
@@ -107,21 +115,29 @@ export default {
 
 		prepareDataForTable(data) {
 			const beneficiaryIds = [];
-			const assistanceIds = [];
+			const productIds = [];
+
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].dateOfDistribution = this.$moment(item.dateOfDistribution).format("YYYY-MM-DD hh:mm:ss");
+				this.table.data[key].dateTime = this.$moment(item.date).format("YYYY-MM-DD hh:mm");
+				this.table.data[key].amount = `${item.quantity} Unit`;
+				this.table.data[key].price = `${item.value} ${item.currency}`;
+				this.table.data[key].commodity = item.source;
 				beneficiaryIds.push(item.beneficiaryId);
-				assistanceIds.push(item.assistanceId);
+				productIds.push(item.productId);
 			});
 
-			this.reload();
+			this.prepareProductForTable([...new Set(productIds)]);
 
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
+		},
 
-			this.prepareCommodityForTable([...new Set(assistanceIds)]);
-
-			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
+		async prepareProductForTable(productIds) {
+			const products = await this.getProducts(productIds);
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].product = this.prepareEntityForTable(item.productId, products, "name");
+			});
+			this.reload();
 		},
 
 		async prepareBeneficiaryForTable(beneficiaryIds) {
@@ -134,41 +150,12 @@ export default {
 			this.reload();
 		},
 
-		async prepareCommodityForTable(assistanceIds) {
-			const commodities = await this.getCommodities(assistanceIds);
-			this.table.data.forEach((item, key) => {
-				const commodity = this.prepareEntityForTable(item.commodityIds[0], commodities);
-				this.table.data[key].commodityObject = commodity;
-				this.table.data[key].commodity = commodity.modalityType;
-				this.table.data[key].amount = `${commodity.value} ${commodity.unit}`;
-			});
-			this.reload();
-		},
-
-		async prepareAssistanceForTable(assistanceIds) {
-			const assistances = await this.getAssistances(assistanceIds);
-			this.table.data.forEach((item, key) => {
-				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
-				this.table.data[key].assistance = assistance.name;
-			});
-			this.reload();
-		},
-
-		async getCommodities(ids) {
+		async getProducts(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
+			return ProductService.getProducts(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
-		},
-
-		async getAssistances(ids) {
-			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
 				});
 		},
 
