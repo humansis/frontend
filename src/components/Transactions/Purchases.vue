@@ -85,7 +85,6 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			searchPhrase: "",
 			table: {
 				data: [],
 				columns: [],
@@ -94,7 +93,7 @@ export default {
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
-					{ key: "assistance", label: "distribution" },
+					{ key: "assistance", label: "Distribution" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },
@@ -114,6 +113,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				progress: null,
+				searchPhrase: "",
 			},
 			exportLoading: false,
 			filters: {},
@@ -140,7 +140,7 @@ export default {
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.searchPhrase,
+				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
