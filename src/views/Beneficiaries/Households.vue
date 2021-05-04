@@ -334,6 +334,7 @@ export default {
 					});
 
 				this.closeAddToProjectModal();
+				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
 			}
 		},
@@ -366,7 +367,12 @@ export default {
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
-				addressIds[typeOfLocation].push(addressId);
+
+				// TODO Fix bug with Informal Settlement (Location Type)
+				if (typeOfLocation && addressId) {
+					addressIds[typeOfLocation].push(addressId);
+				}
+
 				this.table.data[key].addressId = addressId;
 				this.table.data[key].members = item.beneficiaryIds.length;
 			});
@@ -600,6 +606,8 @@ export default {
 					Toast(`${this.$t("Household")} ${e}`, "is-danger");
 				});
 			}
+
+			this.table.checkedRows = [];
 		},
 
 		async onFiltersChange(selectedFilters) {
@@ -633,3 +641,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.modal-card-body {
+	min-height: 250px;
+}
+</style>

@@ -8,6 +8,7 @@
 		>
 			<AssistanceForm
 				close-button
+				class="modal-card"
 				:formModel="assistanceModel"
 				@formClosed="closeAssistanceModal"
 			/>

@@ -127,7 +127,7 @@ export default {
 	created() {
 		this.setLocationNames();
 		this.fetchProjects();
-		this.fetchModality();
+		this.fetchModalityTypes();
 		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
 		this.fetchVendors();
@@ -175,7 +175,9 @@ export default {
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
 					preparedFilters.distribution = null;
-					this.fetchAssistance();
+					if (this.selectedFiltersOptions.project) {
+						this.fetchAssistance();
+					}
 					break;
 				default: break;
 			}

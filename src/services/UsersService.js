@@ -33,7 +33,7 @@ export default {
 					? this.saltPassword(salt, userBody.password)
 					: null;
 
-				const { data, status } = await fetcher({ uri: `users/${userId}`, method: "POST", body: userBody });
+				const { data, status } = await fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
 				return { data, status };
 			})
 			.catch((e) => {
@@ -51,7 +51,7 @@ export default {
 	},
 
 	saltPassword(salt, password) {
-		const salted = `${password}{${salt}`;
+		const salted = `${password}{${salt}}`;
 		let digest = CryptoJS.SHA512(salted);
 
 		for (let i = 1; i < 5000; i += 1) {
@@ -97,6 +97,13 @@ export default {
 
 		const { data } = await download({ uri: `users/exports?${formatText}` });
 		return { data };
+	},
+
+	async patchUser(id, body) {
+		const { data, status } = await fetcher({
+			uri: `users/${id}`, method: "PATCH", body,
+		});
+		return { data, status };
 	},
 
 };

@@ -100,6 +100,8 @@ export default {
 					{ key: "adm3" },
 					{ key: "adm4" },
 					{ key: "datePurchase", label: "Purchased Date", type: "datetime" },
+					{ key: "commodity", label: "CommodityType" },
+					{ key: "carrierNumber" },
 					{ key: "product", label: "Purchased Item" },
 					{ key: "value", label: "Total" },
 					{ key: "currency" },
@@ -146,6 +148,8 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
+				} else {
+					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
