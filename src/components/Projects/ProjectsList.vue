@@ -1,5 +1,6 @@
 <template>
 	<Table
+		v-show="show"
 		has-reset-sort
 		has-search
 		:data="table.data"
@@ -141,15 +142,11 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then(async ({ data }) => {
+			).then(async ({ data, totalCount }) => {
 				this.table.data = [];
-
-				const filteredProjects = data
-					?.filter((project) => this.availableProjects.includes(project.id));
-
-				this.table.total = filteredProjects.length;
-				if (filteredProjects.length > 0) {
-					await this.prepareDataForTable(filteredProjects);
+				this.table.total = totalCount;
+				if (data.length > 0) {
+					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
@@ -158,13 +155,13 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async prepareDataForTable(data) {
-			this.table.data = data;
+		prepareDataForTable(data) {
 			const donorIds = [];
-			data.map(async (item) => {
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
 				donorIds.push(...item.donorIds);
 			});
-			await this.prepareDonorsForTable([...new Set(donorIds)]);
+			this.prepareDonorsForTable([...new Set(donorIds)]);
 		},
 
 		async prepareDonorsForTable(ids) {
@@ -172,6 +169,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].donors = this.prepareDonors(item, donors);
 			});
+			this.reload();
 		},
 
 		prepareDonors(item, donors) {
