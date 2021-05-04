@@ -24,11 +24,10 @@
 				/>
 			</b-field>
 
-			<!-- TODO Add rules to password -->
 			<b-field
 				:label="$t('Password')"
 				:type="validateType('password')"
-				:message="validateMsg('password')"
+				:message="passwordMessage()"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -187,6 +186,10 @@ import Validation from "@/mixins/validation";
 import roles from "@/utils/roleConst";
 import SystemService from "@/services/SystemService";
 
+const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
+
+const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
+
 export default {
 	name: "userForm",
 
@@ -204,10 +207,13 @@ export default {
 		formModel: {
 			email: { required, email },
 			username: { required },
-			// eslint-disable-next-line func-names
-			password: { required: requiredIf(function () {
-				return !this.isEditing;
-			}) },
+			password: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return !this.isEditing;
+				}),
+				passwordValidation,
+			},
 			rights: { required },
 			language: {},
 			projectIds: { required: requiredIf((form) => !form.disabledProject) },
@@ -332,6 +338,17 @@ export default {
 			this.$v.$reset();
 		},
 
+		passwordMessage() {
+			if (this.$v.formModel.password.$dirty) {
+				if (!this.$v.formModel.password.required) {
+					return this.$t("Required");
+				}
+				if (!this.$v.formModel.password.passwordValidation) {
+					return this.$t("The Password Is Not Strong Enough... Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
+				}
+			}
+			return "";
+		},
 	},
 };
 </script>

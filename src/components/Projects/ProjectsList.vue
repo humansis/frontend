@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -126,6 +127,10 @@ export default {
 		this.fetchData();
 	},
 
+	computed: {
+		...mapState(["availableProjects"]),
+	},
+
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
@@ -136,11 +141,15 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
+			).then(async ({ data }) => {
 				this.table.data = [];
-				this.table.total = totalCount;
-				if (data.length > 0) {
-					await this.prepareDataForTable(data);
+
+				const filteredProjects = data
+					?.filter((project) => this.availableProjects.includes(project.id));
+
+				this.table.total = filteredProjects.length;
+				if (filteredProjects.length > 0) {
+					await this.prepareDataForTable(filteredProjects);
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");

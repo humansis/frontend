@@ -405,17 +405,19 @@ export default {
 						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender.code,
-						nationalIdCards: [
-							{
-								number: beneficiary.id.idNumber,
-								type: beneficiary.id.idType.code,
-							},
-						],
 						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteria: this.mapVulnerabilities(beneficiary.vulnerabilities),
 					};
+					if (beneficiary.id.idNumber || beneficiary.id.idType) {
+						preparedBeneficiary.nationalIdCards = [
+							{
+								number: beneficiary.id.idNumber,
+								type: beneficiary.id.idType.code,
+							},
+						];
+					}
 					if (beneficiary.addAReferral) {
 						preparedBeneficiary.referralType = beneficiary.referral.referralType.code;
 						preparedBeneficiary.referralComment = beneficiary.referral.comment;
