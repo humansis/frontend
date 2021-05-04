@@ -15,11 +15,11 @@
 		</p>
 		<b-tabs v-model="activeTab">
 			<b-tab-item :label="$t('Assistances')">
-				<HouseholdAssistanceList />
+				<HouseholdAssistancesList />
 			</b-tab-item>
 
 			<b-tab-item :label="$t('Purchases')">
-				<HouseholdPurchaseList />
+				<HouseholdPurchasesList />
 			</b-tab-item>
 		</b-tabs>
 	</card-component>
@@ -32,15 +32,15 @@ import { Notification } from "@/utils/UI";
 import addressHelper from "@/mixins/addressHelper";
 import AddressService from "@/services/AddressService";
 import grid from "@/mixins/grid";
-import HouseholdAssistanceList from "@/components/Beneficiaries/Household/HouseholdAssistanceList";
-import HouseholdPurchaseList from "@/components/Beneficiaries/Household/HouseholdPurchaseList";
+import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
+import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
 
 export default {
 	name: "HouseholdInformationSummary",
 
 	components: {
-		HouseholdPurchaseList,
-		HouseholdAssistanceList,
+		HouseholdPurchasesList,
+		HouseholdAssistancesList,
 		CardComponent,
 	},
 

@@ -14,7 +14,7 @@ import { getArrayOfCodeListByParams } from "@/utils/codeList";
 import currencies from "@/utils/currencies";
 
 export default {
-	name: "VoucherFilters",
+	name: "VouchersFilter",
 
 	components: {
 		AdvancedFilter,

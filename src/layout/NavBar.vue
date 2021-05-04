@@ -65,13 +65,14 @@
 				</a>
 
 				<b-dropdown-item
-					v-for="language in languages"
-					:key="language.key"
-					:value="language.key"
-					@click="handleChangeLanguage(language)"
+					v-for="value in languages"
+					:key="value.key"
+					:value="value.key"
+					:class="language.key === value.key ? 'is-active' : ''"
+					@click="handleChangeLanguage(value)"
 				>
 					<b-icon class="mr-1" icon="language" />
-					{{ $t(language.name) }}
+					{{ $t(value.name) }}
 				</b-dropdown-item>
 			</b-dropdown>
 

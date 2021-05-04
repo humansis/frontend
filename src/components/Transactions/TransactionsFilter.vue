@@ -36,7 +36,7 @@
 
 <script>
 export default {
-	name: "TransactionFilters",
+	name: "TransactionsFilter",
 
 	data() {
 		return {

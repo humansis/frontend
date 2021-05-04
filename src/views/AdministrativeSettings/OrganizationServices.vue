@@ -17,8 +17,8 @@
 				@formClosed="closeOrganizationServiceModal"
 			/>
 		</Modal>
-		<OrganizationServiceList
-			ref="organizationServiceList"
+		<OrganizationServicesList
+			ref="organizationServicesList"
 			@onShowEdit="editOrganizationService"
 			@onShowDetail="showDetail"
 		/>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import OrganizationServiceList from "@/components/AdministrativeSettings/OrganizationServiceList";
+import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServicesList";
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
 import OrganizationServiceService from "@/services/OrganizationServiceService";
 import Modal from "@/components/Modal";
@@ -36,7 +36,7 @@ export default {
 	name: "OrganizationServicePage",
 
 	components: {
-		OrganizationServiceList,
+		OrganizationServicesList,
 		Modal,
 		OrganizationServiceForm,
 	},
@@ -117,7 +117,7 @@ export default {
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Organization Service Successfully Updated"), "is-success");
-						this.$refs.organizationServiceList.fetchData();
+						this.$refs.organizationServicesList.fetchData();
 						this.closeOrganizationServiceModal();
 					}
 				}).catch((e) => {

@@ -33,7 +33,11 @@ export default {
 		{ name: "English", key: "en" },
 		{ name: "Arabic", key: "ar" },
 		{ name: "Russian", key: "ru" },
-		{ name: "Amrahic", key: "am" },
+		{ name: "Amharic", key: "am" },
+		{ name: "French", key: "fr" },
+		{ name: "Khmer", key: "km" },
+		{ name: "Armenian", key: "hy" },
+		{ name: "Mongolian", key: "mn" },
 	],
 	permissions: {
 		addProject: false,

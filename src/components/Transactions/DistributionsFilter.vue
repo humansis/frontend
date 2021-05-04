@@ -12,7 +12,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import transactionHelper from "@/mixins/transactionHelper";
 
 export default {
-	name: "DistributionFilter",
+	name: "DistributionsFilter",
 
 	components: { AdvancedFilter },
 

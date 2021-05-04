@@ -112,8 +112,8 @@
 				<MultiSelect
 					v-model="formModel.language"
 					searchable
-					label="value"
-					track-by="code"
+					label="name"
+					track-by="key"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.languages"
@@ -176,6 +176,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import { required, requiredIf, email } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
@@ -231,11 +232,7 @@ export default {
 				projects: [],
 				countries: [],
 				phonePrefixes: PhoneCodes,
-				languages: [
-					{ value: "EN", code: "en" },
-					{ value: "AR", code: "ar" },
-					{ value: "RU", code: "ru" },
-				],
+				languages: [],
 			},
 			mapping: true,
 			countriesLoading: true,
@@ -245,11 +242,16 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["languages"]),
+	},
+
 	async mounted() {
 		await Promise.all([
 			this.fetchRoles(),
 			this.fetchProjects(),
 			this.fetchCountries(),
+			this.loadLanguages(),
 		]);
 		this.mapSelects();
 		this.mapping = false;
@@ -286,6 +288,10 @@ export default {
 				this.formModel.disabledCountry = true;
 				this.formModel.disabledProject = true;
 			}
+		},
+
+		loadLanguages() {
+			this.options.languages = this.languages;
 		},
 
 		async fetchProjects() {
