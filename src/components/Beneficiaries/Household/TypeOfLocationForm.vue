@@ -160,7 +160,6 @@ export default {
 
 	async mounted() {
 		await this.fetchLocationsTypes();
-		await this.fetchCamps();
 	},
 
 	methods: {
@@ -182,7 +181,8 @@ export default {
 
 		async fetchCamps() {
 			this.campsLoading = true;
-			await AddressService.getCamps()
+
+			await AddressService.getCampsByLocation(this.formModel.locationId)
 				.then(({ data }) => {
 					this.options.camps = data;
 				})
@@ -193,6 +193,9 @@ export default {
 		},
 
 		mapLocations() {
+			if (this.formModel.locationId) {
+				this.fetchCamps();
+			}
 			if (this.formModel.type) {
 				this.campSelected = this.formModel.type === "camp";
 				this.formModel.typeOfLocation = this.options.typeOfLocation
