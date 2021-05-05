@@ -99,7 +99,7 @@ export default {
 				this.projectSummary = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
-				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
+				this.$router.push({ name: "NotFound" });
 			});
 		},
 

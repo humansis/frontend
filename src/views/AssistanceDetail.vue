@@ -289,7 +289,7 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
+				this.$router.push({ name: "NotFound" });
 			});
 		},
 
@@ -310,7 +310,7 @@ export default {
 				this.project = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
+				this.$router.push({ name: "NotFound" });
 			});
 		},
 

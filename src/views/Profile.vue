@@ -227,7 +227,7 @@ export default {
 			}).then(async () => {
 				await UsersService.patchUser(id, {
 					password: UsersService.saltPassword(salt, this.password.newPassword),
-				}).then((data) => {
+				}).then(({ data }) => {
 					this.mapUser(data);
 					Toast(
 						`${this.$t("Password Updated")}`,
@@ -254,7 +254,7 @@ export default {
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
 				phonePrefix: this.phone.prefix?.code || null,
-			}).then((data) => {
+			}).then(({ data }) => {
 				this.mapUser(data);
 				Toast(
 					`${this.$t("Phone Updated")}`,
