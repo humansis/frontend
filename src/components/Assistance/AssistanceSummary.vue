@@ -143,7 +143,6 @@ export default {
 		...mapState(["admNames"]),
 
 		assistanceName() {
-			console.log(this.assistance);
 			return this.assistance?.name || "";
 		},
 
