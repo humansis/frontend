@@ -53,8 +53,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -71,8 +70,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -89,8 +87,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -126,8 +123,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 
@@ -143,8 +139,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 			</div>
@@ -216,8 +211,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 			</div>
