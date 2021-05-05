@@ -251,8 +251,8 @@ export default {
 			this.fetchRoles(),
 			this.fetchProjects(),
 			this.fetchCountries(),
-			this.loadLanguages(),
 		]);
+		this.loadLanguages();
 		this.mapSelects();
 		this.mapping = false;
 	},
@@ -334,7 +334,7 @@ export default {
 				this.formModel.phonePrefix = getArrayOfCodeListByKey([this.formModel.phonePrefix], this.options.phonePrefixes, "code");
 			}
 			if (typeof this.formModel.language !== "object") {
-				this.formModel.language = getArrayOfCodeListByKey([this.formModel.language], this.options.languages, "code");
+				this.formModel.language = getArrayOfCodeListByKey([this.formModel.language], this.options.languages, "key");
 			}
 			this.mapRights(this.formModel.rights);
 		},
