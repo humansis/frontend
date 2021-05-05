@@ -47,7 +47,7 @@ import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 
 export default {
-	name: "LanguagesForm",
+	name: "LanguageForm",
 
 	mixins: [Validation],
 

@@ -10,7 +10,7 @@
 			</div>
 		</div>
 
-		<ProjectSummary />
+		<ProjectsSummary />
 
 		<UpcomingAssistances />
 	</div>
@@ -20,13 +20,13 @@
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
-import ProjectSummary from "@/components/Home/ProjectSummary";
+import ProjectsSummary from "@/components/Home/ProjectsSummary";
 
 export default {
 	name: "Home",
 
 	components: {
-		ProjectSummary,
+		ProjectsSummary,
 		DistributionMap,
 		Summary,
 		UpcomingAssistances,

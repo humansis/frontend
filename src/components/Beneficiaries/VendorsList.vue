@@ -82,7 +82,7 @@ import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 
 export default {
-	name: "VendorList",
+	name: "VendorsList",
 
 	components: {
 		ExportButton,

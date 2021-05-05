@@ -37,7 +37,7 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<DistributionFilter
+					<DistributionsFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -68,7 +68,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
 
-const DistributionFilter = () => import("@/components/Transactions/DistributionFilter");
+const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
 
 export default {
 	name: "Distributions",
@@ -76,7 +76,7 @@ export default {
 	components: {
 		ExportButton,
 		Table,
-		DistributionFilter,
+		DistributionsFilter,
 		ColumnField,
 	},
 
@@ -100,6 +100,7 @@ export default {
 					{ key: "adm4" },
 					{ key: "dateDistribution", label: "Distribution Date", type: "datetime" },
 					{ key: "commodity" },
+					{ key: "carrierNumber" },
 					{ key: "amount" },
 					{ key: "unit" },
 				],
@@ -143,6 +144,8 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
+				} else {
+					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Distributed Items")} ${e}`, "is-danger");

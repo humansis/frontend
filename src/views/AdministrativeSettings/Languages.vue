@@ -8,7 +8,7 @@
 			:is-waiting="languageModal.isWaiting"
 			@close="closeLanguageModal"
 		>
-			<LanguagesForm
+			<LanguageForm
 				close-button
 				class="modal-card"
 				:formModel="languageModel"
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import LanguagesForm from "@/components/AdministrativeSettings/LanguagesForm";
+import LanguageForm from "@/components/AdministrativeSettings/LanguageForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
 import Modal from "@/components/Modal";
 import LanguagesService from "@/services/LanguagesService";
@@ -45,7 +45,7 @@ export default {
 
 	components: {
 		LanguagesList,
-		LanguagesForm,
+		LanguageForm,
 		Modal,
 	},
 

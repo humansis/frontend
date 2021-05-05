@@ -12,7 +12,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import transactionHelper from "@/mixins/transactionHelper";
 
 export default {
-	name: "PurchaseFilter",
+	name: "DistributionsFilter",
 
 	components: { AdvancedFilter },
 
@@ -29,7 +29,8 @@ export default {
 				adm2: [],
 				adm3: [],
 				adm4: [],
-				vendor: [],
+				dateFrom: null,
+				dateTo: null,
 			},
 			filtersOptions: {
 				beneficiaryType: {
@@ -41,7 +42,6 @@ export default {
 				},
 				project: {
 					name: "Project",
-					type: "multiselect",
 					trackBy: "id",
 					label: "name",
 					loading: true,
@@ -63,18 +63,6 @@ export default {
 					loading: true,
 					placeholder: this.$t("Select Commodity"),
 					data: [],
-				},
-				vendor: {
-					name: "Vendor",
-					type: "multiselect",
-					trackBy: "id",
-					label: "vendorName",
-					loading: true,
-					placeholder: this.$t("Select Vendor"),
-					data: [],
-				},
-				empty: {
-					type: "empty",
 				},
 				adm1: {
 					name: "Province",
@@ -127,10 +115,9 @@ export default {
 	created() {
 		this.setLocationNames();
 		this.fetchProjects();
-		this.fetchModality();
+		this.fetchModalityTypes();
 		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
-		this.fetchVendors();
 	},
 
 	methods: {
@@ -175,7 +162,9 @@ export default {
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
 					preparedFilters.distribution = null;
-					this.fetchAssistance();
+					if (this.selectedFiltersOptions.project) {
+						this.fetchAssistance();
+					}
 					break;
 				default: break;
 			}
@@ -201,7 +190,6 @@ export default {
 				beneficiaryTypes: preparedFilters.beneficiaryType || [],
 				modalityTypes: preparedFilters.commodity || [],
 				assistances: preparedFilters.distribution || [],
-				vendors: preparedFilters.vendor || [],
 				locations: location ? [location] : [],
 			});
 		},

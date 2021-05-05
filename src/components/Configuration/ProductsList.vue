@@ -1,8 +1,7 @@
 <template>
 	<Table
-		has-search
 		has-reset-sort
-		has-export
+		has-search
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -17,18 +16,17 @@
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
-				v-slot="props"
-				:sortable="column.sortable"
 				:key="column.id"
+				v-slot="props"
 			>
-				<ColumnField :column="column" :data="props" />
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
 		</template>
 		<b-table-column
 			v-slot="props"
-			:label="$t('Actions')"
-			width="145"
+			width="150"
 			centered
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
@@ -38,17 +36,17 @@
 					@click="showDetailWithId(props.row.id)"
 				/>
 				<ActionButton
-					v-if="userCan.addEditDonors"
+					v-if="userCan.addEditProducts"
 					icon="edit"
-					:tooltip="$t('Edit')"
+					tooltip="Edit"
 					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete
-					v-if="userCan.addEditDonors"
+					v-if="userCan.addEditProducts"
 					icon="trash"
-					:entity="$t('Donor')"
-					:id="props.row.id"
+					:entity="$t('Product')"
 					:tooltip="$t('Delete')"
+					:id="props.row.id"
 					@submitted="remove"
 				/>
 			</div>
@@ -59,7 +57,7 @@
 				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
-				@onExport="exportDonors"
+				@onExport="exportProducts"
 			/>
 		</template>
 	</Table>
@@ -70,7 +68,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import DonorService from "@/services/DonorService";
+import ProductService from "@/services/ProductService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
@@ -78,7 +76,7 @@ import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "DonorList",
+	name: "ProductsList",
 
 	components: {
 		ExportButton,
@@ -97,10 +95,9 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ type: "text", key: "fullname", label: "Donor Name", width: "500", sortable: true },
-					{ type: "text", key: "shortname", width: "200", sortable: true },
-					{ type: "image", key: "logo", label: "Organization Logo", width: "200" },
-					{ type: "text", key: "notes", width: "200" },
+					{ key: "name", width: "400", sortable: true },
+					{ key: "unit", width: "200", sortable: true },
+					{ type: "image", key: "image", width: "100" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -115,6 +112,20 @@ export default {
 		$route: "fetchData",
 	},
 
+	computed: {
+		modalHeader() {
+			let result = "";
+			if (this.productModal.isDetail) {
+				result = this.$t("Detail of Product");
+			} else if (this.productModal.isEditing) {
+				result = this.$t("Edit Product");
+			} else {
+				result = this.$t("Create New Product");
+			}
+			return result;
+		},
+	},
+
 	mounted() {
 		this.fetchData();
 	},
@@ -124,7 +135,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await DonorService.getListOfDonors(
+			await ProductService.getListOfProducts(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
@@ -133,24 +144,24 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		async exportDonors(format) {
+		async exportProducts(format) {
 			this.exportLoading = true;
-			await DonorService.exportDonors(format)
+			await ProductService.exportProducts(format)
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
 					link.href = window.URL.createObjectURL(blob);
-					link.download = `donors.${format}`;
+					link.download = `products.${format}`;
 					link.click();
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
 				});
 			this.exportLoading = false;
 		},

@@ -228,8 +228,8 @@ export default {
 				});
 		},
 
-		async fetchModality() {
-			await AssistancesService.getListOfModalities()
+		async fetchModalityTypes() {
+			await AssistancesService.getListOfAllModalityTypes()
 				.then(({ data }) => {
 					this.filtersOptions.commodity.data = data;
 					this.filtersOptions.commodity.loading = false;

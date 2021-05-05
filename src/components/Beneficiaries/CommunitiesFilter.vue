@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -12,7 +13,7 @@ import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
 
 export default {
-	name: "InstitutionFilter",
+	name: "CommunitiesFilter",
 
 	components: {
 		AdvancedFilter,

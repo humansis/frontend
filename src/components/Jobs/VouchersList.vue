@@ -36,7 +36,7 @@ import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "VoucherList",
+	name: "VouchersList",
 
 	components: {
 		ColumnField,

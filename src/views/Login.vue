@@ -62,13 +62,17 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
 import gitInfo from "@/gitInfo";
+import UsersService from "@/services/UsersService";
+import CONST from "@/const";
+import TranslationService from "@/services/TranslationService";
+import CountriesService from "@/services/CountriesService";
 
 export default {
 	name: "Login",
@@ -109,8 +113,25 @@ export default {
 		this.$store.commit("fullPage", false);
 	},
 
+	computed: {
+		...mapState([
+			"languages",
+			"language",
+			"translations",
+		]),
+	},
+
 	methods: {
-		...mapActions(["storeUser", "storePermissions"]),
+		...mapActions([
+			"appLoading",
+			"storeUser",
+			"storePermissions",
+			"storeLanguage",
+			"storeTranslations",
+			"storeCountries",
+			"storeCountry",
+			"storeAvailableProjects",
+		]),
 
 		async submitForm() {
 			this.$v.$touch();
@@ -120,12 +141,34 @@ export default {
 
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
-					const { data: { token } } = response;
+					const { data: { token, userId } } = response;
 
 					const user = await JWTDecode(token);
+
+					user.userId = userId;
 					user.token = token;
 
 					await this.storeUser(user);
+
+					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+
+					await this.storeAvailableProjects(userDetail.projectIds);
+
+					const language = this.languages.find(({ key }) => key === userDetail?.language)
+						|| CONST.DEFAULT_LANGUAGE;
+
+					await this.setLocales(language.key);
+					await this.storeLanguage(language);
+
+					const countries = await this.fetchCountries();
+
+					const filteredCountries = countries
+						?.filter((country) => userDetail.countries.includes(country.iso3));
+
+					if (filteredCountries.length) {
+						await this.storeCountries(filteredCountries);
+						await this.storeCountry(filteredCountries[0]);
+					}
 
 					const { data: { privileges } } = user.roles[0]
 						? await LoginService.getRolePermissions(user.roles[0]) : {}
@@ -133,7 +176,11 @@ export default {
 
 					await this.storePermissions(privileges);
 
-					this.$router.push(this.$route.query.redirect?.toString() || "/");
+					if (filteredCountries.length) {
+						this.$router.push(this.$route.query.redirect?.toString() || "/");
+					} else {
+						Notification(`${this.$t("No Countries")}`, "is-warning");
+					}
 				}
 			}).catch((e) => {
 				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
@@ -141,6 +188,37 @@ export default {
 			});
 
 			this.loginButtonLoading = false;
+		},
+
+		fetchCountries() {
+			return CountriesService.getListOfCountries()
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+				});
+		},
+
+		async setLocales(languageKey) {
+			if (!this.translations || languageKey !== this.language.key) {
+				this.appLoading(true);
+
+				await TranslationService.getTranslations(languageKey).then((response) => {
+					if (response.status === 200) {
+						this.storeTranslations(response.data);
+						this.$i18n.locale = languageKey;
+						this.$i18n.fallbackLocale = languageKey;
+						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+				});
+
+				this.appLoading(false);
+			} else {
+				this.$i18n.locale = languageKey;
+				this.$i18n.fallbackLocale = languageKey;
+				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
+			}
 		},
 	},
 };
@@ -159,7 +237,7 @@ export default {
 	background-color: rgba(161, 160 ,160, .85);
 }
 
-.logo{
+.logo {
 	margin: 0 auto;
 	width: 150px;
 	height: 150px;

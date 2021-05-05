@@ -39,6 +39,8 @@ const ifAuthenticated = (to, from, next) => {
 	}
 };
 
+let singleNotification = true;
+
 const routes = [
 	{
 		path: "/login",
@@ -51,8 +53,9 @@ const routes = [
 		beforeEnter: (to, from, next) => {
 			store.dispatch("logoutUser");
 
-			if (from.name !== "Login" && to.query?.notification === "login") {
+			if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
 				Notification("You need to login to continue", "is-warning");
+				singleNotification = false;
 			}
 
 			next({ name: "Login", query: to.query });

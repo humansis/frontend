@@ -37,7 +37,7 @@
 					:open="advancedSearchVisible"
 					animation="slide"
 				>
-					<PurchaseFilter
+					<PurchasesFilter
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -68,7 +68,7 @@ import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
 
-const PurchaseFilter = () => import("@/components/Transactions/PurchaseFilter");
+const PurchasesFilter = () => import("@/components/Transactions/PurchasesFilter");
 
 export default {
 	name: "Purchases",
@@ -76,7 +76,7 @@ export default {
 	components: {
 		ExportButton,
 		Table,
-		PurchaseFilter,
+		PurchasesFilter,
 		ColumnField,
 	},
 
@@ -85,7 +85,6 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			searchPhrase: "",
 			table: {
 				data: [],
 				columns: [],
@@ -94,12 +93,14 @@ export default {
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
-					{ key: "assistance", label: "distribution" },
+					{ key: "assistance", label: "Distribution" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },
 					{ key: "adm4" },
 					{ key: "datePurchase", label: "Purchased Date", type: "datetime" },
+					{ key: "commodity", label: "CommodityType" },
+					{ key: "carrierNumber" },
 					{ key: "product", label: "Purchased Item" },
 					{ key: "value", label: "Total" },
 					{ key: "currency" },
@@ -112,6 +113,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				progress: null,
+				searchPhrase: "",
 			},
 			exportLoading: false,
 			filters: {},
@@ -138,7 +140,7 @@ export default {
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.searchPhrase,
+				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
@@ -146,6 +148,8 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
+				} else {
+					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");

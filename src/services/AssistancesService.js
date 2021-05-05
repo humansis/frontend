@@ -268,6 +268,11 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfAllModalityTypes() {
+		const { data: { data, totalCount } } = await fetcher({ uri: `modalities/types` });
+		return { data, totalCount };
+	},
+
 	async removeAssistance(id) {
 		const { data, status } = await fetcher({ uri: `assistances/${id}`, method: "DELETE" });
 		return { data, status };

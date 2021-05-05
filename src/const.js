@@ -9,7 +9,10 @@ const DEFAULT_COUNTRY = {
 	name: "Cambodia",
 };
 
-const DEFAULT_LANGUAGE = "en";
+const DEFAULT_LANGUAGE = {
+	key: "en",
+	name: "English",
+};
 
 export default {
 	ENV,

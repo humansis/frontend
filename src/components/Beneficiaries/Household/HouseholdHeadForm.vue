@@ -101,10 +101,15 @@
 			</div>
 
 			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('ID') }}</h4>
+				<h4 class="title is-5">
+					{{ $t('ID') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</h4>
 				<b-field
 					:label="$t('ID Type')"
-					:type="validateType('id.idType')"
+					:type="validateType('id.idType', true)"
 					:message="validateMsg('id.idType')"
 				>
 					<MultiSelect
@@ -115,18 +120,18 @@
 						:placeholder="$t('Click to select')"
 						:loading="idTypeLoading"
 						:options="options.idType"
-						:class="validateMultiselect('id.idType')"
+						:class="validateMultiselect('id.idType', true)"
 						@select="validate('id.idType')"
 					/>
 				</b-field>
 				<b-field
 					:label="$t('ID Number')"
-					:type="validateType('id.idNumber')"
+					:type="validateType('id.idNumber', true)"
 					:message="validateMsg('id.idNumber')"
 				>
 					<b-input
 						v-model="formModel.id.idNumber"
-						@blur="validate('id.idNumber')"
+						@blur="validate('id.idNumber', true)"
 					/>
 				</b-field>
 			</div>
@@ -283,7 +288,7 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
@@ -327,8 +332,8 @@ export default {
 				dateOfBirth: { required },
 			},
 			id: {
-				idType: { required },
-				idNumber: { required },
+				idType: { required: requiredIf((form) => form.idNumber) },
+				idNumber: { required: requiredIf((form) => form.idType) },
 			},
 			residencyStatus: { required },
 		},

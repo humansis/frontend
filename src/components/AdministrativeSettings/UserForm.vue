@@ -24,11 +24,10 @@
 				/>
 			</b-field>
 
-			<!-- TODO Add rules to password -->
 			<b-field
 				:label="$t('Password')"
 				:type="validateType('password')"
-				:message="validateMsg('password')"
+				:message="passwordMessage()"
 			>
 				<b-input
 					v-model="formModel.password"
@@ -113,8 +112,8 @@
 				<MultiSelect
 					v-model="formModel.language"
 					searchable
-					label="value"
-					track-by="code"
+					label="name"
+					track-by="key"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.languages"
@@ -177,6 +176,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import { required, requiredIf, email } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
@@ -186,6 +186,10 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 import roles from "@/utils/roleConst";
 import SystemService from "@/services/SystemService";
+
+const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
+
+const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
 
 export default {
 	name: "userForm",
@@ -204,10 +208,13 @@ export default {
 		formModel: {
 			email: { required, email },
 			username: { required },
-			// eslint-disable-next-line func-names
-			password: { required: requiredIf(function () {
-				return !this.isEditing;
-			}) },
+			password: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return !this.isEditing;
+				}),
+				passwordValidation,
+			},
 			rights: { required },
 			language: {},
 			projectIds: { required: requiredIf((form) => !form.disabledProject) },
@@ -225,11 +232,7 @@ export default {
 				projects: [],
 				countries: [],
 				phonePrefixes: PhoneCodes,
-				languages: [
-					{ value: "EN", code: "en" },
-					{ value: "AR", code: "ar" },
-					{ value: "RU", code: "ru" },
-				],
+				languages: [],
 			},
 			mapping: true,
 			countriesLoading: true,
@@ -239,11 +242,16 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["languages"]),
+	},
+
 	async mounted() {
 		await Promise.all([
 			this.fetchRoles(),
 			this.fetchProjects(),
 			this.fetchCountries(),
+			this.loadLanguages(),
 		]);
 		this.mapSelects();
 		this.mapping = false;
@@ -280,6 +288,10 @@ export default {
 				this.formModel.disabledCountry = true;
 				this.formModel.disabledProject = true;
 			}
+		},
+
+		loadLanguages() {
+			this.options.languages = this.languages;
 		},
 
 		async fetchProjects() {
@@ -332,6 +344,17 @@ export default {
 			this.$v.$reset();
 		},
 
+		passwordMessage() {
+			if (this.$v.formModel.password.$dirty) {
+				if (!this.$v.formModel.password.required) {
+					return this.$t("Required");
+				}
+				if (!this.$v.formModel.password.passwordValidation) {
+					return this.$t("The Password Is Not Strong Enough... Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
+				}
+			}
+			return "";
+		},
 	},
 };
 </script>
