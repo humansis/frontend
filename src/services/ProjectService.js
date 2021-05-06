@@ -1,13 +1,6 @@
 import { download, fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
-	async getSummariesForProject(id, code) {
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/summaries?code[]=${code}`,
-		});
-		return { data, totalCount };
-	},
-
 	async getListOfProjects(page, size, sort, search = null, ids) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
