@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import getters from "@/store/getters";
 import store from "@/store/index";
 import { Notification } from "@/utils/UI";
+import CONST from "@/const";
 
 Vue.use(VueRouter);
 
@@ -14,7 +15,22 @@ const ifAuthenticated = (to, from, next) => {
 		.every((permission) => permissions?.[permission]) : true;
 
 	if (user?.token && to.meta.permissions && canGoNext) {
-		next();
+		// TODO Remove this condition after after all views will be available in HOT RELEASE !
+		if (CONST.ENV === "prod" || CONST.ENV === "stage") {
+			if (
+				to.name === "Home"
+			|| to.name === "Logout"
+			|| to.name === "Login"
+			|| to.name === "Profile"
+			|| to.name === "Transactions"
+			) {
+				next();
+			} else {
+				next({ name: "NotFound" });
+			}
+		} else {
+			next();
+		}
 	} else if (!user?.token) {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Login", query: { redirect } });

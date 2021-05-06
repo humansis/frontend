@@ -1,73 +1,19 @@
-<!-- TODO Not used for now -->
 <template>
 	<div>
 		<h1 class="title has-text-centered">Reports</h1>
 
-		<b-tabs v-model="selectedTab">
-			<b-tab-item
-				v-if="userCan.countryReport"
-				label="Country Report"
-				icon="th-large"
-			>
-				<CountryReportList />
-			</b-tab-item>
-			<b-tab-item
-				v-if="userCan.projectReport"
-				label="Project Report"
-				icon="clipboard"
-			>
-				<ProjectReportList :projects="projects" />
-			</b-tab-item>
-			<b-tab-item
-				v-if="userCan.distributionReport"
-				label="Assistance Report"
-				icon="box"
-			>
-				<AssistanceReportList :projects="projects" />
-			</b-tab-item>
-		</b-tabs>
+		<iframe
+			width="100%"
+			height="550"
+			src="https://app.powerbi.com/reportEmbed?reportId=e3763506-6b37-45a9-a8c6-81a94c70f823&appId=73dcd2a9-d860-456d-b648-991c27a79de5&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9"
+			frameborder="0"
+			allowFullScreen="true"
+		/>
 	</div>
 </template>
 
 <script>
-import CountryReportList from "@/components/Reports/CountryReportList";
-import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
-import permissions from "@/mixins/permissions";
-
-const ProjectReportList = () => import("@/components/Reports/ProjectReportList");
-const AssistanceReportList = () => import("@/components/Reports/AssistanceReportList");
-
 export default {
-	name: "ReportsPage",
-
-	components: {
-		CountryReportList,
-		ProjectReportList,
-		AssistanceReportList,
-	},
-
-	mixins: [permissions],
-
-	mounted() {
-		this.fetchProjects();
-	},
-
-	data() {
-		return {
-			selectedTab: 0,
-			projects: [],
-		};
-	},
-
-	methods: {
-		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then((response) => { this.projects = response.data; }).catch((e) => {
-					if (e.message) Notification(`Projects ${e}`, "is-danger");
-				});
-		},
-	},
-
+	name: "Reports",
 };
 </script>
