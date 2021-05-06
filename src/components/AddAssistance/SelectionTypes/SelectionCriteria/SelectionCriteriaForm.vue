@@ -109,8 +109,7 @@
 					min="0"
 					max="1000"
 					expanded
-					controls-alignment="right"
-					controls-position="compact"
+					:controls="false"
 					@blur="validate('value')"
 				/>
 			</b-field>
@@ -138,8 +137,7 @@
 					v-model="formModel.scoreWeight"
 					expanded
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
+					:controls="false"
 				/>
 			</b-field>
 		</section>

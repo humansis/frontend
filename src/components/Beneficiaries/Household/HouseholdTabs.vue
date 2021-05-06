@@ -223,7 +223,7 @@ export default {
 				|| !this.$refs.householdHeadForm?.submit()
 				|| !this.$refs.householdForm.submit()
 			) {
-				Notification(`${this.$t("Household")} ${this.$t("Some required fields are not filled")}`, "is-danger");
+				Notification(`${this.$t("Some required fields are not filled")}`, "is-danger");
 				return;
 			}
 
