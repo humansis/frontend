@@ -152,9 +152,9 @@ export default {
 			camp: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.campName) },
 			campName: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.camp) },
 			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.code === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
-			street: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation?.code !== "camp") },
+			number: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
+			street: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
+			postcode: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
 		},
 	},
 

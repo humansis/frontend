@@ -17,6 +17,9 @@
 				type="is-success"
 			/>
 		</h2>
+		<p v-if="assistanceDescription" class="has-text-centered mb-6">
+			{{ assistanceDescription }}
+		</p>
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
@@ -149,6 +152,10 @@ export default {
 
 		assistanceTarget() {
 			return normalizeText(this.assistance?.target);
+		},
+
+		assistanceDescription() {
+			return this.assistance?.description;
 		},
 
 		provinceName() {

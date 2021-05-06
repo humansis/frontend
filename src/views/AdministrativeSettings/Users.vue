@@ -177,7 +177,7 @@ export default {
 				countries: !disabledCountry ? getArrayOfIdsByParam(countries, "iso3") : [],
 				phonePrefix: phonePrefix?.code,
 				phoneNumber,
-				language: language?.code || null,
+				language: language?.key || null,
 				changePassword: updatePasswordOnNextLogin,
 			};
 			if (this.userModal.isEditing && id) {

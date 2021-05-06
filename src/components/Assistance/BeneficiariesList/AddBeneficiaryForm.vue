@@ -133,18 +133,7 @@ export default {
 	},
 
 	mounted() {
-		switch (this.assistance.target) {
-			case consts.TARGET.COMMUNITY:
-				this.target = "communities";
-				break;
-			case consts.TARGET.INSTITUTION:
-				this.target = "institutions";
-				break;
-			case consts.TARGET.HOUSEHOLD:
-			case consts.TARGET.INDIVIDUAL:
-			default:
-				this.target = "beneficiaries";
-		}
+		this.target = this.assistance.target;
 
 		if (!this.formModel.removingId) this.fetchBeneficiariesByProject();
 		this.formModel.justification = "";

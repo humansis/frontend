@@ -141,8 +141,8 @@ export default {
 					this.mapAssistance(data);
 				})
 				.catch((e) => {
-					if (e.message === "Not Found") this.$router.push({ name: "NotFound" });
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
+					this.$router.push({ name: "NotFound" });
 				});
 		}
 	},
