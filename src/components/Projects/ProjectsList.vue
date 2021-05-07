@@ -28,6 +28,7 @@
 			v-slot="props"
 			centered
 			width="180"
+			field="actions"
 			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">

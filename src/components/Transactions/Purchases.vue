@@ -38,6 +38,7 @@
 					animation="slide"
 				>
 					<PurchasesFilter
+						ref="purchasesFilter"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -53,6 +54,24 @@
 			</template>
 			<template slot="progress">
 				<b-progress :value="table.progress" format="percent" />
+			</template>
+			<template slot="resetSort">
+				<div class="level-right">
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small mr-2"
+						@click="resetFilters"
+					>
+						{{ $t('Reset Filters') }}
+					</b-button>
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small"
+						@click="resetSort"
+					>
+						{{ $t('Reset Table Sort') }}
+					</b-button>
+				</div>
 			</template>
 		</Table>
 	</div>
@@ -89,7 +108,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiary" },
+					{ key: "beneficiary", sortable: true },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
@@ -201,6 +220,10 @@ export default {
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.purchasesFilter.eraseFilters();
 		},
 
 		async exportPurchases(format) {

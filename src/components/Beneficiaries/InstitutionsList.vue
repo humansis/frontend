@@ -22,8 +22,9 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			width="190"
 			centered
+			width="190"
+			field="actions"
 			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">

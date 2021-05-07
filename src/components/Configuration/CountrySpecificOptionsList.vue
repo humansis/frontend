@@ -25,9 +25,10 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			width="150"
-			visible
 			centered
+			visible
+			width="150"
+			field="actions"
 			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">

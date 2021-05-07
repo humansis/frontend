@@ -38,6 +38,7 @@
 					animation="slide"
 				>
 					<DistributionsFilter
+						ref="distributionFilter"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -53,6 +54,24 @@
 			</template>
 			<template slot="progress">
 				<b-progress :value="table.progress" format="percent" />
+			</template>
+			<template slot="resetSort">
+				<div class="level-right">
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small mr-2"
+						@click="resetFilters"
+					>
+						{{ $t('Reset Filters') }}
+					</b-button>
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small"
+						@click="resetSort"
+					>
+						{{ $t('Reset Table Sort') }}
+					</b-button>
+				</div>
 			</template>
 		</Table>
 	</div>
@@ -89,25 +108,23 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiary" },
-					{ key: "localGivenName" },
-					{ key: "localFamilyName" },
-					{ key: "project" },
-					{ key: "assistance", label: "Name" },
-					{ key: "adm1" },
-					{ key: "adm2" },
-					{ key: "adm3" },
-					{ key: "adm4" },
-					{ key: "dateDistribution", label: "Distribution Date", type: "datetime" },
-					{ key: "commodity" },
-					{ key: "carrierNumber" },
-					{ key: "amount" },
-					{ key: "unit" },
+					{ key: "beneficiary", sortable: true },
+					{ key: "localGivenName", sortable: true },
+					{ key: "localFamilyName", sortable: true },
+					{ key: "project", sortable: true },
+					{ key: "assistance", label: "Name", sortable: true },
+					{ key: "adm1", sortable: true },
+					{ key: "adm2", sortable: true },
+					{ key: "adm3", sortable: true },
+					{ key: "adm4", sortable: true },
+					{ key: "dateDistribution", label: "Distribution Date", type: "datetime", sortable: true },
+					{ key: "commodity", sortable: true },
+					{ key: "carrierNumber", sortable: true },
+					{ key: "amount", sortable: true },
+					{ key: "unit", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
 			},
@@ -191,6 +208,10 @@ export default {
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.distributionFilter.eraseFilters();
 		},
 
 		async exportDistributions(format) {
