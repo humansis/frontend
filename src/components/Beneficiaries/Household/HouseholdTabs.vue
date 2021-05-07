@@ -1,22 +1,25 @@
 <template>
 	<card-component>
 		<b-progress :value="100" />
-		<b-steps
+		<CustomSteps
 			v-model="activeStep"
+			ref="customSteps"
 			animated
 			rounded
 			has-navigation
+			@stepsChanged="stepsChanged"
 		>
-			<b-step-item step="1" :label="$t('Household')">
+			<b-step-item step="1" :label="$t('Household')" :clickable="!formLoading">
 				<HouseholdForm
 					v-if="steps[1]"
 					ref="householdForm"
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[1] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="2" :label="$t('Household Head')">
+			<b-step-item step="2" :label="$t('Household Head')" :clickable="!formLoading">
 				<HouseholdHeadForm
 					v-if="steps[2]"
 					ref="householdHeadForm"
@@ -24,19 +27,21 @@
 					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[2] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" :label="$t('Members')">
+			<b-step-item step="3" :label="$t('Members')" :clickable="!formLoading">
 				<Members
 					v-if="steps[3]"
 					ref="householdMembers"
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[3] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="4" :label="$t('Summary')">
+			<b-step-item step="4" :label="$t('Summary')" :clickable="!formLoading">
 				<Summary
 					v-if="steps[4]"
 					ref="householdSummary"
@@ -45,6 +50,7 @@
 					:address="address"
 					:location="location"
 					:is-editing="isEditing"
+					@loaded="loading[4] = false"
 				/>
 			</b-step-item>
 			<template #navigation="{previous, next}">
@@ -73,7 +79,7 @@
 					</b-button>
 				</div>
 			</template>
-		</b-steps>
+		</CustomSteps>
 	</card-component>
 </template>
 
@@ -83,6 +89,7 @@ import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHea
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
+import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
@@ -102,17 +109,17 @@ export default {
 		HouseholdForm,
 		Members,
 		Summary,
+		CustomSteps,
 	},
 
 	mixins: [permissions],
 
 	data() {
 		return {
-			loadingComponent: null,
 			activeStep: 0,
 			detailOfHousehold: null,
 			household: null,
-			householdHead: [],
+			householdHead: null,
 			householdMembers: [],
 			summaryMembers: [],
 			selectedProjects: [],
@@ -125,11 +132,21 @@ export default {
 				3: false,
 				4: false,
 			},
+			loading: {
+				1: true,
+				2: false,
+				3: false,
+				4: false,
+			},
 		};
 	},
 
 	computed: {
 		...mapState(["country"]),
+
+		formLoading() {
+			return !Object.values(this.loading).every((value) => !value);
+		},
 	},
 
 	async created() {
@@ -140,6 +157,45 @@ export default {
 	},
 
 	methods: {
+		stepsChanged(active, next) {
+			if (this.$refs.householdForm?.$parent === active) {
+				if (this.$refs.householdForm.submit()) {
+					this.household = this.$refs.householdForm.formModel;
+					this.loading[next.step] = !this.steps[next.step];
+					this.steps[next.step] = true;
+					this.$refs.customSteps.changeStep(next);
+				}
+			}
+			if (this.$refs.householdHeadForm?.$parent === active) {
+				if (this.$refs.householdHeadForm.submit()) {
+					this.householdHead = this.$refs.householdHeadForm.formModel;
+					this.loading[next.step] = !this.steps[next.step];
+					this.steps[next.step] = true;
+					this.$refs.customSteps.changeStep(next);
+				}
+			}
+			if (this.$refs.householdMembers?.$parent === active) {
+				if (this.$refs.householdMembers.submit()) {
+					this.householdMembers = this.$refs.householdMembers.members;
+					this.prepareSummaryMembers(
+						[this.householdHead, ...this.$refs.householdMembers.members],
+					);
+					this.address = this.prepareAddressForSummary();
+					this.location = this.prepareLocationForSummary();
+					this.loading[next.step] = !this.steps[next.step];
+					this.steps[next.step] = true;
+					this.$refs.customSteps.changeStep(next);
+				}
+			}
+			if (this.$refs.householdSummary?.$parent === active) {
+				if (this.$refs.householdSummary.submit()) {
+					this.loading[next.step] = !this.steps[next.step];
+					this.steps[next.step] = true;
+					this.$refs.customSteps.changeStep(next);
+				}
+			}
+		},
+
 		close() {
 			this.$router.push({ name: "Households" });
 		},
@@ -178,7 +234,13 @@ export default {
 		},
 
 		save() {
-			if (!this.$refs.householdSummary.submit()) {
+			if (
+				!this.$refs.householdSummary.submit()
+				|| !this.$refs.householdMembers?.submit()
+				|| !this.$refs.householdHeadForm?.submit()
+				|| !this.$refs.householdForm.submit()
+			) {
+				Notification(`${this.$t("Some required fields are not filled")}`, "is-danger");
 				return;
 			}
 
@@ -288,16 +350,18 @@ export default {
 			const membersData = [];
 			if (members.length) {
 				members.forEach((member) => {
-					const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
-					membersData.push({
-						firstName: member.nameLocal.firstName,
-						familyName: member.nameLocal.familyName,
-						parentsName: member.nameLocal.parentsName,
-						gender: member.personalInformation.gender,
-						dateBirth: member.personalInformation.dateOfBirth,
-						phone,
-						nationalId: member.id.idNumber,
-					});
+					if (member) {
+						const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
+						membersData.push({
+							firstName: member.nameLocal.firstName,
+							familyName: member.nameLocal.familyName,
+							parentsName: member.nameLocal.parentsName,
+							gender: member.personalInformation.gender,
+							dateBirth: member.personalInformation.dateOfBirth,
+							phone,
+							nationalId: member.id.idNumber,
+						});
+					}
 				});
 			}
 

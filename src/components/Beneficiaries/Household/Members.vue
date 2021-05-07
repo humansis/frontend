@@ -81,6 +81,7 @@ export default {
 		if (this.isEditing) {
 			await this.mapDetailOfHouseholdToFormModel();
 		}
+		this.$emit("loaded");
 	},
 
 	data() {
