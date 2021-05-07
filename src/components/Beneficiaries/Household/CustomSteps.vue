@@ -78,182 +78,18 @@
 <script>
 import Icon from "buefy/src/components/icon/Icon";
 
-import TabbedMixin from "buefy/src/utils/TabbedMixin.js";
-import config from "buefy/src/utils/config";
+import BSteps from "buefy/src/components/steps/Steps";
 
 export default {
-	name: "BSteps",
+	name: "CustomSteps",
+
 	components: {
 		[Icon.name]: Icon,
 	},
-	mixins: [TabbedMixin("step")],
-	props: {
-		type: [String, Object],
-		iconPack: String,
-		iconPrev: {
-			type: String,
-			default: () => config.defaultIconPrev,
-		},
-		iconNext: {
-			type: String,
-			default: () => config.defaultIconNext,
-		},
-		hasNavigation: {
-			type: Boolean,
-			default: true,
-		},
-		labelPosition: {
-			type: String,
-			validator(value) {
-				return [
-					"bottom",
-					"right",
-					"left",
-				].indexOf(value) > -1;
-			},
-			default: "bottom",
-		},
-		rounded: {
-			type: Boolean,
-			default: true,
-		},
-		mobileMode: {
-			type: String,
-			validator(value) {
-				return [
-					"minimalist",
-					"compact",
-				].indexOf(value) > -1;
-			},
-			default: "minimalist",
-		},
-		ariaNextLabel: String,
-		ariaPreviousLabel: String,
-	},
-	computed: {
-		// Override mixin implementation to always have a value
-		activeItem() {
-			return this.childItems.filter((i) => i.value === this.activeId)[0] || this.items[0];
-		},
-		wrapperClasses() {
-			return [
-				this.size,
-				{
-					"is-vertical": this.vertical,
-					[this.position]: this.position && this.vertical,
-				},
-			];
-		},
-		mainClasses() {
-			return [
-				this.type,
-				{
-					"has-label-right": this.labelPosition === "right",
-					"has-label-left": this.labelPosition === "left",
-					"is-animated": this.animated,
-					"is-rounded": this.rounded,
-					[`mobile-${this.mobileMode}`]: this.mobileMode !== null,
-				},
-			];
-		},
 
-		/**
-		 * Check if previous button is available.
-		 */
-		hasPrev() {
-			return this.prevItemIdx !== null;
-		},
+	mixins: [BSteps],
 
-		/**
-		 * Retrieves the next visible item index
-		 */
-		nextItemIdx() {
-			const idx = this.activeItem ? this.items.indexOf(this.activeItem) : 0;
-			return this.getNextItemIdx(idx);
-		},
-
-		/**
-		 * Retrieves the next visible item
-		 */
-		nextItem() {
-			let nextItem = null;
-			if (this.nextItemIdx !== null) {
-				nextItem = this.items[this.nextItemIdx];
-			}
-			return nextItem;
-		},
-
-		/**
-		 * Retrieves the next visible item index
-		 */
-		prevItemIdx() {
-			if (!this.activeItem) { return null; }
-			const idx = this.items.indexOf(this.activeItem);
-			return this.getPrevItemIdx(idx);
-		},
-
-		/**
-		 * Retrieves the previous visible item
-		 */
-		prevItem() {
-			if (!this.activeItem) { return null; }
-
-			let prevItem = null;
-			if (this.prevItemIdx !== null) {
-				prevItem = this.items[this.prevItemIdx];
-			}
-			return prevItem;
-		},
-
-		/**
-		 * Check if next button is available.
-		 */
-		hasNext() {
-			return this.nextItemIdx !== null;
-		},
-
-		navigationProps() {
-			return {
-				previous: {
-					disabled: !this.hasPrev,
-					action: this.prev,
-				},
-				next: {
-					disabled: !this.hasNext,
-					action: this.next,
-				},
-			};
-		},
-	},
 	methods: {
-		/**
-		 * Return if the step should be clickable or not.
-		 */
-		isItemClickable(stepItem) {
-			if (stepItem.clickable === undefined) {
-				return stepItem.index < this.activeItem.index;
-			}
-			return stepItem.clickable;
-		},
-
-		/**
-		 * Previous button click listener.
-		 */
-		prev() {
-			if (this.hasPrev) {
-				this.activeId = this.prevItem.value;
-			}
-		},
-
-		/**
-		 * Previous button click listener.
-		 */
-		next() {
-			if (this.hasNext) {
-				this.activeId = this.nextItem.value;
-			}
-		},
-
 		childClick(child) {
 			this.$emit("stepsChanged", this.activeItem, child);
 		},
