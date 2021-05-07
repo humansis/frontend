@@ -259,24 +259,11 @@ export default {
 				addressStreet,
 				addressNumber,
 				addressPostcode,
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				locationId,
 				user,
 				vendorNo,
 				contractNo,
 			} = vendorForm;
-			let locationId = null;
-			if (adm4Id) {
-				locationId = adm4Id.locationId;
-			} else if (adm3Id) {
-				locationId = adm3Id.locationId;
-			} else if (adm2Id) {
-				locationId = adm2Id.locationId;
-			} else if (adm1Id) {
-				locationId = adm1Id.locationId;
-			}
 			const vendorBody = {
 				name,
 				addressStreet,

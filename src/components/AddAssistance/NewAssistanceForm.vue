@@ -162,6 +162,7 @@ export default {
 				adm2Id: null,
 				adm3Id: null,
 				adm4Id: null,
+				locationId: null,
 				dateOfAssistance: new Date(),
 				sector: null,
 				subsector: null,
@@ -242,7 +243,7 @@ export default {
 		},
 
 		getLocationId() {
-			return this.$refs.locationForm.locationId;
+			return this.formModel.locationId;
 		},
 
 		onSectorSelect({ code }) {
