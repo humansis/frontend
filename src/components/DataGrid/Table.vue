@@ -180,6 +180,7 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+
 		preparedData() {
 			if (this.backendSearching || this.searchedData === null) {
 				return this.data;

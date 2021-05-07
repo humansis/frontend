@@ -112,7 +112,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	async mounted() {
+	async created() {
 		await this.fetchRoles();
 		await this.fetchData();
 	},
