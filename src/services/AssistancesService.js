@@ -14,7 +14,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfProjectAssistancesByType(projectId, type) {
+	async getListOfProjectAssistancesByType(type, projectId = null) {
 		const projectText = projectId ? `&filter[projects][]=${projectId}` : "";
 		const typeText = projectId ? `&filter[type]=${type}` : "";
 

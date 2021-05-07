@@ -131,6 +131,7 @@ export default {
 		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
 		this.fetchVendors();
+		this.fetchAssistance();
 	},
 
 	methods: {
@@ -175,9 +176,7 @@ export default {
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
 					preparedFilters.distribution = null;
-					if (this.selectedFiltersOptions.project) {
-						this.fetchAssistance();
-					}
+					this.fetchAssistance();
 					break;
 				default: break;
 			}
