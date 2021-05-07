@@ -4,9 +4,9 @@
 			<ul class="step-items">
 				<li
 					v-for="childItem in items"
-					:key="childItem.value"
 					v-show="childItem.visible"
 					class="step-item"
+					:key="childItem.value"
 					:class="[childItem.type || type, childItem.headerClass, {
 						'is-active': childItem.isActive,
 						'is-previous': activeItem.index > childItem.index
@@ -45,29 +45,29 @@
 				<a
 					role="button"
 					class="pagination-previous"
+					:aria-label="ariaPreviousLabel"
 					:disabled="navigationProps.previous.disabled"
 					@click.prevent="navigationProps.previous.action"
-					:aria-label="ariaPreviousLabel"
 				>
 					<b-icon
-						:icon="iconPrev"
-						:pack="iconPack"
 						both
 						aria-hidden="true"
+						:icon="iconPrev"
+						:pack="iconPack"
 					/>
 				</a>
 				<a
 					role="button"
 					class="pagination-next"
+					:aria-label="ariaNextLabel"
 					:disabled="navigationProps.next.disabled"
 					@click.prevent="navigationProps.next.action"
-					:aria-label="ariaNextLabel"
 				>
 					<b-icon
-						:icon="iconNext"
-						:pack="iconPack"
 						both
 						aria-hidden="true"
+						:icon="iconNext"
+						:pack="iconPack"
 					/>
 				</a>
 			</nav>
