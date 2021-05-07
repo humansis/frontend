@@ -123,6 +123,7 @@ export default {
 		});
 		await this.fetchProjects();
 		this.loadingComponent.close();
+		this.$emit("loaded");
 	},
 
 	computed: {

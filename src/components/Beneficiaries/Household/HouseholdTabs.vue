@@ -9,16 +9,17 @@
 			has-navigation
 			@stepsChanged="stepsChanged"
 		>
-			<b-step-item step="1" :label="$t('Household')" clickable>
+			<b-step-item step="1" :label="$t('Household')" :clickable="!formLoading">
 				<HouseholdForm
 					v-if="steps[1]"
 					ref="householdForm"
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[1] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="2" :label="$t('Household Head')" clickable>
+			<b-step-item step="2" :label="$t('Household Head')" :clickable="!formLoading">
 				<HouseholdHeadForm
 					v-if="steps[2]"
 					ref="householdHeadForm"
@@ -26,19 +27,21 @@
 					show-type-of-beneficiary
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[2] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" :label="$t('Members')" clickable>
+			<b-step-item step="3" :label="$t('Members')" :clickable="!formLoading">
 				<Members
 					v-if="steps[3]"
 					ref="householdMembers"
 					:is-editing="isEditing"
 					:detailOfHousehold="detailOfHousehold"
+					@loaded="loading[3] = false"
 				/>
 			</b-step-item>
 
-			<b-step-item step="4" :label="$t('Summary')" clickable>
+			<b-step-item step="4" :label="$t('Summary')" :clickable="!formLoading">
 				<Summary
 					v-if="steps[4]"
 					ref="householdSummary"
@@ -47,6 +50,7 @@
 					:address="address"
 					:location="location"
 					:is-editing="isEditing"
+					@loaded="loading[4] = false"
 				/>
 			</b-step-item>
 			<template #navigation="{previous, next}">
@@ -112,7 +116,6 @@ export default {
 
 	data() {
 		return {
-			loadingComponent: null,
 			activeStep: 0,
 			detailOfHousehold: null,
 			household: null,
@@ -129,11 +132,21 @@ export default {
 				3: false,
 				4: false,
 			},
+			loading: {
+				1: true,
+				2: false,
+				3: false,
+				4: false,
+			},
 		};
 	},
 
 	computed: {
 		...mapState(["country"]),
+
+		formLoading() {
+			return !Object.values(this.loading).every((value) => !value);
+		},
 	},
 
 	async created() {
@@ -148,6 +161,7 @@ export default {
 			if (this.$refs.householdForm?.$parent === active) {
 				if (this.$refs.householdForm.submit()) {
 					this.household = this.$refs.householdForm.formModel;
+					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
 				}
@@ -155,6 +169,7 @@ export default {
 			if (this.$refs.householdHeadForm?.$parent === active) {
 				if (this.$refs.householdHeadForm.submit()) {
 					this.householdHead = this.$refs.householdHeadForm.formModel;
+					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
 				}
@@ -167,12 +182,14 @@ export default {
 					);
 					this.address = this.prepareAddressForSummary();
 					this.location = this.prepareLocationForSummary();
+					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
 				}
 			}
 			if (this.$refs.householdSummary?.$parent === active) {
 				if (this.$refs.householdSummary.submit()) {
+					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
 				}

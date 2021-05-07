@@ -362,10 +362,11 @@ export default {
 
 			this.loadingComponent.close();
 
-			this.mapCurrentLocation().then((response) => {
+			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = response;
 			});
 		}
+		this.$emit("loaded");
 	},
 
 	methods: {
