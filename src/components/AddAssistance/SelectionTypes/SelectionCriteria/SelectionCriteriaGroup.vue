@@ -90,7 +90,7 @@ export default {
 				{ criteria, criteriaTarget, value, scoreWeight, condition },
 			) => ({
 				criteriaTarget: criteriaTarget?.value,
-				criteria: criteria?.code,
+				criteria: criteria?.value,
 				value: this.prepareCriteriaValue(value),
 				scoreWeight,
 				condition: condition?.code,
