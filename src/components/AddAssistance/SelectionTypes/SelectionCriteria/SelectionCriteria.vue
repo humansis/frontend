@@ -46,6 +46,7 @@
 				:key="key"
 				:group-id="key"
 				:target-type="targetType"
+				:loading="calculationLoading"
 				@addCriteria="addCriteria"
 				@removeGroup="removeCriteriaGroup(key)"
 				@updatedCriteria="onUpdatedCriteria"
@@ -76,7 +77,7 @@
 					/>
 				</b-field>
 			</div>
-			<div class="level-right">
+			<div class="level-right" ref="groupsCalculation">
 				<b-field>
 					<div class="selection-details">
 						<p class="subtitle is-4 mb-0 mr-3 ml-3">
@@ -143,6 +144,7 @@ export default {
 			countOf: 0,
 			totalCount: 0,
 			minimumSelectionScore: 0,
+			calculationLoading: false,
 		};
 	},
 
@@ -268,6 +270,8 @@ export default {
 		},
 
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
+			this.calculationLoading = true;
+
 			await AssistancesService.calculationOfBeneficiaries(assistanceBody)
 				.then(({ data, status }) => {
 					if (status === 200) {
@@ -290,6 +294,8 @@ export default {
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 				});
+
+			this.calculationLoading = false;
 		},
 
 		removeCriteriaGroup(groupKey) {

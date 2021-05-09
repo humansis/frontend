@@ -47,7 +47,12 @@
 			<a class="card-footer-item" @click="addCriteria">
 				{{ $t('Add') }}
 			</a>
-			<a class="card-footer-item" @click="showDetail">
+			<a class="card-footer-item loading-ref" @click="showDetail">
+				<b-loading
+					v-model="loading"
+					:is-full-page="false"
+					:can-cancel="false"
+				/>
 				{{ count }} {{ targetType }}
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
@@ -78,6 +83,10 @@ export default {
 		groupId: Number,
 		targetType: String,
 		count: Number,
+		loading: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	computed: {
