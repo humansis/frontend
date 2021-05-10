@@ -128,7 +128,7 @@ export default {
 		$route: "setTooltip",
 	},
 
-	async mounted() {
+	async created() {
 		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
@@ -171,7 +171,7 @@ export default {
 
 		async handleChangeCountry(country) {
 			await this.storeCountry(country);
-			this.storeAdmNames(null);
+			await this.fetchAdmNames();
 
 			if (this.$route.name !== "Home") {
 				await this.$router.push({ name: "Home" });
