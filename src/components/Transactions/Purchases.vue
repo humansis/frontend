@@ -2,6 +2,7 @@
 	<div>
 		<Table
 			v-show="show"
+			ref="table"
 			has-reset-sort
 			has-search
 			:data="table.data"
@@ -67,7 +68,7 @@
 					<b-button
 						icon-left="eraser"
 						class="reset-sort-button is-small"
-						@click="resetSort"
+						@click="resetTableSort"
 					>
 						{{ $t('Reset Table Sort') }}
 					</b-button>
@@ -223,6 +224,10 @@ export default {
 
 		resetFilters() {
 			this.$refs.purchasesFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
 		async exportPurchases(format) {

@@ -2,6 +2,7 @@
 	<div>
 		<Table
 			v-show="show"
+			ref="table"
 			has-reset-sort
 			has-search
 			:data="table.data"
@@ -67,7 +68,7 @@
 					<b-button
 						icon-left="eraser"
 						class="reset-sort-button is-small"
-						@click="resetSort"
+						@click="resetTableSort"
 					>
 						{{ $t('Reset Table Sort') }}
 					</b-button>
@@ -125,6 +126,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
+				sortDirection: "",
+				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
 			},
@@ -211,6 +214,10 @@ export default {
 
 		resetFilters() {
 			this.$refs.distributionFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
 		async exportDistributions(format) {
