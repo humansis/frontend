@@ -108,7 +108,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiary", sortable: true },
+					{ key: "beneficiaryId", label: "Beneficiary", sortable: true },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
@@ -184,7 +184,6 @@ export default {
 
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].beneficiary = item.beneficiaryId;
 				projectIds.push(item.projectId);
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
