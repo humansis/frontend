@@ -82,7 +82,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 

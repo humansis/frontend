@@ -22,9 +22,10 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			:label="$t('Actions')"
-			width="150"
 			centered
+			width="150"
+			field="actions"
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
@@ -118,7 +119,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 
