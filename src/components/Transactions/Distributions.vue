@@ -218,17 +218,22 @@ export default {
 
 		async exportDistributions(format) {
 			this.exportLoading = true;
-			await TransactionService.exportDistributions(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `distributions.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
-				});
+			await TransactionService.exportDistributions(
+				format,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.searchPhrase,
+				this.filters,
+			).then(({ data }) => {
+				const blob = new Blob([data], { type: data.type });
+				const link = document.createElement("a");
+				link.href = window.URL.createObjectURL(blob);
+				link.download = `distributions.${format}`;
+				link.click();
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
+			});
 			this.exportLoading = false;
 		},
 

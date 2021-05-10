@@ -29,17 +29,27 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportDistributions(format) {
+	async exportDistributions(format, page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `distributed-items/exports?${formatText}` });
+		const { data } = await download({ uri: `distributed-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 		return { data };
 	},
 
-	async exportPurchases(format) {
+	async exportPurchases(format, page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `purchased-items/exports?${formatText}` });
+		const { data } = await download({ uri: `purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 		return { data };
 	},
 
