@@ -180,6 +180,7 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+
 		preparedData() {
 			if (this.backendSearching || this.searchedData === null) {
 				return this.data;
@@ -192,7 +193,7 @@ export default {
 		...mapActions(["storePerPage"]),
 
 		onClick(row, column) {
-			if (column.$options.propsData.label !== "Actions") {
+			if (column.field !== "actions") {
 				this.$emit("clicked", row);
 			}
 		},

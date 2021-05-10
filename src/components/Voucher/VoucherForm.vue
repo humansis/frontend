@@ -40,10 +40,8 @@
 					expanded
 					min="0"
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
 					:disabled="formDisabled || isEditing"
-					:controls="!formDisabled || isEditing"
+					:controls="false"
 					@input="validate('quantityOfBooklets')"
 				/>
 			</b-field>
@@ -58,10 +56,8 @@
 					expanded
 					min="0"
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
 					:disabled="formDisabled"
-					:controls="!formDisabled"
+					:controls="false"
 					@input="validate('quantityOfVouchers')"
 				/>
 			</b-field>

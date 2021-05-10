@@ -5,17 +5,18 @@
 				<h4 class="title is-4">{{ $t('Current Location') }}</h4>
 				<LocationForm
 					ref="currentLocationForm"
+					is-editing
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
-					is-editing
+					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
 			</div>
 			<div class="column is-half">
 				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
-					:form-model="formModel.currentLocation"
 					is-editing
+					:form-model="formModel.currentLocation"
 				/>
 			</div>
 		</div>
@@ -52,8 +53,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -70,8 +70,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -88,8 +87,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 						:placeholder="countryCurrency"
 					/>
 				</b-field>
@@ -125,8 +123,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 
@@ -142,8 +139,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 			</div>
@@ -215,8 +211,7 @@
 						expanded
 						min="0"
 						type="is-dark"
-						controls-alignment="right"
-						controls-position="compact"
+						:controls="false"
 					/>
 				</b-field>
 			</div>
@@ -367,10 +362,11 @@ export default {
 
 			this.loadingComponent.close();
 
-			this.mapCurrentLocation().then((response) => {
+			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = response;
 			});
 		}
+		this.$emit("loaded");
 	},
 
 	methods: {

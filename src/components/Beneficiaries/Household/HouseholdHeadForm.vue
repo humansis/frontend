@@ -434,6 +434,7 @@ export default {
 				}
 				this.loadingComponent.close();
 			}
+			this.$emit("loaded");
 		},
 
 		async mapDetailOfHouseholdToFormModel(beneficiary) {

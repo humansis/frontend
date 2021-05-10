@@ -23,8 +23,7 @@
 					v-model="formModel.householdsTargeted"
 					expanded
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
+					:controls="false"
 					:min="0"
 					@blur="validate('householdsTargeted')"
 				/>
@@ -39,8 +38,7 @@
 					v-model="formModel.individualsTargeted"
 					expanded
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
+					:controls="false"
 					:min="0"
 					@blur="validate('individualsTargeted')"
 				/>

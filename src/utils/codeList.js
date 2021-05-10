@@ -9,7 +9,7 @@ export const getArrayOfIdsByParam = (items, param) => {
 	return result;
 };
 
-export const getArrayOfCodeListByKey = (codes, array, key) => {
+export const getArrayOfCodeListByKey = (codes, array, key, returnAsArray = false) => {
 	const result = [];
 	codes.forEach((code) => {
 		const field = array.find((item) => code === item[key]);
@@ -17,7 +17,7 @@ export const getArrayOfCodeListByKey = (codes, array, key) => {
 			result.push(field);
 		}
 	});
-	if (result.length === 1) {
+	if (result.length === 1 && !returnAsArray) {
 		return result[0];
 	}
 	return result;

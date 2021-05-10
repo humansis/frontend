@@ -28,6 +28,7 @@
 			v-slot="props"
 			centered
 			width="180"
+			field="actions"
 			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
@@ -124,7 +125,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 

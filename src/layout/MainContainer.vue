@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="main-container">
 		<b-loading
 			is-full-page
 			:active="this.isAppLoading"
@@ -53,3 +53,9 @@ export default {
 	},
 };
 </script>
+
+<style>
+html, body, .main-container, .section {
+	height: 100%;
+}
+</style>

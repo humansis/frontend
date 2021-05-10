@@ -15,7 +15,7 @@
 				:disabled="formDisabled"
 				:options="options.provinces"
 				:class="validateMultiselect('adm1Id')"
-				@select="onProvinceSelect"
+				@input="onProvinceSelect"
 			/>
 		</b-field>
 
@@ -35,7 +35,7 @@
 				:loading="districtsLoading"
 				:disabled="formDisabled"
 				:options="options.districts"
-				@select="onDistrictSelect"
+				@input="onDistrictSelect"
 			/>
 		</b-field>
 
@@ -55,7 +55,7 @@
 				:loading="communesLoading"
 				:disabled="formDisabled"
 				:options="options.communes"
-				@select="onCommuneSelect"
+				@input="onCommuneSelect"
 			/>
 		</b-field>
 
@@ -76,7 +76,7 @@
 				:loading="villagesLoading"
 				:disabled="formDisabled"
 				:options="options.villages"
-				@select="onVillageSelect"
+				@input="onVillageSelect"
 			/>
 		</b-field>
 	</section>
@@ -152,31 +152,54 @@ export default {
 			return this.$v.$invalid;
 		},
 
-		onProvinceSelect({ id, locationId }) {
-			this.locationId = locationId;
-			this.validate("adm1Id");
-			this.eraseData("adm1");
-			this.fetchDistricts(id);
-		},
-
-		onDistrictSelect({ id, locationId }) {
-			this.locationId = locationId;
-			this.validate("adm2Id");
-			this.eraseData("adm2");
-			this.fetchCommunes(id);
-		},
-
-		onCommuneSelect({ id, locationId }) {
-			this.locationId = locationId;
-			this.validate("adm3Id");
-			this.eraseData("adm3");
-			this.fetchVillages(id);
-		},
-
-		onVillageSelect({ locationId }) {
-			this.locationId = locationId;
-			this.validate("adm4Id");
+		onProvinceSelect(location) {
+			if (!location) {
+				this.formModel.locationId = null;
+			} else {
+				this.formModel.locationId = location.locationId;
+				this.validate("adm1Id");
+				this.fetchDistricts(location.id);
+			}
 			this.componentKey += 1;
+			this.eraseData("adm1");
+			this.$emit("locationChanged", "adm1");
+		},
+
+		onDistrictSelect(location) {
+			if (!location) {
+				this.formModel.locationId = this.formModel.adm1Id.locationId;
+			} else {
+				this.formModel.locationId = location.locationId;
+				this.validate("adm2Id");
+				this.fetchCommunes(location.id);
+			}
+			this.componentKey += 1;
+			this.eraseData("adm2");
+			this.$emit("locationChanged", "adm2");
+		},
+
+		onCommuneSelect(location) {
+			if (!location) {
+				this.formModel.locationId = this.formModel.adm2Id.locationId;
+			} else {
+				this.formModel.locationId = location.locationId;
+				this.validate("adm3Id");
+				this.fetchVillages(location.id);
+			}
+			this.componentKey += 1;
+			this.eraseData("adm3");
+			this.$emit("locationChanged", "adm3");
+		},
+
+		onVillageSelect(location) {
+			if (!location) {
+				this.formModel.locationId = this.formModel.adm3Id.locationId;
+			} else {
+				this.formModel.locationId = location.locationId;
+				this.validate("adm4Id");
+			}
+			this.componentKey += 1;
+			this.$emit("locationChanged", "adm4");
 		},
 
 		async fetchProvinces() {
@@ -224,22 +247,22 @@ export default {
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
-				this.locationId = this.formModel.adm1Id.locationId;
+				this.formModel.locationId = this.formModel.adm1Id.locationId;
 				await this.fetchDistricts(adm1Id);
 			}
 			if (adm2Id && typeof adm2Id !== "object") {
 				this.formModel.adm2Id = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
-				this.locationId = this.formModel.adm2Id.locationId;
+				this.formModel.locationId = this.formModel.adm2Id.locationId;
 				await this.fetchCommunes(adm2Id);
 			}
 			if (adm3Id && typeof adm3Id !== "object") {
 				this.formModel.adm3Id = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
-				this.locationId = this.formModel.adm3Id.locationId;
+				this.formModel.locationId = this.formModel.adm3Id.locationId;
 				await this.fetchVillages(adm3Id);
 			}
 			if (adm4Id && typeof adm4Id !== "object") {
 				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
-				this.locationId = this.formModel.adm4Id.locationId;
+				this.formModel.locationId = this.formModel.adm4Id.locationId;
 			}
 			this.mapping = false;
 			this.$emit("mapped");

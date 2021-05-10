@@ -117,12 +117,13 @@ export default {
 		};
 	},
 
-	async mounted() {
+	async created() {
 		this.loadingComponent = this.$buefy.loading.open({
 			container: this.$refs.summary,
 		});
 		await this.fetchProjects();
 		this.loadingComponent.close();
+		this.$emit("loaded");
 	},
 
 	computed: {
