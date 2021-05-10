@@ -24,8 +24,9 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			width="150"
 			centered
+			width="150"
+			field="actions"
 			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
@@ -126,7 +127,7 @@ export default {
 		},
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 

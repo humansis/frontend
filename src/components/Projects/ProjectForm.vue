@@ -158,12 +158,10 @@
 				<b-numberinput
 					v-model="formModel.totalTarget"
 					type="is-dark"
-					controls-alignment="right"
-					controls-position="compact"
 					expanded
 					min="0"
 					:disabled="formDisabled"
-					:controls="!formDisabled"
+					:controls="false"
 					@input="validate('totalTarget')"
 				/>
 			</b-field>
@@ -285,8 +283,7 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
-
-			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code");
+			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true);
 			this.sectorsLoading = false;
 		},
 

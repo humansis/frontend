@@ -36,15 +36,23 @@ export default {
 		return {
 			selectedTab: 0,
 			tabs: {
-				0: true,
+				0: false,
 				1: false,
 				2: false,
 			},
 		};
 	},
 
+	created() {
+		this.selectedTab = this.$route.query?.tab === "purchases" ? 1 : 0;
+		this.tabs[this.selectedTab] = true;
+	},
+
 	methods: {
 		nextTab(data) {
+			const tabName = data === 0 ? "distributions" : "purchases";
+			this.$router.replace({ name: "Transactions", query: { tab: tabName } });
+
 			this.tabs[data] = true;
 		},
 	},

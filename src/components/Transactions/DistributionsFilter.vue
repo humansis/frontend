@@ -1,6 +1,7 @@
 <template>
 	<AdvancedFilter
 		multiline
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -118,6 +119,7 @@ export default {
 		this.fetchModalityTypes();
 		this.fetchBeneficiaryTypes();
 		this.fetchProvinces();
+		this.fetchAssistance();
 	},
 
 	methods: {
@@ -162,9 +164,7 @@ export default {
 				case "project":
 					this.selectedFiltersOptions.distribution = [];
 					preparedFilters.distribution = null;
-					if (this.selectedFiltersOptions.project) {
-						this.fetchAssistance();
-					}
+					this.fetchAssistance();
 					break;
 				default: break;
 			}
@@ -191,6 +191,24 @@ export default {
 				modalityTypes: preparedFilters.commodity || [],
 				assistances: preparedFilters.distribution || [],
 				locations: location ? [location] : [],
+			});
+		},
+
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				beneficiaryType: [],
+				project: [],
+				distribution: [],
+				commodity: [],
+				adm1: [],
+				adm2: [],
+				adm3: [],
+				adm4: [],
+				dateFrom: null,
+				dateTo: null,
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
 			});
 		},
 	},
