@@ -140,10 +140,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.fetchData();
 	},
