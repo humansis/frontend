@@ -41,6 +41,7 @@
 				</b-table-column>
 			</template>
 			<b-table-column
+				field="actions"
 				:label="$t('Actions')"
 				v-slot="props"
 			>

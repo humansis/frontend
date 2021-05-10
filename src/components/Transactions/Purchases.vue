@@ -38,6 +38,7 @@
 					animation="slide"
 				>
 					<PurchasesFilter
+						ref="purchasesFilter"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -53,6 +54,24 @@
 			</template>
 			<template slot="progress">
 				<b-progress :value="table.progress" format="percent" />
+			</template>
+			<template slot="resetSort">
+				<div class="level-right">
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small mr-2"
+						@click="resetFilters"
+					>
+						{{ $t('Reset Filters') }}
+					</b-button>
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small"
+						@click="resetSort"
+					>
+						{{ $t('Reset Table Sort') }}
+					</b-button>
+				</div>
 			</template>
 		</Table>
 	</div>
@@ -89,7 +108,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiary" },
+					{ key: "beneficiaryId", label: "Beneficiary" },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
@@ -98,11 +117,11 @@ export default {
 					{ key: "adm2" },
 					{ key: "adm3" },
 					{ key: "adm4" },
-					{ key: "datePurchase", label: "Purchased Date", type: "datetime" },
+					{ key: "datePurchase", label: "Purchased Date", type: "datetime", sortable: true },
 					{ key: "commodity", label: "CommodityType" },
 					{ key: "carrierNumber" },
 					{ key: "product", label: "Purchased Item" },
-					{ key: "value", label: "Total" },
+					{ key: "value", label: "Total", sortable: true },
 					{ key: "currency" },
 					{ key: "vendor" },
 					{ key: "vendorNo" },
@@ -124,7 +143,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	mounted() {
+	created() {
 		this.fetchData();
 	},
 
@@ -173,7 +192,6 @@ export default {
 
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].beneficiary = item.beneficiaryId;
 				projectIds.push(item.projectId);
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
@@ -201,6 +219,10 @@ export default {
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.purchasesFilter.eraseFilters();
 		},
 
 		async exportPurchases(format) {
