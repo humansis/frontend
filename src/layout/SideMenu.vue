@@ -189,7 +189,7 @@
 							icon="exchange-alt"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Transactions' }"
+							:to="{ name: 'Transactions', query: { tab: 'distributions' } }"
 						>
 							<template #label>
 								<b-tooltip label="Transactions" position="is-right" always>
