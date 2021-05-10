@@ -228,17 +228,22 @@ export default {
 
 		async exportPurchases(format) {
 			this.exportLoading = true;
-			await TransactionService.exportPurchases(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `purchases.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Purchases")} ${e}`, "is-danger");
-				});
+			await TransactionService.exportPurchases(
+				format,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.searchPhrase,
+				this.filters,
+			).then(({ data }) => {
+				const blob = new Blob([data], { type: data.type });
+				const link = document.createElement("a");
+				link.href = window.URL.createObjectURL(blob);
+				link.download = `purchases.${format}`;
+				link.click();
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Export Purchases")} ${e}`, "is-danger");
+			});
 			this.exportLoading = false;
 		},
 
