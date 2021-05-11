@@ -251,9 +251,10 @@ export default {
 			const commodities = await this.getCommodities(assistanceIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0])
-					?.modalityType || this.$t("None");
-				this.table.data[key].commodity = [preparedCommodity];
+				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0]);
+
+				this.table.data[key].commodity = [preparedCommodity]
+					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
 			});
 			this.table.progress += 10;
 		},

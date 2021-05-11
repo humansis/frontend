@@ -28,10 +28,10 @@ export default {
 		...mapState(["icons"]),
 
 		filteredIcons() {
-			const icons = this.items.map(({ key, value }) => ({
-				key,
+			const icons = this.items.map(({ code, value }) => ({
+				code,
 				value,
-				svg: this.icons.find((icon) => icon.key === key)?.svg,
+				svg: this.icons.find((icon) => icon.key === code)?.svg,
 			}));
 
 			return (this.items?.length && this.icons?.length) ? icons : [];

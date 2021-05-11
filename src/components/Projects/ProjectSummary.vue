@@ -96,7 +96,9 @@ export default {
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
-				this.projectSummary = data;
+				const dataCopy = data;
+				dataCopy.sectors = data.sectors?.map((sector) => ({ code: sector, value: sector }));
+				this.projectSummary = dataCopy;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
