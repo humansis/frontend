@@ -1,9 +1,9 @@
 <template>
 	<span>
 		<b-tooltip
-			v-for="icon in selectedIcons"
-			:key="icon.key"
-			:label="$t(icon.key)" :active="icon !== undefined"
+			v-for="(icon, key) in filteredIcons"
+			:key="key"
+			:label="$t(icon.value)" :active="icon !== undefined"
 		>
 			<svg
 				width="30"
@@ -27,9 +27,14 @@ export default {
 	computed: {
 		...mapState(["icons"]),
 
-		selectedIcons() {
-			return (this.items?.length && this.icons?.length) ? this.icons
-				.filter((icon) => this.items.find((item) => item === icon.key)) : [];
+		filteredIcons() {
+			const icons = this.items.map(({ key, value }) => ({
+				key,
+				value,
+				svg: this.icons.find((icon) => icon.key === key)?.svg,
+			}));
+
+			return (this.items?.length && this.icons?.length) ? icons : [];
 		},
 	},
 };
