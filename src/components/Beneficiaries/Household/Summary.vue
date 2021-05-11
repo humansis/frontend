@@ -117,7 +117,7 @@ export default {
 		};
 	},
 
-	async mounted() {
+	async created() {
 		this.loadingComponent = this.$buefy.loading.open({
 			container: this.$refs.summary,
 		});

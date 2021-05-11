@@ -23,8 +23,9 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			:label="$t('Actions')"
 			centered
+			field="actions"
+			:label="$t('Actions')"
 		>
 			<div class="buttons is-right">
 				<ActionButton
@@ -111,7 +112,7 @@ export default {
 		$route: "fetchData",
 	},
 
-	async mounted() {
+	async created() {
 		await this.fetchRoles();
 		await this.fetchData();
 	},

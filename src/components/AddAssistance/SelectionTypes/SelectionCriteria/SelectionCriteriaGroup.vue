@@ -31,7 +31,11 @@
 							<ColumnField :data="props" :column="column" />
 						</b-table-column>
 					</template>
-					<b-table-column v-slot="props" :label="$t('Actions')">
+					<b-table-column
+						v-slot="props"
+						field="actions"
+						:label="$t('Actions')"
+					>
 						<ActionButton
 							icon="trash"
 							centered
