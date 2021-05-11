@@ -50,7 +50,7 @@ export default {
 
 	computed: {
 		filterClass() {
-			return `column ${this.multiline ? "is-half" : ""}`;
+			return "column is-12-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd";
 		},
 	},
 
