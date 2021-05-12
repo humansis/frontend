@@ -253,8 +253,8 @@ export default {
 			this.table.data.forEach((item, key) => {
 				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0]);
 
-				this.table.data[key].commodity = [preparedCommodity]
-					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
+				this.table.data[key].commodity = preparedCommodity ? [preparedCommodity]
+					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
 			});
 			this.table.progress += 10;
 		},
