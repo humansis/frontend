@@ -1,10 +1,5 @@
 <template>
 	<div class="main-container">
-		<b-loading
-			is-full-page
-			:active="this.isAppLoading"
-			:can-cancel="false"
-		/>
 		<NavBar />
 		<SideMenu />
 		<section class="section">
@@ -28,7 +23,6 @@ export default {
 
 	computed: {
 		...mapState([
-			"isAppLoading",
 			"isAsideVisible",
 			"isNavBarVisible",
 			"translations",

@@ -17,10 +17,12 @@
 					:target-type="targetType"
 					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
+					@beneficiariesCounted="selectedBeneficiariesCount = $event"
 				/>
 				<DistributedCommodity
 					ref="distributedCommodity"
 					v-if="visibleComponents.distributedCommodity"
+					:selected-beneficiaries="selectedBeneficiariesCount"
 					@updatedData="fetchDistributedCommodity"
 				/>
 				<ActivityDetails
@@ -102,6 +104,7 @@ export default {
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
 			},
+			selectedBeneficiariesCount: 0,
 			loading: false,
 			duplicate: false,
 			duplicateAssistance: null,
