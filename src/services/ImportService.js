@@ -1,4 +1,3 @@
-// TODO Not used for now
 export default {
 	async getListOfImports() {
 		return {

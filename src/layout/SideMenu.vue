@@ -120,6 +120,19 @@
 						</b-menu-item>
 						<b-menu-item
 							v-show="!isStageOrProd"
+							icon="file-import"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Imports' }"
+						>
+							<template #label>
+								<b-tooltip :label="$t('Imports')" position="is-right" always>
+									{{ $t('Imports') }}
+								</b-tooltip>
+							</template>
+						</b-menu-item>
+						<b-menu-item
+							v-show="!isStageOrProd"
 							v-if="userCan.viewVouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
@@ -198,18 +211,6 @@
 							</template>
 						</b-menu-item>
 						<!--
-						<b-menu-item
-							icon="briefcase"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Jobs' }"
-						>
-							<template #label>
-								<b-tooltip label="Jobs" position="is-right" always>
-									Jobs
-								</b-tooltip>
-							</template>
-						</b-menu-item>
 						<b-menu-item
 							icon="eye"
 							exact-active-class="is-active"

@@ -148,6 +148,42 @@ const routes = [
 				],
 			},
 			{
+				path: "/imports",
+				component: { render(c) { return c("router-view"); } },
+				children: [
+					{
+						path: "",
+						name: "Imports",
+						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
+						beforeEnter: ifAuthenticated,
+						meta: {
+							permissions: [],
+							breadcrumb: "Imports",
+							description: "",
+						},
+					},
+					{
+						path: "/import/:importId",
+						component: { render(c) { return c("router-view"); } },
+						meta: {
+							breadcrumb: "Import",
+						},
+						children: [
+							{
+								path: "",
+								name: "Import",
+								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
+								beforeEnter: ifAuthenticated,
+								meta: {
+									permissions: [],
+									description: "",
+								},
+							},
+						],
+					},
+				],
+			},
+			{
 				path: "/beneficiaries",
 				redirect: { name: "Households" },
 				component: { render(c) { return c("router-view"); } },
@@ -325,17 +361,6 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: "Transactions",
-					description: "",
-				},
-			},
-			{
-				path: "/jobs",
-				name: "Jobs",
-				component: () => import(/* webpackChunkName: "Jobs" */ "@/views/Jobs"),
-				beforeEnter: ifAuthenticated,
-				meta: {
-					permissions: [],
-					breadcrumb: "Jobs",
 					description: "",
 				},
 			},
