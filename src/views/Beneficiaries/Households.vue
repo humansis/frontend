@@ -365,6 +365,7 @@ export default {
 			};
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
@@ -389,6 +390,8 @@ export default {
 
 		async prepareBeneficiaryForTable(beneficiaryIds) {
 			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+			const vulnerabilitiesList = await this.getVulnerabilities();
+
 			this.table.progress += 10;
 			const nationalIdIds = [];
 			this.table.data.forEach((item, key) => {
@@ -398,7 +401,11 @@ export default {
 					nationalId,
 					vulnerabilities,
 				} = this.prepareBeneficiaries(item.householdHeadId, beneficiaries);
-				this.table.data[key].vulnerabilities = vulnerabilities;
+
+				this.table.data[key].vulnerabilities = vulnerabilitiesList
+					?.filter(({ code }) => code === vulnerabilities
+						.find((vulnerability) => vulnerability === code));
+
 				this.table.data[key].givenName = givenName;
 				this.table.data[key].familyName = familyName;
 				this.table.data[key].nationalId = nationalId;
@@ -431,6 +438,14 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].projects = this.prepareProjects(item, projects);
 			});
+		},
+
+		async getVulnerabilities() {
+			return BeneficiariesService.getListOfVulnerabilities()
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+				});
 		},
 
 		async getNationalIds(ids) {

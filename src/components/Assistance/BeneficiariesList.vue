@@ -511,6 +511,7 @@ export default {
 			this.table.progress += 25;
 			let beneficiaryIds = [];
 			let beneficiaries = [];
+			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			const phoneIds = [];
 			const nationalIdIds = [];
@@ -562,6 +563,7 @@ export default {
 						if (item.bookletIds.length) {
 							distributionItems.bookletIds.push(item.bookletIds[0]);
 						}
+
 						if (item.generalReliefItemIds.length) {
 							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
 						}
@@ -590,7 +592,9 @@ export default {
 						this.table.data[key].familyName = this
 							.prepareName(item.localFamilyName, item.enFamilyName);
 						this.table.data[key].gender = this.prepareGender(item.gender);
-						this.table.data[key].vulnerabilities = item.vulnerabilityCriteria;
+						this.table.data[key].vulnerabilities = vulnerabilitiesList
+							?.filter(({ code }) => code === item.vulnerabilityCriteria
+								.find((vulnerability) => vulnerability === code));
 
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
 						if (item.phoneIds.length) phoneIds.push(item.phoneIds[0]);
@@ -626,6 +630,14 @@ export default {
 			if (!this.isAssistanceDetail) {
 				this.table.progress = 100;
 			}
+		},
+
+		async getVulnerabilities() {
+			return BeneficiariesService.getListOfVulnerabilities()
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+				});
 		},
 
 		async getCommunities(ids) {

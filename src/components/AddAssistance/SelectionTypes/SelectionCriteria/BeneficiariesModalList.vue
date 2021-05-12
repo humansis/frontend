@@ -26,6 +26,8 @@
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "BeneficiariesModalList",
@@ -42,6 +44,7 @@ export default {
 	data() {
 		return {
 			table: {
+				data: [],
 				columns: [],
 				visibleColumns: [
 					{ key: "id", sortable: true, searchable: true },
@@ -55,12 +58,33 @@ export default {
 	},
 
 	created() {
-		this.fetchData();
+		this.table.columns = generateColumns(this.table.visibleColumns);
+	},
+
+	mounted() {
+		this.prepareData();
 	},
 
 	methods: {
-		fetchData() {
-			this.table.columns = generateColumns(this.table.visibleColumns);
+		async prepareData() {
+			const preparedData = [...this.data];
+			const vulnerabilitiesList = await this.getVulnerabilities();
+
+			preparedData.forEach((item, key) => {
+				preparedData[key].vulnerabilityCriteria = vulnerabilitiesList
+					?.filter(({ code }) => code === item.vulnerabilityCriteria
+						.find((vulnerability) => vulnerability === code));
+			});
+
+			this.table.data = preparedData;
+		},
+
+		async getVulnerabilities() {
+			return BeneficiariesService.getListOfVulnerabilities()
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+				});
 		},
 	},
 };
