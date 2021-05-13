@@ -123,7 +123,6 @@ export default {
 
 	methods: {
 		...mapActions([
-			"appLoading",
 			"storeUser",
 			"storePermissions",
 			"storeLanguage",
@@ -200,8 +199,6 @@ export default {
 
 		async setLocales(languageKey) {
 			if (!this.translations || languageKey !== this.language.key) {
-				this.appLoading(true);
-
 				await TranslationService.getTranslations(languageKey).then((response) => {
 					if (response.status === 200) {
 						this.storeTranslations(response.data);
@@ -212,8 +209,6 @@ export default {
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 				});
-
-				this.appLoading(false);
 			} else {
 				this.$i18n.locale = languageKey;
 				this.$i18n.fallbackLocale = languageKey;

@@ -160,6 +160,9 @@ export default {
 			const donorIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+				this.table.data[key].sectors = item.sectors
+					.map((sector) => ({ code: sector, value: sector }));
+
 				donorIds.push(...item.donorIds);
 			});
 			this.prepareDonorsForTable([...new Set(donorIds)]);
