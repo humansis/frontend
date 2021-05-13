@@ -1,10 +1,6 @@
 import CONST from "@/store/const";
 
 export default {
-	appLoading: ({ commit }, boolean) => {
-		commit(CONST.APP_LOADING, boolean);
-	},
-
 	storeUser: ({ commit }, user) => {
 		if (user) {
 			commit(CONST.STORE_USER, user);

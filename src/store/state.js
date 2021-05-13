@@ -10,7 +10,6 @@ function setPackageVersion() {
 
 export default {
 	appVersion: setPackageVersion(),
-	isAppLoading: false,
 	isNavBarVisible: true,
 	isAsideVisible: true,
 	isAsideExpanded: false,

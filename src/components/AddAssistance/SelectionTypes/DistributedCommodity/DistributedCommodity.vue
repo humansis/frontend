@@ -53,8 +53,21 @@
 				/>
 			</b-table-column>
 		</Table>
+		<p
+			v-for="({unit, quantity, type}, key) of modifiedTableData"
+			:key="key"
+			class="subtitle is-5 mb-2 has-text-right"
+		>
+			<strong>
+				{{ quantity * selectedBeneficiaries }}
+				{{ unit }}
+			</strong>
+			({{ type }})
+			{{ $t("To Be Delivered") }}
+		</p>
+
 		<b-notification
-			v-else
+			v-if="!table.data.length"
 			type="is-light"
 			has-icon
 			icon="eye-slash"
@@ -108,6 +121,14 @@ export default {
 				],
 			},
 		};
+	},
+
+	props: {
+		selectedBeneficiaries: {
+			type: Number,
+			required: true,
+			default: 0,
+		},
 	},
 
 	created() {

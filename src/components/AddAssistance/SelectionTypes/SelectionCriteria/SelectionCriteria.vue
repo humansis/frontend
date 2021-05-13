@@ -46,6 +46,7 @@
 				:key="key"
 				:group-id="key"
 				:target-type="targetType"
+				:loading="calculationLoading"
 				@addCriteria="addCriteria"
 				@removeGroup="removeCriteriaGroup(key)"
 				@updatedCriteria="onUpdatedCriteria"
@@ -72,15 +73,19 @@
 						expanded
 						type="is-dark"
 						:controls="false"
-						@input="getCountOfBeneficiaries({ totalCount: false })"
+						:loading="vulnerabilityScoreLoading"
+						@input="onVulnerabilityScoreChange"
 					/>
 				</b-field>
 			</div>
-			<div class="level-right">
+			<div class="level-right" ref="groupsCalculation">
 				<b-field>
 					<div class="selection-details">
 						<p class="subtitle is-4 mb-0 mr-3 ml-3">
-							{{ countOf }}/{{ totalCount }} {{ targetType }}
+							<strong>
+								{{ countOf }}/{{ totalCount }}
+							</strong>
+							{{ $t(selectedTargetType) }}
 						</p>
 						<b-button
 							class="is-pulled-right"
@@ -143,12 +148,23 @@ export default {
 			countOf: 0,
 			totalCount: 0,
 			minimumSelectionScore: 0,
+			calculationLoading: false,
+			vulnerabilityScoreLoading: false,
+			vulnerabilityScoreTimer: null,
 		};
+	},
+
+	computed: {
+		selectedTargetType() {
+			if (typeof this.targetType !== "string") return "";
+			return this.targetType.charAt(0).toUpperCase() + this.targetType.slice(1);
+		},
 	},
 
 	updated() {
 		if (this.groups?.length) {
 			this.$emit("updatedData", this.prepareCriteria(), this.minimumSelectionScore);
+			this.$emit("beneficiariesCounted", this.countOf);
 		}
 	},
 
@@ -237,6 +253,16 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
+		onVulnerabilityScoreChange() {
+			clearTimeout(this.vulnerabilityScoreTimer);
+			this.vulnerabilityScoreLoading = true;
+
+			this.vulnerabilityScoreTimer = setTimeout(() => {
+				this.getCountOfBeneficiaries({ totalCount: false });
+				this.vulnerabilityScoreLoading = false;
+			}, 1000);
+		},
+
 		async getCountOfBeneficiariesInGroup(groupKey) {
 			const assistanceBody = { ...this.assistanceBody };
 			const preparedCriteria = this.prepareCriteria();
@@ -268,6 +294,8 @@ export default {
 		},
 
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
+			this.calculationLoading = true;
+
 			await AssistancesService.calculationOfBeneficiaries(assistanceBody)
 				.then(({ data, status }) => {
 					if (status === 200) {
@@ -290,6 +318,8 @@ export default {
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 				});
+
+			this.calculationLoading = false;
 		},
 
 		removeCriteriaGroup(groupKey) {

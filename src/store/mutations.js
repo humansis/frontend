@@ -60,10 +60,6 @@ export default {
 		state.translations = translations;
 	},
 
-	[CONST.APP_LOADING]: (state, boolean) => {
-		state.isAppLoading = boolean;
-	},
-
 	[CONST.STORE_PER_PAGE]: (state, perPage) => {
 		state.perPage = perPage;
 	},

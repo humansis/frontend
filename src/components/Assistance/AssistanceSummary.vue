@@ -86,7 +86,10 @@
 						v-if="commodity"
 						class="has-text-weight-bold is-size-5"
 					>
-						<b-tooltip :label="$t(commodity[0])" :active="commodity[0] !== undefined">
+						<b-tooltip
+							v-if="commodity"
+							:label="$t(commodity.value)"
+						>
 							<SvgIcon :items="commodity" />
 						</b-tooltip>
 					</p>
@@ -196,7 +199,8 @@ export default {
 			await AssistancesService.getAssistanceCommodities(
 				assistanceId,
 			).then(({ data }) => {
-				this.commodity = data.map((item) => item.modalityType);
+				this.commodity = data
+					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
 			});
 		},
 
