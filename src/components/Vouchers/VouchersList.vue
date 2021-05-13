@@ -121,7 +121,7 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { getBookletStatus } from "@/utils/helpers";
 import grid from "@/mixins/grid";
-import VouchersFilter from "@/components/Voucher/VouchersFilter";
+import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import voucherHelper from "@/mixins/voucherHelper";
 import { Notification } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";

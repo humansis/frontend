@@ -54,9 +54,9 @@
 
 <script>
 import { mapState } from "vuex";
-import VouchersList from "@/components/Voucher/VouchersList";
-import VoucherForm from "@/components/Voucher/VoucherForm";
-import BatchesList from "@/components/Voucher/BatchesList";
+import VouchersList from "@/components/Vouchers/VouchersList";
+import VoucherForm from "@/components/Vouchers/VoucherForm";
+import BatchesList from "@/components/Vouchers/BatchesList";
 import Modal from "@/components/Modal";
 import BookletsService from "@/services/BookletsService";
 import { Toast, Notification } from "@/utils/UI";

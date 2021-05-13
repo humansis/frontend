@@ -56,14 +56,24 @@
 				/>
 			</div>
 		</b-table-column>
-		<template #export>
-			<ExportButton
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@onExport="exportProjects"
-			/>
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</b-button>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+		<template #filter>
+			<b-collapse v-model="advancedSearchVisible">
+				<ImportsFilter
+					@filtersChanged="onFiltersChange"
+				/>
+			</b-collapse>
 		</template>
 	</Table>
 </template>
@@ -81,23 +91,25 @@ import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
 import permissions from "@/mixins/permissions";
-import ExportButton from "@/components/ExportButton";
+import ImportsFilter from "@/components/Imports/ImportsFilter";
 
 export default {
 	name: "ProjectList",
 
 	components: {
-		ExportButton,
 		SafeDelete,
 		Table,
 		ActionButton,
 		ColumnField,
+		ImportsFilter,
 	},
 
 	mixins: [permissions, grid, baseHelper],
 
 	data() {
 		return {
+			advancedSearchVisible: false,
+			filters: [],
 			exportLoading: false,
 			table: {
 				data: [],
@@ -157,6 +169,11 @@ export default {
 			this.isLoadingList = false;
 		},
 
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			await this.fetchData();
+		},
+
 		prepareDataForTable(data) {
 			const donorIds = [];
 			data.forEach((item, key) => {
@@ -202,6 +219,10 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
 				});
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
 		goToDetail(project) {
