@@ -97,7 +97,6 @@ aside.aside {
 		}
 	}
 
-
 	.menu-list a {
 		display: flex;
 		align-items: center;
@@ -106,5 +105,11 @@ aside.aside {
 		&.is-expanded + ul {
 			display: block;
 		}
+	}
+}
+
+@media only screen and (max-width: $fullhd) {
+	html {
+		font-size: 14px !important;
 	}
 }

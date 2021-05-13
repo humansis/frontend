@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<div class="columns is-multiline">
-			<div class="column is-full is-half-fullhd">
+			<div class="column">
 				<DistributionMap />
 			</div>
 
-			<div class="column is-full is-half-fullhd">
+			<div class="column">
 				<Summary />
 			</div>
 		</div>
