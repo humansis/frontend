@@ -6,6 +6,6 @@
 
 <script>
 export default {
-	name: "Finalisation",
+	name: "FinalisationStep",
 };
 </script>

@@ -1,11 +1,11 @@
 <template>
 	<div class="card">
-		<div class="card-content">Duplicity</div>
+		<div class="card-content">Start</div>
 	</div>
 </template>
 
 <script>
 export default {
-	name: "DuplicityStep",
+	name: "StartStep",
 };
 </script>
