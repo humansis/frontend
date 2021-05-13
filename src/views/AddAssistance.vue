@@ -44,7 +44,7 @@
 
 		<div class="buttons flex-end">
 			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
-			<b-button type="is-primary" :loading="loading" @click="submitAddingAssistance">
+			<b-button type="is-primary" :loading="loading" @click="validateNewAssistance">
 				{{ $t('Create') }}
 			</b-button>
 		</div>
@@ -151,6 +151,29 @@ export default {
 	},
 
 	methods: {
+		validateNewAssistance() {
+			const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
+			const today = this.$moment().format("YYYY-MM-DD");
+			const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
+
+			if (this.$refs.newAssistanceForm.submit()) {
+				if (isBeforeToday) {
+					this.$buefy.dialog.confirm({
+						title: this.$t("Date of Assistance"),
+						message: this.$t("You picked date from the past. Is it ok?"),
+						confirmText: this.$t("Yes and Continue"),
+						type: "is-warning",
+						hasIcon: true,
+						onConfirm: () => {
+							this.submitAddingAssistance();
+						},
+					});
+				} else {
+					this.submitAddingAssistance();
+				}
+			}
+		},
+
 		async submitAddingAssistance() {
 			if (!this.$refs.newAssistanceForm.submit()) return;
 			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
