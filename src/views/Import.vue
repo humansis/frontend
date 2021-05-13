@@ -8,7 +8,7 @@
 			rounded
 			:has-navigation="false"
 		>
-			<b-step-item clickable step="1" :label="$t('Integrity')">
+			<b-step-item clickable step="1" :label="$t('Start')">
 				<StartStep />
 			</b-step-item>
 

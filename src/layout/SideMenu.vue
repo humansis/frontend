@@ -107,19 +107,6 @@
 						</b-menu-item>
 						<b-menu-item
 							v-show="!isStageOrProd"
-							icon="chart-line"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Reports' }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Reports')" position="is-right" always>
-									{{ $t('Reports') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="file-import"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -128,6 +115,19 @@
 							<template #label>
 								<b-tooltip :label="$t('Imports')" position="is-right" always>
 									{{ $t('Imports') }}
+								</b-tooltip>
+							</template>
+						</b-menu-item>
+						<b-menu-item
+							v-show="!isStageOrProd"
+							icon="chart-line"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Reports' }"
+						>
+							<template #label>
+								<b-tooltip :label="$t('Reports')" position="is-right" always>
+									{{ $t('Reports') }}
 								</b-tooltip>
 							</template>
 						</b-menu-item>
