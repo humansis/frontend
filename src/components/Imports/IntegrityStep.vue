@@ -66,6 +66,7 @@
 					</span>
 				</b-upload>
 				<b-button
+					v-if="uploadedFile"
 					type="is-primary"
 					icon-right="play-circle"
 				>
@@ -85,6 +86,12 @@ export default {
 		return {
 			file: {},
 		};
+	},
+
+	computed: {
+		uploadedFile() {
+			return this.file?.name;
+		},
 	},
 };
 </script>
