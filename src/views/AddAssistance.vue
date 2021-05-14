@@ -154,9 +154,10 @@ export default {
 		validateNewAssistance() {
 			const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
 			const today = this.$moment().format("YYYY-MM-DD");
-			const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
 
 			if (this.$refs.newAssistanceForm.submit()) {
+				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
+
 				if (isBeforeToday) {
 					this.$buefy.dialog.confirm({
 						title: this.$t("Date of Assistance"),
