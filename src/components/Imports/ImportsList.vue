@@ -64,9 +64,27 @@
 			>
 				{{ $t('Advanced Search') }}
 			</b-button>
-		</template>
-		<template #progress>
-			<b-progress :value="table.progress" format="percent" />
+			<b-button
+				class="ml-3 is-info is-light"
+				slot="trigger"
+				icon-right="spinner"
+			>
+				{{ $t('In Progress') }}
+			</b-button>
+			<b-button
+				class="ml-3 is-success is-light"
+				slot="trigger"
+				icon-right="check"
+			>
+				{{ $t('Done') }}
+			</b-button>
+			<b-button
+				class="ml-3 is-warning is-light"
+				slot="trigger"
+				icon-right="ban"
+			>
+				{{ $t('Canceled') }}
+			</b-button>
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
@@ -74,6 +92,9 @@
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
 		</template>
 	</Table>
 </template>
