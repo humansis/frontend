@@ -38,6 +38,8 @@
 				</span>
 			</div>
 
+			<hr>
+
 			<div class="buttons mt-3 flex-end">
 				<b-button
 					type="is-light is-danger"

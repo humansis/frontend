@@ -38,6 +38,8 @@
 				</table>
 			</div>
 
+			<hr>
+
 			<div class="buttons mt-5 flex-end">
 				<b-button
 					type="is-light is-danger"
