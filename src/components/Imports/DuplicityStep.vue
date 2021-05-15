@@ -89,31 +89,65 @@
 				Similarity or Duplicity Cases
 			</h2>
 
+			<hr>
+
 			<div class="content">
-				<table>
-					<thead>
-						<tr>
-							<th>Imported Record</th>
-							<th>Records From Database</th>
-							<th>Similarities</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Three</td>
-							<td>Four</td>
-							<td>Four</td>
-							<td>Action</td>
-						</tr>
-						<tr>
-							<td />
-							<td>Six</td>
-							<td>Six</td>
-							<td>Action</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="resolve-table">
+					<table>
+						<thead>
+							<tr>
+								<th>Imported Record</th>
+								<th>Records From Database</th>
+								<th>Similarities</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+									eget erat. Vestibulum fermentum tortor id mi
+								</td>
+								<td>
+									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+									eget erat. Vestibulum fermentum tortor id mi
+								</td>
+								<td>
+									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+									eget erat. Vestibulum fermentum tortor id mi
+								</td>
+								<td>
+									<b-button
+										type="is-info is-light"
+										icon-right="play-circle"
+									>
+										{{ $t('Merge with this') }}
+									</b-button>
+								</td>
+							</tr>
+							<tr>
+								<td />
+								<td />
+								<td />
+								<td>
+									<b-upload v-model="file">
+										<span class="file-cta button is-light">
+											<span v-if="file" class="file-label">
+												{{ file.name || "Import as New Beneficiary"}}
+											</span>
+											<b-icon icon="file-upload" />
+										</span>
+									</b-upload>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<hr>
+				</div>
+
 			</div>
 		</div>
 	</div>
@@ -122,5 +156,11 @@
 <script>
 export default {
 	name: "DuplicityStep",
+
+	data() {
+		return {
+			file: {},
+		};
+	},
 };
 </script>
