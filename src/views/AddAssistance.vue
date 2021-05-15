@@ -152,10 +152,9 @@ export default {
 
 	methods: {
 		validateNewAssistance() {
-			const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
-			const today = this.$moment().format("YYYY-MM-DD");
-
 			if (this.$refs.newAssistanceForm.submit()) {
+				const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
+				const today = this.$moment().format("YYYY-MM-DD");
 				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
 
 				if (isBeforeToday) {
