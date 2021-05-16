@@ -106,7 +106,7 @@ import BookletsService from "@/services/BookletsService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import VouchersFilter from "@/components/Voucher/VouchersFilter";
+import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import voucherHelper from "@/mixins/voucherHelper";
 import { getBookletStatus } from "@/utils/helpers";
 
