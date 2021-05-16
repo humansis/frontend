@@ -1,10 +1,6 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<b-message type="is-info">
-				You can upload one or multiple .xls or .csv files.
-			</b-message>
-
 			<b-field>
 				<b-upload
 					v-model="dropFiles"

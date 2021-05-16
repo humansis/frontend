@@ -3,7 +3,7 @@
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">{{ $t('Imports (still projects)') }}</h1>
+				<h1 class="title">{{ $t('Imports') }}</h1>
 			</div>
 
 			<div class="level-right">

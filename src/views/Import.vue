@@ -1,6 +1,11 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered mb-6">{{ $t('Import') }} import123367_2021</h1>
+		<h1 class="title has-text-centered mb-3">{{ $t('Import') }} import123367_2021</h1>
+		<p class="has-text-centered mb-3">
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque
+			faucibus fringilla. Vivamus ac leo pretium faucibus. Praesent vitae arcu tempor neque
+			lacinia pretium. Maecenas libero. Nunc tincidunt ante vitae massa. Nulla non lectus
+		</p>
 		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
 			Quanti Project
 		</h2>

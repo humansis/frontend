@@ -27,7 +27,7 @@
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
-									type="is-danger"
+									type="is-warning"
 									size="is-medium"
 								>
 									10
@@ -39,7 +39,7 @@
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
-									type="is-danger"
+									type="is-warning"
 									size="is-medium"
 								>
 									10
