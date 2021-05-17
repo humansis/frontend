@@ -27,7 +27,6 @@
 			<b-dropdown
 				v-model="country.iso3"
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -53,7 +52,6 @@
 			<b-dropdown
 				v-model="language.name"
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -78,7 +76,6 @@
 
 			<b-dropdown
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -129,6 +126,7 @@ export default {
 	},
 
 	async created() {
+		this.changeTextDirection(this.language.direction);
 		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
@@ -186,7 +184,6 @@ export default {
 					this.$i18n.locale = language.key.toLowerCase();
 					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-
 					await this.storeLanguage(language);
 					await this.storeTranslations(response.data);
 					await this.fetchAdmNames();
@@ -196,6 +193,17 @@ export default {
 			});
 
 			this.$router.go();
+		},
+
+		changeTextDirection(direction) {
+			console.log(direction);
+			const htmlElement = document.getElementsByTagName("html").item(0);
+			htmlElement.dir = direction || "ltr";
+			if (direction === "ltr") {
+				htmlElement.classList.remove("is-rtl");
+			} else if (direction === "rtl") {
+				htmlElement.classList.add("is-rtl");
+			}
 		},
 
 		setTooltip() {
@@ -242,5 +250,10 @@ export default {
 	background-color: white;
 	width: 50%;
 	padding-left: 5%;
+}
+
+.is-rtl .country-name {
+	padding-left: 0;
+	padding-right: 5%;
 }
 </style>
