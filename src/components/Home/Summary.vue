@@ -18,7 +18,7 @@
 								:icon="icon"
 							/>
 						</div>
-						<div class="level-left">
+						<div class="level">
 							<div class="content">
 								<p class="heading mb-0"> {{ $t(normalizeText(code)) }}</p>
 								<p v-if="value || value === 0" class="subtitle is-4">{{ value }}</p>
