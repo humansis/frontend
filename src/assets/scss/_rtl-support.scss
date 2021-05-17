@@ -46,11 +46,9 @@
 }
 
 .is-rtl .b-tooltip.is-right .tooltip-content {
-  top: 45%;
   left: auto;
   bottom: auto;
-  right: calc(100% + 45px + 45px);
-  transform: translateY(-50%);
+  right: calc(100% + 75px);
 }
 
 .is-rtl .b-tooltip.is-right .tooltip-content::before {
@@ -72,4 +70,8 @@
 .button .icon:last-child:not(:first-child) {
   margin-right: 0.25em;
   margin-left: calc(-0.5em - 1px);
+}
+
+.is-rtl .nested-item .tooltip-content {
+  right: 1.6rem !important;
 }
