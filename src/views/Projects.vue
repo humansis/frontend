@@ -137,7 +137,7 @@ export default {
 				targetTypes: [],
 				selectedSectors: [],
 				startDate: new Date(),
-				endDate: new Date(),
+				endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
 				selectedDonors: [],
 				selectedTargetType: [],
 				totalTarget: 0,
