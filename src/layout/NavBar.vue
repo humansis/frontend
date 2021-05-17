@@ -27,7 +27,6 @@
 			<b-dropdown
 				v-model="country.iso3"
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -53,7 +52,6 @@
 			<b-dropdown
 				v-model="language.name"
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -78,7 +76,6 @@
 
 			<b-dropdown
 				position="is-bottom-left"
-				append-to-body
 				aria-role="menu"
 			>
 				<a
@@ -186,7 +183,6 @@ export default {
 					this.$i18n.locale = language.key.toLowerCase();
 					this.$i18n.fallbackLocale = language.key.toLowerCase();
 					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-
 					await this.storeLanguage(language);
 					await this.storeTranslations(response.data);
 					await this.fetchAdmNames();
@@ -242,5 +238,10 @@ export default {
 	background-color: white;
 	width: 50%;
 	padding-left: 5%;
+}
+
+.is-rtl .country-name {
+	padding-left: 0;
+	padding-right: 5%;
 }
 </style>

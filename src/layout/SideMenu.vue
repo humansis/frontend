@@ -57,6 +57,7 @@
 							</template>
 							<b-menu-item
 								icon="home"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
@@ -69,6 +70,7 @@
 							</b-menu-item>
 							<b-menu-item
 								icon="building"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
@@ -81,6 +83,7 @@
 							</b-menu-item>
 							<b-menu-item
 								icon="users"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
@@ -93,6 +96,7 @@
 							</b-menu-item>
 							<b-menu-item
 								v-if="userCan.viewVendors"
+								class="nested-item"
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -159,6 +163,7 @@
 							</template>
 							<b-menu-item
 								v-if="userCan.viewProducts"
+								class="nested-item"
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -172,6 +177,7 @@
 							</b-menu-item>
 							<b-menu-item
 								v-if="userCan.countrySettings"
+								class="nested-item"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"

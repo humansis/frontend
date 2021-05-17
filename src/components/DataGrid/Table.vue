@@ -83,7 +83,8 @@
 					:show-labels="false"
 					@input="onChangePerPage"
 				/>
-				<p style="white-space: nowrap">{{ $t('Total Count') }}: {{ total }}</p>
+				<p class="total-count" style="white-space: nowrap">{{ $t('Total Count') }}: </p>
+				<span>{{ total }}</span>
 			</template>
 			<template #footer>
 				<slot name="footer" />
