@@ -48,7 +48,7 @@
 .is-rtl .b-tooltip.is-right .tooltip-content {
   left: auto;
   bottom: auto;
-  right: calc(100% + 75px);
+  right: 5.25rem;
 }
 
 .is-rtl .b-tooltip.is-right .tooltip-content::before {
