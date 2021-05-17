@@ -126,7 +126,6 @@ export default {
 	},
 
 	async created() {
-		this.changeTextDirection(this.language.direction);
 		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames) await this.fetchAdmNames();
 		this.setTooltip();
@@ -193,17 +192,6 @@ export default {
 			});
 
 			this.$router.go();
-		},
-
-		changeTextDirection(direction) {
-			console.log(direction);
-			const htmlElement = document.getElementsByTagName("html").item(0);
-			htmlElement.dir = direction || "ltr";
-			if (direction === "ltr") {
-				htmlElement.classList.remove("is-rtl");
-			} else if (direction === "rtl") {
-				htmlElement.classList.add("is-rtl");
-			}
 		},
 
 		setTooltip() {
