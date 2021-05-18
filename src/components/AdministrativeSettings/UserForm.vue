@@ -14,17 +14,6 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Username')"
-				:type="validateType('username')"
-			>
-				<b-input
-					v-model="formModel.username"
-					:disabled="formDisabled || isEditing"
-					@blur="validate('username')"
-				/>
-			</b-field>
-
-			<b-field
 				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="passwordMessage()"
@@ -207,7 +196,6 @@ export default {
 	validations: {
 		formModel: {
 			email: { required, email },
-			username: { required },
 			password: {
 				// eslint-disable-next-line func-names
 				required: requiredIf(function () {
