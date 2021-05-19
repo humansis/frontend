@@ -31,7 +31,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -44,7 +43,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="user-friends"
 							class="to-dropdown-item"
 							:active="beneficiariesActive"
@@ -110,7 +108,6 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="file-import"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -123,7 +120,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="chart-line"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -136,7 +132,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							v-if="userCan.viewVouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
@@ -150,7 +145,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="cog"
 							class="to-dropdown-item"
 							:active="configurationActive"
@@ -191,7 +185,6 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							v-if="userCan.adminSettings"
 							icon="wrench"
 							exact-active-class="is-active"
@@ -241,7 +234,6 @@
 import { mapState } from "vuex";
 import permissions from "@/mixins/permissions";
 import gitInfo from "@/gitInfo";
-import CONST from "@/const";
 
 export default {
 	name: "SideMenu",
@@ -271,11 +263,6 @@ export default {
 				return temp[0];
 			}
 			return gitInfo.appVersion;
-		},
-
-		// TODO Remove this condition after after all views will be available in HOT RELEASE !
-		isStageOrProd() {
-			return CONST.ENV === "prod" || CONST.ENV === "stage";
 		},
 	},
 

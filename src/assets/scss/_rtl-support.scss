@@ -67,7 +67,7 @@
   margin-right: calc( -0.5em - 1px);
 }
 
-.button .icon:last-child:not(:first-child) {
+.is-rtl .button .icon:last-child:not(:first-child) {
   margin-right: 0.25em;
   margin-left: calc(-0.5em - 1px);
 }
