@@ -3,7 +3,6 @@ import VueRouter from "vue-router";
 import getters from "@/store/getters";
 import store from "@/store/index";
 import { Notification } from "@/utils/UI";
-import CONST from "@/const";
 
 Vue.use(VueRouter);
 
@@ -15,22 +14,7 @@ const ifAuthenticated = (to, from, next) => {
 		.every((permission) => permissions?.[permission]) : true;
 
 	if (user?.token && to.meta.permissions && canGoNext) {
-		// TODO Remove this condition after after all views will be available in HOT RELEASE !
-		if (CONST.ENV === "prod" || CONST.ENV === "stage") {
-			if (
-				to.name === "Home"
-			|| to.name === "Logout"
-			|| to.name === "Login"
-			|| to.name === "Profile"
-			|| to.name === "Transactions"
-			) {
-				next();
-			} else {
-				next({ name: "NotFound" });
-			}
-		} else {
-			next();
-		}
+		next();
 	} else if (!user?.token) {
 		const redirect = to.query?.redirect || to.fullPath;
 		next({ name: "Login", query: { redirect } });
@@ -141,6 +125,42 @@ const routes = [
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new distribution to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
+								},
+							},
+						],
+					},
+				],
+			},
+			{
+				path: "/imports",
+				component: { render(c) { return c("router-view"); } },
+				children: [
+					{
+						path: "",
+						name: "Imports",
+						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
+						beforeEnter: ifAuthenticated,
+						meta: {
+							permissions: [],
+							breadcrumb: "Imports",
+							description: "",
+						},
+					},
+					{
+						path: "/import/:importId",
+						component: { render(c) { return c("router-view"); } },
+						meta: {
+							breadcrumb: "Import",
+						},
+						children: [
+							{
+								path: "",
+								name: "Import",
+								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
+								beforeEnter: ifAuthenticated,
+								meta: {
+									permissions: [],
+									description: "",
 								},
 							},
 						],
@@ -325,17 +345,6 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: "Transactions",
-					description: "",
-				},
-			},
-			{
-				path: "/jobs",
-				name: "Jobs",
-				component: () => import(/* webpackChunkName: "Jobs" */ "@/views/Jobs"),
-				beforeEnter: ifAuthenticated,
-				meta: {
-					permissions: [],
-					breadcrumb: "Jobs",
 					description: "",
 				},
 			},

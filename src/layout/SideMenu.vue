@@ -31,7 +31,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -44,7 +43,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="user-friends"
 							class="to-dropdown-item"
 							:active="beneficiariesActive"
@@ -57,6 +55,7 @@
 							</template>
 							<b-menu-item
 								icon="home"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
@@ -69,6 +68,7 @@
 							</b-menu-item>
 							<b-menu-item
 								icon="building"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
@@ -81,6 +81,7 @@
 							</b-menu-item>
 							<b-menu-item
 								icon="users"
+								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
@@ -93,6 +94,7 @@
 							</b-menu-item>
 							<b-menu-item
 								v-if="userCan.viewVendors"
+								class="nested-item"
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -106,7 +108,18 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
+							icon="file-import"
+							exact-active-class="is-active"
+							tag="router-link"
+							:to="{ name: 'Imports' }"
+						>
+							<template #label>
+								<b-tooltip :label="$t('Imports')" position="is-right" always>
+									{{ $t('Imports') }}
+								</b-tooltip>
+							</template>
+						</b-menu-item>
+						<b-menu-item
 							icon="chart-line"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -119,7 +132,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							v-if="userCan.viewVouchers"
 							icon="ticket-alt"
 							exact-active-class="is-active"
@@ -133,7 +145,6 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							icon="cog"
 							class="to-dropdown-item"
 							:active="configurationActive"
@@ -146,6 +157,7 @@
 							</template>
 							<b-menu-item
 								v-if="userCan.viewProducts"
+								class="nested-item"
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -159,6 +171,7 @@
 							</b-menu-item>
 							<b-menu-item
 								v-if="userCan.countrySettings"
+								class="nested-item"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
@@ -172,7 +185,6 @@
 							</b-menu-item>
 						</b-menu-item>
 						<b-menu-item
-							v-show="!isStageOrProd"
 							v-if="userCan.adminSettings"
 							icon="wrench"
 							exact-active-class="is-active"
@@ -199,18 +211,6 @@
 						</b-menu-item>
 						<!--
 						<b-menu-item
-							icon="briefcase"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Jobs' }"
-						>
-							<template #label>
-								<b-tooltip label="Jobs" position="is-right" always>
-									Jobs
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
 							icon="eye"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -234,7 +234,6 @@
 import { mapState } from "vuex";
 import permissions from "@/mixins/permissions";
 import gitInfo from "@/gitInfo";
-import CONST from "@/const";
 
 export default {
 	name: "SideMenu",
@@ -264,11 +263,6 @@ export default {
 				return temp[0];
 			}
 			return gitInfo.appVersion;
-		},
-
-		// TODO Remove this condition after after all views will be available in HOT RELEASE !
-		isStageOrProd() {
-			return CONST.ENV === "prod" || CONST.ENV === "stage";
 		},
 	},
 

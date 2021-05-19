@@ -31,6 +31,7 @@ export default {
 	},
 
 	created() {
+		this.changeTextDirection(this.language.direction);
 		this.setLocales();
 
 		if (!this.isAsideVisible && !this.isNavBarVisible) {
@@ -43,6 +44,16 @@ export default {
 			this.$i18n.locale = this.language.key;
 			this.$i18n.fallbackLocale = this.language.key;
 			this.$root.$i18n.setLocaleMessage(this.language.key, this.translations);
+		},
+
+		changeTextDirection(direction) {
+			const htmlElement = document.getElementsByTagName("html").item(0);
+			htmlElement.dir = direction || "ltr";
+			if (direction === "ltr") {
+				htmlElement.classList.remove("is-rtl");
+			} else if (direction === "rtl") {
+				htmlElement.classList.add("is-rtl");
+			}
 		},
 	},
 };

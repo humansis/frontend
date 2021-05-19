@@ -1,8 +1,9 @@
+<!-- TODO Refactor this for Imports, not Projects -->
 <template>
 	<div>
 		<div class="level">
 			<div class="level-left">
-				<h1 class="title">{{ $t('Projects') }}</h1>
+				<h1 class="title">{{ $t('Imports') }}</h1>
 			</div>
 
 			<div class="level-right">
@@ -24,7 +25,7 @@
 			:is-waiting="projectModal.isWaiting"
 			@close="closeProjectModal"
 		>
-			<ProjectForm
+			<ImportForm
 				close-button
 				class="modal-card"
 				:formModel="projectModel"
@@ -35,7 +36,7 @@
 			/>
 		</Modal>
 
-		<ProjectList
+		<ImportsList
 			ref="projectList"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -46,21 +47,22 @@
 
 <script>
 import { mapState } from "vuex";
-import ProjectForm from "@/components/Projects/ProjectForm";
+import ImportForm from "@/components/Imports/ImportForm";
 import Modal from "@/components/Modal";
+// TODO Change service
 import ProjectService from "@/services/ProjectService";
 import { Toast, Notification } from "@/utils/UI.js";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import ProjectList from "@/components/Projects/ProjectsList";
+import ImportsList from "@/components/Imports/ImportsList";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "ProjectPage",
+	name: "Imports",
 
 	components: {
-		ProjectList,
+		ImportsList,
 		Modal,
-		ProjectForm,
+		ImportForm,
 	},
 
 	mixins: [permissions],
@@ -137,7 +139,7 @@ export default {
 				targetTypes: [],
 				selectedSectors: [],
 				startDate: new Date(),
-				endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
+				endDate: new Date(),
 				selectedDonors: [],
 				selectedTargetType: [],
 				totalTarget: 0,
