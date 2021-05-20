@@ -83,7 +83,7 @@ export default {
 			options: {
 				projects: [],
 			},
-			projectsLoading: true,
+			projectsLoading: false,
 		};
 	},
 
@@ -96,7 +96,7 @@ export default {
 	},
 
 	mounted() {
-		this.fetchProjects();
+		if (!this.formDisabled) this.fetchProjects();
 	},
 
 	methods: {
@@ -116,6 +116,8 @@ export default {
 		},
 
 		async fetchProjects() {
+			this.projectsLoading = true;
+
 			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
 					this.options.projects = data;

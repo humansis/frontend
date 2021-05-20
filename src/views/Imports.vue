@@ -75,7 +75,8 @@ export default {
 
 	computed: {
 		modalHeader() {
-			return this.$t("Create New Import");
+			return this.importModal
+				.isDetail ? this.$t("Import Detail") : this.$t("Create New Import");
 		},
 	},
 
@@ -116,6 +117,7 @@ export default {
 			{
 				id,
 				title,
+				project,
 				projectId,
 				description,
 			},
@@ -124,7 +126,7 @@ export default {
 				...this.importModel,
 				id,
 				title,
-				project: null,
+				project,
 				projectId,
 				description,
 			};

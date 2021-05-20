@@ -84,7 +84,7 @@
 					@input="onChangePerPage"
 				/>
 				<p class="total-count" style="white-space: nowrap">{{ $t('Total Count') }}: </p>
-				<span>{{ total }}</span>
+				<span class="mr-1 ml-1">{{ total }}</span>
 			</template>
 			<template #footer>
 				<slot name="footer" />
