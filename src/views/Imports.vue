@@ -133,7 +133,6 @@ export default {
 		},
 
 		submitImportForm(importForm) {
-			console.log(importForm);
 			const {
 				title,
 				project,
