@@ -13,4 +13,9 @@ export default {
 		});
 		return { data, totalCount };
 	},
+
+	async createImport(body) {
+		const { data, status } = await fetcher({ uri: "imports", method: "POST", body });
+		return { data, status };
+	},
 };
