@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -66,6 +67,16 @@ export default {
 				.catch((e) => {
 					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
+		},
+
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				projects: [],
+				status: [],
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
+			});
 		},
 	},
 };

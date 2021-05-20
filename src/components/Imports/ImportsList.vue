@@ -3,6 +3,7 @@
 		v-show="show"
 		has-reset-sort
 		has-search
+		ref="table"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -51,7 +52,7 @@
 			<b-button
 				class="ml-3 is-light"
 				slot="trigger"
-				icon-right="spinner"
+				icon-right="sticky-note"
 			>
 				{{ $t('New') }}
 			</b-button>
@@ -80,12 +81,31 @@
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
 				<ImportsFilter
+					ref="importFilter"
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
 		</template>
 		<template #progress>
 			<b-progress :value="table.progress" format="percent" />
+		</template>
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small"
+					@click="resetTableSort"
+				>
+					{{ $t('Reset Table Sort') }}
+				</b-button>
+			</div>
 		</template>
 	</Table>
 </template>
@@ -193,6 +213,14 @@ export default {
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.importFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
 		goToDetail(importItem) {
