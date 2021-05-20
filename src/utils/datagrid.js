@@ -28,6 +28,7 @@ export const generateColumns = ((visibleColumns) => {
 			attribute: column.attribute,
 			visible: column.visible,
 			customSort: column.customSort,
+			customTags: column.customTags,
 		});
 	});
 	return preparedColumns;

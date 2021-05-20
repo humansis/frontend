@@ -34,7 +34,10 @@
 			/>
 		</Modal>
 
-		<ImportsList ref="importList" />
+		<ImportsList
+			ref="importList"
+			@onShowDetail="showDetail"
+		/>
 	</div>
 </template>
 
@@ -97,6 +100,16 @@ export default {
 
 		closeImportModal() {
 			this.importModal.isOpened = false;
+		},
+
+		showDetail(importItem) {
+			this.mapToFormModel(importItem);
+			this.importModal = {
+				isOpened: true,
+				isDetail: true,
+				isWaiting: false,
+				isEditing: false,
+			};
 		},
 
 		mapToFormModel(

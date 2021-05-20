@@ -77,6 +77,13 @@
 			{{ customValue }}
 		</template>
 
+		<!-- Show Custom Tag with background color -->
+		<template v-if="column.type === 'tag'">
+			<b-tag :type="getTagType">
+				{{ data.row[column.field] }}
+			</b-tag>
+		</template>
+
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
@@ -133,6 +140,12 @@ export default {
 
 		formattedDateTime() {
 			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD hh:mm")}`;
+		},
+
+		getTagType() {
+			const tag = this.column.customTags
+				.find(({ code }) => code === this.data.row[this.column.field]);
+			return tag?.type || "is-dark";
 		},
 	},
 

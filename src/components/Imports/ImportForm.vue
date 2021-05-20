@@ -39,6 +39,7 @@
 			>
 				<b-input
 					v-model="formModel.description"
+					type="textarea"
 					:disabled="formDisabled"
 					@blur="validate('description')"
 				/>

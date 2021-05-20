@@ -1,4 +1,3 @@
-<!-- TODO Refactor this for Imports, not Projects -->
 <template>
 	<Table
 		v-show="show"
@@ -39,12 +38,6 @@
 					:tooltip="$t('Show Detail')"
 					@click="showDetailWithId(props.row.id)"
 				/>
-				<ActionButton
-					v-if="userCan.editProject"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
 			</div>
 		</b-table-column>
 		<template #filterButton>
@@ -54,6 +47,13 @@
 				@click="filtersToggle"
 			>
 				{{ $t('Advanced Search') }}
+			</b-button>
+			<b-button
+				class="ml-3 is-light"
+				slot="trigger"
+				icon-right="spinner"
+			>
+				{{ $t('New') }}
 			</b-button>
 			<b-button
 				class="ml-3 is-info is-light"
@@ -97,9 +97,15 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
-import permissions from "@/mixins/permissions";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import ImportService from "@/services/ImportService";
+
+const statusTags = [
+	{ code: "New", type: "is-light" },
+	{ code: "In Progress", type: "is-info" },
+	{ code: "Done", type: "is-success" },
+	{ code: "Canceled", type: "is-warning" },
+];
 
 export default {
 	name: "ProjectList",
@@ -111,7 +117,7 @@ export default {
 		ImportsFilter,
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -125,7 +131,7 @@ export default {
 					{ key: "id", width: "90", sortable: true },
 					{ key: "title", width: "200", sortable: true },
 					{ key: "projectId", label: "Project", width: "120", sortable: true },
-					{ key: "status", width: "120", sortable: true },
+					{ key: "status", type: "tag", customTags: statusTags, width: "120", sortable: true },
 					{ key: "createdBy", width: "120", sortable: true },
 					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
 				],
@@ -152,6 +158,7 @@ export default {
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+
 			await ImportService.getListOfImports(
 				this.table.currentPage,
 				this.perPage,
@@ -188,13 +195,13 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		goToDetail(project) {
-			if (this.userCan.viewProject) this.$router.push({ name: "Import", params: { importId: project.id } });
+		goToDetail(importItem) {
+			this.$router.push({ name: "Import", params: { importId: importItem.id } });
 		},
 
 		showDetailWithId(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowDetail", project);
+			const importItem = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowDetail", importItem);
 		},
 	},
 };
