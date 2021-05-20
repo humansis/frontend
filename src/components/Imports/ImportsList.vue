@@ -53,6 +53,7 @@
 				class="ml-3 is-light"
 				slot="trigger"
 				icon-right="sticky-note"
+				@click="statusFilter('New')"
 			>
 				{{ $t('New') }}
 			</b-button>
@@ -60,6 +61,7 @@
 				class="ml-3 is-info is-light"
 				slot="trigger"
 				icon-right="spinner"
+				@click="statusFilter('In Progress')"
 			>
 				{{ $t('In Progress') }}
 			</b-button>
@@ -67,6 +69,7 @@
 				class="ml-3 is-success is-light"
 				slot="trigger"
 				icon-right="check"
+				@click="statusFilter('Done')"
 			>
 				{{ $t('Done') }}
 			</b-button>
@@ -74,6 +77,7 @@
 				class="ml-3 is-warning is-light"
 				slot="trigger"
 				icon-right="ban"
+				@click="statusFilter('Canceled')"
 			>
 				{{ $t('Canceled') }}
 			</b-button>
@@ -153,7 +157,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", sortable: true },
 					{ key: "title", sortable: true },
-					{ key: "projectId", label: "Project", sortable: true },
+					{ key: "projectId", label: "Project", sortable: true, sortKey: "project" },
 					{ key: "status", type: "tag", customTags: statusTags, sortable: true },
 					{ key: "createdBy", sortable: true },
 					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
@@ -199,6 +203,10 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		statusFilter(filter) {
+			this.onFiltersChange({ projects: [], status: [filter] });
 		},
 
 		async onFiltersChange(selectedFilters) {

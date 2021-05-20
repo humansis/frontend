@@ -37,11 +37,11 @@ export default {
 				status: {
 					name: "Status",
 					placeholder: this.$t("Select Status"),
-					multiple: true,
+					multiple: false,
 					data: [
-						{ code: "new", value: this.$t("New") },
-						{ code: "inProgress", value: this.$t("In Progress") },
-						{ code: "done", value: this.$t("Done") },
+						{ code: "New", value: this.$t("New") },
+						{ code: "In Progress", value: this.$t("In Progress") },
+						{ code: "Done", value: this.$t("Done") },
 						{ code: "Canceled", value: this.$t("Canceled") },
 					],
 				},
