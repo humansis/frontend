@@ -19,7 +19,7 @@
 				:message="validateMsg('project')"
 			>
 				<MultiSelect
-					v-model="formModel.projectId"
+					v-model="formModel.project"
 					searchable
 					label="name"
 					track-by="id"

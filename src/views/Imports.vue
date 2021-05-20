@@ -63,6 +63,7 @@ export default {
 			importModel: {
 				id: null,
 				title: null,
+				project: null,
 				projectId: null,
 				description: null,
 			},
@@ -88,6 +89,7 @@ export default {
 				...this.importModel,
 				id: null,
 				title: null,
+				project: null,
 				projectId: null,
 				description: null,
 			};
@@ -109,21 +111,23 @@ export default {
 				...this.importModel,
 				id,
 				title,
+				project: null,
 				projectId,
 				description,
 			};
 		},
 
 		submitImportForm(importForm) {
+			console.log(importForm);
 			const {
 				title,
-				projectId,
+				project,
 				description,
 			} = importForm;
 
 			const projectBody = {
 				title,
-				projectId,
+				projectId: project?.id,
 				description,
 			};
 

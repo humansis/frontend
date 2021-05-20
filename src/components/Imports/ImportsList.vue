@@ -125,7 +125,7 @@ export default {
 					{ key: "id", width: "90", sortable: true },
 					{ key: "title", width: "200", sortable: true },
 					{ key: "projectId", label: "Project", width: "120", sortable: true },
-					{ key: "status", type: "datetime", width: "120", sortable: true },
+					{ key: "status", width: "120", sortable: true },
 					{ key: "createdBy", width: "120", sortable: true },
 					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
 				],
