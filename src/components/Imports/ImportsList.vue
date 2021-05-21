@@ -69,9 +69,9 @@
 				class="ml-3 is-success is-light"
 				slot="trigger"
 				icon-right="check"
-				@click="statusFilter('Done')"
+				@click="statusFilter('Finished')"
 			>
-				{{ $t('Done') }}
+				{{ $t('Finished') }}
 			</b-button>
 			<b-button
 				class="ml-3 is-warning is-light"
@@ -130,7 +130,7 @@ import UsersService from "@/services/UsersService";
 const statusTags = [
 	{ code: "New", type: "is-light" },
 	{ code: "In Progress", type: "is-info" },
-	{ code: "Done", type: "is-success" },
+	{ code: "Finished", type: "is-success" },
 	{ code: "Canceled", type: "is-warning" },
 ];
 
@@ -167,6 +167,11 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				filtersInProgress: [
+					"Integrity Checking", "Integrity Check Correct", "Integrity Check Failed",
+					"Identity Checking", "Identity Check Correct", "Identity Check Failed",
+					"Similarity Checking", "Similarity Check Correct", "Similarity Check Failed",
+				],
 			},
 		};
 	},
@@ -206,7 +211,8 @@ export default {
 		},
 
 		statusFilter(filter) {
-			this.onFiltersChange({ projects: [], status: [filter] });
+			const newStatusFilter = filter === "In Progress" ? this.table.filtersInProgress : [filter];
+			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 
 		async onFiltersChange(selectedFilters) {
