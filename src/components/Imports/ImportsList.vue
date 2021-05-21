@@ -1,9 +1,9 @@
-<!-- TODO Refactor this for Imports, not Projects -->
 <template>
 	<Table
 		v-show="show"
 		has-reset-sort
 		has-search
+		ref="table"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -39,21 +39,6 @@
 					:tooltip="$t('Show Detail')"
 					@click="showDetailWithId(props.row.id)"
 				/>
-				<ActionButton
-					v-if="userCan.editProject"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.deleteProject"
-					icon="trash"
-					:entity="$t('Project')"
-					:tooltip="$t('Delete')"
-					:disabled="!props.row.deletable"
-					:id="props.row.id"
-					@submitted="onDelete"
-				/>
 			</div>
 		</b-table-column>
 		<template #filterButton>
@@ -65,9 +50,18 @@
 				{{ $t('Advanced Search') }}
 			</b-button>
 			<b-button
+				class="ml-3 is-light"
+				slot="trigger"
+				icon-right="sticky-note"
+				@click="statusFilter('New')"
+			>
+				{{ $t('New') }}
+			</b-button>
+			<b-button
 				class="ml-3 is-info is-light"
 				slot="trigger"
 				icon-right="spinner"
+				@click="statusFilter('In Progress')"
 			>
 				{{ $t('In Progress') }}
 			</b-button>
@@ -75,13 +69,15 @@
 				class="ml-3 is-success is-light"
 				slot="trigger"
 				icon-right="check"
+				@click="statusFilter('Finished')"
 			>
-				{{ $t('Done') }}
+				{{ $t('Finished') }}
 			</b-button>
 			<b-button
 				class="ml-3 is-warning is-light"
 				slot="trigger"
 				icon-right="ban"
+				@click="statusFilter('Canceled')"
 			>
 				{{ $t('Canceled') }}
 			</b-button>
@@ -89,6 +85,7 @@
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
 				<ImportsFilter
+					ref="importFilter"
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
@@ -96,36 +93,58 @@
 		<template #progress>
 			<b-progress :value="table.progress" format="percent" />
 		</template>
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small"
+					@click="resetTableSort"
+				>
+					{{ $t('Reset Table Sort') }}
+				</b-button>
+			</div>
+		</template>
 	</Table>
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
-import DonorService from "@/services/DonorService";
-import permissions from "@/mixins/permissions";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
+import ImportService from "@/services/ImportService";
+import ProjectService from "@/services/ProjectService";
+import { Notification } from "@/utils/UI";
+import UsersService from "@/services/UsersService";
+
+const statusTags = [
+	{ code: "New", type: "is-light" },
+	{ code: "In Progress", type: "is-info" },
+	{ code: "Finished", type: "is-success" },
+	{ code: "Canceled", type: "is-warning" },
+];
 
 export default {
 	name: "ProjectList",
 
 	components: {
-		SafeDelete,
 		Table,
 		ActionButton,
 		ColumnField,
 		ImportsFilter,
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [grid, baseHelper],
 
 	data() {
 		return {
@@ -136,21 +155,23 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", width: "90", sortable: true },
-					{ key: "name", width: "200", sortable: true },
-					{ key: "sectors", width: "150", type: "svgIcon" },
-					{ key: "startDate", type: "datetime", width: "120", sortable: true },
-					{ key: "endDate", type: "datetime", width: "120", sortable: true },
-					{ key: "donors", width: "150" },
-					{ key: "target", label: "Target Households", width: "90" },
-					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
-					{ key: "beneficiariesReached", label: "Beneficiaries Reached", width: "130", sortable: true },
+					{ key: "id", sortable: true },
+					{ key: "title", sortable: true },
+					{ key: "projectId", label: "Project", sortable: true, sortKey: "project" },
+					{ key: "status", type: "tag", customTags: statusTags, sortable: true },
+					{ key: "createdBy", sortable: true },
+					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				filtersInProgress: [
+					"Integrity Checking", "Integrity Check Correct", "Integrity Check Failed",
+					"Identity Checking", "Identity Check Correct", "Identity Check Failed",
+					"Similarity Checking", "Similarity Check Correct", "Similarity Check Failed",
+				],
 			},
 		};
 	},
@@ -163,31 +184,35 @@ export default {
 		this.fetchData();
 	},
 
-	computed: {
-		...mapState(["availableProjects"]),
-	},
-
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await ProjectService.getListOfProjects(
+
+			await ImportService.getListOfImports(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
+				this.filters,
+			).then(({ data, totalCount }) => {
 				this.table.data = [];
+				this.table.progress = 0;
 				this.table.total = totalCount;
-				if (data.length > 0) {
+
+				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		statusFilter(filter) {
+			const newStatusFilter = filter === "In Progress" ? this.table.filtersInProgress : [filter];
+			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 
 		async onFiltersChange(selectedFilters) {
@@ -196,49 +221,54 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const donorIds = [];
+			const projectIds = [];
+			const userIds = [];
+
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].sectors = item.sectors
-					.map((sector) => ({ code: sector, value: sector }));
 
-				donorIds.push(...item.donorIds);
+				projectIds.push(item.projectId);
+				userIds.push(item.createdBy);
 			});
-			this.prepareDonorsForTable([...new Set(donorIds)]);
+
+			this.table.progress = 50;
+
+			this.prepareProjectsForTable([...new Set(projectIds)]);
+			this.prepareUsersForTable([...new Set(userIds)]);
 		},
 
-		async prepareDonorsForTable(ids) {
-			const donors = await this.getDonors(ids);
+		async prepareProjectsForTable(projectIds) {
+			const projects = await this.getProjects(projectIds);
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].donors = this.prepareDonors(item, donors);
+				this.table.data[key].project = projects?.find(({ id }) => id === item.projectId);
+				this.table.data[key].projectId = this.prepareEntityForTable(item.projectId, projects, "name", "None");
 			});
+			this.table.progress = 75;
 			this.reload();
 		},
 
-		prepareDonors(item, donors) {
-			if (!donors?.length || !item.donorIds?.length) return this.$t("None");
-			let result = "";
-
-			item.donorIds.forEach((id) => {
-				const foundDonor = donors.find((donor) => donor.id === id);
-
-				if (foundDonor) {
-					if (result === "") {
-						result = foundDonor.shortname;
-					} else {
-						result += `, ${foundDonor.shortname}`;
-					}
-				}
+		async prepareUsersForTable(userIds) {
+			const users = await this.getUsers(userIds);
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].createdBy = this.prepareEntityForTable(item.createdBy, users, "email", "None");
 			});
-
-			return result;
+			this.table.progress = 100;
+			this.reload();
 		},
 
-		async getDonors(ids) {
-			return DonorService.getListOfDonors(null, null, null, null, ids)
+		async getProjects(ids) {
+			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+		},
+
+		async getUsers(ids) {
+			return UsersService.getListOfUsers(null, null, null, null, ids, "id", false)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
 				});
 		},
 
@@ -246,38 +276,21 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		goToDetail(project) {
-			if (this.userCan.viewProject) this.$router.push({ name: "Import", params: { importId: project.id } });
+		resetFilters() {
+			this.$refs.importFilter.eraseFilters();
 		},
 
-		edit(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onEdit", project);
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
-		onDelete(id) {
-			this.$emit("onDelete", id);
+		goToDetail(importItem) {
+			this.$router.push({ name: "Import", params: { importId: importItem.id } });
 		},
 
 		showDetailWithId(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowDetail", project);
-		},
-
-		async exportProjects(format) {
-			this.exportLoading = true;
-			await ProjectService.exportProjects(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `projects.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+			const importItem = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowDetail", importItem);
 		},
 	},
 };
