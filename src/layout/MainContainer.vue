@@ -98,15 +98,16 @@ export default {
 		async changeForcedPassword({ password }) {
 			this.forcePasswordModal.isWaiting = true;
 
-			await UsersService.changeUsersAttribute(this.user.userId, "password", password).then((response) => {
-				if (response.status === 200) {
-					Toast(this.$t("Password Successfully Updated"), "is-success");
+			await UsersService.changeUsersAttribute(this.user.userId, "password", password)
+				.then((response) => {
+					if (response.status === 200) {
+						Toast(this.$t("Password Successfully Updated"), "is-success");
 
-					this.forcePasswordModal.isOpened = false;
-				}
-			}).catch((e) => {
-				Toast(`${this.$t("Password Was Not Updated")} ${e}`, "is-danger");
-			});
+						this.forcePasswordModal.isOpened = false;
+					}
+				}).catch((e) => {
+					Toast(`${this.$t("Password Was Not Updated")} ${e}`, "is-danger");
+				});
 
 			this.forcePasswordModal.isWaiting = false;
 		},
