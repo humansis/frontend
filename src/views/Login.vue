@@ -146,6 +146,8 @@ export default {
 
 					user.userId = userId;
 					user.token = token;
+					// TODO Take info from endpoint
+					user.changePassword = true;
 
 					await this.storeUser(user);
 
