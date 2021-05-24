@@ -29,6 +29,7 @@
 		>
 			<b-step-item clickable step="1" :label="$t('Start')">
 				<StartStep
+					:status="importStatus"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -37,7 +38,7 @@
 			<b-step-item clickable step="2" :label="$t('Integrity Check')">
 				<IntegrityStep
 					:statistics="statistics"
-					:active-step="activeStep"
+					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -47,7 +48,7 @@
 			<b-step-item clickable step="3" :label="$t('Duplicity Check')">
 				<DuplicityStep
 					:statistics="statistics"
-					:active-step="activeStep"
+					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -57,7 +58,7 @@
 			<b-step-item clickable step="4" :label="$t('Finalisation')">
 				<FinalisationStep
 					:statistics="statistics"
-					:active-step="activeStep"
+					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -93,7 +94,6 @@ export default {
 		},
 
 		importStatus() {
-			console.log(this.importDetail);
 			return this.importDetail?.status || "";
 		},
 

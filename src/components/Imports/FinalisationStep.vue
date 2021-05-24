@@ -112,26 +112,28 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
+			importStatus: "",
 		};
 	},
 
 	props: {
-		activeStep: {
-			type: Number,
-			required: true,
-		},
 		statistics: {
 			type: Object,
 			required: true,
 		},
+		status: {
+			type: String,
+			required: false,
+			default: "",
+		},
 	},
 
 	watch: {
-		activeStep(step) {
-			if (step === 3) console.log("FinalisationStep");
-		},
 		statistics(value) {
 			this.importStatistics = value;
+		},
+		status(value) {
+			this.importStatus = value;
 		},
 	},
 

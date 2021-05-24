@@ -131,14 +131,11 @@ export default {
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
+			importStatus: "",
 		};
 	},
 
 	props: {
-		activeStep: {
-			type: Number,
-			required: true,
-		},
 		statistics: {
 			type: Object,
 			required: true,
@@ -147,17 +144,22 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+		status: {
+			type: String,
+			required: false,
+			default: "",
+		},
 	},
 
 	watch: {
-		activeStep(step) {
-			if (step === 1) console.log("IntegrityStep");
-		},
 		statistics(value) {
 			this.importStatistics = value;
 		},
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
+		},
+		status(value) {
+			this.importStatus = value;
 		},
 	},
 

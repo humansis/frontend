@@ -70,7 +70,22 @@ export default {
 		return {
 			dropFiles: [],
 			startButtonLoading: false,
+			importStatus: "",
 		};
+	},
+
+	props: {
+		status: {
+			type: String,
+			required: false,
+			default: "",
+		},
+	},
+
+	watch: {
+		status(value) {
+			this.importStatus = value;
+		},
 	},
 
 	computed: {
