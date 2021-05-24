@@ -100,9 +100,19 @@
 export default {
 	name: "FinalisationStep",
 
+	data() {
+		return {
+			importStatistics: {},
+		};
+	},
+
 	props: {
 		activeStep: {
 			type: Number,
+			required: true,
+		},
+		statistics: {
+			type: Object,
 			required: true,
 		},
 	},
@@ -110,6 +120,9 @@ export default {
 	watch: {
 		activeStep(step) {
 			if (step === 3) console.log("FinalisationStep");
+		},
+		statistics(value) {
+			this.importStatistics = value;
 		},
 	},
 

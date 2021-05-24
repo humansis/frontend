@@ -94,6 +94,7 @@ export default {
 
 	data() {
 		return {
+			importStatistics: {},
 			file: {},
 			startIntegrityCheckAgainLoading: false,
 		};
@@ -104,11 +105,19 @@ export default {
 			type: Number,
 			required: true,
 		},
+		statistics: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	watch: {
 		activeStep(step) {
 			if (step === 1) console.log("IntegrityStep");
+		},
+		statistics(value) {
+			console.log("statistics", value);
+			this.importStatistics = value;
 		},
 	},
 

@@ -23,6 +23,7 @@
 
 			<b-step-item clickable step="2" :label="$t('Integrity Check')">
 				<IntegrityStep
+					:statistics="statistics"
 					:active-step="activeStep"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -31,6 +32,7 @@
 
 			<b-step-item clickable step="3" :label="$t('Duplicity Check')">
 				<DuplicityStep
+					:statistics="statistics"
 					:active-step="activeStep"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -39,6 +41,7 @@
 
 			<b-step-item clickable step="4" :label="$t('Finalisation')">
 				<FinalisationStep
+					:statistics="statistics"
 					:active-step="activeStep"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -84,15 +87,19 @@ export default {
 	data() {
 		return {
 			importDetail: {},
+			statistics: {},
 			project: {},
 			activeStep: 0,
 		};
 	},
 
-	created() {
+	async created() {
 		const { importId } = this.$route.params;
 
-		if (importId) this.fetchImport(importId);
+		if (importId) {
+			this.fetchImport(importId);
+			this.fetchImportStatistics(importId);
+		}
 	},
 
 	methods: {
@@ -102,6 +109,14 @@ export default {
 				this.fetchProject(data.projectId);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+			});
+		},
+
+		fetchImportStatistics(importId) {
+			ImportService.getStatisticsInImport(importId).then(({ data }) => {
+				this.statistics = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Import Statistics")} ${e}`, "is-danger");
 			});
 		},
 

@@ -161,6 +161,7 @@ export default {
 
 	data() {
 		return {
+			importStatistics: {},
 			file: {},
 		};
 	},
@@ -170,11 +171,18 @@ export default {
 			type: Number,
 			required: true,
 		},
+		statistics: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	watch: {
 		activeStep(step) {
 			if (step === 2) console.log("DuplicityStep");
+		},
+		statistics(value) {
+			this.importStatistics = value;
 		},
 	},
 
