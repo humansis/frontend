@@ -154,7 +154,6 @@ export default {
 		submitUserForm(userForm) {
 			const {
 				id,
-				username,
 				email,
 				password,
 				rights,
@@ -169,7 +168,7 @@ export default {
 			} = userForm;
 
 			const userBody = {
-				username,
+				username: email,
 				email,
 				password,
 				roles: [rights.code],
