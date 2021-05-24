@@ -59,7 +59,8 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import ImportService from "@/services/ImportService";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "StartStep",
@@ -83,9 +84,23 @@ export default {
 		},
 
 		startImport() {
+			const { importId } = this.$route.params;
+
 			this.startButtonLoading = true;
-			// TODO Start Import Service
-			Toast("Import Started", "is-success");
+
+			ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
+				if (status === 200) {
+					Toast("Uploaded Successfully", "is-success");
+					this.$emit("changeImportState", {
+						state: "Integrity Checking",
+						successMessage: "Start Import Success",
+					});
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.startButtonLoading = false;
+			});
 		},
 
 		cancelImport() {

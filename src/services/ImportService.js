@@ -47,8 +47,9 @@ export default {
 	async uploadFilesIntoImport(importId, files) {
 		const formData = new FormData();
 
-		// TODO Iteration for files
-		formData.append("file", files);
+		files.forEach((file) => {
+			formData.append(file.name, file);
+		});
 
 		const { data, status } = await upload({
 			uri: `imports/${importId}/files`,
@@ -59,7 +60,7 @@ export default {
 	},
 
 	async removeFilesFromImport(fileId) {
-		const { data, status } = await upload({
+		const { data, status } = await fetcher({
 			uri: `imports/files/${fileId}`,
 			method: "DELETE",
 		});

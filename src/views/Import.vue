@@ -1,13 +1,11 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered mb-3">{{ $t('Import') }} import123367_2021</h1>
+		<h1 class="title has-text-centered mb-3">{{ importTitle }}</h1>
 		<p class="has-text-centered mb-3">
-			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque
-			faucibus fringilla. Vivamus ac leo pretium faucibus. Praesent vitae arcu tempor neque
-			lacinia pretium. Maecenas libero. Nunc tincidunt ante vitae massa. Nulla non lectus
+			{{ importDescription }}
 		</p>
 		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
-			Quanti Project
+			{{ importProject }}
 		</h2>
 
 		<b-steps
@@ -17,7 +15,10 @@
 			:has-navigation="false"
 		>
 			<b-step-item clickable step="1" :label="$t('Start')">
-				<StartStep @canceledImport="onCancelImport" />
+				<StartStep
+					@canceled-import="onCancelImport"
+					@change-import-state="onChangeImportState"
+				/>
 			</b-step-item>
 
 			<b-step-item clickable step="2" :label="$t('Integrity Check')">
@@ -40,7 +41,9 @@ import StartStep from "@/components/Imports/StartStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import DuplicityStep from "@/components/Imports/DuplicityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
+import ImportService from "@/services/ImportService";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "Import",
@@ -52,13 +55,52 @@ export default {
 		FinalisationStep,
 	},
 
+	computed: {
+		importTitle() {
+			return this.importDetail?.title || "";
+		},
+
+		importDescription() {
+			return this.importDetail?.description || "";
+		},
+
+		importProject() {
+			return this.project?.name || "";
+		},
+	},
+
 	data() {
 		return {
+			importDetail: {},
+			project: {},
 			activeStep: 0,
 		};
 	},
 
+	created() {
+		const { importId } = this.$route.params;
+
+		if (importId) this.fetchImport(importId);
+	},
+
 	methods: {
+		fetchImport(importId) {
+			ImportService.getDetailOfImport(importId).then(({ data }) => {
+				this.importDetail = data;
+				this.fetchProject(data.projectId);
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+			});
+		},
+
+		fetchProject(projectId) {
+			ProjectService.getDetailOfProject(projectId).then(({ data }) => {
+				this.project = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
+			});
+		},
+
 		onCancelImport() {
 			this.$buefy.dialog.confirm({
 				title: this.$t("Cancel Import"),
@@ -72,8 +114,20 @@ export default {
 			});
 		},
 
+		onChangeImportState(state, successMessage) {
+			const { importId } = this.$route.params;
+
+			ImportService.changeImportState(importId, state).then(({ status }) => {
+				if (status === 200) {
+					Toast(successMessage, "is-success");
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+			});
+		},
+
 		cancelImport() {
-			Toast("Import Canceled", "is-success");
+			this.onChangeImportState("Canceled", "Canceled Successfully");
 		},
 	},
 };
