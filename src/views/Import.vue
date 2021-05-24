@@ -94,15 +94,19 @@ export default {
 	},
 
 	async created() {
-		const { importId } = this.$route.params;
-
-		if (importId) {
-			this.fetchImport(importId);
-			this.fetchImportStatistics(importId);
-		}
+		this.fetchData();
 	},
 
 	methods: {
+		fetchData() {
+			const { importId } = this.$route.params;
+
+			if (importId) {
+				this.fetchImport(importId);
+				this.fetchImportStatistics(importId);
+			}
+		},
+
 		fetchImport(importId) {
 			ImportService.getDetailOfImport(importId).then(({ data }) => {
 				this.importDetail = data;
@@ -145,7 +149,7 @@ export default {
 			const { importId } = this.$route.params;
 
 			ImportService.changeImportState(importId, state).then(({ status }) => {
-				if (status === 200) {
+				if (status === 202) {
 					Toast(successMessage, "is-success");
 				}
 			}).catch((e) => {
@@ -153,8 +157,9 @@ export default {
 			});
 		},
 
-		cancelImport() {
-			this.onChangeImportState("Canceled", "Canceled Successfully");
+		async cancelImport() {
+			await this.onChangeImportState("Canceled", "Canceled Successfully");
+			await this.fetchData();
 		},
 	},
 };
