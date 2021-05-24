@@ -71,13 +71,15 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
+					v-if="amountDuplicities"
 					type="is-primary"
 					icon-right="tasks"
-					@click="resolveSimilarities"
+					@click="duplicitiesContentOpened = !duplicitiesContentOpened"
 				>
 					{{ $t('Resolve Similarities') }}
 				</b-button>
 				<b-button
+					v-if="!amountDuplicities"
 					type="is-primary"
 					icon-right="play-circle"
 					@click="goToFinalisation"
@@ -86,69 +88,71 @@
 				</b-button>
 			</div>
 
-			<hr>
+			<div v-if="duplicitiesContentOpened">
+				<hr>
 
-			<h2 class="subtitle is-5 mb-4">
-				Similarity or Duplicity Cases
-			</h2>
+				<h2 class="subtitle is-5 mb-4">
+					Similarity or Duplicity Cases
+				</h2>
 
-			<hr>
+				<hr>
 
-			<div class="content">
-				<div class="resolve-table">
-					<table>
-						<thead>
-							<tr>
-								<th>Imported Record</th>
-								<th>Records From Database</th>
-								<th>Similarities</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-									eget erat. Vestibulum fermentum tortor id mi
-								</td>
-								<td>
-									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-									eget erat. Vestibulum fermentum tortor id mi
-								</td>
-								<td>
-									Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-									eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-									eget erat. Vestibulum fermentum tortor id mi
-								</td>
-								<td>
-									<b-button
-										type="is-info is-light"
-										icon-right="play-circle"
-									>
-										{{ $t('Merge with this') }}
-									</b-button>
-								</td>
-							</tr>
-							<tr>
-								<td />
-								<td />
-								<td />
-								<td>
-									<b-upload v-model="file">
-										<span class="file-cta button is-light">
-											<span v-if="file" class="file-label">
-												{{ file.name || "Import as New Beneficiary"}}
+				<div class="content">
+					<div class="resolve-table">
+						<table>
+							<thead>
+								<tr>
+									<th>Imported Record</th>
+									<th>Records From Database</th>
+									<th>Similarities</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+										eget erat. Vestibulum fermentum tortor id mi
+									</td>
+									<td>
+										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+										eget erat. Vestibulum fermentum tortor id mi
+									</td>
+									<td>
+										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+										eget erat. Vestibulum fermentum tortor id mi
+									</td>
+									<td>
+										<b-button
+											type="is-info is-light"
+											icon-right="play-circle"
+										>
+											{{ $t('Merge with this') }}
+										</b-button>
+									</td>
+								</tr>
+								<tr>
+									<td />
+									<td />
+									<td />
+									<td>
+										<b-upload v-model="file">
+											<span class="file-cta button is-light">
+												<span v-if="file" class="file-label">
+													{{ file.name || "Import as New Beneficiary"}}
+												</span>
+												<b-icon icon="file-upload" />
 											</span>
-											<b-icon icon="file-upload" />
-										</span>
-									</b-upload>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<hr>
+										</b-upload>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<hr>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -162,6 +166,7 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
+			duplicitiesContentOpened: false,
 			file: {},
 		};
 	},
@@ -202,15 +207,11 @@ export default {
 
 	methods: {
 		goToFinalisation() {
-			// TODO If no errors, I can emit
+			// TODO Solve this
 			this.$emit("changeImportState", {
 				state: "",
-				successMessage: "Finalisation Started Successfully",
+				successMessage: "",
 			});
-		},
-
-		resolveSimilarities() {
-			// TODO
 		},
 
 		cancelImport() {
