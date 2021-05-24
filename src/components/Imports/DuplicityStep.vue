@@ -2,10 +2,22 @@
 	<div class="card">
 		<div class="card-content">
 			<div class="content">
-				<b-progress size="is-large">
+				<b-progress
+					v-if="totalEntries"
+					size="is-large"
+					:max="totalEntries"
+				>
 					<template #bar>
-						<b-progress-bar type="is-success" show-value :value="90"  />
-						<b-progress-bar type="is-danger" show-value :value="10" />
+						<b-progress-bar
+							type="is-success"
+							show-value
+							:value="totalEntries - amountDuplicities"
+						/>
+						<b-progress-bar
+							type="is-warning"
+							show-value
+							:value="amountDuplicities"
+						/>
 					</template>
 				</b-progress>
 				<table>
@@ -18,43 +30,31 @@
 									type="is-light"
 									size="is-medium"
 								>
-									100
+									{{ totalEntries }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>Similarities found:</td>
+							<td>Similarities or Duplicities Found:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
 									type="is-warning"
 									size="is-medium"
 								>
-									10
+									{{ amountDuplicities }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>Duplicities found:</td>
-							<td class="has-text-right">
-								<b-tag
-									class="has-text-weight-bold"
-									type="is-warning"
-									size="is-medium"
-								>
-									10
-								</b-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>Duplicities corrected/merged:</td>
+							<td>Similarities or Duplicities Corrected/Merged:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
 									type="is-success"
 									size="is-medium"
 								>
-									10
+									{{ amountDuplicitiesResolved }}
 								</b-tag>
 							</td>
 						</tr>
@@ -183,6 +183,20 @@ export default {
 		},
 		statistics(value) {
 			this.importStatistics = value;
+		},
+	},
+
+	computed: {
+		totalEntries() {
+			return this.importStatistics?.totalEntries || 0;
+		},
+
+		amountDuplicities() {
+			return this.importStatistics?.amountDuplicities || 0;
+		},
+
+		amountDuplicitiesResolved() {
+			return this.importStatistics?.amountDuplicitiesResolved || 0;
 		},
 	},
 

@@ -2,12 +2,6 @@
 	<div class="card">
 		<div class="card-content">
 			<div class="content">
-				<b-progress size="is-large">
-					<template #bar>
-						<b-progress-bar type="is-success" show-value :value="90"  />
-						<b-progress-bar type="is-danger" show-value :value="10" />
-					</template>
-				</b-progress>
 				<table>
 					<tbody>
 						<tr>
@@ -18,7 +12,19 @@
 									type="is-light"
 									size="is-medium"
 								>
-									100
+									{{ totalEntries }}
+								</b-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>Corrected Errors:</td>
+							<td class="has-text-right">
+								<b-tag
+									class="has-text-weight-bold"
+									type="is-success"
+									size="is-medium"
+								>
+									{{ amountIntegrityCorrect }}
 								</b-tag>
 							</td>
 						</tr>
@@ -30,43 +36,43 @@
 									type="is-danger"
 									size="is-medium"
 								>
-									10
+									{{ amountIntegrityFailed }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>Duplicities resolved:</td>
+							<td>Similarities or Duplicities Found:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
-									type="is-danger"
+									type="is-warning"
 									size="is-medium"
 								>
-									10
+									{{ amountDuplicities }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>Similarities resolved:</td>
+							<td>Similarities or Duplicities Corrected/Merged:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
-									type="is-danger"
+									type="is-success"
 									size="is-medium"
 								>
-									10
+									{{ amountDuplicitiesResolved }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>Records to Import:</td>
+							<td>Final Records to Import</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
-									type="is-danger"
+									type="is-success"
 									size="is-medium"
 								>
-									10
+									{{ amountEntriesToImport }}
 								</b-tag>
 							</td>
 						</tr>
@@ -123,6 +129,32 @@ export default {
 		},
 		statistics(value) {
 			this.importStatistics = value;
+		},
+	},
+
+	computed: {
+		totalEntries() {
+			return this.importStatistics?.totalEntries || 0;
+		},
+
+		amountIntegrityCorrect() {
+			return this.importStatistics?.amountIntegrityCorrect || 0;
+		},
+
+		amountIntegrityFailed() {
+			return this.importStatistics?.amountIntegrityFailed || 0;
+		},
+
+		amountDuplicities() {
+			return this.importStatistics?.amountDuplicities || 0;
+		},
+
+		amountDuplicitiesResolved() {
+			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		},
+
+		amountEntriesToImport() {
+			return this.importStatistics?.amountEntriesToImport || 0;
 		},
 	},
 

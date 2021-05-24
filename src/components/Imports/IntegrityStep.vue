@@ -2,10 +2,22 @@
 	<div class="card">
 		<div class="card-content">
 			<div class="content">
-				<b-progress size="is-large">
+				<b-progress
+					v-if="totalEntries"
+					size="is-large"
+					:max="totalEntries"
+				>
 					<template #bar>
-						<b-progress-bar type="is-success" show-value :value="90"  />
-						<b-progress-bar type="is-danger" show-value :value="10" />
+						<b-progress-bar
+							type="is-success"
+							show-value
+							:value="totalEntries - amountIntegrityFailed"
+						/>
+						<b-progress-bar
+							type="is-danger"
+							show-value
+							:value="amountIntegrityFailed"
+						/>
 					</template>
 				</b-progress>
 				<table>
@@ -18,7 +30,19 @@
 									type="is-light"
 									size="is-medium"
 								>
-									100
+									{{ totalEntries }}
+								</b-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>Corrected Errors:</td>
+							<td class="has-text-right">
+								<b-tag
+									class="has-text-weight-bold"
+									type="is-success"
+									size="is-medium"
+								>
+									{{ amountIntegrityCorrect }}
 								</b-tag>
 							</td>
 						</tr>
@@ -30,7 +54,7 @@
 									type="is-danger"
 									size="is-medium"
 								>
-									10
+									{{ amountIntegrityFailed }}
 								</b-tag>
 							</td>
 						</tr>
@@ -124,6 +148,18 @@ export default {
 	computed: {
 		uploadedFile() {
 			return this.file?.name;
+		},
+
+		totalEntries() {
+			return this.importStatistics?.totalEntries || 0;
+		},
+
+		amountIntegrityCorrect() {
+			return this.importStatistics?.amountIntegrityCorrect || 0;
+		},
+
+		amountIntegrityFailed() {
+			return this.importStatistics?.amountIntegrityFailed || 0;
 		},
 	},
 
