@@ -22,6 +22,7 @@
 
 		<b-steps
 			v-model="activeStep"
+			ref="importSteps"
 			animated
 			rounded
 			:has-navigation="false"
@@ -37,6 +38,7 @@
 				<IntegrityStep
 					:statistics="statistics"
 					:active-step="activeStep"
+					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -46,6 +48,7 @@
 				<DuplicityStep
 					:statistics="statistics"
 					:active-step="activeStep"
+					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -55,6 +58,7 @@
 				<FinalisationStep
 					:statistics="statistics"
 					:active-step="activeStep"
+					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -137,6 +141,7 @@ export default {
 			statistics: {},
 			project: {},
 			activeStep: 0,
+			loadingChangeStateButton: false,
 		};
 	},
 
@@ -195,14 +200,18 @@ export default {
 		onChangeImportState(state, successMessage) {
 			const { importId } = this.$route.params;
 
-			// TODO Start component loading
+			// TODO Component loading
+			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, state).then(({ status }) => {
 				if (status === 202) {
 					Toast(this.$t(successMessage), "is-success");
+					this.$router.push({ name: "Imports" });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.loadingChangeStateButton = false;
 			});
 		},
 

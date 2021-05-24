@@ -82,6 +82,7 @@
 					v-if="!amountDuplicities"
 					type="is-primary"
 					icon-right="play-circle"
+					:loading="changeStateButtonLoading"
 					@click="goToFinalisation"
 				>
 					{{ $t('Go to Finalisation') }}
@@ -168,6 +169,7 @@ export default {
 			importStatistics: {},
 			duplicitiesContentOpened: false,
 			file: {},
+			changeStateButtonLoading: false,
 		};
 	},
 
@@ -180,6 +182,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	watch: {
@@ -188,6 +194,9 @@ export default {
 		},
 		statistics(value) {
 			this.importStatistics = value;
+		},
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
 		},
 	},
 

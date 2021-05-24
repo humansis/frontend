@@ -76,6 +76,7 @@
 					v-if="!amountIntegrityFailed"
 					type="is-primary"
 					icon-right="play-circle"
+					:loading="changeStateButtonLoading"
 					@click="startDuplicityCheck"
 				>
 					{{ $t('Start Duplicity Check') }}
@@ -129,6 +130,7 @@ export default {
 			file: {},
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
+			changeStateButtonLoading: false,
 		};
 	},
 
@@ -141,6 +143,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	watch: {
@@ -149,6 +155,9 @@ export default {
 		},
 		statistics(value) {
 			this.importStatistics = value;
+		},
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
 		},
 	},
 
