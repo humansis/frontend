@@ -110,7 +110,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: ["viewDistribution", "editDistribution"],
+									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},
