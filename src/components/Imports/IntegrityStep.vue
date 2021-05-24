@@ -90,6 +90,19 @@ export default {
 		};
 	},
 
+	props: {
+		activeStep: {
+			type: Number,
+			required: true,
+		},
+	},
+
+	watch: {
+		activeStep(step) {
+			if (step === 1) console.log("IntegrityStep");
+		},
+	},
+
 	computed: {
 		uploadedFile() {
 			return this.file?.name;

@@ -162,5 +162,18 @@ export default {
 			file: {},
 		};
 	},
+
+	props: {
+		activeStep: {
+			type: Number,
+			required: true,
+		},
+	},
+
+	watch: {
+		activeStep(step) {
+			if (step === 2) console.log("DuplicityStep");
+		},
+	},
 };
 </script>

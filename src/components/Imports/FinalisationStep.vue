@@ -97,5 +97,18 @@
 <script>
 export default {
 	name: "FinalisationStep",
+
+	props: {
+		activeStep: {
+			type: Number,
+			required: true,
+		},
+	},
+
+	watch: {
+		activeStep(step) {
+			if (step === 3) console.log("FinalisationStep");
+		},
+	},
 };
 </script>

@@ -22,15 +22,15 @@
 			</b-step-item>
 
 			<b-step-item clickable step="2" :label="$t('Integrity Check')">
-				<IntegrityStep />
+				<IntegrityStep :active-step="activeStep" />
 			</b-step-item>
 
 			<b-step-item clickable step="3" :label="$t('Duplicity Check')">
-				<DuplicityStep />
+				<DuplicityStep :active-step="activeStep" />
 			</b-step-item>
 
 			<b-step-item clickable step="4" :label="$t('Finalisation')">
-				<FinalisationStep />
+				<FinalisationStep :active-step="activeStep" />
 			</b-step-item>
 		</b-steps>
 	</div>
