@@ -126,12 +126,21 @@ import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
+import consts from "@/utils/importConst";
 
 const statusTags = [
-	{ code: "New", type: "is-light" },
-	{ code: "In Progress", type: "is-info" },
-	{ code: "Finished", type: "is-success" },
-	{ code: "Canceled", type: "is-warning" },
+	{ code: consts.STATUS.NEW, type: "is-light" },
+	{ code: consts.STATUS.INTEGRITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.INTEGRITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.INTEGRITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.IDENTITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.IDENTITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.IDENTITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.SIMILARITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.SIMILARITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.FINISH, type: "is-success" },
+	{ code: consts.STATUS.CANCEL, type: "is-warning" },
 ];
 
 export default {

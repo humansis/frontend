@@ -1,12 +1,24 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered mb-3">{{ importTitle }}</h1>
+		<h1 class="title has-text-centered mb-3">
+			{{ importTitle }}
+		</h1>
 		<p class="has-text-centered mb-3">
 			{{ importDescription }}
 		</p>
-		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
+		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mb-4">
 			{{ importProject }}
 		</h2>
+		<div class="has-text-centered mb-5">
+			<b-tag
+				v-if="importStatus"
+				class="has-text-weight-bold"
+				size="is-small"
+				:type="importStatusType"
+			>
+				{{ $t(importStatus) }}
+			</b-tag>
+		</div>
 
 		<b-steps
 			v-model="activeStep"
@@ -59,6 +71,7 @@ import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
+import consts from "@/utils/importConst";
 
 export default {
 	name: "Import",
@@ -75,12 +88,46 @@ export default {
 			return this.importDetail?.title || "";
 		},
 
+		importStatus() {
+			console.log(this.importDetail);
+			return this.importDetail?.status || "";
+		},
+
 		importDescription() {
 			return this.importDetail?.description || "";
 		},
 
 		importProject() {
 			return this.project?.name || "";
+		},
+
+		importStatusType() {
+			let result = "";
+
+			switch (this.importStatus) {
+				case consts.STATUS.CANCEL:
+					result = "is-warning";
+					break;
+				case consts.STATUS.FINISH:
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+					result = "is-success";
+					break;
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+					result = "is-danger";
+					break;
+				case consts.STATUS.NEW:
+				case consts.STATUS.INTEGRITY_CHECK:
+				case consts.STATUS.IDENTITY_CHECK:
+				case consts.STATUS.SIMILARITY_CHECK:
+				default:
+					result = "is-info";
+			}
+
+			return result;
 		},
 	},
 
