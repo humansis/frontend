@@ -15,7 +15,7 @@
 									size="is-large"
 								/>
 							</p>
-							<p>Drop your files here or click to upload</p>
+							<p>{{ $t("Drop your files here or click to upload") }}</p>
 						</div>
 					</section>
 				</b-upload>
@@ -90,7 +90,7 @@ export default {
 
 			ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
 				if (status === 200) {
-					Toast("Uploaded Successfully", "is-success");
+					Toast(this.$t("Uploaded Successfully"), "is-success");
 					this.$emit("changeImportState", {
 						state: "Integrity Checking",
 						successMessage: "Integrity Check Started Successfully",

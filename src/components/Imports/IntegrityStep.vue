@@ -73,6 +73,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
+					v-if="!amountIntegrityFailed"
 					type="is-primary"
 					icon-right="play-circle"
 					@click="startDuplicityCheck"
@@ -80,13 +81,18 @@
 					{{ $t('Start Duplicity Check') }}
 				</b-button>
 				<b-button
+					v-if="amountIntegrityFailed"
 					type="is-primary"
 					icon-right="file-download"
+					:loading="downloadAffectedRecordsLoading"
 					@click="downloadAffectedRecords"
 				>
 					{{ $t('Download Affected Records') }}
 				</b-button>
-				<b-upload v-model="file">
+				<b-upload
+					v-if="amountIntegrityFailed"
+					v-model="file"
+				>
 					<span class="file-cta button is-primary">
 						<span v-if="file" class="file-label">
 							{{ file.name || "Upload Corrected Records"}}
@@ -121,6 +127,7 @@ export default {
 			importStatistics: {},
 			file: {},
 			startIntegrityCheckAgainLoading: false,
+			downloadAffectedRecordsLoading: false,
 		};
 	},
 
@@ -140,7 +147,6 @@ export default {
 			if (step === 1) console.log("IntegrityStep");
 		},
 		statistics(value) {
-			console.log("statistics", value);
 			this.importStatistics = value;
 		},
 	},
@@ -165,13 +171,29 @@ export default {
 
 	methods: {
 		downloadAffectedRecords() {
-			// TODO
+			this.downloadAffectedRecordsLoading = true;
+
+			ImportService.getFileWithInvalidEntriesFromImport().then(({ data }) => {
+				const blob = new Blob([data], { type: data.type });
+				const link = document.createElement("a");
+				link.href = window.URL.createObjectURL(blob);
+				link.download = "affectedImportRecords.xls";
+				link.click();
+			}).catch((e) => {
+				if (e.message) {
+					Notification(
+						`${this.$t("Downloaded File")} ${e}`,
+						"is-danger",
+					);
+				}
+			}).finally(() => {
+				this.downloadAffectedRecordsLoading = false;
+			});
 		},
 
 		startDuplicityCheck() {
-			// TODO If no errors, I can emit
 			this.$emit("changeImportState", {
-				state: "",
+				state: "Identity Checking",
 				successMessage: "Duplicity Check Started Successfully",
 			});
 		},

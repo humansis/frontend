@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, upload } from "@/utils/fetcher";
 
 export default {
 	async getListOfImports(page, size, sort, search = null, filters = null) {
@@ -82,10 +82,8 @@ export default {
 	},
 
 	async getFileWithInvalidEntriesFromImport(importId) {
-		const { data, status } = await fetcher({
-			uri: `imports/${importId}/invalid-files`,
-		});
-		return { data, status };
+		const { data } = await download({ uri: `imports/${importId}/invalid-files` });
+		return { data };
 	},
 
 	async getImportItemDetail(queueId) {

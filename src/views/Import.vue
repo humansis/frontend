@@ -148,6 +148,8 @@ export default {
 		onChangeImportState(state, successMessage) {
 			const { importId } = this.$route.params;
 
+			// TODO Start component loading
+
 			ImportService.changeImportState(importId, state).then(({ status }) => {
 				if (status === 202) {
 					Toast(successMessage, "is-success");
