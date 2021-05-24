@@ -44,18 +44,21 @@
 				<b-button
 					type="is-light is-danger"
 					icon-right="ban"
+					@click="cancelImport"
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
 					type="is-primary"
 					icon-right="play-circle"
+					@click="startDuplicityCheck"
 				>
 					{{ $t('Start Duplicity Check') }}
 				</b-button>
 				<b-button
 					type="is-primary"
 					icon-right="file-download"
+					@click="downloadAffectedRecords"
 				>
 					{{ $t('Download Affected Records') }}
 				</b-button>
@@ -71,6 +74,8 @@
 					v-if="uploadedFile"
 					type="is-primary"
 					icon-right="play-circle"
+					:loading="startIntegrityCheckAgainLoading"
+					@click="startIntegrityCheckAgain"
 				>
 					{{ $t('Start Integrity Check Again') }}
 				</b-button>
@@ -81,12 +86,16 @@
 </template>
 
 <script>
+import ImportService from "@/services/ImportService";
+import { Notification, Toast } from "@/utils/UI";
+
 export default {
 	name: "IntegrityStep",
 
 	data() {
 		return {
 			file: {},
+			startIntegrityCheckAgainLoading: false,
 		};
 	},
 
@@ -106,6 +115,44 @@ export default {
 	computed: {
 		uploadedFile() {
 			return this.file?.name;
+		},
+	},
+
+	methods: {
+		downloadAffectedRecords() {
+			// TODO
+		},
+
+		startDuplicityCheck() {
+			// TODO If no errors, I can emit
+			this.$emit("changeImportState", {
+				state: "",
+				successMessage: "Duplicity Check Started Successfully",
+			});
+		},
+
+		startIntegrityCheckAgain() {
+			const { importId } = this.$route.params;
+
+			this.startIntegrityCheckAgainLoading = true;
+
+			ImportService.uploadFilesIntoImport(importId, [this.file]).then(({ status }) => {
+				if (status === 200) {
+					Toast("Uploaded Successfully", "is-success");
+					this.$emit("changeImportState", {
+						state: "Integrity Checking",
+						successMessage: "Integrity Check Started Successfully",
+					});
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.startIntegrityCheckAgainLoading = false;
+			});
+		},
+
+		cancelImport() {
+			this.$emit("canceledImport");
 		},
 	},
 };

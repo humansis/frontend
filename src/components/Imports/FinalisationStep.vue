@@ -80,12 +80,14 @@
 				<b-button
 					type="is-light is-danger"
 					icon-right="ban"
+					@click="cancelImport"
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
 					type="is-primary"
 					icon-right="save"
+					@click="approveAndSave"
 				>
 					{{ $t('Approve and Save') }}
 				</b-button>
@@ -108,6 +110,20 @@ export default {
 	watch: {
 		activeStep(step) {
 			if (step === 3) console.log("FinalisationStep");
+		},
+	},
+
+	methods: {
+		approveAndSave() {
+			// TODO If no errors, I can emit
+			this.$emit("changeImportState", {
+				state: "",
+				successMessage: "Approved and Saved",
+			});
+		},
+
+		cancelImport() {
+			this.$emit("canceledImport");
 		},
 	},
 };

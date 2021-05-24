@@ -66,18 +66,21 @@
 				<b-button
 					type="is-light is-danger"
 					icon-right="ban"
+					@click="cancelImport"
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
 					type="is-primary"
 					icon-right="tasks"
+					@click="resolveSimilarities"
 				>
 					{{ $t('Resolve Similarities') }}
 				</b-button>
 				<b-button
 					type="is-primary"
 					icon-right="play-circle"
+					@click="goToFinalisation"
 				>
 					{{ $t('Go to Finalisation') }}
 				</b-button>
@@ -147,7 +150,6 @@
 					</table>
 					<hr>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -173,6 +175,24 @@ export default {
 	watch: {
 		activeStep(step) {
 			if (step === 2) console.log("DuplicityStep");
+		},
+	},
+
+	methods: {
+		goToFinalisation() {
+			// TODO If no errors, I can emit
+			this.$emit("changeImportState", {
+				state: "",
+				successMessage: "Finalisation Started Successfully",
+			});
+		},
+
+		resolveSimilarities() {
+			// TODO
+		},
+
+		cancelImport() {
+			this.$emit("canceledImport");
 		},
 	},
 };

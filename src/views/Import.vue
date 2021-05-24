@@ -22,15 +22,27 @@
 			</b-step-item>
 
 			<b-step-item clickable step="2" :label="$t('Integrity Check')">
-				<IntegrityStep :active-step="activeStep" />
+				<IntegrityStep
+					:active-step="activeStep"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
+				/>
 			</b-step-item>
 
 			<b-step-item clickable step="3" :label="$t('Duplicity Check')">
-				<DuplicityStep :active-step="activeStep" />
+				<DuplicityStep
+					:active-step="activeStep"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
+				/>
 			</b-step-item>
 
 			<b-step-item clickable step="4" :label="$t('Finalisation')">
-				<FinalisationStep :active-step="activeStep" />
+				<FinalisationStep
+					:active-step="activeStep"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
+				/>
 			</b-step-item>
 		</b-steps>
 	</div>
