@@ -16,8 +16,8 @@
 		>
 			<b-step-item clickable step="1" :label="$t('Start')">
 				<StartStep
-					@canceled-import="onCancelImport"
-					@change-import-state="onChangeImportState"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
 				/>
 			</b-step-item>
 
