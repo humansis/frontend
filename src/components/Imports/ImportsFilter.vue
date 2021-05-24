@@ -1,6 +1,6 @@
-<!-- TODO Refactor this for Imports, not Projects -->
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -9,10 +9,8 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByParams } from "@/utils/codeList";
-import currencies from "@/utils/currencies";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "ImportsFilter",
@@ -24,103 +22,69 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: {
-				currencies: [],
-				statuses: [],
-				assistances: [],
-				beneficiaries: [],
+				projects: [],
+				status: [],
 			},
 			filtersOptions: {
-				currencies: {
-					name: "Currency",
-					placeholder: this.$t("Select Currency"),
-					label: "value",
-					trackBy: "value",
-					multiple: true,
-					loading: false,
-					data: currencies,
-				},
-				statuses: {
-					name: "Status",
-					placeholder: this.$t("Select Status"),
-					multiple: true,
-					data: [
-						{ code: 0, value: this.$t("Unassigned") },
-						{ code: 1, value: this.$t("Distributed") },
-						{ code: 2, value: this.$t("Used") },
-						{ code: 3, value: this.$t("Deactivated") },
-					],
-				},
-				assistances: {
-					name: "Assistance",
-					placeholder: this.$t("Select Assistance"),
+				project: {
+					name: "Project",
 					trackBy: "id",
 					label: "name",
-					multiple: true,
 					loading: true,
+					placeholder: this.$t("Select Project"),
 					data: [],
-					filterKey: "distributions",
 				},
-				beneficiaries: {
-					name: "Beneficiary",
-					placeholder: this.$t("Select Beneficiary"),
-					trackBy: "id",
-					label: "localFamilyName",
-					multiple: true,
-					loading: false,
-					data: [],
+				status: {
+					name: "Status",
+					placeholder: this.$t("Select Status"),
+					multiple: false,
+					data: [
+						{ code: "New", value: this.$t("New") },
+						{ code: "Integrity Checking", value: this.$t("Integrity Checking") },
+						{ code: "Integrity Check Correct", value: this.$t("Integrity Check Correct") },
+						{ code: "Integrity Check Failed", value: this.$t("Integrity Check Failed") },
+						{ code: "Identity Checking", value: this.$t("Identity Checking") },
+						{ code: "Identity Check Correct", value: this.$t("Identity Check Correct") },
+						{ code: "Identity Check Failed", value: this.$t("Identity Check Failed") },
+						{ code: "Similarity Checking", value: this.$t("Similarity Checking") },
+						{ code: "Similarity Check Correct", value: this.$t("Similarity Check Correct") },
+						{ code: "Similarity Check Failed", value: this.$t("Similarity Check Failed") },
+						{ code: "Finished", value: this.$t("Finished") },
+						{ code: "Canceled", value: this.$t("Canceled") },
+					],
 				},
 			},
 		};
 	},
 
-	mounted() {
-		this.fetchAssistances();
+	created() {
+		this.fetchProjects();
 	},
 
 	methods: {
-		filterChanged(filters, filtername) {
-			if (filtername === "assistances") {
-				this.fetchBeneficiaries(filters.distributions);
-			}
+		filterChanged(filters) {
 			this.$emit("filtersChanged", filters);
 		},
 
-		async fetchAssistances() {
-			await AssistancesService.getListOfAssistances()
+		async fetchProjects() {
+			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
-					this.filtersOptions.assistances.data = data;
+					this.filtersOptions.project.data = data;
+					this.filtersOptions.project.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
-
-			this.filtersOptions.assistances.loading = false;
 		},
 
-		async fetchBeneficiaries(ids) {
-			if (ids?.length) {
-				this.filtersOptions.beneficiaries.loading = true;
-				this.filtersOptions.beneficiaries.data = [];
-				const promise = ids.map(async (id) => {
-					await AssistancesService.getListOfBeneficiaries(id)
-						.then(({ data }) => {
-							data.forEach((item) => {
-								if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
-									this.filtersOptions.beneficiaries.data.push(item);
-								}
-							});
-						})
-						.catch((e) => {
-							if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-						});
-				});
-				await Promise.all(promise);
-				this.selectedFiltersOptions
-					.beneficiaries = getArrayOfCodeListByParams(this.selectedFiltersOptions.beneficiaries, this.filtersOptions.beneficiaries.data, "id", "id");
-				this.filtersOptions.beneficiaries.loading = false;
-			} else {
-				this.selectedFiltersOptions.beneficiaries = [];
-			}
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				projects: [],
+				status: [],
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
+			});
 		},
 	},
 };
