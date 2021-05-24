@@ -118,6 +118,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
+import consts from "@/utils/importConst";
 
 export default {
 	name: "IntegrityStep",
@@ -193,7 +194,7 @@ export default {
 
 		startDuplicityCheck() {
 			this.$emit("changeImportState", {
-				state: "Identity Checking",
+				state: consts.STATE.IDENTITY_CHECKING,
 				successMessage: "Duplicity Check Started Successfully",
 			});
 		},
@@ -207,7 +208,7 @@ export default {
 				if (status === 200) {
 					Toast("Uploaded Successfully", "is-success");
 					this.$emit("changeImportState", {
-						state: "Integrity Checking",
+						state: consts.STATE.INTEGRITY_CHECKING,
 						successMessage: "Integrity Check Started Successfully",
 					});
 				}

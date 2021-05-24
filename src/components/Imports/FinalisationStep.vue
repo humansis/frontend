@@ -91,6 +91,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
+					v-if="amountEntriesToImport"
 					type="is-primary"
 					icon-right="save"
 					@click="approveAndSave"
@@ -103,6 +104,8 @@
 </template>
 
 <script>
+import consts from "@/utils/importConst";
+
 export default {
 	name: "FinalisationStep",
 
@@ -160,9 +163,8 @@ export default {
 
 	methods: {
 		approveAndSave() {
-			// TODO If no errors, I can emit
 			this.$emit("changeImportState", {
-				state: "",
+				state: consts.STATE.FINISHED,
 				successMessage: "Approved and Saved",
 			});
 		},

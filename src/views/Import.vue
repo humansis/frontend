@@ -199,7 +199,7 @@ export default {
 
 			ImportService.changeImportState(importId, state).then(({ status }) => {
 				if (status === 202) {
-					Toast(successMessage, "is-success");
+					Toast(this.$t(successMessage), "is-success");
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
@@ -207,7 +207,7 @@ export default {
 		},
 
 		async cancelImport() {
-			await this.onChangeImportState("Canceled", "Canceled Successfully");
+			await this.onChangeImportState(consts.STATE.CANCELED, "Canceled Successfully");
 			await this.fetchData();
 		},
 	},

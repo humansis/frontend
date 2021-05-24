@@ -61,6 +61,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
+import consts from "@/utils/importConst";
 
 export default {
 	name: "StartStep",
@@ -92,7 +93,7 @@ export default {
 				if (status === 200) {
 					Toast(this.$t("Uploaded Successfully"), "is-success");
 					this.$emit("changeImportState", {
-						state: "Integrity Checking",
+						state: consts.STATE.INTEGRITY_CHECKING,
 						successMessage: "Integrity Check Started Successfully",
 					});
 				}
