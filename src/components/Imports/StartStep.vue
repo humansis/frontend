@@ -93,7 +93,7 @@ export default {
 					Toast("Uploaded Successfully", "is-success");
 					this.$emit("changeImportState", {
 						state: "Integrity Checking",
-						successMessage: "Start Import Success",
+						successMessage: "Integrity Check Started Successfully",
 					});
 				}
 			}).catch((e) => {
