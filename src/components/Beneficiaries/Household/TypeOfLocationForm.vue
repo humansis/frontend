@@ -179,17 +179,18 @@ export default {
 			this.locationTypesLoading = false;
 		},
 
-		async fetchCamps() {
+		fetchCamps() {
 			this.campsLoading = true;
 
-			await AddressService.getCampsByLocation(this.formModel.locationId)
+			AddressService.getCampsByLocation(this.formModel.locationId)
 				.then(({ data }) => {
 					this.options.camps = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.campsLoading = false;
 				});
-			this.campsLoading = false;
 		},
 
 		mapLocations() {
@@ -201,14 +202,15 @@ export default {
 				this.formModel.typeOfLocation = this.options.typeOfLocation
 					.find((item) => this.formModel.type === item.code);
 			}
-			if (this.formModel.campId) {
+			if (this.formModel?.campId) {
 				this.campSelected = this.formModel.type === "camp";
 				this.formModel.camp = this.options.camps
-					.find((item) => this.formModel.campId === item.id);
+					.find((item) => this.formModel?.campId === item.id);
 			}
 		},
 
 		selectTypeOfLocation(value) {
+			this.$v.$reset();
 			this.campSelected = value.code === "camp";
 			this.validate("typeOfLocation");
 		},
