@@ -5,7 +5,7 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>Number of Records:</td>
+							<td>{{ $t("Number of Records") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -17,7 +17,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Corrected Errors:</td>
+							<td>{{ $t("Corrected Errors") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -29,7 +29,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Integrity Errors:</td>
+							<td>{{ $t("Integrity Errors") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -41,7 +41,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Similarities or Duplicities Found:</td>
+							<td>{{ $t("Similarities or Duplicities Found") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -53,7 +53,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Similarities or Duplicities Corrected/Merged:</td>
+							<td>{{ $t("Similarities or Duplicities Corrected/Merged") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -65,7 +65,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Final Records to Import</td>
+							<td>{{ $t("Final Records to Import") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"

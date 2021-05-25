@@ -36,7 +36,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Similarities or Duplicities Found')}}:</td>
+							<td>{{ $t('Duplicities Found')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -48,7 +48,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Similarities or Duplicities Corrected/Merged')}}:</td>
+							<td>{{ $t('Duplicities Corrected/Merged')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -84,9 +84,9 @@
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="changeStateButtonLoading"
-					@click="goToFinalisation"
+					@click="startSimilarityCheck"
 				>
-					{{ $t('Go to Finalisation') }}
+					{{ $t('Start Similarity Check') }}
 				</b-button>
 			</div>
 
@@ -155,6 +155,8 @@
 </template>
 
 <script>
+import consts from "@/utils/importConst";
+
 export default {
 	name: "DuplicityStep",
 
@@ -211,11 +213,10 @@ export default {
 	},
 
 	methods: {
-		goToFinalisation() {
-			// TODO Solve this
+		startSimilarityCheck() {
 			this.$emit("changeImportState", {
-				state: "",
-				successMessage: "",
+				state: consts.STATE.SIMILARITY_CHECKING,
+				successMessage: "Similarity Check Started Successfully",
 			});
 		},
 

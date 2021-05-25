@@ -36,7 +36,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Similarities or Duplicities Found')}}:</td>
+							<td>{{ $t('Similarities Found')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -48,7 +48,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Similarities or Duplicities Corrected/Merged')}}:</td>
+							<td>{{ $t('Similarities Corrected/Merged')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -77,7 +77,7 @@
 					icon-right="tasks"
 					@click="duplicitiesContentOpened = !duplicitiesContentOpened"
 				>
-					{{ $t('Resolve Duplicities') }}
+					{{ $t('Resolve Similarities') }}
 				</b-button>
 				<b-button
 					v-if="!amountDuplicities"
@@ -94,7 +94,7 @@
 				<hr>
 
 				<h2 class="subtitle is-5 mb-4">
-					{{ $t("Duplicity Cases") }}
+					{{ $t("Similarity Cases") }}
 				</h2>
 
 				<hr>
@@ -212,11 +212,7 @@ export default {
 
 	methods: {
 		goToFinalisation() {
-			// TODO Solve this
-			this.$emit("changeImportState", {
-				state: "",
-				successMessage: "",
-			});
+			this.$emit("goToFinalStep");
 		},
 
 		cancelImport() {

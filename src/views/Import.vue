@@ -63,6 +63,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
+					@goToFinalStep="changeTab(4)"
 				/>
 			</b-step-item>
 
@@ -225,8 +226,6 @@ export default {
 		fetchImportStatistics(importId) {
 			ImportService.getStatisticsInImport(importId).then(({ data }) => {
 				this.statistics = data;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Import Statistics")} ${e}`, "is-danger");
 			});
 		},
 
