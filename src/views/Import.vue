@@ -56,7 +56,17 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="4" :label="$t('Finalisation')">
+			<b-step-item clickable step="4" :label="$t('Similarity Check')">
+				<SimilarityStep
+					:statistics="statistics"
+					:status="importStatus"
+					:loading-change-state-button="loadingChangeStateButton"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
+				/>
+			</b-step-item>
+
+			<b-step-item clickable step="5" :label="$t('Finalisation')">
 				<FinalisationStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -73,6 +83,7 @@
 import StartStep from "@/components/Imports/StartStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import DuplicityStep from "@/components/Imports/DuplicityStep";
+import SimilarityStep from "@/components/Imports/SimilarityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
@@ -86,6 +97,7 @@ export default {
 		StartStep,
 		IntegrityStep,
 		DuplicityStep,
+		SimilarityStep,
 		FinalisationStep,
 	},
 
@@ -149,7 +161,8 @@ export default {
 				{ code: 0, slug: "start-import" },
 				{ code: 1, slug: "integrity-check" },
 				{ code: 2, slug: "duplicity-check" },
-				{ code: 3, slug: "finalisation" },
+				{ code: 3, slug: "similarity-check" },
+				{ code: 4, slug: "finalisation" },
 			],
 		};
 	},

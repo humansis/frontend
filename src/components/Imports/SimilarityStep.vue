@@ -156,7 +156,7 @@
 
 <script>
 export default {
-	name: "DuplicityStep",
+	name: "SimilarityStep",
 
 	data() {
 		return {

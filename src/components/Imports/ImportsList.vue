@@ -307,11 +307,13 @@ export default {
 				case consts.STATUS.IDENTITY_CHECK:
 				case consts.STATUS.IDENTITY_CHECK_CORRECT:
 				case consts.STATUS.IDENTITY_CHECK_FAILED:
-				case consts.STATUS.SIMILARITY_CHECK:
-				case consts.STATUS.SIMILARITY_CHECK_FAILED:
 					slug = "duplicity-check";
 					break;
+				case consts.STATUS.SIMILARITY_CHECK:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
 				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+					slug = "similarity-check";
+					break;
 				case consts.STATUS.FINISH:
 					slug = "finalisation";
 					break;

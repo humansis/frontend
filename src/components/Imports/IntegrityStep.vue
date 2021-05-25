@@ -24,7 +24,7 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>Number of Records:</td>
+							<td>{{ $t('Number of Records') }}:</td>s
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -36,7 +36,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Corrected Errors:</td>
+							<td>{{ $t('Corrected Errors') }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -48,7 +48,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Integrity Errors:</td>
+							<td>{{ $t('Integrity Errors') }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -97,7 +97,7 @@
 				>
 					<span class="file-cta button is-primary">
 						<span v-if="file" class="file-label">
-							{{ file.name || "Upload Corrected Records"}}
+							{{ file.name || $t("Upload Corrected Records") }}
 						</span>
 						<b-icon icon="file-upload" />
 					</span>
