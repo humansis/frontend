@@ -307,7 +307,7 @@ export default {
 				case consts.STATUS.IDENTITY_CHECK:
 				case consts.STATUS.IDENTITY_CHECK_CORRECT:
 				case consts.STATUS.IDENTITY_CHECK_FAILED:
-					slug = "duplicity-check";
+					slug = "identity-check";
 					break;
 				case consts.STATUS.SIMILARITY_CHECK:
 				case consts.STATUS.SIMILARITY_CHECK_FAILED:

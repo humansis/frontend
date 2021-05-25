@@ -75,13 +75,13 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
-					v-if="canStartDuplicityCheck"
+					v-if="canStartIdentityCheck"
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="changeStateButtonLoading"
-					@click="startDuplicityCheck"
+					@click="startIdentityCheck"
 				>
-					{{ $t('Start Duplicity Check') }}
+					{{ $t('Start Identity Check') }}
 				</b-button>
 				<b-button
 					v-if="canUploadAndDownloadAffectedRecords"
@@ -190,7 +190,7 @@ export default {
 			return this.importStatus === consts.STATUS.NEW && this.uploadedFile;
 		},
 
-		canStartDuplicityCheck() {
+		canStartIdentityCheck() {
 			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT;
 		},
 
@@ -226,10 +226,10 @@ export default {
 			});
 		},
 
-		startDuplicityCheck() {
+		startIdentityCheck() {
 			this.$emit("changeImportState", {
 				state: consts.STATE.IDENTITY_CHECKING,
-				successMessage: "Duplicity Check Started Successfully",
+				successMessage: "Identity Check Started Successfully",
 			});
 		},
 

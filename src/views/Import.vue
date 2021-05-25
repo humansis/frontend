@@ -46,7 +46,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="3" :label="$t('Duplicity Check')">
+			<b-step-item clickable step="3" :label="$t('Identity Check')">
 				<DuplicityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -83,7 +83,7 @@
 <script>
 import StartStep from "@/components/Imports/StartStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
-import DuplicityStep from "@/components/Imports/DuplicityStep";
+import DuplicityStep from "@/components/Imports/IdentityStep";
 import SimilarityStep from "@/components/Imports/SimilarityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
@@ -161,7 +161,7 @@ export default {
 			steps: [
 				{ code: 0, slug: "start-import" },
 				{ code: 1, slug: "integrity-check" },
-				{ code: 2, slug: "duplicity-check" },
+				{ code: 2, slug: "identity-check" },
 				{ code: 3, slug: "similarity-check" },
 				{ code: 4, slug: "finalisation" },
 			],
