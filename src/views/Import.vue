@@ -47,7 +47,7 @@
 			</b-step-item>
 
 			<b-step-item clickable step="3" :label="$t('Identity Check')">
-				<DuplicityStep
+				<IdentityStep
 					:statistics="statistics"
 					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
@@ -83,7 +83,7 @@
 <script>
 import StartStep from "@/components/Imports/StartStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
-import DuplicityStep from "@/components/Imports/IdentityStep";
+import IdentityStep from "@/components/Imports/IdentityStep";
 import SimilarityStep from "@/components/Imports/SimilarityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
@@ -97,7 +97,7 @@ export default {
 	components: {
 		StartStep,
 		IntegrityStep,
-		DuplicityStep,
+		IdentityStep,
 		SimilarityStep,
 		FinalisationStep,
 	},

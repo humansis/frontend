@@ -101,19 +101,30 @@
 				<hr>
 
 				<div class="content">
-					<div class="resolve-table">
+					<div
+						v-for="{ id, itemId, status, recordValues, recordDuplicities } of duplicities"
+						:key="id"
+						class="resolve-table"
+					>
 						<table>
 							<thead>
 								<tr>
 									<th>{{ $t('Imported Record') }}</th>
 									<th>{{ $t('Records From Database') }}</th>
-									<th>{{ $t('Duplicities') }}</th>
+									<th>{{ $t('Reasons') }}</th>
 									<th>{{ $t('Actions') }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<td>
+										<i>{{ itemId }} {{status}} {{ recordValues }}</i>
+										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
+										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
+										eget erat. Vestibulum fermentum tortor id mi
+									</td>
+									<td>
+										{{ recordDuplicities }}
 										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
 										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
 										eget erat. Vestibulum fermentum tortor id mi
@@ -124,18 +135,6 @@
 										eget erat. Vestibulum fermentum tortor id mi
 									</td>
 									<td>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
-									</td>
-									<td>
-										<b-button
-											class="mb-2"
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('To Create') }}
-										</b-button>
 										<b-button
 											class="mb-2"
 											type="is-info is-light"
@@ -149,13 +148,6 @@
 											icon-right="play-circle"
 										>
 											{{ $t('To Link') }}
-										</b-button>
-										<b-button
-											class="mb-2"
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('To Ignore') }}
 										</b-button>
 									</td>
 								</tr>
@@ -171,6 +163,8 @@
 
 <script>
 import consts from "@/utils/importConst";
+import ImportService from "@/services/ImportService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "DuplicityStep",
@@ -182,6 +176,34 @@ export default {
 			file: {},
 			changeStateButtonLoading: false,
 			importStatus: "",
+			duplicities: [
+				{
+					id: 0,
+					itemId: 1024,
+					status: "New",
+					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }",
+					recordDuplicities: [ // duplicityCandidateId
+						{
+							beneficiaryId: 64,
+							name: "BeneficiaryName 1",
+							reasonsOfDuplicity: [ // Reasons
+								"same NationalID",
+								"same given name",
+								"similarity 70 % on family name",
+							],
+						},
+						{
+							beneficiaryId: 74,
+							name: "BeneficiaryName 2",
+							reasonsOfDuplicity: [ // Reasons
+								"same NationalID",
+								"same given name",
+								"similarity 70 % on family name",
+							],
+						},
+					],
+				},
+			],
 		};
 	},
 
@@ -239,7 +261,23 @@ export default {
 		},
 	},
 
+	mounted() {
+		this.fetchDuplicities();
+	},
+
 	methods: {
+		fetchDuplicities() {
+			const { importId } = this.$route.params;
+
+			ImportService.getDuplicitiesInImport(importId).then(({ data }) => {
+				this.importDetail = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Import 2")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.fetchProject(this.importDetail.projectId);
+			});
+		},
+
 		startSimilarityCheck() {
 			this.$emit("changeImportState", {
 				state: consts.STATE.SIMILARITY_CHECKING,
