@@ -200,7 +200,6 @@ export default {
 		onChangeImportState(state, successMessage) {
 			const { importId } = this.$route.params;
 
-			// TODO Component loading
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, state).then(({ status }) => {
