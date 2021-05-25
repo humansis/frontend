@@ -81,7 +81,7 @@
 					{{ $t('Resolve Duplicities') }}
 				</b-button>
 				<b-button
-					v-if="!amountDuplicities"
+					v-if="canStartSimilarityCheck"
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="changeStateButtonLoading"
@@ -216,8 +216,12 @@ export default {
 			return this.importStatistics?.amountDuplicitiesResolved || 0;
 		},
 
+		canStartSimilarityCheck() {
+			return this.importStatus !== consts.STATUS.IDENTITY_CHECK_CORRECT;
+		},
+
 		canCancelImport() {
-			return this.importStatus !== consts.STATE.FINISHED;
+			return this.importStatus !== consts.STATUS.FINISH;
 		},
 	},
 

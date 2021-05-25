@@ -97,11 +97,11 @@ export default {
 		},
 
 		canStartImport() {
-			return this.importStatus === consts.STATE.NEW;
+			return this.importStatus === consts.STATUS.NEW;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATE.FINISHED;
+			return this.importStatus !== consts.STATUS.FINISH;
 		},
 	},
 

@@ -187,7 +187,7 @@ export default {
 		},
 
 		canStartIntegrityCheckAgain() {
-			return this.importStatus === consts.STATE.NEW && this.uploadedFile;
+			return this.importStatus === consts.STATUS.NEW && this.uploadedFile;
 		},
 
 		canStartDuplicityCheck() {
@@ -200,7 +200,7 @@ export default {
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATE.FINISHED;
+			return this.importStatus !== consts.STATUS.FINISH;
 		},
 	},
 

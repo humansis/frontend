@@ -221,7 +221,7 @@ export default {
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATE.FINISHED;
+			return this.importStatus !== consts.STATUS.FINISH;
 		},
 	},
 
