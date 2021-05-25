@@ -11,7 +11,7 @@ const ifAuthenticated = (to, from, next) => {
 	const permissions = getters.getPermissionsFromVuexStorage();
 
 	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
-		.every((permission) => permissions?.[permission]) : true;
+		.some((permission) => permissions?.[permission]) : true;
 
 	if (user?.token && to.meta.permissions && canGoNext) {
 		next();
