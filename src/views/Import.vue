@@ -259,7 +259,10 @@ export default {
 		},
 
 		async cancelImport() {
-			await this.onChangeImportState(consts.STATE.CANCELED, "Canceled Successfully");
+			await this.onChangeImportState({
+				state: consts.STATE.CANCELED,
+				successMessage: "Canceled Successfully",
+			});
 			await this.fetchData();
 		},
 	},
