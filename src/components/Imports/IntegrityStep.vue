@@ -24,7 +24,7 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>{{ $t('Number of Records') }}:</td>s
+							<td>{{ $t('Number of Records') }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -67,6 +67,7 @@
 
 			<div class="buttons mt-5 flex-end">
 				<b-button
+					v-if="canCancelImport"
 					type="is-light is-danger"
 					icon-right="ban"
 					@click="cancelImport"
@@ -192,6 +193,10 @@ export default {
 		canUploadAndDownloadAffectedRecords() {
 			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
 				&& this.amountIntegrityFailed;
+		},
+
+		canCancelImport() {
+			return this.importStatus !== consts.STATE.FINISHED;
 		},
 	},
 

@@ -84,6 +84,7 @@
 
 			<div class="buttons mt-5 flex-end">
 				<b-button
+					v-if="canCancelImport"
 					type="is-light is-danger"
 					icon-right="ban"
 					@click="cancelImport"
@@ -160,6 +161,10 @@ export default {
 
 		amountEntriesToImport() {
 			return this.importStatistics?.amountEntriesToImport || 0;
+		},
+
+		canCancelImport() {
+			return this.importStatus !== consts.STATE.FINISHED;
 		},
 	},
 

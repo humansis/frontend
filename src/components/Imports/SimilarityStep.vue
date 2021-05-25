@@ -65,6 +65,7 @@
 
 			<div class="buttons mt-5 flex-end">
 				<b-button
+					v-if="canCancelImport"
 					type="is-light is-danger"
 					icon-right="ban"
 					@click="cancelImport"
@@ -155,6 +156,8 @@
 </template>
 
 <script>
+import consts from "@/utils/importConst";
+
 export default {
 	name: "SimilarityStep",
 
@@ -207,6 +210,10 @@ export default {
 
 		amountDuplicitiesResolved() {
 			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		},
+
+		canCancelImport() {
+			return this.importStatus !== consts.STATE.FINISHED;
 		},
 	},
 
