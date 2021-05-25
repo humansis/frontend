@@ -26,6 +26,7 @@
 			animated
 			rounded
 			:has-navigation="false"
+			@input="changeTab"
 		>
 			<b-step-item clickable step="1" :label="$t('Start')">
 				<StartStep
@@ -140,22 +141,43 @@ export default {
 			importDetail: {},
 			statistics: {},
 			project: {},
-			activeStep: 0,
+
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
+			activeStep: 0,
+			steps: [
+				{ code: 0, slug: "start-import" },
+				{ code: 1, slug: "integrity-check" },
+				{ code: 2, slug: "duplicity-check" },
+				{ code: 3, slug: "finalisation" },
+			],
 		};
 	},
 
 	async created() {
 		this.fetchData();
+
+		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
+		this.activeStep = currentStep?.code || 0;
 	},
 
 	beforeDestroy() {
-		console.log("destroyed");
 		clearInterval(this.statisticsInterval);
 	},
 
 	methods: {
+		changeTab(data) {
+			const { slug, code } = this.steps.find((step) => step.code === data);
+
+			this.$router.replace({
+				name: "Import",
+				params: { importId: this.$route.params.importId },
+				query: { step: slug },
+			});
+
+			this.activeStep = code;
+		},
+
 		fetchData() {
 			const { importId } = this.$route.params;
 

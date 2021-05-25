@@ -177,9 +177,11 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				filtersInProgress: [
-					"Integrity Checking", "Integrity Check Correct", "Integrity Check Failed",
-					"Identity Checking", "Identity Check Correct", "Identity Check Failed",
-					"Similarity Checking", "Similarity Check Correct", "Similarity Check Failed",
+					consts.STATUS.INTEGRITY_CHECK, consts.STATUS.INTEGRITY_CHECK_CORRECT,
+					consts.STATUS.INTEGRITY_CHECK_FAILED, consts.STATUS.IDENTITY_CHECK,
+					consts.STATUS.IDENTITY_CHECK_CORRECT, consts.STATUS.IDENTITY_CHECK_FAILED,
+					consts.STATUS.SIMILARITY_CHECK, consts.STATUS.SIMILARITY_CHECK_CORRECT,
+					consts.STATUS.SIMILARITY_CHECK_FAILED,
 				],
 			},
 		};
@@ -294,7 +296,36 @@ export default {
 		},
 
 		goToDetail(importItem) {
-			this.$router.push({ name: "Import", params: { importId: importItem.id } });
+			let slug = "";
+
+			switch (importItem.status) {
+				case consts.STATUS.INTEGRITY_CHECK:
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+					slug = "integrity-check";
+					break;
+				case consts.STATUS.IDENTITY_CHECK:
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case consts.STATUS.SIMILARITY_CHECK:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+					slug = "duplicity-check";
+					break;
+				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+				case consts.STATUS.FINISH:
+					slug = "finalisation";
+					break;
+				case consts.STATUS.NEW:
+				case consts.STATUS.CANCEL:
+				default:
+					slug = "start-import";
+			}
+
+			this.$router.push({
+				name: "Import",
+				params: { importId: importItem.id },
+				query: { step: slug },
+			});
 		},
 
 		showDetailWithId(id) {
