@@ -95,7 +95,7 @@
 				<hr>
 
 				<h2 class="subtitle is-5 mb-4">
-					{{ $t("Duplicity Cases") }}
+					{{ $t("Duplicity Cases") }} ({{ duplicities.length }})
 				</h2>
 
 				<hr>
@@ -112,47 +112,62 @@
 									<th>{{ $t('Imported Record') }}</th>
 									<th>{{ $t('Records From Database') }}</th>
 									<th>{{ $t('Reasons') }}</th>
-									<th>{{ $t('Actions') }}</th>
+									<th class="has-text-right">{{ $t('Actions') }}</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td>
-										<i>{{ itemId }} {{status}} {{ recordValues }}</i>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
+								<tr
+									v-for="({name, duplicityReasons}, key) of recordDuplicities"
+									:key="key"
+								>
+									<td class="td-width-30">
+										<span v-if="key === 0">
+											{{ recordValues }}
+											<br>
+											<b-tag
+												class="mt-2"
+												type="is-light"
+											>
+												{{ $t('Row') }} {{ itemId }}
+											</b-tag>
+										</span>
+									</td>
+									<td class="td-width-30">
+										{{ name }}
 									</td>
 									<td>
-										{{ recordDuplicities }}
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
+										{{ duplicityReasons }}
 									</td>
 									<td>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
-									</td>
-									<td>
-										<b-button
-											class="mb-2"
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('To Update') }}
-										</b-button>
-										<b-button
-											class="mb-2"
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('To Link') }}
-										</b-button>
+										<div class="buttons flex-end">
+											<b-button
+												class="mb-2 mr-0"
+												type="is-warning is-light"
+												@click="resolveToUpdate"
+											>
+												{{ $t('To Update') }}
+											</b-button>
+											<b-button
+												class="mb-2 mr-0"
+												type="is-info is-light"
+												@click="resolveToLink"
+											>
+												{{ $t('To Link') }}
+											</b-button>
+										</div>
 									</td>
 								</tr>
 							</tbody>
 						</table>
+						<div class="buttons flex-end">
+							<b-button
+								class="mt-2 mr-3"
+								type="is-success is-light"
+								@click="resolveToCreate"
+							>
+								{{ $t('To Create') }}
+							</b-button>
+						</div>
 						<hr>
 					</div>
 				</div>
@@ -182,11 +197,11 @@ export default {
 					itemId: 1024,
 					status: "New",
 					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }",
-					recordDuplicities: [ // duplicityCandidateId
+					recordDuplicities: [
 						{
 							beneficiaryId: 64,
 							name: "BeneficiaryName 1",
-							reasonsOfDuplicity: [ // Reasons
+							duplicityReasons: [
 								"same NationalID",
 								"same given name",
 								"similarity 70 % on family name",
@@ -195,7 +210,7 @@ export default {
 						{
 							beneficiaryId: 74,
 							name: "BeneficiaryName 2",
-							reasonsOfDuplicity: [ // Reasons
+							duplicityReasons: [
 								"same NationalID",
 								"same given name",
 								"similarity 70 % on family name",
@@ -272,10 +287,20 @@ export default {
 			ImportService.getDuplicitiesInImport(importId).then(({ data }) => {
 				this.importDetail = data;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Import 2")} ${e}`, "is-danger");
-			}).finally(() => {
-				this.fetchProject(this.importDetail.projectId);
+				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
 			});
+		},
+
+		resolveToUpdate() {
+			// TODO
+		},
+
+		resolveToLink() {
+			// TODO
+		},
+
+		resolveToCreate() {
+			// TODO
 		},
 
 		startSimilarityCheck() {
@@ -291,3 +316,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.td-width-30 {
+	width: 30%;
+}
+</style>
