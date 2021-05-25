@@ -122,6 +122,7 @@ export default {
 			type: Object,
 			required: true,
 		},
+
 		status: {
 			type: String,
 			required: false,
@@ -133,6 +134,7 @@ export default {
 		statistics(value) {
 			this.importStatistics = value;
 		},
+
 		status(value) {
 			this.importStatus = value;
 		},

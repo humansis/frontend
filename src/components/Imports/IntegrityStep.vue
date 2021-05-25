@@ -142,10 +142,12 @@ export default {
 			type: Object,
 			required: true,
 		},
+
 		loadingChangeStateButton: {
 			type: Boolean,
 			required: true,
 		},
+
 		status: {
 			type: String,
 			required: false,
@@ -157,9 +159,11 @@ export default {
 		statistics(value) {
 			this.importStatistics = value;
 		},
+
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
 		},
+
 		status(value) {
 			this.importStatus = value;
 		},

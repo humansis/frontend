@@ -81,7 +81,7 @@
 					{{ $t('Resolve Similarities') }}
 				</b-button>
 				<b-button
-					v-if="!amountDuplicities"
+					v-if="canGoToFinalisation"
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="changeStateButtonLoading"
@@ -176,10 +176,12 @@ export default {
 			type: Object,
 			required: true,
 		},
+
 		loadingChangeStateButton: {
 			type: Boolean,
 			required: true,
 		},
+
 		status: {
 			type: String,
 			required: false,
@@ -191,9 +193,11 @@ export default {
 		statistics(value) {
 			this.importStatistics = value;
 		},
+
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
 		},
+
 		status(value) {
 			this.importStatus = value;
 		},
@@ -210,6 +214,10 @@ export default {
 
 		amountDuplicitiesResolved() {
 			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		},
+
+		canGoToFinalisation() {
+			return this.importStatus === consts.STATUS.SIMILARITY_CHECK_CORRECT;
 		},
 
 		canCancelImport() {
