@@ -14,6 +14,7 @@
 							:value="totalEntries - amountDuplicities"
 						/>
 						<b-progress-bar
+							v-if="amountDuplicities"
 							type="is-warning"
 							show-value
 							:value="amountDuplicities"

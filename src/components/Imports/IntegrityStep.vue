@@ -14,6 +14,7 @@
 							:value="totalEntries - amountIntegrityFailed"
 						/>
 						<b-progress-bar
+							v-if="amountIntegrityFailed"
 							type="is-danger"
 							show-value
 							:value="amountIntegrityFailed"
@@ -73,7 +74,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
-					v-if="!amountIntegrityFailed"
+					v-if="canStartDuplicityCheck"
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="changeStateButtonLoading"
@@ -82,7 +83,7 @@
 					{{ $t('Start Duplicity Check') }}
 				</b-button>
 				<b-button
-					v-if="amountIntegrityFailed"
+					v-if="canUploadAndDownloadAffectedRecords"
 					type="is-primary"
 					icon-right="file-download"
 					:loading="downloadAffectedRecordsLoading"
@@ -91,7 +92,7 @@
 					{{ $t('Download Affected Records') }}
 				</b-button>
 				<b-upload
-					v-if="amountIntegrityFailed"
+					v-if="canUploadAndDownloadAffectedRecords"
 					v-model="file"
 				>
 					<span class="file-cta button is-primary">
@@ -102,7 +103,7 @@
 					</span>
 				</b-upload>
 				<b-button
-					v-if="uploadedFile"
+					v-if="canStartIntegrityCheckAgain"
 					type="is-primary"
 					icon-right="play-circle"
 					:loading="startIntegrityCheckAgainLoading"
@@ -178,6 +179,19 @@ export default {
 
 		amountIntegrityFailed() {
 			return this.importStatistics?.amountIntegrityFailed || 0;
+		},
+
+		canStartIntegrityCheckAgain() {
+			return this.importStatus === consts.STATE.NEW && this.uploadedFile;
+		},
+
+		canStartDuplicityCheck() {
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT;
+		},
+
+		canUploadAndDownloadAffectedRecords() {
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
+				&& this.amountIntegrityFailed;
 		},
 	},
 

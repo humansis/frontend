@@ -142,11 +142,17 @@ export default {
 			project: {},
 			activeStep: 0,
 			loadingChangeStateButton: false,
+			statisticsInterval: null,
 		};
 	},
 
 	async created() {
 		this.fetchData();
+	},
+
+	beforeDestroy() {
+		console.log("destroyed");
+		clearInterval(this.statisticsInterval);
 	},
 
 	methods: {
@@ -156,6 +162,19 @@ export default {
 			if (importId) {
 				this.fetchImport(importId);
 				this.fetchImportStatistics(importId);
+				this.setCheckingInterval(importId);
+			}
+		},
+
+		setCheckingInterval(importId) {
+			if (
+				this.importDetail?.status !== consts.STATUS.NEW
+				&& this.importDetail?.status !== consts.STATUS.CANCEL
+				&& this.importDetail?.status !== consts.STATUS.FINISH
+			) {
+				this.statisticsInterval = setInterval(() => {
+					this.fetchImportStatistics(importId);
+				}, 1000);
 			}
 		},
 
@@ -197,7 +216,7 @@ export default {
 			});
 		},
 
-		onChangeImportState(state, successMessage) {
+		onChangeImportState({ state, successMessage }) {
 			const { importId } = this.$route.params;
 
 			this.loadingChangeStateButton = true;
@@ -205,7 +224,10 @@ export default {
 			ImportService.changeImportState(importId, state).then(({ status }) => {
 				if (status === 202) {
 					Toast(this.$t(successMessage), "is-success");
-					this.$router.push({ name: "Imports" });
+
+					if (state === consts.STATE.CANCELED) {
+						this.$router.push({ name: "Imports" });
+					}
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");

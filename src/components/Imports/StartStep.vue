@@ -6,6 +6,7 @@
 					v-model="dropFiles"
 					multiple
 					drag-drop
+					:disabled="!canStartImport"
 				>
 					<section class="section">
 						<div class="content has-text-centered">
@@ -45,6 +46,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
+					v-if="canStartImport"
 					type="is-primary"
 					icon-right="play-circle"
 					:disabled="!filesCount"
@@ -91,6 +93,10 @@ export default {
 	computed: {
 		filesCount() {
 			return this.dropFiles?.length;
+		},
+
+		canStartImport() {
+			return this.importStatus === consts.STATE.NEW;
 		},
 	},
 
