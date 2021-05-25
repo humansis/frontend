@@ -1,11 +1,11 @@
-// States
+// Import States
 const INTEGRITY_CHECKING = "Integrity Checking";
 const IDENTITY_CHECKING = "Identity Checking";
 const SIMILARITY_CHECKING = "Similarity Checking";
 const FINISHED = "Finished";
 const CANCELED = "Canceled";
 
-// Statuses
+// Import Statuses
 const NEW = "New";
 const INTEGRITY_CHECK = "Integrity Checking";
 const INTEGRITY_CHECK_CORRECT = "Integrity Check Correct";
@@ -19,8 +19,15 @@ const SIMILARITY_CHECK_FAILED = "Similarity Check Failed";
 const FINISH = "Finished";
 const CANCEL = "Canceled";
 
+// Import Item Statuses
+const TO_CREATE = "To Create";
+const TO_UPDATE = "To Update";
+const TO_LINK = "To Link";
+const TO_IGNORE = "To Ignore";
+
 export default {
 	STATE: {
+		NEW,
 		INTEGRITY_CHECKING,
 		IDENTITY_CHECKING,
 		SIMILARITY_CHECKING,
@@ -40,5 +47,11 @@ export default {
 		SIMILARITY_CHECK_FAILED,
 		FINISH,
 		CANCEL,
+	},
+	ITEM_STATUS: {
+		TO_CREATE,
+		TO_UPDATE,
+		TO_LINK,
+		TO_IGNORE,
 	},
 };

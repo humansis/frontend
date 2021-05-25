@@ -107,7 +107,7 @@
 								<tr>
 									<th>{{ $t('Imported Record') }}</th>
 									<th>{{ $t('Records From Database') }}</th>
-									<th>{{ $t('Similarities') }}</th>
+									<th>{{ $t('Duplicities') }}</th>
 									<th>{{ $t('Actions') }}</th>
 								</tr>
 							</thead>
@@ -130,18 +130,32 @@
 									</td>
 									<td>
 										<b-button
+											class="mb-2"
 											type="is-info is-light"
 											icon-right="play-circle"
 										>
-											{{ $t('Use Existing') }}
+											{{ $t('To Create') }}
 										</b-button>
-									</td>
-									<td>
 										<b-button
+											class="mb-2"
 											type="is-info is-light"
 											icon-right="play-circle"
 										>
-											{{ $t('Use New') }}
+											{{ $t('To Update') }}
+										</b-button>
+										<b-button
+											class="mb-2"
+											type="is-info is-light"
+											icon-right="play-circle"
+										>
+											{{ $t('To Link') }}
+										</b-button>
+										<b-button
+											class="mb-2"
+											type="is-info is-light"
+											icon-right="play-circle"
+										>
+											{{ $t('To Ignore') }}
 										</b-button>
 									</td>
 								</tr>
@@ -164,7 +178,7 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			duplicitiesContentOpened: false,
+			duplicitiesContentOpened: true,
 			file: {},
 			changeStateButtonLoading: false,
 			importStatus: "",
