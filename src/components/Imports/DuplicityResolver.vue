@@ -86,6 +86,7 @@
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import consts from "@/utils/importConst";
 
 export default {
 	name: "DuplicityResolver",
@@ -199,15 +200,15 @@ export default {
 		},
 
 		resolveToUpdate(queueId, acceptedDuplicityId) {
-			this.resolveImportItemDuplicity(queueId, "To Update", acceptedDuplicityId);
+			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_UPDATE, acceptedDuplicityId);
 		},
 
 		resolveToLink(queueId, acceptedDuplicityId) {
-			this.resolveImportItemDuplicity(queueId, "To Link", acceptedDuplicityId);
+			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_LINK, acceptedDuplicityId);
 		},
 
 		resolveToCreate(queueId) {
-			this.resolveImportItemDuplicity(queueId, "To Create", null);
+			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_CREATE, null);
 		},
 
 		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
