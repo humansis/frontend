@@ -92,85 +92,7 @@
 			</div>
 
 			<div v-if="duplicitiesContentOpened">
-				<hr>
-
-				<h2 class="subtitle is-5 mb-4">
-					{{ $t("Duplicity Cases") }} ({{ duplicities.length }})
-				</h2>
-
-				<hr>
-
-				<div class="content">
-					<div
-						v-for="{ id, itemId, recordValues, recordDuplicities } of duplicities"
-						:key="id"
-						class="resolve-table"
-					>
-						<table>
-							<thead>
-								<tr>
-									<th>{{ $t('Imported Record') }}</th>
-									<th>{{ $t('Records From Database') }}</th>
-									<th>{{ $t('Reasons') }}</th>
-									<th class="has-text-right">{{ $t('Actions') }}</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									v-for="({name, duplicityReasons}, key) of recordDuplicities"
-									:key="key"
-								>
-									<td class="td-width-30">
-										<span v-if="key === 0">
-											{{ recordValues }}
-											<br>
-											<b-tag
-												class="mt-2"
-												type="is-light"
-											>
-												{{ $t('Row') }} {{ itemId }}
-											</b-tag>
-										</span>
-									</td>
-									<td class="td-width-30">
-										{{ name }}
-									</td>
-									<td>
-										{{ duplicityReasons }}
-									</td>
-									<td>
-										<div class="buttons flex-end">
-											<b-button
-												class="mb-2 mr-0"
-												type="is-warning is-light"
-												@click="resolveToUpdate"
-											>
-												{{ $t('To Update') }}
-											</b-button>
-											<b-button
-												class="mb-2 mr-0"
-												type="is-info is-light"
-												@click="resolveToLink"
-											>
-												{{ $t('To Link') }}
-											</b-button>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<div class="buttons flex-end">
-							<b-button
-								class="mt-2 mr-3"
-								type="is-success is-light"
-								@click="resolveToCreate"
-							>
-								{{ $t('To Create') }}
-							</b-button>
-						</div>
-						<hr>
-					</div>
-				</div>
+				<DuplicityResolver />
 			</div>
 		</div>
 	</div>
@@ -178,11 +100,14 @@
 
 <script>
 import consts from "@/utils/importConst";
-import ImportService from "@/services/ImportService";
-import { Notification } from "@/utils/UI";
+import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 
 export default {
 	name: "DuplicityStep",
+
+	components: {
+		DuplicityResolver,
+	},
 
 	data() {
 		return {
@@ -191,36 +116,6 @@ export default {
 			file: {},
 			changeStateButtonLoading: false,
 			importStatus: "",
-			duplicities: [
-				{
-					id: 0,
-					queueId: 1024, // --> Will be filled from /imports/queue/{id}
-					status: "New", // --> Will be filled from /imports/queue/{id}
-					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }", // --> Will be filled from /imports/queue/{id}
-					recordDuplicities: [
-						{
-							id: 0,
-							duplicityCandidateId: 64,
-							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
-							duplicityReasons: [
-								"same NationalID",
-								"same given name",
-								"similarity 70 % on family name",
-							],
-						},
-						{
-							id: 0,
-							duplicityCandidateId: 64,
-							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
-							duplicityReasons: [
-								"same NationalID",
-								"same given name",
-								"similarity 70 % on family name",
-							],
-						},
-					],
-				},
-			],
 		};
 	},
 
@@ -278,44 +173,7 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.prepareDuplicities();
-	},
-
 	methods: {
-		async prepareDuplicities() {
-			const duplicities = await this.getDuplicities();
-			console.log("duplicities", duplicities);
-			// TODO
-			// Foreach on duplicities
-		},
-
-		getDuplicities() {
-			const { importId } = this.$route.params;
-
-			return ImportService.getDuplicitiesInImport(importId).then(({ data }) => data).catch((e) => {
-				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
-			});
-		},
-
-		getImportItemDetail(queueId) {
-			return ImportService.getImportItemDetail(queueId).then(({ data }) => data).catch((e) => {
-				if (e.message) Notification(`${this.$t("Duplicity Item")} ${e}`, "is-danger");
-			});
-		},
-
-		resolveToUpdate() {
-			// TODO
-		},
-
-		resolveToLink() {
-			// TODO
-		},
-
-		resolveToCreate() {
-			// TODO
-		},
-
 		startSimilarityCheck() {
 			this.$emit("changeImportState", {
 				state: consts.STATE.SIMILARITY_CHECKING,

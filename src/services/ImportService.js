@@ -86,7 +86,8 @@ export default {
 		return { data };
 	},
 
-	async getImportItemDetail(queueId) {
+	// TODO Prepare this for multi get
+	async getImportItemsDetail(queueId) {
 		const { data, status } = await fetcher({
 			uri: `imports/queue/${queueId}`,
 		});
