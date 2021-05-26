@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import SideMenu from "@/layout/SideMenu";
 import NavBar from "@/layout/NavBar";
 import Modal from "@/components/Modal";
 import Validation from "@/mixins/validation";
 import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
 import UsersService from "@/services/UsersService";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "MainContainer",
@@ -79,6 +79,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(["updateStoredUser"]),
+
 		setLocales() {
 			this.$i18n.locale = this.language.key;
 			this.$i18n.fallbackLocale = this.language.key;
@@ -98,18 +100,27 @@ export default {
 		async changeForcedPassword({ password }) {
 			this.forcePasswordModal.isWaiting = true;
 
-			await UsersService.changeUsersAttribute(this.user.userId, "password", password)
-				.then((response) => {
-					if (response.status === 200) {
-						Toast(this.$t("Password Successfully Updated"), "is-success");
+			const { data: { salt } } = await UsersService.requestSalt(this.user.username);
 
-						this.forcePasswordModal.isOpened = false;
-					}
-				}).catch((e) => {
-					Toast(`${this.$t("Password Was Not Updated")} ${e}`, "is-danger");
-				});
-
-			this.forcePasswordModal.isWaiting = false;
+			await UsersService.patchUser(this.user.userId, {
+				password: UsersService.saltPassword(salt, password),
+			}).then(({ status }) => {
+				if (status === 200) {
+					this.updateStoredUser({
+						attribute: "changePassword",
+						value: false,
+					});
+					Toast(
+						`${this.$t("Password Updated")}`,
+						"is-success",
+					);
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.forcePasswordModal.isWaiting = false;
+				this.forcePasswordModal.isOpened = false;
+			});
 		},
 	},
 };

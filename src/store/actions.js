@@ -7,6 +7,12 @@ export default {
 		}
 	},
 
+	updateStoredUser: ({ commit }, { attribute, value }) => {
+		if (attribute && value) {
+			commit(CONST.UPDATE_STORED_USER, { attribute, value });
+		}
+	},
+
 	logoutUser: ({ commit }) => {
 		commit(CONST.LOGOUT);
 	},

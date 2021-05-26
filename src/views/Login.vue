@@ -124,6 +124,7 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
+			"updateStoredUser",
 			"storePermissions",
 			"storeLanguage",
 			"storeTranslations",
@@ -146,14 +147,15 @@ export default {
 
 					user.userId = userId;
 					user.token = token;
-					// TODO Take info from endpoint
-					user.changePassword = false;
-
-					console.log("user", user);
 
 					await this.storeUser(user);
 
 					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+
+					this.updateStoredUser({
+						attribute: "changePassword",
+						value: userDetail.changePassword,
+					});
 
 					await this.storeAvailableProjects(userDetail.projectIds);
 
