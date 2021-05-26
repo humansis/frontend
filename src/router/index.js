@@ -11,7 +11,7 @@ const ifAuthenticated = (to, from, next) => {
 	const permissions = getters.getPermissionsFromVuexStorage();
 
 	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
-		.every((permission) => permissions?.[permission]) : true;
+		.some((permission) => permissions?.[permission]) : true;
 
 	if (user?.token && to.meta.permissions && canGoNext) {
 		next();
@@ -110,7 +110,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								beforeEnter: ifAuthenticated,
 								meta: {
-									permissions: ["viewDistribution", "editDistribution"],
+									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},

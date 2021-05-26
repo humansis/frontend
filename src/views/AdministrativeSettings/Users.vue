@@ -154,7 +154,6 @@ export default {
 		submitUserForm(userForm) {
 			const {
 				id,
-				username,
 				email,
 				password,
 				rights,
@@ -169,7 +168,7 @@ export default {
 			} = userForm;
 
 			const userBody = {
-				username,
+				username: email,
 				email,
 				password,
 				roles: [rights.code],
@@ -228,7 +227,7 @@ export default {
 			this.userModal.isWaiting = true;
 
 			await UsersService.createUser(userBody).then((response) => {
-				if (response.status === 200) {
+				if (response.status && response.status === 200) {
 					Toast(this.$t("User Successfully Created"), "is-success");
 					this.$refs.usersList.fetchData();
 					this.closeUserModal();
