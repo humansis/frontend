@@ -10,8 +10,8 @@
 
 		<div class="content">
 			<div
-				v-for="{ id, queueId, recordValues, recordDuplicities } of duplicities"
-				:key="id"
+				v-for="({ queueId, recordValues, recordDuplicities }, key) of duplicities"
+				:key="key"
 				class="resolve-table"
 			>
 				<table>
@@ -25,7 +25,7 @@
 					</thead>
 					<tbody>
 						<tr
-							v-for="({name, duplicityReasons}, key) of recordDuplicities"
+							v-for="({id, name, duplicityReasons}, key) of recordDuplicities"
 							:key="key"
 						>
 							<td class="td-width-30">
@@ -51,14 +51,14 @@
 									<b-button
 										class="mb-2 mr-0"
 										type="is-warning is-light"
-										@click="resolveToUpdate"
+										@click="resolveToUpdate(queueId, id)"
 									>
 										{{ $t('To Update') }}
 									</b-button>
 									<b-button
-										class="mb-2 mr-0"
+										class="mb-2 ml-2"
 										type="is-info is-light"
-										@click="resolveToLink"
+										@click="resolveToLink(queueId, id)"
 									>
 										{{ $t('To Link') }}
 									</b-button>
@@ -71,7 +71,7 @@
 					<b-button
 						class="mt-2 mr-3"
 						type="is-success is-light"
-						@click="resolveToCreate"
+						@click="resolveToCreate(queueId)"
 					>
 						{{ $t('To Create') }}
 					</b-button>
@@ -84,7 +84,7 @@
 
 <script>
 import ImportService from "@/services/ImportService";
-import { Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
 
 export default {
@@ -198,16 +198,27 @@ export default {
 				});
 		},
 
-		resolveToUpdate() {
-			// TODO
+		resolveToUpdate(queueId, acceptedDuplicityId) {
+			this.resolveImportItemDuplicity(queueId, "To Update", acceptedDuplicityId);
 		},
 
-		resolveToLink() {
-			// TODO
+		resolveToLink(queueId, acceptedDuplicityId) {
+			this.resolveImportItemDuplicity(queueId, "To Link", acceptedDuplicityId);
 		},
 
-		resolveToCreate() {
-			// TODO
+		resolveToCreate(queueId) {
+			this.resolveImportItemDuplicity(queueId, "To Create", null);
+		},
+
+		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
+			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
+				.then(({ status }) => {
+					if (status === 200) {
+						Toast(this.$t("Import Successfully Created"), "is-success");
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Resolving")} ${e}`, "is-danger");
+				});
 		},
 	},
 };
