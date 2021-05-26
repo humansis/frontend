@@ -102,7 +102,7 @@
 
 				<div class="content">
 					<div
-						v-for="{ id, itemId, status, recordValues, recordDuplicities } of duplicities"
+						v-for="{ id, itemId, recordValues, recordDuplicities } of duplicities"
 						:key="id"
 						class="resolve-table"
 					>
@@ -194,13 +194,14 @@ export default {
 			duplicities: [
 				{
 					id: 0,
-					itemId: 1024,
-					status: "New",
-					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }",
+					queueId: 1024, // --> Will be filled from /imports/queue/{id}
+					status: "New", // --> Will be filled from /imports/queue/{id}
+					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }", // --> Will be filled from /imports/queue/{id}
 					recordDuplicities: [
 						{
-							beneficiaryId: 64,
-							name: "BeneficiaryName 1",
+							id: 0,
+							duplicityCandidateId: 64,
+							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
 							duplicityReasons: [
 								"same NationalID",
 								"same given name",
@@ -208,8 +209,9 @@ export default {
 							],
 						},
 						{
-							beneficiaryId: 74,
-							name: "BeneficiaryName 2",
+							id: 0,
+							duplicityCandidateId: 64,
+							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
 							duplicityReasons: [
 								"same NationalID",
 								"same given name",
@@ -277,17 +279,28 @@ export default {
 	},
 
 	mounted() {
-		this.fetchDuplicities();
+		this.prepareDuplicities();
 	},
 
 	methods: {
-		fetchDuplicities() {
+		async prepareDuplicities() {
+			const duplicities = await this.getDuplicities();
+			console.log("duplicities", duplicities);
+			// TODO
+			// Foreach on duplicities
+		},
+
+		getDuplicities() {
 			const { importId } = this.$route.params;
 
-			ImportService.getDuplicitiesInImport(importId).then(({ data }) => {
-				this.importDetail = data;
-			}).catch((e) => {
+			return ImportService.getDuplicitiesInImport(importId).then(({ data }) => data).catch((e) => {
 				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
+			});
+		},
+
+		getImportItemDetail(queueId) {
+			return ImportService.getImportItemDetail(queueId).then(({ data }) => data).catch((e) => {
+				if (e.message) Notification(`${this.$t("Duplicity Item")} ${e}`, "is-danger");
 			});
 		},
 
