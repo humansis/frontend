@@ -213,12 +213,16 @@ export default {
 
 		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
 			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
-				.then(({ status }) => {
-					if (status === 200) {
-						Toast(this.$t("Import Successfully Created"), "is-success");
+				.then(({ status, data }) => {
+					if (status === 202) {
+						Toast(this.$t("Solved"), "is-success");
+					}
+
+					if (status === 400) {
+						Notification(`${this.$t("Not Solved")} ${data?.message}`, "is-warning");
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Resolving")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Not Solved")} ${e}`, "is-danger");
 				});
 		},
 	},
