@@ -6,6 +6,8 @@
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
+		:default-sort-direction="table.sortDirection"
+		:default-sort-key="table.sortColumn"
 		:is-loading="isLoadingList"
 		@clicked="goToDetail"
 		@pageChanged="onPageChange"
@@ -114,8 +116,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "endDate",
 				searchPhrase: "",
 			},
 		};
