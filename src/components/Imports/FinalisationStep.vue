@@ -175,6 +175,7 @@ export default {
 			this.$emit("changeImportState", {
 				state: consts.STATE.FINISHED,
 				successMessage: "Approved and Saved",
+				goBack: false,
 			});
 		},
 

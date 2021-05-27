@@ -108,7 +108,7 @@ export default {
 		},
 
 		importStatus() {
-			return this.importDetail?.status || "";
+			return this.statistics?.status || "";
 		},
 
 		importDescription() {
@@ -250,7 +250,7 @@ export default {
 			});
 		},
 
-		onChangeImportState({ state, successMessage }) {
+		onChangeImportState({ state, successMessage, goBack }) {
 			const { importId } = this.$route.params;
 
 			this.loadingChangeStateButton = true;
@@ -261,6 +261,10 @@ export default {
 
 					if (state === consts.STATE.CANCELED) {
 						this.$router.push({ name: "Imports" });
+					}
+
+					if (state !== consts.STATE.FINISHED) {
+						this.changeTab(goBack ? this.activeStep - 1 : this.activeStep + 1);
 					}
 				}
 			}).catch((e) => {
@@ -274,6 +278,7 @@ export default {
 			await this.onChangeImportState({
 				state: consts.STATE.CANCELED,
 				successMessage: "Canceled Successfully",
+				goBack: false,
 			});
 			await this.fetchData();
 		},

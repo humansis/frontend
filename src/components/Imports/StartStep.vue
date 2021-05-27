@@ -121,6 +121,7 @@ export default {
 					this.$emit("changeImportState", {
 						state: consts.STATE.INTEGRITY_CHECKING,
 						successMessage: "Integrity Check Started Successfully",
+						goBack: false,
 					});
 				}
 			}).catch((e) => {

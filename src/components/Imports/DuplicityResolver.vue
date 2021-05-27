@@ -137,22 +137,24 @@ export default {
 			const queueIds = [];
 			const duplicityCandidateIds = [];
 
-			duplicities.forEach((item, key) => {
-				this.duplicities[key] = item;
+			if (duplicities?.length) {
+				duplicities.forEach((item, key) => {
+					this.duplicities[key] = item;
 
-				if (item.queueId) {
-					queueIds.push(item.queueId);
-				}
+					if (item.queueId) {
+						queueIds.push(item.queueId);
+					}
 
-				if (item.recordDuplicities?.length) {
-					item.recordDuplicities.forEach(({ duplicityCandidateId }) => {
-						duplicityCandidateIds.push(duplicityCandidateId);
-					});
-				}
-			});
+					if (item.recordDuplicities?.length) {
+						item.recordDuplicities.forEach(({ duplicityCandidateId }) => {
+							duplicityCandidateIds.push(duplicityCandidateId);
+						});
+					}
+				});
 
-			this.prepareQueueItemForDuplicity(queueIds);
-			this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
+				this.prepareQueueItemForDuplicity(queueIds);
+				this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
+			}
 		},
 
 		async prepareQueueItemForDuplicity(queueIds) {
