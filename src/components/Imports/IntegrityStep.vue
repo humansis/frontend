@@ -102,9 +102,9 @@
 					type="is-primary"
 					icon-right="file-download"
 					:loading="downloadAffectedRecordsLoading"
-					@click="downloadAffectedRecords"
+					@click="getAffectedRecords"
 				>
-					{{ $t('Download Affected Records') }}
+					{{ $t('Get Affected Records') }}
 				</b-button>
 				<b-upload
 					v-if="canUploadAndDownloadAffectedRecords"
@@ -128,6 +128,28 @@
 				</b-button>
 			</div>
 
+			<div v-if="invalidFiles.length" class="content">
+				<table>
+					<tbody>
+						<tr
+							v-for="({id, name}, key) of invalidFiles"
+							:key="key"
+						>
+							<td>{{ name }}</td>
+							<td class="has-text-right">
+								<b-button
+									type="is-info"
+									icon-right="file-download"
+									@click="downloadAffectedFile(id, name)"
+								>
+									{{ $t('Download') }}
+								</b-button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
 		</div>
 	</div>
 </template>
@@ -148,6 +170,7 @@ export default {
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
 			importStatus: "",
+			invalidFiles: [],
 		};
 	},
 
@@ -207,7 +230,7 @@ export default {
 		},
 
 		canStartIntegrityCheckAgain() {
-			return this.importStatus === consts.STATUS.NEW && this.uploadedFile;
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED && this.uploadedFile;
 		},
 
 		canStartIdentityCheck() {
@@ -215,8 +238,7 @@ export default {
 		},
 
 		canUploadAndDownloadAffectedRecords() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
-				&& this.amountIntegrityFailed;
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canCancelImport() {
@@ -225,25 +247,44 @@ export default {
 	},
 
 	methods: {
-		downloadAffectedRecords() {
+		getAffectedRecords() {
+			const { importId } = this.$route.params;
+
 			this.downloadAffectedRecordsLoading = true;
 
-			ImportService.getFileWithInvalidEntriesFromImport().then(({ data }) => {
-				const blob = new Blob([data], { type: data.type });
-				const link = document.createElement("a");
-				link.href = window.URL.createObjectURL(blob);
-				link.download = "affectedImportRecords.xls";
-				link.click();
-			}).catch((e) => {
-				if (e.message) {
-					Notification(
-						`${this.$t("Downloaded File")} ${e}`,
-						"is-danger",
-					);
-				}
-			}).finally(() => {
-				this.downloadAffectedRecordsLoading = false;
-			});
+			ImportService.getFilesWithInvalidEntriesFromImport(importId)
+				.then(({ data: { data } }) => {
+					this.invalidFiles = data;
+				}).catch((e) => {
+					if (e.message) {
+						Notification(
+							`${this.$t("Invalid Files")} ${e}`,
+							"is-danger",
+						);
+					}
+				}).finally(() => {
+					this.downloadAffectedRecordsLoading = false;
+				});
+		},
+
+		downloadAffectedFile(id, file) {
+			ImportService.downloadFileWithInvalidEntriesFromImport(id)
+				.then(({ data }) => {
+					Toast(this.$t("Download Started"), "is-success");
+
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `${file}`;
+					link.click();
+				}).catch((e) => {
+					if (e.message) {
+						Notification(
+							`${this.$t("Downloaded File")} ${e}`,
+							"is-danger",
+						);
+					}
+				});
 		},
 
 		startIdentityCheck() {

@@ -15,7 +15,10 @@ export default {
 	},
 
 	async createImport(body) {
-		const { data, status } = await fetcher({ uri: "imports", method: "POST", body });
+		const { data, status } = await fetcher(
+			{ uri: "imports", method: "POST", body,
+			},
+		);
 		return { data, status };
 	},
 
@@ -81,8 +84,15 @@ export default {
 		return { data, status };
 	},
 
-	async getFileWithInvalidEntriesFromImport(importId) {
-		const { data } = await download({ uri: `imports/${importId}/invalid-files` });
+	async downloadFileWithInvalidEntriesFromImport(id) {
+		const { data } = await download({ uri: `imports/invalid-files/${id}` });
+		return { data };
+	},
+
+	async getFilesWithInvalidEntriesFromImport(importId) {
+		const { data } = await fetcher({
+			uri: `imports/${importId}/invalid-files`,
+		});
 		return { data };
 	},
 
