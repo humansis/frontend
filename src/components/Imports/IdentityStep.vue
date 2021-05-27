@@ -198,7 +198,7 @@ export default {
 			this.$emit("changeImportState", {
 				state: consts.STATE.SIMILARITY_CHECKING,
 				successMessage: "Similarity Check Started Successfully",
-				toStep: null,
+				goNext: true,
 			});
 		},
 

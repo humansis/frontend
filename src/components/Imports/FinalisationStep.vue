@@ -193,7 +193,7 @@ export default {
 			this.$emit("changeImportState", {
 				state: consts.STATE.FINISHED,
 				successMessage: "Approved and Saved",
-				toStep: null,
+				goNext: false,
 			});
 		},
 

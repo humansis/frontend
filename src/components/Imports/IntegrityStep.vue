@@ -319,7 +319,7 @@ export default {
 			this.$emit("changeImportState", {
 				state: consts.STATE.IDENTITY_CHECKING,
 				successMessage: "Identity Check Started Successfully",
-				toStep: null,
+				goNext: true,
 			});
 		},
 
@@ -335,7 +335,7 @@ export default {
 						this.$emit("changeImportState", {
 							state: consts.STATE.INTEGRITY_CHECKING,
 							successMessage: "Integrity Check Started Successfully",
-							toStep: 1,
+							goNext: false,
 						});
 					}
 				}).catch((e) => {
