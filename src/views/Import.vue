@@ -250,7 +250,7 @@ export default {
 			});
 		},
 
-		onChangeImportState({ state, successMessage, goBack }) {
+		onChangeImportState({ state, successMessage, toStep }) {
 			const { importId } = this.$route.params;
 
 			this.loadingChangeStateButton = true;
@@ -264,7 +264,8 @@ export default {
 					}
 
 					if (state !== consts.STATE.FINISHED && state !== consts.STATE.CANCELED) {
-						this.changeTab(goBack ? this.activeStep - 1 : this.activeStep + 1);
+						console.log(this.activeStep);
+						this.changeTab(toStep || this.activeStep + 1);
 					}
 				}
 			}).catch((e) => {
@@ -278,7 +279,7 @@ export default {
 			await this.onChangeImportState({
 				state: consts.STATE.CANCELED,
 				successMessage: "Canceled Successfully",
-				goBack: false,
+				toStep: null,
 			});
 			await this.fetchData();
 		},

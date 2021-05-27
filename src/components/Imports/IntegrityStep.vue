@@ -106,17 +106,14 @@
 				>
 					{{ $t('Get Affected Records') }}
 				</b-button>
-				<b-upload
+				<b-button
 					v-if="canUploadAndDownloadAffectedRecords"
-					v-model="file"
+					type="is-primary"
+					icon-right="file-upload"
+					@click="filesUpload = !filesUpload"
 				>
-					<span class="file-cta button is-primary">
-						<span v-if="file" class="file-label">
-							{{ file.name || $t("Upload Corrected Records") }}
-						</span>
-						<b-icon icon="file-upload" />
-					</span>
-				</b-upload>
+					{{ $t("Upload Corrected Records") }}
+				</b-button>
 				<b-button
 					v-if="canStartIntegrityCheckAgain"
 					type="is-primary"
@@ -126,6 +123,39 @@
 				>
 					{{ $t('Start Integrity Check Again') }}
 				</b-button>
+			</div>
+
+			<b-field v-if="filesUpload">
+				<b-upload
+					v-model="dropFiles"
+					multiple
+					drag-drop
+				>
+					<section class="section">
+						<div class="content has-text-centered">
+							<p>
+								<b-icon
+									icon="file-upload"
+									size="is-large"
+								/>
+							</p>
+							<p>{{ $t("Drop your files here or click to upload") }}</p>
+						</div>
+					</section>
+				</b-upload>
+			</b-field>
+
+			<div class="tags">
+				<span v-for="(file, index) in dropFiles"
+					:key="index"
+					class="tag is-primary"
+				>
+					{{file.name}}
+					<button class="delete is-small"
+						type="button"
+						@click="deleteDropFile(index)"
+					/>
+				</span>
 			</div>
 
 			<div v-if="invalidFiles.length" class="content">
@@ -165,12 +195,13 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			file: {},
+			dropFiles: [],
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
 			importStatus: "",
 			invalidFiles: [],
+			filesUpload: false,
 		};
 	},
 
@@ -213,10 +244,6 @@ export default {
 				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
-		uploadedFile() {
-			return this.file?.name;
-		},
-
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},
@@ -230,7 +257,8 @@ export default {
 		},
 
 		canStartIntegrityCheckAgain() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED && this.uploadedFile;
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
+				&& this.dropFiles.length;
 		},
 
 		canStartIdentityCheck() {
@@ -291,29 +319,35 @@ export default {
 			this.$emit("changeImportState", {
 				state: consts.STATE.IDENTITY_CHECKING,
 				successMessage: "Identity Check Started Successfully",
-				goBack: false,
+				toStep: null,
 			});
 		},
 
 		startIntegrityCheckAgain() {
 			const { importId } = this.$route.params;
 
-			this.startIntegrityCheckAgainLoading = true;
+			if (this.dropFiles.length) {
+				this.startIntegrityCheckAgainLoading = true;
 
-			ImportService.uploadFilesIntoImport(importId, [this.file]).then(({ status }) => {
-				if (status === 200) {
-					Toast("Uploaded Successfully", "is-success");
-					this.$emit("changeImportState", {
-						state: consts.STATE.INTEGRITY_CHECKING,
-						successMessage: "Integrity Check Started Successfully",
-						goBack: true,
-					});
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-			}).finally(() => {
-				this.startIntegrityCheckAgainLoading = false;
-			});
+				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
+					if (status === 200) {
+						Toast("Uploaded Successfully", "is-success");
+						this.$emit("changeImportState", {
+							state: consts.STATE.INTEGRITY_CHECKING,
+							successMessage: "Integrity Check Started Successfully",
+							toStep: 1,
+						});
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.startIntegrityCheckAgainLoading = false;
+				});
+			}
+		},
+
+		deleteDropFile(index) {
+			this.dropFiles.splice(index, 1);
 		},
 
 		cancelImport() {
