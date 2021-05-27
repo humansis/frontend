@@ -337,6 +337,8 @@ export default {
 							successMessage: "Integrity Check Started Successfully",
 							goNext: false,
 						});
+
+						this.filesUpload = false;
 					}
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
