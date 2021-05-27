@@ -1,6 +1,20 @@
 <template>
 	<div class="card">
-		<div class="card-content">
+		<b-notification
+			v-if="!finalisationStepActive"
+			class="is-light"
+			type="is-info"
+			has-icon
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("This step currently is not in progress")}}
+			</div>
+		</b-notification>
+		<div
+			v-if="finalisationStepActive"
+			class="card-content"
+		>
 			<div class="content">
 				<table>
 					<tbody>
@@ -141,6 +155,10 @@ export default {
 	},
 
 	computed: {
+		finalisationStepActive() {
+			return this.status === consts.STATUS.SIMILARITY_CHECK_CORRECT;
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},

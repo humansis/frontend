@@ -1,6 +1,20 @@
 <template>
 	<div class="card">
-		<div class="card-content">
+		<b-notification
+			v-if="!identityStepActive"
+			class="is-light"
+			type="is-info"
+			has-icon
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("This step currently is not in progress")}}
+			</div>
+		</b-notification>
+		<div
+			v-if="identityStepActive"
+			class="card-content"
+		>
 			<div class="content">
 				<b-progress
 					v-if="totalEntries"
@@ -152,6 +166,12 @@ export default {
 	},
 
 	computed: {
+		identityStepActive() {
+			return this.status === consts.STATUS.IDENTITY_CHECK
+				|| this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},

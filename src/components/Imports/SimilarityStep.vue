@@ -1,6 +1,20 @@
 <template>
 	<div class="card">
-		<div class="card-content">
+		<b-notification
+			v-if="!similarityStepActive"
+			class="is-light"
+			type="is-info"
+			has-icon
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("This step currently is not in progress")}}
+			</div>
+		</b-notification>
+		<div
+			v-if="similarityStepActive"
+			class="card-content"
+		>
 			<div class="content">
 				<b-progress
 					v-if="totalEntries"
@@ -204,6 +218,12 @@ export default {
 	},
 
 	computed: {
+		similarityStepActive() {
+			return this.status === consts.STATUS.SIMILARITY_CHECK
+				|| this.status === consts.STATUS.SIMILARITY_CHECK_CORRECT
+				|| this.status === consts.STATUS.SIMILARITY_CHECK_FAILED;
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},
