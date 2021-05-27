@@ -263,8 +263,6 @@ export default {
 						this.$router.push({ name: "Imports" });
 					}
 
-					console.log("state", state);
-
 					if (state !== consts.STATE.FINISHED && state !== consts.STATE.CANCELED) {
 						if (goNext) this.changeTab(this.activeStep + 1);
 					}

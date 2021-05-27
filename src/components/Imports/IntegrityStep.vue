@@ -339,6 +339,7 @@ export default {
 						});
 
 						this.filesUpload = false;
+						this.invalidFiles = [];
 					}
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
