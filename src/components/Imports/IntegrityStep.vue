@@ -1,7 +1,7 @@
 <template>
 	<div class="card">
 		<b-notification
-			v-if="!integrityStepActive"
+			v-if="!integrityStepActive && status"
 			class="is-light"
 			type="is-info"
 			has-icon
@@ -12,7 +12,7 @@
 			</div>
 		</b-notification>
 		<div
-			v-if="integrityStepActive"
+			v-if="integrityStepActive && status"
 			class="card-content"
 		>
 			<div class="content">
