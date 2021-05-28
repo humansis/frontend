@@ -61,7 +61,7 @@
 								<div class="buttons flex-end">
 									<b-button
 										class="mb-2 mr-0"
-										type="is-warning is-light"
+										type="is-link"
 										:disabled="disabled"
 										:loading="toUpdateLoading"
 										@click="resolveToUpdate(queueId, duplicityCandidateId, recordKey, duplicityKey)"
@@ -70,10 +70,10 @@
 									</b-button>
 									<b-button
 										class="mb-2 ml-2"
-										type="is-info is-light"
+										type="is-info"
 										:disabled="disabled"
 										:loading="toLinkLoading"
-										@click="resolveToLink(queueId, duplicityCandidateId)"
+										@click="resolveToLink(queueId, duplicityCandidateId, recordKey, duplicityKey)"
 									>
 										{{ $t('To Link') }}
 									</b-button>
@@ -85,10 +85,10 @@
 				<div class="buttons flex-end">
 					<b-button
 						class="mt-2 mr-3"
-						type="is-success is-light"
+						type="is-success"
 						:disabled="disabled"
 						:loading="toCreateLoading"
-						@click="resolveToCreate(queueId)"
+						@click="resolveToCreate(queueId, recordKey)"
 					>
 						{{ $t('To Create') }}
 					</b-button>
@@ -287,26 +287,48 @@ export default {
 				queueId,
 				consts.ITEM_STATUS.TO_UPDATE,
 				acceptedDuplicityId,
+				recordKey,
+				duplicityKey,
+				"toUpdateLoading",
 			);
 		},
 
-		async resolveToLink(queueId, acceptedDuplicityId) {
+		async resolveToLink(queueId, acceptedDuplicityId, recordKey, duplicityKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
 				consts.ITEM_STATUS.TO_LINK,
 				acceptedDuplicityId,
+				recordKey,
+				duplicityKey,
+				"toLinkLoading",
 			);
 		},
 
-		async resolveToCreate(queueId) {
+		async resolveToCreate(queueId, recordKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
 				consts.ITEM_STATUS.TO_CREATE,
 				null,
+				recordKey,
+				null,
+				"toCreateLoading",
 			);
 		},
 
-		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
+		async resolveImportItemDuplicity(
+			queueId, state, acceptedDuplicityId, recordKey, duplicityKey, button,
+		) {
+			// TODO
+			console.log(duplicityKey);
+			if (duplicityKey !== null) {
+				console.log(duplicityKey);
+				this.recordItems[recordKey].duplicities[duplicityKey][button] = true;
+			} else {
+				this.recordItems[recordKey].toCreateLoading = true;
+			}
+
+			this.recordItems[recordKey].disabled = true;
+
 			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
 				.then(({ status, data }) => {
 					if (status === 202) {
@@ -316,8 +338,24 @@ export default {
 					if (status === 400) {
 						Notification(`${this.$t("Not Solved")} ${data?.message}`, "is-warning");
 					}
+
+					if (duplicityKey !== null) {
+						this.recordItems[recordKey].duplicities[duplicityKey][button] = false;
+					} else {
+						this.recordItems[recordKey].toCreateLoading = false;
+					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Not Solved")} ${e}`, "is-danger");
+					if (e.message) {
+						Notification(`${this.$t("Not Solved")} ${e}`, "is-danger");
+
+						if (duplicityKey !== null) {
+							this.recordItems[recordKey].duplicities[duplicityKey][button] = false;
+						} else {
+							this.recordItems[recordKey].toCreateLoading = false;
+						}
+
+						this.recordItems[recordKey].disabled = false;
+					}
 				});
 		},
 	},
