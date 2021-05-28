@@ -124,6 +124,7 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
+			"updateStoredUser",
 			"storePermissions",
 			"storeLanguage",
 			"storeTranslations",
@@ -150,6 +151,11 @@ export default {
 					await this.storeUser(user);
 
 					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+
+					this.updateStoredUser({
+						attribute: "changePassword",
+						value: userDetail.changePassword,
+					});
 
 					await this.storeAvailableProjects(userDetail.projectIds);
 
