@@ -97,7 +97,7 @@ export default {
 				{
 					id: 0,
 					queueId: 1024, // --> Will be filled from /imports/queue/{id}
-					status: "New", // --> Will be filled from /imports/queue/{id}
+					status: null, // --> Will be filled from /imports/queue/{id}
 					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }", // --> Will be filled from /imports/queue/{id}
 					recordDuplicities: [
 						{
@@ -131,8 +131,75 @@ export default {
 	},
 
 	methods: {
+		async preparedDuplicitiesObject() {
+			// const originalDuplicities = await this.getDuplicities() || [];
+			const originalDuplicities = [
+				{
+					id: 3,
+					itemId: 1025,
+					duplicityCandidateId: 66,
+					reasons: [
+						"same NationalID",
+						"same given name",
+						"similarity 70 % on family name",
+					],
+				},
+				{
+					itemId: 1024,
+					duplicityCandidateId: 64,
+					reasons: [
+						"same NationalID",
+						"same given name",
+						"similarity 70 % on family name",
+					],
+				},
+				{
+					itemId: 1024,
+					duplicityCandidateId: 65,
+					reasons: [
+						"same NationalID",
+						"same given name",
+						"similarity 70 % on family name",
+					],
+				},
+			];
+
+			const duplicities = [];
+
+			if (originalDuplicities?.length) {
+				originalDuplicities.forEach(({ itemId, duplicityCandidateId, reasons }) => {
+					// console.log(duplicities);
+					// console.log(duplicities.find((duplicity) => duplicity.queueId === itemId));
+
+					if (duplicities.find((duplicity) => duplicity.queueId === itemId)) {
+						const existIndex = duplicities.findIndex((x) => x.queueId === itemId);
+						console.log(existIndex);
+					} else {
+						const duplicity = {
+							queueId: itemId,
+							status: "", // --> Will be filled from /imports/queue/{id}
+							recordValues: "", // --> Will be filled from /imports/queue/{id}
+							recordDuplicities: [
+								{
+									id: 0,
+									duplicityCandidateId,
+									candidate: {}, // Will be filled from /beneficiaries/{id}
+									duplicityReasons: reasons
+										.toString().replace(",", ", "),
+								},
+							],
+						};
+
+						duplicities.push(duplicity);
+					}
+				});
+
+				console.log(duplicities);
+			}
+		},
+
 		async prepareDuplicities() {
-			const duplicities = await this.getDuplicities() || [];
+			const duplicities = await this.preparedDuplicitiesObject() || [];
 
 			const queueIds = [];
 			const duplicityCandidateIds = [];

@@ -105,10 +105,12 @@
 				</b-button>
 			</div>
 
-			<div v-if="duplicitiesContentOpened">
+			<!--<div v-if="duplicitiesContentOpened">
 				<DuplicityResolver />
-			</div>
+			</div>-->
+
 		</div>
+		<DuplicityResolver />
 	</div>
 </template>
 
