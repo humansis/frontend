@@ -10,8 +10,14 @@
 
 		<div class="content">
 			<div
-				v-for="({ queueId, values, duplicities }, key) of recordItems"
-				:key="key"
+				v-for="({
+					queueId,
+					values,
+					duplicities,
+					toCreateLoading,
+					disabled
+				}, recordKey) of recordItems"
+				:key="recordKey"
 				class="resolve-table"
 			>
 				<table>
@@ -25,11 +31,16 @@
 					</thead>
 					<tbody>
 						<tr
-							v-for="({id, duplicityCandidateId, reasons}, key) of duplicities"
-							:key="key"
+							v-for="({
+								duplicityCandidateId,
+								reasons,
+								toUpdateLoading,
+								toLinkLoading
+							}, duplicityKey) of duplicities"
+							:key="duplicityKey"
 						>
 							<td class="td-width-30">
-								<span v-if="key === 0">
+								<span v-if="duplicityKey === 0">
 									{{ values }}
 									<br>
 									<b-tag
@@ -51,13 +62,17 @@
 									<b-button
 										class="mb-2 mr-0"
 										type="is-warning is-light"
-										@click="resolveToUpdate(queueId, duplicityCandidateId)"
+										:disabled="disabled"
+										:loading="toUpdateLoading"
+										@click="resolveToUpdate(queueId, duplicityCandidateId, recordKey, duplicityKey)"
 									>
 										{{ $t('To Update') }}
 									</b-button>
 									<b-button
 										class="mb-2 ml-2"
 										type="is-info is-light"
+										:disabled="disabled"
+										:loading="toLinkLoading"
 										@click="resolveToLink(queueId, duplicityCandidateId)"
 									>
 										{{ $t('To Link') }}
@@ -71,6 +86,8 @@
 					<b-button
 						class="mt-2 mr-3"
 						type="is-success is-light"
+						:disabled="disabled"
+						:loading="toCreateLoading"
 						@click="resolveToCreate(queueId)"
 					>
 						{{ $t('To Create') }}
@@ -146,12 +163,16 @@ export default {
 							duplicityCandidateId,
 							candidate: {},
 							reasons: reasons.toString().replace(",", ", "),
+							toUpdateLoading: false,
+							toLinkLoading: false,
 						});
 					} else {
 						const record = {
 							queueId: itemId,
 							status: "",
 							values: "",
+							disabled: false,
+							toCreateLoading: false,
 							duplicities: [
 								{
 									id,
@@ -159,6 +180,8 @@ export default {
 									candidate: {},
 									reasons: reasons
 										.toString().replace(",", ", "),
+									toUpdateLoading: false,
+									toLinkLoading: false,
 								},
 							],
 						};
@@ -166,8 +189,6 @@ export default {
 						records.push(record);
 					}
 				});
-
-				console.log(records);
 			}
 
 			return records;
@@ -184,8 +205,8 @@ export default {
 				duplicities.forEach((item, key) => {
 					newDuplicities[key] = item;
 
-					if (item.itemId) {
-						queueIds.push(item.itemId);
+					if (item.queueId) {
+						queueIds.push(item.queueId);
 					}
 
 					if (item.duplicities?.length) {
@@ -197,23 +218,36 @@ export default {
 
 				this.recordItems = newDuplicities;
 
-				// this.prepareQueueItemForDuplicity(queueIds);
-				// this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
+				this.prepareQueueItemForDuplicity(queueIds);
+				this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
 			}
 		},
 
 		async prepareQueueItemForDuplicity(queueIds) {
 			const queueItems = await this.getImportItemsDetail(queueIds);
 
-			// TODO Prepare queueItems for duplicities
-			console.log(queueItems);
+			this.recordItems.forEach((item, key) => {
+				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
+
+				this.recordItems[key].values = queueItem?.values;
+				this.recordItems[key].status = queueItem?.status;
+			});
 		},
 
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
 			const beneficiaries = await this.getBeneficiaries(duplicityCandidateIds);
 
-			// TODO Prepare beneficiaries for duplicities
-			console.log(beneficiaries);
+			this.recordItems.forEach(({ duplicities }, recordKey) => {
+				if (duplicities.length) {
+					duplicities.forEach((duplicity, duplicityKey) => {
+						const candidate = beneficiaries?.find(
+							({ id }) => id === duplicity.duplicityCandidateId,
+						);
+
+						this.recordItems[recordKey].duplicities[duplicityKey].candidate = candidate;
+					});
+				}
+			});
 		},
 
 		getDuplicities() {
@@ -246,16 +280,30 @@ export default {
 				});
 		},
 
-		resolveToUpdate(queueId, acceptedDuplicityId) {
-			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_UPDATE, acceptedDuplicityId);
+		async resolveToUpdate(queueId, acceptedDuplicityId, recordKey, duplicityKey) {
+			this.recordItems[recordKey].duplicities[duplicityKey].buttonLoading = true;
+
+			await this.resolveImportItemDuplicity(
+				queueId,
+				consts.ITEM_STATUS.TO_UPDATE,
+				acceptedDuplicityId,
+			);
 		},
 
-		resolveToLink(queueId, acceptedDuplicityId) {
-			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_LINK, acceptedDuplicityId);
+		async resolveToLink(queueId, acceptedDuplicityId) {
+			await this.resolveImportItemDuplicity(
+				queueId,
+				consts.ITEM_STATUS.TO_LINK,
+				acceptedDuplicityId,
+			);
 		},
 
-		resolveToCreate(queueId) {
-			this.resolveImportItemDuplicity(queueId, consts.ITEM_STATUS.TO_CREATE, null);
+		async resolveToCreate(queueId) {
+			await this.resolveImportItemDuplicity(
+				queueId,
+				consts.ITEM_STATUS.TO_CREATE,
+				null,
+			);
 		},
 
 		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
