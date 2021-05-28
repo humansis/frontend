@@ -31,7 +31,7 @@ const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)
 const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
 
 export default {
-	name: "userForm",
+	name: "UserPasswordForm",
 
 	mixins: [Validation],
 
