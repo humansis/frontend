@@ -185,7 +185,7 @@ export default {
 		},
 
 		canStartSimilarityCheck() {
-			return this.importStatus !== consts.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		canCancelImport() {

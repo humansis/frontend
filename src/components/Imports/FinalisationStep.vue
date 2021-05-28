@@ -1,20 +1,6 @@
 <template>
 	<div class="card">
-		<b-notification
-			v-if="!finalisationStepActive && status"
-			class="is-light"
-			type="is-info"
-			has-icon
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("This step currently is not in progress")}}
-			</div>
-		</b-notification>
-		<div
-			v-if="finalisationStepActive && status"
-			class="card-content"
-		>
+		<div class="card-content">
 			<div class="content">
 				<table>
 					<tbody>
@@ -106,9 +92,10 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
-					v-if="amountEntriesToImport"
+					v-if="finalisationStepActive"
 					type="is-primary"
 					icon-right="save"
+					:loading="approveAndSaveButtonLoading"
 					@click="approveAndSave"
 				>
 					{{ $t('Approve and Save') }}
@@ -128,6 +115,7 @@ export default {
 		return {
 			importStatistics: {},
 			importStatus: "",
+			approveAndSaveButtonLoading: false,
 		};
 	},
 
@@ -190,11 +178,15 @@ export default {
 
 	methods: {
 		approveAndSave() {
+			this.approveAndSaveButtonLoading = true;
+
 			this.$emit("changeImportState", {
 				state: consts.STATE.FINISHED,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});
+
+			this.approveAndSaveButtonLoading = false;
 		},
 
 		cancelImport() {

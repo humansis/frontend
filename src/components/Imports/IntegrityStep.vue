@@ -89,15 +89,6 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
-					v-if="canStartIdentityCheck"
-					type="is-primary"
-					icon-right="play-circle"
-					:loading="changeStateButtonLoading"
-					@click="startIdentityCheck"
-				>
-					{{ $t('Start Identity Check') }}
-				</b-button>
-				<b-button
 					v-if="canUploadAndDownloadAffectedRecords"
 					type="is-primary"
 					icon-right="file-download"
@@ -122,6 +113,15 @@
 					@click="startIntegrityCheckAgain"
 				>
 					{{ $t('Start Integrity Check Again') }}
+				</b-button>
+				<b-button
+					v-if="canStartIdentityCheck"
+					type="is-primary"
+					icon-right="play-circle"
+					:loading="changeStateButtonLoading"
+					@click="startIdentityCheck"
+				>
+					{{ $t('Start Identity Check') }}
 				</b-button>
 			</div>
 
@@ -262,7 +262,8 @@ export default {
 		},
 
 		canStartIdentityCheck() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT;
+			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canUploadAndDownloadAffectedRecords() {
