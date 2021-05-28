@@ -3,14 +3,14 @@
 		<hr>
 
 		<h2 class="subtitle is-5 mb-4">
-			{{ $t("Duplicity Cases") }} ({{ duplicities.length }})
+			{{ $t("Duplicity Cases") }} ({{ recordItems.length }})
 		</h2>
 
 		<hr>
 
 		<div class="content">
 			<div
-				v-for="({ queueId, recordValues, recordDuplicities }, key) of duplicities"
+				v-for="({ queueId, values, duplicities }, key) of recordItems"
 				:key="key"
 				class="resolve-table"
 			>
@@ -25,12 +25,12 @@
 					</thead>
 					<tbody>
 						<tr
-							v-for="({id, name, duplicityReasons}, key) of recordDuplicities"
+							v-for="({id, duplicityCandidateId, reasons}, key) of duplicities"
 							:key="key"
 						>
 							<td class="td-width-30">
 								<span v-if="key === 0">
-									{{ recordValues }}
+									{{ values }}
 									<br>
 									<b-tag
 										class="mt-2"
@@ -41,24 +41,24 @@
 								</span>
 							</td>
 							<td class="td-width-30">
-								{{ name }}
+								Candidate ID: {{ duplicityCandidateId }}
 							</td>
 							<td>
-								{{ duplicityReasons }}
+								{{ reasons }}
 							</td>
 							<td>
 								<div class="buttons flex-end">
 									<b-button
 										class="mb-2 mr-0"
 										type="is-warning is-light"
-										@click="resolveToUpdate(queueId, id)"
+										@click="resolveToUpdate(queueId, duplicityCandidateId)"
 									>
 										{{ $t('To Update') }}
 									</b-button>
 									<b-button
 										class="mb-2 ml-2"
 										type="is-info is-light"
-										@click="resolveToLink(queueId, id)"
+										@click="resolveToLink(queueId, duplicityCandidateId)"
 									>
 										{{ $t('To Link') }}
 									</b-button>
@@ -93,36 +93,7 @@ export default {
 
 	data() {
 		return {
-			duplicities: [
-				{
-					id: 0,
-					queueId: 1024, // --> Will be filled from /imports/queue/{id}
-					status: null, // --> Will be filled from /imports/queue/{id}
-					recordValues: "{ local_given_name: 'Abdul Mohamed', local_family_name: 'Hassan' }", // --> Will be filled from /imports/queue/{id}
-					recordDuplicities: [
-						{
-							id: 0,
-							duplicityCandidateId: 64,
-							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
-							duplicityReasons: [
-								"same NationalID",
-								"same given name",
-								"similarity 70 % on family name",
-							],
-						},
-						{
-							id: 0,
-							duplicityCandidateId: 64,
-							name: "BeneficiaryName 1", // --> Will be filled from /beneficiary/{id}
-							duplicityReasons: [
-								"same NationalID",
-								"same given name",
-								"similarity 70 % on family name",
-							],
-						},
-					],
-				},
-			],
+			recordItems: [],
 		};
 	},
 
@@ -164,63 +135,70 @@ export default {
 				},
 			];
 
-			const duplicities = [];
+			const records = [];
 
 			if (originalDuplicities?.length) {
-				originalDuplicities.forEach(({ itemId, duplicityCandidateId, reasons }) => {
-					// console.log(duplicities);
-					// console.log(duplicities.find((duplicity) => duplicity.queueId === itemId));
-
-					if (duplicities.find((duplicity) => duplicity.queueId === itemId)) {
-						const existIndex = duplicities.findIndex((x) => x.queueId === itemId);
-						console.log(existIndex);
+				originalDuplicities.forEach(({ id, itemId, duplicityCandidateId, reasons }) => {
+					if (records.find((duplicity) => duplicity.queueId === itemId)) {
+						const existIndex = records.findIndex((item) => item.queueId === itemId);
+						records[existIndex].duplicities.push({
+							id,
+							duplicityCandidateId,
+							candidate: {},
+							reasons: reasons.toString().replace(",", ", "),
+						});
 					} else {
-						const duplicity = {
+						const record = {
 							queueId: itemId,
-							status: "", // --> Will be filled from /imports/queue/{id}
-							recordValues: "", // --> Will be filled from /imports/queue/{id}
-							recordDuplicities: [
+							status: "",
+							values: "",
+							duplicities: [
 								{
-									id: 0,
+									id,
 									duplicityCandidateId,
-									candidate: {}, // Will be filled from /beneficiaries/{id}
-									duplicityReasons: reasons
+									candidate: {},
+									reasons: reasons
 										.toString().replace(",", ", "),
 								},
 							],
 						};
 
-						duplicities.push(duplicity);
+						records.push(record);
 					}
 				});
 
-				console.log(duplicities);
+				console.log(records);
 			}
+
+			return records;
 		},
 
 		async prepareDuplicities() {
 			const duplicities = await this.preparedDuplicitiesObject() || [];
 
+			const newDuplicities = [];
 			const queueIds = [];
 			const duplicityCandidateIds = [];
 
 			if (duplicities?.length) {
 				duplicities.forEach((item, key) => {
-					this.duplicities[key] = item;
+					newDuplicities[key] = item;
 
-					if (item.queueId) {
-						queueIds.push(item.queueId);
+					if (item.itemId) {
+						queueIds.push(item.itemId);
 					}
 
-					if (item.recordDuplicities?.length) {
-						item.recordDuplicities.forEach(({ duplicityCandidateId }) => {
+					if (item.duplicities?.length) {
+						item.duplicities.forEach(({ duplicityCandidateId }) => {
 							duplicityCandidateIds.push(duplicityCandidateId);
 						});
 					}
 				});
 
-				this.prepareQueueItemForDuplicity(queueIds);
-				this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
+				this.recordItems = newDuplicities;
+
+				// this.prepareQueueItemForDuplicity(queueIds);
+				// this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
 			}
 		},
 
