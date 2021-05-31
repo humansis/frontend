@@ -1,12 +1,43 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered mb-3">
+		<h1 class="title has-text-centered">
 			{{ importTitle }}
 		</h1>
-		<p class="has-text-centered mb-3">
+		<p
+			v-if="importDescription && !importDescriptionEditing"
+			class="has-text-centered mt-3"
+		>
 			{{ importDescription }}
+			<b-button
+				class="ml-1 description-edit-button"
+				size="is-small"
+				icon-left="edit"
+				@click="editDescription"
+			/>
 		</p>
-		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mb-4">
+		<div v-if="importDescriptionEditing">
+			<b-input
+				class="description-edit-area"
+				v-model="importDescriptionCopy"
+				type="textarea"
+				maxlength="255"
+			/>
+			<div class="buttons mt-1 flex-end">
+				<b-button
+					@click="closeEditDescription"
+				>
+					{{ $t('Close') }}
+				</b-button>
+				<b-button
+					class="is-primary"
+					:loading="updateDescriptionLoading"
+					@click="updateDescription"
+				>
+					{{ $t('Save') }}
+				</b-button>
+			</div>
+		</div>
+		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mt-3 mb-4">
 			{{ importProject }}
 		</h2>
 		<div class="has-text-centered mb-5">
@@ -154,7 +185,9 @@ export default {
 			importDetail: {},
 			statistics: {},
 			project: {},
-
+			importDescriptionEditing: false,
+			importDescriptionCopy: "",
+			updateDescriptionLoading: false,
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
 			activeStep: 0,
@@ -180,6 +213,23 @@ export default {
 	},
 
 	methods: {
+		editDescription() {
+			this.importDescriptionEditing = true;
+			this.importDescriptionCopy = this.importDescription;
+		},
+
+		closeEditDescription() {
+			this.updateDescriptionLoading = false;
+			this.importDescriptionEditing = false;
+			this.importDescriptionCopy = "";
+		},
+
+		updateDescription() {
+			this.updateDescriptionLoading = true;
+
+			// TODO Change description for import after BE will implement it
+		},
+
 		changeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
@@ -285,3 +335,13 @@ export default {
 	},
 };
 </script>
+
+<style>
+.description-edit-button {
+	margin-top: -.2rem;
+}
+
+.description-edit-area textarea {
+	text-align: center;
+}
+</style>
