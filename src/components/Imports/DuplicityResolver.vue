@@ -3,7 +3,7 @@
 		<hr>
 
 		<h2 class="subtitle is-5 mb-4">
-			{{ $t("Duplicity Cases") }} ({{ recordItems.length }})
+			{{ header }} ({{ recordItems.length }})
 		</h2>
 
 		<hr>
@@ -122,6 +122,13 @@ export default {
 		return {
 			recordItems: [],
 		};
+	},
+
+	props: {
+		header: {
+			type: String,
+			required: true,
+		},
 	},
 
 	mounted() {

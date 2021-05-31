@@ -107,7 +107,10 @@
 			</div>
 
 			<div v-if="duplicitiesContentOpened">
-				<DuplicityResolver @loaded="onDuplicityLoaded" />
+				<DuplicityResolver
+					:header="$t('Duplicity Cases')"
+					@loaded="onDuplicityLoaded"
+				/>
 			</div>
 		</div>
 	</div>
