@@ -63,7 +63,6 @@ export default {
 
 	methods: {
 		filterChanged(filters) {
-			console.log(filters);
 			this.$emit("filtersChanged", filters);
 		},
 

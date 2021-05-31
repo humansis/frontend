@@ -8,7 +8,7 @@
 			:closable="false"
 		>
 			<div class="mt-3">
-				{{ $t("This step currently is not in progress")}}
+				{{ $t("This step is not currently in progress")}}
 			</div>
 		</b-notification>
 		<div

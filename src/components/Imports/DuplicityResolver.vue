@@ -133,7 +133,6 @@ export default {
 
 	mounted() {
 		this.prepareDuplicities();
-		console.log("mounted");
 	},
 
 	methods: {
@@ -313,7 +312,6 @@ export default {
 			queueId, state, acceptedDuplicityId, recordKey, duplicityKey, button,
 		) {
 			if (duplicityKey !== null) {
-				console.log(duplicityKey);
 				this.recordItems[recordKey].duplicities[duplicityKey][button] = true;
 			} else {
 				this.recordItems[recordKey].toCreateLoading = true;
