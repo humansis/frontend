@@ -64,7 +64,12 @@
 										type="is-link"
 										:disabled="disabled"
 										:loading="toUpdateLoading"
-										@click="resolveToUpdate(queueId, duplicityCandidateId, recordKey, duplicityKey)"
+										@click="resolveToUpdate(
+											queueId,
+											duplicityCandidateId,
+											recordKey,
+											duplicityKey
+										)"
 									>
 										{{ $t('To Update') }}
 									</b-button>
@@ -73,7 +78,12 @@
 										type="is-info"
 										:disabled="disabled"
 										:loading="toLinkLoading"
-										@click="resolveToLink(queueId, duplicityCandidateId, recordKey, duplicityKey)"
+										@click="resolveToLink(
+											queueId,
+											duplicityCandidateId,
+											recordKey,
+											duplicityKey
+										)"
 									>
 										{{ $t('To Link') }}
 									</b-button>
