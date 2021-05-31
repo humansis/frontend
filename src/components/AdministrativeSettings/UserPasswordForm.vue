@@ -28,7 +28,7 @@ import Validation from "@/mixins/validation";
 
 const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
 
-const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
+const passwordValidation = (value) => ((value ? passwordRegexp.test(value) : true) && value.length);
 
 export default {
 	name: "UserPasswordForm",
