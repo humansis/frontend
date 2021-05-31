@@ -138,37 +138,7 @@ export default {
 
 	methods: {
 		async preparedDuplicitiesObject() {
-			// const originalDuplicities = await this.getDuplicities() || [];
-			const originalDuplicities = [
-				{
-					id: 3,
-					itemId: 1025,
-					duplicityCandidateId: 66,
-					reasons: [
-						"same NationalID",
-						"same given name",
-						"similarity 70 % on family name",
-					],
-				},
-				{
-					itemId: 1024,
-					duplicityCandidateId: 64,
-					reasons: [
-						"same NationalID",
-						"same given name",
-						"similarity 70 % on family name",
-					],
-				},
-				{
-					itemId: 1024,
-					duplicityCandidateId: 65,
-					reasons: [
-						"same NationalID",
-						"same given name",
-						"similarity 70 % on family name",
-					],
-				},
-			];
+			const originalDuplicities = await this.getDuplicities() || [];
 
 			const records = [];
 
