@@ -90,7 +90,8 @@
 					v-if="amountDuplicities"
 					type="is-primary"
 					icon-right="tasks"
-					@click="duplicitiesContentOpened = !duplicitiesContentOpened"
+					:loading="resolveDuplicitiesLoading"
+					@click="resolveDuplicities"
 				>
 					{{ $t('Resolve Similarities') }}
 				</b-button>
@@ -106,64 +107,10 @@
 			</div>
 
 			<div v-if="duplicitiesContentOpened">
-				<hr>
-
-				<h2 class="subtitle is-5 mb-4">
-					{{ $t("Similarity Cases") }}
-				</h2>
-
-				<hr>
-
-				<div class="content">
-					<div class="resolve-table">
-						<table>
-							<thead>
-								<tr>
-									<th>{{ $t('Imported Record') }}</th>
-									<th>{{ $t('Records From Database') }}</th>
-									<th>{{ $t('Similarities') }}</th>
-									<th>{{ $t('Actions') }}</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
-									</td>
-									<td>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
-									</td>
-									<td>
-										Vestibulum fermentum tortor id mi. Etiam sapien elit, consequat
-										eget, tristique non, venenatis quis, ante. Etiam bibendum elit
-										eget erat. Vestibulum fermentum tortor id mi
-									</td>
-									<td>
-										<b-button
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('Use Existing') }}
-										</b-button>
-									</td>
-									<td>
-										<b-button
-											type="is-info is-light"
-											icon-right="play-circle"
-										>
-											{{ $t('Use New') }}
-										</b-button>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<hr>
-					</div>
-				</div>
+				<DuplicityResolver
+					:header="$t('Similarity Cases')"
+					@loaded="onDuplicityLoaded"
+				/>
 			</div>
 		</div>
 	</div>
@@ -171,14 +118,20 @@
 
 <script>
 import consts from "@/utils/importConst";
+import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 
 export default {
 	name: "SimilarityStep",
+
+	components: {
+		DuplicityResolver,
+	},
 
 	data() {
 		return {
 			importStatistics: {},
 			duplicitiesContentOpened: false,
+			resolveDuplicitiesLoading: false,
 			file: {},
 			changeStateButtonLoading: false,
 			importStatus: "",
@@ -246,6 +199,15 @@ export default {
 	},
 
 	methods: {
+		resolveDuplicities() {
+			if (!this.duplicitiesContentOpened) this.resolveDuplicitiesLoading = true;
+			this.duplicitiesContentOpened = true;
+		},
+
+		onDuplicityLoaded() {
+			this.resolveDuplicitiesLoading = false;
+		},
+
 		goToFinalisation() {
 			this.$emit("goToFinalStep");
 		},
