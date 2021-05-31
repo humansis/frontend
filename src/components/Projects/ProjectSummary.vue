@@ -99,6 +99,8 @@ export default {
 				const dataCopy = data;
 				dataCopy.sectors = data.sectors?.map((sector) => ({ code: sector, value: sector }));
 				this.projectSummary = dataCopy;
+
+				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });

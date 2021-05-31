@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<ProjectSummary />
+		<ProjectSummary @projectLoaded="onProjectLoaded" />
 
 		<div class="level">
 			<div class="level-left">
@@ -37,6 +37,7 @@
 
 		<AssistancesList
 			ref="assistancesList"
+			:beneficiaries-count="beneficiariesCount"
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -67,6 +68,7 @@ export default {
 
 	data() {
 		return {
+			project: null,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
@@ -83,7 +85,17 @@ export default {
 		};
 	},
 
+	computed: {
+		beneficiariesCount() {
+			return this.project?.numberOfHouseholds || 0;
+		},
+	},
+
 	methods: {
+		onProjectLoaded(project) {
+			this.project = project;
+		},
+
 		closeAssistanceModal() {
 			this.assistanceModal.isOpened = false;
 		},
