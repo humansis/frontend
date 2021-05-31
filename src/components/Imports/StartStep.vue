@@ -6,6 +6,7 @@
 					v-model="dropFiles"
 					multiple
 					drag-drop
+					:disabled="!canStartImport"
 				>
 					<section class="section">
 						<div class="content has-text-centered">
@@ -15,7 +16,7 @@
 									size="is-large"
 								/>
 							</p>
-							<p>Drop your files here or click to upload</p>
+							<p>{{ $t("Drop your files here or click to upload") }}</p>
 						</div>
 					</section>
 				</b-upload>
@@ -38,6 +39,7 @@
 
 			<div class="buttons mt-3 flex-end">
 				<b-button
+					v-if="canCancelImport"
 					type="is-light is-danger"
 					icon-right="ban"
 					@click="cancelImport"
@@ -45,6 +47,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
+					v-if="canStartImport"
 					type="is-primary"
 					icon-right="play-circle"
 					:disabled="!filesCount"
@@ -59,7 +62,9 @@
 </template>
 
 <script>
-import { Toast } from "@/utils/UI";
+import ImportService from "@/services/ImportService";
+import { Notification, Toast } from "@/utils/UI";
+import consts from "@/utils/importConst";
 
 export default {
 	name: "StartStep",
@@ -68,12 +73,35 @@ export default {
 		return {
 			dropFiles: [],
 			startButtonLoading: false,
+			importStatus: "",
 		};
+	},
+
+	props: {
+		status: {
+			type: String,
+			required: false,
+			default: "",
+		},
+	},
+
+	watch: {
+		status(value) {
+			this.importStatus = value;
+		},
 	},
 
 	computed: {
 		filesCount() {
 			return this.dropFiles?.length;
+		},
+
+		canStartImport() {
+			return this.importStatus === consts.STATUS.NEW;
+		},
+
+		canCancelImport() {
+			return this.importStatus !== consts.STATUS.FINISH;
 		},
 	},
 
@@ -83,9 +111,24 @@ export default {
 		},
 
 		startImport() {
+			const { importId } = this.$route.params;
+
 			this.startButtonLoading = true;
-			// TODO Start Import Service
-			Toast("Import Started", "is-success");
+
+			ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
+				if (status === 200) {
+					Toast(this.$t("Uploaded Successfully"), "is-success");
+					this.$emit("changeImportState", {
+						state: consts.STATE.INTEGRITY_CHECKING,
+						successMessage: "Integrity Check Started Successfully",
+						goNext: true,
+					});
+				}
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.startButtonLoading = false;
+			});
 		},
 
 		cancelImport() {

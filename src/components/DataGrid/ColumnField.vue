@@ -80,7 +80,7 @@
 		<!-- Show Custom Tag with background color -->
 		<template v-if="column.type === 'tag'">
 			<b-tag :type="getTagType">
-				{{ data.row[column.field] }}
+				{{ $t(data.row[column.field]) }}
 			</b-tag>
 		</template>
 
@@ -145,7 +145,7 @@ export default {
 		getTagType() {
 			const tag = this.column.customTags
 				.find(({ code }) => code === this.data.row[this.column.field]);
-			return tag?.type || "is-dark";
+			return tag?.type || "is-light";
 		},
 	},
 

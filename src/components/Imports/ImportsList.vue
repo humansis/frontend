@@ -126,12 +126,21 @@ import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
+import consts from "@/utils/importConst";
 
 const statusTags = [
-	{ code: "New", type: "is-light" },
-	{ code: "In Progress", type: "is-info" },
-	{ code: "Finished", type: "is-success" },
-	{ code: "Canceled", type: "is-warning" },
+	{ code: consts.STATUS.NEW, type: "is-light" },
+	{ code: consts.STATUS.INTEGRITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.INTEGRITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.INTEGRITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.IDENTITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.IDENTITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.IDENTITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.SIMILARITY_CHECK, type: "is-info" },
+	{ code: consts.STATUS.SIMILARITY_CHECK_CORRECT, type: "is-success" },
+	{ code: consts.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
+	{ code: consts.STATUS.FINISH, type: "is-success" },
+	{ code: consts.STATUS.CANCEL, type: "is-warning" },
 ];
 
 export default {
@@ -155,11 +164,11 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", sortable: true },
-					{ key: "title", sortable: true },
-					{ key: "projectId", label: "Project", sortable: true, sortKey: "project" },
-					{ key: "status", type: "tag", customTags: statusTags, sortable: true },
-					{ key: "createdBy", sortable: true },
+					{ key: "id", width: "30", sortable: true },
+					{ key: "title", width: "120", sortable: true },
+					{ key: "projectId", width: "120", label: "Project", sortable: true, sortKey: "project" },
+					{ key: "status", width: "100", type: "tag", customTags: statusTags, sortable: true },
+					{ key: "createdBy", width: "140", sortable: true },
 					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
 				],
 				total: 0,
@@ -168,9 +177,11 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				filtersInProgress: [
-					"Integrity Checking", "Integrity Check Correct", "Integrity Check Failed",
-					"Identity Checking", "Identity Check Correct", "Identity Check Failed",
-					"Similarity Checking", "Similarity Check Correct", "Similarity Check Failed",
+					consts.STATUS.INTEGRITY_CHECK, consts.STATUS.INTEGRITY_CHECK_CORRECT,
+					consts.STATUS.INTEGRITY_CHECK_FAILED, consts.STATUS.IDENTITY_CHECK,
+					consts.STATUS.IDENTITY_CHECK_CORRECT, consts.STATUS.IDENTITY_CHECK_FAILED,
+					consts.STATUS.SIMILARITY_CHECK, consts.STATUS.SIMILARITY_CHECK_CORRECT,
+					consts.STATUS.SIMILARITY_CHECK_FAILED,
 				],
 			},
 		};
@@ -285,7 +296,38 @@ export default {
 		},
 
 		goToDetail(importItem) {
-			this.$router.push({ name: "Import", params: { importId: importItem.id } });
+			let slug = "";
+
+			switch (importItem.status) {
+				case consts.STATUS.INTEGRITY_CHECK:
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+					slug = "integrity-check";
+					break;
+				case consts.STATUS.IDENTITY_CHECK:
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+					slug = "identity-check";
+					break;
+				case consts.STATUS.SIMILARITY_CHECK:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+					slug = "similarity-check";
+					break;
+				case consts.STATUS.FINISH:
+					slug = "finalisation";
+					break;
+				case consts.STATUS.NEW:
+				case consts.STATUS.CANCEL:
+				default:
+					slug = "start-import";
+			}
+
+			this.$router.push({
+				name: "Import",
+				params: { importId: importItem.id },
+				query: { step: slug },
+			});
 		},
 
 		showDetailWithId(id) {
