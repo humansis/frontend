@@ -126,6 +126,7 @@ export default {
 
 	mounted() {
 		this.prepareDuplicities();
+		console.log("mounted");
 	},
 
 	methods: {
@@ -230,6 +231,8 @@ export default {
 
 				this.prepareQueueItemsForDuplicity(queueIds);
 				this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
+
+				this.$emit("loaded", true);
 			}
 		},
 
@@ -237,6 +240,8 @@ export default {
 			const { importId } = this.$route.params;
 
 			const queueItems = await this.getImportItemsDetail(importId, queueIds);
+
+			if (!queueItems?.length) return;
 
 			this.recordItems.forEach((item, key) => {
 				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
@@ -330,8 +335,6 @@ export default {
 		async resolveImportItemDuplicity(
 			queueId, state, acceptedDuplicityId, recordKey, duplicityKey, button,
 		) {
-			// TODO
-			console.log(duplicityKey);
 			if (duplicityKey !== null) {
 				console.log(duplicityKey);
 				this.recordItems[recordKey].duplicities[duplicityKey][button] = true;

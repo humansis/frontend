@@ -90,7 +90,8 @@
 					v-if="amountDuplicities"
 					type="is-primary"
 					icon-right="tasks"
-					@click="duplicitiesContentOpened = !duplicitiesContentOpened"
+					:loading="resolveDuplicitiesLoading"
+					@click="resolveDuplicities"
 				>
 					{{ $t('Resolve Duplicities') }}
 				</b-button>
@@ -105,12 +106,10 @@
 				</b-button>
 			</div>
 
-			<!--<div v-if="duplicitiesContentOpened">
-				<DuplicityResolver />
-			</div>-->
-
+			<div v-if="duplicitiesContentOpened">
+				<DuplicityResolver @loaded="onDuplicityLoaded" />
+			</div>
 		</div>
-		<DuplicityResolver />
 	</div>
 </template>
 
@@ -128,9 +127,10 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			duplicitiesContentOpened: true,
+			duplicitiesContentOpened: false,
 			file: {},
 			changeStateButtonLoading: false,
+			resolveDuplicitiesLoading: false,
 			importStatus: "",
 		};
 	},
@@ -196,6 +196,15 @@ export default {
 	},
 
 	methods: {
+		resolveDuplicities() {
+			if (!this.duplicitiesContentOpened) this.resolveDuplicitiesLoading = true;
+			this.duplicitiesContentOpened = true;
+		},
+
+		onDuplicityLoaded() {
+			this.resolveDuplicitiesLoading = false;
+		},
+
 		startSimilarityCheck() {
 			this.$emit("changeImportState", {
 				state: consts.STATE.SIMILARITY_CHECKING,
