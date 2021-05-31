@@ -1,6 +1,30 @@
 <template>
 	<div>
 		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
+		<b-notification
+			v-if="!this.table.data && !isLoadingList"
+			type="is-info is-light"
+			has-icon
+			icon="exclamation-triangle"
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("This project does not contain any assistances")}}.
+				{{ $t("Create your first one")}}.
+			</div>
+		</b-notification>
+		<b-notification
+			v-if="!beneficiariesCount && this.table.data && !isLoadingList"
+			type="is-warning is-light"
+			has-icon
+			icon="user-plus"
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("Please add some beneficiaries first!")}}
+				{{ $t("Then you will be able to manage some assistances")}}.
+			</div>
+		</b-notification>
 		<Table
 			has-reset-sort
 			default-sort-key="dateDistribution"
@@ -128,6 +152,11 @@ export default {
 
 	props: {
 		upcoming: Boolean,
+		beneficiariesCount: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 	},
 
 	mixins: [permissions, grid, baseHelper],
