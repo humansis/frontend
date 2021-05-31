@@ -228,13 +228,15 @@ export default {
 
 				this.recordItems = newDuplicities;
 
-				this.prepareQueueItemForDuplicity(queueIds);
+				this.prepareQueueItemsForDuplicity(queueIds);
 				this.prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds);
 			}
 		},
 
-		async prepareQueueItemForDuplicity(queueIds) {
-			const queueItems = await this.getImportItemsDetail(queueIds);
+		async prepareQueueItemsForDuplicity(queueIds) {
+			const { importId } = this.$route.params;
+
+			const queueItems = await this.getImportItemsDetail(importId, queueIds);
 
 			this.recordItems.forEach((item, key) => {
 				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
@@ -270,9 +272,9 @@ export default {
 				});
 		},
 
-		getImportItemsDetail(ids) {
+		getImportItemsDetail(importId, ids) {
 			if (!ids.length) return [];
-			return ImportService.getImportItemsDetail(ids)
+			return ImportService.getImportItemsDetail(importId, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicity Item")} ${e}`, "is-danger");

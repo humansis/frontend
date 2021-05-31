@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri, upload } from "@/utils/fetcher";
 
 export default {
 	async getListOfImports(page, size, sort, search = null, filters = null) {
@@ -96,10 +96,11 @@ export default {
 		return { data };
 	},
 
-	// TODO Prepare this for multi get
-	async getImportItemsDetail(queueId) {
+	async getImportItemsDetail(importId, queueIds) {
+		const idsText = queueIds.length ? idsToUri(queueIds) : "";
+
 		const { data, status } = await fetcher({
-			uri: `imports/queue/${queueId}`,
+			uri: `imports/${importId}/queue?${idsText}`,
 		});
 		return { data, status };
 	},
