@@ -203,7 +203,6 @@ export default {
 
 	async created() {
 		this.fetchData();
-
 		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
 		this.activeStep = currentStep?.code || 0;
 	},
