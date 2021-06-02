@@ -7,7 +7,7 @@
 				<h2 class="title">{{ $t('Project Assistances') }}</h2>
 			</div>
 
-			<div class="level-right">
+			<div v-if="beneficiariesCount" class="level-right">
 				<b-button
 					v-if="userCan.addDistribution"
 					type="is-primary"
