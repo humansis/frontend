@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
 		<b-notification
-			v-if="!this.table.data && !isLoadingList"
+			v-if="beneficiariesCount && !table.data && !isLoadingList && !upcoming"
 			type="is-info is-light"
 			has-icon
 			icon="exclamation-triangle"
@@ -14,7 +14,7 @@
 			</div>
 		</b-notification>
 		<b-notification
-			v-if="!beneficiariesCount && this.table.data && !isLoadingList"
+			v-if="!beneficiariesCount && table.data && !isLoadingList && !upcoming"
 			type="is-warning is-light"
 			has-icon
 			icon="user-plus"
