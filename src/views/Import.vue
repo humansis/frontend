@@ -323,7 +323,9 @@ export default {
 						this.$router.push({ name: "Imports" });
 					}
 
-					if (state !== consts.STATE.FINISHED && state !== consts.STATE.CANCELED) {
+					if (state !== consts.STATE.FINISHED
+						&& state !== consts.STATE.IMPORTING
+						&& state !== consts.STATE.CANCELED) {
 						if (goNext) this.changeTab(this.activeStep + 1);
 					}
 				}

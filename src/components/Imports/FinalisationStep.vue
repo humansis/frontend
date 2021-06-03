@@ -182,7 +182,7 @@ export default {
 			this.approveAndSaveButtonLoading = true;
 
 			this.$emit("changeImportState", {
-				state: consts.STATE.FINISHED,
+				state: consts.STATE.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});

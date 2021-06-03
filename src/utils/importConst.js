@@ -4,6 +4,7 @@ const IDENTITY_CHECKING = "Identity Checking";
 const SIMILARITY_CHECKING = "Similarity Checking";
 const FINISHED = "Finished";
 const CANCELED = "Canceled";
+const IMPORTING = "Importing";
 
 // Import Statuses
 const NEW = "New";
@@ -16,7 +17,6 @@ const IDENTITY_CHECK_FAILED = "Identity Check Failed";
 const SIMILARITY_CHECK = "Similarity Checking";
 const SIMILARITY_CHECK_CORRECT = "Similarity Check Correct";
 const SIMILARITY_CHECK_FAILED = "Similarity Check Failed";
-const IMPORTING = "Importing";
 const FINISH = "Finished";
 const CANCEL = "Canceled";
 
@@ -32,6 +32,7 @@ export default {
 		INTEGRITY_CHECKING,
 		IDENTITY_CHECKING,
 		SIMILARITY_CHECKING,
+		IMPORTING,
 		FINISHED,
 		CANCELED,
 	},
