@@ -137,6 +137,8 @@ export default {
 		},
 
 		goBack() {
+			this.fetchSmartcardRedemptions();
+
 			if (this.redemptionSummary) {
 				this.redemptionSummary = false;
 				this.header = "Redeemed Batches";
@@ -160,6 +162,7 @@ export default {
 			return format.format(price);
 		},
 
+		// TODO Here fetch again
 		async fetchSmartcardRedemptions() {
 			await SmartcardService.getSmartCardRedemption(this.vendor.id)
 				.then(({ data }) => {
