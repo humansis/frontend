@@ -165,14 +165,11 @@ export default {
 					await this.setLocales(language.key);
 					await this.storeLanguage(language);
 
-					const countries = await this.fetchCountries();
+					const countries = await this.fetchUsersCountries(userId);
 
-					const filteredCountries = countries
-						?.filter((country) => userDetail.countries.includes(country.iso3));
-
-					if (filteredCountries.length) {
-						await this.storeCountries(filteredCountries);
-						await this.storeCountry(filteredCountries[0]);
+					if (countries.length) {
+						await this.storeCountries(countries);
+						await this.storeCountry(countries[0]);
 					}
 
 					const { data: { privileges } } = user.roles[0]
@@ -181,7 +178,7 @@ export default {
 
 					await this.storePermissions(privileges);
 
-					if (filteredCountries.length) {
+					if (countries.length) {
 						this.$router.push(this.$route.query.redirect?.toString() || "/");
 					} else {
 						Notification(`${this.$t("No Countries")}`, "is-warning");
@@ -195,8 +192,8 @@ export default {
 			this.loginButtonLoading = false;
 		},
 
-		fetchCountries() {
-			return CountriesService.getListOfCountries()
+		fetchUsersCountries(userId) {
+			return CountriesService.getListOfUsersCountries(userId)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
