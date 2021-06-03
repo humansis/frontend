@@ -16,6 +16,7 @@ const IDENTITY_CHECK_FAILED = "Identity Check Failed";
 const SIMILARITY_CHECK = "Similarity Checking";
 const SIMILARITY_CHECK_CORRECT = "Similarity Check Correct";
 const SIMILARITY_CHECK_FAILED = "Similarity Check Failed";
+const IMPORTING = "Importing";
 const FINISH = "Finished";
 const CANCEL = "Canceled";
 
@@ -45,6 +46,7 @@ export default {
 		SIMILARITY_CHECK,
 		SIMILARITY_CHECK_CORRECT,
 		SIMILARITY_CHECK_FAILED,
+		IMPORTING,
 		FINISH,
 		CANCEL,
 	},

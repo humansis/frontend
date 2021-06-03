@@ -29,12 +29,12 @@ export default {
 		return { data, status };
 	},
 
-	async changeImportState(importId, state) {
+	async changeImportState(importId, attribute, value) {
 		const { data, status } = await fetcher({
 			uri: `imports/${importId}`,
 			method: "PATCH",
 			body: {
-				status: state,
+				[attribute]: value,
 			},
 		});
 		return { data, status };
