@@ -155,6 +155,7 @@ export default {
 
 			switch (this.importStatus) {
 				case consts.STATUS.CANCEL:
+				case consts.STATUS.IMPORTING:
 					result = "is-warning";
 					break;
 				case consts.STATUS.FINISH:
@@ -203,7 +204,6 @@ export default {
 
 	async created() {
 		this.fetchData();
-
 		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
 		this.activeStep = currentStep?.code || 0;
 	},
@@ -226,8 +226,18 @@ export default {
 
 		updateDescription() {
 			this.updateDescriptionLoading = true;
+			const { importId } = this.$route.params;
 
-			// TODO Change description for import after BE will implement it
+			ImportService.changeImportState(importId, "description", this.importDescriptionCopy)
+				.then(({ status }) => {
+					if (status === 202) {
+						this.importDetail.description = this.importDescriptionCopy;
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.closeEditDescription();
+				});
 		},
 
 		changeTab(data) {
@@ -260,7 +270,7 @@ export default {
 			) {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics(importId);
-				}, 1000);
+				}, 30000);
 			}
 		},
 
@@ -305,7 +315,7 @@ export default {
 
 			this.loadingChangeStateButton = true;
 
-			ImportService.changeImportState(importId, state).then(({ status }) => {
+			ImportService.changeImportState(importId, "status", state).then(({ status }) => {
 				if (status === 202) {
 					Toast(this.$t(successMessage), "is-success");
 
@@ -313,7 +323,9 @@ export default {
 						this.$router.push({ name: "Imports" });
 					}
 
-					if (state !== consts.STATE.FINISHED && state !== consts.STATE.CANCELED) {
+					if (state !== consts.STATE.FINISHED
+						&& state !== consts.STATE.IMPORTING
+						&& state !== consts.STATE.CANCELED) {
 						if (goNext) this.changeTab(this.activeStep + 1);
 					}
 				}
@@ -321,6 +333,7 @@ export default {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 			}).finally(() => {
 				this.loadingChangeStateButton = false;
+				this.fetchImportStatistics(importId);
 			});
 		},
 

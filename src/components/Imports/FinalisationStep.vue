@@ -172,7 +172,8 @@ export default {
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH;
+			return this.importStatus !== consts.STATUS.FINISH
+				|| this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
 
@@ -181,7 +182,7 @@ export default {
 			this.approveAndSaveButtonLoading = true;
 
 			this.$emit("changeImportState", {
-				state: consts.STATE.FINISHED,
+				state: consts.STATE.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});

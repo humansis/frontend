@@ -4,6 +4,7 @@ const IDENTITY_CHECKING = "Identity Checking";
 const SIMILARITY_CHECKING = "Similarity Checking";
 const FINISHED = "Finished";
 const CANCELED = "Canceled";
+const IMPORTING = "Importing";
 
 // Import Statuses
 const NEW = "New";
@@ -31,6 +32,7 @@ export default {
 		INTEGRITY_CHECKING,
 		IDENTITY_CHECKING,
 		SIMILARITY_CHECKING,
+		IMPORTING,
 		FINISHED,
 		CANCELED,
 	},
@@ -45,6 +47,7 @@ export default {
 		SIMILARITY_CHECK,
 		SIMILARITY_CHECK_CORRECT,
 		SIMILARITY_CHECK_FAILED,
+		IMPORTING,
 		FINISH,
 		CANCEL,
 	},
