@@ -2,8 +2,8 @@
 	<div>
 		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
 		<b-notification
-			v-if="beneficiariesCount && !table.data && !isLoadingList && !upcoming"
-			type="is-info is-light"
+			v-if="!table.data.length && beneficiariesCount && !isLoadingList && !upcoming"
+			type="is-warning is-light"
 			has-icon
 			icon="exclamation-triangle"
 			:closable="false"
@@ -26,6 +26,7 @@
 			</div>
 		</b-notification>
 		<Table
+			v-show="beneficiariesCount"
 			has-reset-sort
 			default-sort-key="dateDistribution"
 			:has-search="!upcoming"
