@@ -13,6 +13,7 @@
 				v-for="({
 					queueId,
 					values,
+					status,
 					duplicities,
 					toCreateLoading,
 					disabled
@@ -44,10 +45,16 @@
 									<span v-html="values" />
 									<br>
 									<b-tag
-										class="mt-2"
+										class="mt-2 mr-2"
 										type="is-light"
 									>
 										{{ $t('Row') }} {{ queueId }}
+									</b-tag>
+									<b-tag
+										class="mt-2"
+										type="is-light"
+									>
+										{{ status }}
 									</b-tag>
 								</span>
 							</td>

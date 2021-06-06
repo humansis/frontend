@@ -23,7 +23,7 @@
 				>
 					<template #bar>
 						<b-progress-bar
-							type="is-success"
+							type="is-light"
 							show-value
 							:value="totalEntries - amountDuplicities"
 						/>
