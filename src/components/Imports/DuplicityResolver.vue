@@ -41,7 +41,7 @@
 						>
 							<td class="td-width-30">
 								<span v-if="duplicityKey === 0">
-									{{ values }}
+									<span v-html="values" />
 									<br>
 									<b-tag
 										class="mt-2"
@@ -121,6 +121,10 @@ export default {
 	data() {
 		return {
 			recordItems: [],
+			visibleBeneficiaryAttributes: [
+				"Local given name",
+				"Local family name",
+			],
 		};
 	},
 
@@ -138,7 +142,6 @@ export default {
 	methods: {
 		async preparedDuplicitiesObject() {
 			const originalDuplicities = await this.getDuplicities() || [];
-
 			const records = [];
 
 			if (originalDuplicities?.length) {
@@ -176,6 +179,8 @@ export default {
 						records.push(record);
 					}
 				});
+			} else {
+				this.$emit("loaded", true);
 			}
 
 			return records;
@@ -222,7 +227,25 @@ export default {
 			this.recordItems.forEach((item, key) => {
 				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
 
-				this.recordItems[key].values = queueItem?.values;
+				const parsedValues = JSON.parse(queueItem?.values);
+
+				let values = "";
+
+				if (parsedValues?.length) {
+					parsedValues.forEach((parsedValue, parsedValueKey) => {
+						Object.entries(parsedValue).forEach(([attr, value]) => {
+							if (this.visibleBeneficiaryAttributes.includes(attr)) {
+								values += `${attr}: ${value}, `;
+							}
+						});
+
+						if (!((parsedValues.length - 1) === parsedValueKey)) {
+							values += "</br></br>";
+						}
+					});
+				}
+
+				this.recordItems[key].values = values;
 				this.recordItems[key].status = queueItem?.status;
 			});
 		},
@@ -247,7 +270,7 @@ export default {
 			const { importId } = this.$route.params;
 
 			return ImportService.getDuplicitiesInImport(importId)
-				.then(({ data }) => data)
+				.then(({ data: { data } }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
 				});
@@ -256,7 +279,7 @@ export default {
 		getImportItemsDetail(importId, ids) {
 			if (!ids.length) return [];
 			return ImportService.getImportItemsDetail(importId, ids)
-				.then(({ data }) => data)
+				.then(({ data: { data } }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicity Item")} ${e}`, "is-danger");
 					return [];
