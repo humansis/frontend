@@ -309,7 +309,11 @@ export default {
 
 						if (groupKey !== null) {
 							const newGroups = [...this.groups];
-							newGroups[groupKey].tableData = data.data;
+
+							if (newGroups[groupKey]?.tableData) {
+								newGroups[groupKey].tableData = data.data;
+							}
+
 							this.groups = newGroups;
 						} else {
 							this.totalBeneficiariesData = data.data;
@@ -333,7 +337,11 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
-		onUpdatedCriteria() {
+		onUpdatedCriteria({ groupKey }) {
+			if (this.groups[groupKey].data?.length === 0) {
+				this.groups.splice(groupKey, 1);
+			}
+
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
