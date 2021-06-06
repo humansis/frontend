@@ -110,6 +110,7 @@
 				<DuplicityResolver
 					:header="$t('Similarity Cases')"
 					@loaded="onDuplicityLoaded"
+					@updated="update"
 				/>
 			</div>
 		</div>
@@ -210,6 +211,10 @@ export default {
 
 		goToFinalisation() {
 			this.$emit("goToFinalStep");
+		},
+
+		update() {
+			this.$emit("updated");
 		},
 
 		cancelImport() {

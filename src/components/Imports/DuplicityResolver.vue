@@ -376,6 +376,8 @@ export default {
 
 						this.recordItems[recordKey].disabled = false;
 					}
+				}).finally(() => {
+					this.$emit("updated");
 				});
 		},
 	},

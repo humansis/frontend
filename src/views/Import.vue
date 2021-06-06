@@ -84,6 +84,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
+					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
 
@@ -95,6 +96,7 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@goToFinalStep="changeTab(4)"
+					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
 

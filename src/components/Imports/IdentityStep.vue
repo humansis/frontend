@@ -110,6 +110,7 @@
 				<DuplicityResolver
 					:header="$t('Duplicity Cases')"
 					@loaded="onDuplicityLoaded"
+					@updated="update"
 				/>
 			</div>
 		</div>
@@ -215,6 +216,10 @@ export default {
 				successMessage: "Similarity Check Started Successfully",
 				goNext: true,
 			});
+		},
+
+		update() {
+			this.$emit("updated");
 		},
 
 		cancelImport() {
