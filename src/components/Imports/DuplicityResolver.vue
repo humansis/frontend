@@ -293,12 +293,6 @@ export default {
 					});
 				}
 			});
-
-			this.prepareBeneficiariesForDuplicity();
-		},
-
-		prepareBeneficiariesForDuplicity() {
-
 		},
 
 		getDuplicities() {
