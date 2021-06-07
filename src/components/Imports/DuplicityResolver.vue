@@ -34,6 +34,7 @@
 						<tr
 							v-for="({
 								duplicityCandidateId,
+								beneficiaries,
 								reasons,
 								toUpdateLoading,
 								toLinkLoading
@@ -59,9 +60,9 @@
 								</span>
 							</td>
 							<td class="td-width-30">
-								Candidate ID: {{ duplicityCandidateId }}
+								<span v-html="beneficiaries" />
 							</td>
-							<td>
+							<td class="td-width-30">
 								{{ reasons }}
 							</td>
 							<td>
@@ -174,7 +175,8 @@ export default {
 								{
 									id,
 									duplicityCandidateId,
-									candidate: {},
+									beneficiariesIds: [],
+									beneficiaries: "",
 									reasons: reasons
 										.toString().replace(",", ", "),
 									toUpdateLoading: false,
@@ -256,21 +258,60 @@ export default {
 		},
 
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
-			const households = await this.getHouseholds(duplicityCandidateIds);
+			// TODO Repair this
+			console.log(duplicityCandidateIds);
+			const households = await this.getHouseholds([186, 191, 192, 361]);
 
 			console.log(households);
-
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
 				if (duplicities?.length) {
-					duplicities.forEach((duplicity, duplicityKey) => {
-						const candidate = households?.find(
+					duplicities.forEach(async (duplicity, duplicityKey) => {
+						/*
+						const { householdHeadId, beneficiaryIds } = households?.find(
 							({ id }) => id === duplicity.duplicityCandidateId,
 						);
 
-						this.recordItems[recordKey].duplicities[duplicityKey].candidate = candidate;
+						 */
+
+						// TODO Repair this
+						const { householdHeadId, beneficiaryIds } = households[0];
+						let values = "";
+
+						if (householdHeadId) {
+							const beneficiaries = await this.getBeneficiaries([
+								householdHeadId,
+								...beneficiaryIds,
+							]);
+
+							// Here I got bnfs, display them
+							console.log("helou", beneficiaries);
+
+							if (beneficiaries?.length) {
+								beneficiaries.forEach(({ localGivenName, localFamilyName }, key) => {
+									values += `${localGivenName}, ${localFamilyName}`;
+
+									if (!((beneficiaries.length - 1) === key)) {
+										values += "</br></br>";
+									}
+								});
+							}
+
+							console.log(this.recordItems);
+
+							this.recordItems[recordKey].duplicities[duplicityKey]
+								.beneficiariesIds = [householdHeadId, ...beneficiaryIds];
+						}
+
+						this.recordItems[recordKey].duplicities[duplicityKey].beneficiaries = values;
 					});
 				}
 			});
+
+			this.prepareBeneficiariesForDuplicity();
+		},
+
+		prepareBeneficiariesForDuplicity() {
+
 		},
 
 		getDuplicities() {
@@ -300,6 +341,14 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`Beneficiaries ${e}`, "is-danger");
 					return [];
+				});
+		},
+
+		async getBeneficiaries(ids) {
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 				});
 		},
 
@@ -383,3 +432,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.td-width-30 {
+	width: 30%;
+}
+</style>

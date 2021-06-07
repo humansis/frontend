@@ -228,9 +228,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.td-width-30 {
-	width: 30%;
-}
-</style>
