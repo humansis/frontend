@@ -260,6 +260,8 @@ export default {
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
 			const beneficiaries = await this.getBeneficiaries(duplicityCandidateIds);
 
+			console.log(beneficiaries);
+
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
 				if (duplicities.length) {
 					duplicities.forEach((duplicity, duplicityKey) => {
@@ -295,7 +297,7 @@ export default {
 
 		getBeneficiaries(ids) {
 			if (!ids.length) return [];
-			return BeneficiariesService.getBeneficiaries(ids)
+			return BeneficiariesService.getListOfHouseholds(null, null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`Beneficiaries ${e}`, "is-danger");
