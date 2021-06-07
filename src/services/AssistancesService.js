@@ -103,6 +103,13 @@ export default {
 		return { data, status };
 	},
 
+	async calculationOfBeneficiariesScores(body) {
+		const { data, status } = await fetcher({
+			uri: "assistances/vulnerability-scores", method: "POST", body,
+		});
+		return { data, status };
+	},
+
 	async getAssistanceCommodities(id) {
 		const { data: { data }, totalCount } = await fetcher({
 			uri: `assistances/${id}/commodities`,

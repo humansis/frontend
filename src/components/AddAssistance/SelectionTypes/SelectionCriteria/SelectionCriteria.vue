@@ -9,6 +9,7 @@
 			<BeneficiariesModalList
 				close-button
 				:data="beneficiariesData"
+				:scores="beneficiariesScores"
 			/>
 		</Modal>
 		<h2 class="title space-between mb-0">
@@ -144,6 +145,7 @@ export default {
 				isOpened: false,
 			},
 			beneficiariesData: [],
+			beneficiariesScores: [],
 			totalBeneficiariesData: [],
 			countOf: 0,
 			totalCount: 0,
@@ -287,6 +289,7 @@ export default {
 
 			if (assistanceBody.selectionCriteria?.length) {
 				this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
+				this.calculationOfAssistanceBeneficiariesScores({ assistanceBody });
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
@@ -324,6 +327,17 @@ export default {
 				});
 
 			this.calculationLoading = false;
+		},
+
+		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {
+			await AssistancesService.calculationOfBeneficiariesScores(assistanceBody)
+				.then(({ data, status }) => {
+					if (status === 200) {
+						this.beneficiariesScores = data.data;
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+				});
 		},
 
 		removeCriteriaGroup(groupKey) {
