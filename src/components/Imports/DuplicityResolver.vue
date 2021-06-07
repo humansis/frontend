@@ -258,23 +258,15 @@ export default {
 		},
 
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
-			// TODO Repair this
-			console.log(duplicityCandidateIds);
-			const households = await this.getHouseholds([186, 191, 192, 361]);
+			const households = await this.getHouseholds(duplicityCandidateIds);
 
-			console.log(households);
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
-				if (duplicities?.length) {
+				if (duplicities?.length && households?.length) {
 					duplicities.forEach(async (duplicity, duplicityKey) => {
-						/*
 						const { householdHeadId, beneficiaryIds } = households?.find(
 							({ id }) => id === duplicity.duplicityCandidateId,
 						);
 
-						 */
-
-						// TODO Repair this
-						const { householdHeadId, beneficiaryIds } = households[0];
 						let values = "";
 
 						if (householdHeadId) {
@@ -282,9 +274,6 @@ export default {
 								householdHeadId,
 								...beneficiaryIds,
 							]);
-
-							// Here I got bnfs, display them
-							console.log("helou", beneficiaries);
 
 							if (beneficiaries?.length) {
 								beneficiaries.forEach(({ localGivenName, localFamilyName }, key) => {
@@ -295,8 +284,6 @@ export default {
 									}
 								});
 							}
-
-							console.log(this.recordItems);
 
 							this.recordItems[recordKey].duplicities[duplicityKey]
 								.beneficiariesIds = [householdHeadId, ...beneficiaryIds];
