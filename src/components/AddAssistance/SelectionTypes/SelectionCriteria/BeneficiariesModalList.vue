@@ -26,8 +26,6 @@
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
 
 export default {
 	name: "BeneficiariesModalList",
@@ -38,7 +36,14 @@ export default {
 	},
 
 	props: {
-		data: Array,
+		data: {
+			type: Array,
+			required: true,
+		},
+		scores: {
+			type: Array,
+			required: true,
+		},
 	},
 
 	data() {
@@ -50,7 +55,7 @@ export default {
 					{ key: "id", sortable: true, searchable: true },
 					{ key: "localFamilyName", label: "Family Name", sortable: true, searchable: true },
 					{ key: "localGivenName", label: "First Name", sortable: true, searchable: true },
-					{ key: "vulnerabilityCriteria", type: "svgIcon", sortable: true, searchable: true },
+					{ key: "vulnerability", sortable: true, searchable: true },
 				],
 				total: 0,
 			},
@@ -68,23 +73,13 @@ export default {
 	methods: {
 		async prepareData() {
 			const preparedData = [...this.data];
-			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			preparedData.forEach((item, key) => {
-				preparedData[key].vulnerabilityCriteria = vulnerabilitiesList
-					?.filter(({ code }) => code === item.vulnerabilityCriteria
-						.find((vulnerability) => vulnerability === code));
+				const criteria = this.scores.find(({ beneficiaryId }) => item.id === beneficiaryId);
+				preparedData[key].vulnerability = criteria?.totalScore || "";
 			});
 
 			this.table.data = preparedData;
-		},
-
-		async getVulnerabilities() {
-			return BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
 		},
 	},
 };
