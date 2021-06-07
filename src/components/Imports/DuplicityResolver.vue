@@ -195,7 +195,6 @@ export default {
 
 		async prepareDuplicities() {
 			const duplicities = await this.preparedDuplicitiesObject() || [];
-
 			const newDuplicities = [];
 			const queueIds = [];
 			const duplicityCandidateIds = [];
@@ -226,7 +225,6 @@ export default {
 
 		async prepareQueueItemsForDuplicity(queueIds) {
 			const { importId } = this.$route.params;
-
 			const queueItems = await this.getImportItemsDetail(importId, queueIds);
 
 			if (!queueItems?.length) return;
@@ -258,14 +256,14 @@ export default {
 		},
 
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
-			const beneficiaries = await this.getBeneficiaries(duplicityCandidateIds);
+			const households = await this.getHouseholds(duplicityCandidateIds);
 
-			console.log(beneficiaries);
+			console.log(households);
 
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
-				if (duplicities.length) {
+				if (duplicities?.length) {
 					duplicities.forEach((duplicity, duplicityKey) => {
-						const candidate = beneficiaries?.find(
+						const candidate = households?.find(
 							({ id }) => id === duplicity.duplicityCandidateId,
 						);
 
@@ -295,7 +293,7 @@ export default {
 				});
 		},
 
-		getBeneficiaries(ids) {
+		getHouseholds(ids) {
 			if (!ids.length) return [];
 			return BeneficiariesService.getListOfHouseholds(null, null, null, null, null, ids)
 				.then(({ data }) => data)
