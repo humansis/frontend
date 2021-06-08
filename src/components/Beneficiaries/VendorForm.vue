@@ -14,18 +14,6 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Email')"
-				:type="validateType('email')"
-				:message="validateMsg('email')"
-			>
-				<b-input
-					v-model="formModel.email"
-					:disabled="formDisabled || isEditing"
-					@blur="validate('email')"
-				/>
-			</b-field>
-
-			<b-field
 				:label="$t('Password')"
 				:type="validateType('password')"
 				:message="validateMsg('password')"
@@ -156,7 +144,7 @@
 </template>
 
 <script>
-import { required, requiredIf, email } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import Validation from "@/mixins/validation";
 
@@ -179,7 +167,6 @@ export default {
 	validations: {
 		formModel: {
 			username: { required },
-			email: { required, email },
 			// eslint-disable-next-line func-names
 			password: { required: requiredIf(function () {
 				return !this.isEditing;
