@@ -231,7 +231,6 @@ export default {
 				id,
 				shop,
 				username: data.username,
-				email: data.email,
 				name,
 				addressStreet,
 				addressNumber,
@@ -253,7 +252,6 @@ export default {
 				id,
 				username,
 				shop,
-				email,
 				password,
 				name,
 				addressStreet,
@@ -278,8 +276,8 @@ export default {
 			const userBody = {
 				...user,
 				username,
+				email: username,
 				password,
-				email,
 				phoneNumber: "",
 				// TODO edit after BE will implement permissions
 				roles: ["ROLE_VENDOR"],

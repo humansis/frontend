@@ -84,6 +84,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
+					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
 
@@ -95,6 +96,7 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@goToFinalStep="changeTab(4)"
+					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
 
@@ -257,19 +259,19 @@ export default {
 
 			if (importId) {
 				this.fetchImport(importId);
-				this.fetchImportStatistics(importId);
-				this.setCheckingInterval(importId);
+				this.fetchImportStatistics();
+				this.setCheckingInterval();
 			}
 		},
 
-		setCheckingInterval(importId) {
+		setCheckingInterval() {
 			if (
 				this.importDetail?.status !== consts.STATUS.NEW
 				&& this.importDetail?.status !== consts.STATUS.CANCEL
 				&& this.importDetail?.status !== consts.STATUS.FINISH
 			) {
 				this.statisticsInterval = setInterval(() => {
-					this.fetchImportStatistics(importId);
+					this.fetchImportStatistics();
 				}, 30000);
 			}
 		},
@@ -283,7 +285,9 @@ export default {
 			});
 		},
 
-		fetchImportStatistics(importId) {
+		fetchImportStatistics() {
+			const { importId } = this.$route.params;
+
 			ImportService.getStatisticsInImport(importId).then(({ data }) => {
 				this.statistics = data;
 			});
@@ -333,7 +337,7 @@ export default {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 			}).finally(() => {
 				this.loadingChangeStateButton = false;
-				this.fetchImportStatistics(importId);
+				this.fetchImportStatistics();
 			});
 		},
 

@@ -20,15 +20,16 @@
 			</b-field>
 
 			<b-field
+				class="relative-select"
 				:type="validateType('type')"
 				:message="validateMsg('type')"
 				:label="$t('Type')"
 			>
 				<MultiSelect
 					v-model="formModel.type"
-					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
+					:placeholder="$t('Click to select')"
 					:options="options.types"
 					:loading="loading.types"
 					:searchable="false"
@@ -305,3 +306,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.relative-select {
+	.multiselect__content-wrapper {
+		position: relative;
+	}
+}
+</style>
