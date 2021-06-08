@@ -23,7 +23,7 @@
 				>
 					<template #bar>
 						<b-progress-bar
-							type="is-success"
+							type="is-light"
 							show-value
 							:value="totalEntries - amountDuplicities"
 						/>
@@ -110,6 +110,7 @@
 				<DuplicityResolver
 					:header="$t('Similarity Cases')"
 					@loaded="onDuplicityLoaded"
+					@updated="update"
 				/>
 			</div>
 		</div>
@@ -210,6 +211,10 @@ export default {
 
 		goToFinalisation() {
 			this.$emit("goToFinalStep");
+		},
+
+		update() {
+			this.$emit("updated");
 		},
 
 		cancelImport() {

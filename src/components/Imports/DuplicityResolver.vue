@@ -13,6 +13,7 @@
 				v-for="({
 					queueId,
 					values,
+					status,
 					duplicities,
 					toCreateLoading,
 					disabled
@@ -33,6 +34,7 @@
 						<tr
 							v-for="({
 								duplicityCandidateId,
+								beneficiaries,
 								reasons,
 								toUpdateLoading,
 								toLinkLoading
@@ -41,20 +43,26 @@
 						>
 							<td class="td-width-30">
 								<span v-if="duplicityKey === 0">
-									{{ values }}
+									<span v-html="values" />
 									<br>
 									<b-tag
-										class="mt-2"
+										class="mt-2 mr-2"
 										type="is-light"
 									>
 										{{ $t('Row') }} {{ queueId }}
 									</b-tag>
+									<b-tag
+										class="mt-2"
+										type="is-light"
+									>
+										{{ status }}
+									</b-tag>
 								</span>
 							</td>
 							<td class="td-width-30">
-								Candidate ID: {{ duplicityCandidateId }}
+								<span v-html="beneficiaries" />
 							</td>
-							<td>
+							<td class="td-width-30">
 								{{ reasons }}
 							</td>
 							<td>
@@ -121,6 +129,10 @@ export default {
 	data() {
 		return {
 			recordItems: [],
+			visibleBeneficiaryAttributes: [
+				"Local given name",
+				"Local family name",
+			],
 		};
 	},
 
@@ -138,7 +150,6 @@ export default {
 	methods: {
 		async preparedDuplicitiesObject() {
 			const originalDuplicities = await this.getDuplicities() || [];
-
 			const records = [];
 
 			if (originalDuplicities?.length) {
@@ -164,7 +175,8 @@ export default {
 								{
 									id,
 									duplicityCandidateId,
-									candidate: {},
+									beneficiariesIds: [],
+									beneficiaries: "",
 									reasons: reasons
 										.toString().replace(",", ", "),
 									toUpdateLoading: false,
@@ -176,6 +188,8 @@ export default {
 						records.push(record);
 					}
 				});
+			} else {
+				this.$emit("loaded", true);
 			}
 
 			return records;
@@ -183,7 +197,6 @@ export default {
 
 		async prepareDuplicities() {
 			const duplicities = await this.preparedDuplicitiesObject() || [];
-
 			const newDuplicities = [];
 			const queueIds = [];
 			const duplicityCandidateIds = [];
@@ -214,7 +227,6 @@ export default {
 
 		async prepareQueueItemsForDuplicity(queueIds) {
 			const { importId } = this.$route.params;
-
 			const queueItems = await this.getImportItemsDetail(importId, queueIds);
 
 			if (!queueItems?.length) return;
@@ -222,22 +234,62 @@ export default {
 			this.recordItems.forEach((item, key) => {
 				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
 
-				this.recordItems[key].values = queueItem?.values;
+				const parsedValues = JSON.parse(queueItem?.values);
+
+				let values = "";
+
+				if (parsedValues?.length) {
+					parsedValues.forEach((parsedValue, parsedValueKey) => {
+						Object.entries(parsedValue).forEach(([attr, value]) => {
+							if (this.visibleBeneficiaryAttributes.includes(attr)) {
+								values += `${attr}: ${value}, `;
+							}
+						});
+
+						if (!((parsedValues.length - 1) === parsedValueKey)) {
+							values += "</br></br>";
+						}
+					});
+				}
+
+				this.recordItems[key].values = values;
 				this.recordItems[key].status = queueItem?.status;
 			});
 		},
 
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
-			const beneficiaries = await this.getBeneficiaries(duplicityCandidateIds);
+			const households = await this.getHouseholds(duplicityCandidateIds);
 
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
-				if (duplicities.length) {
-					duplicities.forEach((duplicity, duplicityKey) => {
-						const candidate = beneficiaries?.find(
+				if (duplicities?.length && households?.length) {
+					duplicities.forEach(async (duplicity, duplicityKey) => {
+						const { householdHeadId, beneficiaryIds } = households?.find(
 							({ id }) => id === duplicity.duplicityCandidateId,
 						);
 
-						this.recordItems[recordKey].duplicities[duplicityKey].candidate = candidate;
+						let values = "";
+
+						if (householdHeadId) {
+							const beneficiaries = await this.getBeneficiaries([
+								householdHeadId,
+								...beneficiaryIds,
+							]);
+
+							if (beneficiaries?.length) {
+								beneficiaries.forEach(({ localGivenName, localFamilyName }, key) => {
+									values += `${localGivenName}, ${localFamilyName}`;
+
+									if (!((beneficiaries.length - 1) === key)) {
+										values += "</br></br>";
+									}
+								});
+							}
+
+							this.recordItems[recordKey].duplicities[duplicityKey]
+								.beneficiariesIds = [householdHeadId, ...beneficiaryIds];
+						}
+
+						this.recordItems[recordKey].duplicities[duplicityKey].beneficiaries = values;
 					});
 				}
 			});
@@ -247,7 +299,7 @@ export default {
 			const { importId } = this.$route.params;
 
 			return ImportService.getDuplicitiesInImport(importId)
-				.then(({ data }) => data)
+				.then(({ data: { data } }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
 				});
@@ -256,20 +308,28 @@ export default {
 		getImportItemsDetail(importId, ids) {
 			if (!ids.length) return [];
 			return ImportService.getImportItemsDetail(importId, ids)
-				.then(({ data }) => data)
+				.then(({ data: { data } }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicity Item")} ${e}`, "is-danger");
 					return [];
 				});
 		},
 
-		getBeneficiaries(ids) {
+		getHouseholds(ids) {
 			if (!ids.length) return [];
-			return BeneficiariesService.getBeneficiaries(ids)
+			return BeneficiariesService.getListOfHouseholds(null, null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`Beneficiaries ${e}`, "is-danger");
 					return [];
+				});
+		},
+
+		async getBeneficiaries(ids) {
+			return BeneficiariesService.getBeneficiaries(ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 				});
 		},
 
@@ -346,8 +406,16 @@ export default {
 
 						this.recordItems[recordKey].disabled = false;
 					}
+				}).finally(() => {
+					this.$emit("updated");
 				});
 		},
 	},
 };
 </script>
+
+<style scoped>
+.td-width-30 {
+	width: 30%;
+}
+</style>
