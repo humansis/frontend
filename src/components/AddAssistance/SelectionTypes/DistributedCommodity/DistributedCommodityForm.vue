@@ -2,6 +2,7 @@
 	<form @submit.prevent="submitForm" class="mb-6">
 		<section class="modal-card-body pb-6">
 			<b-field
+				class="relative-select"
 				:type="validateType('modality')"
 				:message="validateMsg('modality')"
 				:label="$t('Modality')"
