@@ -115,8 +115,9 @@
 				<ExportButton
 					type="is-primary"
 					space-between
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportAssistances"
+					@onExport="exportAssistances"
 				/>
 			</template>
 			<template #progress>
