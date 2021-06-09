@@ -227,21 +227,22 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportHouseholds(format) {
-		const formatText = format ? `type=${format}` : "";
+	async exportHouseholds(format, ids) {
+		const idsText = ids ? idsToUri(ids) : "";
 
-		const { data } = await download({ uri: `households/exports?${formatText}` });
+		const formatText = format ? `type=${format}` : "";
+		const { data } = await download({ uri: `households/exports?${formatText + idsText}` });
 		return { data };
 	},
 
-	async exportBeneficiaries(format, assistanceId) {
+	async exportAssistanceBeneficiaries(format, assistanceId) {
 		const formatText = format ? `type=${format}` : "";
 
 		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
 		return { data };
 	},
 
-	async exportRandomSample(format, ids, param = null) {
+	async exportBeneficiaries(format, ids, param = null) {
 		const formatText = format ? `type=${format}` : "";
 		const idsText = ids ? idsToUri(ids, param) : "";
 

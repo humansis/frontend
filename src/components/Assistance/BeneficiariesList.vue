@@ -689,7 +689,9 @@ export default {
 		async exportData(format) {
 			this.exportLoading = true;
 			if (!this.changeButton) {
-				await BeneficiariesService.exportBeneficiaries(format, this.$route.params.assistanceId)
+				await BeneficiariesService.exportAssistanceBeneficiaries(
+					format, this.$route.params.assistanceId,
+				)
 					.then(({ data }) => {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");
@@ -701,7 +703,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
 					});
 			} else {
-				await BeneficiariesService.exportRandomSample(format, this.table.data, "id")
+				await BeneficiariesService.exportBeneficiaries(format, this.table.data, "id")
 					.then(({ data }) => {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");

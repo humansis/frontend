@@ -134,12 +134,14 @@
 						v-if="userCan.viewBeneficiary"
 						icon="search"
 						type="is-primary"
+						:disabled="!householdsSelects"
 						:tooltip="$t('Show Detail')"
 						@click="showDetail(props.row.id)"
 					/>
 					<ActionButton
 						v-if="userCan.viewBeneficiary"
 						icon="edit"
+						:disabled="!householdsSelects"
 						:tooltip="$t('Edit')"
 						@click="editHousehold(props.row.id)"
 					/>
@@ -148,6 +150,7 @@
 						icon="trash"
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
+						:disabled="!householdsSelects"
 						:id="props.row.id"
 						@submitted="removeHousehold"
 					/>
@@ -193,6 +196,18 @@
 					/>
 				</b-collapse>
 			</template>
+
+			<template #export>
+				<ExportButton
+					class="ml-3"
+					:label="!householdsSelects ? $t('Export selection') : null"
+					space-between
+					type="is-primary"
+					:loading="exportLoading"
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@onExport="exportHouseholds"
+				/>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -212,6 +227,7 @@ import grid from "@/mixins/grid";
 import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import permissions from "@/mixins/permissions";
+import ExportButton from "@/components/ExportButton";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -226,6 +242,7 @@ export default {
 		SafeDelete,
 		ColumnField,
 		Modal,
+		ExportButton,
 	},
 
 	mixins: [grid, addressHelper, permissions],
@@ -233,6 +250,8 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
+			householdsSelects: true,
+			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -311,9 +330,30 @@ export default {
 			});
 		},
 
+		async exportHouseholds(format) {
+			this.exportLoading = true;
+			let ids = null;
+			if (!this.householdsSelects) {
+				ids = this.table.checkedRows.map((item) => item.id);
+			}
+			await BeneficiariesService.exportHouseholds(format, ids)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `Households.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+				});
+			this.exportLoading = false;
+		},
+
 		onRowsChecked(rows) {
 			this.table.checkedRows = rows;
 			this.actionsButtonVisible = !!rows?.length;
+			this.householdsSelects = !rows?.length;
 		},
 
 		async addHouseholdsToProject() {
