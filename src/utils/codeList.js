@@ -9,10 +9,14 @@ export const getArrayOfIdsByParam = (items, param) => {
 	return result;
 };
 
-export const getArrayOfCodeListByKey = (codes, array, key, returnAsArray = false) => {
+export const getArrayOfCodeListByKey = (codes, array, key, returnAsArray = false, codeKey = "") => {
 	const result = [];
 	codes.forEach((code) => {
-		const field = array.find((item) => code === item[key]);
+		const field = array.find((item) => {
+			if (codeKey) return code[codeKey] === item[key];
+			return code === item[key];
+		});
+
 		if (field) {
 			result.push(field);
 		}
