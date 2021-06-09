@@ -283,7 +283,7 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
-			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true);
+			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true, "code");
 			this.sectorsLoading = false;
 		},
 
