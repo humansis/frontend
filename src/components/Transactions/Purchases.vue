@@ -125,7 +125,6 @@ export default {
 					{ key: "value", label: "Total", sortable: true },
 					{ key: "currency" },
 					{ key: "vendor" },
-					{ key: "vendorNo" },
 					{ key: "invoiceNumber", label: "Invoice No" },
 				],
 				total: 0,
