@@ -3,11 +3,11 @@
 		<section class="modal-card-body overflow-visible">
 			<p v-if="!formModel.removingId" class="mb-5">
 				{{ $t('Please select the beneficiaries that you want to add to the') }}
-				<strong>{{ assistance.name }} </strong>{{ $t('distribution') }}.
+				<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
 			</p>
 			<p v-if="formModel.removingId" class="mb-5">
 				{{ $t('You are about to remove this beneficiary from') }}
-				<strong>{{ assistance.name }}</strong> {{ $t('distribution') }}.<br>
+				<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
 				{{ $t('Do you wish to continue?') }}
 			</p>
 			<b-field

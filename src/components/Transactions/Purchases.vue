@@ -113,7 +113,7 @@ export default {
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project" },
-					{ key: "assistance", label: "Distribution" },
+					{ key: "assistance" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },

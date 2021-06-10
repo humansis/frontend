@@ -376,7 +376,7 @@ export default {
 				this.startTransactionButtonLoading = false;
 			} else {
 				Notification(
-					`${this.$t("Date of the distribution is in the future")}.`,
+					`${this.$t("Date of the assistance is in the future")}.`,
 					"is-danger",
 				);
 			}

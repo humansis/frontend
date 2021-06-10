@@ -175,7 +175,7 @@ export default {
 					{ key: "type", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
-					{ key: "dateDistribution", label: "Date of Distribution", type: "datetime", sortable: true },
+					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],

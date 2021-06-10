@@ -3,9 +3,9 @@
 		<p class="mb-4 mt-5 has-text-centered">
 			<strong>
 				{{ $t(`
-				Import the file that contains the modified distribution.
+				Import the file that contains the modified assistance.
 				The database will be updated with the new list of beneficiaries for this
-				distribution when you will click on "update" after importing.
+				assistance when you will click on "update" after importing.
 				`) }}
 			</strong>
 		</p>
