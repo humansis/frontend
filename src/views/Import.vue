@@ -261,6 +261,8 @@ export default {
 				this.fetchImport(importId);
 				this.fetchImportStatistics();
 				this.setCheckingInterval();
+			} else {
+				clearInterval(this.statisticsInterval);
 			}
 		},
 
