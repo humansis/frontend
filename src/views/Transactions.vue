@@ -3,7 +3,7 @@
 		<div>
 			<h1 class="title has-text-centered">{{ $t('Transactions') }}</h1>
 			<b-tabs v-model="selectedTab" @input="nextTab">
-				<b-tab-item icon="hand-holding-water" :label="$t('Distributions')">
+				<b-tab-item icon="hand-holding-water" :label="$t('Assistances')">
 					<Distributions v-if="tabs[0]" />
 				</b-tab-item>
 
