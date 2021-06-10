@@ -288,9 +288,11 @@ export default {
 		fetchImportStatistics() {
 			const { importId } = this.$route.params;
 
-			ImportService.getStatisticsInImport(importId).then(({ data }) => {
-				this.statistics = data;
-			});
+			if (importId) {
+				ImportService.getStatisticsInImport(importId).then(({ data }) => {
+					this.statistics = data;
+				});
+			}
 		},
 
 		fetchProject(projectId) {
