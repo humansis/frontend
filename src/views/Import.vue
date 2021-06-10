@@ -261,6 +261,8 @@ export default {
 				this.fetchImport(importId);
 				this.fetchImportStatistics();
 				this.setCheckingInterval();
+			} else {
+				clearInterval(this.statisticsInterval);
 			}
 		},
 
@@ -288,9 +290,11 @@ export default {
 		fetchImportStatistics() {
 			const { importId } = this.$route.params;
 
-			ImportService.getStatisticsInImport(importId).then(({ data }) => {
-				this.statistics = data;
-			});
+			if (importId) {
+				ImportService.getStatisticsInImport(importId).then(({ data }) => {
+					this.statistics = data;
+				});
+			}
 		},
 
 		fetchProject(projectId) {
