@@ -26,7 +26,7 @@
 			</div>
 		</b-notification>
 		<Table
-			v-show="beneficiariesCount"
+			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
 			:has-search="!upcoming"
