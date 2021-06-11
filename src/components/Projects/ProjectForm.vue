@@ -158,7 +158,6 @@
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
-					class="is-left"
 					type="is-dark"
 					expanded
 					min="0"
