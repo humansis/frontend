@@ -23,7 +23,6 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			centered
 			field="actions"
 			:label="$t('Actions')"
 		>

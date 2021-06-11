@@ -23,7 +23,7 @@ export const generateColumns = ((visibleColumns) => {
 				? i18n.t(column.label) : i18n.t(normalizeText(column.key)),
 			type: column.type,
 			width: column.width,
-			centered: true,
+			centered: false,
 			sortable: column.sortable,
 			attribute: column.attribute,
 			visible: column.visible,

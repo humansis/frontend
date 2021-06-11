@@ -8,6 +8,9 @@
 		border-radius: 0;
 		height: .25rem;
 	}
+
+	progress::-moz-progress-bar { background: $base-color; }
+	progress::-webkit-progress-value { background: $base-color; }
 }
 
 .b-steps .steps {
