@@ -152,11 +152,13 @@
 
 			<b-field
 				label="Total Target"
+				class="total-target-field"
 				:type="validateType('totalTarget')"
 				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
 			>
 				<b-numberinput
 					v-model="formModel.totalTarget"
+					class="is-left"
 					type="is-dark"
 					expanded
 					min="0"
@@ -311,3 +313,9 @@ export default {
 	},
 };
 </script>
+
+<style>
+.total-target-field .b-numberinput input[type=number] {
+	text-align: left !important;
+}
+</style>
