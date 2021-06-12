@@ -335,7 +335,7 @@ export default {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
-			residencyStatus: { required },
+			residencyStatus: {},
 		},
 	},
 

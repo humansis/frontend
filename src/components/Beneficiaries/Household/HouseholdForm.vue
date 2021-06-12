@@ -247,7 +247,6 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -329,7 +328,7 @@ export default {
 			},
 			externalSupport: {
 				externalSupportReceivedType: {},
-				supportDateReceived: { required },
+				supportDateReceived: {},
 				supportOrganization: {},
 			},
 			countrySpecificOptions: {},
