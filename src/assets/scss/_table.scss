@@ -2,6 +2,12 @@ table.table {
   thead {
     th {
       border-bottom-width: 1px;
+
+      &:last-child {
+        .th-wrap {
+          justify-content: flex-end;
+        }
+      }
     }
   }
 
