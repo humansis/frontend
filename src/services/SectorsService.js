@@ -7,8 +7,7 @@ export default {
 	},
 
 	async getListOfProjectSectors(projectId) {
-		// TODO Endpoint needs to have a different prefix
-		const { data: { data, totalCount } } = await fetcher({ uri: `projects/${projectId}/sectors` });
+		const { data: { data, totalCount } } = await fetcher({ uri: `projects/${projectId}/sectors`, version: 2 });
 		return { data, totalCount };
 	},
 

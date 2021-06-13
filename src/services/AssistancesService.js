@@ -184,6 +184,7 @@ export default {
 
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `general-relief-items?${idsText}`,
+			version: 2,
 		});
 		return { data, totalCount };
 	},
