@@ -47,6 +47,7 @@ export default {
 				campAddressId,
 			},
 		) {
+			console.log("campAddressId", campAddressId);
 			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
 			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
 			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };

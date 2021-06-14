@@ -182,6 +182,7 @@ export default {
 		fetchCamps() {
 			this.campsLoading = true;
 
+			console.log("getCampsByLocation", this.formModel);
 			AddressService.getCampsByLocation(this.formModel.locationId)
 				.then(({ data }) => {
 					this.options.camps = data;
