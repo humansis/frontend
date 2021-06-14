@@ -277,7 +277,7 @@ export default {
 				foodConsumptionScore,
 				copingStrategiesIndex,
 				debtLevel,
-				supportDateReceived: supportDateReceived.toISOString(),
+				supportDateReceived: supportDateReceived ? supportDateReceived.toISOString() : null,
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				incomeSpentOnFood,
