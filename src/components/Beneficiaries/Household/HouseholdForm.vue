@@ -163,11 +163,13 @@
 					/>
 				</b-field>
 
-				<b-field
-					:label="$t('Support Date Received')"
-					:type="validateType('externalSupport.supportDateReceived')"
-					:message="validateMsg('externalSupport.supportDateReceived')"
-				>
+				<b-field>
+					<template #label>
+						<span>{{ $t('Support Date Received') }}</span>
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-datepicker
 						v-model="formModel.externalSupport.supportDateReceived"
 						show-week-number
@@ -175,7 +177,6 @@
 						icon="calendar-day"
 						trap-focus
 						:placeholder="$t('Click to select')"
-						@input="validate('externalSupport.supportDateReceived')"
 					/>
 				</b-field>
 
