@@ -238,9 +238,27 @@ export default {
 
 		async addOrRemoveBeneficiaryFromAssistance(body, target, successMessage) {
 			this.submitButtonLoading = true;
+			let assistanceTarget = "";
+
+			switch (target) {
+				case consts.TARGET.COMMUNITY:
+					assistanceTarget = "communities";
+					break;
+				case consts.TARGET.INSTITUTION:
+					assistanceTarget = "institutions";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					assistanceTarget = "beneficiaries";
+			}
 
 			await BeneficiariesService
-				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
+				.addOrRemoveBeneficiaryFromAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+				)
 				.then(() => {
 					Toast(successMessage, "is-success");
 				})
