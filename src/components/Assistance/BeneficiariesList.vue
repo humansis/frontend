@@ -157,7 +157,6 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				centered
 				width="140"
 				field="actions"
 				:visible="!!table.columns.length"
