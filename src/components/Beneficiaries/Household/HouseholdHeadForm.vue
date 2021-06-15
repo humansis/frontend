@@ -138,13 +138,11 @@
 
 			<div class="column is-one-quarter">
 				<h4 class="title is-5">{{ $t('Residency') }}</h4>
-				<b-field>
-					<template #label>
-						<span>{{ $t('Residency Status') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
+				<b-field
+					:label="$t('Residency Status')"
+					:type="validateType('residencyStatus')"
+					:message="validateMsg('residencyStatus')"
+				>
 					<MultiSelect
 						v-model="formModel.residencyStatus"
 						searchable
@@ -153,6 +151,8 @@
 						:placeholder="$t('Click to select')"
 						:loading="residenceStatusesLoading"
 						:options="options.residencyStatus"
+						:class="validateMultiselect('residencyStatus')"
+						@select="validate('residencyStatus')"
 					>
 						<template slot="singleLabel" slot-scope="props">
 							<div class="option__desc">
@@ -335,7 +335,7 @@ export default {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
-			residencyStatus: {},
+			residencyStatus: { required },
 		},
 	},
 
