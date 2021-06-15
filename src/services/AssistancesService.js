@@ -325,10 +325,11 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportAssistances(format, projectId) {
+	async exportAssistances(format, projectId, isRaw) {
 		const formatText = format ? `type=${format}` : "";
+		const exports = isRaw ? "exports-raw" : "exports";
 
-		const { data } = await download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
+		const { data } = await download({ uri: `projects/${projectId}/assistances/${exports}?${formatText}` });
 		return { data };
 	},
 

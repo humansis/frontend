@@ -116,7 +116,9 @@
 					space-between
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@onExport="exportAssistances"
+					:formats-for-raw="{ xlsx: true, csv: true, pdf: true}"
+					@onExport="exportAssistances($event, false)"
+					@onExportRaw="exportAssistances($event, true)"
 				/>
 			</template>
 			<template #progress>
@@ -358,9 +360,10 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		async exportAssistances(format) {
+		async exportAssistances(format, isRaw) {
 			this.exportLoading = true;
-			await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+
+			await AssistancesService.exportAssistances(format, this.$route.params.projectId, isRaw)
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
