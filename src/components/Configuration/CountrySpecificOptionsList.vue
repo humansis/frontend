@@ -25,7 +25,6 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			centered
 			visible
 			width="150"
 			field="actions"

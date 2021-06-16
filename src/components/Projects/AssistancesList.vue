@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
+		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
 		<b-notification
 			v-if="!table.data.length && beneficiariesCount && !isLoadingList && !upcoming"
 			type="is-warning is-light"
@@ -53,7 +53,6 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				centered
 				width="230"
 				field="actions"
 				:label="$t('Actions')"

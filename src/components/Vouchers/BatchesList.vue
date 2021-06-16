@@ -69,7 +69,6 @@
 							v-slot="props"
 							label="Actions"
 							width="145"
-							centered
 						>
 							<div class="buttons is-right">
 								<ActionButton
