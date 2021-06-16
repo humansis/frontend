@@ -11,8 +11,8 @@
 		<section class="modal-card-body">
 			<div v-if="!history">
 				<span>
-					<span class="has-text-weight-bold">Total No. Transactions: </span>
-					{{ numberOfTransactions }}
+					<span class="has-text-weight-bold">{{ $t("Total No. Transactions") }}: </span>
+					{{ totalNumberOfTransactions }}
 				</span>
 				<span>
 					<b-button class="is-right is-pulled-right" @click="showHistory">
@@ -83,6 +83,7 @@ import grid from "@/mixins/grid";
 import SmartcardService from "@/services/SmartcardService";
 import { Notification } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import VendorService from "@/services/VendorService";
 import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatches";
 import RedemptionSummary from "@/components/Beneficiaries/Smartcard/RedemptionSummary";
 
@@ -108,19 +109,12 @@ export default {
 			redemptionSummary: false,
 			batches: [],
 			projects: [],
+			totalNumberOfTransactions: "",
 		};
 	},
 
-	computed: {
-		numberOfTransactions() {
-			if (!this.batches.length) return 0;
-			let total = 0;
-			this.batches.forEach(({ purchaseIds }) => { total += purchaseIds.length; });
-			return total;
-		},
-	},
-
 	created() {
+		this.fetchVendorSummary();
 		this.fetchSmartcardRedemptions();
 		this.fetchProjects();
 	},
@@ -162,7 +156,6 @@ export default {
 			return format.format(price);
 		},
 
-		// TODO Here fetch again
 		async fetchSmartcardRedemptions() {
 			await SmartcardService.getSmartCardRedemption(this.vendor.id)
 				.then(({ data }) => {
@@ -171,6 +164,15 @@ export default {
 					if (e.message) Notification(`${this.$t("Smartcard Redemption")} ${e}`, "is-danger");
 				});
 			this.$emit("loaded");
+		},
+
+		async fetchVendorSummary() {
+			await VendorService.getSummaryOfVendor(this.vendor.id)
+				.then((data) => {
+					this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
 		},
 
 		async fetchProjects() {

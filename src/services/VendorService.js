@@ -26,6 +26,14 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getSummaryOfVendor(id) {
+		// TODO BE Should fix response structure
+		const { data } = await fetcher({
+			uri: `vendors/${id}/summaries`,
+		});
+		return data;
+	},
+
 	async updateVendor(id, body) {
 		const { data, status } = await fetcher({
 			uri: `vendors/${id}`, method: "PUT", body,
