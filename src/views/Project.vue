@@ -1,13 +1,13 @@
 <template>
 	<div>
-		<ProjectSummary />
+		<ProjectSummary @projectLoaded="onProjectLoaded" />
 
 		<div class="level">
 			<div class="level-left">
 				<h2 class="title">{{ $t('Project Assistances') }}</h2>
 			</div>
 
-			<div class="level-right">
+			<div v-if="beneficiariesCount" class="level-right">
 				<b-button
 					v-if="userCan.addDistribution"
 					type="is-primary"
@@ -37,6 +37,7 @@
 
 		<AssistancesList
 			ref="assistancesList"
+			:beneficiaries-count="beneficiariesCount"
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -67,6 +68,7 @@ export default {
 
 	data() {
 		return {
+			project: null,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
@@ -83,7 +85,17 @@ export default {
 		};
 	},
 
+	computed: {
+		beneficiariesCount() {
+			return this.project?.numberOfHouseholds || 0;
+		},
+	},
+
 	methods: {
+		onProjectLoaded(project) {
+			this.project = project;
+		},
+
 		closeAssistanceModal() {
 			this.assistanceModal.isOpened = false;
 		},

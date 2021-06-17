@@ -118,7 +118,7 @@ export default {
 					{ key: "adm2" },
 					{ key: "adm3" },
 					{ key: "adm4" },
-					{ key: "dateDistribution", label: "Distribution Date", type: "datetime", sortable: true },
+					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
 					{ key: "commodity" },
 					{ key: "carrierNumber" },
 					{ key: "amount" },

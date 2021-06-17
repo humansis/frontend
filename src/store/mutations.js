@@ -68,6 +68,13 @@ export default {
 		state.user = user;
 	},
 
+	[CONST.UPDATE_STORED_USER]: (state, { attribute, value }) => {
+		const userCopy = { ...state.user };
+		userCopy[attribute] = value;
+
+		state.user = userCopy;
+	},
+
 	[CONST.LOGOUT]: (state) => {
 		state.user = {
 			iat: null,

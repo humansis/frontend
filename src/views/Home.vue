@@ -10,8 +10,6 @@
 			</div>
 		</div>
 
-		<ProjectsSummary />
-
 		<UpcomingAssistances />
 	</div>
 </template>
@@ -20,13 +18,11 @@
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
-import ProjectsSummary from "@/components/Home/ProjectsSummary";
 
 export default {
 	name: "Home",
 
 	components: {
-		ProjectsSummary,
 		DistributionMap,
 		Summary,
 		UpcomingAssistances,

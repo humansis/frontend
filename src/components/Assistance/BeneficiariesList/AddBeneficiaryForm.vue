@@ -3,11 +3,11 @@
 		<section class="modal-card-body overflow-visible">
 			<p v-if="!formModel.removingId" class="mb-5">
 				{{ $t('Please select the beneficiaries that you want to add to the') }}
-				<strong>{{ assistance.name }} </strong>{{ $t('distribution') }}.
+				<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
 			</p>
 			<p v-if="formModel.removingId" class="mb-5">
 				{{ $t('You are about to remove this beneficiary from') }}
-				<strong>{{ assistance.name }}</strong> {{ $t('distribution') }}.<br>
+				<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
 				{{ $t('Do you wish to continue?') }}
 			</p>
 			<b-field
@@ -238,9 +238,27 @@ export default {
 
 		async addOrRemoveBeneficiaryFromAssistance(body, target, successMessage) {
 			this.submitButtonLoading = true;
+			let assistanceTarget = "";
+
+			switch (target) {
+				case consts.TARGET.COMMUNITY:
+					assistanceTarget = "communities";
+					break;
+				case consts.TARGET.INSTITUTION:
+					assistanceTarget = "institutions";
+					break;
+				case consts.TARGET.HOUSEHOLD:
+				case consts.TARGET.INDIVIDUAL:
+				default:
+					assistanceTarget = "beneficiaries";
+			}
 
 			await BeneficiariesService
-				.addOrRemoveBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
+				.addOrRemoveBeneficiaryFromAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+				)
 				.then(() => {
 					Toast(successMessage, "is-success");
 				})

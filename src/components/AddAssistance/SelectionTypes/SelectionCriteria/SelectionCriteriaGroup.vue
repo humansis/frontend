@@ -23,7 +23,6 @@
 					<template v-for="(column) in table.columns">
 						<b-table-column
 							sortable
-							centered
 							v-bind="column"
 							:key="column.id"
 							v-slot="props"
@@ -38,7 +37,6 @@
 					>
 						<ActionButton
 							icon="trash"
-							centered
 							type="is-danger"
 							:tooltip="$t('Delete')"
 							@click="remove(props.index)"
@@ -57,7 +55,7 @@
 					:is-full-page="false"
 					:can-cancel="false"
 				/>
-				{{ count }} {{ targetType }}
+				{{ countOfCriteriaBeneficiaries }} {{ targetType }}
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
 				{{ $t('Remove') }}
@@ -96,6 +94,10 @@ export default {
 	computed: {
 		groupName() {
 			return `Group ${(this.groupId + 1)}`;
+		},
+
+		countOfCriteriaBeneficiaries() {
+			return this.count;
 		},
 
 		criteriaGroups() {
@@ -153,7 +155,7 @@ export default {
 
 		remove(index) {
 			this.data.splice(index, 1);
-			this.$emit("updatedCriteria");
+			this.$emit("updatedCriteria", { groupKey: this.groupId });
 		},
 
 		addCriteria() {

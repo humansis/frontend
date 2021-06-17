@@ -58,7 +58,7 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: "Home",
-					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's distributions and a summary of the last ones.",
+					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
 				},
 			},
 			{
@@ -123,7 +123,7 @@ const routes = [
 								meta: {
 									permissions: ["addDistribution"],
 									breadcrumb: "Add Assistance",
-									description: "This page is a form to add a new distribution to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
+									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
 								},
 							},
@@ -283,7 +283,7 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: "Reports",
-					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of distributions",
+					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances",
 				},
 			},
 			{

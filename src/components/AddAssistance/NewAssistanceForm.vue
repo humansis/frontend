@@ -344,7 +344,9 @@ export default {
 		},
 
 		async fetchSectors() {
-			await SectorsService.getListOfSectors()
+			const { projectId } = this.$route.params;
+
+			await SectorsService.getListOfProjectSectors(projectId)
 				.then(({ data }) => {
 					this.options.sectors = data;
 				})

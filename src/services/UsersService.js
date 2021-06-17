@@ -41,6 +41,17 @@ export default {
 			});
 	},
 
+	async changeUsersAttribute(userId, attribute, value) {
+		const { data, status } = await fetcher({
+			uri: `users/${userId}`,
+			method: "PATCH",
+			body: {
+				[attribute]: value,
+			},
+		});
+		return { data, status };
+	},
+
 	async initializeUser(username) {
 		return fetcher({ uri: "users/initialize", method: "POST", body: { username } });
 	},

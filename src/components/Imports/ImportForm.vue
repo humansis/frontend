@@ -40,6 +40,7 @@
 				<b-input
 					v-model="formModel.description"
 					type="textarea"
+					maxlength="255"
 					:disabled="formDisabled"
 					@blur="validate('description')"
 				/>

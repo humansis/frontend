@@ -12,6 +12,10 @@
   aside.aside {
     right: 0;
   }
+
+  .pagination-next, .pagination-previous {
+    transform: scaleX(-1);
+  }
 }
 @include desktop {
   .is-rtl {
