@@ -69,13 +69,14 @@ export const getResponseJSON = async (response, download = false) => {
 export const fetcher = async (
 	{
 		uri,
+		version = 1,
 		auth = true,
 		method,
 		body,
 		contentType,
 		tryRequest = false,
 	}) => {
-	const url = `${CONST.API}/${uri}`;
+	const url = `${CONST.API}/v${version}/${uri}`;
 
 	let headers = {};
 
@@ -113,8 +114,8 @@ export const fetcher = async (
 	return getResponseJSON(response);
 };
 
-export const upload = async ({ uri, auth = true, method, body }) => {
-	const url = `${CONST.API}/${uri}`;
+export const upload = async ({ uri, version = 1, auth = true, method, body }) => {
+	const url = `${CONST.API}/v${version}/${uri}`;
 
 	const headers = {};
 
@@ -139,8 +140,8 @@ export const upload = async ({ uri, auth = true, method, body }) => {
 	return getResponseJSON(response);
 };
 
-export const download = async ({ uri }) => {
-	const url = `${CONST.API}/${uri}`;
+export const download = async ({ uri, version = 1 }) => {
+	const url = `${CONST.API}/v${version}/${uri}`;
 
 	const headers = {};
 

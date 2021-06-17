@@ -6,6 +6,8 @@
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
+		:default-sort-direction="table.sortDirection"
+		:default-sort-key="table.sortColumn"
 		:is-loading="isLoadingList"
 		@clicked="goToDetail"
 		@pageChanged="onPageChange"
@@ -26,7 +28,6 @@
 		</template>
 		<b-table-column
 			v-slot="props"
-			centered
 			width="180"
 			field="actions"
 			:label="$t('Actions')"
@@ -114,8 +115,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "endDate",
 				searchPhrase: "",
 			},
 		};

@@ -26,7 +26,7 @@ export default {
 				status: [],
 			},
 			filtersOptions: {
-				project: {
+				projects: {
 					name: "Project",
 					trackBy: "id",
 					label: "name",
@@ -69,8 +69,8 @@ export default {
 		async fetchProjects() {
 			await ProjectService.getListOfProjects()
 				.then(({ data }) => {
-					this.filtersOptions.project.data = data;
-					this.filtersOptions.project.loading = false;
+					this.filtersOptions.projects.data = data;
+					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
 					Notification(`${this.$t("Projects")} ${e}`, "is-danger");

@@ -14,6 +14,7 @@
 			<header v-if="!customHeader" class="modal-card-head">
 				<h2 class="modal-card-title title is-5 mb-0">{{ header }}</h2>
 				<button
+					v-if="canCancel"
 					type="button"
 					class="delete"
 					@click="$emit('close')"
@@ -34,9 +35,13 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		canCancel: {
+			type: Boolean,
+			required: false,
+			default: true,
+		},
 		active: Boolean,
 		header: String,
-		canCancel: Boolean,
 		isWaiting: Boolean,
 	},
 };

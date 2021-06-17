@@ -1,15 +1,16 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfHouseholds(page, size, sort, search = null, filters = null) {
+	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = size ? `&size=${size}` : "";
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
+		const idsText = ids ? idsToUri(ids) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?${pageText + sizeText + sortText + fulltext + filtersUri}`,
+			uri: `households?${pageText + sizeText + sortText + fulltext + filtersUri + idsText}`,
 		});
 
 		return { data, totalCount };
@@ -226,21 +227,22 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportHouseholds(format) {
-		const formatText = format ? `type=${format}` : "";
+	async exportHouseholds(format, ids) {
+		const idsText = ids ? idsToUri(ids) : "";
 
-		const { data } = await download({ uri: `households/exports?${formatText}` });
+		const formatText = format ? `type=${format}` : "";
+		const { data } = await download({ uri: `households/exports?${formatText + idsText}` });
 		return { data };
 	},
 
-	async exportBeneficiaries(format, assistanceId) {
+	async exportAssistanceBeneficiaries(format, assistanceId) {
 		const formatText = format ? `type=${format}` : "";
 
 		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
 		return { data };
 	},
 
-	async exportRandomSample(format, ids, param = null) {
+	async exportBeneficiaries(format, ids, param = null) {
 		const formatText = format ? `type=${format}` : "";
 		const idsText = ids ? idsToUri(ids, param) : "";
 

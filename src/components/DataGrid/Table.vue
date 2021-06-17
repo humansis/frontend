@@ -5,7 +5,7 @@
 		</slot>
 
 		<slot name="tableHeader">
-			<div class="level p-4 has-border-bottom">
+			<div class="level p-3 has-border-bottom">
 				<div class="level-left">
 					<slot name="search">
 						<div class="level-item">

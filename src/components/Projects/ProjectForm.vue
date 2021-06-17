@@ -152,6 +152,7 @@
 
 			<b-field
 				label="Total Target"
+				class="total-target-field"
 				:type="validateType('totalTarget')"
 				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
 			>
@@ -283,7 +284,7 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
-			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true);
+			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true, "code");
 			this.sectorsLoading = false;
 		},
 
@@ -311,3 +312,9 @@ export default {
 	},
 };
 </script>
+
+<style>
+.total-target-field .b-numberinput input[type=number] {
+	text-align: left !important;
+}
+</style>
