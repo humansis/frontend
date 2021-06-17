@@ -25,7 +25,6 @@
 			<b-table-column
 				v-slot="props"
 				label="Actions"
-				centered
 			>
 				<div class="buttons is-right">
 					<SafeDelete

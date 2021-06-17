@@ -58,10 +58,10 @@
 			:key="key"
 			class="subtitle is-5 mb-2 has-text-right"
 		>
-			<strong>
-				{{ quantity * selectedBeneficiaries }}
-				{{ unit }}
+			<strong class="is-size-4">
+				{{ numberWithCommas(quantity * countOfSelectedBeneficiaries) }}
 			</strong>
+			{{ unit }}
 			({{ type }})
 			{{ $t("To Be Delivered") }}
 		</p>
@@ -162,6 +162,10 @@ export default {
 
 			return tableData || [];
 		},
+
+		countOfSelectedBeneficiaries() {
+			return this.selectedBeneficiaries;
+		},
 	},
 
 	methods: {
@@ -194,6 +198,10 @@ export default {
 
 		removeCommodity(index) {
 			this.table.data.splice(index, 1);
+		},
+
+		numberWithCommas(number) {
+			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		},
 	},
 };

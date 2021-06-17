@@ -44,7 +44,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Date of Distribution') }}</p>
+					<p class="heading">{{ $t('Date of Assistance') }}</p>
 					<p
 						v-if="dateDistribution"
 						class="has-text-weight-bold is-size-5"

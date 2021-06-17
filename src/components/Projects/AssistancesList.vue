@@ -1,7 +1,32 @@
 <template>
 	<div>
-		<h2 class="title">{{ upcoming ? $t('Upcoming Assistances') : '' }}</h2>
+		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
+		<b-notification
+			v-if="!table.data.length && beneficiariesCount && !isLoadingList && !upcoming"
+			type="is-warning is-light"
+			has-icon
+			icon="exclamation-triangle"
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("This project does not contain any assistances")}}.
+				{{ $t("Create your first one")}}.
+			</div>
+		</b-notification>
+		<b-notification
+			v-if="!beneficiariesCount && table.data && !isLoadingList && !upcoming"
+			type="is-warning is-light"
+			has-icon
+			icon="user-plus"
+			:closable="false"
+		>
+			<div class="mt-3">
+				{{ $t("Please add some beneficiaries first!")}}
+				{{ $t("Then you will be able to manage some assistances")}}.
+			</div>
+		</b-notification>
 		<Table
+			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
 			:has-search="!upcoming"
@@ -28,7 +53,6 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				centered
 				width="230"
 				field="actions"
 				:label="$t('Actions')"
@@ -90,8 +114,9 @@
 				<ExportButton
 					type="is-primary"
 					space-between
+					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
-					@exportData="exportAssistances"
+					@onExport="exportAssistances"
 				/>
 			</template>
 			<template #progress>
@@ -128,6 +153,11 @@ export default {
 
 	props: {
 		upcoming: Boolean,
+		beneficiariesCount: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 	},
 
 	mixins: [permissions, grid, baseHelper],
@@ -144,7 +174,7 @@ export default {
 					{ key: "type", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
-					{ key: "dateDistribution", label: "Date of Distribution", type: "datetime", sortable: true },
+					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],

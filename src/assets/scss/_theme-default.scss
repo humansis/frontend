@@ -6,13 +6,13 @@ $size-base: 1rem;
 $default-padding: $size-base * 1.5;
 
 /* Base: Color */
-$base-color: #051d38;
+$base-color: #074F60;
 $base-color-light: #f5f8fa;
-$base-gradient: linear-gradient(to right, $base-color, #1e344c);
+$base-gradient: linear-gradient(to right, #051d38, $base-color);
 
 /* Override Bulma setting */
 //$primary: #033B4F;
-$primary: #203752;
+$primary: #074F60;
 
 /* Default font */
 $family-sans-serif: "IBM Plex Sans", sans-serif;

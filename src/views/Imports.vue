@@ -151,11 +151,12 @@ export default {
 		async createImport(importBody) {
 			this.importModal.isWaiting = true;
 
-			await ImportService.createImport(importBody).then((response) => {
-				if (response.status === 200) {
+			await ImportService.createImport(importBody).then(({ status, data }) => {
+				if (status === 200) {
 					Toast(this.$t("Import Successfully Created"), "is-success");
-					this.$refs.importList.fetchData();
+
 					this.closeImportModal();
+					this.$router.push({ name: "Import", params: { importId: data.id } });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");

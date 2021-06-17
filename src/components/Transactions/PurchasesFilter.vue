@@ -52,12 +52,12 @@ export default {
 					data: [],
 				},
 				distribution: {
-					name: "Distribution Name",
+					name: "Assistance Name",
 					type: "multiselect",
 					trackBy: "id",
 					label: "name",
 					loading: false,
-					placeholder: this.$t("Select Distribution"),
+					placeholder: this.$t("Select Assistance"),
 					data: [],
 				},
 				commodity: {
