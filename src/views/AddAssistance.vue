@@ -198,17 +198,25 @@ export default {
 			}
 
 			this.loading = true;
-			await AssistancesService.createAssistance(this.assistanceBody).then(({ status }) => {
-				if (status === 200) {
-					Toast(this.$t("Assistance Successfully Created"), "is-success");
-					this.$router.push({
-						name: "Project",
-						params: { projectId: this.$route.params.projectId },
-					});
-				}
-			}).catch((e) => {
-				Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
-			});
+			await AssistancesService.createAssistance(this.assistanceBody)
+				.then(({ status, data: { id } }) => {
+					if (status === 200) {
+						Toast(this.$t("Assistance Successfully Created"), "is-success");
+						if (id) {
+							this.$router.push({
+								name: "AssistanceEdit",
+								params: { assistanceId: id },
+							});
+						} else {
+							this.$router.push({
+								name: "Project",
+								params: { projectId: this.$route.params.projectId },
+							});
+						}
+					}
+				}).catch((e) => {
+					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
+				});
 			this.loading = false;
 		},
 
