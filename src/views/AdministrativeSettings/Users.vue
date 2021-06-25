@@ -177,7 +177,7 @@ export default {
 				phonePrefix: phonePrefix?.code,
 				phoneNumber,
 				language: language?.key || null,
-				changePassword: updatePasswordOnNextLogin,
+				changePassword: updatePasswordOnNextLogin || false,
 			};
 			if (this.userModal.isEditing && id) {
 				this.updateUser(id, userBody);
