@@ -21,6 +21,10 @@ elif [[ $1 == "demo" ]]; then
     echo "Demo environment is not currently supported."
     exit 0
     mv .env.demo .env
+elif [[ $1 == "proddca" ]]; then # DCA
+    mv .env.proddca .env
+elif [[ $1 == "testdca" ]]; then # DCA
+    mv .env.testingdca .env
 else
     echo "Unknown environment"
     exit 1
@@ -79,5 +83,13 @@ elif [[ $1 == "demo" ]]; then
     # aws s3 rm s3://demo.humansis.org --recursive
     # aws s3 cp ./dist_gzipped s3://demo.humansis.org --recursive --acl public-read --content-encoding gzip
     # aws cloudfront create-invalidation --distribution-id EETRVGJ9FHCMD --paths '/*'
+elif [[ $1 == "proddca" ]]; then # DCA
+    aws s3 rm s3://dca.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://dca.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id EZBP52LVPFT1C --paths '/*'
+elif [[ $1 == "testdca" ]]; then # DCA
+    aws s3 rm s3://testdca.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://testdca.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E3RNPDVEF9KF64 --paths '/*'
 fi
 echo "Upload complete"
