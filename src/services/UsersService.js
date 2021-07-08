@@ -25,6 +25,13 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfUsersProjects(userId) {
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `users/${userId}/projects`,
+		});
+		return { data, totalCount };
+	},
+
 	async createUser(body) {
 		return this.initializeUser(body.username)
 			.then(async ({ data: { salt, userId } }) => {

@@ -175,6 +175,7 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 import roles from "@/utils/roleConst";
 import SystemService from "@/services/SystemService";
+import UsersService from "@/services/UsersService";
 
 const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
 
@@ -289,6 +290,12 @@ export default {
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
+
+			await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
+				this.options.projects = [...this.options.projects, ...data];
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+			});
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
 			this.projectsLoading = false;
