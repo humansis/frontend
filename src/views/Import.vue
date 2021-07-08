@@ -338,7 +338,10 @@ export default {
 					}
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+				if (e.message) {
+					const type = state === consts.STATE.IMPORTING ? "is-warning" : "is-danger";
+					Notification(`${this.$t("Import")} ${e}`, type);
+				}
 			}).finally(() => {
 				this.loadingChangeStateButton = false;
 				this.fetchImportStatistics();

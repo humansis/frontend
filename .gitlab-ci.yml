@@ -105,3 +105,36 @@ deploy prod:
     - branches
   when: manual
 
+###############################################
+### DEPLOY DCA
+#############################################
+
+deploy test DCA:
+  stage: deploy_test
+  environment:
+    name: dca-test
+    url: https://testdca.humansis.org
+  <<: *prepare_aws
+  script:
+    - yarn install
+    - ./get-info.sh
+    - ./build-deploy.sh testdca
+  only:
+    - dca_master
+  when: manual
+
+deploy prod DCA:
+  stage: deploy_prod
+  environment:
+    name: dca-prod
+    url: https://dca.humansis.org
+  <<: *prepare_aws
+  script:
+    - yarn install
+    - ./get-info.sh
+    - ./build-deploy.sh proddca
+  only:
+    - /^dca-v.*$/
+  except:
+    - branches
+  when: manual
