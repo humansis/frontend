@@ -89,6 +89,7 @@ import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
+import AddressService from "../services/AddressService";
 
 export default {
 	name: "LocationForm",
@@ -242,8 +243,25 @@ export default {
 			this.villagesLoading = false;
 		},
 
+		async fetchCamps(id) {
+			await AddressService.getCamp(id)
+				.then((data) => {
+					this.formModel.adm1Id = data.adm1Id;
+					this.formModel.adm2Id = data.adm2Id;
+					this.formModel.adm3Id = data.adm3Id;
+					this.formModel.adm4Id = data.adm4Id;
+					this.formModel.locationId = data.locationId;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Camp")} ${e}`, "is-danger");
+				});
+		},
+
 		async mapLocations() {
 			this.mapping = true;
+			if (this.formModel.type === "camp") {
+				await this.fetchCamps(this.formModel.campId);
+			}
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 			if (adm1Id && typeof adm1Id !== "object") {
 				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");

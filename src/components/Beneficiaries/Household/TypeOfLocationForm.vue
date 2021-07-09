@@ -28,8 +28,9 @@
 				</template>
 			</MultiSelect>
 		</b-field>
-		<div v-if="campSelected">
+		<div v-if="campSelected || this.formModel.type === 'camp'" :key="campKey">
 			<b-field
+				v-if="!createCamp"
 				:label="$t('Camp')"
 				:type="validateType('camp')"
 				:message="validateMsg('camp')"
@@ -42,7 +43,7 @@
 					:options="options.camps"
 					:searchable="false"
 					:class="validateMultiselect('camp')"
-					@select="validate('camp')"
+					@select="selectCamp"
 				/>
 			</b-field>
 
@@ -135,6 +136,7 @@ export default {
 
 	data() {
 		return {
+			campKey: 0,
 			locationTypesLoading: true,
 			createCamp: false,
 			campSelected: false,
@@ -179,33 +181,36 @@ export default {
 			this.locationTypesLoading = false;
 		},
 
-		fetchCamps() {
+		async fetchCamps() {
 			this.campsLoading = true;
 
-			AddressService.getCampsByLocation(this.formModel.locationId)
+			await AddressService.getCampsByLocation(this.formModel.locationId)
 				.then(({ data }) => {
 					this.options.camps = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
-				}).finally(() => {
+				})
+				.finally(() => {
 					this.campsLoading = false;
 				});
 		},
 
-		mapLocations() {
+		async mapLocations() {
 			if (this.formModel.locationId) {
-				this.fetchCamps();
+				await this.fetchCamps();
 			}
 			if (this.formModel.type) {
 				this.campSelected = this.formModel.type === "camp";
 				this.formModel.typeOfLocation = this.options.typeOfLocation
 					.find((item) => this.formModel.type === item.code);
 			}
-			if (this.formModel?.campId) {
+			const campId = this.formModel?.campId || this.formModel.camp?.id;
+			if (campId && !this.formModel.camp) {
 				this.campSelected = this.formModel.type === "camp";
 				this.formModel.camp = this.options.camps
-					.find((item) => this.formModel?.campId === item.id);
+					.find((item) => campId === item.id);
+				this.campKey += 1;
 			}
 		},
 
@@ -218,6 +223,11 @@ export default {
 		submitTypeOfLocationForm() {
 			this.$v.$touch();
 			return this.$v.$invalid;
+		},
+
+		selectCamp() {
+			this.validate("camp");
+			this.campKey += 1;
 		},
 	},
 };
