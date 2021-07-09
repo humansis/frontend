@@ -420,8 +420,8 @@ export default {
 				address.campAddress = {
 					tentNumber,
 					camp: {
-						name: camp?.name || campName,
-						locationId: camp?.locationId || locationId,
+						name: campName || camp?.name,
+						locationId: locationId || camp?.locationId,
 					},
 				};
 			} else if (typeOfLocation.code === "residence") {
