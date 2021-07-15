@@ -9,6 +9,7 @@
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
+					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
 			</div>
 			<div class="column is-half">
