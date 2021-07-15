@@ -60,4 +60,9 @@ export default {
 		const { data: { data, totalCount } } = await fetcher({ uri: `locations/${id}/camps` });
 		return { data, totalCount };
 	},
+
+	async getCamp(id) {
+		const { data } = await fetcher({ uri: `camps/${id}` });
+		return data;
+	},
 };
