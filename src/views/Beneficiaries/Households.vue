@@ -498,13 +498,27 @@ export default {
 		async getAddresses(ids) {
 			const addresses = [];
 			if (ids.camp.length) {
+				let camps = [];
 				await AddressService.getCampAddresses(ids.camp)
 					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "camp" });
-						});
+						camps = data;
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+					});
+				await AddressService.getCampsByIds(camps, "campId")
+					.then(({ data }) => {
+						data.forEach((item) => {
+							const address = camps.find(({ campId }) => campId === item.id);
+							if (address) {
+								addresses.push({
+									locationId: item.locationId,
+									id: address.id,
+									type: "camp",
+								});
+							}
+						});
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
 					});
 			}
 			if (ids.residence.length) {

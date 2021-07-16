@@ -65,4 +65,11 @@ export default {
 		const { data } = await fetcher({ uri: `camps/${id}` });
 		return data;
 	},
+
+	async getCampsByIds(ids, param) {
+		const idsText = ids.length ? idsToUri(ids, param) : "";
+
+		const { data } = await fetcher({ uri: `camps?${idsText}` });
+		return data;
+	},
 };
