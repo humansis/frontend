@@ -116,4 +116,11 @@ export default {
 		});
 		return { data, status };
 	},
+
+	async exportTemplate(format) {
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `imports/template?${formatText}` });
+		return { data };
+	},
 };
