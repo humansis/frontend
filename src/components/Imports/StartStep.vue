@@ -56,15 +56,6 @@
 				>
 					{{ $t('Start Import') }}
 				</b-button>
-				<ExportButton
-					space-between
-					type="is-primary"
-					position="is-top-right"
-					label="Download Template"
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@onExport="downloadTemplate"
-				/>
 			</div>
 		</div>
 	</div>
@@ -72,20 +63,14 @@
 
 <script>
 import ImportService from "@/services/ImportService";
-import ExportButton from "@/components/ExportButton";
 import { Notification, Toast } from "@/utils/UI";
 import consts from "@/utils/importConst";
 
 export default {
 	name: "StartStep",
 
-	components: {
-		ExportButton,
-	},
-
 	data() {
 		return {
-			exportLoading: false,
 			dropFiles: [],
 			startButtonLoading: false,
 			importStatus: "",
@@ -145,24 +130,6 @@ export default {
 			}).finally(() => {
 				this.startButtonLoading = false;
 			});
-		},
-
-		async downloadTemplate(format) {
-			this.exportLoading = true;
-			await ImportService.exportTemplate(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `import-template.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) {
-						Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
-					}
-				});
-			this.exportLoading = false;
 		},
 
 		cancelImport() {
