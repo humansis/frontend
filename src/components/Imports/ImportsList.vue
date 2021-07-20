@@ -56,15 +56,6 @@
 			>
 				{{ $t('New') }}
 			</b-button>
-			<ExportButton
-				class="ml-3"
-				space-between
-				type="is-primary"
-				label="Download Template"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@onExport="downloadTemplate"
-			/>
 			<b-button
 				class="ml-3 is-info is-light"
 				slot="trigger"
@@ -124,7 +115,6 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
@@ -161,7 +151,6 @@ export default {
 		ActionButton,
 		ColumnField,
 		ImportsFilter,
-		ExportButton,
 	},
 
 	mixins: [grid, baseHelper],
@@ -170,7 +159,6 @@ export default {
 		return {
 			advancedSearchVisible: false,
 			filters: [],
-			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],
@@ -345,24 +333,6 @@ export default {
 		showDetailWithId(id) {
 			const importItem = this.table.data.find((item) => item.id === id);
 			this.$emit("onShowDetail", importItem);
-		},
-
-		async downloadTemplate(format) {
-			this.exportLoading = true;
-			await ImportService.exportTemplate(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `import-template.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) {
-						Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
-					}
-				});
-			this.exportLoading = false;
 		},
 	},
 };

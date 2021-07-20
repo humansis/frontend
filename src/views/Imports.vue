@@ -6,6 +6,15 @@
 			</div>
 
 			<div class="level-right">
+				<ExportButton
+					class="mr-3"
+					space-between
+					type="is-primary"
+					label="Download Template"
+					:loading="exportLoading"
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@onExport="downloadTemplate"
+				/>
 				<b-button
 					type="is-primary"
 					icon-left="plus"
@@ -47,6 +56,7 @@ import Modal from "@/components/Modal";
 import ImportService from "@/services/ImportService";
 import { Toast, Notification } from "@/utils/UI.js";
 import ImportsList from "@/components/Imports/ImportsList";
+import ExportButton from "@/components/ExportButton";
 
 export default {
 	name: "Imports",
@@ -55,10 +65,12 @@ export default {
 		ImportsList,
 		Modal,
 		ImportForm,
+		ExportButton,
 	},
 
 	data() {
 		return {
+			exportLoading: false,
 			importModal: {
 				isOpened: false,
 				isWaiting: false,
@@ -162,6 +174,24 @@ export default {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 				this.importModal.isWaiting = false;
 			});
+		},
+
+		async downloadTemplate(format) {
+			this.exportLoading = true;
+			await ImportService.exportTemplate(format)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `import-template.${format}`;
+					link.click();
+				})
+				.catch((e) => {
+					if (e.message) {
+						Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
+					}
+				});
+			this.exportLoading = false;
 		},
 	},
 };
