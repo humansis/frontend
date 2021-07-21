@@ -181,7 +181,8 @@ export default {
 
 		canCancelImport() {
 			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL;
+				&& this.importStatus !== consts.STATUS.CANCEL
+				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
 
