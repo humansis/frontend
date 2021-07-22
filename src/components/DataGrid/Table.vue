@@ -72,9 +72,9 @@
 			<slot />
 
 			<template v-if="paginated" #bottom-left>
-				<p style="white-space: nowrap">{{ $t('Per Page') }}: </p>
+				<p>{{ $t('Per Page') }}: </p>
 				<MultiSelect
-					class="ml-2 mr-2"
+					class="per-page-select ml-2 mr-4"
 					hide-selected
 					open-direction="above"
 					:value="perPage"
@@ -83,8 +83,17 @@
 					:show-labels="false"
 					@input="onChangePerPage"
 				/>
-				<p class="total-count" style="white-space: nowrap">{{ $t('Total Count') }}: </p>
-				<span class="mr-1 ml-1">{{ total }}</span>
+				<div class="mr-3">
+					<b-taglist attached>
+						<b-tag size="is-medium" type="is-info is-light">{{ $t('Total Count') }}</b-tag>
+						<b-tag size="is-medium" type="is-light">{{ total }}</b-tag>
+					</b-taglist>
+				</div>
+
+				<b-taglist v-if="checkedCount" attached>
+					<b-tag size="is-medium" type="is-info is-light">{{ $t('Items Selected') }}</b-tag>
+					<b-tag size="is-medium" type="is-light">{{ checkedCount }}</b-tag>
+				</b-taglist>
 			</template>
 			<template #footer>
 				<slot name="footer" />
@@ -176,6 +185,7 @@ export default {
 				perPageNumbers: [10, 20, 50, 100],
 			},
 			searchedData: null,
+			checkedCount: 0,
 		};
 	},
 
@@ -204,8 +214,10 @@ export default {
 				const immediatelyCheckedRows = this.checkedRows.map((row) => row.id);
 				const checkedNewRows = rows.filter((row) => !immediatelyCheckedRows.includes(row.id));
 
+				this.checkedCount = checkedNewRows?.length ?? 0;
 				this.$emit("checked", checkedNewRows);
 			} else {
+				this.checkedCount = rows?.length ?? 0;
 				this.$emit("checked", rows);
 			}
 		},
