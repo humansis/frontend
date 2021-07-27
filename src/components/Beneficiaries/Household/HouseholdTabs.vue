@@ -448,6 +448,7 @@ export default {
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
 					const preparedBeneficiary = {
+						id: beneficiary.beneficiaryId,
 						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
 						localFamilyName: beneficiary.nameLocal.familyName,
 						localGivenName: beneficiary.nameLocal.firstName,
