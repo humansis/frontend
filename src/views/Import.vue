@@ -61,6 +61,7 @@
 		>
 			<b-step-item clickable step="1" :label="$t('Start')">
 				<StartStep
+					:importFiles="importFiles"
 					:status="importStatus"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -285,17 +286,19 @@ export default {
 		fetchImportFiles() {
 			const { importId } = this.$route.params;
 
-			ImportService.getFilesInImport(importId)
-				.then(({ data: { data } }) => {
-					this.importFiles = data;
-				}).catch((e) => {
-					if (e.message) {
-						Notification(
-							`${this.$t("Import Files")} ${e}`,
-							"is-danger",
-						);
-					}
-				});
+			if (importId) {
+				ImportService.getFilesInImport(importId)
+					.then(({ data: { data } }) => {
+						this.importFiles = data;
+					}).catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Import Files")} ${e}`,
+								"is-danger",
+							);
+						}
+					});
+			}
 		},
 
 		fetchImport(importId) {
@@ -345,16 +348,18 @@ export default {
 
 			ImportService.changeImportState(importId, "status", state).then(({ status }) => {
 				if (status === 202) {
-					Toast(this.$t(successMessage), "is-success");
-
 					if (state === consts.STATE.CANCELED) {
 						this.$router.push({ name: "Imports" });
 					}
 
-					if (state !== consts.STATE.FINISHED
-						&& state !== consts.STATE.IMPORTING
-						&& state !== consts.STATE.CANCELED) {
-						if (goNext) this.changeTab(this.activeStep + 1);
+					if (this.$route.name === "Import") {
+						Toast(this.$t(successMessage), "is-success");
+
+						if (state !== consts.STATE.FINISHED
+							&& state !== consts.STATE.IMPORTING
+							&& state !== consts.STATE.CANCELED) {
+							if (goNext) this.changeTab(this.activeStep + 1);
+						}
 					}
 				}
 			}).catch((e) => {
