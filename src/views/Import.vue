@@ -71,6 +71,7 @@
 				<IntegrityStep
 					:statistics="statistics"
 					:status="importStatus"
+					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -193,6 +194,7 @@ export default {
 			updateDescriptionLoading: false,
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
+			importFiles: [],
 			activeStep: 0,
 			steps: [
 				{ code: 0, slug: "start-import" },
@@ -259,6 +261,7 @@ export default {
 
 			if (importId) {
 				this.fetchImport(importId);
+				this.fetchImportFiles(importId);
 				this.fetchImportStatistics();
 				this.setCheckingInterval();
 			} else {
@@ -274,8 +277,25 @@ export default {
 			) {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics();
+					this.fetchImportFiles();
 				}, 30000);
 			}
+		},
+
+		fetchImportFiles() {
+			const { importId } = this.$route.params;
+
+			ImportService.getFilesInImport(importId)
+				.then(({ data: { data } }) => {
+					this.importFiles = data;
+				}).catch((e) => {
+					if (e.message) {
+						Notification(
+							`${this.$t("Import Files")} ${e}`,
+							"is-danger",
+						);
+					}
+				});
 		},
 
 		fetchImport(importId) {
@@ -345,6 +365,7 @@ export default {
 			}).finally(() => {
 				this.loadingChangeStateButton = false;
 				this.fetchImportStatistics();
+				this.fetchImportFiles();
 			});
 		},
 
