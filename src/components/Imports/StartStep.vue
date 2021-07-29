@@ -35,6 +35,15 @@
 				</span>
 			</div>
 
+			<div v-if="isStatusNew" class="tags">
+				<span v-for="({name}, index) in importFiles"
+					:key="index"
+					class="tag is-info"
+				>
+					{{ name }}
+				</span>
+			</div>
+
 			<hr>
 
 			<div class="buttons mt-3 flex-end">
@@ -50,7 +59,7 @@
 					v-if="canStartImport"
 					type="is-primary"
 					icon-right="play-circle"
-					:disabled="!filesCount"
+					:disabled="!disabledStartImport"
 					:loading="startButtonLoading"
 					@click="startImport"
 				>
@@ -83,6 +92,11 @@ export default {
 			required: false,
 			default: "",
 		},
+
+		importFiles: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	watch: {
@@ -92,12 +106,17 @@ export default {
 	},
 
 	computed: {
-		filesCount() {
-			return this.dropFiles?.length;
+		disabledStartImport() {
+			return this.importStatus === consts.STATUS.NEW
+				&& (this.dropFiles.length || this.importFiles.length);
+		},
+
+		isStatusNew() {
+			return this.importStatus === consts.STATUS.NEW;
 		},
 
 		canStartImport() {
-			return this.importStatus === consts.STATUS.NEW;
+			return this.importStatus === consts.STATUS.NEW || this.importFiles.length;
 		},
 
 		canCancelImport() {
@@ -117,20 +136,30 @@ export default {
 
 			this.startButtonLoading = true;
 
-			ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
-				if (status === 200) {
-					Toast(this.$t("Uploaded Successfully"), "is-success");
-					this.$emit("changeImportState", {
-						state: consts.STATE.INTEGRITY_CHECKING,
-						successMessage: "Integrity Check Started Successfully",
-						goNext: true,
-					});
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-			}).finally(() => {
-				this.startButtonLoading = false;
-			});
+			if (this.dropFiles.length) {
+				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
+					if (status === 200) {
+						Toast(this.$t("Uploaded Successfully"), "is-success");
+						this.dropFiles = [];
+
+						this.$emit("changeImportState", {
+							state: consts.STATE.INTEGRITY_CHECKING,
+							successMessage: "Integrity Check Started Successfully",
+							goNext: true,
+						});
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.startButtonLoading = false;
+				});
+			} else if (this.importFiles.length) {
+				this.$emit("changeImportState", {
+					state: consts.STATE.INTEGRITY_CHECKING,
+					successMessage: "Integrity Check Started Successfully",
+					goNext: true,
+				});
+			}
 		},
 
 		cancelImport() {

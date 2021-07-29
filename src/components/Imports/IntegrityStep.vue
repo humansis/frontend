@@ -317,7 +317,6 @@ export default {
 
 		importFiles: {
 			type: Array,
-			required: false,
 			default: () => [],
 		},
 	},
