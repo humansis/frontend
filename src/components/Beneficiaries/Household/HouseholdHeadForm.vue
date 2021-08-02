@@ -343,6 +343,7 @@ export default {
 		return {
 			loadingComponent: null,
 			formModel: {
+				beneficiaryId: null,
 				nameLocal: {
 					familyName: "",
 					firstName: "",
@@ -439,6 +440,7 @@ export default {
 
 		async mapDetailOfHouseholdToFormModel(beneficiary) {
 			const {
+				id,
 				dateOfBirth,
 				enFamilyName,
 				enGivenName,
@@ -459,9 +461,10 @@ export default {
 				this.formModel.addAReferral = true;
 			}
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
-			const id = await this.getNationalIdCard(nationalIds[0]);
+			const cardId = await this.getNationalIdCard(nationalIds[0]);
 			this.formModel = {
 				...this.formModel,
+				beneficiaryId: id,
 				nameLocal: {
 					familyName: localFamilyName,
 					firstName: localGivenName,
@@ -476,7 +479,7 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: new Date(dateOfBirth),
 				},
-				id,
+				id: cardId,
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
