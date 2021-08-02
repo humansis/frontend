@@ -60,7 +60,7 @@
 					type="is-primary"
 					icon-right="play-circle"
 					:disabled="!disabledStartImport"
-					:loading="startButtonLoading"
+					:loading="loadingChangeStateButton"
 					@click="startImport"
 				>
 					{{ $t('Start Import') }}
@@ -81,7 +81,7 @@ export default {
 	data() {
 		return {
 			dropFiles: [],
-			startButtonLoading: false,
+			changeStateButtonLoading: false,
 			importStatus: "",
 		};
 	},
@@ -97,11 +97,20 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	watch: {
 		status(value) {
 			this.importStatus = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
 		},
 	},
 
@@ -134,8 +143,6 @@ export default {
 		startImport() {
 			const { importId } = this.$route.params;
 
-			this.startButtonLoading = true;
-
 			if (this.dropFiles.length) {
 				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
 					if (status === 200) {
@@ -150,8 +157,6 @@ export default {
 					}
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.startButtonLoading = false;
 				});
 			} else if (this.importFiles.length) {
 				this.$emit("changeImportState", {
