@@ -1,17 +1,6 @@
 <template>
 	<div>
 		<div class="card">
-			<b-notification
-				v-if="!integrityStepActive && status"
-				class="is-light"
-				type="is-info"
-				has-icon
-				:closable="false"
-			>
-				<div class="mt-3">
-					{{ $t("This step is not currently in progress")}}
-				</div>
-			</b-notification>
 			<div
 				v-if="integrityStepActive && status"
 				class="card-content"
@@ -196,12 +185,17 @@
 				class="card-content"
 			>
 				<h2 class="subtitle is-5">
-					{{ name }} <br>
-					<span class="is-block" v-if="expectedColumns">
-						{{ expectedColumns.length }}
-					</span>
+					{{ name }}
+					<b-taglist class="mt-3 mb-1" attached>
+						<b-tag size="is-medium" type="is-warning is-light">
+							{{ $t('Expected Columns') }}
+						</b-tag>
+						<b-tag size="is-medium" type="is-light">
+							{{ expectedColumns.length }}
+						</b-tag>
+					</b-taglist>
 
-					<b-taglist class="mt-3" attached>
+					<b-taglist attached>
 						<b-tag size="is-medium" type="is-info is-light">
 							{{ $t('Upload Date') }}
 						</b-tag>

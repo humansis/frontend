@@ -57,9 +57,8 @@
 			animated
 			rounded
 			:has-navigation="false"
-			@input="changeTab"
 		>
-			<b-step-item clickable step="1" :label="$t('Start')">
+			<b-step-item step="1" :label="$t('Start')" :clickable="false">
 				<StartStep
 					:importFiles="importFiles"
 					:status="importStatus"
@@ -68,7 +67,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="2" :label="$t('Integrity Check')">
+			<b-step-item step="2" :label="$t('Integrity Check')" :clickable="false">
 				<IntegrityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -79,7 +78,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="3" :label="$t('Identity Check')">
+			<b-step-item step="3" :label="$t('Identity Check')" :clickable="false">
 				<IdentityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -90,7 +89,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="4" :label="$t('Similarity Check')">
+			<b-step-item step="4" :label="$t('Similarity Check')" :clickable="false">
 				<SimilarityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -102,7 +101,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="5" :label="$t('Finalisation')">
+			<b-step-item step="5" :label="$t('Finalisation')" :clickable="false">
 				<FinalisationStep
 					:statistics="statistics"
 					:status="importStatus"
