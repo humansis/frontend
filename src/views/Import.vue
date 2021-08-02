@@ -63,6 +63,7 @@
 				<StartStep
 					:importFiles="importFiles"
 					:status="importStatus"
+					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -97,7 +98,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
-					@goToFinalStep="changeTab(4)"
+					@goToFinalStep="goToFinalStep"
 					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
@@ -342,8 +343,25 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext }) {
-			const { importId } = this.$route.params;
+			console.log(this.statistics);
+			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+				this.$buefy.dialog.confirm({
+					title: this.$t("Continue"),
+					message: this.$t("Are you sure you want to ignore errors and proceed?"),
+					confirmText: this.$t("Confirm"),
+					type: "is-warning",
+					hasIcon: true,
+					onConfirm: () => {
+						this.changeImportState(state, successMessage, goNext);
+					},
+				});
+			} else {
+				this.changeImportState(state, successMessage, goNext);
+			}
+		},
 
+		changeImportState(state, successMessage, goNext) {
+			const { importId } = this.$route.params;
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, "status", state).then(({ status }) => {
@@ -372,6 +390,23 @@ export default {
 				this.fetchImportStatistics();
 				this.fetchImportFiles();
 			});
+		},
+
+		goToFinalStep() {
+			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+				this.$buefy.dialog.confirm({
+					title: this.$t("Continue"),
+					message: this.$t("Are you sure you want to ignore errors and proceed?"),
+					confirmText: this.$t("Confirm"),
+					type: "is-warning",
+					hasIcon: true,
+					onConfirm: () => {
+						this.changeTab(4);
+					},
+				});
+			} else {
+				this.changeTab(4);
+			}
 		},
 
 		async cancelImport() {
