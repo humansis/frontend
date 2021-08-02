@@ -1,16 +1,5 @@
 <template>
 	<div class="card">
-		<b-notification
-			v-if="!identityStepActive && status"
-			class="is-light"
-			type="is-info"
-			has-icon
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("This step is not currently in progress")}}
-			</div>
-		</b-notification>
 		<div
 			v-if="identityStepActive && status"
 			class="card-content"
