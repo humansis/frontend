@@ -268,9 +268,15 @@ export default {
 		},
 
 		async onTargetTypeSelect(targetType) {
-			this.validate("targetType");
-			this.$emit("onTargetSelect", targetType);
-			await this.showComponents();
+			const isLocationInvalid = this.$refs.locationForm.submitLocationForm();
+
+			if (isLocationInvalid) {
+				this.formModel.targetType = [];
+			} else {
+				this.validate("targetType");
+				this.$emit("onTargetSelect", targetType);
+				await this.showComponents();
+			}
 		},
 
 		async showComponents() {

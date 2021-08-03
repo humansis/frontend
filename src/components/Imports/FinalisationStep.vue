@@ -95,7 +95,7 @@
 					v-if="finalisationStepActive"
 					type="is-primary"
 					icon-right="save"
-					:loading="approveAndSaveButtonLoading"
+					:loading="changeStateButtonLoading"
 					@click="approveAndSave"
 				>
 					{{ $t('Approve and Save') }}
@@ -115,7 +115,7 @@ export default {
 		return {
 			importStatistics: {},
 			importStatus: "",
-			approveAndSaveButtonLoading: false,
+			changeStateButtonLoading: false,
 		};
 	},
 
@@ -130,11 +130,19 @@ export default {
 			required: false,
 			default: "",
 		},
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	watch: {
 		statistics(value) {
 			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
 		},
 
 		status(value) {
@@ -173,21 +181,18 @@ export default {
 
 		canCancelImport() {
 			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL;
+				&& this.importStatus !== consts.STATUS.CANCEL
+				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
 
 	methods: {
 		approveAndSave() {
-			this.approveAndSaveButtonLoading = true;
-
 			this.$emit("changeImportState", {
 				state: consts.STATE.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});
-
-			this.approveAndSaveButtonLoading = false;
 		},
 
 		cancelImport() {

@@ -1,5 +1,5 @@
 <template>
-	<div class="card">
+	<div class="card overflow-visible">
 		<div class="card-content">
 			<b-field>
 				<b-upload
@@ -35,6 +35,15 @@
 				</span>
 			</div>
 
+			<div v-if="isStatusNew" class="tags">
+				<span v-for="({name}, index) in importFiles"
+					:key="index"
+					class="tag is-info"
+				>
+					{{ name }}
+				</span>
+			</div>
+
 			<hr>
 
 			<div class="buttons mt-3 flex-end">
@@ -50,8 +59,8 @@
 					v-if="canStartImport"
 					type="is-primary"
 					icon-right="play-circle"
-					:disabled="!filesCount"
-					:loading="startButtonLoading"
+					:disabled="!disabledStartImport"
+					:loading="loadingChangeStateButton"
 					@click="startImport"
 				>
 					{{ $t('Start Import') }}
@@ -72,7 +81,7 @@ export default {
 	data() {
 		return {
 			dropFiles: [],
-			startButtonLoading: false,
+			changeStateButtonLoading: false,
 			importStatus: "",
 		};
 	},
@@ -83,26 +92,46 @@ export default {
 			required: false,
 			default: "",
 		},
+
+		importFiles: {
+			type: Array,
+			default: () => [],
+		},
+
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	watch: {
 		status(value) {
 			this.importStatus = value;
 		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
 	},
 
 	computed: {
-		filesCount() {
-			return this.dropFiles?.length;
+		disabledStartImport() {
+			return this.importStatus === consts.STATUS.NEW
+				&& (this.dropFiles.length || this.importFiles.length);
+		},
+
+		isStatusNew() {
+			return this.importStatus === consts.STATUS.NEW;
 		},
 
 		canStartImport() {
-			return this.importStatus === consts.STATUS.NEW;
+			return this.importStatus === consts.STATUS.NEW || this.importFiles.length;
 		},
 
 		canCancelImport() {
 			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL;
+				&& this.importStatus !== consts.STATUS.CANCEL
+				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
 
@@ -114,22 +143,28 @@ export default {
 		startImport() {
 			const { importId } = this.$route.params;
 
-			this.startButtonLoading = true;
+			if (this.dropFiles.length) {
+				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
+					if (status === 200) {
+						Toast(this.$t("Uploaded Successfully"), "is-success");
+						this.dropFiles = [];
 
-			ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
-				if (status === 200) {
-					Toast(this.$t("Uploaded Successfully"), "is-success");
-					this.$emit("changeImportState", {
-						state: consts.STATE.INTEGRITY_CHECKING,
-						successMessage: "Integrity Check Started Successfully",
-						goNext: true,
-					});
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-			}).finally(() => {
-				this.startButtonLoading = false;
-			});
+						this.$emit("changeImportState", {
+							state: consts.STATE.INTEGRITY_CHECKING,
+							successMessage: "Integrity Check Started Successfully",
+							goNext: true,
+						});
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+				});
+			} else if (this.importFiles.length) {
+				this.$emit("changeImportState", {
+					state: consts.STATE.INTEGRITY_CHECKING,
+					successMessage: "Integrity Check Started Successfully",
+					goNext: true,
+				});
+			}
 		},
 
 		cancelImport() {

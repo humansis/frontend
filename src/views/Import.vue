@@ -57,19 +57,10 @@
 			animated
 			rounded
 			:has-navigation="false"
-			@input="changeTab"
 		>
-			<b-step-item clickable step="1" :label="$t('Start')">
+			<b-step-item step="1" :label="$t('Start')" :clickable="false">
 				<StartStep
-					:status="importStatus"
-					@canceledImport="onCancelImport"
-					@changeImportState="onChangeImportState"
-				/>
-			</b-step-item>
-
-			<b-step-item clickable step="2" :label="$t('Integrity Check')">
-				<IntegrityStep
-					:statistics="statistics"
+					:importFiles="importFiles"
 					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
@@ -77,7 +68,18 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="3" :label="$t('Identity Check')">
+			<b-step-item step="2" :label="$t('Integrity Check')" :clickable="false">
+				<IntegrityStep
+					:statistics="statistics"
+					:status="importStatus"
+					:importFiles="importFiles"
+					:loading-change-state-button="loadingChangeStateButton"
+					@canceledImport="onCancelImport"
+					@changeImportState="onChangeImportState"
+				/>
+			</b-step-item>
+
+			<b-step-item step="3" :label="$t('Identity Check')" :clickable="false">
 				<IdentityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -88,19 +90,19 @@
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="4" :label="$t('Similarity Check')">
+			<b-step-item step="4" :label="$t('Similarity Check')" :clickable="false">
 				<SimilarityStep
 					:statistics="statistics"
 					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
-					@goToFinalStep="changeTab(4)"
+					@goToFinalStep="goToFinalStep"
 					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
 
-			<b-step-item clickable step="5" :label="$t('Finalisation')">
+			<b-step-item step="5" :label="$t('Finalisation')" :clickable="false">
 				<FinalisationStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -193,6 +195,7 @@ export default {
 			updateDescriptionLoading: false,
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
+			importFiles: [],
 			activeStep: 0,
 			steps: [
 				{ code: 0, slug: "start-import" },
@@ -259,6 +262,7 @@ export default {
 
 			if (importId) {
 				this.fetchImport(importId);
+				this.fetchImportFiles(importId);
 				this.fetchImportStatistics();
 				this.setCheckingInterval();
 			} else {
@@ -274,7 +278,26 @@ export default {
 			) {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics();
+					this.fetchImportFiles();
 				}, 30000);
+			}
+		},
+
+		fetchImportFiles() {
+			const { importId } = this.$route.params;
+
+			if (importId) {
+				ImportService.getFilesInImport(importId)
+					.then(({ data: { data } }) => {
+						this.importFiles = data;
+					}).catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Import Files")} ${e}`,
+								"is-danger",
+							);
+						}
+					});
 			}
 		},
 
@@ -319,22 +342,41 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext }) {
-			const { importId } = this.$route.params;
+			console.log(this.statistics);
+			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+				this.$buefy.dialog.confirm({
+					title: this.$t("Continue"),
+					message: this.$t("Are you sure you want to ignore errors and proceed?"),
+					confirmText: this.$t("Confirm"),
+					type: "is-warning",
+					hasIcon: true,
+					onConfirm: () => {
+						this.changeImportState(state, successMessage, goNext);
+					},
+				});
+			} else {
+				this.changeImportState(state, successMessage, goNext);
+			}
+		},
 
+		changeImportState(state, successMessage, goNext) {
+			const { importId } = this.$route.params;
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, "status", state).then(({ status }) => {
 				if (status === 202) {
-					Toast(this.$t(successMessage), "is-success");
-
 					if (state === consts.STATE.CANCELED) {
 						this.$router.push({ name: "Imports" });
 					}
 
-					if (state !== consts.STATE.FINISHED
-						&& state !== consts.STATE.IMPORTING
-						&& state !== consts.STATE.CANCELED) {
-						if (goNext) this.changeTab(this.activeStep + 1);
+					if (this.$route.name === "Import") {
+						Toast(this.$t(successMessage), "is-success");
+
+						if (state !== consts.STATE.FINISHED
+							&& state !== consts.STATE.IMPORTING
+							&& state !== consts.STATE.CANCELED) {
+							if (goNext) this.changeTab(this.activeStep + 1);
+						}
 					}
 				}
 			}).catch((e) => {
@@ -345,7 +387,25 @@ export default {
 			}).finally(() => {
 				this.loadingChangeStateButton = false;
 				this.fetchImportStatistics();
+				this.fetchImportFiles();
 			});
+		},
+
+		goToFinalStep() {
+			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+				this.$buefy.dialog.confirm({
+					title: this.$t("Continue"),
+					message: this.$t("Are you sure you want to ignore errors and proceed?"),
+					confirmText: this.$t("Confirm"),
+					type: "is-warning",
+					hasIcon: true,
+					onConfirm: () => {
+						this.changeTab(4);
+					},
+				});
+			} else {
+				this.changeTab(4);
+			}
 		},
 
 		async cancelImport() {

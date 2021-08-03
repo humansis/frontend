@@ -1,16 +1,5 @@
 <template>
 	<div class="card">
-		<b-notification
-			v-if="!similarityStepActive && status"
-			class="is-light"
-			type="is-info"
-			has-icon
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("This step is not currently in progress")}}
-			</div>
-		</b-notification>
 		<div
 			v-if="similarityStepActive && status"
 			class="card-content"
@@ -196,7 +185,8 @@ export default {
 
 		canCancelImport() {
 			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL;
+				&& this.importStatus !== consts.STATUS.CANCEL
+				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
 

@@ -35,6 +35,14 @@
 	.table th {
 		vertical-align: middle;
 	}
+
+	.level-left {
+		flex-grow: 1;
+	}
+
+	.per-page-select {
+		max-width: 80px;
+	}
 }
 
 .table-action {
