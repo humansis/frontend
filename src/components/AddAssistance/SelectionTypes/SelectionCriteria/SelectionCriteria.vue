@@ -158,8 +158,19 @@ export default {
 
 	computed: {
 		selectedTargetType() {
-			if (typeof this.targetType !== "string") return "";
-			return this.targetType.charAt(0).toUpperCase() + this.targetType.slice(1);
+			let result = this.targetType;
+
+			if (typeof result !== "string") return "";
+
+			if (this.targetType === "household") {
+				result = this.countOf === 1 ? "household" : "households";
+			}
+
+			if (this.targetType === "individual") {
+				result = this.countOf === 1 ? "individual" : "individuals";
+			}
+
+			return result.charAt(0).toUpperCase() + result.slice(1);
 		},
 	},
 
