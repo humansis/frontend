@@ -12,6 +12,20 @@ export default {
 			return entity;
 		},
 
+		preparePhonesForTable(phoneIds, phones = null, emptyValue = "") {
+			let number = "";
+
+			phones.forEach(({ id }, key) => {
+				if (phoneIds.includes(id)) {
+					number += `${!number ? "" : ", "} ${phones[key].number}`;
+				}
+			});
+
+			if (!number) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
+
+			return number;
+		},
+
 		prepareName(localName, enName) {
 			let preparedName = localName;
 			if (enName) preparedName += ` (${enName})`;
