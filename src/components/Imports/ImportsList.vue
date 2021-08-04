@@ -159,7 +159,6 @@ export default {
 		return {
 			advancedSearchVisible: false,
 			filters: [],
-			exportLoading: false,
 			table: {
 				data: [],
 				columns: [],

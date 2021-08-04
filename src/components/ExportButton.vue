@@ -2,12 +2,19 @@
 	<b-dropdown
 		v-model="currentFormat"
 		aria-role="list"
+		:position="position"
 	>
-		<b-button :loading="loading" icon-left="file-download" slot="trigger" :size="size" :type="type">
+		<b-button
+			icon-right="arrow-down"
+			icon-left="file-download"
+			slot="trigger"
+			:loading="loading"
+			:size="size"
+			:type="type"
+		>
 			<template>
-				<span>{{ label || $t('Export') }}</span>
+				<span>{{ $t(label) }}</span>
 			</template>
-			<b-icon icon="arrow-down" />
 		</b-button>
 		<b-dropdown-item
 			v-for="(menu, index) in formatMenu"
@@ -36,7 +43,11 @@ export default {
 		spaceBetween: Boolean,
 		label: {
 			type: String,
-			default: null,
+			default: "Export",
+		},
+		position: {
+			type: String,
+			default: "is-bottom-right",
 		},
 		loading: {
 			type: Boolean,

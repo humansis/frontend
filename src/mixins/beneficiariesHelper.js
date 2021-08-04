@@ -206,8 +206,7 @@ export default {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].phone = !item.phoneIds.length
 					? this.$t("None")
-					: this.prepareEntityForTable(item.phoneIds[0], phones,
-						"number", "None");
+					: this.preparePhonesForTable(item.phoneIds, phones, "None");
 			});
 			this.table.progress += 15;
 		},

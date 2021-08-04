@@ -596,10 +596,10 @@ export default {
 								.find((vulnerability) => vulnerability === code));
 
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
-						if (item.phoneIds.length) phoneIds.push(item.phoneIds[0]);
+						if (item.phoneIds.length) phoneIds.push(...item.phoneIds);
 
 						if (item.bookletIds.length) {
-							distributionItems.bookletIds.push(item.bookletIds[0]);
+							distributionItems.bookletIds.push(item.bookletIds);
 						}
 						if (item.generalReliefItemIds.length) {
 							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);

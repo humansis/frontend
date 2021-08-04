@@ -158,8 +158,19 @@ export default {
 
 	computed: {
 		selectedTargetType() {
-			if (typeof this.targetType !== "string") return "";
-			return this.targetType.charAt(0).toUpperCase() + this.targetType.slice(1);
+			let result = this.targetType;
+
+			if (typeof result !== "string") return "";
+
+			if (this.targetType === "household") {
+				result = this.countOf === 1 ? "household" : "households";
+			}
+
+			if (this.targetType === "individual") {
+				result = this.countOf === 1 ? "individual" : "individuals";
+			}
+
+			return result.charAt(0).toUpperCase() + result.slice(1);
 		},
 	},
 
@@ -299,45 +310,53 @@ export default {
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
 			this.calculationLoading = true;
 
-			await AssistancesService.calculationOfBeneficiaries(assistanceBody)
-				.then(({ data, status }) => {
-					if (status === 200) {
-						if (groupKey === null) {
-							if (totalCount) {
-								this.totalCount = data.totalCount;
+			if (this.assistanceBodyIsValid(assistanceBody)) {
+				await AssistancesService.calculationOfBeneficiaries(assistanceBody)
+					.then(({ data, status }) => {
+						if (status === 200) {
+							if (groupKey === null) {
+								if (totalCount) {
+									this.totalCount = data.totalCount;
+								} else {
+									this.countOf = data.totalCount;
+								}
+							}
+
+							if (groupKey !== null) {
+								const newGroups = [...this.groups];
+
+								if (newGroups[groupKey]?.tableData) {
+									newGroups[groupKey].tableData = data.data;
+								}
+
+								this.groups = newGroups;
 							} else {
-								this.countOf = data.totalCount;
+								this.totalBeneficiariesData = data.data;
 							}
 						}
-
-						if (groupKey !== null) {
-							const newGroups = [...this.groups];
-
-							if (newGroups[groupKey]?.tableData) {
-								newGroups[groupKey].tableData = data.data;
-							}
-
-							this.groups = newGroups;
-						} else {
-							this.totalBeneficiariesData = data.data;
-						}
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-				});
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					});
+			}
 
 			this.calculationLoading = false;
 		},
 
 		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {
-			await AssistancesService.calculationOfBeneficiariesScores(assistanceBody)
-				.then(({ data, status }) => {
-					if (status === 200) {
-						this.beneficiariesScores = data.data;
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-				});
+			if (this.assistanceBodyIsValid(assistanceBody)) {
+				await AssistancesService.calculationOfBeneficiariesScores(assistanceBody)
+					.then(({ data, status }) => {
+						if (status === 200) {
+							this.beneficiariesScores = data.data;
+						}
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					});
+			}
+		},
+
+		assistanceBodyIsValid({ sector, subsector, target, type }) {
+			return sector && subsector && target && type;
 		},
 
 		removeCriteriaGroup(groupKey) {
