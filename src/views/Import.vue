@@ -342,7 +342,6 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext }) {
-			console.log(this.statistics);
 			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),

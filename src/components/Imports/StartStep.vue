@@ -60,7 +60,7 @@
 					type="is-primary"
 					icon-right="play-circle"
 					:disabled="!disabledStartImport"
-					:loading="loadingChangeStateButton"
+					:loading="loadingChangeStateButton || startLoading"
 					@click="startImport"
 				>
 					{{ $t('Start Import') }}
@@ -82,6 +82,7 @@ export default {
 		return {
 			dropFiles: [],
 			changeStateButtonLoading: false,
+			startLoading: false,
 			importStatus: "",
 		};
 	},
@@ -142,12 +143,14 @@ export default {
 
 		startImport() {
 			const { importId } = this.$route.params;
+			this.startLoading = true;
 
 			if (this.dropFiles.length) {
 				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
 					if (status === 200) {
 						Toast(this.$t("Uploaded Successfully"), "is-success");
 						this.dropFiles = [];
+						this.startLoading = false;
 
 						this.$emit("changeImportState", {
 							state: consts.STATE.INTEGRITY_CHECKING,
