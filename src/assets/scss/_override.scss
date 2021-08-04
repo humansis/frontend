@@ -1,14 +1,21 @@
-.b-table .table th {
-  vertical-align: bottom;
-}
+// Table
 
-.b-table .table th .th-wrap .icon {
-  margin-left: .2rem;
-}
+.b-table {
+  .table {
+    th {
+      vertical-align: bottom;
+      cursor: initial !important;
 
-.is-sortable {
-  .sort-icon.is-invisible {
-    visibility: initial !important;
-    opacity: .3;
+      .th-wrap .icon {
+        margin-left: .2rem;
+      }
+    }
+
+    .is-sortable {
+      .sort-icon.is-invisible {
+        visibility: initial !important;
+        opacity: .3;
+      }
+    }
   }
 }
