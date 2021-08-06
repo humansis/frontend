@@ -46,7 +46,7 @@
 				:count="group.tableData.length"
 				:key="key"
 				:group-id="key"
-				:target-type="targetType"
+				:target-type="selectedTargetType"
 				:loading="calculationLoading"
 				@addCriteria="addCriteria"
 				@removeGroup="removeCriteriaGroup(key)"
