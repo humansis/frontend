@@ -197,6 +197,7 @@ export default {
 			statisticsInterval: null,
 			importFiles: [],
 			activeStep: 0,
+			columnsError: 0,
 			steps: [
 				{ code: 0, slug: "start-import" },
 				{ code: 1, slug: "integrity-check" },
@@ -290,6 +291,7 @@ export default {
 				ImportService.getFilesInImport(importId)
 					.then(({ data: { data } }) => {
 						this.importFiles = data;
+						this.checkImportFiles(data);
 					}).catch((e) => {
 						if (e.message) {
 							Notification(
@@ -299,6 +301,19 @@ export default {
 						}
 					});
 			}
+		},
+
+		checkImportFiles(data) {
+			let columnsError = 0;
+
+			data.forEach((file) => {
+				const { missingColumns = [], violations = [] } = file || {};
+				columnsError += missingColumns.length;
+				columnsError += violations.length;
+				console.log(file, missingColumns);
+			});
+
+			this.columnsError = columnsError;
 		},
 
 		fetchImport(importId) {
@@ -342,7 +357,10 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext }) {
-			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+			if (this.statistics.amountIntegrityFailed
+				|| this.statistics.amountDuplicities
+				|| this.columnsError
+			) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
@@ -408,7 +426,7 @@ export default {
 		},
 
 		async cancelImport() {
-			await this.onChangeImportState({
+			await this.changeImportState({
 				state: consts.STATE.CANCELED,
 				successMessage: "Canceled Successfully",
 				goNext: true,
