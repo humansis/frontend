@@ -67,7 +67,7 @@
 					Close
 				</b-button>
 				<b-button
-					v-if="redemptionSummary"
+					v-if="redemptionSummary && printButtonVisible"
 					type="is-primary"
 					:loading="printLoading"
 					:label="$t('Print')"
@@ -107,6 +107,7 @@ export default {
 			history: false,
 			redemptionBatch: null,
 			redemptionSummary: false,
+			printButtonVisible: true,
 			batches: [],
 			projects: [],
 			totalNumberOfTransactions: "",
@@ -121,7 +122,13 @@ export default {
 
 	methods: {
 		showRedemptionSummary(batch) {
+			this.printButtonVisible = true;
 			this.redemptionBatch = batch;
+
+			if (!this.getProjectName(batch.projectId)) {
+				this.printButtonVisible = false;
+			}
+
 			this.redemptionSummary = true;
 			this.header = "Vendor Redemption Summary";
 		},
