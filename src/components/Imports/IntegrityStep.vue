@@ -453,7 +453,7 @@ export default {
 		},
 
 		getParsedArray(violations) {
-			return violations ? JSON.parse(violations) : [];
+			return violations || [];
 		},
 
 		cancelImport() {

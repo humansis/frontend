@@ -310,7 +310,6 @@ export default {
 				const { missingColumns = [], violations = [] } = file || {};
 				columnsError += missingColumns.length;
 				columnsError += violations.length;
-				console.log(file, missingColumns);
 			});
 
 			this.columnsError = columnsError;
@@ -369,6 +368,7 @@ export default {
 					hasIcon: true,
 					onConfirm: () => {
 						this.changeImportState(state, successMessage, goNext);
+						this.columnsError = 0;
 					},
 				});
 			} else {
