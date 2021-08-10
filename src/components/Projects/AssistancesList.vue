@@ -96,6 +96,7 @@
 					<SafeDelete
 						v-if="!props.row.validated && userCan.deleteDistribution"
 						icon="trash"
+						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 						:entity="$t('Assistance')"
 						:tooltip="$t('Delete')"
 						:id="props.row.id"
