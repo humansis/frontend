@@ -9,6 +9,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@resetSort="resetSort"
@@ -40,6 +41,7 @@
 				>
 					<PurchasesFilter
 						ref="purchasesFilter"
+						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -87,6 +89,7 @@ import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 const PurchasesFilter = () => import("@/components/Transactions/PurchasesFilter");
 
@@ -100,7 +103,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, transactionHelper],
+	mixins: [grid, urlFiltersHelper, transactionHelper],
 
 	data() {
 		return {
@@ -136,17 +139,18 @@ export default {
 			},
 			exportLoading: false,
 			filters: {},
+			locationsFilter: {},
 		};
 	},
 
 	created() {
 		this.fetchData();
+		this.setGridFilters();
 	},
 
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-
 			this.table.progress = null;
 
 			this.renameAdms();
@@ -158,6 +162,8 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
+				this.setGridFiltersToUrl();
+
 				this.table.data = [];
 				this.table.progress = 10;
 				this.table.total = totalCount;
@@ -246,15 +252,17 @@ export default {
 			this.exportLoading = false;
 		},
 
-		async onFiltersChange(selectedFilters) {
-			Object.keys(selectedFilters).forEach((key) => {
-				if (Array.isArray(selectedFilters[key])) {
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
+
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
 					this.filters[key] = [];
-					selectedFilters[key].forEach((value) => {
+					filters[key].forEach((value) => {
 						this.filters[key].push(value);
 					});
 				} else {
-					this.filters[key] = selectedFilters[key];
+					this.filters[key] = filters[key];
 				}
 			});
 			await this.fetchData();
