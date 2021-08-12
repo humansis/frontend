@@ -139,14 +139,9 @@ export default {
 				});
 		},
 
-		downloadTemplate() {
-			console.log(this.currentFormat);
-		},
+		downloadTemplate() {},
 
-		convertFile() {
-			// TODO on this method open modal
-			console.log("Convert File");
-		},
+		convertFile() {},
 
 		importFile() {
 			if (!this.dropFile || !this.selectedProject) {
