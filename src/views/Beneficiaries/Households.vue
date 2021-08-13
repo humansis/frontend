@@ -607,7 +607,7 @@ export default {
 		},
 
 		goToImportPage() {
-			this.$router.push({ name: "ImportHousehold" });
+			this.$router.push({ name: "Imports", query: { openModal: "1" } });
 		},
 
 		normalizeText(text) {

@@ -308,8 +308,8 @@ export default {
 
 			data.forEach((file) => {
 				const { missingColumns = [], violations = [] } = file || {};
-				columnsError += missingColumns.length;
-				columnsError += violations.length;
+				columnsError += missingColumns?.length ?? 0;
+				columnsError += violations?.length ?? 0;
 			});
 
 			this.columnsError = columnsError;
@@ -318,6 +318,8 @@ export default {
 		fetchImport(importId) {
 			ImportService.getDetailOfImport(importId).then(({ data }) => {
 				this.importDetail = data;
+				this.stepsRedirect(data.status);
+
 				this.fetchProject(data.projectId);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
@@ -340,6 +342,38 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 			});
+		},
+
+		stepsRedirect(status) {
+			switch (status) {
+				case consts.STATUS.CANCEL:
+				case consts.STATUS.IMPORTING:
+				case consts.STATUS.FINISH:
+					this.changeTab(4);
+					break;
+
+				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+				case consts.STATUS.SIMILARITY_CHECK:
+					this.changeTab(3);
+					break;
+
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case consts.STATUS.IDENTITY_CHECK:
+					this.changeTab(2);
+					break;
+
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+				case consts.STATUS.INTEGRITY_CHECK:
+					this.changeTab(1);
+					break;
+
+				case consts.STATUS.NEW:
+				default:
+					this.changeTab(0);
+			}
 		},
 
 		onCancelImport() {
@@ -426,11 +460,11 @@ export default {
 		},
 
 		async cancelImport() {
-			await this.changeImportState({
-				state: consts.STATE.CANCELED,
-				successMessage: "Canceled Successfully",
-				goNext: true,
-			});
+			await this.changeImportState(
+				consts.STATE.CANCELED,
+				"Canceled Successfully",
+				true,
+			);
 			await this.fetchData();
 		},
 	},

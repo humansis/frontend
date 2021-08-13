@@ -92,6 +92,14 @@ export default {
 		},
 	},
 
+	created() {
+		const { query: { openModal = "" } } = this.$route || {};
+
+		if (openModal === "1") {
+			this.addNewImport();
+		}
+	},
+
 	methods: {
 		addNewImport() {
 			this.importModal = {
