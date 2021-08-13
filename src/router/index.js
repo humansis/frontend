@@ -205,17 +205,6 @@ const routes = [
 								},
 							},
 							{
-								path: "import",
-								name: "ImportHousehold",
-								component: () => import(/* webpackChunkName: "ImportHousehold" */ "@/views/Beneficiaries/ImportHousehold"),
-								beforeEnter: ifAuthenticated,
-								meta: {
-									permissions: ["importBeneficiaries"],
-									breadcrumb: "Import Household",
-									description: "This page is where you can import beneficiaries. You can choose to import them using a file or the API (the external data source) to import all the household of a specific commune.",
-								},
-							},
-							{
 								path: "edit/:householdId",
 								name: "EditHousehold",
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
