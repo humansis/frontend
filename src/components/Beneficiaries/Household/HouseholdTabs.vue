@@ -426,16 +426,16 @@ export default {
 				};
 			} else if (typeOfLocation.code === "residence") {
 				address.residenceAddress = {
-					number,
-					street,
-					postcode,
+					number: number || null,
+					street: street || null,
+					postcode: postcode || null,
 					locationId,
 				};
 			} else if (typeOfLocation.code === "temporary_settlement") {
 				address.temporarySettlementAddress = {
-					number,
-					street,
-					postcode,
+					number: number || null,
+					street: street || null,
+					postcode: postcode || null,
 					locationId,
 				};
 			}
