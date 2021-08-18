@@ -7,7 +7,7 @@
 	>
 		<section
 			class="modal-card-body overflow-visible"
-			:style="{ 'min-height': selectOpened ? '400px' : '100px' }"
+			:style="{ 'min-height': selectOpened ? `${options.length * 50}px` : '100px' }"
 		>
 			<b-field label="Projects">
 				<MultiSelect
@@ -53,13 +53,13 @@ export default {
 		confirmButtonLoading: Boolean,
 		loading: Boolean,
 		options: Array,
-		selectedProject: Object,
 		isOpened: Boolean,
 	},
 
 	data() {
 		return {
 			selectOpened: false,
+			selectedProject: null,
 		};
 	},
 
@@ -68,7 +68,7 @@ export default {
 			this.$emit("close");
 		},
 		addHouseholdsToProject() {
-			this.$emit("confirm");
+			this.$emit("confirm", this.selectedProject);
 		},
 	},
 };

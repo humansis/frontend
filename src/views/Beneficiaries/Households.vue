@@ -49,9 +49,8 @@
 			:options="options.projects"
 			:is-opened="addToProjectModal.isOpened"
 			:confirm-button-loading="confirmButtonLoading"
-			:selected-project="selectedProject"
 			@close="closeAddToProjectModal"
-			@confirmed="addHouseholdsToProject"
+			@confirm="addHouseholdsToProject"
 		/>
 
 		<Modal
@@ -336,7 +335,8 @@ export default {
 			this.householdsSelects = !rows?.length;
 		},
 
-		async addHouseholdsToProject() {
+		async addHouseholdsToProject(project) {
+			this.selectedProject = project;
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
