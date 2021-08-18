@@ -5,6 +5,8 @@
 			ref="table"
 			has-reset-sort
 			has-search
+			:default-sort-direction="table.sortDirection"
+			:default-sort-key="table.sortColumn"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -144,8 +146,8 @@ export default {
 	},
 
 	created() {
-		this.fetchData();
 		this.setGridFilters();
+		this.fetchData();
 	},
 
 	methods: {
