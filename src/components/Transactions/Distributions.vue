@@ -5,10 +5,13 @@
 			ref="table"
 			has-reset-sort
 			has-search
+			:default-sort-direction="table.sortDirection"
+			:default-sort-key="table.sortColumn"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@resetSort="resetSort"
@@ -40,6 +43,7 @@
 				>
 					<DistributionsFilter
 						ref="distributionFilter"
+						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -87,6 +91,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
 
@@ -100,7 +105,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, transactionHelper],
+	mixins: [grid, urlFiltersHelper, transactionHelper],
 
 	data() {
 		return {
@@ -133,17 +138,18 @@ export default {
 			},
 			exportLoading: false,
 			filters: {},
+			locationsFilter: {},
 		};
 	},
 
 	created() {
+		this.setGridFilters();
 		this.fetchData();
 	},
 
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-
 			this.table.progress = null;
 
 			this.renameAdms();
@@ -155,6 +161,8 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
+				this.setGridFiltersToUrl();
+
 				this.table.data = [];
 				this.table.progress = 20;
 				this.table.total = totalCount;
@@ -237,15 +245,17 @@ export default {
 			this.exportLoading = false;
 		},
 
-		async onFiltersChange(selectedFilters) {
-			Object.keys(selectedFilters).forEach((key) => {
-				if (Array.isArray(selectedFilters[key])) {
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
+
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
 					this.filters[key] = [];
-					selectedFilters[key].forEach((value) => {
+					filters[key].forEach((value) => {
 						this.filters[key].push(value);
 					});
 				} else {
-					this.filters[key] = selectedFilters[key];
+					this.filters[key] = filters[key];
 				}
 			});
 			await this.fetchData();

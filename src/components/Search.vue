@@ -20,6 +20,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		searchPhrase: {
+			type: String,
+			default: "",
+		},
 	},
 
 	data() {
@@ -34,6 +38,12 @@ export default {
 		value() {
 			this.onSearch();
 		},
+	},
+
+	mounted() {
+		if (this.searchPhrase) {
+			this.value = this.searchPhrase;
+		}
 	},
 
 	methods: {

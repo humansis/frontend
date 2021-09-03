@@ -197,6 +197,7 @@ export default {
 			statisticsInterval: null,
 			importFiles: [],
 			activeStep: 0,
+			columnsError: 0,
 			steps: [
 				{ code: 0, slug: "start-import" },
 				{ code: 1, slug: "integrity-check" },
@@ -290,6 +291,7 @@ export default {
 				ImportService.getFilesInImport(importId)
 					.then(({ data: { data } }) => {
 						this.importFiles = data;
+						this.checkImportFiles(data);
 					}).catch((e) => {
 						if (e.message) {
 							Notification(
@@ -301,9 +303,23 @@ export default {
 			}
 		},
 
+		checkImportFiles(data) {
+			let columnsError = 0;
+
+			data.forEach((file) => {
+				const { missingColumns = [], violations = [] } = file || {};
+				columnsError += missingColumns?.length ?? 0;
+				columnsError += violations?.length ?? 0;
+			});
+
+			this.columnsError = columnsError;
+		},
+
 		fetchImport(importId) {
 			ImportService.getDetailOfImport(importId).then(({ data }) => {
 				this.importDetail = data;
+				this.stepsRedirect(data.status);
+
 				this.fetchProject(data.projectId);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
@@ -328,6 +344,38 @@ export default {
 			});
 		},
 
+		stepsRedirect(status) {
+			switch (status) {
+				case consts.STATUS.CANCEL:
+				case consts.STATUS.IMPORTING:
+				case consts.STATUS.FINISH:
+					this.changeTab(4);
+					break;
+
+				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+				case consts.STATUS.SIMILARITY_CHECK:
+					this.changeTab(3);
+					break;
+
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case consts.STATUS.IDENTITY_CHECK:
+					this.changeTab(2);
+					break;
+
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+				case consts.STATUS.INTEGRITY_CHECK:
+					this.changeTab(1);
+					break;
+
+				case consts.STATUS.NEW:
+				default:
+					this.changeTab(0);
+			}
+		},
+
 		onCancelImport() {
 			this.$buefy.dialog.confirm({
 				title: this.$t("Cancel Import"),
@@ -342,7 +390,10 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext }) {
-			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+			if (this.statistics.amountIntegrityFailed
+				|| this.statistics.amountDuplicities
+				|| this.columnsError
+			) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
@@ -351,6 +402,7 @@ export default {
 					hasIcon: true,
 					onConfirm: () => {
 						this.changeImportState(state, successMessage, goNext);
+						this.columnsError = 0;
 					},
 				});
 			} else {
@@ -408,11 +460,11 @@ export default {
 		},
 
 		async cancelImport() {
-			await this.onChangeImportState({
-				state: consts.STATE.CANCELED,
-				successMessage: "Canceled Successfully",
-				goNext: true,
-			});
+			await this.changeImportState(
+				consts.STATE.CANCELED,
+				"Canceled Successfully",
+				true,
+			);
 			await this.fetchData();
 		},
 	},
