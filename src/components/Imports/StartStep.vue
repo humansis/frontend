@@ -7,6 +7,7 @@
 					multiple
 					drag-drop
 					:disabled="!canStartImport"
+					:accept="allowedFileExtensions"
 				>
 					<section class="section">
 						<div class="content has-text-centered">
@@ -119,6 +120,10 @@ export default {
 		disabledStartImport() {
 			return this.importStatus === consts.STATUS.NEW
 				&& (this.dropFiles.length || this.importFiles.length);
+		},
+
+		allowedFileExtensions() {
+			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
 
 		isStatusNew() {

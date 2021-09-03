@@ -4,6 +4,8 @@
 		has-reset-sort
 		has-search
 		ref="table"
+		default-sort-direction="desc"
+		default-sort-key="createdAt"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -172,8 +174,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "createdAt",
 				searchPhrase: "",
 				filtersInProgress: [
 					consts.STATUS.INTEGRITY_CHECK, consts.STATUS.INTEGRITY_CHECK_CORRECT,

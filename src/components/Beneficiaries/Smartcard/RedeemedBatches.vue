@@ -106,7 +106,7 @@ export default {
 				this.table.data[key].date = this.$moment(item.date).format("DD-MM-YYYY HH:mm");
 				this.table.data[key].total = this.formatPrice(item.value, item.currency);
 				this.table.data[key].project = this.projects
-					.find((project) => project.id === item.projectId)?.name || this.$t("None");
+					.find((project) => project.id === item.projectId)?.name;
 			});
 		},
 

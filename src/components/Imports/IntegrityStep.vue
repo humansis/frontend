@@ -120,6 +120,7 @@
 						v-model="dropFiles"
 						multiple
 						drag-drop
+						:accept="allowedFileExtensions"
 					>
 						<section class="section">
 							<div class="content has-text-centered">
@@ -336,6 +337,10 @@ export default {
 				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
+		allowedFileExtensions() {
+			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},
@@ -453,7 +458,7 @@ export default {
 		},
 
 		getParsedArray(violations) {
-			return violations ? JSON.parse(violations) : [];
+			return violations || [];
 		},
 
 		cancelImport() {

@@ -11,13 +11,21 @@
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
 import transactionHelper from "@/mixins/transactionHelper";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 export default {
 	name: "PurchasesFilter",
 
 	components: { AdvancedFilter },
 
-	mixins: [transactionHelper],
+	mixins: [urlFiltersHelper, transactionHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => {},
+		},
+	},
 
 	data() {
 		return {
@@ -127,17 +135,57 @@ export default {
 		};
 	},
 
-	created() {
-		this.setLocationNames();
-		this.fetchProjects();
-		this.fetchModalityTypes();
-		this.fetchBeneficiaryTypes();
-		this.fetchProvinces();
-		this.fetchVendors();
-		this.fetchAssistance();
+	async created() {
+		await Promise.all([
+			this.setLocationNames(),
+			this.fetchProjects(),
+			this.fetchModalityTypes(),
+			this.fetchBeneficiaryTypes(),
+			this.fetchProvinces(),
+			this.fetchVendors(),
+			this.fetchAssistance(),
+		]);
+
+		await Promise.all([
+			this.setDefaultFilters(),
+			this.setDefaultLocationsFilter(),
+		]);
 	},
 
 	methods: {
+		setDefaultFilters() {
+			if (this.defaultFilters.assistances?.length) {
+				this.selectedFiltersOptions.distribution = this.filtersOptions
+					.distribution.data.find((item) => item.id === this.defaultFilters.assistances[0]);
+			}
+
+			if (this.defaultFilters.beneficiaryTypes?.length) {
+				this.selectedFiltersOptions.beneficiaryType	= this.filtersOptions
+					.beneficiaryType.data
+					.find((item) => item.code === this.defaultFilters.beneficiaryTypes[0]);
+			}
+
+			if (this.defaultFilters.projects?.length) {
+				this.selectedFiltersOptions.project	= this.filtersOptions
+					.project.data
+					.find((item) => item.id === this.defaultFilters.projects[0]);
+			}
+
+			if (this.defaultFilters.modalityTypes?.length) {
+				this.selectedFiltersOptions.commodity = this.filtersOptions
+					.commodity.data
+					.find((item) => item.code === this.defaultFilters.modalityTypes[0]);
+			}
+
+			if (this.defaultFilters.dateFrom) {
+				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
+			}
+
+			if (this.defaultFilters.dateFrom) {
+				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
+			}
+		},
+
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;
 			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
@@ -199,14 +247,22 @@ export default {
 			}
 
 			this.$emit("filtersChanged", {
-				projects: preparedFilters.project || [],
-				dateFrom: preparedFilters.dateFrom || null,
-				dateTo: preparedFilters.dateTo || null,
-				beneficiaryTypes: preparedFilters.beneficiaryType || [],
-				modalityTypes: preparedFilters.commodity || [],
-				assistances: preparedFilters.distribution || [],
-				vendors: preparedFilters.vendor || [],
-				locations: location ? [location] : [],
+				filters: {
+					projects: preparedFilters.project || [],
+					dateFrom: preparedFilters.dateFrom || null,
+					dateTo: preparedFilters.dateTo || null,
+					beneficiaryTypes: preparedFilters.beneficiaryType || [],
+					modalityTypes: preparedFilters.commodity || [],
+					assistances: preparedFilters.distribution || [],
+					vendors: preparedFilters.vendor || [],
+					locations: location ? [location] : [],
+				},
+				locationsFilter: {
+					adm1: preparedFilters.adm1,
+					adm2: preparedFilters.adm2,
+					adm3: preparedFilters.adm3,
+					adm4: preparedFilters.adm4,
+				},
 			});
 		},
 

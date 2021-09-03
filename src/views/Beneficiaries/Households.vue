@@ -43,38 +43,15 @@
 				</b-dropdown>
 			</div>
 		</div>
-		<Modal
-			can-cancel
-			:header="$t('Add Beneficiary to a Project')"
-			:active="addToProjectModal.isOpened"
+
+		<AddProjectToHouseholdModal
+			:loading="loading.projects"
+			:options="options.projects"
+			:is-opened="addToProjectModal.isOpened"
+			:confirm-button-loading="confirmButtonLoading"
 			@close="closeAddToProjectModal"
-		>
-			<section class="modal-card-body overflow-visible">
-				<b-field label="Projects">
-					<MultiSelect
-						v-model="selectedProject"
-						searchable
-						label="name"
-						track-by="id"
-						:placeholder="$t('Click to select')"
-						:loading="loading.projects"
-						:options="options.projects"
-					/>
-				</b-field>
-			</section>
-			<footer class="modal-card-foot">
-				<b-button  @click="closeAddToProjectModal">
-					{{ $t('Close') }}
-				</b-button>
-				<b-button
-					type="is-primary"
-					:loading="confirmButtonLoading"
-					@click="addHouseholdsToProject"
-				>
-					{{ $t('Confirm') }}
-				</b-button>
-			</footer>
-		</Modal>
+			@confirm="addHouseholdsToProject"
+		/>
 
 		<Modal
 			can-cancel
@@ -227,6 +204,8 @@ import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
+import AddProjectToHouseholdModal
+	from "../../components/Beneficiaries/Household/AddProjectToHouseholdModal";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -234,6 +213,7 @@ export default {
 	name: "HouseholdPage",
 
 	components: {
+		AddProjectToHouseholdModal,
 		HouseholdDetail,
 		Table,
 		ActionButton,
@@ -355,7 +335,8 @@ export default {
 			this.householdsSelects = !rows?.length;
 		},
 
-		async addHouseholdsToProject() {
+		async addHouseholdsToProject(project) {
+			this.selectedProject = project;
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
@@ -607,7 +588,7 @@ export default {
 		},
 
 		goToImportPage() {
-			this.$router.push({ name: "ImportHousehold" });
+			this.$router.push({ name: "Imports", query: { openModal: "1" } });
 		},
 
 		normalizeText(text) {
@@ -710,9 +691,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.modal-card-body {
-	min-height: 250px;
-}
-</style>

@@ -11,6 +11,7 @@
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
+								:search-phrase="searchPhrase"
 								:backend-search="backendSearching"
 								@search="onSearch"
 							/>
@@ -172,6 +173,10 @@ export default {
 		hasSearch: {
 			type: Boolean,
 			default: false,
+		},
+		searchPhrase: {
+			type: String,
+			default: "",
 		},
 		customPerPage: {
 			type: Number,
