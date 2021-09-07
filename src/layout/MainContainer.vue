@@ -79,7 +79,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["updateStoredUser"]),
+		...mapActions(["storeUser"]),
 
 		setLocales() {
 			this.$i18n.locale = this.language.key;
@@ -106,10 +106,8 @@ export default {
 				password: UsersService.saltPassword(salt, password),
 			}).then(({ status }) => {
 				if (status === 200) {
-					this.updateStoredUser({
-						attribute: "changePassword",
-						value: false,
-					});
+					this.storeUser({ ...this.user, changePassword: false });
+
 					Toast(
 						`${this.$t("Password Updated")}`,
 						"is-success",
