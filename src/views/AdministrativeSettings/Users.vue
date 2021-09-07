@@ -199,7 +199,6 @@ export default {
 				phoneNumber,
 				roles,
 				language,
-				updatePasswordOnNextLogin,
 			},
 		) {
 			this.userModel = {
@@ -215,7 +214,6 @@ export default {
 				phonePrefix,
 				phoneNumber,
 				language,
-				updatePasswordOnNextLogin,
 			};
 		},
 
