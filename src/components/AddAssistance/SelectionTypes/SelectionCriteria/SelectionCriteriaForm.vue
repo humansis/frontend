@@ -119,27 +119,6 @@
 				ref="locationForm"
 				:form-model="admModel"
 			/>
-
-			<b-button
-				slot="trigger"
-				:icon-right="advancedOptions ? 'arrow-up' : 'arrow-down'"
-				@click.prevent="advancedOptions = !advancedOptions"
-			>
-				{{ $t('Advanced Options') }}
-			</b-button>
-
-			<b-field
-				v-if="advancedOptions"
-				:label="$t('Score Weight')"
-				class="mt-3"
-			>
-				<b-numberinput
-					v-model="formModel.scoreWeight"
-					expanded
-					type="is-dark"
-					:controls="false"
-				/>
-			</b-field>
 		</section>
 
 		<footer class="modal-card-foot">
