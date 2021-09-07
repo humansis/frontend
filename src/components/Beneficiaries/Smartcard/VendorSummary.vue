@@ -67,6 +67,13 @@
 					Close
 				</b-button>
 				<b-button
+					v-if="redemptionSummary"
+					type="is-primary"
+					:loading="legacyPrintLoading"
+					:label="$t('Legacy Print')"
+					@click.native="legacyPrint"
+				/>
+				<b-button
 					v-if="redemptionSummary && printButtonVisible"
 					type="is-primary"
 					:loading="printLoading"
@@ -219,6 +226,22 @@ export default {
 					if (e.message) Notification(`${this.$t("Print")} ${e}`, "is-danger");
 				});
 			this.printLoading = false;
+		},
+
+		async legacyPrint() {
+			this.legacyPrintLoading = true;
+			await SmartcardService.legacyPrintSmartcardBatches(this.redemptionBatch.id)
+				.then(({ data }) => {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `Legacy_Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
+					link.click();
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Legacy Print")} ${e}`, "is-danger");
+				});
+			this.legacyPrintLoading = false;
 		},
 	},
 };
