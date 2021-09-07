@@ -98,7 +98,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ type: "text", key: "fullname", label: "Donor Name", width: "500", sortable: true },
-					{ type: "text", key: "shortname", width: "200", sortable: true },
+					{ type: "text", key: "shortname", label: "Short Name", width: "200", sortable: true },
 					{ type: "image", key: "logo", label: "Organization Logo", width: "200" },
 					{ type: "text", key: "notes", width: "200" },
 				],

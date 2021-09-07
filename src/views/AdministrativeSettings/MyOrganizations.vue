@@ -67,9 +67,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.myOrganizationModal.isDetail) {
-				result = this.$t("Detail of MyOrganization");
+				result = this.$t("Detail of My Organization");
 			} else if (this.myOrganizationModal.isEditing) {
-				result = this.$t("Edit MyOrganization");
+				result = this.$t("Edit My Organization");
 			}
 			return result;
 		},
