@@ -12,7 +12,7 @@
 				:scores="beneficiariesScores"
 			/>
 		</Modal>
-		<h2 class="title space-between mb-0">
+		<h3 class="title is-4 space-between mb-0">
 			{{ $t('Selection Criteria') }}
 			<b-button
 				class="mb-5"
@@ -22,7 +22,7 @@
 			>
 				{{ $t('Add Group') }}
 			</b-button>
-		</h2>
+		</h3>
 		<Modal
 			can-cancel
 			:header="$t('Create New Criteria')"
