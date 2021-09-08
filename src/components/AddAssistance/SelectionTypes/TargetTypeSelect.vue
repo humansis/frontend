@@ -1,6 +1,6 @@
 <template>
 	<div class="mt-5">
-		<h2 class="subtitle">{{ title }}</h2>
+		<h3 class="title is-4">{{ title }}</h3>
 		<form class="box">
 			<b-field
 				v-if="visible.communities"

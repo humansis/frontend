@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="title space-between mb-0">
+		<h3 class="title is-4 space-between mb-0">
 			{{ $t('Distributed Commodity') }}
 			<b-button
 				class="mb-5"
@@ -10,7 +10,7 @@
 			>
 				{{ $t('Add') }}
 			</b-button>
-		</h2>
+		</h3>
 		<Modal
 			can-cancel
 			:header="$t('Create New Commodity')"

@@ -1,8 +1,6 @@
 <template>
 	<div>
-		<h1 class="title">{{ $t('New Assistance') }}</h1>
-
-		<h2 class="subtitle">{{ $t('Location and Date') }}</h2>
+		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
 		<div class="box">
 			<LocationForm
 				ref="locationForm"
@@ -21,7 +19,7 @@
 			</b-field>
 		</div>
 
-		<h2 class="subtitle">{{ $t('Target') }}</h2>
+		<h3 class="title is-4">{{ $t('Target') }}</h3>
 		<div class="box">
 			<b-field
 				:label="$t('Sector')"

@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<h1 class="title">{{ $t('New Assistance') }}</h1>
 		<div class="columns">
 			<div class="column">
 				<NewAssistanceForm

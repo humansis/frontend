@@ -76,6 +76,8 @@ export default {
 	},
 
 	[CONST.LOGOUT]: (state) => {
+		state.lastUsername = state.user.username;
+
 		state.user = {
 			iat: null,
 			exp: null,
