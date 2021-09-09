@@ -61,7 +61,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Start date')"
+				:label="$t('Start Date')"
 				:type="validateType('startDate')"
 				:message="validateMsg('startDate')"
 			>

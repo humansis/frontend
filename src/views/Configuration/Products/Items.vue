@@ -1,22 +1,5 @@
 <template>
 	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Products') }}</h1>
-			</div>
-
-			<div class="level-right">
-				<b-button
-					v-if="userCan.addEditProducts"
-					type="is-primary"
-					icon-left="plus"
-					@click="addNewProduct"
-				>
-					{{ $t('Add') }}
-				</b-button>
-			</div>
-		</div>
-
 		<Modal
 			can-cancel
 			:active="productModal.isOpened"
@@ -27,6 +10,7 @@
 			<ProductForm
 				close-button
 				class="modal-card"
+				:categories="categories"
 				:formModel="productModel"
 				:editing="productModal.isEditing"
 				:form-disabled="productModal.isDetail"
@@ -35,9 +19,18 @@
 				@formClosed="closeProductModal"
 			/>
 		</Modal>
-
+		<b-button
+			v-if="userCan.addEditProducts"
+			class="mb-4"
+			type="is-primary"
+			icon-left="plus"
+			@click="addNewProduct"
+		>
+			{{ $t('Add') }}
+		</b-button>
 		<ProductsList
 			ref="productsList"
+			:categories="categories"
 			@onRemove="onRemoveProduct"
 			@onShowEdit="editProduct"
 			@onShowDetail="showDetail"
@@ -47,15 +40,16 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/Configuration/ProductsList";
-import ProductForm from "@/components/Configuration/ProductForm";
+import ProductsList from "@/components/Configuration/Products/ProductsList";
+import ProductForm from "@/components/Configuration/Products/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import currencies from "@/utils/currencies";
 
 export default {
-	name: "ProductPage",
+	name: "Items",
 
 	components: {
 		ProductsList,
@@ -77,9 +71,14 @@ export default {
 				id: null,
 				iso3: "",
 				name: "",
+				productCategoryId: null,
 				unit: "",
+				unitPrice: 0,
+				currency: "",
 				image: "",
 			},
+			categories: [],
+			currencies,
 		};
 	},
 
@@ -99,7 +98,19 @@ export default {
 		...mapState(["country"]),
 	},
 
+	mounted() {
+		this.fetchCategories();
+	},
+
 	methods: {
+		async fetchCategories() {
+			await ProductService.getListOfCategories(1, 1000).then(({ data }) => {
+				this.categories = data;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+			});
+		},
+
 		showDetail(product) {
 			this.mapToFormModel(product);
 			this.productModal = {
@@ -115,17 +126,26 @@ export default {
 				id,
 				iso3,
 				name,
+				productCategoryId,
 				image,
 				unit,
+				unitPrice,
+				currency,
 			},
 		) {
+			const productCategory = this.categories.find((item) => productCategoryId === item.id);
+			const productCurrency = this.currencies.find((item) => currency === item.value);
+
 			this.productModel = {
 				...this.productModel,
 				id,
 				iso3,
 				name,
+				productCategoryId: productCategory,
 				image,
 				unit,
+				unitPrice,
+				currency: productCurrency,
 			};
 		},
 
@@ -155,8 +175,11 @@ export default {
 				...this.productModel,
 				id: null,
 				name: "",
+				productCategoryId: null,
 				image: null,
 				unit: "",
+				unitPrice: 0,
+				currency: "",
 			};
 		},
 
@@ -165,17 +188,24 @@ export default {
 				id,
 				iso3,
 				name,
+				productCategoryId,
 				image,
 				unit,
+				unitPrice,
+				currency,
 				uploadedImage,
 			} = productForm;
+
 			const productBody = {
 				name,
+				productCategoryId: productCategoryId.id,
 				unit,
+				unitPrice,
+				currency: currency?.value || "",
 				iso3: iso3 || this.country.iso3,
 			};
 
-			const imageUrl = await this.uploadImage(uploadedImage);
+			const imageUrl = await this.uploadProductImage(uploadedImage);
 			productBody.image = imageUrl || image;
 
 			if (this.productModal.isEditing && id) {
@@ -215,9 +245,9 @@ export default {
 			});
 		},
 
-		async uploadImage(image) {
+		async uploadProductImage(image) {
 			if (image) {
-				const { data: { url } } = await ProductService.uploadImage(image);
+				const { data: { url } } = await ProductService.uploadProductImage(image);
 				return url;
 			}
 			return null;

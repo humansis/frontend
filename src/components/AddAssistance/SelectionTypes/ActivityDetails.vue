@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2 class="subtitle">{{ $t('Activity Details') }}</h2>
+		<h3 class="title is-4">{{ $t('Activity Details') }}</h3>
 		<form class="box">
 			<b-field
 				v-if="visible.activityDescription"

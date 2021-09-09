@@ -40,11 +40,11 @@
 
 			<b-field
 				v-if="formDisabled && formModel.logo"
-				:label="$t('Image')"
+				:label="$t('Organization Logo')"
 			>
 				<b-image
-					alt="Image"
-					ratio="601by235"
+					alt="Organization Logo"
+					ratio="300by300"
 					:src="formModel.logo"
 				/>
 			</b-field>
