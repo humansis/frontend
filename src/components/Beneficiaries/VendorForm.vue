@@ -39,17 +39,29 @@
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					{{ $t('Shop') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.shop"
-					:disabled="formDisabled"
-				/>
+			<b-field
+				:label="$t('Allowed Category Types')"
+				:type="validateType('categoryType')"
+				:message="validateMsg('categoryType')"
+				:addons="false"
+			>
+				<div
+					v-for="({code, value}) of options.categoryTypes"
+					class="mb-3"
+					:key="`category-type-${code}`"
+				>
+					<b-checkbox
+						v-model="formModel.categoryType"
+						:native-value="code"
+						:disabled="formDisabled"
+						@blur="validate('categoryType')"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ value }}
+							<SvgIcon class="ml-2" :items="[{code, value}]" />
+						</div>
+					</b-checkbox>
+				</div>
 			</b-field>
 
 			<b-field>
@@ -147,11 +159,15 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import Validation from "@/mixins/validation";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "VendorForm",
 
-	components: { LocationForm },
+	components: {
+		LocationForm,
+		SvgIcon,
+	},
 
 	mixins: [Validation],
 
@@ -172,6 +188,7 @@ export default {
 				return !this.isEditing;
 			}) },
 			name: { required },
+			categoryType: { required },
 			shop: {},
 			addressStreet: {},
 			addressNumber: {},
@@ -188,6 +205,22 @@ export default {
 	data() {
 		return {
 			mapping: true,
+			options: {
+				categoryTypes: [
+					{
+						code: "Food",
+						value: "Food",
+					},
+					{
+						code: "Non-Food",
+						value: "Non-Food",
+					},
+					{
+						code: "Cashback",
+						value: "Cashback",
+					},
+				],
+			},
 		};
 	},
 

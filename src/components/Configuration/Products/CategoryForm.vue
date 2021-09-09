@@ -8,23 +8,36 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					:disabled="formDisabled || editing"
+					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					{{ $t('Unit') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.unit"
-					:disabled="formDisabled"
-					@blur="validate('unit')"
-				/>
+			<b-field
+				:label="$t('Type')"
+				:type="validateType('type')"
+				:message="validateMsg('type')"
+				:addons="false"
+			>
+				<div
+					v-for="({code, value}) of options.categoryTypes"
+					class="mb-3"
+					:key="`category-type-${code}`"
+				>
+					<b-radio
+						v-model="formModel.type"
+						:native-value="code"
+						:disabled="formDisabled"
+						@blur="validate('type')"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ value }}
+							<SvgIcon class="ml-2" :items="[{code, value}]" />
+						</div>
+
+					</b-radio>
+
+				</div>
 			</b-field>
 
 			<b-field
@@ -53,7 +66,6 @@
 					ratio="601by235"
 					:src="formModel.image"
 				/>
-
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
@@ -77,11 +89,38 @@
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
-	name: "ProductForm",
+	name: "CategoryForm",
+
+	components: {
+		SvgIcon,
+	},
 
 	mixins: [Validation],
+
+	data() {
+		return {
+			options: {
+				// TODO Get this from API (change it everywhere)
+				categoryTypes: [
+					{
+						code: "Food",
+						value: "Food",
+					},
+					{
+						code: "Non-Food",
+						value: "Non-Food",
+					},
+					{
+						code: "Cashback",
+						value: "Cashback",
+					},
+				],
+			},
+		};
+	},
 
 	props: {
 		formModel: Object,
@@ -94,7 +133,7 @@ export default {
 	validations: {
 		formModel: {
 			name: { required },
-			unit: {},
+			type: { required },
 			uploadedImage: { required: requiredIf((form) => !form.image) },
 		},
 	},
