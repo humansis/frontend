@@ -41,6 +41,7 @@
 					tooltip="Edit"
 					@click="showEdit(props.row.id)"
 				/>
+				<!-- TODO remove this after PUT and DELETE will be available on BE
 				<SafeDelete
 					v-if="userCan.addEditProducts"
 					icon="trash"
@@ -49,39 +50,27 @@
 					:id="props.row.id"
 					@submitted="remove"
 				/>
+				-->
 			</div>
 		</b-table-column>
-		<template #export>
-			<ExportButton
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@onExport="exportProducts"
-			/>
-		</template>
 	</Table>
 </template>
 
 <script>
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import ProductService from "@/services/ProductService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "ProductsList",
+	name: "CategoriesList",
 
 	components: {
-		ExportButton,
 		ColumnField,
-		SafeDelete,
 		Table,
 		ActionButton,
 	},
@@ -96,7 +85,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "name", width: "400", sortable: true },
-					{ key: "unit", width: "200", sortable: true },
+					{ key: "type", width: "150", type: "svgIcon", sortable: true },
 					{ type: "image", key: "image", width: "100" },
 				],
 				total: 0,
@@ -115,12 +104,12 @@ export default {
 	computed: {
 		modalHeader() {
 			let result = "";
-			if (this.productModal.isDetail) {
-				result = this.$t("Detail of Product");
-			} else if (this.productModal.isEditing) {
-				result = this.$t("Edit Product");
+			if (this.categoryModal.isDetail) {
+				result = this.$t("Detail of Category");
+			} else if (this.categoryModal.isEditing) {
+				result = this.$t("Edit Category");
 			} else {
-				result = this.$t("Create New Product");
+				result = this.$t("Create New Category");
 			}
 			return result;
 		},
@@ -135,35 +124,27 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await ProductService.getListOfProducts(
+			await ProductService.getListOfCategories(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 			).then((response) => {
-				this.table.data = response.data;
+				this.prepareDataForTable(response.data);
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Categories")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		async exportProducts(format) {
-			this.exportLoading = true;
-			await ProductService.exportProducts(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `products.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async prepareDataForTable(data) {
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+
+				this.table.data[key].type = [{ code: item.type, value: item.type }];
+			});
 		},
 	},
 };

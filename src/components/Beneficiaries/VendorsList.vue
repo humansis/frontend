@@ -15,12 +15,15 @@
 		@search="onSearch"
 	>
 		<template v-for="column in table.columns">
-			<b-table-column v-bind="column" sortable :key="column.id">
-				<template v-slot="props">
-					{{ props.row[column.field] }}
-				</template>
+			<b-table-column
+				v-bind="column"
+				v-slot="props"
+				:key="column.id"
+			>
+				<ColumnField :column="column" :data="props" />
 			</b-table-column>
 		</template>
+
 		<b-table-column
 			v-slot="props"
 			width="190"
@@ -80,6 +83,7 @@ import UsersService from "@/services/UsersService";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
 
 export default {
 	name: "VendorsList",
@@ -89,6 +93,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ColumnField,
 	},
 
 	mixins: [grid, baseHelper, permissions],
@@ -102,6 +107,7 @@ export default {
 				visibleColumns: [
 					{ key: "username" },
 					{ key: "name" },
+					{ key: "categoryType", width: "200", type: "svgIcon" },
 					{ key: "vendorNo", label: this.$t("Vendor No.") },
 					{ key: "contractNo", label: this.$t("Contract No.") },
 					{ key: "addressNumber" },
@@ -149,7 +155,26 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
-			this.table.data = data;
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+
+				const categoryTypes = [];
+
+				if (item.canSellFood) {
+					categoryTypes.push({ code: "Food", value: "Food" });
+				}
+
+				if (item.canSellNonFood) {
+					categoryTypes.push({ code: "Non-Food", value: "Non-Food" });
+				}
+
+				if (item.canSellCashback) {
+					categoryTypes.push({ code: "Cashback", value: "Cashback" });
+				}
+
+				this.table.data[key].categoryType = categoryTypes;
+			});
+
 			this.getUsers(data)
 				.then((users) => {
 					this.table.data.map(async (item, key) => {
