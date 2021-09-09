@@ -102,6 +102,7 @@ export default {
 				email: "",
 				password: "",
 				name: "",
+				categoryType: [],
 				shop: "",
 				addressStreet: "",
 				addressNumber: "",
@@ -170,6 +171,7 @@ export default {
 				password: "",
 				shop: "",
 				name: "",
+				categoryType: [],
 				addressStreet: "",
 				addressNumber: "",
 				addressPostcode: "",
@@ -223,15 +225,34 @@ export default {
 				userId,
 				vendorNo,
 				contractNo,
+				canSellFood,
+				canSellNonFood,
+				canSellCashback,
 			},
 		) {
 			const { data } = await UsersService.getDetailOfUser(userId);
+
+			const categoryType = [];
+
+			if (canSellFood) {
+				categoryType.push("Food");
+			}
+
+			if (canSellNonFood) {
+				categoryType.push("Non-Food");
+			}
+
+			if (canSellCashback) {
+				categoryType.push("Cashback");
+			}
+
 			this.vendorModel = {
 				...this.vendorModel,
 				id,
 				shop,
 				username: data.username,
 				name,
+				categoryType,
 				addressStreet,
 				addressNumber,
 				addressPostcode,
@@ -254,6 +275,7 @@ export default {
 				shop,
 				password,
 				name,
+				categoryType,
 				addressStreet,
 				addressNumber,
 				addressPostcode,
@@ -271,8 +293,12 @@ export default {
 				vendorNo,
 				contractNo,
 				shop,
+				canSellFood: categoryType.includes("Food"),
+				canSellNonFood: categoryType.includes("Non-Food"),
+				canSellCashback: categoryType.includes("Cashback"),
 				userId: user?.id || null,
 			};
+
 			const userBody = {
 				...user,
 				username,

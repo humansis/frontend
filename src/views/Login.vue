@@ -115,8 +115,11 @@ export default {
 
 	computed: {
 		...mapState([
+			"user",
+			"lastUsername",
 			"languages",
 			"language",
+			"country",
 			"translations",
 		]),
 	},
@@ -138,6 +141,8 @@ export default {
 			if (this.$v.$invalid) return;
 
 			this.loginButtonLoading = true;
+
+			const lastLoggedUsername = this.user.username || this.lastUsername;
 
 			await LoginService.logUserIn(this.formModel).then(async (response) => {
 				if (response.status === 200) {
@@ -162,14 +167,28 @@ export default {
 					const language = this.languages.find(({ key }) => key === userDetail?.language)
 						|| CONST.DEFAULT_LANGUAGE;
 
-					await this.setLocales(language.key);
-					await this.storeLanguage(language);
+					if (lastLoggedUsername === user.username) {
+						await this.setLocales(this.language.key);
+					} else {
+						await this.setLocales(language.key);
+					}
+
+					if (lastLoggedUsername === user.username) {
+						await this.storeLanguage(this.language);
+					} else {
+						await this.storeLanguage(language);
+					}
 
 					const countries = await this.fetchUsersCountries(userId);
 
 					if (countries.length) {
 						await this.storeCountries(countries);
-						await this.storeCountry(countries[0]);
+
+						if (lastLoggedUsername === user.username) {
+							await this.storeCountry(this.country);
+						} else {
+							await this.storeCountry(countries[0]);
+						}
 					}
 
 					const { data: { privileges } } = user.roles[0]

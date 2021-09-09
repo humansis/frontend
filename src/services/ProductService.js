@@ -50,7 +50,7 @@ export default {
 		return { data, status };
 	},
 
-	async uploadImage(image) {
+	async uploadProductImage(image) {
 		const formData = new FormData();
 		formData.append("file", image);
 
@@ -68,4 +68,59 @@ export default {
 		const { data } = await download({ uri: `products/exports?${formatText}` });
 		return { data };
 	},
+
+	async getListOfCategories(page, size, sort, search = null) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `product-categories?${pageText + sizeText + sortText + fulltext}`,
+		});
+		return { data, totalCount };
+	},
+
+	async getCategories(ids) {
+		const idsText = ids ? idsToUri(ids) : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `product-categories?${idsText}`,
+		});
+		return { data, totalCount };
+	},
+
+	async createCategory(body) {
+		const { data, status } = await fetcher({
+			uri: "product-categories", method: "POST", body,
+		});
+		return { data, status };
+	},
+
+	async updateCategory(id, body) {
+		const { data, status } = await fetcher({
+			uri: `product-categories/${id}`, method: "POST", body,
+		});
+		return { data, status };
+	},
+
+	async removeCategory(id) {
+		const { data, status } = await fetcher({
+			uri: `product-categories/${id}`, method: "DELETE",
+		});
+		return { data, status };
+	},
+
+	async uploadCategoryImage(image) {
+		const formData = new FormData();
+		formData.append("file", image);
+
+		const { data, status } = await upload({
+			uri: `products/images`,
+			method: "POST",
+			body: formData,
+		});
+		return { data, status };
+	},
+
 };
