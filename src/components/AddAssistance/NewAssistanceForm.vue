@@ -7,9 +7,19 @@
 				:form-model="formModel"
 				@mapped="$emit('updatedData', formModel)"
 			/>
-			<b-field :label="$t('Date of Assistance')">
+			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					:placeholder="$t('Click to select')"
+				/>
+			</b-field>
+			<b-field :label="$t('Expiration Date')">
+				<b-datepicker
+					v-model="formModel.dateExpiration"
 					show-week-number
 					locale="en-CA"
 					icon="calendar-day"
@@ -162,6 +172,7 @@ export default {
 				adm4Id: null,
 				locationId: null,
 				dateOfAssistance: new Date(),
+				dateExpiration: new Date(),
 				sector: null,
 				subsector: null,
 				targetType: null,
@@ -185,6 +196,7 @@ export default {
 	validations: {
 		formModel: {
 			dateOfAssistance: { required },
+			dateExpiration: { required },
 			sector: { required },
 			subsector: { required },
 			targetType: { required },

@@ -12,9 +12,21 @@
 				:form-model="formModel"
 			/>
 
-			<b-field :label="$t('Date of Assistance')">
+			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateDistribution"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					:placeholder="$t('Click to select')"
+					:disabled="!editing"
+				/>
+			</b-field>
+
+			<b-field :label="$t('Expiration Date')">
+				<b-datepicker
+					v-model="formModel.dateExpiration"
 					show-week-number
 					locale="en-CA"
 					icon="calendar-day"
