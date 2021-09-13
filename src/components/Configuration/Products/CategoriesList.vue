@@ -41,7 +41,6 @@
 					tooltip="Edit"
 					@click="showEdit(props.row.id)"
 				/>
-				<!-- TODO remove this after PUT and DELETE will be available on BE
 				<SafeDelete
 					v-if="userCan.addEditProducts"
 					icon="trash"
@@ -50,7 +49,6 @@
 					:id="props.row.id"
 					@submitted="remove"
 				/>
-				-->
 			</div>
 		</b-table-column>
 	</Table>
@@ -65,6 +63,7 @@ import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import SafeDelete from "@/components/SafeDelete";
 
 export default {
 	name: "CategoriesList",
@@ -73,6 +72,7 @@ export default {
 		ColumnField,
 		Table,
 		ActionButton,
+		SafeDelete,
 	},
 
 	mixins: [grid, permissions],
