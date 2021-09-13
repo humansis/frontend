@@ -14,9 +14,12 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
+			<!--
+			TODO Uncomment this after dateExpiration implementation in 3.2
 			<b-field :label="$t('Expiration Date')">
 				<b-datepicker
 					v-model="formModel.dateExpiration"
@@ -27,6 +30,7 @@
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
+			-->
 		</div>
 
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
@@ -163,6 +167,13 @@ export default {
 
 	mixins: [Validation],
 
+	props: {
+		project: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
 	data() {
 		return {
 			formModel: {
@@ -216,6 +227,13 @@ export default {
 
 	updated() {
 		this.$emit("updatedData", this.formModel);
+	},
+
+	computed: {
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return new Date(endDate);
+		},
 	},
 
 	methods: {
