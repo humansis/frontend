@@ -45,6 +45,7 @@
 					:entity="$t('User')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
+					:disabled="isLoggedUser(props.row.id)"
 					@submitted="remove"
 				/>
 			</div>
@@ -62,6 +63,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
@@ -105,6 +107,10 @@ export default {
 				searchPhrase: "",
 			},
 		};
+	},
+
+	computed: {
+		...mapState(["user"]),
 	},
 
 	watch: {
@@ -151,6 +157,10 @@ export default {
 		prepareRights(rights) {
 			const role = this.roles.find((item) => item.code === rights[0]);
 			return role?.name;
+		},
+
+		isLoggedUser(id) {
+			return id === this.user?.userId;
 		},
 
 		async fetchRoles() {
