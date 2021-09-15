@@ -15,9 +15,9 @@ export default {
 		return { data, status };
 	},
 
-	async printMyOrganization(id) {
+	async printMyOrganization() {
 		const { data, status } = await fetcher({
-			uri: `organizations/${id}/print/template`,
+			uri: `organization/print/template`,
 		});
 		return { data, status };
 	},
