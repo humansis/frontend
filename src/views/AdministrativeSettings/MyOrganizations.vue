@@ -172,8 +172,8 @@ export default {
 			}
 		},
 
-		async printMyOrganization(id) {
-			await MyOrganizationsService.printMyOrganization(id)
+		async printMyOrganization() {
+			await MyOrganizationsService.printMyOrganization()
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Download Is Starting"), "is-success");

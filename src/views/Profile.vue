@@ -95,6 +95,7 @@
 							</b-button>
 						</div>
 					</form>
+					<!-- Disabled part with 2FA
 					<section>
 						<p class="is-size-4 my-5">{{ $t('Two Factor Authentication') }}</p>
 						<div class="has-text-centered">
@@ -120,6 +121,7 @@
 							</b-button>
 						</div>
 					</section>
+					-->
 				</section>
 			</div>
 		</div>

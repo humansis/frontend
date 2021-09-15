@@ -31,6 +31,7 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
+							:active="isProjectsActive()"
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
@@ -270,6 +271,17 @@ export default {
 		if (this.isAsideExpanded) {
 			this.$store.commit("asideStateToggle");
 		}
+	},
+
+	methods: {
+		isProjectsActive() {
+			const { name } = this.$route;
+
+			return name === "Project"
+				|| name === "AssistanceEdit"
+				|| name === "AssistanceDetail"
+				|| name === "AddAssistance";
+		},
 	},
 };
 </script>

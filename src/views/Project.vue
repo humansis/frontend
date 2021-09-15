@@ -80,6 +80,7 @@ export default {
 				adm3: [],
 				adm4: [],
 				dateDistribution: new Date(),
+				dateExpiration: new Date(),
 				target: "",
 			},
 		};
@@ -155,6 +156,7 @@ export default {
 				id,
 				commodityIds,
 				dateDistribution,
+				dateExpiration,
 				name,
 				projectId,
 				target,
@@ -167,6 +169,7 @@ export default {
 				adm3Id,
 				adm4Id,
 				dateDistribution: new Date(dateDistribution),
+				dateExpiration: new Date(dateExpiration),
 				target,
 				id,
 				commodityIds,

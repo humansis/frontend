@@ -5,6 +5,7 @@
 			<div class="column">
 				<NewAssistanceForm
 					ref="newAssistanceForm"
+					:project="project"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -61,6 +62,7 @@ import { Notification, Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
 import consts from "@/utils/assistanceConst";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "AddAssistance",
@@ -75,6 +77,7 @@ export default {
 
 	data() {
 		return {
+			project: {},
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -87,6 +90,7 @@ export default {
 			targetType: "",
 			assistanceBody: {
 				dateDistribution: "",
+				dateExpiration: "",
 				description: "",
 				householdsTargeted: null,
 				individualsTargeted: null,
@@ -121,6 +125,7 @@ export default {
 				individualsTargeted: this.visibleComponents.individualsTargeted,
 			};
 		},
+
 		targetTypeSelectVisible() {
 			return {
 				communities: this.visibleComponents.communities,
@@ -149,9 +154,25 @@ export default {
 					this.$router.push({ name: "NotFound" });
 				});
 		}
+
+		await this.fetchProject();
 	},
 
 	methods: {
+		async fetchProject() {
+			const { projectId } = this.$route.params;
+
+			if (projectId) {
+				await ProjectService.getDetailOfProject(projectId)
+					.then(({ data }) => {
+						this.project = data;
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
+					});
+			}
+		},
+
 		validateNewAssistance() {
 			if (this.$refs.newAssistanceForm.submit()) {
 				const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
@@ -228,6 +249,7 @@ export default {
 				adm3Id: assistance.adm3Id,
 				adm4Id: assistance.adm4Id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
+				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
 				sector: assistance.sector,
 				subsector: assistance.subsector,
@@ -338,6 +360,8 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				dateDistribution: dateOfAssistance.toISOString(),
+				// TODO Uncomment this after dateExpiration implementation in 3.2
+				// dateExpiration: dateExpiration ? dateExpiration.toISOString() : null,
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,

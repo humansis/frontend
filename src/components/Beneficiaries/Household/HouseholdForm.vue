@@ -44,7 +44,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Income Level') }}</span>
+						<span>{{ $t('Income') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
