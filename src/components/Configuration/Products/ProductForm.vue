@@ -50,10 +50,15 @@
 					:type="validateType('unitPrice')"
 					:message="validateMsg('unitPrice')"
 				>
-					<b-input
+					<b-numberinput
 						v-model="formModel.unitPrice"
+						expanded
+						min="0.01"
+						step="0.01"
+						type="is-dark"
 						:disabled="formDisabled"
-						@blur="validate('unitPrice')"
+						:controls="false"
+						@input="validate('unitPrice')"
 					/>
 				</b-field>
 
@@ -124,7 +129,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf, minValue } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import currencies from "@/utils/currencies";
 
@@ -158,7 +163,10 @@ export default {
 			name: { required },
 			productCategoryId: { required },
 			currency: { required: requiredIf((form) => form.productCategoryId.name === "Cashback") },
-			unitPrice: { required: requiredIf((form) => form.productCategoryId.name === "Cashback") },
+			unitPrice: {
+				required: requiredIf((form) => form.productCategoryId.name === "Cashback"),
+				minValue: minValue(0),
+			},
 			uploadedImage: { required: requiredIf((form) => !form.image) },
 		},
 	},
