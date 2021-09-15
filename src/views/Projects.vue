@@ -87,6 +87,8 @@ export default {
 				targetTypes: [],
 				selectedTargetType: [],
 				totalTarget: 0,
+				localInvoiceAddress: "",
+				englishInvoiceAddress: "",
 				notes: "",
 			},
 		};
@@ -141,6 +143,8 @@ export default {
 				selectedDonors: [],
 				selectedTargetType: [],
 				totalTarget: 0,
+				localInvoiceAddress: "",
+				englishInvoiceAddress: "",
 				notes: "",
 			};
 		},
@@ -168,6 +172,8 @@ export default {
 				donorIds,
 				target: totalTarget,
 				notes,
+				localInvoiceAddress,
+				englishInvoiceAddress,
 				startDate,
 				endDate,
 			},
@@ -187,6 +193,8 @@ export default {
 				selectedDonors: [],
 				selectedTargetType: [],
 				totalTarget,
+				localInvoiceAddress,
+				englishInvoiceAddress,
 				notes,
 			};
 		},
@@ -203,12 +211,16 @@ export default {
 				selectedDonors,
 				selectedTargetType: { code: targetType },
 				totalTarget: target,
+				localInvoiceAddress,
+				englishInvoiceAddress,
 				notes,
 			} = projectForm;
 			const projectBody = {
 				iso3: iso3 || this.country.iso3,
 				name,
 				internalId,
+				localInvoiceAddress,
+				englishInvoiceAddress,
 				notes,
 				target,
 				targetType,
