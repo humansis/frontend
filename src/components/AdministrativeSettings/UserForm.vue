@@ -291,11 +291,13 @@ export default {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 
-			await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
-				this.options.projects = [...this.options.projects, ...data];
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-			});
+			if (this.formModel.id) {
+				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
+					this.options.projects = [...this.options.projects, ...data];
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+			}
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
 			this.projectsLoading = false;
