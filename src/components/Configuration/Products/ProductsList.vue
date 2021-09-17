@@ -103,7 +103,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "name", width: "400", sortable: true },
-					{ key: "category", type: "image", width: "400", sortable: true, sortKey: "productCategoryId" },
+					{ key: "category", type: "productCategoryImage", width: "400", sortable: true, sortKey: "productCategoryId" },
 					{ key: "unit", width: "200", sortable: true },
 					{ type: "image", key: "image", width: "100" },
 				],
@@ -162,8 +162,14 @@ export default {
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].category = this.categories?.find(({ id }) => id === item
-					.productCategoryId)?.image;
+
+				const categoryImage = this.categories?.find(({ id }) => id === item
+					.productCategoryId)?.image || "";
+
+				this.table.data[key].category = {
+					image: categoryImage,
+					icon: [{ code: "Food", value: "Food" }],
+				};
 			});
 		},
 
