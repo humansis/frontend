@@ -97,6 +97,15 @@
 				{{ $t('None') }}
 			</p>
 		</template>
+
+		<!-- Column for product category image/icon  -->
+		<template v-if="column.type === 'productCategoryImage'">
+			<ImageColumn
+				v-if="data.row[column.field] && data.row[column.field].image"
+				:image="data.row[column.field].image"
+			/>
+			<SvgIcon v-else :items="data.row[column.field].icon" />
+		</template>
 	</div>
 </template>
 
