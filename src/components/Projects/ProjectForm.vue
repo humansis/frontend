@@ -169,6 +169,34 @@
 
 			<b-field>
 				<template #label>
+					{{ $t('Local Invoice Address') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.localInvoiceAddress"
+					:disabled="formDisabled"
+					@blur="validate('localInvoiceAddress')"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('English Invoice Address') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-input
+					v-model="formModel.englishInvoiceAddress"
+					:disabled="formDisabled"
+					@blur="validate('englishInvoiceAddress')"
+				/>
+			</b-field>
+
+			<b-field>
+				<template #label>
 					{{ $t('Notes') }}
 					<span class="optional-text has-text-weight-normal is-italic">
 						- {{ $t('Optional') }}
