@@ -124,8 +124,7 @@ export default {
 					{ key: "adm3" },
 					{ key: "adm4" },
 					{ key: "datePurchase", label: "Purchased Date", type: "datetime", sortable: true },
-					{ key: "commodity", label: "CommodityType" },
-					{ key: "contractNumber", label: "Card No." },
+					{ key: "smartcardCode", label: "Card No." },
 					{ key: "product", label: "Purchased Item" },
 					{ key: "value", label: "Total", sortable: true },
 					{ key: "currency" },
@@ -189,7 +188,6 @@ export default {
 			const locationIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
-			const commodityIds = [];
 			const projectIds = [];
 			const vendorIds = [];
 			const productIds = [];
@@ -199,7 +197,6 @@ export default {
 				projectIds.push(item.projectId);
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
-				commodityIds.push(item.commodityId);
 				vendorIds.push(item.vendorId);
 				productIds.push(item.productId);
 				adm1Ids.push(item.adm1Id);
@@ -212,7 +209,6 @@ export default {
 			this.prepareProjectForTable([...new Set(projectIds)]);
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
 			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
-			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.prepareVendorForTable([...new Set(vendorIds)]);
 			this.prepareProductForTable([...new Set(productIds)]);
 			this.prepareAdm1ForTable([...new Set(adm1Ids)]);
