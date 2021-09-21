@@ -29,6 +29,20 @@ export default {
 		return { data, totalCount };
 	},
 
+	async getListOfSmartcardPurchasedItems(page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `smartcard-purchased-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+		});
+
+		return { data, totalCount };
+	},
+
 	async exportDistributions(format, page, size, sort, search, filters) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const filtersText = filters ? filtersToUri(filters) : "";
@@ -50,6 +64,18 @@ export default {
 		const formatText = format ? `type=${format}` : "";
 
 		const { data } = await download({ uri: `purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
+		return { data };
+	},
+
+	async exportSmartcardPurchasesItems(format, page, size, sort, search, filters) {
+		const fulltext = search ? `&filter[fulltext]=${search}` : "";
+		const filtersText = filters ? filtersToUri(filters) : "";
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const formatText = format ? `type=${format}` : "";
+
+		const { data } = await download({ uri: `smartcard-purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 		return { data };
 	},
 
