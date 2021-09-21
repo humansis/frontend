@@ -7,11 +7,10 @@
 					<Distributions v-if="tabs[0]" />
 				</b-tab-item>
 
-				<!--
-				<b-tab-item icon="shopping-cart" :label="$t('Purchases')">
-					<Purchases v-if="tabs[1]" />
+				<b-tab-item icon="shopping-cart" :label="$t('Smartcard Purchases Items')">
+					<SmartcardPurchasesItems v-if="tabs[1]" />
 				</b-tab-item>
-
+				<!--
 				<b-tab-item icon="balance-scale" :label="$t('Balances')">
 					<Balances v-if="tabs[2]" />
 				</b-tab-item>
@@ -23,13 +22,13 @@
 
 <script>
 import Distributions from "@/components/Transactions/Distributions";
-// import Purchases from "@/components/Transactions/Purchases";
+import SmartcardPurchasesItems from "@/components/Transactions/SmartcardPurchasesItems";
 
 export default {
 	name: "TransactionsPage",
 
 	components: {
-		// Purchases,
+		SmartcardPurchasesItems,
 		Distributions,
 	},
 
