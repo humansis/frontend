@@ -266,6 +266,8 @@ export default {
 		},
 
 		async fetchDistricts(id) {
+			if (!id) return;
+
 			this.filtersOptions.adm2.loading = true;
 			await LocationsService.getListOfAdm2(id)
 				.then(({ data }) => {
@@ -278,6 +280,8 @@ export default {
 		},
 
 		async fetchCommunes(id) {
+			if (!id) return;
+
 			this.filtersOptions.adm3.loading = true;
 			await LocationsService.getListOfAdm3(id)
 				.then(({ data }) => {
@@ -290,6 +294,8 @@ export default {
 		},
 
 		async fetchVillages(id) {
+			if (!id) return;
+
 			this.filtersOptions.adm4.loading = true;
 			await LocationsService.getListOfAdm4(id)
 				.then(({ data }) => {
