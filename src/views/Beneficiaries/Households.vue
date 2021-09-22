@@ -429,7 +429,8 @@ export default {
 				this.table.data[key].givenName = givenName;
 				this.table.data[key].familyName = familyName;
 				this.table.data[key].nationalId = nationalId;
-				this.table.data[key].supportDateReceived = new Date(item.supportDateReceived);
+				this.table.data[key].supportDateReceived = item
+					.supportDateReceived ? new Date(item.supportDateReceived) : null;
 				nationalIdIds.push(nationalId);
 			});
 			this.table.progress += 5;
