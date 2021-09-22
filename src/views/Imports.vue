@@ -36,8 +36,10 @@
 				close-button
 				class="modal-card"
 				:formModel="importModel"
-				:submit-button-label="$t('Create')"
+				:submit-button-label="importModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="importModal.isDetail"
+				:is-editing="importModal.isEditing"
+				:options="options"
 				@formSubmitted="submitImportForm"
 				@formClosed="closeImportModal"
 			/>
@@ -46,6 +48,7 @@
 		<ImportsList
 			ref="importList"
 			@onShowDetail="showDetail"
+			@onShowEdit="showEdit"
 		/>
 	</div>
 </template>
@@ -57,6 +60,7 @@ import ImportService from "@/services/ImportService";
 import { Toast, Notification } from "@/utils/UI.js";
 import ImportsList from "@/components/Imports/ImportsList";
 import ExportButton from "@/components/ExportButton";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "Imports",
@@ -82,13 +86,23 @@ export default {
 				projectId: null,
 				description: null,
 			},
+			options: {
+				projects: [],
+			},
 		};
 	},
 
 	computed: {
 		modalHeader() {
-			return this.importModal
-				.isDetail ? this.$t("Import Detail") : this.$t("Create New Import");
+			let result = "";
+			if (this.importModal.isDetail) {
+				result = this.$t("Detail of Import");
+			} else if (this.importModal.isEditing) {
+				result = this.$t("Edit Import");
+			} else {
+				result = this.$t("Create New Import");
+			}
+			return result;
 		},
 	},
 
@@ -98,6 +112,8 @@ export default {
 		if (openModal === "1") {
 			this.addNewImport();
 		}
+
+		this.fetchProjects();
 	},
 
 	methods: {
@@ -133,39 +149,67 @@ export default {
 			};
 		},
 
+		showEdit(importItem) {
+			this.importModal = {
+				isEditing: true,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+			this.mapToFormModel(importItem);
+		},
+
 		mapToFormModel(
 			{
 				id,
 				title,
-				project,
-				projectId,
 				description,
+				projectId,
 			},
 		) {
 			this.importModel = {
 				...this.importModel,
 				id,
 				title,
-				project,
-				projectId,
+				project: this.options.projects.find((item) => item.id === projectId),
 				description,
 			};
 		},
 
 		submitImportForm(importForm) {
 			const {
+				id,
 				title,
 				project,
 				description,
 			} = importForm;
 
-			const projectBody = {
+			const importBody = {
+				id,
 				title,
 				projectId: project?.id,
 				description,
 			};
 
-			this.createImport(projectBody);
+			if (this.importModal.isEditing && id) {
+				this.updateImport(id, importBody);
+			} else {
+				this.createImport(importBody);
+			}
+		},
+
+		async fetchProjects() {
+			this.projectsLoading = true;
+
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.options.projects = data;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				});
+
+			this.projectsLoading = false;
 		},
 
 		async createImport(importBody) {
@@ -174,14 +218,32 @@ export default {
 			await ImportService.createImport(importBody).then(({ status, data }) => {
 				if (status === 200) {
 					Toast(this.$t("Import Successfully Created"), "is-success");
-
+					this.$refs.importList.fetchData();
 					this.closeImportModal();
+
 					this.$router.push({ name: "Import", params: { importId: data.id } });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 				this.importModal.isWaiting = false;
 			});
+		},
+
+		async updateImport(id, { title, projectId, description }) {
+			this.importModal.isWaiting = true;
+
+			await ImportService.changeImportState(id, { title, projectId, description })
+				.then(({ status }) => {
+					if (status === 202) {
+						Toast(this.$t("Import Successfully Updated"), "is-success");
+						this.$refs.importList.fetchData();
+
+						this.closeImportModal();
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+					this.importModal.isWaiting = false;
+				});
 		},
 
 		async downloadTemplate(format) {
