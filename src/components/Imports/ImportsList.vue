@@ -40,6 +40,11 @@
 					:tooltip="$t('Show Detail')"
 					@click="showDetailWithId(props.row.id)"
 				/>
+				<ActionButton
+					icon="edit"
+					:tooltip="$t('Edit')"
+					@click="showEdit(props.row.id)"
+				/>
 			</div>
 		</b-table-column>
 		<template #filterButton>
@@ -167,7 +172,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", width: "30", sortable: true },
 					{ key: "title", width: "120", sortable: true },
-					{ key: "projectId", width: "120", label: "Project", sortable: true, sortKey: "project" },
+					{ key: "project", width: "120", label: "Project", sortable: true, sortKey: "project" },
 					{ key: "status", width: "100", type: "tag", customTags: statusTags, sortable: true },
 					{ key: "createdBy", width: "140", sortable: true },
 					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
@@ -183,6 +188,7 @@ export default {
 					consts.STATUS.IDENTITY_CHECK_CORRECT, consts.STATUS.IDENTITY_CHECK_FAILED,
 					consts.STATUS.SIMILARITY_CHECK, consts.STATUS.SIMILARITY_CHECK_CORRECT,
 					consts.STATUS.SIMILARITY_CHECK_FAILED,
+					consts.STATUS.IMPORTING,
 				],
 			},
 		};
@@ -252,8 +258,7 @@ export default {
 		async prepareProjectsForTable(projectIds) {
 			const projects = await this.getProjects(projectIds);
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = projects?.find(({ id }) => id === item.projectId);
-				this.table.data[key].projectId = this.prepareEntityForTable(item.projectId, projects, "name", "None");
+				this.table.data[key].project = projects?.find(({ id }) => id === item.projectId)?.name || this.$t("None");
 			});
 			this.table.progress = 75;
 			this.reload();

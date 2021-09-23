@@ -4,39 +4,11 @@
 			{{ importTitle }}
 		</h1>
 		<p
-			v-if="importDescription && !importDescriptionEditing"
+			v-if="importDescription"
 			class="has-text-centered mt-3"
 		>
 			{{ importDescription }}
-			<b-button
-				class="ml-1 description-edit-button"
-				size="is-small"
-				icon-left="edit"
-				@click="editDescription"
-			/>
 		</p>
-		<div v-if="importDescriptionEditing">
-			<b-input
-				class="description-edit-area"
-				v-model="importDescriptionCopy"
-				type="textarea"
-				maxlength="255"
-			/>
-			<div class="buttons mt-1 flex-end">
-				<b-button
-					@click="closeEditDescription"
-				>
-					{{ $t('Close') }}
-				</b-button>
-				<b-button
-					class="is-primary"
-					:loading="updateDescriptionLoading"
-					@click="updateDescription"
-				>
-					{{ $t('Save') }}
-				</b-button>
-			</div>
-		</div>
 		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mt-3 mb-4">
 			{{ importProject }}
 		</h2>
@@ -190,9 +162,6 @@ export default {
 			importDetail: {},
 			statistics: {},
 			project: {},
-			importDescriptionEditing: false,
-			importDescriptionCopy: "",
-			updateDescriptionLoading: false,
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
 			importFiles: [],
@@ -219,33 +188,6 @@ export default {
 	},
 
 	methods: {
-		editDescription() {
-			this.importDescriptionEditing = true;
-			this.importDescriptionCopy = this.importDescription;
-		},
-
-		closeEditDescription() {
-			this.updateDescriptionLoading = false;
-			this.importDescriptionEditing = false;
-			this.importDescriptionCopy = "";
-		},
-
-		updateDescription() {
-			this.updateDescriptionLoading = true;
-			const { importId } = this.$route.params;
-
-			ImportService.changeImportState(importId, "description", this.importDescriptionCopy)
-				.then(({ status }) => {
-					if (status === 202) {
-						this.importDetail.description = this.importDescriptionCopy;
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.closeEditDescription();
-				});
-		},
-
 		changeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
@@ -414,32 +356,33 @@ export default {
 			const { importId } = this.$route.params;
 			this.loadingChangeStateButton = true;
 
-			ImportService.changeImportState(importId, "status", state).then(({ status }) => {
-				if (status === 202) {
-					if (state === consts.STATE.CANCELED) {
-						this.$router.push({ name: "Imports" });
-					}
+			ImportService.changeImportState(importId, { status: state })
+				.then(({ status }) => {
+					if (status === 202) {
+						if (state === consts.STATE.CANCELED) {
+							this.$router.push({ name: "Imports" });
+						}
 
-					if (this.$route.name === "Import") {
-						Toast(this.$t(successMessage), "is-success");
+						if (this.$route.name === "Import") {
+							Toast(this.$t(successMessage), "is-success");
 
-						if (state !== consts.STATE.FINISHED
+							if (state !== consts.STATE.FINISHED
 							&& state !== consts.STATE.IMPORTING
 							&& state !== consts.STATE.CANCELED) {
-							if (goNext) this.changeTab(this.activeStep + 1);
+								if (goNext) this.changeTab(this.activeStep + 1);
+							}
 						}
 					}
-				}
-			}).catch((e) => {
-				if (e.message) {
-					const type = state === consts.STATE.IMPORTING ? "is-warning" : "is-danger";
-					Notification(`${this.$t("Import")} ${e}`, type);
-				}
-			}).finally(() => {
-				this.loadingChangeStateButton = false;
-				this.fetchImportStatistics();
-				this.fetchImportFiles();
-			});
+				}).catch((e) => {
+					if (e.message) {
+						const type = state === consts.STATE.IMPORTING ? "is-warning" : "is-danger";
+						Notification(`${this.$t("Import")} ${e}`, type);
+					}
+				}).finally(() => {
+					this.loadingChangeStateButton = false;
+					this.fetchImportStatistics();
+					this.fetchImportFiles();
+				});
 		},
 
 		goToFinalStep() {

@@ -1,12 +1,11 @@
 <template>
 	<div class="card overflow-visible">
 		<div class="card-content">
-			<b-field>
+			<b-field v-if="canStartImport">
 				<b-upload
 					v-model="dropFiles"
 					multiple
 					drag-drop
-					:disabled="!canStartImport"
 					:accept="allowedFileExtensions"
 				>
 					<section class="section">

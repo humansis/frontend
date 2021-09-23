@@ -175,9 +175,9 @@
 					</span>
 				</template>
 				<b-input
-					v-model="formModel.localInvoiceAddress"
+					v-model="formModel.projectInvoiceAddressLocal"
 					:disabled="formDisabled"
-					@blur="validate('localInvoiceAddress')"
+					@blur="validate('projectInvoiceAddressLocal')"
 				/>
 			</b-field>
 
@@ -189,7 +189,7 @@
 					</span>
 				</template>
 				<b-input
-					v-model="formModel.englishInvoiceAddress"
+					v-model="formModel.projectInvoiceAddressEnglish"
 					:disabled="formDisabled"
 					@blur="validate('englishInvoiceAddress')"
 				/>
@@ -277,6 +277,8 @@ export default {
 			selectedDonors: {},
 			selectedTargetType: {},
 			totalTarget: { required, minValue: minValue(1) },
+			projectInvoiceAddressLocal: {},
+			projectInvoiceAddressEnglish: {},
 		},
 	},
 
