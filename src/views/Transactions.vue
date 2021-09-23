@@ -7,7 +7,7 @@
 					<Distributions v-if="tabs[0]" />
 				</b-tab-item>
 
-				<b-tab-item icon="shopping-cart" :label="$t('Smartcard Purchases Items')">
+				<b-tab-item icon="shopping-cart" :label="$t('Smartcard Purchased Items')">
 					<SmartcardPurchasesItems v-if="tabs[1]" />
 				</b-tab-item>
 				<!--

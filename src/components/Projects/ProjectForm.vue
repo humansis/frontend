@@ -191,7 +191,7 @@
 				<b-input
 					v-model="formModel.projectInvoiceAddressEnglish"
 					:disabled="formDisabled"
-					@blur="validate('englishInvoiceAddress')"
+					@blur="validate('projectInvoiceAddressEnglish')"
 				/>
 			</b-field>
 
