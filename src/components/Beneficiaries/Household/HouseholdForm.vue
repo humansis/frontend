@@ -419,7 +419,8 @@ export default {
 				externalSupport: {
 					...this.formModel.externalSupport,
 					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code"),
-					supportDateReceived: new Date(this.detailOfHousehold.supportDateReceived),
+					supportDateReceived: this.detailOfHousehold
+						.supportDateReceived ? new Date(this.detailOfHousehold.supportDateReceived) : null,
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
 				countrySpecificOptions: {

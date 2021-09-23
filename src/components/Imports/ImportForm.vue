@@ -12,7 +12,6 @@
 					@blur="validate('title')"
 				/>
 			</b-field>
-
 			<b-field
 				:label="$t('Project')"
 				:type="validateType('project')"
@@ -25,7 +24,7 @@
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:loading="projectsLoading"
-					:disabled="formDisabled"
+					:disabled="formDisabled || isEditing"
 					:options="options.projects"
 					:class="validateMultiselect('project')"
 					@select="validate('project')"
@@ -63,9 +62,7 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
-import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "importForm",
@@ -77,13 +74,15 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
+		options: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
 		return {
-			options: {
-				projects: [],
-			},
 			projectsLoading: false,
 		};
 	},
@@ -94,10 +93,6 @@ export default {
 			project: { required },
 			description: {},
 		},
-	},
-
-	mounted() {
-		if (!this.formDisabled) this.fetchProjects();
 	},
 
 	methods: {
@@ -114,20 +109,6 @@ export default {
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
-		},
-
-		async fetchProjects() {
-			this.projectsLoading = true;
-
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.options.projects = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-
-			this.projectsLoading = false;
 		},
 	},
 };
