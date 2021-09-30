@@ -90,7 +90,7 @@ export default {
 			targetType: "",
 			assistanceBody: {
 				dateDistribution: "",
-				dateExpiration: "",
+				// dateExpiration: "",
 				description: "",
 				householdsTargeted: null,
 				individualsTargeted: null,
@@ -249,7 +249,7 @@ export default {
 				adm3Id: assistance.adm3Id,
 				adm4Id: assistance.adm4Id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
-				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
+				// dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
 				sector: assistance.sector,
 				subsector: assistance.subsector,
