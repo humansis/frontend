@@ -89,6 +89,7 @@
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
+			@assistanceUpdated="fetchAssistance"
 		/>
 		<br>
 		<div class="columns">

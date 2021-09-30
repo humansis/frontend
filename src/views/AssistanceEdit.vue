@@ -18,6 +18,7 @@
 					add-button
 					:assistance="assistance"
 					@beneficiariesReloaded="reloadOtherTabs"
+					@assistanceUpdated="fetchAssistance"
 				/>
 			</b-step-item>
 
@@ -76,6 +77,7 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
+				@assistanceUpdated="fetchAssistance"
 			/>
 			<div class="buttons mt-3 flex-end">
 				<b-button

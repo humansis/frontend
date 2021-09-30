@@ -51,7 +51,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Similarities Corrected/Merged')}}:</td>
+							<td>{{ $t('Resolved Similarities and Correct Records')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
