@@ -38,38 +38,46 @@ export default {
 		},
 
 		async prepareAdm1ForTable(adm1Ids) {
+			this.table.progress += 10;
+
 			const adm1s = await this.getAdm1s(adm1Ids);
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm1 = this.prepareEntityForTable(item.adm1Id, adm1s, "name", "None");
 			});
-			this.table.progress += 10;
+
 			this.reload();
 		},
 
 		async prepareAdm2ForTable(adm2Ids) {
+			this.table.progress += 10;
+
 			const adm2s = await this.getAdm2s(adm2Ids);
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm2 = this.prepareEntityForTable(item.adm2Id, adm2s, "name", "None");
 			});
-			this.table.progress += 10;
+
 			this.reload();
 		},
 
 		async prepareAdm3ForTable(adm3Ids) {
+			this.table.progress += 10;
+
 			const adm3s = await this.getAdm3s(adm3Ids);
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm3 = this.prepareEntityForTable(item.adm3Id, adm3s, "name", "None");
 			});
-			this.table.progress += 10;
+
 			this.reload();
 		},
 
 		async prepareAdm4ForTable(adm4Ids) {
+			this.table.progress += 10;
+
 			const adm4s = await this.getAdm4s(adm4Ids);
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].adm4 = this.prepareEntityForTable(item.adm4Id, adm4s, "name", "None");
 			});
-			this.table.progress += 10;
+
 			this.reload();
 		},
 
@@ -158,37 +166,25 @@ export default {
 		async getAdm1s(ids) {
 			if (!ids.length) return [];
 			return LocationsService.getAdm1s(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
-				});
+				.then(({ data }) => data);
 		},
 
 		async getAdm2s(ids) {
 			if (!ids.length) return [];
 			return LocationsService.getAdm2s(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
-				});
+				.then(({ data }) => data);
 		},
 
 		async getAdm3s(ids) {
 			if (!ids.length) return [];
 			return LocationsService.getAdm3s(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
-				});
+				.then(({ data }) => data);
 		},
 
 		async getAdm4s(ids) {
 			if (!ids.length) return [];
 			return LocationsService.getAdm4s(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
-				});
+				.then(({ data }) => data);
 		},
 
 		async getAssistances(ids) {
@@ -259,9 +255,6 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm1.data = data;
 					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Provinces")} ${e}`, "is-danger");
 				});
 		},
 
@@ -273,9 +266,6 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm2.data = data;
 					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Districts")} ${e}`, "is-danger");
 				});
 		},
 
@@ -287,9 +277,6 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm3.data = data;
 					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Communes")} ${e}`, "is-danger");
 				});
 		},
 
@@ -301,9 +288,6 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm4.data = data;
 					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Villages")} ${e}`, "is-danger");
 				});
 		},
 

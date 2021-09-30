@@ -130,6 +130,8 @@ export default {
 					this.filters[key] = [date.toISOString()];
 				}
 			});
+
+			this.table.currentPage = 1;
 			await this.fetchData();
 		},
 	},

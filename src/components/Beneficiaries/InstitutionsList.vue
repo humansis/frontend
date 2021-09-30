@@ -147,6 +147,7 @@ export default {
 
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
+			this.table.currentPage = 1;
 			await this.fetchData();
 		},
 
