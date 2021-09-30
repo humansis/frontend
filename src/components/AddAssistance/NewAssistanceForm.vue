@@ -183,7 +183,7 @@ export default {
 				adm4Id: null,
 				locationId: null,
 				dateOfAssistance: new Date(),
-				dateExpiration: new Date(),
+				// dateExpiration: new Date(),
 				sector: null,
 				subsector: null,
 				targetType: null,
@@ -207,7 +207,7 @@ export default {
 	validations: {
 		formModel: {
 			dateOfAssistance: { required },
-			dateExpiration: { required },
+			// dateExpiration: { required },
 			sector: { required },
 			subsector: { required },
 			targetType: { required },
