@@ -267,6 +267,8 @@ export default {
 					this.filters[key] = filters[key];
 				}
 			});
+
+			this.table.currentPage = 1;
 			await this.fetchData();
 		},
 	},

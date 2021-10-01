@@ -162,7 +162,6 @@ export default {
 				this.filters,
 			).then(async ({ data, totalCount }) => {
 				this.setGridFiltersToUrl();
-
 				this.table.data = [];
 				this.table.progress = 20;
 				this.table.total = totalCount;
@@ -258,6 +257,8 @@ export default {
 					this.filters[key] = filters[key];
 				}
 			});
+
+			this.table.currentPage = 1;
 			await this.fetchData();
 		},
 	},
