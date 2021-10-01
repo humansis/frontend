@@ -30,11 +30,13 @@ export default {
 				this.table.sortColumn = sortKey;
 				this.table.sortDirection = "desc";
 			}
+
 			this.fetchData();
 		},
 
 		onSearch(value) {
 			this.table.searchPhrase = value;
+			this.table.currentPage = 1;
 			this.fetchData();
 		},
 
