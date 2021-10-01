@@ -1,0 +1,7 @@
+{
+  "tag": "__TAG__",
+  "hash": "__COMMIT_HASH__",
+  "author": "__COMMIT_AUTHOR__",
+  "branch": "__BRANCH__",
+  "appVersion": "__APP_VERSION__"
+}
