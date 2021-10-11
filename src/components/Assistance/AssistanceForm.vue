@@ -24,7 +24,6 @@
 				/>
 			</b-field>
 
-			<!--
 			<b-field :label="$t('Expiration Date')">
 				<b-datepicker
 					v-model="formModel.dateExpiration"
@@ -36,7 +35,6 @@
 					:disabled="!editing"
 				/>
 			</b-field>
-			-->
 
 			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
