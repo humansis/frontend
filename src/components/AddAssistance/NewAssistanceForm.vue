@@ -18,8 +18,7 @@
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
-			<!--
-			TODO Uncomment this after dateExpiration implementation in 3.2
+
 			<b-field :label="$t('Expiration Date')">
 				<b-datepicker
 					v-model="formModel.dateExpiration"
@@ -30,7 +29,6 @@
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
-			-->
 		</div>
 
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
@@ -183,7 +181,7 @@ export default {
 				adm4Id: null,
 				locationId: null,
 				dateOfAssistance: new Date(),
-				// dateExpiration: new Date(),
+				dateExpiration: new Date(),
 				sector: null,
 				subsector: null,
 				targetType: null,
@@ -207,7 +205,7 @@ export default {
 	validations: {
 		formModel: {
 			dateOfAssistance: { required },
-			// dateExpiration: { required },
+			dateExpiration: { required },
 			sector: { required },
 			subsector: { required },
 			targetType: { required },

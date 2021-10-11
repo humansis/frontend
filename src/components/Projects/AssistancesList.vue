@@ -93,8 +93,9 @@
 						:tooltip="$t('View')"
 						@click="goToDetail(props.row.id)"
 					/>
+					{{  }}
 					<SafeDelete
-						v-if="!props.row.validated && userCan.deleteDistribution"
+						:disabled="!props.row.deletable && userCan.deleteDistribution"
 						icon="trash"
 						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 						:entity="$t('Assistance')"
@@ -176,7 +177,7 @@ export default {
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
-					// { key: "dateExpiration", label: "Expiration Date", type: "datetime", sortable: true },
+					{ key: "dateExpiration", label: "Expiration Date", type: "datetime", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
@@ -260,7 +261,7 @@ export default {
 				commodityIds.push(...item.commodityIds);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
-				// this.table.data[key].dateExpiration = item.dateExpiration ?? null;
+				this.table.data[key].dateExpiration = item.dateExpiration ?? null;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
 			});
