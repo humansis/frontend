@@ -93,8 +93,9 @@
 						:tooltip="$t('View')"
 						@click="goToDetail(props.row.id)"
 					/>
+					{{  }}
 					<SafeDelete
-						v-if="!props.row.validated && userCan.deleteDistribution"
+						:disabled="!props.row.deletable && userCan.deleteDistribution"
 						icon="trash"
 						:entity="$t('Assistance')"
 						:tooltip="$t('Delete')"
