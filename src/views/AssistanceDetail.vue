@@ -89,7 +89,7 @@
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
-			@assistanceUpdated="fetchAssistance"
+			@assistanceUpdated="fetchAssistanceData"
 		/>
 		<br>
 		<div class="columns">
@@ -279,6 +279,11 @@ export default {
 	},
 
 	methods: {
+		fetchAssistanceData() {
+			this.fetchAssistance();
+			this.fetchAssistanceStatistics();
+		},
+
 		async fetchAssistance() {
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
