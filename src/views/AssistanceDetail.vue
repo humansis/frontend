@@ -434,7 +434,7 @@ export default {
 		unvalidateAssistance() {
 			this.$buefy.dialog.confirm({
 				title: this.$t("Unvalidate Assistance"),
-				message: this.$t("Please be sure that no field activity has been started. Do your really want to unvalidate assistance?"),
+				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
 				confirmText: this.$t("Confirm"),
 				type: "is-primary",
 				onConfirm: async () => {
