@@ -296,7 +296,7 @@ export default {
 		return { data, status };
 	},
 
-	async updateAssistanceToStatusValidated({ assistanceId, validated }) {
+	async updateAssistanceStatusValidated({ assistanceId, validated }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",

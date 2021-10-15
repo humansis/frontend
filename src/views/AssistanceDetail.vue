@@ -95,6 +95,15 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
+					v-if="isAssistanceValidated && !distributionStarted"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="check"
+					@click="unvalidateAssistance"
+				>
+					{{ $t('Unvalidate Assistance') }}
+				</b-button>
+				<b-button
 					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"
 					type="is-primary"
@@ -219,6 +228,10 @@ export default {
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
+		},
+
+		distributionStarted() {
+			return this.assistance?.distributionStarted;
 		},
 
 		modalityType() {
@@ -421,6 +434,29 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
+		},
+
+		unvalidateAssistance() {
+			this.$buefy.dialog.confirm({
+				title: this.$t("Unvalidate Assistance"),
+				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
+				confirmText: this.$t("Confirm"),
+				type: "is-primary",
+				onConfirm: async () => {
+					const assistanceId = Number(this.$route.params.assistanceId);
+
+					await AssistancesService.updateAssistanceToStatusCompleted(
+						{ assistanceId, validated: false },
+					).then(({ status }) => {
+						if (status === 200) {
+							Toast(this.$t("Assistance Successfully Unvalidated"), "is-success");
+							this.fetchAssistance();
+						}
+					}).catch((e) => {
+						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
+					});
+				},
+			});
 		},
 
 		closeAssistance() {
