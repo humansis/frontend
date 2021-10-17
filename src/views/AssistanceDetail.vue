@@ -95,7 +95,7 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					v-if="isAssistanceValidated && !distributionStarted"
+					v-if="isAssistanceValidated && !amountDistributed"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="check"
@@ -228,10 +228,6 @@ export default {
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
-		},
-
-		distributionStarted() {
-			return this.assistance?.distributionStarted;
 		},
 
 		modalityType() {
