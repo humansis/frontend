@@ -108,6 +108,7 @@ export default {
 				quantity: "",
 				description: "",
 				totalValueOfBooklet: null,
+				remoteDistributionAllowed: false,
 			},
 			table: {
 				data: [],
@@ -136,11 +137,14 @@ export default {
 	},
 
 	updated() {
-		const commodities = this.modifiedTableData.map(({ type, unit, quantity, description }) => ({
+		const commodities = this.modifiedTableData.map((
+			{ type, unit, quantity, description, remoteDistributionAllowed },
+		) => ({
 			modalityType: type,
 			unit,
 			value: quantity,
 			description: description || "",
+			remoteDistributionAllowed,
 		}));
 
 		if (this.table.data.length) {
@@ -151,13 +155,23 @@ export default {
 	computed: {
 		modifiedTableData() {
 			const tableData = this.table.data.map((
-				{ modality, type, unit, currency, quantity, description, totalValueOfBooklet },
+				{
+					modality,
+					type,
+					unit,
+					currency,
+					quantity,
+					description,
+					totalValueOfBooklet,
+					remoteDistributionAllowed,
+				},
 			) => ({
 				modality: modality?.value || modality,
 				type: type?.value || type,
 				unit: unit || currency?.value,
 				quantity: quantity || totalValueOfBooklet,
 				description,
+				remoteDistributionAllowed,
 			}));
 
 			return tableData || [];
@@ -184,6 +198,7 @@ export default {
 				quantity: null,
 				description: null,
 				totalValueOfBooklet: null,
+				remoteDistributionAllowed: false,
 			};
 		},
 
