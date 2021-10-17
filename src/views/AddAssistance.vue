@@ -108,6 +108,7 @@ export default {
 				completed: false,
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
+				remoteDistributionAllowed: null,
 			},
 			selectedBeneficiariesCount: 0,
 			loading: false,
@@ -382,6 +383,8 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
+				remoteDistributionAllowed: commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD
+					&& commodities[0]?.remoteDistributionAllowed,
 			};
 		},
 

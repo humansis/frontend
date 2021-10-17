@@ -103,6 +103,13 @@
 					@blur="validate('totalValueOfBooklet')"
 				/>
 			</b-field>
+
+			<b-field
+				v-if="displayedFields.remoteDistributionAllowed"
+				:label="$t('Remote Distribution Enabled')"
+			>
+				<b-checkbox v-model="formModel.remoteDistributionAllowed" />
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
@@ -145,6 +152,7 @@ export default {
 				quantity: false,
 				description: false,
 				totalValueOfBooklet: false,
+				remoteDistributionAllowed: false,
 			},
 			options: {
 				modalities: [],
@@ -210,7 +218,6 @@ export default {
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARTCARD:
 				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
@@ -219,6 +226,17 @@ export default {
 						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
+						remoteDistributionAllowed: false,
+					};
+					break;
+				case consts.COMMODITY.SMARTCARD:
+					this.displayedFields = {
+						unit: false,
+						description: false,
+						totalValueOfBooklet: false,
+						currency: true,
+						quantity: true,
+						remoteDistributionAllowed: true,
 					};
 					break;
 				case consts.COMMODITY.FOOD_RATIONS:
@@ -238,6 +256,7 @@ export default {
 						unit: true,
 						quantity: true,
 						description: true,
+						remoteDistributionAllowed: false,
 					};
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
@@ -247,6 +266,7 @@ export default {
 						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
+						remoteDistributionAllowed: false,
 					};
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
@@ -257,6 +277,7 @@ export default {
 						description: false,
 						currency: true,
 						totalValueOfBooklet: true,
+						remoteDistributionAllowed: false,
 					};
 					break;
 				default:
