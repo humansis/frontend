@@ -39,8 +39,26 @@
 				/>
 			</div>
 		</b-table-column>
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</b-button>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+		<template #filter>
+			<b-collapse v-model="advancedSearchVisible">
+				<SyncFilter @filtersChanged="onFiltersChange" />
+			</b-collapse>
+		</template>
 		<template #export>
 			<ExportButton
+				class="ml-3"
 				space-between
 				type="is-primary"
 				:loading="exportLoading"
@@ -59,6 +77,7 @@ import DonorService from "@/services/DonorService";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import ExportButton from "@/components/ExportButton";
+import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
 
 export default {
@@ -69,13 +88,16 @@ export default {
 		ColumnField,
 		Table,
 		ActionButton,
+		SyncFilter,
 	},
 
 	mixins: [grid, permissions],
 
 	data() {
 		return {
+			advancedSearchVisible: false,
 			exportLoading: false,
+			filters: [],
 			table: {
 				data: [],
 				columns: [],
@@ -104,6 +126,7 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			// TODO fetch sync data
@@ -112,14 +135,28 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				this.filters,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
+
+				// TODO Change progress and add this.prepareDataForTable(data)
+				this.table.progress = 100;
 			}).catch((e) => {
 				if (e.message) console.error(e);
 			});
 
 			this.isLoadingList = false;
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			this.table.currentPage = 1;
+			await this.fetchData();
 		},
 
 		async exportSync() {
