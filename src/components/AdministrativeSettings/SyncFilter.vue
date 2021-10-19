@@ -10,7 +10,6 @@
 import AdvancedFilter from "@/components/AdvancedFilter";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByParams } from "@/utils/codeList";
 
 export default {
 	name: "SyncFilter",
@@ -22,21 +21,22 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: {
-				statuses: [],
+				vendorNo: null,
+				vendorContractNo: null,
 				assistances: [],
-				beneficiaries: [],
+				timeFrom: null,
+				timeTo: null,
 			},
 			filtersOptions: {
-				statuses: {
-					name: "Status",
-					placeholder: this.$t("Select Status"),
-					multiple: true,
-					data: [
-						{ code: 0, value: this.$t("Unassigned") },
-						{ code: 1, value: this.$t("Distributed") },
-						{ code: 2, value: this.$t("Used") },
-						{ code: 3, value: this.$t("Deactivated") },
-					],
+				vendorNo: {
+					name: "Vendor No",
+					placeholder: this.$t("Vendor No"),
+					type: "text",
+				},
+				vendorContractNo: {
+					name: "Vendor Contract No",
+					placeholder: this.$t("Vendor Contract No"),
+					type: "text",
 				},
 				assistances: {
 					name: "Assistance",
@@ -48,14 +48,15 @@ export default {
 					data: [],
 					filterKey: "distributions",
 				},
-				beneficiaries: {
-					name: "Beneficiary",
-					placeholder: this.$t("Select Beneficiary"),
-					trackBy: "id",
-					label: "localFamilyName",
-					multiple: true,
-					loading: false,
-					data: [],
+				timeFrom: {
+					name: "Time From",
+					placeholder: this.$t("Select Time"),
+					type: "time",
+				},
+				timeTo: {
+					name: "Time To",
+					placeholder: this.$t("Select Time"),
+					type: "time",
 				},
 			},
 		};
@@ -66,10 +67,7 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filters, filtername) {
-			if (filtername === "assistances") {
-				this.fetchBeneficiaries(filters.distributions);
-			}
+		filterChanged(filters) {
 			this.$emit("filtersChanged", filters);
 		},
 
@@ -83,32 +81,6 @@ export default {
 				});
 
 			this.filtersOptions.assistances.loading = false;
-		},
-
-		async fetchBeneficiaries(ids) {
-			if (ids?.length) {
-				this.filtersOptions.beneficiaries.loading = true;
-				this.filtersOptions.beneficiaries.data = [];
-				const promise = ids.map(async (id) => {
-					await AssistancesService.getListOfBeneficiaries(id)
-						.then(({ data }) => {
-							data.forEach((item) => {
-								if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
-									this.filtersOptions.beneficiaries.data.push(item);
-								}
-							});
-						})
-						.catch((e) => {
-							if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-						});
-				});
-				await Promise.all(promise);
-				this.selectedFiltersOptions
-					.beneficiaries = getArrayOfCodeListByParams(this.selectedFiltersOptions.beneficiaries, this.filtersOptions.beneficiaries.data, "id", "id");
-				this.filtersOptions.beneficiaries.loading = false;
-			} else {
-				this.selectedFiltersOptions.beneficiaries = [];
-			}
 		},
 	},
 };
