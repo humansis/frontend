@@ -439,14 +439,18 @@ export default {
 				confirmText: this.$t("Confirm"),
 				type: "is-primary",
 				onConfirm: async () => {
-					const assistanceId = Number(this.$route.params.assistanceId);
+					const { assistanceId, projectId } = this.$route.params;
 
 					await AssistancesService.updateAssistanceToStatusCompleted(
 						{ assistanceId, validated: false },
 					).then(({ status }) => {
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Unvalidated"), "is-success");
-							this.fetchAssistance();
+
+							this.$router.push({
+								name: "AssistanceEdit",
+								params: { assistanceId, projectId },
+							});
 						}
 					}).catch((e) => {
 						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
