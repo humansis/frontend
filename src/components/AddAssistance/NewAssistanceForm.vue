@@ -26,6 +26,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
