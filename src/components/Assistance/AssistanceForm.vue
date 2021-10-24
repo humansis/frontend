@@ -19,6 +19,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
@@ -31,6 +32,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
@@ -68,6 +70,17 @@ export default {
 	props: {
 		formModel: Object,
 		editing: Boolean,
+		project: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
+	computed: {
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return new Date(endDate);
+		},
 	},
 
 	methods: {

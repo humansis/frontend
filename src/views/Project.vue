@@ -28,6 +28,7 @@
 			<AssistanceForm
 				close-button
 				class="modal-card"
+				:project="project"
 				:formModel="assistanceModel"
 				:editing="assistanceModal.isEditing"
 				@formClosed="closeAssistanceModal"
@@ -105,9 +106,11 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		async editAssistance({ id, dateDistribution }) {
-			const date = this.$moment(dateDistribution).format("YYYY-MM-DD hh:mm");
-			await AssistancesService.updateAssistanceDateOfDistribution(id, date)
+		async editAssistance({ id, dateDistribution, dateExpiration }) {
+			const startDate = this.$moment(dateDistribution).format("YYYY-MM-DD hh:mm");
+			const endDate = this.$moment(dateExpiration).format("YYYY-MM-DD hh:mm");
+
+			await AssistancesService.updateAssistanceDateOfDistribution(id, startDate, endDate)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Assistance Successfully Updated"), "is-success");
