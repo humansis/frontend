@@ -32,6 +32,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:min-date="formModel.dateDistribution"
 					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
