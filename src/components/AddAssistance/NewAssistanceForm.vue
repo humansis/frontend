@@ -26,6 +26,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:min-date="formModel.dateOfAssistance"
 					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
 				/>
