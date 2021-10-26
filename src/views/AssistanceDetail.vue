@@ -441,7 +441,7 @@ export default {
 				onConfirm: async () => {
 					const { assistanceId, projectId } = this.$route.params;
 
-					await AssistancesService.updateAssistanceToStatusCompleted(
+					await AssistancesService.updateAssistanceStatusValidated(
 						{ assistanceId, validated: false },
 					).then(({ status }) => {
 						if (status === 200) {
