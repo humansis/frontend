@@ -8,6 +8,13 @@
 					:disabled="formDisabled"
 				/>
 			</b-field>
+			<b-field :label="$t('Validation Error Messages')">
+				<b-input
+					v-model="formModel.validationErrorMessages"
+					type="textarea"
+					:disabled="formDisabled"
+				/>
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button

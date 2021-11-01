@@ -102,9 +102,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ type: "text", key: "who", width: "100", sortable: true },
-					{ type: "text", key: "what", width: "200", sortable: true },
-					{ type: "text", key: "rawData" },
+					{ type: "text", key: "syncId" },
+					{ type: "text", key: "username" },
+					{ type: "text", key: "vendorNo" },
+					{ type: "text", key: "validationErrors" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -136,9 +137,9 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 				this.filters,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
+			).then(({ data, totalCount }) => {
+				this.table.data = data;
+				this.table.total = totalCount;
 
 				// TODO Change progress and add this.prepareDataForTable(data)
 				this.table.progress = 100;
