@@ -56,16 +56,6 @@
 				<SyncFilter @filtersChanged="onFiltersChange" />
 			</b-collapse>
 		</template>
-		<template #export>
-			<ExportButton
-				class="ml-3"
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
-				@onExport="exportSync"
-			/>
-		</template>
 	</Table>
 </template>
 
@@ -73,10 +63,9 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import DonorService from "@/services/DonorService";
+import SyncService from "@/services/SyncService";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
 
@@ -84,7 +73,6 @@ export default {
 	name: "SyncList",
 
 	components: {
-		ExportButton,
 		ColumnField,
 		Table,
 		ActionButton,
@@ -132,7 +120,7 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			// TODO fetch sync data
-			await DonorService.getListOfDonors(
+			await SyncService.getListOfSync(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
@@ -159,12 +147,6 @@ export default {
 			this.filters = selectedFilters;
 			this.table.currentPage = 1;
 			await this.fetchData();
-		},
-
-		async exportSync() {
-			this.exportLoading = true;
-			// TODO async export sync
-			this.exportLoading = false;
 		},
 	},
 };

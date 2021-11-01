@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfSync(page, size, sort, search = null, filters = null) {
@@ -9,16 +9,8 @@ export default {
 		const filtersUri = filters ? filtersToUri(filters) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `sync?${pageText + sizeText + sortText + fulltext + filtersUri}`,
+			uri: `syncs?${pageText + sizeText + sortText + fulltext + filtersUri}`,
 		});
 		return { data, totalCount };
-	},
-
-	async exportSync(format, ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const formatText = format ? `type=${format}` : "";
-		const { data } = await download({ uri: `sync/exports?${formatText + idsText}` });
-		return { data };
 	},
 };
