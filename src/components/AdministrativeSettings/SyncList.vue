@@ -103,6 +103,7 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ type: "text", key: "syncId" },
+					{ type: "date", key: "datetime" },
 					{ type: "text", key: "username" },
 					{ type: "text", key: "vendorNo" },
 					{ type: "text", key: "validationErrors" },
