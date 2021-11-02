@@ -10,7 +10,7 @@
 			</b-field>
 			<b-field :label="$t('Validation Error Messages')">
 				<b-input
-					v-model="formModel.validationErrorMessages"
+					v-model="formModel.violations"
 					type="textarea"
 					:disabled="formDisabled"
 				/>
