@@ -89,6 +89,7 @@ export default {
 				totalTarget: 0,
 				projectInvoiceAddressLocal: "",
 				projectInvoiceAddressEnglish: "",
+				allowedProductCategoryTypes: [],
 				notes: "",
 			},
 		};
@@ -145,6 +146,7 @@ export default {
 				totalTarget: 0,
 				projectInvoiceAddressLocal: "",
 				projectInvoiceAddressEnglish: "",
+				allowedProductCategoryTypes: ["Food"],
 				notes: "",
 			};
 		},
@@ -174,6 +176,7 @@ export default {
 				notes,
 				projectInvoiceAddressLocal,
 				projectInvoiceAddressEnglish,
+				allowedProductCategoryTypes,
 				startDate,
 				endDate,
 			},
@@ -195,6 +198,7 @@ export default {
 				totalTarget,
 				projectInvoiceAddressLocal,
 				projectInvoiceAddressEnglish,
+				allowedProductCategoryTypes,
 				notes,
 			};
 		},
@@ -213,6 +217,7 @@ export default {
 				totalTarget: target,
 				projectInvoiceAddressLocal,
 				projectInvoiceAddressEnglish,
+				allowedProductCategoryTypes,
 				notes,
 			} = projectForm;
 			const projectBody = {
@@ -221,6 +226,7 @@ export default {
 				internalId,
 				projectInvoiceAddressLocal,
 				projectInvoiceAddressEnglish,
+				allowedProductCategoryTypes,
 				notes,
 				target,
 				targetType,
