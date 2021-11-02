@@ -44,6 +44,19 @@
 							@click="removeFilterValue(filter)"
 						/>
 					</b-field>
+					<b-field v-else-if="options.type === 'datetime'">
+						<b-datetimepicker
+							v-model="selectedFiltersOptions[filter]"
+							expanded
+							icon-right="calendar"
+							:placeholder="options.placeholder || $t('')"
+							@input="filterChanged(filter)"
+						/>
+						<b-button
+							icon-left="times"
+							@click="removeFilterValue(filter)"
+						/>
+					</b-field>
 					<b-field v-else-if="options.type === 'time'">
 						<b-timepicker
 							v-model="selectedFiltersOptions[filter]"
@@ -97,13 +110,9 @@ export default {
 						filters[filterKey].push(value[select]);
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					if (this.filtersOptions[key].type === "date") {
+					if (this.filtersOptions[key].type === "date" || this.filtersOptions[key].type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
-					} else if (
-						this.filtersOptions[key].type === "time"
-						|| this.filtersOptions[key].type === "text"
-					) {
-						// TODO Use specific new Date(...).getTime() for filter type time
+					} else if (this.filtersOptions[key].type === "text") {
 						filters[filterKey] = this.selectedFiltersOptions[key];
 					} else {
 						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";

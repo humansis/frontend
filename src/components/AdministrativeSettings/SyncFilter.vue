@@ -22,8 +22,8 @@ export default {
 		return {
 			selectedFiltersOptions: {
 				assistances: [],
-				timeFrom: null,
-				timeTo: null,
+				dateFrom: null,
+				dateTo: null,
 			},
 			filtersOptions: {
 				assistances: {
@@ -36,15 +36,15 @@ export default {
 					data: [],
 					filterKey: "distributions",
 				},
-				timeFrom: {
-					name: "Time From",
-					placeholder: this.$t("Select Time"),
-					type: "time",
+				dateFrom: {
+					name: "Date From",
+					placeholder: this.$t("Select Date From"),
+					type: "datetime",
 				},
-				timeTo: {
-					name: "Time To",
-					placeholder: this.$t("Select Time"),
-					type: "time",
+				dateTo: {
+					name: "Date To",
+					placeholder: this.$t("Select Date To"),
+					type: "datetime",
 				},
 			},
 		};
