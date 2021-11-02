@@ -68,6 +68,8 @@ import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
+import UsersService from "@/services/UsersService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "SyncList",
@@ -90,8 +92,8 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ type: "text", key: "syncId" },
-					{ type: "date", key: "datetime" },
+					{ type: "text", key: "id", label: "syncId" },
+					{ type: "date", key: "createdAt", label: "Datetime" },
 					{ type: "text", key: "username" },
 					{ type: "text", key: "vendorNo" },
 					{ type: "text", key: "validationErrors" },
@@ -127,8 +129,10 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
-				this.table.data = data;
+				this.table.data = [];
 				this.table.total = totalCount;
+
+				this.prepareDataForTable(data);
 
 				// TODO Change progress and add this.prepareDataForTable(data)
 				this.table.progress = 100;
@@ -137,6 +141,52 @@ export default {
 			});
 
 			this.isLoadingList = false;
+		},
+
+		// TODO
+		prepareDataForTable(data) {
+			const vendorIds = [];
+
+			data.forEach((item, key) => {
+				vendorIds.push(item.vendorId);
+
+				this.table.data[key] = {
+					...item,
+				};
+			});
+
+			this.prepareVendorsForTable([...new Set(vendorIds)]);
+		},
+
+		// TODO
+		async prepareVendorsForTable(vendorIds) {
+			const vendors = await this.getVendors(vendorIds);
+			const userIds = [];
+
+			this.table.data.forEach((item, key) => {
+				const { vendorNo } = vendors.find(({ id }) => item.id === id);
+
+				this.table.data[key].vendorNo = vendorNo;
+			});
+
+			await this.prepareUsersForTable([...new Set(userIds)]);
+		},
+
+		async prepareUsersForTable(userIds) {
+			const users = await this.getUsers(userIds);
+			this.table.data.forEach((item, key) => {
+				const { email } = users.find(({ id }) => item.id === id);
+
+				this.table.data[key].username = email;
+			});
+		},
+
+		async getUsers(vendors) {
+			if (!vendors?.length) return [];
+			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
+				.then(({ data }) => data).catch((e) => {
+					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+				});
 		},
 
 		filtersToggle() {

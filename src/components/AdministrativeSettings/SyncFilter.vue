@@ -21,23 +21,11 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: {
-				vendorNo: null,
-				vendorContractNo: null,
 				assistances: [],
 				timeFrom: null,
 				timeTo: null,
 			},
 			filtersOptions: {
-				vendorNo: {
-					name: "Vendor No",
-					placeholder: this.$t("Vendor No"),
-					type: "text",
-				},
-				vendorContractNo: {
-					name: "Vendor Contract No",
-					placeholder: this.$t("Vendor Contract No"),
-					type: "text",
-				},
 				assistances: {
 					name: "Assistance",
 					placeholder: this.$t("Select Assistance"),
