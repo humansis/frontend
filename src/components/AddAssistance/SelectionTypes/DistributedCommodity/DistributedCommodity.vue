@@ -109,6 +109,7 @@ export default {
 				description: "",
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: ["Food"],
 			},
 			table: {
 				data: [],
@@ -138,13 +139,14 @@ export default {
 
 	updated() {
 		const commodities = this.modifiedTableData.map((
-			{ type, unit, quantity, description, remoteDistributionAllowed },
+			{ type, unit, quantity, description, remoteDistributionAllowed, allowedProductCategoryTypes },
 		) => ({
 			modalityType: type,
 			unit,
 			value: quantity,
 			description: description || "",
 			remoteDistributionAllowed,
+			allowedProductCategoryTypes,
 		}));
 
 		if (this.table.data.length) {
@@ -164,6 +166,7 @@ export default {
 					description,
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
 				},
 			) => ({
 				modality: modality?.value || modality,
@@ -172,6 +175,7 @@ export default {
 				quantity: quantity || totalValueOfBooklet,
 				description,
 				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
 			}));
 
 			return tableData || [];
@@ -199,6 +203,7 @@ export default {
 				description: null,
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: [],
 			};
 		},
 

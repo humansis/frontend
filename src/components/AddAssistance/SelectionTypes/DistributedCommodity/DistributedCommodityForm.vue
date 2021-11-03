@@ -110,6 +110,31 @@
 			>
 				<b-checkbox v-model="formModel.remoteDistributionAllowed" />
 			</b-field>
+
+			<b-field
+				v-if="displayedFields.allowedProductCategoryTypes"
+				:label="$t('Allowed Product Category Types')"
+				:type="validateType('allowedProductCategoryTypes')"
+				:message="validateMsg('allowedProductCategoryTypes')"
+				:addons="false"
+			>
+				<div
+					v-for="item of options.allowedProductCategoryTypes"
+					class="mb-3"
+					:key="`product-category-type-${item}`"
+				>
+					<b-checkbox
+						v-model="formModel.allowedProductCategoryTypes"
+						:native-value="item"
+						@blur="validate('allowedProductCategoryTypes')"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ item }}
+							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
+						</div>
+					</b-checkbox>
+				</div>
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
@@ -132,9 +157,12 @@ import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
 import currencies from "@/utils/currencies";
 import Validation from "@/mixins/validation";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "DistributedCommodityForm",
+
+	components: { SvgIcon },
 
 	mixins: [Validation],
 
@@ -153,11 +181,15 @@ export default {
 				description: false,
 				totalValueOfBooklet: false,
 				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: false,
 			},
 			options: {
 				modalities: [],
 				types: [],
 				currencies,
+				allowedProductCategoryTypes: [
+					"Food", "Non-Food", "Cashback",
+				],
 			},
 			loading: {
 				modalities: false,
@@ -189,6 +221,10 @@ export default {
 			// eslint-disable-next-line func-names
 			totalValueOfBooklet: { required: requiredIf(function () {
 				return this.displayedFields.totalValueOfBooklet;
+			}) },
+			// eslint-disable-next-line func-names
+			allowedProductCategoryTypes: { required: requiredIf(function () {
+				return this.displayedFields.allowedProductCategoryTypes;
 			}) },
 		},
 	},
@@ -227,6 +263,7 @@ export default {
 						currency: true,
 						quantity: true,
 						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.SMARTCARD:
@@ -237,6 +274,7 @@ export default {
 						currency: true,
 						quantity: true,
 						remoteDistributionAllowed: true,
+						allowedProductCategoryTypes: true,
 					};
 					break;
 				case consts.COMMODITY.FOOD_RATIONS:
@@ -257,6 +295,7 @@ export default {
 						quantity: true,
 						description: true,
 						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
@@ -267,6 +306,7 @@ export default {
 						unit: true,
 						quantity: true,
 						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
@@ -278,6 +318,7 @@ export default {
 						currency: true,
 						totalValueOfBooklet: true,
 						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				default:

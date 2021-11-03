@@ -82,6 +82,7 @@ export default {
 				adm4: [],
 				dateDistribution: new Date(),
 				dateExpiration: new Date(),
+				allowedProductCategoryTypes: [],
 				target: "",
 			},
 		};
@@ -160,6 +161,7 @@ export default {
 				commodityIds,
 				dateDistribution,
 				dateExpiration,
+				allowedProductCategoryTypes,
 				name,
 				projectId,
 				target,
@@ -173,6 +175,7 @@ export default {
 				adm4Id,
 				dateDistribution: new Date(dateDistribution),
 				dateExpiration: new Date(dateExpiration),
+				allowedProductCategoryTypes,
 				target,
 				id,
 				commodityIds,
