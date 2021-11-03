@@ -109,6 +109,7 @@ export default {
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
 				remoteDistributionAllowed: null,
+				allowedProductCategoryTypes: [],
 			},
 			selectedBeneficiariesCount: 0,
 			loading: false,
@@ -385,6 +386,7 @@ export default {
 				commodities,
 				remoteDistributionAllowed: commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD
 					&& commodities[0]?.remoteDistributionAllowed,
+				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 			};
 		},
 

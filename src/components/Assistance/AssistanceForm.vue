@@ -42,6 +42,24 @@
 			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
+
+			<b-field :label="$t('Allowed Product Category Types')" :addons="false">
+				<div
+					v-for="item of options.allowedProductCategoryTypes"
+					:key="`product-category-type-${item}`"
+				>
+					<b-checkbox
+						v-model="formModel.allowedProductCategoryTypes"
+						:native-value="item"
+						:disabled="!editing"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ item }}
+							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
+						</div>
+					</b-checkbox>
+				</div>
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
@@ -60,12 +78,24 @@
 
 <script>
 import LocationForm from "@/components/LocationForm";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "AssistanceForm",
 
 	components: {
 		LocationForm,
+		SvgIcon,
+	},
+
+	data() {
+		return {
+			options: {
+				allowedProductCategoryTypes: [
+					"Food", "Non-Food", "Cashback",
+				],
+			},
+		};
 	},
 
 	props: {
