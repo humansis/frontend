@@ -113,6 +113,7 @@ export default {
 				adm4Id: "",
 				vendorNo: "",
 				contractNo: "",
+				canDoRemoteDistributions: false,
 				userId: null,
 			},
 			selectedVendor: null,
@@ -181,6 +182,7 @@ export default {
 				adm4Id: "",
 				vendorNo: "",
 				contractNo: "",
+				canDoRemoteDistributions: false,
 				userId: null,
 			};
 		},
@@ -228,6 +230,7 @@ export default {
 				canSellFood,
 				canSellNonFood,
 				canSellCashback,
+				canDoRemoteDistributions,
 			},
 		) {
 			const { data } = await UsersService.getDetailOfUser(userId);
@@ -264,6 +267,7 @@ export default {
 				user: data,
 				vendorNo,
 				contractNo,
+				canDoRemoteDistributions,
 			};
 		},
 
@@ -283,6 +287,7 @@ export default {
 				user,
 				vendorNo,
 				contractNo,
+				canDoRemoteDistributions,
 			} = vendorForm;
 			const vendorBody = {
 				name,
@@ -292,6 +297,7 @@ export default {
 				locationId,
 				vendorNo,
 				contractNo,
+				canDoRemoteDistributions,
 				shop,
 				canSellFood: categoryType.includes("Food"),
 				canSellNonFood: categoryType.includes("Non-Food"),

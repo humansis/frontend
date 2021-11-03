@@ -92,6 +92,21 @@
 
 			<b-field>
 				<template #label>
+					{{ $t('Remote Distribution Permission') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+				<b-checkbox
+					v-model="formModel.canDoRemoteDistributions"
+					:disabled="formDisabled"
+				>
+					{{ $t('Allowed') }}
+				</b-checkbox>
+			</b-field>
+
+			<b-field>
+				<template #label>
 					{{ $t('Address Street') }}
 					<span class="optional-text has-text-weight-normal is-italic">
 						- {{ $t('Optional') }}
