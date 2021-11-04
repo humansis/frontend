@@ -18,8 +18,6 @@ elif [[ $1 == "dev" ]]; then
 elif [[ $1 == "stage" ]]; then
     mv .env.stage .env
 elif [[ $1 == "demo" ]]; then
-    echo "Demo environment is not currently supported."
-    exit 0
     mv .env.demo .env
 elif [[ $1 == "proddca" ]]; then # DCA
     mv .env.proddca .env
@@ -79,10 +77,9 @@ elif [[ $1 == "stage" ]]; then
     aws s3 cp ./dist_gzipped s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3T4ZDIOJ7A023 --paths '/*'
 elif [[ $1 == "demo" ]]; then
-    echo "Not supported yet."
-    # aws s3 rm s3://demo.humansis.org --recursive
-    # aws s3 cp ./dist_gzipped s3://demo.humansis.org --recursive --acl public-read --content-encoding gzip
-    # aws cloudfront create-invalidation --distribution-id EETRVGJ9FHCMD --paths '/*'
+    aws s3 rm s3://demo.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://demo.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E3MTL7N9452SZ4 --paths '/*'
 elif [[ $1 == "proddca" ]]; then # DCA
     aws s3 rm s3://dca.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://dca.humansis.org --recursive --acl public-read --content-encoding gzip
