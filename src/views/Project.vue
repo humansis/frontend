@@ -83,6 +83,7 @@ export default {
 				dateDistribution: new Date(),
 				dateExpiration: new Date(),
 				allowedProductCategoryTypes: [],
+				cashbackLimit: null,
 				target: "",
 			},
 		};
@@ -162,6 +163,7 @@ export default {
 				dateDistribution,
 				dateExpiration,
 				allowedProductCategoryTypes,
+				cashbackLimit,
 				name,
 				projectId,
 				target,
@@ -176,6 +178,7 @@ export default {
 				dateDistribution: new Date(dateDistribution),
 				dateExpiration: new Date(dateExpiration),
 				allowedProductCategoryTypes,
+				cashbackLimit,
 				target,
 				id,
 				commodityIds,

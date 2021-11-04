@@ -20,6 +20,7 @@
 			<DistributedCommodityForm
 				close-button
 				class="modal-card"
+				:project="project"
 				:submit-button-label="$t('Create')"
 				:formModel="formModel"
 				@formSubmitted="submitCommodityForm"
@@ -110,6 +111,7 @@ export default {
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
+				cashbackLimit: 0,
 			},
 			table: {
 				data: [],
@@ -131,6 +133,10 @@ export default {
 			required: true,
 			default: 0,
 		},
+		project: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	created() {
@@ -139,7 +145,15 @@ export default {
 
 	updated() {
 		const commodities = this.modifiedTableData.map((
-			{ type, unit, quantity, description, remoteDistributionAllowed, allowedProductCategoryTypes },
+			{
+				type,
+				unit,
+				quantity,
+				description,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
+			},
 		) => ({
 			modalityType: type,
 			unit,
@@ -147,6 +161,7 @@ export default {
 			description: description || "",
 			remoteDistributionAllowed,
 			allowedProductCategoryTypes,
+			cashbackLimit,
 		}));
 
 		if (this.table.data.length) {
@@ -167,6 +182,7 @@ export default {
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
+					cashbackLimit,
 				},
 			) => ({
 				modality: modality?.value || modality,
@@ -176,6 +192,7 @@ export default {
 				description,
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
+				cashbackLimit,
 			}));
 
 			return tableData || [];
@@ -204,6 +221,7 @@ export default {
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
+				cashbackLimit: 0,
 			};
 		},
 
