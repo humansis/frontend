@@ -24,6 +24,7 @@
 				<DistributedCommodity
 					ref="distributedCommodity"
 					v-if="visibleComponents.distributedCommodity"
+					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					@updatedData="fetchDistributedCommodity"
 				/>
@@ -110,6 +111,7 @@ export default {
 				iso3: this.$store.state.country?.iso3,
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
+				cashbackLimit: 0,
 			},
 			selectedBeneficiariesCount: 0,
 			loading: false,
@@ -387,6 +389,7 @@ export default {
 				remoteDistributionAllowed: commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD
 					&& commodities[0]?.remoteDistributionAllowed,
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
+				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,
 			};
 		},
 

@@ -119,7 +119,7 @@
 				:addons="false"
 			>
 				<div
-					v-for="item of options.allowedProductCategoryTypes"
+					v-for="item of project.allowedProductCategoryTypes"
 					class="mb-3"
 					:key="`product-category-type-${item}`"
 				>
@@ -134,6 +134,18 @@
 						</div>
 					</b-checkbox>
 				</div>
+			</b-field>
+
+			<b-field
+				v-if="formModel.allowedProductCategoryTypes.includes('Cashback')"
+				:type="validateType('cashbackLimit')"
+				:message="validateMsg('cashbackLimit')"
+				:label="$t('Cashback Limit')"
+			>
+				<b-input
+					v-model="formModel.cashbackLimit"
+					@blur="validate('cashbackLimit')"
+				/>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
@@ -170,6 +182,10 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+		project: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
@@ -225,6 +241,10 @@ export default {
 			// eslint-disable-next-line func-names
 			allowedProductCategoryTypes: { required: requiredIf(function () {
 				return this.displayedFields.allowedProductCategoryTypes;
+			}) },
+			// eslint-disable-next-line func-names
+			cashbackLimit: { required: requiredIf(function () {
+				return this.formModel.allowedProductCategoryTypes.includes("Cashback");
 			}) },
 		},
 	},

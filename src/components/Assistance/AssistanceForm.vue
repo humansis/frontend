@@ -45,13 +45,13 @@
 
 			<b-field :label="$t('Allowed Product Category Types')" :addons="false">
 				<div
-					v-for="item of options.allowedProductCategoryTypes"
+					v-for="item of project.allowedProductCategoryTypes"
 					:key="`product-category-type-${item}`"
 				>
 					<b-checkbox
 						v-model="formModel.allowedProductCategoryTypes"
+						disabled
 						:native-value="item"
-						:disabled="!editing"
 					>
 						<div class="is-flex is-align-items-center">
 							{{ item }}
@@ -59,6 +59,10 @@
 						</div>
 					</b-checkbox>
 				</div>
+			</b-field>
+
+			<b-field v-if="formModel.cashbackLimit" :label="$t('Cashback Limit')">
+				<b-input v-model="formModel.cashbackLimit" disabled />
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">
