@@ -66,7 +66,6 @@
 			({{ type }})
 			{{ $t("To Be Delivered") }}
 		</p>
-
 		<b-notification
 			v-if="!table.data.length"
 			type="is-light"
