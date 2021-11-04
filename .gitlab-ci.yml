@@ -12,6 +12,7 @@ stages:
  - deploy_test
  - deploy_test3
  - deploy_stage
+ - deploy_demo
  - deploy_prod
 
 .prepare_aws: &prepare_aws
@@ -103,6 +104,21 @@ deploy prod:
     - /^v.*$/
   except:
     - branches
+  when: manual
+
+deploy demo:
+  stage: deploy_demo
+  environment:
+    name: demo
+    url: https://demo-pin.humansis.org
+  <<: *prepare_aws
+  script:
+    - yarn install
+    - ./get-info.sh
+    - ./build-deploy.sh demo
+  only:
+    - /^v.*$/
+    - /^release\/.*$/
   when: manual
 
 ###############################################
