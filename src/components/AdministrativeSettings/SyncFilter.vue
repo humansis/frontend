@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -57,6 +58,17 @@ export default {
 	methods: {
 		filterChanged(filters) {
 			this.$emit("filtersChanged", filters);
+		},
+
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				assistances: [],
+				dateFrom: null,
+				dateTo: null,
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
+			});
 		},
 
 		async fetchAssistances() {

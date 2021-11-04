@@ -23,7 +23,7 @@
 						<b-input
 							v-model="selectedFiltersOptions[filter]"
 							expanded
-							:placeholder="options.placeholder || $t('')"
+							:placeholder="options.placeholder || ''"
 							@input="filterChangeDelay(filter)"
 						/>
 						<b-button
@@ -36,7 +36,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
-							:placeholder="options.placeholder || $t('')"
+							:placeholder="options.placeholder || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button
@@ -49,7 +49,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
-							:placeholder="options.placeholder || $t('')"
+							:placeholder="options.placeholder || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button
@@ -62,7 +62,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							icon="clock"
 							expanded
-							:placeholder="options.placeholder || $t('')"
+							:placeholder="options.placeholder || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button

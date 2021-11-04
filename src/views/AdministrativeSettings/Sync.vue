@@ -43,9 +43,8 @@ export default {
 				isWaiting: false,
 			},
 			syncModel: {
-				who: "",
-				what: "",
 				rawData: "",
+				violations: "",
 			},
 		};
 	},
@@ -69,16 +68,14 @@ export default {
 
 		mapToFormModel(
 			{
-				who,
-				what,
 				rawData,
+				violations,
 			},
 		) {
 			this.syncModel = {
 				...this.syncModel,
-				who,
-				what,
-				rawData,
+				rawData: JSON.parse(rawData) || [],
+				violations: JSON.parse(violations) || [],
 			};
 		},
 

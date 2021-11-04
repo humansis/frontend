@@ -2,18 +2,10 @@
 	<form>
 		<section class="modal-card-body">
 			<b-field :label="$t('Raw Data')">
-				<b-input
-					v-model="formModel.rawData"
-					type="textarea"
-					:disabled="formDisabled"
-				/>
+				<pre><code>{{ formModel.rawData }}</code></pre>
 			</b-field>
 			<b-field :label="$t('Validation Error Messages')">
-				<b-input
-					v-model="formModel.violations"
-					type="textarea"
-					:disabled="formDisabled"
-				/>
+				<pre><code>{{ formModel.violations }}</code></pre>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">

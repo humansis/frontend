@@ -51,9 +51,20 @@
 		<template #progress>
 			<b-progress :value="table.progress" format="percent" />
 		</template>
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+			</div>
+		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<SyncFilter @filtersChanged="onFiltersChange" />
+				<SyncFilter ref="syncFilter" @filtersChanged="onFiltersChange" />
 			</b-collapse>
 		</template>
 	</Table>
@@ -70,6 +81,7 @@ import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
 import UsersService from "@/services/UsersService";
 import { Notification } from "@/utils/UI";
+import VendorService from "@/services/VendorService";
 
 export default {
 	name: "SyncList",
@@ -92,7 +104,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ type: "text", key: "id", label: "syncId" },
+					{ type: "text", key: "id", label: "Sync Id" },
 					{ type: "text", key: "username" },
 					{ type: "text", key: "vendorNo" },
 					{ type: "date", key: "createdAt", label: "Datetime" },
@@ -139,19 +151,22 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		prepareDataForTable(data) {
+		async prepareDataForTable(data) {
 			const vendorIds = [];
 
 			data.forEach((item, key) => {
 				vendorIds.push(item.vendorId);
 
+				const violations = JSON.parse(item.violations) || [];
+
 				this.table.data[key] = {
 					...item,
-					validationErrors: item.violations?.length,
+					validationErrors: violations.length,
 				};
 			});
 
-			this.prepareVendorsForTable([...new Set(vendorIds)]);
+			this.table.data = [...this.table.data];
+			await this.prepareVendorsForTable([...new Set(vendorIds)]);
 			this.table.progress = 50;
 		},
 
@@ -160,23 +175,31 @@ export default {
 			const userIds = [];
 
 			this.table.data.forEach((item, key) => {
-				const { vendorNo, userId } = vendors.find(({ id }) => item.id === id);
+				const { vendorNo, userId } = vendors.find(({ id }) => item.vendorId === id) ?? {};
 
 				userIds.push(userId);
-				this.table.data[key].vendorNo = vendorNo ?? this.$t("None");
+
+				this.table.data[key] = {
+					...this.table.data[key],
+					vendorNo,
+					userId,
+				};
 			});
 
+			this.table.data = [...this.table.data];
 			await this.prepareUsersForTable([...new Set(userIds)]);
-			this.table.progress = 100;
 		},
 
 		async prepareUsersForTable(userIds) {
 			const users = await this.getUsers(userIds);
 			this.table.data.forEach((item, key) => {
-				const { email } = users.find(({ id }) => item.id === id);
+				const { email } = users.find(({ id }) => item.userId === id) ?? {};
 
-				this.table.data[key].username = email || this.$t("None");
+				this.table.data[key].username = email;
 			});
+
+			this.table.data = [...this.table.data];
+			this.table.progress = 100;
 		},
 
 		async getUsers(ids) {
@@ -187,8 +210,21 @@ export default {
 				});
 		},
 
+		async getVendors(ids) {
+			if (!ids.length) return [];
+			return VendorService.getListOfVendors(null, null, null, null, ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+				});
+		},
+
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.syncFilter.eraseFilters();
 		},
 
 		async onFiltersChange(selectedFilters) {
