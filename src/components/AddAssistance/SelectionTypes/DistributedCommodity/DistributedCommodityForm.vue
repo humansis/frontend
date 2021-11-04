@@ -74,8 +74,12 @@
 				:message="validateMsg('quantity')"
 				:label="$t('Quantity')"
 			>
-				<b-input
+				<b-numberinput
 					v-model="formModel.quantity"
+					type="is-dark"
+					expanded
+					min="0"
+					:controls="false"
 					@blur="validate('quantity')"
 				/>
 			</b-field>
@@ -142,8 +146,13 @@
 				:message="validateMsg('cashbackLimit')"
 				:label="$t('Cashback Limit')"
 			>
-				<b-input
+				<b-numberinput
 					v-model="formModel.cashbackLimit"
+					type="is-dark"
+					expanded
+					min="0"
+					:max="formModel.quantity"
+					:controls="false"
 					@blur="validate('cashbackLimit')"
 				/>
 			</b-field>
@@ -163,7 +172,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { minValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
@@ -226,10 +235,13 @@ export default {
 			unit: { required: requiredIf(function () {
 				return this.displayedFields.unit;
 			}) },
-			// eslint-disable-next-line func-names
-			quantity: { required: requiredIf(function () {
-				return this.displayedFields.quantity;
-			}) },
+			quantity: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return this.displayedFields.quantity;
+				}),
+				minValue: minValue(1),
+			},
 			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
@@ -242,10 +254,13 @@ export default {
 			allowedProductCategoryTypes: { required: requiredIf(function () {
 				return this.displayedFields.allowedProductCategoryTypes;
 			}) },
-			// eslint-disable-next-line func-names
-			cashbackLimit: { required: requiredIf(function () {
-				return this.formModel.allowedProductCategoryTypes.includes("Cashback");
-			}) },
+			cashbackLimit: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return this.formModel.allowedProductCategoryTypes.includes("Cashback");
+				}),
+				minValue: minValue(1),
+			},
 		},
 	},
 
@@ -395,5 +410,9 @@ export default {
 	.multiselect__content-wrapper {
 		position: relative;
 	}
+}
+
+.b-numberinput input[type=number] {
+	text-align: left !important;
 }
 </style>

@@ -167,39 +167,42 @@ export default {
 
 			this.table.data = [...this.table.data];
 			await this.prepareVendorsForTable([...new Set(vendorIds)]);
-			this.table.progress = 50;
 		},
 
 		async prepareVendorsForTable(vendorIds) {
-			const vendors = await this.getVendors(vendorIds);
-			const userIds = [];
+			if (vendorIds?.length) {
+				const vendors = await this.getVendors(vendorIds);
+				const userIds = [];
 
-			this.table.data.forEach((item, key) => {
-				const { vendorNo, userId } = vendors.find(({ id }) => item.vendorId === id) ?? {};
+				this.table.data.forEach((item, key) => {
+					const { vendorNo, userId } = vendors.find(({ id }) => item.vendorId === id) ?? {};
 
-				userIds.push(userId);
+					userIds.push(userId);
 
-				this.table.data[key] = {
-					...this.table.data[key],
-					vendorNo,
-					userId,
-				};
-			});
+					this.table.data[key] = {
+						...this.table.data[key],
+						vendorNo,
+						userId,
+					};
+				});
 
-			this.table.data = [...this.table.data];
-			await this.prepareUsersForTable([...new Set(userIds)]);
+				this.table.data = [...this.table.data];
+				await this.prepareUsersForTable([...new Set(userIds)]);
+			}
 		},
 
 		async prepareUsersForTable(userIds) {
-			const users = await this.getUsers(userIds);
-			this.table.data.forEach((item, key) => {
-				const { email } = users.find(({ id }) => item.userId === id) ?? {};
+			if (userIds?.length) {
+				const users = await this.getUsers(userIds);
+				this.table.data.forEach((item, key) => {
+					const { email } = users.find(({ id }) => item.userId === id) ?? {};
 
-				this.table.data[key].username = email;
-			});
+					this.table.data[key].username = email;
+				});
 
-			this.table.data = [...this.table.data];
-			this.table.progress = 100;
+				this.table.data = [...this.table.data];
+				this.table.progress = 100;
+			}
 		},
 
 		async getUsers(ids) {
@@ -228,6 +231,7 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
+			this.table.progress = 0;
 			this.filters = selectedFilters;
 			this.table.currentPage = 1;
 			await this.fetchData();
