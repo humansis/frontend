@@ -20,6 +20,7 @@
 			<DistributedCommodityForm
 				close-button
 				class="modal-card"
+				:project="project"
 				:submit-button-label="$t('Create')"
 				:formModel="formModel"
 				@formSubmitted="submitCommodityForm"
@@ -108,6 +109,9 @@ export default {
 				quantity: "",
 				description: "",
 				totalValueOfBooklet: null,
+				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: ["Food"],
+				cashbackLimit: 0,
 			},
 			table: {
 				data: [],
@@ -129,6 +133,10 @@ export default {
 			required: true,
 			default: 0,
 		},
+		project: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	created() {
@@ -136,11 +144,24 @@ export default {
 	},
 
 	updated() {
-		const commodities = this.modifiedTableData.map(({ type, unit, quantity, description }) => ({
+		const commodities = this.modifiedTableData.map((
+			{
+				type,
+				unit,
+				quantity,
+				description,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
+			},
+		) => ({
 			modalityType: type,
 			unit,
 			value: quantity,
 			description: description || "",
+			remoteDistributionAllowed,
+			allowedProductCategoryTypes,
+			cashbackLimit,
 		}));
 
 		if (this.table.data.length) {
@@ -151,13 +172,27 @@ export default {
 	computed: {
 		modifiedTableData() {
 			const tableData = this.table.data.map((
-				{ modality, type, unit, currency, quantity, description, totalValueOfBooklet },
+				{
+					modality,
+					type,
+					unit,
+					currency,
+					quantity,
+					description,
+					totalValueOfBooklet,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				},
 			) => ({
 				modality: modality?.value || modality,
 				type: type?.value || type,
 				unit: unit || currency?.value,
 				quantity: quantity || totalValueOfBooklet,
 				description,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
 			}));
 
 			return tableData || [];
@@ -184,6 +219,9 @@ export default {
 				quantity: null,
 				description: null,
 				totalValueOfBooklet: null,
+				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: [],
+				cashbackLimit: 0,
 			};
 		},
 

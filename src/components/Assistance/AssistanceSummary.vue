@@ -57,6 +57,19 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
+					<p class="heading">{{ $t('Expiration Date') }}</p>
+					<p
+						v-if="dateExpiration"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ dateExpiration }}
+					</p>
+					<Loading v-else type="bubbles" is-normal />
+				</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
 					<p class="heading">{{ $t('Project') }}</p>
 					<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
 					<Loading v-else type="bubbles" is-normal />
@@ -179,6 +192,10 @@ export default {
 
 		dateDistribution() {
 			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm") || "";
+		},
+
+		dateExpiration() {
+			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || "";
 		},
 
 		beneficiariesCount() {

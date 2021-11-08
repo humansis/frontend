@@ -89,11 +89,20 @@
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
-			@assistanceUpdated="fetchAssistance"
+			@assistanceUpdated="fetchAssistanceData"
 		/>
 		<br>
 		<div class="columns">
 			<div class="column buttons">
+				<b-button
+					v-if="isAssistanceValidated && !amountDistributed"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="check"
+					@click="unvalidateAssistance"
+				>
+					{{ $t('Unvalidate Assistance') }}
+				</b-button>
 				<b-button
 					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"
@@ -279,6 +288,11 @@ export default {
 	},
 
 	methods: {
+		fetchAssistanceData() {
+			this.fetchAssistance();
+			this.fetchAssistanceStatistics();
+		},
+
 		async fetchAssistance() {
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
@@ -416,6 +430,33 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
+		},
+
+		unvalidateAssistance() {
+			this.$buefy.dialog.confirm({
+				title: this.$t("Unvalidate Assistance"),
+				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
+				confirmText: this.$t("Confirm"),
+				type: "is-primary",
+				onConfirm: async () => {
+					const { assistanceId, projectId } = this.$route.params;
+
+					await AssistancesService.updateAssistanceStatusValidated(
+						{ assistanceId, validated: false },
+					).then(({ status }) => {
+						if (status === 200) {
+							Toast(this.$t("Assistance Successfully Unvalidated"), "is-success");
+
+							this.$router.push({
+								name: "AssistanceEdit",
+								params: { assistanceId, projectId },
+							});
+						}
+					}).catch((e) => {
+						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
+					});
+				},
+			});
 		},
 
 		closeAssistance() {

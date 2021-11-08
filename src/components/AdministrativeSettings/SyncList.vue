@@ -1,0 +1,241 @@
+<template>
+	<Table
+		has-search
+		has-reset-sort
+		has-export
+		:data="table.data"
+		:total="table.total"
+		:current-page="table.currentPage"
+		:is-loading="isLoadingList"
+		@clicked="showDetail"
+		@pageChanged="onPageChange"
+		@sorted="onSort"
+		@changePerPage="onChangePerPage"
+		@resetSort="resetSort"
+		@search="onSearch"
+	>
+		<template v-for="column in table.columns">
+			<b-table-column
+				v-bind="column"
+				v-slot="props"
+				:sortable="column.sortable"
+				:key="column.id"
+			>
+				<ColumnField :column="column" :data="props" />
+			</b-table-column>
+		</template>
+		<b-table-column
+			v-slot="props"
+			width="145"
+			field="actions"
+			:label="$t('Actions')"
+		>
+			<div class="buttons is-right">
+				<ActionButton
+					icon="search"
+					type="is-primary"
+					:tooltip="$t('Show Detail')"
+					@click="showDetailWithId(props.row.id)"
+				/>
+			</div>
+		</b-table-column>
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</b-button>
+		</template>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+			</div>
+		</template>
+		<template #filter>
+			<b-collapse v-model="advancedSearchVisible">
+				<SyncFilter ref="syncFilter" @filtersChanged="onFiltersChange" />
+			</b-collapse>
+		</template>
+	</Table>
+</template>
+
+<script>
+import Table from "@/components/DataGrid/Table";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import SyncService from "@/services/SyncService";
+import { generateColumns } from "@/utils/datagrid";
+import grid from "@/mixins/grid";
+import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
+import permissions from "@/mixins/permissions";
+import UsersService from "@/services/UsersService";
+import { Notification } from "@/utils/UI";
+import VendorService from "@/services/VendorService";
+
+export default {
+	name: "SyncList",
+
+	components: {
+		ColumnField,
+		Table,
+		ActionButton,
+		SyncFilter,
+	},
+
+	mixins: [grid, permissions],
+
+	data() {
+		return {
+			advancedSearchVisible: false,
+			exportLoading: false,
+			filters: [],
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					{ type: "text", key: "id", label: "Sync Id" },
+					{ type: "text", key: "username" },
+					{ type: "text", key: "vendorNo" },
+					{ type: "date", key: "createdAt", label: "Datetime" },
+					{ type: "text", key: "validationErrors" }, // TODO Prepare data
+				],
+				total: 0,
+				currentPage: 1,
+				sortDirection: "",
+				sortColumn: "",
+				searchPhrase: "",
+			},
+		};
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	created() {
+		this.fetchData();
+	},
+
+	methods: {
+		async fetchData() {
+			this.isLoadingList = true;
+			this.table.progress = null;
+			this.table.columns = generateColumns(this.table.visibleColumns);
+
+			await SyncService.getListOfSync(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.searchPhrase,
+				this.filters,
+			).then(({ data, totalCount }) => {
+				this.table.data = [];
+				this.table.total = totalCount;
+
+				if (data?.length) this.prepareDataForTable(data);
+			}).catch((e) => {
+				if (e.message) console.error(e);
+			});
+
+			this.isLoadingList = false;
+		},
+
+		async prepareDataForTable(data) {
+			const vendorIds = [];
+
+			data.forEach((item, key) => {
+				vendorIds.push(item.vendorId);
+
+				const violations = JSON.parse(item.violations) || [];
+
+				this.table.data[key] = {
+					...item,
+					validationErrors: violations.length,
+				};
+			});
+
+			this.table.data = [...this.table.data];
+			await this.prepareVendorsForTable([...new Set(vendorIds)]);
+		},
+
+		async prepareVendorsForTable(vendorIds) {
+			if (vendorIds?.length) {
+				const vendors = await this.getVendors(vendorIds);
+				const userIds = [];
+
+				this.table.data.forEach((item, key) => {
+					const { vendorNo, userId } = vendors.find(({ id }) => item.vendorId === id) ?? {};
+
+					userIds.push(userId);
+
+					this.table.data[key] = {
+						...this.table.data[key],
+						vendorNo,
+						userId,
+					};
+				});
+
+				this.table.data = [...this.table.data];
+				await this.prepareUsersForTable([...new Set(userIds)]);
+			}
+		},
+
+		async prepareUsersForTable(userIds) {
+			if (userIds?.length) {
+				const users = await this.getUsers(userIds);
+				this.table.data.forEach((item, key) => {
+					const { email } = users.find(({ id }) => item.userId === id) ?? {};
+
+					this.table.data[key].username = email;
+				});
+
+				this.table.data = [...this.table.data];
+				this.table.progress = 100;
+			}
+		},
+
+		async getUsers(ids) {
+			if (!ids?.length) return [];
+			return UsersService.getListOfUsers(null, null, null, null, ids, "userId")
+				.then(({ data }) => data).catch((e) => {
+					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+				});
+		},
+
+		async getVendors(ids) {
+			if (!ids.length) return [];
+			return VendorService.getListOfVendors(null, null, null, null, ids)
+				.then(({ data }) => data)
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+				});
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.syncFilter.eraseFilters();
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.table.progress = 0;
+			this.filters = selectedFilters;
+			this.table.currentPage = 1;
+			await this.fetchData();
+		},
+	},
+};
+</script>

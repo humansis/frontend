@@ -2,7 +2,7 @@
 	<div>
 		<h1 class="title has-text-centered">{{ $t('Administrative Settings') }}</h1>
 
-		<b-tabs v-model="selectedTab">
+		<b-tabs v-model="selectedTab" destroy-on-hide>
 			<b-tab-item icon="user" :label="$t('Users')">
 				<Users />
 			</b-tab-item>
@@ -18,35 +18,9 @@
 			<b-tab-item icon="th-large" :label="$t('Organization Services')">
 				<OrganizationServices />
 			</b-tab-item>
-			<!---
-			<b-tab-item
-				label="Countries"
-				icon="globe-europe"
-			>
-				<CountriesPage />
+			<b-tab-item icon="th-large" :label="$t('Sync')">
+				<Sync />
 			</b-tab-item>
-
-			<b-tab-item
-				label="Languages"
-				icon="language"
-			>
-				<LanguagesPage />
-			</b-tab-item>
-
-			<b-tab-item
-				label="Currencies"
-				icon="dollar-sign"
-			>
-				<CurrenciesList />
-			</b-tab-item>
-
-			<b-tab-item
-				label="Translations"
-				icon="people-arrows"
-			>
-				<TranslationsList />
-			</b-tab-item>
-			--->
 		</b-tabs>
 	</div>
 </template>
@@ -56,28 +30,18 @@ import Users from "@/views/AdministrativeSettings/Users";
 import Donors from "@/views/AdministrativeSettings/Donors";
 import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
 import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
+import Sync from "@/views/AdministrativeSettings/Sync";
 import permissions from "@/mixins/permissions";
-/*
-import Countries from "@/views/AdministrativeSettings/Countries";
-import Languages from "@/views/AdministrativeSettings/Languages";
-import CurrenciesList from "@/views/AdministrativeSettings/CurrenciesList";
-import TranslationsList from "@/views/AdministrativeSettings/TranslationsList";
-*/
 
 export default {
 	name: "AdministrativeSettings",
 
 	components: {
-		/*
-		TranslationsList,
-		CurrenciesList,
-		Countries,
-		Languages,
-		*/
 		OrganizationServices,
 		MyOrganizations,
 		Donors,
 		Users,
+		Sync,
 	},
 
 	mixins: [permissions],

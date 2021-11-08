@@ -74,8 +74,12 @@
 				:message="validateMsg('quantity')"
 				:label="$t('Quantity')"
 			>
-				<b-input
+				<b-numberinput
 					v-model="formModel.quantity"
+					type="is-dark"
+					expanded
+					min="0"
+					:controls="false"
 					@blur="validate('quantity')"
 				/>
 			</b-field>
@@ -103,6 +107,55 @@
 					@blur="validate('totalValueOfBooklet')"
 				/>
 			</b-field>
+
+			<b-field
+				v-if="displayedFields.remoteDistributionAllowed"
+				:label="$t('Remote Distribution Enabled')"
+			>
+				<b-checkbox v-model="formModel.remoteDistributionAllowed" />
+			</b-field>
+
+			<b-field
+				v-if="displayedFields.allowedProductCategoryTypes"
+				:label="$t('Allowed Product Category Types')"
+				:type="validateType('allowedProductCategoryTypes')"
+				:message="validateMsg('allowedProductCategoryTypes')"
+				:addons="false"
+			>
+				<div
+					v-for="item of project.allowedProductCategoryTypes"
+					class="mb-3"
+					:key="`product-category-type-${item}`"
+				>
+					<b-checkbox
+						v-model="formModel.allowedProductCategoryTypes"
+						:native-value="item"
+						@blur="validate('allowedProductCategoryTypes')"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ item }}
+							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
+						</div>
+					</b-checkbox>
+				</div>
+			</b-field>
+
+			<b-field
+				v-if="formModel.allowedProductCategoryTypes.includes('Cashback')"
+				:type="validateType('cashbackLimit')"
+				:message="validateMsg('cashbackLimit')"
+				:label="$t('Cashback Limit')"
+			>
+				<b-numberinput
+					v-model="formModel.cashbackLimit"
+					type="is-dark"
+					expanded
+					min="0"
+					:max="formModel.quantity"
+					:controls="false"
+					@blur="validate('cashbackLimit')"
+				/>
+			</b-field>
 		</section>
 		<footer class="modal-card-foot">
 			<b-button @click="closeForm">
@@ -119,15 +172,18 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { minValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
 import currencies from "@/utils/currencies";
 import Validation from "@/mixins/validation";
+import SvgIcon from "@/components/SvgIcon";
 
 export default {
 	name: "DistributedCommodityForm",
+
+	components: { SvgIcon },
 
 	mixins: [Validation],
 
@@ -135,6 +191,10 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+		project: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
@@ -145,11 +205,16 @@ export default {
 				quantity: false,
 				description: false,
 				totalValueOfBooklet: false,
+				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: false,
 			},
 			options: {
 				modalities: [],
 				types: [],
 				currencies,
+				allowedProductCategoryTypes: [
+					"Food", "Non-Food", "Cashback",
+				],
 			},
 			loading: {
 				modalities: false,
@@ -170,10 +235,13 @@ export default {
 			unit: { required: requiredIf(function () {
 				return this.displayedFields.unit;
 			}) },
-			// eslint-disable-next-line func-names
-			quantity: { required: requiredIf(function () {
-				return this.displayedFields.quantity;
-			}) },
+			quantity: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return this.displayedFields.quantity;
+				}),
+				minValue: minValue(1),
+			},
 			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
@@ -182,6 +250,17 @@ export default {
 			totalValueOfBooklet: { required: requiredIf(function () {
 				return this.displayedFields.totalValueOfBooklet;
 			}) },
+			// eslint-disable-next-line func-names
+			allowedProductCategoryTypes: { required: requiredIf(function () {
+				return this.displayedFields.allowedProductCategoryTypes;
+			}) },
+			cashbackLimit: {
+				// eslint-disable-next-line func-names
+				required: requiredIf(function () {
+					return this.formModel.allowedProductCategoryTypes.includes("Cashback");
+				}),
+				minValue: minValue(1),
+			},
 		},
 	},
 
@@ -210,7 +289,6 @@ export default {
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARTCARD:
 				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
@@ -219,6 +297,19 @@ export default {
 						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
+						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
+					};
+					break;
+				case consts.COMMODITY.SMARTCARD:
+					this.displayedFields = {
+						unit: false,
+						description: false,
+						totalValueOfBooklet: false,
+						currency: true,
+						quantity: true,
+						remoteDistributionAllowed: true,
+						allowedProductCategoryTypes: true,
 					};
 					break;
 				case consts.COMMODITY.FOOD_RATIONS:
@@ -238,6 +329,8 @@ export default {
 						unit: true,
 						quantity: true,
 						description: true,
+						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
@@ -247,6 +340,8 @@ export default {
 						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
+						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
@@ -257,6 +352,8 @@ export default {
 						description: false,
 						currency: true,
 						totalValueOfBooklet: true,
+						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
 					};
 					break;
 				default:
@@ -313,5 +410,9 @@ export default {
 	.multiselect__content-wrapper {
 		position: relative;
 	}
+}
+
+.b-numberinput input[type=number] {
+	text-align: left !important;
 }
 </style>

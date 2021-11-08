@@ -165,7 +165,7 @@ export default {
 			const assistanceId = Number(this.$route.params.assistanceId);
 			this.validateAssistanceButtonLoading = true;
 
-			await AssistancesService.updateAssistanceToStatusValidated(
+			await AssistancesService.updateAssistanceStatusValidated(
 				{ assistanceId, validated: true },
 			).then(({ status }) => {
 				if (status === 200) {

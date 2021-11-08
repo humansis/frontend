@@ -28,6 +28,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		message: {
+			type: String,
+			default: "",
+		},
 	},
 
 	computed: {
@@ -50,7 +54,7 @@ export default {
 
 			this.$buefy.dialog.confirm({
 				title,
-				message: `${message}?`,
+				message: this.message || `${message}?`,
 				confirmText: this.$t("Delete"),
 				type: "is-danger",
 				hasIcon: true,

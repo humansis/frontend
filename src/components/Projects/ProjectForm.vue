@@ -195,6 +195,31 @@
 				/>
 			</b-field>
 
+			<b-field
+				:label="$t('Allowed Product Category Types')"
+				:type="validateType('allowedProductCategoryTypes')"
+				:message="validateMsg('allowedProductCategoryTypes')"
+				:addons="false"
+			>
+				<div
+					v-for="item of options.allowedProductCategoryTypes"
+					class="mb-3"
+					:key="`product-category-type-${item}`"
+				>
+					<b-checkbox
+						v-model="formModel.allowedProductCategoryTypes"
+						:native-value="item"
+						:disabled="formDisabled"
+						@blur="validate('allowedProductCategoryTypes')"
+					>
+						<div class="is-flex is-align-items-center">
+							{{ item }}
+							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
+						</div>
+					</b-checkbox>
+				</div>
+			</b-field>
+
 			<b-field>
 				<template #label>
 					{{ $t('Notes') }}
@@ -234,13 +259,17 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import MultiSelectTag from "@/components/MultiSelectTag";
+import SvgIcon from "@/components/SvgIcon";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
 export default {
 	name: "ProjectForm",
 
-	components: { MultiSelectTag },
+	components: {
+		MultiSelectTag,
+		SvgIcon,
+	},
 
 	mixins: [Validation],
 
@@ -257,6 +286,9 @@ export default {
 				sectors: [],
 				donors: [],
 				targetTypes: [],
+				allowedProductCategoryTypes: [
+					"Food", "Non-Food", "Cashback",
+				],
 			},
 			sectorsLoading: true,
 			donorsLoading: true,
@@ -279,6 +311,7 @@ export default {
 			totalTarget: { required, minValue: minValue(1) },
 			projectInvoiceAddressLocal: {},
 			projectInvoiceAddressEnglish: {},
+			allowedProductCategoryTypes: {},
 		},
 	},
 

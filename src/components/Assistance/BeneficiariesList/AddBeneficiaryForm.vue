@@ -253,12 +253,11 @@ export default {
 					assistanceTarget = "beneficiaries";
 			}
 
-			await BeneficiariesService
-				.addOrRemoveBeneficiaryFromAssistance(
-					this.$route.params.assistanceId,
-					assistanceTarget,
-					body,
-				)
+			await BeneficiariesService.addOrRemoveBeneficiaryFromAssistance(
+				this.$route.params.assistanceId,
+				assistanceTarget,
+				body,
+			)
 				.then(() => {
 					Toast(successMessage, "is-success");
 				})
