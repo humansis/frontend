@@ -386,11 +386,22 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
-				remoteDistributionAllowed: commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD
-					&& commodities[0]?.remoteDistributionAllowed,
+				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,
 			};
+		},
+
+		remoteAllowed(commodity) {
+			let result = null;
+
+			if (commodity?.modalityType === consts.COMMODITY.SMARTCARD) {
+				result = !!commodity?.remoteDistributionAllowed;
+			} else {
+				result = null;
+			}
+
+			return result;
 		},
 
 		fetchActivityDetails(data) {
