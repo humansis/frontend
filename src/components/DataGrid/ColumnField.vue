@@ -89,10 +89,14 @@
 
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
-			<SvgIcon
-				v-if="data.row[column.field] && data.row[column.field].length > 0"
-				:items="data.row[column.field]"
-			/>
+			<span v-if="data.row[column.field] && data.row[column.field].length > 0">
+				<SvgIcon
+					:items="data.row[column.field]"
+				/>
+				<!-- Special case for assistances grid -->
+				<span v-if="isAssistanceRemote(data.row)" class="remote-disribution-flag">R</span>
+			</span>
+
 			<p v-else>
 				{{ $t('None') }}
 			</p>
@@ -158,9 +162,23 @@ export default {
 		},
 	},
 
+	methods: {
+		isAssistanceRemote(data) {
+			return !!data.remoteDistributionAllowed;
+		},
+	},
+
 	props: {
 		column: Object,
 		data: Object,
 	},
 };
 </script>
+
+<style scoped>
+.remote-disribution-flag {
+	position: relative;
+	top: -20px;
+	left: -5px;
+}
+</style>
