@@ -111,7 +111,7 @@ export default {
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
-				cashbackLimit: 0,
+				cashbackLimit: null,
 			},
 			table: {
 				data: [],
@@ -221,7 +221,7 @@ export default {
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
-				cashbackLimit: 0,
+				cashbackLimit: null,
 			};
 		},
 
