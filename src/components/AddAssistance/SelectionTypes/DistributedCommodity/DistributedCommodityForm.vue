@@ -143,7 +143,7 @@
 			<b-field
 				v-if="formModel.allowedProductCategoryTypes.includes('Cashback')"
 				:type="validateType('cashbackLimit')"
-				:message="validateMsg('cashbackLimit')"
+				:message="validateMsg('cashbackLimit', 'Required minimum is 1')"
 				:label="$t('Cashback Limit')"
 			>
 				<b-numberinput
