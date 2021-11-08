@@ -150,10 +150,10 @@
 					v-model="formModel.cashbackLimit"
 					type="is-dark"
 					expanded
-					min="0"
+					min="1"
 					:max="formModel.quantity"
 					:controls="false"
-					@blur="validate('cashbackLimit')"
+					@input="validate('cashbackLimit')"
 				/>
 			</b-field>
 		</section>
@@ -255,10 +255,7 @@ export default {
 				return this.displayedFields.allowedProductCategoryTypes;
 			}) },
 			cashbackLimit: {
-				// eslint-disable-next-line func-names
-				required: requiredIf(function () {
-					return this.formModel.allowedProductCategoryTypes.includes("Cashback");
-				}),
+				required: requiredIf((form) => form.allowedProductCategoryTypes.includes("Cashback")),
 				minValue: minValue(1),
 			},
 		},
@@ -390,6 +387,8 @@ export default {
 
 		submitForm() {
 			this.$v.$touch();
+
+			console.log(this.$v);
 			if (this.$v.$invalid) {
 				return;
 			}

@@ -105,6 +105,12 @@
 						>
 							<SvgIcon :items="commodity" />
 						</b-tooltip>
+						<span
+							v-if="assistanceRemote"
+							class="remote-disribution-flag"
+						>
+							R
+						</span>
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
@@ -174,6 +180,10 @@ export default {
 			return this.assistance?.description;
 		},
 
+		assistanceRemote() {
+			return !!this.assistance?.remoteDistributionAllowed;
+		},
+
 		provinceName() {
 			return this.province?.name || "";
 		},
@@ -235,5 +245,11 @@ export default {
 <style scoped>
 .box {
 	height: 90px;
+}
+
+.remote-disribution-flag {
+	position: relative;
+	top: -18px;
+	left: -10px;
 }
 </style>

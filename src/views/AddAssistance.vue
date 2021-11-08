@@ -111,7 +111,7 @@ export default {
 				iso3: this.$store.state.country?.iso3,
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
-				cashbackLimit: 0,
+				cashbackLimit: null,
 			},
 			selectedBeneficiariesCount: 0,
 			loading: false,
