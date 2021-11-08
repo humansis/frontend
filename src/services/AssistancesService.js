@@ -285,18 +285,19 @@ export default {
 		return { data, status };
 	},
 
-	async updateAssistanceDateOfDistribution(id, date) {
+	async updateAssistanceDateOfDistribution(id, dateDistribution, dateExpiration) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
 			body: {
-				dateDistribution: date,
+				dateDistribution,
+				dateExpiration,
 			},
 		});
 		return { data, status };
 	},
 
-	async updateAssistanceToStatusValidated({ assistanceId, validated }) {
+	async updateAssistanceStatusValidated({ assistanceId, validated }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",

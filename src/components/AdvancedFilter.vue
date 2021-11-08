@@ -19,17 +19,55 @@
 						:closeOnSelect="!options.multiple"
 						@input="filterChanged(filter)"
 					/>
+					<b-field v-else-if="options.type === 'text'">
+						<b-input
+							v-model="selectedFiltersOptions[filter]"
+							expanded
+							:placeholder="options.placeholder || ''"
+							@input="filterChangeDelay(filter)"
+						/>
+						<b-button
+							icon-left="times"
+							@click="removeFilterValue(filter)"
+						/>
+					</b-field>
 					<b-field v-else-if="options.type === 'date'">
 						<b-datepicker
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
-							:placeholder="options.placeholder || $t('')"
+							:placeholder="options.placeholder || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button
 							icon-left="times"
-							@click="removeDate(filter)"
+							@click="removeFilterValue(filter)"
+						/>
+					</b-field>
+					<b-field v-else-if="options.type === 'datetime'">
+						<b-datetimepicker
+							v-model="selectedFiltersOptions[filter]"
+							expanded
+							icon-right="calendar"
+							:placeholder="options.placeholder || ''"
+							@input="filterChanged(filter)"
+						/>
+						<b-button
+							icon-left="times"
+							@click="removeFilterValue(filter)"
+						/>
+					</b-field>
+					<b-field v-else-if="options.type === 'time'">
+						<b-timepicker
+							v-model="selectedFiltersOptions[filter]"
+							icon="clock"
+							expanded
+							:placeholder="options.placeholder || ''"
+							@input="filterChanged(filter)"
+						/>
+						<b-button
+							icon-left="times"
+							@click="removeFilterValue(filter)"
 						/>
 					</b-field>
 				</b-field>
@@ -46,6 +84,12 @@ export default {
 		selectedFiltersOptions: Object,
 		filtersOptions: Object,
 		multiline: Boolean,
+	},
+
+	data() {
+		return {
+			timer: null,
+		};
 	},
 
 	computed: {
@@ -66,18 +110,29 @@ export default {
 						filters[filterKey].push(value[select]);
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					if (this.filtersOptions[key].type === "date") {
+					if (this.filtersOptions[key].type === "date" || this.filtersOptions[key].type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
+					} else if (this.filtersOptions[key].type === "text") {
+						filters[filterKey] = this.selectedFiltersOptions[key];
 					} else {
 						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 					}
 				}
 			});
+
 			this.$emit("filtersChanged", filters, filterName);
 		},
 
-		removeDate(filter) {
+		filterChangeDelay(filter) {
+			clearTimeout(this.timer);
+
+			this.timer = setTimeout(() => {
+				this.filterChanged(filter);
+			}, 150);
+		},
+
+		removeFilterValue(filter) {
 			this.selectedFiltersOptions[filter] = null;
 			this.filterChanged(filter);
 		},

@@ -28,6 +28,7 @@
 			<AssistanceForm
 				close-button
 				class="modal-card"
+				:project="project"
 				:formModel="assistanceModel"
 				:editing="assistanceModal.isEditing"
 				@formClosed="closeAssistanceModal"
@@ -80,7 +81,9 @@ export default {
 				adm3: [],
 				adm4: [],
 				dateDistribution: new Date(),
-				// dateExpiration: new Date(),
+				dateExpiration: new Date(),
+				allowedProductCategoryTypes: [],
+				cashbackLimit: null,
 				target: "",
 			},
 		};
@@ -105,9 +108,11 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		async editAssistance({ id, dateDistribution }) {
-			const date = this.$moment(dateDistribution).format("YYYY-MM-DD hh:mm");
-			await AssistancesService.updateAssistanceDateOfDistribution(id, date)
+		async editAssistance({ id, dateDistribution, dateExpiration }) {
+			const startDate = this.$moment(dateDistribution).format("YYYY-MM-DD hh:mm");
+			const endDate = this.$moment(dateExpiration).format("YYYY-MM-DD hh:mm");
+
+			await AssistancesService.updateAssistanceDateOfDistribution(id, startDate, endDate)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Assistance Successfully Updated"), "is-success");
@@ -156,7 +161,9 @@ export default {
 				id,
 				commodityIds,
 				dateDistribution,
-				// dateExpiration,
+				dateExpiration,
+				allowedProductCategoryTypes,
+				cashbackLimit,
 				name,
 				projectId,
 				target,
@@ -169,7 +176,9 @@ export default {
 				adm3Id,
 				adm4Id,
 				dateDistribution: new Date(dateDistribution),
-				// dateExpiration: new Date(dateExpiration),
+				dateExpiration: new Date(dateExpiration),
+				allowedProductCategoryTypes,
+				cashbackLimit,
 				target,
 				id,
 				commodityIds,
