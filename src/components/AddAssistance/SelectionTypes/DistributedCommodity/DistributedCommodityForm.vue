@@ -81,6 +81,7 @@
 					min="0"
 					:controls="false"
 					@blur="validate('quantity')"
+					@input="checkQuantity"
 				/>
 			</b-field>
 
@@ -131,6 +132,7 @@
 						v-model="formModel.allowedProductCategoryTypes"
 						:native-value="item"
 						@blur="validate('allowedProductCategoryTypes')"
+						@input="checkAllowedProductCategoryTypes"
 					>
 						<div class="is-flex is-align-items-center">
 							{{ item }}
@@ -151,9 +153,11 @@
 					type="is-dark"
 					expanded
 					min="1"
+					:disabled="cashbackLimitDisabled"
 					:max="formModel.quantity"
 					:controls="false"
-					@input="validate('cashbackLimit')"
+					@blur="validate('cashbackLimit')"
+					@input="checkCashbackLimit"
 				/>
 			</b-field>
 		</section>
@@ -212,15 +216,21 @@ export default {
 				modalities: [],
 				types: [],
 				currencies,
-				allowedProductCategoryTypes: [
-					"Food", "Non-Food", "Cashback",
-				],
 			},
 			loading: {
 				modalities: false,
 				types: false,
 			},
 		};
+	},
+
+	computed: {
+		cashbackLimitDisabled() {
+			return this.formModel.quantity >= 1
+				&& this.formModel.cashbackLimit === this.formModel.quantity
+				&& this.formModel.allowedProductCategoryTypes.length === 1
+				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
+		},
 	},
 
 	validations: {
@@ -266,6 +276,34 @@ export default {
 	},
 
 	methods: {
+		checkQuantity() {
+			if (this.displayedFields.allowedProductCategoryTypes
+				&& this.formModel.allowedProductCategoryTypes.length === 1
+				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				this.formModel.cashbackLimit = this.formModel.quantity;
+			}
+
+			if (this.displayedFields.allowedProductCategoryTypes
+				&& !this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				this.formModel.cashbackLimit = null;
+			}
+		},
+
+		checkCashbackLimit() {
+			if (this.formModel.allowedProductCategoryTypes.length === 1
+				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				this.formModel.cashbackLimit = this.formModel.quantity;
+			}
+		},
+
+		checkAllowedProductCategoryTypes() {
+			if (this.formModel.quantity >= 1) {
+				this.formModel.cashbackLimit = this.formModel.quantity;
+			} else {
+				this.formModel.cashbackLimit = null;
+			}
+		},
+
 		onModalitySelect({ code }) {
 			this.formModel.type = "";
 			this.fetchModalityTypes(code);
@@ -276,6 +314,8 @@ export default {
 				quantity: false,
 				description: false,
 				totalValueOfBooklet: false,
+				remoteDistributionAllowed: false,
+				allowedProductCategoryTypes: false,
 			};
 		},
 
@@ -388,7 +428,6 @@ export default {
 		submitForm() {
 			this.$v.$touch();
 
-			console.log(this.$v);
 			if (this.$v.$invalid) {
 				return;
 			}

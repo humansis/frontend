@@ -80,7 +80,6 @@ import grid from "@/mixins/grid";
 import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
 import UsersService from "@/services/UsersService";
-import { Notification } from "@/utils/UI";
 import VendorService from "@/services/VendorService";
 
 export default {
@@ -108,7 +107,7 @@ export default {
 					{ type: "text", key: "username" },
 					{ type: "text", key: "vendorNo" },
 					{ type: "date", key: "createdAt", label: "Datetime" },
-					{ type: "text", key: "validationErrors" }, // TODO Prepare data
+					{ type: "text", key: "validationErrors" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -157,11 +156,17 @@ export default {
 			data.forEach((item, key) => {
 				vendorIds.push(item.vendorId);
 
-				const violations = JSON.parse(item.violations) || [];
+				let violations = [];
+
+				try {
+					violations = JSON.parse(item.violations) || [];
+				} catch (e) {
+					violations = null;
+				}
 
 				this.table.data[key] = {
 					...item,
-					validationErrors: violations.length,
+					validationErrors: violations?.length,
 				};
 			});
 
@@ -209,7 +214,7 @@ export default {
 			if (!ids?.length) return [];
 			return UsersService.getListOfUsers(null, null, null, null, ids, "userId")
 				.then(({ data }) => data).catch((e) => {
-					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+					if (e.message) console.error(e.message);
 				});
 		},
 
@@ -218,7 +223,7 @@ export default {
 			return VendorService.getListOfVendors(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+					if (e.message) console.error(e.message);
 				});
 		},
 
