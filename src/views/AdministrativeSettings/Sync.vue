@@ -74,9 +74,17 @@ export default {
 		) {
 			this.syncModel = {
 				...this.syncModel,
-				rawData: JSON.parse(rawData) || [],
-				violations: JSON.parse(violations) || [],
+				rawData: this.parseJSON(rawData),
+				violations: this.parseJSON(violations),
 			};
+		},
+
+		parseJSON(json) {
+			try {
+				return JSON.parse(json);
+			} catch (e) {
+				return json;
+			}
 		},
 
 		closeSyncModal() {
