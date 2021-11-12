@@ -180,9 +180,9 @@ export default {
 				const userIds = [];
 
 				this.table.data.forEach((item, key) => {
-					const { vendorNo, userId } = vendors.find(({ id }) => item.vendorId === id) ?? {};
+					const { vendorNo, userId } = vendors?.find(({ id }) => item.vendorId === id) ?? {};
 
-					userIds.push(userId);
+					if (userId) userIds.push(userId);
 
 					this.table.data[key] = {
 						...this.table.data[key],
@@ -199,6 +199,7 @@ export default {
 		async prepareUsersForTable(userIds) {
 			if (userIds?.length) {
 				const users = await this.getUsers(userIds);
+
 				this.table.data.forEach((item, key) => {
 					const { email } = users.find(({ id }) => item.userId === id) ?? {};
 
@@ -206,6 +207,8 @@ export default {
 				});
 
 				this.table.data = [...this.table.data];
+				this.table.progress = 100;
+			} else {
 				this.table.progress = 100;
 			}
 		},
