@@ -223,6 +223,8 @@ export default {
 				if (!this.$refs.selectionCriteria.submit()) return;
 			}
 
+			if (!this.isRemoteAndValid()) return;
+
 			this.loading = true;
 			await AssistancesService.createAssistance(this.assistanceBody)
 				.then(({ status, data: { id } }) => {
@@ -244,6 +246,30 @@ export default {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 				});
 			this.loading = false;
+		},
+
+		isRemoteAndValid() {
+			const { remoteDistributionAllowed } = this.assistanceBody;
+
+			if (remoteDistributionAllowed) {
+				const allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
+					.every(({ data }) => data.some(({ criteria, value }) => criteria.code === "hasValidSmartcard" && value.code));
+
+				if (allCriteriaHasValidCard) {
+					return true;
+				}
+
+				this.$buefy.dialog.alert({
+					title: this.$t("Warning"),
+					message: this.$t(`Please add "Has valid card = true" criterion for each group`),
+					type: "is-warning",
+					hasIcon: true,
+				});
+
+				return false;
+			}
+
+			return true;
 		},
 
 		async mapAssistance(assistance) {
