@@ -40,7 +40,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>{{ $t('Corrected Errors') }}:</td>
+								<td>{{ $t('Valid Errors') }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"
