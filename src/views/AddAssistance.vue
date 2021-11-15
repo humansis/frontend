@@ -223,8 +223,7 @@ export default {
 				if (!this.$refs.selectionCriteria.submit()) return;
 			}
 
-			// TODO Uncomment this
-			// if (!this.isRemoteAndValid()) return;
+			if (!this.isRemoteAndValid()) return;
 
 			this.loading = true;
 			await AssistancesService.createAssistance(this.assistanceBody)
