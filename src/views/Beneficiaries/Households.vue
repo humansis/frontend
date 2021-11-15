@@ -315,7 +315,7 @@ export default {
 			if (!this.householdsSelects) {
 				ids = this.table.checkedRows.map((item) => item.id);
 			}
-			await BeneficiariesService.exportHouseholds(format, ids)
+			await BeneficiariesService.exportHouseholds(format, ids, this.filters)
 				.then(({ data }) => {
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
