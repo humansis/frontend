@@ -436,6 +436,7 @@ export default {
 							state: consts.STATE.INTEGRITY_CHECKING,
 							successMessage: "Integrity Check Started Successfully",
 							goNext: false,
+							withConfirm: false,
 						});
 
 						this.filesUpload = false;
