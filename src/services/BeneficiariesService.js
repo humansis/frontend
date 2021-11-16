@@ -227,11 +227,12 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportHouseholds(format, ids) {
+	async exportHouseholds(format, ids, filters) {
 		const idsText = ids ? idsToUri(ids) : "";
-
 		const formatText = format ? `type=${format}` : "";
-		const { data } = await download({ uri: `households/exports?${formatText + idsText}` });
+		const filtersUri = filters ? filtersToUri(filters) : "";
+
+		const { data } = await download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
 		return { data };
 	},
 

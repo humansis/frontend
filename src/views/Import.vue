@@ -331,10 +331,11 @@ export default {
 			});
 		},
 
-		onChangeImportState({ state, successMessage, goNext }) {
-			if (this.statistics.amountIntegrityFailed
+		onChangeImportState({ state, successMessage, goNext, withConfirm = true }) {
+			if ((this.statistics.amountIntegrityFailed
 				|| this.statistics.amountDuplicities
-				|| this.columnsError
+				|| this.columnsError)
+				&& withConfirm
 			) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
