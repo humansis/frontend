@@ -310,23 +310,27 @@ export default {
 		},
 
 		async exportHouseholds(format) {
-			this.exportLoading = true;
-			let ids = null;
-			if (!this.householdsSelects) {
-				ids = this.table.checkedRows.map((item) => item.id);
+			if (this.table.total > 10000) {
+				Notification(this.$t("You can export up to 10 000 households"), "is-warning");
+			} else {
+				this.exportLoading = true;
+				let ids = null;
+				if (!this.householdsSelects) {
+					ids = this.table.checkedRows.map((item) => item.id);
+				}
+				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
+					.then(({ data }) => {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Households.${format}`;
+						link.click();
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+					});
+				this.exportLoading = false;
 			}
-			await BeneficiariesService.exportHouseholds(format, ids, this.filters)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Households.${format}`;
-					link.click();
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
 		},
 
 		onRowsChecked(rows) {
