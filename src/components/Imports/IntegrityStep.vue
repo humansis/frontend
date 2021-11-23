@@ -398,8 +398,6 @@ export default {
 		downloadAffectedFile(id, file) {
 			ImportService.downloadFileWithInvalidEntriesFromImport(id)
 				.then(({ data }) => {
-					Toast(this.$t("Download Started"), "is-success");
-
 					const blob = new Blob([data], { type: data.type });
 					const link = document.createElement("a");
 					link.href = window.URL.createObjectURL(blob);
