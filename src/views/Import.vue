@@ -155,6 +155,29 @@ export default {
 
 			return result;
 		},
+
+		integrityStepHasError() {
+			if (this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT
+				&& this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
+				&& this.importStatus === consts.STATUS.INTEGRITY_CHECK) {
+				return this.statistics.amountIntegrityFailed;
+			}
+
+			return false;
+		},
+
+		identityStepHasError() {
+			if (this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT
+				&& this.importStatus === consts.STATUS.IDENTITY_CHECK_FAILED
+				&& this.importStatus === consts.STATUS.IDENTITY_CHECK
+				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK_CORRECT
+				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK_FAILED
+				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK) {
+				return this.statistics.amountDuplicities || this.columnsError;
+			}
+
+			return false;
+		},
 	},
 
 	data() {
@@ -332,11 +355,7 @@ export default {
 		},
 
 		onChangeImportState({ state, successMessage, goNext, withConfirm = true }) {
-			if ((this.statistics.amountIntegrityFailed
-				|| this.statistics.amountDuplicities
-				|| this.columnsError)
-				&& withConfirm
-			) {
+			if ((this.integrityStepHasError || this.identityStepHasError) && withConfirm) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
