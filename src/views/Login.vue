@@ -102,6 +102,8 @@ export default {
 	},
 
 	mounted() {
+		this.urlLogin();
+
 		this.$store.commit("fullPage", true);
 	},
 
@@ -135,6 +137,21 @@ export default {
 			"storeCountry",
 			"storeAvailableProjects",
 		]),
+
+		urlLogin() {
+			if (process.env.VUE_APP_ENV === "prod") return;
+
+			const { username, password } = this.$route.query;
+
+			if (username && password) {
+				this.formModel = {
+					username,
+					password,
+				};
+
+				this.submitForm();
+			}
+		},
 
 		async submitForm() {
 			this.$v.$touch();
