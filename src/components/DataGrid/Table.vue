@@ -72,6 +72,18 @@
 		>
 			<slot />
 
+			<template #empty>
+				<b-notification
+					class="notification-no-data"
+					type="is-light"
+					has-icon
+					icon="eye-slash"
+					:closable="false"
+				>
+					<p class="mt-3">{{ $t('No data') }}</p>
+				</b-notification>
+			</template>
+
 			<template v-if="paginated" #bottom-left>
 				<p>{{ $t('Per Page') }}: </p>
 				<MultiSelect
