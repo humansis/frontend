@@ -16,6 +16,22 @@
 .modal-card-body {
   padding-top: $default-padding;
   padding-bottom: $default-padding;
+
+  .multiselect__content-wrapper {
+    position: relative;
+  }
+
+  .datepicker {
+      .dropdown {
+        display: flex;
+        flex-direction: column;
+
+        .dropdown-menu {
+          position: relative;
+          max-width: 320px;
+        }
+      }
+  }
 }
 
 .modal-card-foot {
