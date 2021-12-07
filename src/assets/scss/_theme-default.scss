@@ -6,6 +6,16 @@ $body-size: 14px !default;
 $size-base: 1rem;
 $default-padding: $size-base * 1.5;
 
+/* Environments colors */
+$dev-color: #cfcfe2;
+$dev-color-hover: #b7b7d5;
+$test-color: #e2d9cf;
+$test-color-hover: #cfc5ba;
+$stage-color: #cfe2e2;
+$stage-color-hover: #b6cbcb;
+$demo-color: #cfe2cf;
+$demo-color-hover: #b6cdb6;
+
 /* Base: Color */
 $base-color: #074F60;
 $base-color-light: #f5f8fa;
