@@ -2,7 +2,7 @@
 	<aside
 		v-show="isAsideVisible"
 		class="aside is-placed-left"
-		:class="{'is-expanded': isAsideExpanded}"
+		:class="[asideBackgroundClass, {'is-expanded': isAsideExpanded}]"
 	>
 		<div ref="container" class="aside-container">
 			<div class="image">
@@ -11,6 +11,8 @@
 				</router-link>
 			</div>
 			<div class="git-info">
+				<p>{{ organization }}</p>
+				<p>{{ environment }}</p>
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 					{{ appVersion }}
 				</p>
@@ -255,15 +257,29 @@ export default {
 			"isAsideExpanded",
 		]),
 
+		environment() {
+			return process.env.VUE_APP_ENV.toUpperCase();
+		},
+
+		organization() {
+			return process.env.VUE_APP_ORGANIZATION;
+		},
+
 		appVersion() {
 			if (gitInfo.appVersion.includes("-")) {
 				if (this.isAsideExpanded) {
 					return gitInfo.appVersion;
 				}
 				const temp = gitInfo.appVersion.split("-");
+
 				return temp[0];
 			}
+
 			return gitInfo.appVersion;
+		},
+
+		asideBackgroundClass() {
+			return `${process.env.VUE_APP_ENV}-aside-style`;
 		},
 	},
 
@@ -296,5 +312,12 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	font-size: .9rem;
+	font-weight: bold;
+	pointer-events: none;
+}
+
+.git-info p{
+	text-align: center;
 }
 </style>

@@ -100,6 +100,20 @@
 				>
 					{{ $t('Approve and Save') }}
 				</b-button>
+				<b-button
+					v-if="finishedImport"
+					type="is-primary"
+					@click="$router.push({ name: 'Imports' })"
+				>
+					{{ $t('Back to Imports') }}
+				</b-button>
+				<b-button
+					v-if="finishedImport"
+					type="is-primary"
+					@click="$router.push({ name: 'Households' })"
+				>
+					{{ $t('Go to Beneficiaries') }}
+				</b-button>
 			</div>
 		</div>
 	</div>
@@ -177,6 +191,11 @@ export default {
 
 		amountEntriesToImport() {
 			return this.importStatistics?.amountEntriesToImport || 0;
+		},
+
+		finishedImport() {
+			return this.importStatus === consts.STATUS.FINISH
+				|| this.importStatus === consts.STATUS.IMPORTING;
 		},
 
 		canCancelImport() {
