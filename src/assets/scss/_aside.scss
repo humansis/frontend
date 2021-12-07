@@ -9,7 +9,6 @@ aside.aside {
   padding: 0;
   box-shadow: $aside-box-shadow;
   background: $aside-background-color;
-  background-image: $base-gradient;
 
   &.is-placed-right {
     @include transition(right);
@@ -97,6 +96,94 @@ aside.aside {
 html.has-aside-right {
   aside.aside.is-placed-right {
     right: 0;
+  }
+}
+
+.dev-aside-style {
+  background: $dev-color !important;
+
+  .menu-list {
+    a {
+      color: white;
+
+      &.is-active {
+        background-color: $dev-color-hover;
+      }
+
+      &:hover {
+        background-color: $dev-color-hover;
+      }
+    }
+
+    li ul {
+      background-color: $dev-color-hover !important;
+    }
+  }
+}
+
+.test-aside-style {
+  background: $test-color !important;
+
+  .menu-list {
+    a {
+      color: white;
+
+      &.is-active {
+        background-color: $test-color-hover;
+      }
+
+      &:hover {
+        background-color: $test-color-hover;
+      }
+    }
+
+    li ul {
+      background-color: $test-color-hover !important;
+    }
+  }
+}
+
+.stage-aside-style {
+  background: $stage-color !important;
+
+  .menu-list {
+    a {
+      color: white;
+
+      &.is-active {
+        background-color: $stage-color-hover;
+      }
+
+      &:hover {
+        background-color: $stage-color-hover;
+      }
+    }
+
+    li ul {
+      background-color: $stage-color-hover !important;
+    }
+  }
+}
+
+.demo-aside-style {
+  background: $demo-color !important;
+
+  .menu-list {
+    a {
+      color: white;
+
+      &.is-active {
+        background-color: $demo-color-hover;
+      }
+
+      &:hover {
+        background-color: $demo-color-hover;
+      }
+    }
+
+    li ul {
+      background-color: $demo-color-hover !important;
+    }
   }
 }
 
