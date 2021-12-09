@@ -4,6 +4,8 @@
 
 .card {
   &.has-table {
+    overflow: visible;
+
     .card-content {
       padding: 0;
     }
