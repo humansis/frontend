@@ -28,11 +28,20 @@ export default {
 		},
 
 		// Methods for Data Grid
-		async prepareProjectForTable(projectIds) {
+		async prepareProjectForTable(projectIds, hasLink = false) {
 			const projects = await this.getProjects(projectIds);
+
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
+				if (hasLink) {
+					this.table.data[key].project = {
+						link: `/project/${item.projectId}`,
+						name: projects.find(({ id }) => id === item.projectId)?.name || "",
+					};
+				} else {
+					this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
+				}
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
@@ -92,11 +101,19 @@ export default {
 			this.reload();
 		},
 
-		async prepareBeneficiaryForTable(beneficiaryIds) {
+		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false) {
 			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
 			this.table.data.forEach((item, key) => {
 				const beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries);
+
 				if (beneficiary) {
+					if (hasLink) {
+						this.table.data[key].beneficiaryId = {
+							link: `/beneficiaries/households/edit/${beneficiary.householdId}`,
+							name: item.beneficiaryId,
+						};
+					}
+
 					this.table.data[key].localGivenName = beneficiary.localGivenName;
 					this.table.data[key].localFamilyName = beneficiary.localFamilyName;
 				}
@@ -105,11 +122,19 @@ export default {
 			this.reload();
 		},
 
-		async prepareAssistanceForTable(assistanceIds) {
+		async prepareAssistanceForTable(assistanceIds, hasLink = false) {
 			const assistances = await this.getAssistances(assistanceIds);
 			this.table.data.forEach((item, key) => {
 				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
-				this.table.data[key].assistance = assistance.name;
+
+				if (hasLink) {
+					this.table.data[key].assistance = {
+						link: `/project/${item.projectId}/assistance/detail/${item.assistanceId}`,
+						name: assistances.find(({ id }) => id === item.assistanceId)?.name || "",
+					};
+				} else {
+					this.table.data[key].assistance = assistance.name;
+				}
 			});
 			this.table.progress += 10;
 			this.reload();
