@@ -100,7 +100,7 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="buttons flex-end">
+				<div v-if="hasToCreateButton" class="buttons flex-end">
 					<b-button
 						class="mt-2 mr-3"
 						type="is-success"
@@ -140,6 +140,11 @@ export default {
 		header: {
 			type: String,
 			required: true,
+		},
+
+		hasToCreateButton: {
+			type: Boolean,
+			default: true,
 		},
 	},
 

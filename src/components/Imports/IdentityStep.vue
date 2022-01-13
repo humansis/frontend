@@ -100,6 +100,7 @@
 					:header="$t('Duplicity Cases')"
 					@loaded="onDuplicityLoaded"
 					@updated="update"
+					:has-to-create-button="false"
 				/>
 			</div>
 		</div>
