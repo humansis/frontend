@@ -12,7 +12,7 @@
 			</div>
 			<div class="git-info">
 				<p>{{ organization }}</p>
-				<p>{{ environment }}</p>
+				<p><strong>{{ environment }}</strong></p>
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 					{{ appVersion }}
 				</p>
@@ -25,6 +25,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Home' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Home')" position="is-right" always>
@@ -38,6 +39,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Projects' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Projects')" position="is-right" always>
@@ -49,6 +51,7 @@
 							icon="user-friends"
 							class="to-dropdown-item"
 							:active="beneficiariesActive"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 							@click="beneficiariesActive = !beneficiariesActive"
 						>
 							<template #label>
@@ -62,6 +65,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Households' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Households')" position="is-right" always>
@@ -75,6 +79,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Institutions' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Institutions')" position="is-right" always>
@@ -88,6 +93,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Communities' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Communities')" position="is-right" always>
@@ -102,6 +108,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Vendors' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Vendors')" position="is-right" always>
@@ -115,6 +122,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Imports' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Imports')" position="is-right" always>
@@ -127,6 +135,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Reports' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Reports')" position="is-right" always>
@@ -140,6 +149,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Vouchers' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Vouchers')" position="is-right" always>
@@ -151,6 +161,7 @@
 							icon="cog"
 							class="to-dropdown-item"
 							:active="configurationActive"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 							@click="configurationActive = !configurationActive"
 						>
 							<template #label>
@@ -165,6 +176,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'Products' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Products')" position="is-right" always>
@@ -179,6 +191,7 @@
 								exact-active-class="is-active"
 								tag="router-link"
 								:to="{ name: 'CountrySpecificOptions' }"
+								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
 									<b-tooltip :label="$t('Country specifics')" position="is-right" always>
@@ -193,6 +206,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Administrative Settings' }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip :label="$t('Administrative Settings')" position="is-right" always>
@@ -205,6 +219,7 @@
 							exact-active-class="is-active"
 							tag="router-link"
 							:to="{ name: 'Transactions', query: { tab: 'distributions' } }"
+							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
 								<b-tooltip label="Transactions" position="is-right" always>
@@ -212,20 +227,6 @@
 								</b-tooltip>
 							</template>
 						</b-menu-item>
-						<!--
-						<b-menu-item
-							icon="eye"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Logs' }"
-						>
-							<template #label>
-								<b-tooltip label="Logs" position="is-right" always>
-									Logs
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						-->
 					</b-menu-list>
 				</b-menu>
 			</div>
@@ -248,6 +249,7 @@ export default {
 			gitInfo,
 			beneficiariesActive: false,
 			configurationActive: false,
+			isSmallerMenuItem: false,
 		};
 	},
 
@@ -289,7 +291,21 @@ export default {
 		}
 	},
 
+	mounted() {
+		this.checkScreenHeight();
+
+		window.addEventListener("resize", this.checkScreenHeight);
+	},
+
+	destroyed() {
+		window.removeEventListener("resize", this.checkScreenHeight);
+	},
+
 	methods: {
+		checkScreenHeight() {
+			this.isSmallerMenuItem = window.innerHeight < 480;
+		},
+
 		isProjectsActive() {
 			const { name } = this.$route;
 
@@ -302,7 +318,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .git-info {
 	position: absolute;
 	bottom: 20px;
@@ -313,11 +329,21 @@ export default {
 	align-items: center;
 	width: 100%;
 	font-size: .9rem;
-	font-weight: bold;
 	pointer-events: none;
+	opacity: .8;
+	line-height: 1.2;
 }
 
-.git-info p{
+.git-info p {
 	text-align: center;
+	margin-bottom: 1px;
+}
+
+.git-info p strong {
+	color: #ffffff;
+}
+
+.small-menu-item a {
+	padding: .6rem 0 !important;
 }
 </style>

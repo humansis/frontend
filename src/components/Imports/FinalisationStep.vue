@@ -194,12 +194,16 @@ export default {
 		},
 
 		finishedImport() {
+			if (!this.importStatus) return false;
+
 			return this.importStatus === consts.STATUS.FINISH
-				|| this.importStatus === consts.STATUS.IMPORTING;
+				|| this.importStatus === consts.STATUS.IMPORTING
+				|| this.importStatus === consts.STATUS.CANCEL;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
+			return this.importStatus
+				&& this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},

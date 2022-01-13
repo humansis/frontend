@@ -51,7 +51,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t('Resolved Duplicities and Correct Records')}}:</td>
+							<td>{{ $t('Resolved Duplicities')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -100,6 +100,7 @@
 					:header="$t('Duplicity Cases')"
 					@loaded="onDuplicityLoaded"
 					@updated="update"
+					:has-to-create-button="false"
 				/>
 			</div>
 		</div>

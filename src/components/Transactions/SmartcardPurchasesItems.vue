@@ -114,12 +114,12 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiaryId", label: "Beneficiary" },
+					{ key: "beneficiaryId", label: "Beneficiary", type: "link" },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "idNumber" },
-					{ key: "project" },
-					{ key: "assistance" },
+					{ key: "project", type: "link" },
+					{ key: "assistance", type: "link" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },
@@ -208,9 +208,9 @@ export default {
 				locationIds.push(item.locationId);
 			});
 
-			this.prepareProjectForTable([...new Set(projectIds)]);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
+			this.prepareProjectForTable([...new Set(projectIds)], true);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
+			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
 			this.prepareVendorForTable([...new Set(vendorIds)]);
 			this.prepareProductForTable([...new Set(productIds)]);
 			this.prepareAdm1ForTable([...new Set(adm1Ids)]);
