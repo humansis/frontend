@@ -10,6 +10,16 @@
 			{{ data.row[column.field] || this.$t("None") }}
 		</template>
 
+		<!-- Link to detail -->
+		<template v-if="column.type === 'link'">
+			<router-link
+				class="table-link"
+				:to="getLink(data.row[column.field])" target="_blank"
+			>
+				{{ getLinkName(data.row[column.field]) }}
+			</router-link>
+		</template>
+
 		<!-- Count array items -->
 		<template v-if="column.type === 'count'">
 			<p v-if="data.row[column.field].length">
@@ -166,6 +176,14 @@ export default {
 		isAssistanceRemote(data) {
 			return !!data.remoteDistributionAllowed;
 		},
+
+		getLink(field) {
+			return field?.link || "";
+		},
+
+		getLinkName(field) {
+			return field?.name || "";
+		},
 	},
 
 	props: {
@@ -180,5 +198,14 @@ export default {
 	position: relative;
 	top: -20px;
 	left: -5px;
+}
+
+.table-link {
+	color: #0D92B3;
+	font-weight: bold;
+}
+
+.table-link:hover {
+	text-decoration: underline;
 }
 </style>

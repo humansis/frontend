@@ -381,6 +381,7 @@ export default {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
 							this.$router.push({ name: "Imports" });
+							Toast("Import Canceled", "is-success");
 						}
 
 						if (this.$route.name === "Import") {
@@ -428,6 +429,7 @@ export default {
 				"Canceled Successfully",
 				true,
 			);
+
 			await this.fetchData();
 		},
 	},
