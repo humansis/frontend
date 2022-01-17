@@ -324,11 +324,17 @@ export default {
 					link.click();
 				})
 				.catch((e) => {
-					if (this.table.total > 10000) {
+					if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+
+					/*
+					if (this.table.total > 10000 && (e.name !== "Error"
+					|| e.name !== "Something went wrong")) {
 						Notification(
-							this.$t(`Too much beneficiaries in households (${this.table.total}). Limit is 10000`), "is-warning",
+							this.$t(`Too much beneficiaries in households
+							(${this.table.total}). Limit is 10000`), "is-warning",
 						);
-					} else if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+					} else
+					 */
 				});
 			this.exportLoading = false;
 		},
