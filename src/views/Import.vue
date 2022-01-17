@@ -380,8 +380,8 @@ export default {
 				.then(({ status }) => {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
-							this.$router.push({ name: "Imports" });
 							Toast("Import Canceled", "is-success");
+							this.changeTab(4);
 						}
 
 						if (this.$route.name === "Import") {
