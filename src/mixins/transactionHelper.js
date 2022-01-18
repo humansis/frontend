@@ -109,7 +109,7 @@ export default {
 				if (beneficiary) {
 					if (hasLink) {
 						this.table.data[key].beneficiaryId = {
-							link: `/beneficiaries/households/edit/${beneficiary.householdId}`,
+							link: `/beneficiaries/households/summary/${beneficiary.householdId}`,
 							name: item.beneficiaryId,
 						};
 					}
