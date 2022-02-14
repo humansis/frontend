@@ -52,6 +52,7 @@
 										{{ $t('Row') }} {{ queueId }}
 									</b-tag>
 									<b-tag
+										v-if="status"
 										class="mt-2"
 										type="is-light"
 									>
@@ -238,8 +239,7 @@ export default {
 
 			this.recordItems.forEach((item, key) => {
 				const queueItem = queueItems?.find(({ id }) => id === item.queueId);
-
-				const parsedValues = JSON.parse(queueItem?.values);
+				const parsedValues = queueItem?.values;
 
 				let values = "";
 
@@ -247,7 +247,13 @@ export default {
 					parsedValues.forEach((parsedValue, parsedValueKey) => {
 						Object.entries(parsedValue).forEach(([attr, value]) => {
 							if (this.visibleBeneficiaryAttributes.includes(attr)) {
-								values += `${attr}: ${value}, `;
+								let finalValue = value;
+
+								if (typeof value !== "string") {
+									finalValue = JSON.stringify(value);
+								}
+
+								values += `${attr}: ${finalValue}, `;
 							}
 						});
 
