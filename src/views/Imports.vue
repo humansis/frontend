@@ -16,11 +16,21 @@
 					@onExport="downloadTemplate"
 				/>
 				<b-button
+					class="mr-3"
 					type="is-primary"
 					icon-left="plus"
 					@click="addNewImport"
 				>
 					{{ $t('New') }}
+				</b-button>
+				<b-button
+					tag="a"
+					type="is-primary"
+					icon-left="question"
+					href="https://docs.humansis.org/display/HD/Imports"
+					target="_blank"
+				>
+					{{ $t('Help') }}
 				</b-button>
 			</div>
 		</div>
