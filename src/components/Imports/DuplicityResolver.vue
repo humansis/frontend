@@ -66,12 +66,15 @@
 								<span v-html="beneficiaries" />
 							</td>
 							<td class="td-width-30">
-								{{ reasons }}
+								<div v-html="reasons" />
 							</td>
 							<td>
 								<b-field grouped>
 									<b-button
-										:class="['is-link button-to-update', toUpdate ? '' : 'is-outlined']"
+										:class="[
+											'is-link button-to-update',
+											(toUpdate || status === 'To Update') ? '' : 'is-outlined'
+										]"
 										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toUpdateLoading"
 										@click="resolveToUpdate(
@@ -84,7 +87,10 @@
 										{{ $t('To Update') }}
 									</b-button>
 									<b-button
-										:class="['is-info button-to-link', toLink ? '' : 'is-outlined']"
+										:class="[
+											'is-info button-to-link',
+											(toUpdate || status === 'To Link') ? '' : 'is-outlined'
+										]"
 										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toLinkLoading"
 										@click="resolveToLink(
