@@ -89,7 +89,7 @@
 									<b-button
 										:class="[
 											'is-info button-to-link',
-											(toUpdate || status === 'To Link') ? '' : 'is-outlined'
+											(toLink || status === 'To Link') ? '' : 'is-outlined'
 										]"
 										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toLinkLoading"
