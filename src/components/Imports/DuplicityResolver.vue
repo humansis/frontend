@@ -16,7 +16,9 @@
 					status,
 					duplicities,
 					toCreateLoading,
-					disabled
+					disabled,
+					toUpdate,
+					toLink,
 				}, recordKey) of recordItems"
 				:key="recordKey"
 				class="resolve-table"
@@ -64,14 +66,16 @@
 								<span v-html="beneficiaries" />
 							</td>
 							<td class="td-width-30">
-								{{ reasons }}
+								<div v-html="reasons" />
 							</td>
 							<td>
-								<div class="buttons flex-end">
+								<b-field grouped>
 									<b-button
-										class="mb-2 mr-0"
-										type="is-link"
-										:disabled="disabled"
+										:class="[
+											'is-link button-to-update',
+											(toUpdate || status === 'To Update') ? '' : 'is-outlined'
+										]"
+										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toUpdateLoading"
 										@click="resolveToUpdate(
 											queueId,
@@ -83,9 +87,11 @@
 										{{ $t('To Update') }}
 									</b-button>
 									<b-button
-										class="mb-2 ml-2"
-										type="is-info"
-										:disabled="disabled"
+										:class="[
+											'is-info button-to-link',
+											(toUpdate || status === 'To Link') ? '' : 'is-outlined'
+										]"
+										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toLinkLoading"
 										@click="resolveToLink(
 											queueId,
@@ -96,7 +102,8 @@
 									>
 										{{ $t('To Link') }}
 									</b-button>
-								</div>
+								</b-field>
+
 							</td>
 						</tr>
 					</tbody>
@@ -389,6 +396,8 @@ export default {
 			}
 
 			this.recordItems[recordKey].disabled = true;
+			this.recordItems[recordKey].toUpdate = state === consts.ITEM_STATUS.TO_UPDATE;
+			this.recordItems[recordKey].toLink = state === consts.ITEM_STATUS.TO_LINK;
 
 			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
 				.then(({ status, data }) => {
@@ -425,8 +434,19 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .td-width-30 {
 	width: 30%;
+}
+
+.button-to-update {
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.button-to-link {
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	border-left: none;
 }
 </style>
