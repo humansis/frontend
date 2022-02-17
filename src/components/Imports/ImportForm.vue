@@ -13,21 +13,22 @@
 				/>
 			</b-field>
 			<b-field
-				:label="$t('Project')"
-				:type="validateType('project')"
-				:message="validateMsg('project')"
+				:label="$t('Projects')"
+				:type="validateType('projects')"
+				:message="validateMsg('projects')"
 			>
 				<MultiSelect
-					v-model="formModel.project"
+					v-model="formModel.projects"
 					searchable
+					multiple
 					label="name"
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:loading="projectsLoading"
 					:disabled="formDisabled || isEditing"
 					:options="options.projects"
-					:class="validateMultiselect('project')"
-					@select="validate('project')"
+					:class="validateMultiselect('projects')"
+					@select="validate('projects')"
 				/>
 			</b-field>
 
@@ -90,7 +91,7 @@ export default {
 	validations: {
 		formModel: {
 			title: { required },
-			project: { required },
+			projects: { required },
 			description: {},
 		},
 	},
