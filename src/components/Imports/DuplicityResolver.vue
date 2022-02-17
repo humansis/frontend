@@ -416,8 +416,6 @@ export default {
 					}
 				}).catch((e) => {
 					if (e.message) {
-						Notification(`${this.$t("Not Solved")} ${e}`, "is-danger");
-
 						if (duplicityKey !== null) {
 							this.recordItems[recordKey].duplicities[duplicityKey][button] = false;
 						} else {
