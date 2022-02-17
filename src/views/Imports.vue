@@ -92,7 +92,7 @@ export default {
 			importModel: {
 				id: null,
 				title: null,
-				project: null,
+				projects: [],
 				projectId: null,
 				description: null,
 			},
@@ -139,7 +139,7 @@ export default {
 				...this.importModel,
 				id: null,
 				title: null,
-				project: null,
+				projects: null,
 				projectId: null,
 				description: null,
 			};
@@ -174,14 +174,14 @@ export default {
 				id,
 				title,
 				description,
-				projectId,
+				projects,
 			},
 		) {
 			this.importModel = {
 				...this.importModel,
 				id,
 				title,
-				project: this.options.projects.find((item) => item.id === projectId),
+				projects: this.options.projects.filter((item) => projects.includes(item.id)),
 				description,
 			};
 		},
@@ -190,14 +190,14 @@ export default {
 			const {
 				id,
 				title,
-				project,
+				projects,
 				description,
 			} = importForm;
 
 			const importBody = {
 				id,
 				title,
-				projectId: project?.id,
+				projects: projects.map((item) => item.id),
 				description,
 			};
 
