@@ -66,7 +66,7 @@
 				</table>
 			</div>
 
-			<div class="buttons mt-5 flex-end">
+			<div class="buttons mt-5 space-between">
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
@@ -75,24 +75,26 @@
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
-				<b-button
-					v-if="amountDuplicities"
-					type="is-primary"
-					icon-right="tasks"
-					:loading="resolveDuplicitiesLoading"
-					@click="resolveDuplicities"
-				>
-					{{ $t('Resolve Duplicities') }}
-				</b-button>
-				<b-button
-					v-if="canStartSimilarityCheck"
-					type="is-primary"
-					icon-right="play-circle"
-					:loading="changeStateButtonLoading"
-					@click="startSimilarityCheck"
-				>
-					{{ $t('Start Similarity Check') }}
-				</b-button>
+				<div>
+					<b-button
+						v-if="amountDuplicities"
+						type="is-primary"
+						icon-right="tasks"
+						:loading="resolveDuplicitiesLoading"
+						@click="resolveDuplicities"
+					>
+						{{ $t('Resolve Duplicities') }}
+					</b-button>
+					<b-button
+						v-if="canStartSimilarityCheck"
+						type="is-primary"
+						icon-right="play-circle"
+						:loading="changeStateButtonLoading"
+						@click="startSimilarityCheck"
+					>
+						{{ $t('Start Similarity Check') }}
+					</b-button>
+				</div>
 			</div>
 
 			<div v-if="duplicitiesContentOpened">
