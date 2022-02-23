@@ -69,7 +69,7 @@
 
 				<hr>
 
-				<div class="buttons mt-5 flex-end">
+				<div class="buttons mt-5 space-between">
 					<b-button
 						v-if="canCancelImport"
 						type="is-light is-danger"
@@ -78,41 +78,44 @@
 					>
 						{{ $t('Cancel Import') }}
 					</b-button>
-					<b-button
-						v-if="canUploadAndDownloadAffectedRecords"
-						type="is-primary"
-						icon-right="file-download"
-						:loading="downloadAffectedRecordsLoading"
-						@click="getAffectedRecords"
-					>
-						{{ $t('Get Affected Records') }}
-					</b-button>
-					<b-button
-						v-if="canUploadAndDownloadAffectedRecords"
-						type="is-primary"
-						icon-right="file-upload"
-						@click="filesUpload = !filesUpload"
-					>
-						{{ $t("Upload Corrected Records") }}
-					</b-button>
-					<b-button
-						v-if="canStartIntegrityCheckAgain"
-						type="is-primary"
-						icon-right="play-circle"
-						:loading="startIntegrityCheckAgainLoading"
-						@click="startIntegrityCheckAgain"
-					>
-						{{ $t('Start Integrity Check Again') }}
-					</b-button>
-					<b-button
-						v-if="canStartIdentityCheck"
-						type="is-primary"
-						icon-right="play-circle"
-						:loading="changeStateButtonLoading"
-						@click="startIdentityCheck"
-					>
-						{{ $t('Start Identity Check') }}
-					</b-button>
+					<div>
+
+						<b-button
+							v-if="canUploadAndDownloadAffectedRecords"
+							type="is-primary"
+							icon-right="file-download"
+							:loading="downloadAffectedRecordsLoading"
+							@click="getAffectedRecords"
+						>
+							{{ $t('Get Affected Records') }}
+						</b-button>
+						<b-button
+							v-if="canUploadAndDownloadAffectedRecords"
+							type="is-primary"
+							icon-right="file-upload"
+							@click="filesUpload = !filesUpload"
+						>
+							{{ $t("Upload Corrected Records") }}
+						</b-button>
+						<b-button
+							v-if="canStartIntegrityCheckAgain"
+							type="is-primary"
+							icon-right="play-circle"
+							:loading="startIntegrityCheckAgainLoading"
+							@click="startIntegrityCheckAgain"
+						>
+							{{ $t('Start Integrity Check Again') }}
+						</b-button>
+						<b-button
+							v-if="canStartIdentityCheck"
+							type="is-primary"
+							icon-right="play-circle"
+							:loading="changeStateButtonLoading"
+							@click="startIdentityCheck"
+						>
+							{{ $t('Start Identity Check') }}
+						</b-button>
+					</div>
 				</div>
 
 				<b-field v-if="filesUpload">

@@ -46,7 +46,7 @@
 
 			<hr>
 
-			<div class="buttons mt-3 flex-end">
+			<div class="buttons mt-3 space-between">
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
