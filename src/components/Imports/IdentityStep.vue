@@ -78,6 +78,24 @@
 				<div>
 					<b-button
 						v-if="amountDuplicities"
+						:type="['is-link' , { 'is-outlined': this.resolversAllActive
+							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
+						:loading="resolversAllLoading"
+						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
+					>
+						{{ $t('Update All') }}
+					</b-button>
+					<b-button
+						v-if="amountDuplicities"
+						:type="['is-info' , { 'is-outlined': this.resolversAllActive
+							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
+						:loading="resolversAllLoading"
+						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
+					>
+						{{ $t('Link All') }}
+					</b-button>
+					<b-button
+						v-if="amountDuplicities"
 						type="is-primary"
 						icon-right="tasks"
 						:loading="resolveDuplicitiesLoading"
@@ -112,6 +130,8 @@
 <script>
 import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
+import ImportService from "@/services/ImportService";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DuplicityStep",
@@ -122,12 +142,15 @@ export default {
 
 	data() {
 		return {
+			consts,
 			importStatistics: {},
 			duplicitiesContentOpened: false,
 			file: {},
 			changeStateButtonLoading: false,
 			resolveDuplicitiesLoading: false,
 			importStatus: "",
+			resolversAllLoading: false,
+			resolversAllActive: "",
 		};
 	},
 
@@ -194,6 +217,22 @@ export default {
 	},
 
 	methods: {
+		changeBulkDuplicitiesStatus(status) {
+			const { importId } = this.$route.params;
+			this.resolversAllLoading = false;
+
+			ImportService.changeBulkDuplicitiesStatus(importId, { status })
+				.then((response) => {
+					if (response.status === 202) {
+						this.resolversAllActive = status;
+						Toast(this.$t("Duplicities were resolved"), "is-success");
+					}
+				}).finally(() => {
+					this.resolversAllLoading = false;
+					this.$emit("updated");
+				});
+		},
+
 		resolveDuplicities() {
 			if (!this.duplicitiesContentOpened) this.resolveDuplicitiesLoading = true;
 			this.duplicitiesContentOpened = true;
