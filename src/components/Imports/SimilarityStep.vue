@@ -66,7 +66,7 @@
 				</table>
 			</div>
 
-			<div class="buttons mt-5 flex-end">
+			<div class="buttons mt-5 space-between">
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"

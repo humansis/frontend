@@ -82,7 +82,7 @@
 
 			<hr>
 
-			<div class="buttons mt-5 flex-end">
+			<div class="buttons mt-5 space-between">
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
@@ -91,29 +91,31 @@
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
-				<b-button
-					v-if="finalisationStepActive"
-					type="is-primary"
-					icon-right="save"
-					:loading="changeStateButtonLoading"
-					@click="approveAndSave"
-				>
-					{{ $t('Approve and Save') }}
-				</b-button>
-				<b-button
-					v-if="finishedImport"
-					type="is-primary"
-					@click="$router.push({ name: 'Imports' })"
-				>
-					{{ $t('Back to Imports') }}
-				</b-button>
-				<b-button
-					v-if="finishedImport"
-					type="is-primary"
-					@click="$router.push({ name: 'Households' })"
-				>
-					{{ $t('Go to Beneficiaries') }}
-				</b-button>
+				<div>
+					<b-button
+						v-if="finalisationStepActive"
+						type="is-primary"
+						icon-right="save"
+						:loading="changeStateButtonLoading"
+						@click="approveAndSave"
+					>
+						{{ $t('Approve and Save') }}
+					</b-button>
+					<b-button
+						v-if="finishedImport"
+						type="is-primary"
+						@click="$router.push({ name: 'Imports' })"
+					>
+						{{ $t('Back to Imports') }}
+					</b-button>
+					<b-button
+						v-if="finishedImport"
+						type="is-primary"
+						@click="$router.push({ name: 'Households' })"
+					>
+						{{ $t('Go to Beneficiaries') }}
+					</b-button>
+				</div>
 			</div>
 		</div>
 	</div>
