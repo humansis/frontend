@@ -75,6 +75,17 @@ export default {
 		return { data, status };
 	},
 
+	async changeBulkDuplicitiesStatus(importId, body) {
+		const { data, status } = await fetcher({
+			uri: `imports/${importId}/duplicities`,
+			method: "PATCH",
+			body,
+			tryRequest: true,
+		});
+
+		return { data, status };
+	},
+
 	async getStatisticsInImport(importId) {
 		const { data, status } = await fetcher({
 			uri: `imports/${importId}/statistics`,

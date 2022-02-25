@@ -278,6 +278,7 @@ export default {
 		async prepareDuplicityCandidatesForDuplicity(duplicityCandidateIds) {
 			const households = await this.getHouseholds(duplicityCandidateIds);
 
+			// TODO This needs refactor
 			this.recordItems.forEach(({ duplicities }, recordKey) => {
 				if (duplicities?.length && households?.length) {
 					duplicities.forEach(async (duplicity, duplicityKey) => {
