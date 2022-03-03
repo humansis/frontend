@@ -239,7 +239,7 @@ export default {
 			await this.fetchData();
 		},
 
-		prepareDataForTable(data) {
+		async prepareDataForTable(data) {
 			const projectIds = [];
 			const userIds = [];
 
@@ -252,15 +252,18 @@ export default {
 
 			this.table.progress = 50;
 
-			this.prepareProjectsForTable([...new Set(projectIds)]);
-			this.prepareUsersForTable([...new Set(userIds)]);
+			await this.prepareProjectsForTable([...new Set(projectIds)]);
+			await this.prepareUsersForTable([...new Set(userIds)]);
 		},
 
 		async prepareProjectsForTable(projectIds) {
 			const projects = await this.getProjects(projectIds);
+
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = projects?.find(({ id }) => id === item.projectId)?.name || this.$t("None");
+				const projectsSet = projects?.filter(({ id }) => item.projects?.includes(id));
+				this.table.data[key].project = projectsSet.map(({ name }) => (name)).join(", ");
 			});
+
 			this.table.progress = 75;
 			this.reload();
 		},
