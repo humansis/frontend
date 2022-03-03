@@ -123,7 +123,8 @@ export default {
 		},
 
 		importProject() {
-			return this.project?.name || "";
+			const projects = this.projects?.map(({ name }) => (name)) || [];
+			return projects.join(", ");
 		},
 
 		importStatusType() {
@@ -184,7 +185,7 @@ export default {
 		return {
 			importDetail: {},
 			statistics: {},
-			project: {},
+			projects: [],
 			loadingChangeStateButton: false,
 			statisticsInterval: null,
 			importFiles: [],
@@ -285,7 +286,7 @@ export default {
 				this.importDetail = data;
 				this.stepsRedirect(data.status);
 
-				this.fetchProject(data.projectId);
+				this.fetchProjects(data.projects);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 			});
@@ -301,9 +302,9 @@ export default {
 			}
 		},
 
-		fetchProject(projectId) {
-			ProjectService.getDetailOfProject(projectId).then(({ data }) => {
-				this.project = data;
+		fetchProjects(projectIds) {
+			ProjectService.getListOfProjects(null, null, null, null, projectIds).then(({ data }) => {
+				this.projects = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 			});
