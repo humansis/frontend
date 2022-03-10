@@ -80,7 +80,7 @@
 						v-if="amountDuplicities"
 						:type="['is-link' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
-						:loading="resolversAllLoading"
+						:disabled="resolversAllLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
 					>
 						{{ $t('Update All') }}
@@ -89,7 +89,7 @@
 						v-if="amountDuplicities"
 						:type="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
-						:loading="resolversAllLoading"
+						:disabled="resolversAllLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
 					>
 						{{ $t('Link All') }}
@@ -117,10 +117,10 @@
 
 			<div v-if="duplicitiesContentOpened">
 				<DuplicityResolver
+					ref="duplicityResolver"
 					:header="$t('Duplicity Cases')"
 					@loaded="onDuplicityLoaded"
 					@updated="update"
-					:has-to-create-button="false"
 				/>
 			</div>
 		</div>
@@ -219,12 +219,13 @@ export default {
 	methods: {
 		changeBulkDuplicitiesStatus(status) {
 			const { importId } = this.$route.params;
-			this.resolversAllLoading = false;
+			this.resolversAllLoading = true;
 
 			ImportService.changeBulkDuplicitiesStatus(importId, { status })
 				.then((response) => {
 					if (response.status === 202) {
 						this.resolversAllActive = status;
+						this.$refs.duplicityResolver.fetchDuplicities();
 						Toast(this.$t("Duplicities were resolved"), "is-success");
 					}
 				}).finally(() => {
