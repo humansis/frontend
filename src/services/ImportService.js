@@ -115,15 +115,17 @@ export default {
 	},
 
 	async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
-		const { data, status } = await fetcher({
+		const { status } = await fetcher({
 			uri: `imports/queue/${queueId}`,
 			method: "PATCH",
 			body: {
 				status: state,
 				acceptedDuplicityId,
 			},
+			tryRequest: true,
 		});
-		return { data, status };
+
+		return { status };
 	},
 
 	async exportTemplate(format) {
