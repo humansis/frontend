@@ -17,8 +17,6 @@
 					toUpdateLoading,
 					toLinkLoading,
 					state,
-					addedBeneficiaries,
-					removedBeneficiaries
 				}, duplicityKey) of duplicities"
 				:key="duplicityKey"
 				class="resolve-table"
@@ -99,7 +97,7 @@
 
 								</div>
 							</td>
-							<td>
+							<td class="action-row">
 								<b-field grouped>
 									<b-button
 										:class="[
@@ -136,32 +134,6 @@
 						</tr>
 					</tbody>
 				</table>
-
-				<div v-if="addedBeneficiaries.length">
-					- Added beneficiaries:
-					<span
-						v-for="(beneficiary, index) of addedBeneficiaries"
-						:key="`added-beneficiary-${index}`"
-					>
-						{{ beneficiary }}
-						<span v-if="index !== addedBeneficiaries.length - 1">
-							,
-						</span>
-					</span>
-				</div>
-
-				<div v-if="removedBeneficiaries.length">
-					- Removed beneficiaries:
-					<span
-						v-for="({ id, name}, index) of removedBeneficiaries"
-						:key="`added-beneficiary-${index}`"
-					>
-						#{{ id }} {{ name }}
-						<span v-if="index !== removedBeneficiaries.length - 1">
-							,
-						</span>
-					</span>
-				</div>
 				<hr>
 			</div>
 		</div>
@@ -211,7 +183,18 @@ export default {
 		},
 
 		getSlashedArray(items) {
-			return Object.values(items).join(" / ");
+			let result = "";
+
+			if (typeof items.database === "string" || typeof items.import === "string") {
+				result = Object.values(items).join(" / ");
+			} else {
+				const database = items.database[0] || "-";
+				const imp = items.import[0] || "-";
+
+				result = `${database} / ${imp}`;
+			}
+
+			return result;
 		},
 
 		hasDuplicityDifferences(differences) {
@@ -299,5 +282,9 @@ export default {
 	border-bottom-left-radius: 0;
 	border-top-left-radius: 0;
 	border-left: none;
+}
+
+.action-row .is-grouped {
+	justify-content: right;
 }
 </style>
