@@ -8,8 +8,7 @@ export default {
 	mixins: [baseHelper],
 
 	methods: {
-		prepareDataForTable(data) {
-			this.table.progress += 20;
+		async prepareDataForTable(data) {
 			const projectIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
@@ -27,17 +26,18 @@ export default {
 					beneficiaryIds.push(item.beneficiaryId);
 				}
 			});
-			this.table.progress += 5;
-			this.prepareProjectsForTable(projectIds);
 
-			this.prepareAssistancesForTable(assistanceIds);
+			await Promise.all([
+				this.prepareProjectsForTable(projectIds),
+				this.prepareAssistancesForTable(assistanceIds),
+				this.prepareBeneficiaryForTable(beneficiaryIds),
+			]);
 
-			this.prepareBeneficiaryForTable(beneficiaryIds);
+			this.table.progress = 100;
 		},
 
 		async prepareBeneficiaryForTable(ids) {
 			const beneficiaries = await this.getBeneficiaries(ids);
-			this.table.progress += 20;
 			if (!beneficiaries.length) return;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].beneficiary = this.prepareEntityForTable(
@@ -47,27 +47,22 @@ export default {
 					"None",
 				);
 			});
-			this.table.progress += 15;
 		},
 
 		async prepareProjectsForTable(ids) {
 			const projects = await this.getProjects(ids);
-			this.table.progress += 20;
 			if (!projects.length) return;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
 			});
-			this.table.progress += 15;
 		},
 
 		async prepareAssistancesForTable(ids) {
 			const assistances = await this.getAssistances(ids);
-			this.table.progress += 20;
 			if (!assistances.length) return;
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "None");
 			});
-			this.table.progress += 15;
 		},
 
 		async getBeneficiaries(ids) {

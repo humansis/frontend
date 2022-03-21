@@ -44,6 +44,10 @@ export default {
 		state.availableProjects = projects;
 	},
 
+	[CONST.STORE_GRID_FILTERS]: (state, gridFilters) => {
+		state.gridFilters = gridFilters;
+	},
+
 	[CONST.STORE_COUNTRIES]: (state, countries) => {
 		state.countries = countries;
 	},
