@@ -144,6 +144,12 @@ export default {
 					.find((item) => item.id === this.defaultFilters.projects[0]);
 			}
 
+			if (this.defaultFilters.vendors?.length) {
+				this.selectedFiltersOptions.vendor	= this.filtersOptions
+					.vendor.data
+					.find((item) => item.id === this.defaultFilters.vendors[0]);
+			}
+
 			if (this.defaultFilters.dateFrom) {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}

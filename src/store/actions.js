@@ -23,6 +23,10 @@ export default {
 		}
 	},
 
+	storeGridFilters: ({ commit }, gridFilters) => {
+		commit(CONST.STORE_GRID_FILTERS, gridFilters);
+	},
+
 	storeAvailableProjects: ({ commit }, projects) => {
 		commit(CONST.STORE_AVAILABLE_PROJECTS, projects);
 	},
