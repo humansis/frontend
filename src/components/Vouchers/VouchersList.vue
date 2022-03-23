@@ -1,5 +1,6 @@
 <template>
 	<Table
+		ref="vouchersList"
 		has-reset-sort
 		has-search
 		checkable
@@ -78,9 +79,29 @@
 		<template #progress>
 			<b-progress :value="table.progress" format="percent" />
 		</template>
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small"
+					@click="resetTableSort"
+				>
+					{{ $t('Reset Table Sort') }}
+				</b-button>
+			</div>
+		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
 				<VouchersFilter
+					ref="vouchersFilter"
+					:defaultFilters="{ ...filters }"
 					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
@@ -125,6 +146,7 @@ import voucherHelper from "@/mixins/voucherHelper";
 import { Notification } from "@/utils/UI";
 import ExportButton from "@/components/ExportButton";
 import permissions from "@/mixins/permissions";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 export default {
 	name: "VouchersList",
@@ -138,12 +160,12 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [permissions, grid, voucherHelper],
+	mixins: [permissions, grid, voucherHelper, urlFiltersHelper],
 
 	data() {
 		return {
 			advancedSearchVisible: false,
-			filters: [],
+			filters: {},
 			exportLoading: false,
 			printLoading: false,
 			printSelectionLoading: false,
@@ -177,6 +199,7 @@ export default {
 	},
 
 	created() {
+		this.setGridFilters("vouchers", false);
 		this.fetchData();
 	},
 
@@ -193,6 +216,7 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
+				this.setGridFiltersToUrl("vouchers", false);
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
@@ -208,8 +232,18 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onFiltersChange(filters) {
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
+					this.filters[key] = [];
+					filters[key].forEach((value) => {
+						this.filters[key].push(value);
+					});
+				} else {
+					this.filters[key] = filters[key];
+				}
+			});
+
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},
@@ -273,6 +307,14 @@ export default {
 				}).catch((e) => {
 					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
 				});
+		},
+
+		resetFilters() {
+			this.$refs.vouchersFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.vouchersList.onResetSort();
 		},
 	},
 };

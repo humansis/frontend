@@ -89,6 +89,25 @@
 				<b-progress :value="table.progress" format="percent" />
 			</template>
 
+			<template slot="resetSort">
+				<div class="level-right">
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small mr-2"
+						@click="resetFilters"
+					>
+						{{ $t('Reset Filters') }}
+					</b-button>
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small"
+						@click="resetTableSort"
+					>
+						{{ $t('Reset Table Sort') }}
+					</b-button>
+				</div>
+			</template>
+
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
@@ -168,6 +187,8 @@
 			<template #filter>
 				<b-collapse v-model="advancedSearchVisible">
 					<HouseholdsFilter
+						ref="householdsFilter"
+						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
 					/>
 				</b-collapse>
@@ -204,6 +225,7 @@ import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
 	from "../../components/Beneficiaries/Household/AddProjectToHouseholdModal";
 
@@ -224,7 +246,7 @@ export default {
 		ExportButton,
 	},
 
-	mixins: [grid, addressHelper, permissions],
+	mixins: [grid, addressHelper, permissions, urlFiltersHelper],
 
 	data() {
 		return {
@@ -253,6 +275,7 @@ export default {
 				checkedRows: [],
 			},
 			filters: {},
+			locationsFilter: {},
 			householdDetailModal: {
 				isOpened: false,
 			},
@@ -280,6 +303,7 @@ export default {
 	},
 
 	created() {
+		this.setGridFilters("households");
 		this.fetchData();
 	},
 
@@ -297,6 +321,7 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
+				this.setGridFiltersToUrl("households");
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
@@ -671,8 +696,20 @@ export default {
 			this.table.checkedRows = [];
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
+
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
+					this.filters[key] = [];
+					filters[key].forEach((value) => {
+						this.filters[key].push(value);
+					});
+				} else {
+					this.filters[key] = filters[key];
+				}
+			});
+
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},
@@ -699,6 +736,14 @@ export default {
 			this.householdModel = {
 				...household,
 			};
+		},
+
+		resetFilters() {
+			this.$refs.householdsFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.householdList.onResetSort();
 		},
 	},
 };

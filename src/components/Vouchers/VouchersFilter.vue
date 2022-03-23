@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
@@ -12,6 +13,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByParams } from "@/utils/codeList";
 import currencies from "@/utils/currencies";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 export default {
 	name: "VouchersFilter",
@@ -19,6 +21,15 @@ export default {
 	components: {
 		AdvancedFilter,
 	},
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
+	mixins: [urlFiltersHelper],
 
 	data() {
 		return {
@@ -63,7 +74,7 @@ export default {
 					name: "Beneficiary",
 					placeholder: this.$t("Select Beneficiary"),
 					trackBy: "id",
-					label: "localFamilyName",
+					label: "id",
 					multiple: true,
 					loading: false,
 					data: [],
@@ -72,16 +83,59 @@ export default {
 		};
 	},
 
+	async created() {
+		await this.fetchAssistances();
+
+		await Promise.all([
+			this.setDefaultFilters(false),
+		]);
+	},
+
 	mounted() {
-		this.fetchAssistances();
+		if (this.defaultFilters.distributions?.length) {
+			this.fetchBeneficiaries((this.defaultFilters.distributions));
+		}
 	},
 
 	methods: {
-		filterChanged(filters, filtername) {
+		async filterChanged(filters, filtername) {
 			if (filtername === "assistances") {
 				this.fetchBeneficiaries(filters.distributions);
 			}
+
 			this.$emit("filtersChanged", filters);
+		},
+
+		setDefaultFilters() {
+			if (this.defaultFilters.currencies?.length) {
+				this.selectedFiltersOptions.currencies = this.filtersOptions
+					.currencies.data
+					.filter((item) => this.defaultFilters.currencies.includes(item.value));
+			}
+
+			if (this.defaultFilters.statuses?.length) {
+				this.selectedFiltersOptions.statuses = this.filtersOptions
+					.statuses.data
+					.filter((item) => this.defaultFilters.statuses.includes(item.code));
+			}
+
+			if (this.defaultFilters.distributions?.length) {
+				this.selectedFiltersOptions.assistances = this.filtersOptions
+					.assistances.data
+					.filter((item) => this.defaultFilters.distributions.includes(item.id));
+			}
+		},
+
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				currencies: [],
+				statuses: [],
+				assistances: [],
+				beneficiaries: [],
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
+			});
 		},
 
 		async fetchAssistances() {
@@ -100,6 +154,7 @@ export default {
 			if (ids?.length) {
 				this.filtersOptions.beneficiaries.loading = true;
 				this.filtersOptions.beneficiaries.data = [];
+
 				const promise = ids.map(async (id) => {
 					await AssistancesService.getListOfBeneficiaries(id)
 						.then(({ data }) => {
