@@ -329,13 +329,37 @@ const routes = [
 			{
 				path: "/transactions",
 				name: "Transactions",
-				component: () => import(/* webpackChunkName: "Transactions" */ "@/views/Transactions"),
+				component: { render(c) { return c("router-view"); } },
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: "Transactions",
 					description: "",
 				},
+				children: [
+					{
+						path: "assistances",
+						name: "TransactionsAssistances",
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
+						beforeEnter: ifAuthenticated,
+						meta: {
+							permissions: [],
+							breadcrumb: "Assistances",
+							description: "",
+						},
+					},
+					{
+						path: "purchases",
+						name: "TransactionsPurchases",
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
+						beforeEnter: ifAuthenticated,
+						meta: {
+							permissions: [],
+							breadcrumb: "Purchases",
+							description: "",
+						},
+					},
+				],
 			},
 			{
 				path: "/logs",

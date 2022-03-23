@@ -218,7 +218,7 @@
 							icon="exchange-alt"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Transactions', query: { tab: 'distributions' } }"
+							:to="{ name: 'TransactionsAssistances' }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>

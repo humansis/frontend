@@ -29,6 +29,12 @@ export default {
 	icons: null,
 	translations: null,
 	admNames: null,
+	gridFilters: {
+		households: [],
+		vouchers: [],
+		distributions: [],
+		purchases: [],
+	},
 	languages: [
 		{ name: "English", key: "en", direction: "ltr" },
 		{ name: "Arabic", key: "ar", direction: "rtl" },

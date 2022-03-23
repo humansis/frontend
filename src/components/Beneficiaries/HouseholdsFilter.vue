@@ -1,5 +1,6 @@
 <template>
 	<AdvancedFilter
+		ref="advancedFilter"
 		v-if="admNames"
 		multiline
 		:selected-filters-options="selectedFiltersOptions"
@@ -15,6 +16,8 @@ import ProjectService from "@/services/ProjectService";
 import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "HouseholdsFilter",
@@ -22,6 +25,8 @@ export default {
 	components: {
 		AdvancedFilter,
 	},
+
+	mixins: [urlFiltersHelper],
 
 	data() {
 		return {
@@ -122,18 +127,32 @@ export default {
 		};
 	},
 
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
 	computed: {
 		...mapState(["admNames"]),
 	},
 
-	mounted() {
-		this.setLocationNames();
-		this.fetchProjects();
-		this.fetchProvinces();
-		this.fetchLivelihoods();
-		this.fetchVulnerabilities();
-		this.fetchResidenceStatuses();
-		this.fetchReferralTypes();
+	async created() {
+		await Promise.all([
+			this.setLocationNames(),
+			this.fetchProjects(),
+			this.fetchProvinces(),
+			this.fetchLivelihoods(),
+			this.fetchVulnerabilities(),
+			this.fetchResidenceStatuses(),
+			this.fetchReferralTypes(),
+		]);
+
+		await Promise.all([
+			this.setDefaultFilters(),
+			this.setDefaultLocationsFilter(),
+		]);
 	},
 
 	methods: {
@@ -149,6 +168,43 @@ export default {
 
 			this.filtersOptions.adm4.name = this.admNames.adm4;
 			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
+		},
+
+		setDefaultFilters() {
+			if (this.defaultFilters.projects?.length) {
+				this.selectedFiltersOptions.projects = this.filtersOptions
+					.projects.data
+					.filter((item) => this.defaultFilters.projects.includes(item.id));
+			}
+
+			if (this.defaultFilters.vulnerabilities?.length) {
+				this.selectedFiltersOptions.vulnerabilities = this.filtersOptions
+					.vulnerabilities.data
+					.filter((item) => this.defaultFilters.vulnerabilities.includes(item.code));
+			}
+
+			if (this.defaultFilters.gender) {
+				this.selectedFiltersOptions.gender = this.filtersOptions
+					.gender.data.find((item) => item.code === this.defaultFilters.gender[0]);
+			}
+
+			if (this.defaultFilters.residencyStatuses?.length) {
+				this.selectedFiltersOptions.residencyStatuses = this.filtersOptions
+					.residencyStatuses.data
+					.filter((item) => this.defaultFilters.residencyStatuses.includes(item.code));
+			}
+
+			if (this.defaultFilters.livelihoods?.length) {
+				this.selectedFiltersOptions.livelihoods = this.filtersOptions
+					.livelihoods.data
+					.filter((item) => this.defaultFilters.livelihoods.includes(item.code));
+			}
+
+			if (this.defaultFilters.referralTypes?.length) {
+				this.selectedFiltersOptions.referralTypes = this.filtersOptions
+					.referralTypes.data
+					.filter((item) => this.defaultFilters.referralTypes.includes(item.code));
+			}
 		},
 
 		filterChanged(filters, filterName) {
@@ -193,14 +249,23 @@ export default {
 				const [a] = filters.adm1;
 				location = a;
 			}
+
 			this.$emit("filtersChanged", {
-				projects: filters.projects,
-				vulnerabilities: filters.vulnerabilities,
-				gender: filters.gender ? filters.gender[0] : null,
-				residencyStatuses: filters.residencyStatuses,
-				referralTypes: filters.referralTypes,
-				livelihoods: filters.livelihoods,
-				locations: location ? [location] : [],
+				filters: {
+					projects: filters.projects,
+					vulnerabilities: filters.vulnerabilities,
+					gender: filters.gender ? filters.gender[0] : null,
+					residencyStatuses: filters.residencyStatuses,
+					referralTypes: filters.referralTypes,
+					livelihoods: filters.livelihoods,
+					locations: location ? [location] : [],
+				},
+				locationsFilter: {
+					adm1: filters.adm1,
+					adm2: filters.adm2,
+					adm3: filters.adm3,
+					adm4: filters.adm4,
+				},
 			});
 		},
 
@@ -304,6 +369,25 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
+		},
+
+		eraseFilters() {
+			this.selectedFiltersOptions = {
+				projects: [],
+				vulnerabilities: [],
+				gender: [],
+				residencyStatuses: [],
+				referralTypes: [],
+				livelihoods: [],
+				adm1: [],
+				adm2: [],
+				adm3: [],
+				adm4: [],
+				locations: [],
+			};
+			this.$nextTick(() => {
+				this.$refs.advancedFilter.filterChanged();
+			});
 		},
 	},
 };

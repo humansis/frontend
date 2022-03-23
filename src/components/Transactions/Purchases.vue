@@ -146,7 +146,6 @@ export default {
 	},
 
 	created() {
-		this.setGridFilters();
 		this.fetchData();
 	},
 
@@ -164,8 +163,6 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
-				this.setGridFiltersToUrl();
-
 				this.table.data = [];
 				this.table.progress = 10;
 				this.table.total = totalCount;

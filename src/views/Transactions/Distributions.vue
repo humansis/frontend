@@ -1,5 +1,18 @@
 <template>
 	<div>
+		<div>
+			<h1 class="title has-text-centered">{{ $t('Transactions') }}</h1>
+			<b-tabs v-model="selectedTab" @input="redirectToTab">
+				<b-tab-item
+					icon="hand-holding-water"
+					:label="$t('Assistances')"
+				/>
+				<b-tab-item
+					icon="shopping-cart"
+					:label="$t('Smartcard Purchased Items')"
+				/>
+			</b-tabs>
+		</div>
 		<Table
 			v-show="show"
 			ref="table"
@@ -20,9 +33,9 @@
 			<template v-for="column in table.columns">
 				<b-table-column
 					v-bind="column"
-					v-slot="props"
 					:sortable="column.sortable"
 					:key="column.id"
+					v-slot="props"
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
@@ -38,11 +51,11 @@
 			</template>
 			<template #filter>
 				<b-collapse
-					animation="slide"
 					:open="advancedSearchVisible"
+					animation="slide"
 				>
-					<SmartcardPurchasesItemsFilter
-						ref="purchasesFilter"
+					<DistributionsFilter
+						ref="distributionFilter"
 						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
 					/>
@@ -54,7 +67,7 @@
 					space-between
 					:formats="{ xlsx: true, csv: true}"
 					:loading="exportLoading"
-					@onExport="exportPurchases"
+					@onExport="exportDistributions"
 				/>
 			</template>
 			<template slot="progress">
@@ -84,24 +97,24 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
+import ExportButton from "@/components/ExportButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import TransactionService from "@/services/TransactionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
-const SmartcardPurchasesItemsFilter = () => import("@/components/Transactions/SmartcardPurchasesItemsFilter");
+const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
 
 export default {
-	name: "SmartcardPurchasesItems",
+	name: "Distributions",
 
 	components: {
 		ExportButton,
 		Table,
-		SmartcardPurchasesItemsFilter,
+		DistributionsFilter,
 		ColumnField,
 	},
 
@@ -109,36 +122,33 @@ export default {
 
 	data() {
 		return {
+			selectedTab: 0,
 			advancedSearchVisible: false,
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiaryId", label: "Beneficiary", type: "link" },
+					{ key: "beneficiaryId", label: "Beneficiary", sortable: true },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
-					{ key: "idNumber" },
-					{ key: "project", type: "link" },
-					{ key: "assistance", type: "link" },
+					{ key: "project" },
+					{ key: "assistance", label: "Name" },
 					{ key: "adm1" },
 					{ key: "adm2" },
 					{ key: "adm3" },
 					{ key: "adm4" },
-					{ key: "datePurchase", label: "Purchased Date", type: "datetime", sortable: true },
-					{ key: "smartcardCode", label: "Card No." },
-					{ key: "product", label: "Purchased Item" },
-					{ key: "value", label: "Total", sortable: true },
-					{ key: "currency" },
-					{ key: "vendor" },
-					{ key: "vendorNo" },
-					{ key: "invoiceNumber", label: "Invoice No" },
+					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
+					{ key: "commodity" },
+					{ key: "carrierNumber" },
+					{ key: "amount" },
+					{ key: "unit" },
 				],
 				total: 0,
 				currentPage: 1,
 				sortDirection: "",
 				sortColumn: "",
-				progress: null,
 				searchPhrase: "",
+				progress: null,
 			},
 			exportLoading: false,
 			filters: {},
@@ -146,8 +156,12 @@ export default {
 		};
 	},
 
+	watch: {
+		$route: "fetchData",
+	},
+
 	created() {
-		this.setGridFilters();
+		this.setGridFilters("distributions");
 		this.fetchData();
 	},
 
@@ -158,28 +172,36 @@ export default {
 
 			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await TransactionService.getListOfSmartcardPurchasedItems(
+			await TransactionService.getListOfDistributedItems(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 				this.filters,
-			).then(({ data, totalCount }) => {
-				this.setGridFiltersToUrl();
+			).then(async ({ data, totalCount }) => {
+				this.setGridFiltersToUrl("distributions");
 
 				this.table.data = [];
-				this.table.progress = 10;
+				this.table.progress = 20;
 				this.table.total = totalCount;
 				if (data.length > 0) {
-					this.prepareDataForTable(data);
+					await this.prepareDataForTable(data);
 				} else {
 					this.table.progress = 100;
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Smartcard Purchases")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Distributed Items")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
+		},
+
+		redirectToTab(tab) {
+			if (tab) {
+				this.$router.push({ name: "TransactionsPurchases" });
+			} else {
+				this.$router.push({ name: "TransactionsAssistances" });
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -190,17 +212,15 @@ export default {
 			const locationIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
+			const commodityIds = [];
 			const projectIds = [];
-			const vendorIds = [];
-			const productIds = [];
 
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 				projectIds.push(item.projectId);
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
-				vendorIds.push(item.vendorId);
-				productIds.push(item.productId);
+				commodityIds.push(item.commodityId);
 				adm1Ids.push(item.adm1Id);
 				adm2Ids.push(item.adm2Id);
 				adm3Ids.push(item.adm3Id);
@@ -208,11 +228,10 @@ export default {
 				locationIds.push(item.locationId);
 			});
 
-			this.prepareProjectForTable([...new Set(projectIds)], true);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
-			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
-			this.prepareVendorForTable([...new Set(vendorIds)]);
-			this.prepareProductForTable([...new Set(productIds)]);
+			this.prepareProjectForTable([...new Set(projectIds)]);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
+			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
+			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.prepareAdm1ForTable([...new Set(adm1Ids)]);
 			this.prepareAdm2ForTable([...new Set(adm2Ids)]);
 			this.prepareAdm3ForTable([...new Set(adm3Ids)]);
@@ -224,16 +243,16 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.purchasesFilter.eraseFilters();
+			this.$refs.distributionFilter.eraseFilters();
 		},
 
 		resetTableSort() {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportPurchases(format) {
+		async exportDistributions(format) {
 			this.exportLoading = true;
-			await TransactionService.exportSmartcardPurchasesItems(
+			await TransactionService.exportDistributions(
 				format,
 				this.table.currentPage,
 				this.perPage,
@@ -244,10 +263,10 @@ export default {
 				const blob = new Blob([data], { type: data.type });
 				const link = document.createElement("a");
 				link.href = window.URL.createObjectURL(blob);
-				link.download = `purchases.${format}`;
+				link.download = `distributions.${format}`;
 				link.click();
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Export Smartcard Purchases")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
 			});
 			this.exportLoading = false;
 		},
