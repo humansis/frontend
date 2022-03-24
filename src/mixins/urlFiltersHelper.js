@@ -10,7 +10,7 @@ export default {
 
 		setGridFilters(entity, hasLocationsFilter = true) {
 			const storedFilter = this.gridFilters[entity]
-				.find(({ country }) => country === this.country.iso3);
+				?.find(({ country }) => country === this.country.iso3);
 
 			const { query } = storedFilter || this.$route;
 
@@ -47,15 +47,20 @@ export default {
 
 			const updatedGridFilters = { ...this.gridFilters };
 			const filterEntityIndex = this.gridFilters?.[entity]
-				.findIndex(({ country }) => country === this.country.iso3);
+				?.findIndex(({ country }) => country === this.country.iso3);
 
-			if (filterEntityIndex !== -1) {
+			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
 				updatedGridFilters[entity][filterEntityIndex].query = { ...query };
-			} else {
+			} else if (updatedGridFilters[entity]?.length) {
 				updatedGridFilters[entity].push({
 					country: this.country.iso3,
 					query,
 				});
+			} else {
+				updatedGridFilters[entity] = [{
+					country: this.country.iso3,
+					query,
+				}];
 			}
 
 			this.storeGridFilters({

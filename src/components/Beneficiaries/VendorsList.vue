@@ -1,5 +1,6 @@
 <template>
 	<Table
+		ref="table"
 		v-show="show"
 		has-reset-sort
 		has-search
@@ -58,14 +59,54 @@
 				/>
 			</div>
 		</b-table-column>
+
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchOpened ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</b-button>
+		</template>
+
+		<template #filter>
+			<b-collapse :open="advancedSearchOpened">
+				<VendorsFilter
+					ref="vendorsFilter"
+					:defaultFilters="{ ...filters, ...locationsFilter }"
+					@filtersChanged="onFiltersChange"
+				/>
+			</b-collapse>
+		</template>
+
 		<template #export>
 			<ExportButton
 				space-between
-				type="is-primary"
+				class="ml-2"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportVendors"
 			/>
+		</template>
+
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small"
+					@click="resetTableSort"
+				>
+					{{ $t('Reset Table Sort') }}
+				</b-button>
+			</div>
 		</template>
 	</Table>
 </template>
@@ -84,6 +125,8 @@ import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 
 export default {
 	name: "VendorsList",
@@ -94,13 +137,17 @@ export default {
 		Table,
 		ActionButton,
 		ColumnField,
+		VendorsFilter,
 	},
 
-	mixins: [grid, baseHelper, permissions],
+	mixins: [grid, baseHelper, permissions, urlFiltersHelper],
 
 	data() {
 		return {
+			advancedSearchOpened: false,
 			exportLoading: false,
+			filters: {},
+			locationsFilter: {},
 			table: {
 				data: [],
 				columns: [],
@@ -129,6 +176,7 @@ export default {
 	},
 
 	created() {
+		this.setGridFilters("vendors");
 		this.fetchData();
 	},
 
@@ -142,7 +190,10 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				null,
+				this.filters,
 			).then(({ data, totalCount }) => {
+				this.setGridFiltersToUrl("vendors");
 				this.table.data = [];
 				this.table.total = totalCount;
 				if (totalCount > 0) {
@@ -152,6 +203,36 @@ export default {
 				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 			});
 			this.isLoadingList = false;
+		},
+
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
+
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
+					this.filters[key] = [];
+					filters[key].forEach((value) => {
+						this.filters[key].push(value);
+					});
+				} else {
+					this.filters[key] = filters[key];
+				}
+			});
+
+			this.table.currentPage = 1;
+			await this.fetchData();
+		},
+
+		filtersToggle() {
+			this.advancedSearchOpened = !this.advancedSearchOpened;
+		},
+
+		resetFilters() {
+			this.$refs.vendorsFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
 		async prepareDataForTable(data) {

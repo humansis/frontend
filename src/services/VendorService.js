@@ -1,15 +1,16 @@
-import { download, fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfVendors(page, size, sort, search = null, ids = null) {
+	async getListOfVendors(page, size, sort, search = null, ids = null, filters) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
 		const sizeText = page ? `&size=${size}` : "";
 		const idsText = ids ? idsToUri(ids) : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `vendors?${pageText + sizeText + sortText + fulltext + idsText}`,
+			uri: `vendors?${pageText + sizeText + sortText + fulltext + filtersUri + idsText}`,
 		});
 		return { data, totalCount };
 	},
