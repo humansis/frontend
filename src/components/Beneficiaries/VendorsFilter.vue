@@ -171,13 +171,6 @@ export default {
 				location = a;
 			}
 
-			console.log({
-				adm1: filtersCopy.adm1,
-				adm2: filtersCopy.adm2,
-				adm3: filtersCopy.adm3,
-				adm4: filtersCopy.adm4,
-			});
-
 			this.$emit("filtersChanged", {
 				filters: {
 					locations: location ? [location] : [],
