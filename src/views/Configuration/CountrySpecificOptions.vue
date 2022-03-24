@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="countrySpecificOptionModel"
-				:submit-button-label="$t('Update')"
+				:submit-button-label="$t('Create')"
 				:form-disabled="countrySpecificOptionModal.isDetail"
 				@formSubmitted="submitCountrySpecificOptionForm"
 				@formClosed="closeCountrySpecificOptionModal"
