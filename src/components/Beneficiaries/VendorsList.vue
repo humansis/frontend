@@ -67,7 +67,7 @@
 		<template #filterButton>
 			<b-button
 				slot="trigger"
-				:icon-right="advancedSearchOpened ? 'arrow-up' : 'arrow-down'"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
 				{{ $t('Advanced Search') }}
@@ -75,7 +75,7 @@
 		</template>
 
 		<template #filter>
-			<b-collapse :open="advancedSearchOpened">
+			<b-collapse :open="advancedSearchVisible">
 				<VendorsFilter
 					ref="vendorsFilter"
 					:defaultFilters="{ ...filters, ...locationsFilter }"
@@ -148,7 +148,7 @@ export default {
 
 	data() {
 		return {
-			advancedSearchOpened: false,
+			advancedSearchVisible: false,
 			exportLoading: false,
 			filters: {},
 			locationsFilter: {},
@@ -232,7 +232,7 @@ export default {
 		},
 
 		filtersToggle() {
-			this.advancedSearchOpened = !this.advancedSearchOpened;
+			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
 		resetFilters() {
