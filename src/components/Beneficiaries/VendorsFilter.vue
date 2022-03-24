@@ -89,6 +89,9 @@ export default {
 		await Promise.all([
 			this.setLocationNames(),
 			this.fetchProvinces(),
+			this.fetchDistricts(),
+			this.fetchCommunes(),
+			this.fetchVillages(),
 		]);
 
 		await Promise.all([
@@ -112,31 +115,45 @@ export default {
 		},
 
 		filterChanged(filters, filterName) {
+			const filtersCopy = { ...filters };
+
 			switch (filterName) {
 				case "adm1":
 					this.selectedFiltersOptions.adm2 = null;
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
 					break;
 				case "adm2":
+					this.selectedFiltersOptions.adm1 = null;
 					this.selectedFiltersOptions.adm3 = null;
 					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
+					filtersCopy.adm1 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
 					break;
 				case "adm3":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
 					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm4 = [];
 					break;
 				case "adm4":
-					if (!this.selectedFiltersOptions[filterName]) break;
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
 					break;
 				default: break;
 			}
 			let location = null;
+
 			if (this.selectedFiltersOptions.adm4) {
 				const [a] = filters.adm4;
 				location = a;
@@ -154,15 +171,22 @@ export default {
 				location = a;
 			}
 
+			console.log({
+				adm1: filtersCopy.adm1,
+				adm2: filtersCopy.adm2,
+				adm3: filtersCopy.adm3,
+				adm4: filtersCopy.adm4,
+			});
+
 			this.$emit("filtersChanged", {
 				filters: {
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
-					adm1: filters.adm1,
-					adm2: filters.adm2,
-					adm3: filters.adm3,
-					adm4: filters.adm4,
+					adm1: filtersCopy.adm1,
+					adm2: filtersCopy.adm2,
+					adm3: filtersCopy.adm3,
+					adm4: filtersCopy.adm4,
 				},
 			});
 		},
@@ -178,9 +202,10 @@ export default {
 				});
 		},
 
-		async fetchDistricts(id) {
+		async fetchDistricts() {
 			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2(id)
+
+			await LocationsService.getListOfAdm2(null)
 				.then(({ data }) => {
 					this.filtersOptions.adm2.data = data;
 					this.filtersOptions.adm2.loading = false;
@@ -190,9 +215,10 @@ export default {
 				});
 		},
 
-		async fetchCommunes(id) {
+		async fetchCommunes() {
 			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3(id)
+
+			await LocationsService.getListOfAdm3(null)
 				.then(({ data }) => {
 					this.filtersOptions.adm3.data = data;
 					this.filtersOptions.adm3.loading = false;
@@ -202,9 +228,10 @@ export default {
 				});
 		},
 
-		async fetchVillages(id) {
+		async fetchVillages() {
 			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4(id)
+
+			await LocationsService.getListOfAdm4(null)
 				.then(({ data }) => {
 					this.filtersOptions.adm4.data = data;
 					this.filtersOptions.adm4.loading = false;
@@ -216,12 +243,6 @@ export default {
 
 		eraseFilters() {
 			this.selectedFiltersOptions = {
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencyStatuses: [],
-				referralTypes: [],
-				livelihoods: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],

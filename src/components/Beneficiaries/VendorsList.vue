@@ -15,6 +15,10 @@
 		@resetSort="resetSort"
 		@search="onSearch"
 	>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
@@ -167,6 +171,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
 		};
 	},
@@ -183,8 +188,11 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+
+			this.setGridFiltersToUrl("vendors");
 			await VendorService.getListOfVendors(
 				this.table.currentPage,
 				this.perPage,
@@ -193,7 +201,6 @@ export default {
 				null,
 				this.filters,
 			).then(({ data, totalCount }) => {
-				this.setGridFiltersToUrl("vendors");
 				this.table.data = [];
 				this.table.total = totalCount;
 				if (totalCount > 0) {
@@ -203,6 +210,7 @@ export default {
 				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 			});
 			this.isLoadingList = false;
+			this.table.progress = 100;
 		},
 
 		async onFiltersChange({ filters, locationsFilter }) {

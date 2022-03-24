@@ -87,7 +87,7 @@ export default {
 					.adm1.data
 					.find((item) => item.locationId === this.defaultFilters.adm1[0]);
 
-				await this.fetchDistricts(this.selectedFiltersOptions.adm1.id);
+				// await this.fetchDistricts(this.selectedFiltersOptions.adm1.id);
 			}
 
 			if (this.defaultFilters.adm2?.length) {
@@ -95,7 +95,7 @@ export default {
 					.adm2.data
 					.find((item) => item.locationId === this.defaultFilters.adm2[0]);
 
-				await this.fetchCommunes(this.selectedFiltersOptions.adm2.id);
+				// await this.fetchCommunes(this.selectedFiltersOptions.adm2.id);
 			}
 
 			if (this.defaultFilters.adm3?.length) {
@@ -103,7 +103,7 @@ export default {
 					.adm3.data
 					.find((item) => item.locationId === this.defaultFilters.adm3[0]);
 
-				await this.fetchVillages(this.selectedFiltersOptions.adm3.id);
+				// await this.fetchVillages(this.selectedFiltersOptions.adm3.id);
 			}
 
 			if (this.defaultFilters.adm4?.length) {

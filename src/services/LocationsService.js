@@ -27,17 +27,25 @@ export default {
 	},
 
 	async getListOfAdm2(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `adm1/${id}/adm2` });
+		const { data: { data, totalCount } } = id
+			? await fetcher({ uri: `adm1/${id}/adm2` })
+			: await fetcher({ uri: "adm2" });
+
 		return { data, totalCount };
 	},
 
 	async getListOfAdm3(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `adm2/${id}/adm3` });
+		const { data: { data, totalCount } } = id
+			? await fetcher({ uri: `adm2/${id}/adm3` })
+			: await fetcher({ uri: "adm3" });
+
 		return { data, totalCount };
 	},
 
 	async getListOfAdm4(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `adm3/${id}/adm4` });
+		const { data: { data, totalCount } } = id
+			? await fetcher({ uri: `adm3/${id}/adm4` })
+			: await fetcher({ uri: "adm4" });
 		return { data, totalCount };
 	},
 
