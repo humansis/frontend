@@ -27,7 +27,7 @@
 				close-button
 				class="modal-card"
 				:formModel="countrySpecificOptionModel"
-				:submit-button-label="$t('Create')"
+				:submit-button-label="submitButtonLabel"
 				:form-disabled="countrySpecificOptionModal.isDetail"
 				@formSubmitted="submitCountrySpecificOptionForm"
 				@formClosed="closeCountrySpecificOptionModal"
@@ -92,6 +92,10 @@ export default {
 			}
 			return result;
 		},
+
+		submitButtonLabel() {
+			return this.countrySpecificOptionModal.isEditing ? this.$t("Update") : this.$t("Create");
+		}
 	},
 
 	methods: {
