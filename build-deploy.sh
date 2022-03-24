@@ -69,9 +69,9 @@ elif [[ $1 == "test3" ]]; then
     aws s3 cp ./dist_gzipped s3://test3.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3UIKQJ6I7SYO4 --paths '/*'
 elif [[ $1 == "dev" ]]; then
-    aws s3 rm s3://dev-pin.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://dev-pin.humansis.org --recursive --acl public-read --content-encoding gzip
-    aws cloudfront create-invalidation --distribution-id EBG5G8O7ZSVBV --paths '/*'
+    aws s3 rm s3://dev-test.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://dev-test.humansis.org --recursive --acl public-read --content-encoding gzip
+    # aws cloudfront create-invalidation --distribution-id EBG5G8O7ZSVBV --paths '/*'
 elif [[ $1 == "stage" ]]; then
     aws s3 rm s3://stage-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip
