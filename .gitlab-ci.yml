@@ -12,6 +12,7 @@ cache:
 
 stages:
  - lint
+ - build
  - deploy_dev
  - deploy_test
  - deploy_stage
@@ -39,6 +40,17 @@ lint:
     - yarn install
   script:
     - yarn lint
+  except:
+    - tags
+
+build:
+  stage: build
+  variables:
+    NODE_OPTIONS: --max-old-space-size=4096
+  before_script:
+    - yarn install
+  script:
+    - yarn build
   except:
     - tags
 
