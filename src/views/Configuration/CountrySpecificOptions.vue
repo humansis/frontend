@@ -95,7 +95,7 @@ export default {
 
 		submitButtonLabel() {
 			return this.countrySpecificOptionModal.isEditing ? this.$t("Update") : this.$t("Create");
-		}
+		},
 	},
 
 	methods: {

@@ -314,6 +314,7 @@ export default {
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.setGridFiltersToUrl("households");
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.perPage,
@@ -321,7 +322,6 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
-				this.setGridFiltersToUrl("households");
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
