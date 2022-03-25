@@ -1,5 +1,6 @@
 <template>
 	<Table
+		ref="table"
 		v-show="show"
 		has-reset-sort
 		has-search
@@ -14,6 +15,10 @@
 		@resetSort="resetSort"
 		@search="onSearch"
 	>
+		<template #progress>
+			<b-progress :value="table.progress" format="percent" />
+		</template>
+
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
@@ -58,14 +63,54 @@
 				/>
 			</div>
 		</b-table-column>
+
+		<template #filterButton>
+			<b-button
+				slot="trigger"
+				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				@click="filtersToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</b-button>
+		</template>
+
+		<template #filter>
+			<b-collapse :open="advancedSearchVisible">
+				<VendorsFilter
+					ref="vendorsFilter"
+					:defaultFilters="{ ...filters, ...locationsFilter }"
+					@filtersChanged="onFiltersChange"
+				/>
+			</b-collapse>
+		</template>
+
 		<template #export>
 			<ExportButton
 				space-between
-				type="is-primary"
+				class="ml-2"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"
 				@onExport="exportVendors"
 			/>
+		</template>
+
+		<template slot="resetSort">
+			<div class="level-right">
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small mr-2"
+					@click="resetFilters"
+				>
+					{{ $t('Reset Filters') }}
+				</b-button>
+				<b-button
+					icon-left="eraser"
+					class="reset-sort-button is-small"
+					@click="resetTableSort"
+				>
+					{{ $t('Reset Table Sort') }}
+				</b-button>
+			</div>
 		</template>
 	</Table>
 </template>
@@ -84,6 +129,8 @@ import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 
 export default {
 	name: "VendorsList",
@@ -94,13 +141,17 @@ export default {
 		Table,
 		ActionButton,
 		ColumnField,
+		VendorsFilter,
 	},
 
-	mixins: [grid, baseHelper, permissions],
+	mixins: [grid, baseHelper, permissions, urlFiltersHelper],
 
 	data() {
 		return {
+			advancedSearchVisible: false,
 			exportLoading: false,
+			filters: {},
+			locationsFilter: {},
 			table: {
 				data: [],
 				columns: [],
@@ -120,6 +171,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				progress: null,
 			},
 		};
 	},
@@ -129,19 +181,25 @@ export default {
 	},
 
 	created() {
+		this.setGridFilters("vendors");
 		this.fetchData();
 	},
 
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
+			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+
+			this.setGridFiltersToUrl("vendors");
 			await VendorService.getListOfVendors(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				null,
+				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;
@@ -152,6 +210,37 @@ export default {
 				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
 			});
 			this.isLoadingList = false;
+			this.table.progress = 100;
+		},
+
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
+
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
+					this.filters[key] = [];
+					filters[key].forEach((value) => {
+						this.filters[key].push(value);
+					});
+				} else {
+					this.filters[key] = filters[key];
+				}
+			});
+
+			this.table.currentPage = 1;
+			await this.fetchData();
+		},
+
+		filtersToggle() {
+			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		resetFilters() {
+			this.$refs.vendorsFilter.eraseFilters();
+		},
+
+		resetTableSort() {
+			this.$refs.table.onResetSort();
 		},
 
 		async prepareDataForTable(data) {

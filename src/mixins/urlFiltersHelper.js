@@ -10,7 +10,7 @@ export default {
 
 		setGridFilters(entity, hasLocationsFilter = true) {
 			const storedFilter = this.gridFilters[entity]
-				.find(({ country }) => country === this.country.iso3);
+				?.find(({ country }) => country === this.country.iso3);
 
 			const { query } = storedFilter || this.$route;
 
@@ -47,15 +47,20 @@ export default {
 
 			const updatedGridFilters = { ...this.gridFilters };
 			const filterEntityIndex = this.gridFilters?.[entity]
-				.findIndex(({ country }) => country === this.country.iso3);
+				?.findIndex(({ country }) => country === this.country.iso3);
 
-			if (filterEntityIndex !== -1) {
+			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
 				updatedGridFilters[entity][filterEntityIndex].query = { ...query };
-			} else {
+			} else if (updatedGridFilters[entity]?.length) {
 				updatedGridFilters[entity].push({
 					country: this.country.iso3,
 					query,
 				});
+			} else {
+				updatedGridFilters[entity] = [{
+					country: this.country.iso3,
+					query,
+				}];
 			}
 
 			this.storeGridFilters({
@@ -81,24 +86,18 @@ export default {
 				this.selectedFiltersOptions.adm1 = this.filtersOptions
 					.adm1.data
 					.find((item) => item.locationId === this.defaultFilters.adm1[0]);
-
-				await this.fetchDistricts(this.selectedFiltersOptions.adm1.id);
 			}
 
 			if (this.defaultFilters.adm2?.length) {
 				this.selectedFiltersOptions.adm2 = this.filtersOptions
 					.adm2.data
 					.find((item) => item.locationId === this.defaultFilters.adm2[0]);
-
-				await this.fetchCommunes(this.selectedFiltersOptions.adm2.id);
 			}
 
 			if (this.defaultFilters.adm3?.length) {
 				this.selectedFiltersOptions.adm3 = this.filtersOptions
 					.adm3.data
 					.find((item) => item.locationId === this.defaultFilters.adm3[0]);
-
-				await this.fetchVillages(this.selectedFiltersOptions.adm3.id);
 			}
 
 			if (this.defaultFilters.adm4?.length) {
@@ -106,6 +105,48 @@ export default {
 					.adm4.data
 					.find((item) => item.locationId === this.defaultFilters.adm4[0]);
 			}
+		},
+
+		clearedLocationFilters(filters, filterName) {
+			const filtersCopy = { ...filters };
+
+			switch (filterName) {
+				case "adm1":
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm2":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm3":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm4":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
+					break;
+				default: break;
+			}
+
+			return filtersCopy;
 		},
 	},
 };

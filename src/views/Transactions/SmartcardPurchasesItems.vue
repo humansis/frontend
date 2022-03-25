@@ -176,6 +176,7 @@ export default {
 
 			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.setGridFiltersToUrl("purchases");
 			await TransactionService.getListOfSmartcardPurchasedItems(
 				this.table.currentPage,
 				this.perPage,
@@ -183,8 +184,6 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
-				this.setGridFiltersToUrl("purchases");
-
 				this.table.data = [];
 				this.table.progress = 10;
 				this.table.total = totalCount;

@@ -283,33 +283,27 @@ export default {
 				});
 		},
 
-		async fetchDistricts(id) {
-			if (!id) return;
-
+		async fetchDistricts() {
 			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2(id)
+			await LocationsService.getListOfAdm2()
 				.then(({ data }) => {
 					this.filtersOptions.adm2.data = data;
 					this.filtersOptions.adm2.loading = false;
 				});
 		},
 
-		async fetchCommunes(id) {
-			if (!id) return;
-
+		async fetchCommunes() {
 			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3(id)
+			await LocationsService.getListOfAdm3()
 				.then(({ data }) => {
 					this.filtersOptions.adm3.data = data;
 					this.filtersOptions.adm3.loading = false;
 				});
 		},
 
-		async fetchVillages(id) {
-			if (!id) return;
-
+		async fetchVillages() {
 			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4(id)
+			await LocationsService.getListOfAdm4()
 				.then(({ data }) => {
 					this.filtersOptions.adm4.data = data;
 					this.filtersOptions.adm4.loading = false;
