@@ -106,5 +106,47 @@ export default {
 					.find((item) => item.locationId === this.defaultFilters.adm4[0]);
 			}
 		},
+
+		clearedLocationFilters(filters, filterName) {
+			const filtersCopy = { ...filters };
+
+			switch (filterName) {
+				case "adm1":
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm2":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm3 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm3":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm4 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm4 = [];
+					break;
+				case "adm4":
+					this.selectedFiltersOptions.adm1 = null;
+					this.selectedFiltersOptions.adm2 = null;
+					this.selectedFiltersOptions.adm3 = null;
+					filtersCopy.adm1 = [];
+					filtersCopy.adm2 = [];
+					filtersCopy.adm3 = [];
+					break;
+				default: break;
+			}
+
+			return filtersCopy;
+		},
 	},
 };

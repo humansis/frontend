@@ -114,44 +114,9 @@ export default {
 			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
 		},
 
-		filterChanged(filters, filterName) {
-			const filtersCopy = { ...filters };
+		async filterChanged(filters, filterName) {
+			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm4":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					break;
-				default: break;
-			}
 			let location = null;
 
 			if (this.selectedFiltersOptions.adm4) {
