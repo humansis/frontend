@@ -95,6 +95,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "id", label: "ID" },
 					{ key: "email" },
 					{ key: "role", label: "Rights", sortKey: "rights" },
 					{ key: "phonePrefix", label: "Prefix", sortKey: "prefix" },
