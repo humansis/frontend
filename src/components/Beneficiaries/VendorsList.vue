@@ -156,6 +156,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "id", label: "ID" },
 					{ key: "username" },
 					{ key: "name" },
 					{ key: "categoryType", width: "200", type: "svgIcon" },
