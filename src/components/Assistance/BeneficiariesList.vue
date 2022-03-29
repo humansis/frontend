@@ -283,7 +283,7 @@ export default {
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
 					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "nationalId", label: "Card ID", sortable: true },
+					{ key: "nationalId", label: "ID Number", sortable: true },
 				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
