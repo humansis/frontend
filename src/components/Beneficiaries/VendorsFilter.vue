@@ -29,6 +29,7 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: {
+				isInvoiced: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
@@ -36,6 +37,14 @@ export default {
 				locations: [],
 			},
 			filtersOptions: {
+				isInvoiced: {
+					name: "Invoicing",
+					placeholder: this.$t("Select invoicing"),
+					data: [
+						{ code: "true", value: this.$t("Invoiced") },
+						{ code: "false", value: this.$t("To Redeem") },
+					],
+				},
 				adm1: {
 					name: "Province",
 					placeholder: this.$t("Select Province"),
@@ -95,11 +104,19 @@ export default {
 		]);
 
 		await Promise.all([
+			this.setDefaultFilters(),
 			this.setDefaultLocationsFilter(),
 		]);
 	},
 
 	methods: {
+		setDefaultFilters() {
+			if (this.defaultFilters.isInvoiced) {
+				this.selectedFiltersOptions.isInvoiced = this.filtersOptions
+					.isInvoiced.data.find((item) => item.code === this.defaultFilters.isInvoiced);
+			}
+		},
+
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;
 			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
@@ -138,6 +155,7 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
+					isInvoiced: filters.isInvoiced[0],
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
@@ -201,6 +219,7 @@ export default {
 
 		eraseFilters() {
 			this.selectedFiltersOptions = {
+				isInvoiced: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
