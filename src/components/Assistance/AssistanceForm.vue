@@ -27,6 +27,7 @@
 
 			<b-field :label="$t('Expiration Date')">
 				<b-datepicker
+					v-if="formModel.dateExpiration"
 					v-model="formModel.dateExpiration"
 					show-week-number
 					locale="en-CA"
@@ -37,6 +38,7 @@
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
+				<b-input v-else value="N/A" disabled />
 			</b-field>
 
 			<b-field :label="$t('Target')">

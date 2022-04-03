@@ -175,7 +175,7 @@ export default {
 				adm3Id,
 				adm4Id,
 				dateDistribution: new Date(dateDistribution),
-				dateExpiration: new Date(dateExpiration),
+				dateExpiration: dateExpiration ? new Date(dateExpiration) : null,
 				allowedProductCategoryTypes,
 				cashbackLimit,
 				target,
