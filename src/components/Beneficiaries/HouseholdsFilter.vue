@@ -143,6 +143,9 @@ export default {
 			this.setLocationNames(),
 			this.fetchProjects(),
 			this.fetchProvinces(),
+			this.fetchDistricts(),
+			this.fetchCommunes(),
+			this.fetchVillages(),
 			this.fetchLivelihoods(),
 			this.fetchVulnerabilities(),
 			this.fetchResidenceStatuses(),
@@ -207,46 +210,24 @@ export default {
 			}
 		},
 
-		filterChanged(filters, filterName) {
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm4":
-					if (!this.selectedFiltersOptions[filterName]) break;
-					break;
-				default: break;
-			}
+		async filterChanged(filters, filterName) {
+			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+
 			let location = null;
 			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filters.adm4;
+				const [a] = filtersCopy.adm4;
 				location = a;
 			} else
 			if (this.selectedFiltersOptions.adm3) {
-				const [a] = filters.adm3;
+				const [a] = filtersCopy.adm3;
 				location = a;
 			} else
 			if (this.selectedFiltersOptions.adm2) {
-				const [a] = filters.adm2;
+				const [a] = filtersCopy.adm2;
 				location = a;
 			} else
 			if (this.selectedFiltersOptions.adm1) {
-				const [a] = filters.adm1;
+				const [a] = filtersCopy.adm1;
 				location = a;
 			}
 
@@ -261,10 +242,10 @@ export default {
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
-					adm1: filters.adm1,
-					adm2: filters.adm2,
-					adm3: filters.adm3,
-					adm4: filters.adm4,
+					adm1: filtersCopy.adm1,
+					adm2: filtersCopy.adm2,
+					adm3: filtersCopy.adm3,
+					adm4: filtersCopy.adm4,
 				},
 			});
 		},

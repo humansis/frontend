@@ -1,10 +1,5 @@
 image: artifactory.quanti.cz/docker/node-yarn-awscli:12
 
-include:
-  - project: 'humansis/gitlab-ci-templates'
-    ref: 'slack'
-    file: '.slack-template.yml'
-
 variables:
   CHANNEL: "#pin_deployment"
   USERNAME: "PIN Deploy"
@@ -17,20 +12,25 @@ cache:
 
 stages:
  - lint
- - report_starting
+ - build
  - deploy_dev
  - deploy_test
- - deploy_test3
  - deploy_stage
  - deploy_demo
  - deploy_prod
- - report_finished
 
-.prepare_aws: &prepare_aws
+.deploy:
   before_script:
     - aws configure set aws_access_key_id ${aws_access_key_id}
     - aws configure set aws_secret_access_key ${aws_secret_access_key}
     - aws configure set default.region eu-central-1
+  script:
+    - yarn install
+    - ./ci/report-slack.sh start ${ENV}
+    - ./ci/get-info.sh
+    - ./ci/build-deploy.sh ${ENV}
+  after_script:
+    - ./ci/report-slack.sh ${CI_JOB_STATUS} ${ENV}
 
 lint:
   stage: lint
@@ -43,16 +43,49 @@ lint:
   except:
     - tags
 
-deploy dev:
+build:
+  stage: build
+  variables:
+    NODE_OPTIONS: --max-old-space-size=4096
+  before_script:
+    - yarn install
+  script:
+    - yarn build
+  except:
+    - tags
+
+deploy dev1:
   stage: deploy_dev
   environment:
-    name: dev
-    url: https://dev-pin.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh dev
+    name: dev1
+    url: https://dev1.humansis.org
+  variables:
+    ENV: dev1
+  extends: .deploy
+  only:
+    - branches
+  when: manual
+
+deploy dev2:
+  stage: deploy_dev
+  environment:
+    name: dev2
+    url: https://dev2.humansis.org
+  variables:
+    ENV: dev2
+  extends: .deploy
+  only:
+    - branches
+  when: manual
+
+deploy dev3:
+  stage: deploy_dev
+  environment:
+    name: dev3
+    url: https://dev3.humansis.org
+  variables:
+    ENV: dev3
+  extends: .deploy
   only:
     - branches
   when: manual
@@ -61,53 +94,23 @@ deploy test:
   stage: deploy_test
   environment:
     name: test
-    url: https://test-pin.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh test
+    url: https://test.humansis.org
+  variables:
+    ENV: test
+  extends: .deploy
   only:
     - /^develop$/
   except:
     - tags
 
-deploy test3:
-  stage: deploy_test3
-  environment:
-    name: test3
-    url: https://test3.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh test3
-  only:
-    - branches
-  when: manual
-
-report starting:
-  stage: report_starting
-  extends: .slack_starting_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: always
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: always
-    - when: never
-
 deploy stage:
   stage: deploy_stage
   environment:
     name: stage
-    url: https://stage-pin.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh stage
+    url: https://stage.humansis.org
+  variables:
+    ENV: stage
+  extends: .deploy
   only:
     - /^release\/.*$/
   except:
@@ -117,12 +120,10 @@ deploy prod:
   stage: deploy_prod
   environment:
     name: production
-    url: https://prod-pin.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh prod
+    url: https://pin.humansis.org
+  variables:
+    ENV: production
+  extends: .deploy
   only:
     - /^v.*$/
   except:
@@ -134,71 +135,11 @@ deploy demo:
   stage: deploy_demo
   environment:
     name: demo
-    url: https://demo-pin.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh demo
+    url: https://demo.humansis.org
+  variables:
+    ENV: demo
+  extends: .deploy
   only:
     - /^v.*$/
     - /^release\/.*$/
-  when: manual
-
-report success:
-  stage: report_finished
-  extends: .slack_successful_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_success
-    - when: never
-
-report failure:
-  stage: report_finished
-  extends: .slack_failed_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_failure
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_failure
-    - when: never
-
-###############################################
-### DEPLOY DCA
-#############################################
-
-deploy test DCA:
-  stage: deploy_test
-  environment:
-    name: dca-test
-    url: https://testdca.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh testdca
-  only:
-    - dca_master
-  when: manual
-
-deploy prod DCA:
-  stage: deploy_prod
-  environment:
-    name: dca-prod
-    url: https://dca.humansis.org
-  <<: *prepare_aws
-  script:
-    - yarn install
-    - ./get-info.sh
-    - ./build-deploy.sh proddca
-  only:
-    - /^dca-v.*$/
-  except:
-    - branches
   when: manual

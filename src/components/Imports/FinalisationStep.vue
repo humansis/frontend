@@ -41,26 +41,50 @@
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t("Similarities or Duplicities Found") }}:</td>
+							<td>{{ $t("Duplicities Found") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
 									type="is-warning"
 									size="is-medium"
 								>
-									{{ amountDuplicities }}
+									{{ amountIdentityDuplicities }}
 								</b-tag>
 							</td>
 						</tr>
 						<tr>
-							<td>{{ $t("Similarities or Duplicities Corrected/Merged") }}:</td>
+							<td>{{ $t("Duplicities Corrected/Merged") }}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
 									type="is-success"
 									size="is-medium"
 								>
-									{{ amountDuplicitiesResolved }}
+									{{ amountIdentityDuplicitiesResolved }}
+								</b-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>{{ $t("Similarities Found") }}:</td>
+							<td class="has-text-right">
+								<b-tag
+									class="has-text-weight-bold"
+									type="is-warning"
+									size="is-medium"
+								>
+									{{ amountSimilarityDuplicities }}
+								</b-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>{{ $t("Similarities Corrected/Merged") }}:</td>
+							<td class="has-text-right">
+								<b-tag
+									class="has-text-weight-bold"
+									type="is-success"
+									size="is-medium"
+								>
+									{{ amountSimilarityDuplicitiesResolved }}
 								</b-tag>
 							</td>
 						</tr>
@@ -183,12 +207,20 @@ export default {
 			return this.importStatistics?.amountIntegrityFailed || 0;
 		},
 
-		amountDuplicities() {
-			return this.importStatistics?.amountDuplicities || 0;
+		amountIdentityDuplicities() {
+			return this.importStatistics?.amountIdentityDuplicities || 0;
 		},
 
-		amountDuplicitiesResolved() {
-			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		amountIdentityDuplicitiesResolved() {
+			return this.importStatistics?.amountIdentityDuplicitiesResolved || 0;
+		},
+
+		amountSimilarityDuplicities() {
+			return this.importStatistics?.amountSimilarityDuplicities || 0;
+		},
+
+		amountSimilarityDuplicitiesResolved() {
+			return this.importStatistics?.amountSimilarityDuplicitiesResolved || 0;
 		},
 
 		amountEntriesToImport() {

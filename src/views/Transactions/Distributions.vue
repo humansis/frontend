@@ -172,6 +172,7 @@ export default {
 
 			this.renameAdms();
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.setGridFiltersToUrl("distributions");
 			await TransactionService.getListOfDistributedItems(
 				this.table.currentPage,
 				this.perPage,
@@ -179,8 +180,6 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
-				this.setGridFiltersToUrl("distributions");
-
 				this.table.data = [];
 				this.table.progress = 20;
 				this.table.total = totalCount;

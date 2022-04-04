@@ -13,7 +13,7 @@
 					label="value"
 					track-by="code"
 					:options="options.modalities"
-					:searchable="false"
+					searchable
 					:loading="loading.modalities"
 					:class="validateMultiselect('modality')"
 					@select="onModalitySelect"
@@ -33,7 +33,7 @@
 					:placeholder="$t('Click to select')"
 					:options="options.types"
 					:loading="loading.types"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('type')"
 					@select="onModalityTypeSelect"
 				/>

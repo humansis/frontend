@@ -14,13 +14,13 @@
 						<b-progress-bar
 							type="is-light"
 							show-value
-							:value="totalEntries - amountDuplicities"
+							:value="totalEntries - amountIdentityDuplicities"
 						/>
 						<b-progress-bar
-							v-if="amountDuplicities"
+							v-if="amountIdentityDuplicities"
 							type="is-warning"
 							show-value
-							:value="amountDuplicities"
+							:value="amountIdentityDuplicities"
 						/>
 					</template>
 				</b-progress>
@@ -46,7 +46,7 @@
 									type="is-warning"
 									size="is-medium"
 								>
-									{{ amountDuplicities }}
+									{{ amountIdentityDuplicities }}
 								</b-tag>
 							</td>
 						</tr>
@@ -58,7 +58,7 @@
 									type="is-success"
 									size="is-medium"
 								>
-									{{ amountDuplicitiesResolved }}
+									{{ amountIdentityDuplicitiesResolved }}
 								</b-tag>
 							</td>
 						</tr>
@@ -77,7 +77,7 @@
 				</b-button>
 				<div>
 					<b-button
-						v-if="amountDuplicities"
+						v-if="amountIdentityDuplicities"
 						:type="['is-link' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
 						:disabled="resolversAllLoading"
@@ -86,7 +86,7 @@
 						{{ $t('Update All') }}
 					</b-button>
 					<b-button
-						v-if="amountDuplicities"
+						v-if="amountIdentityDuplicities"
 						:type="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
 						:disabled="resolversAllLoading"
@@ -95,7 +95,7 @@
 						{{ $t('Link All') }}
 					</b-button>
 					<b-button
-						v-if="amountDuplicities"
+						v-if="amountIdentityDuplicities"
 						type="is-primary"
 						icon-right="tasks"
 						:loading="resolveDuplicitiesLoading"
@@ -197,12 +197,12 @@ export default {
 			return this.importStatistics?.totalEntries || 0;
 		},
 
-		amountDuplicities() {
-			return this.importStatistics?.amountDuplicities || 0;
+		amountIdentityDuplicities() {
+			return this.importStatistics?.amountIdentityDuplicities || 0;
 		},
 
-		amountDuplicitiesResolved() {
-			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		amountIdentityDuplicitiesResolved() {
+			return this.importStatistics?.amountIdentityDuplicitiesResolved || 0;
 		},
 
 		canStartSimilarityCheck() {

@@ -209,6 +209,7 @@ export default {
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
+			this.setGridFiltersToUrl("vouchers", false);
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.perPage,
@@ -216,7 +217,6 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
-				this.setGridFiltersToUrl("vouchers", false);
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;

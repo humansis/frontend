@@ -11,18 +11,16 @@ if [[ $1 == "prod" ]]; then
     mv .env.prod .env
 elif [[ $1 == "test" ]]; then
     mv .env.testing .env
-elif [[ $1 == "test3" ]]; then
-    mv .env.testing .env
-elif [[ $1 == "dev" ]]; then
+elif [[ $1 == "dev1" ]]; then
     mv .env.development .env
+elif [[ $1 == "dev2" ]]; then
+    mv .env.development2 .env
+elif [[ $1 == "dev3" ]]; then
+    mv .env.development3 .env
 elif [[ $1 == "stage" ]]; then
     mv .env.stage .env
 elif [[ $1 == "demo" ]]; then
     mv .env.demo .env
-elif [[ $1 == "proddca" ]]; then # DCA
-    mv .env.proddca .env
-elif [[ $1 == "testdca" ]]; then # DCA
-    mv .env.testingdca .env
 else
     echo "Unknown environment"
     exit 1
@@ -52,9 +50,6 @@ echo "Compression complete"
 
 # deploy on aws
 echo "Upload starting"
-# aws configure set aws_access_key_id ${aws_access_key_id}
-# aws configure set aws_secret_access_key ${aws_secret_access_key}
-# aws configure set default.region eu-central-1
 
 if [[ $1 == "prod" ]]; then
     aws s3 rm s3://prod-pin.humansis.org --recursive
@@ -64,14 +59,18 @@ elif [[ $1 == "test" ]]; then
     aws s3 rm s3://test-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://test-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3RKOVT9Z18TQC --paths '/*'
-elif [[ $1 == "test3" ]]; then
-    aws s3 rm s3://test3.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://test3.humansis.org --recursive --acl public-read --content-encoding gzip
-    aws cloudfront create-invalidation --distribution-id E3UIKQJ6I7SYO4 --paths '/*'
-elif [[ $1 == "dev" ]]; then
+elif [[ $1 == "dev1" ]]; then
     aws s3 rm s3://dev-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://dev-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id EBG5G8O7ZSVBV --paths '/*'
+elif [[ $1 == "dev2" ]]; then
+    aws s3 rm s3://dev2.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://dev2.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E1L04TE4FQK24O --paths '/*'
+elif [[ $1 == "dev3" ]]; then
+    aws s3 rm s3://dev3.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://dev3.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E2RDLDL7FXC18J --paths '/*'
 elif [[ $1 == "stage" ]]; then
     aws s3 rm s3://stage-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip
@@ -80,13 +79,5 @@ elif [[ $1 == "demo" ]]; then
     aws s3 rm s3://demo.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://demo.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3MTL7N9452SZ4 --paths '/*'
-elif [[ $1 == "proddca" ]]; then # DCA
-    aws s3 rm s3://dca.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://dca.humansis.org --recursive --acl public-read --content-encoding gzip
-    aws cloudfront create-invalidation --distribution-id EZBP52LVPFT1C --paths '/*'
-elif [[ $1 == "testdca" ]]; then # DCA
-    aws s3 rm s3://testdca.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://testdca.humansis.org --recursive --acl public-read --content-encoding gzip
-    aws cloudfront create-invalidation --distribution-id E3RNPDVEF9KF64 --paths '/*'
 fi
 echo "Upload complete"
