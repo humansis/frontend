@@ -21,7 +21,7 @@
 					icon-left="plus"
 					@click="addNewImport"
 				>
-					{{ $t('New') }}
+					{{ $t('New Import') }}
 				</b-button>
 				<b-button
 					tag="a"

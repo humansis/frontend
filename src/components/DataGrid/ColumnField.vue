@@ -162,7 +162,9 @@ export default {
 		},
 
 		formattedDateTime() {
-			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD hh:mm")}`;
+			const date = this.data.row[this.column.field];
+
+			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "N/A";
 		},
 
 		getTagType() {

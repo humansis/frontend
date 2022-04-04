@@ -1,11 +1,14 @@
 <template>
-	<AdvancedFilter
-		multiline
-		ref="advancedFilter"
-		:selected-filters-options="selectedFiltersOptions"
-		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-	/>
+	<div>
+		<AdvancedFilter
+			multiline
+			ref="advancedFilter"
+			:selected-filters-options="selectedFiltersOptions"
+			:filters-options="filtersOptions"
+			@filtersChanged="filterChanged"
+		/>
+		neeeeee
+	</div>
 </template>
 
 <script>
@@ -142,6 +145,9 @@ export default {
 			this.fetchModalityTypes(),
 			this.fetchBeneficiaryTypes(),
 			this.fetchProvinces(),
+			this.fetchDistricts(),
+			this.fetchCommunes(),
+			this.fetchVillages(),
 			this.fetchVendors(),
 			this.fetchAssistance(),
 		]);
@@ -200,49 +206,29 @@ export default {
 			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
 		},
 
-		filterChanged(filters, filterName) {
+		async filterChanged(filters, filterName) {
 			const preparedFilters = { ...filters };
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchDistricts(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchCommunes(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm4 = null;
-					if (!this.selectedFiltersOptions[filterName]) break;
-					this.fetchVillages(this.selectedFiltersOptions[filterName].id);
-					break;
-				case "adm4":
-					if (!this.selectedFiltersOptions[filterName]) break;
-					break;
-				case "project":
-					this.selectedFiltersOptions.distribution = [];
-					preparedFilters.distribution = null;
-					this.fetchAssistance();
-					break;
-				default: break;
+
+			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+
+			if (filterName === "project") {
+				this.selectedFiltersOptions.distribution = [];
+				preparedFilters.distribution = null;
+				this.fetchAssistance();
 			}
+
 			let location = null;
 			if (this.selectedFiltersOptions.adm4) {
-				const [a] = preparedFilters.adm4;
+				const [a] = filtersCopy.adm4;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm3) {
-				const [a] = preparedFilters.adm3;
+				const [a] = filtersCopy.adm3;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm2) {
-				const [a] = preparedFilters.adm2;
+				const [a] = filtersCopy.adm2;
 				location = a;
 			} else if (this.selectedFiltersOptions.adm1) {
-				const [a] = preparedFilters.adm1;
+				const [a] = filtersCopy.adm1;
 				location = a;
 			}
 
@@ -258,10 +244,10 @@ export default {
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
-					adm1: preparedFilters.adm1,
-					adm2: preparedFilters.adm2,
-					adm3: preparedFilters.adm3,
-					adm4: preparedFilters.adm4,
+					adm1: filtersCopy.adm1,
+					adm2: filtersCopy.adm2,
+					adm3: filtersCopy.adm3,
+					adm4: filtersCopy.adm4,
 				},
 			});
 		},

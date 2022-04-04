@@ -14,13 +14,13 @@
 						<b-progress-bar
 							type="is-light"
 							show-value
-							:value="totalEntries - amountDuplicities"
+							:value="totalEntries - amountSimilarityDuplicities"
 						/>
 						<b-progress-bar
-							v-if="amountDuplicities"
+							v-if="amountSimilarityDuplicities"
 							type="is-warning"
 							show-value
-							:value="amountDuplicities"
+							:value="amountSimilarityDuplicities"
 						/>
 					</template>
 				</b-progress>
@@ -46,7 +46,7 @@
 									type="is-warning"
 									size="is-medium"
 								>
-									{{ amountDuplicities }}
+									{{ amountSimilarityDuplicities }}
 								</b-tag>
 							</td>
 						</tr>
@@ -58,7 +58,7 @@
 									type="is-success"
 									size="is-medium"
 								>
-									{{ amountDuplicitiesResolved }}
+									{{ amountSimilarityDuplicitiesResolved }}
 								</b-tag>
 							</td>
 						</tr>
@@ -76,7 +76,7 @@
 					{{ $t('Cancel Import') }}
 				</b-button>
 				<b-button
-					v-if="amountDuplicities"
+					v-if="amountSimilarityDuplicities"
 					type="is-primary"
 					icon-right="tasks"
 					:loading="resolveDuplicitiesLoading"
@@ -171,12 +171,12 @@ export default {
 			return this.importStatistics?.totalEntries || 0;
 		},
 
-		amountDuplicities() {
-			return this.importStatistics?.amountDuplicities || 0;
+		amountSimilarityDuplicities() {
+			return this.importStatistics?.amountSimilarityDuplicities || 0;
 		},
 
-		amountDuplicitiesResolved() {
-			return this.importStatistics?.amountDuplicitiesResolved || 0;
+		amountSimilarityDuplicitiesResolved() {
+			return this.importStatistics?.amountSimilarityDuplicitiesResolved || 0;
 		},
 
 		canGoToFinalisation() {
