@@ -95,7 +95,7 @@
 		<div class="columns">
 			<div class="column buttons">
 				<b-button
-					v-if="isAssistanceValidated && !amountDistributed"
+					v-if="isAssistanceValidated && !amountDistributed && !isAssistanceCompleted"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="check"
