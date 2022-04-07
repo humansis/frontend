@@ -161,6 +161,8 @@ export default {
 			if (this.$refs.householdForm?.$parent === active) {
 				if (this.$refs.householdForm.submit()) {
 					this.household = this.$refs.householdForm.formModel;
+					this.address = this.prepareAddressForSummary();
+					this.location = this.prepareLocationForSummary();
 					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
@@ -180,8 +182,6 @@ export default {
 					this.prepareSummaryMembers(
 						[this.householdHead, ...this.$refs.householdMembers.members],
 					);
-					this.address = this.prepareAddressForSummary();
-					this.location = this.prepareLocationForSummary();
 					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
@@ -206,6 +206,8 @@ export default {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
 						this.household = this.$refs.householdForm.formModel;
+						this.address = this.prepareAddressForSummary();
+						this.location = this.prepareLocationForSummary();
 						next.action();
 					}
 					break;
@@ -221,8 +223,6 @@ export default {
 						this.prepareSummaryMembers(
 							[this.householdHead, ...this.$refs.householdMembers.members],
 						);
-						this.address = this.prepareAddressForSummary();
-						this.location = this.prepareLocationForSummary();
 						next.action();
 					}
 					break;

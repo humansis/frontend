@@ -27,7 +27,7 @@
 
 			<b-field :label="$t('Expiration Date')">
 				<b-datepicker
-					v-if="formModel.dateExpiration"
+					v-if="isAssistanceForSmartCards"
 					v-model="formModel.dateExpiration"
 					show-week-number
 					locale="en-CA"
@@ -117,6 +117,10 @@ export default {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
 			return new Date(endDate);
+		},
+
+		isAssistanceForSmartCards() {
+			return this.formModel.commodity?.find((item) => item.code === "Smartcard");
 		},
 	},
 
