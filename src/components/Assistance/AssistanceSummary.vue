@@ -55,7 +55,7 @@
 				</div>
 			</div>
 
-			<div class="level-item has-text-centered">
+			<div v-if="dateExpiration" class="level-item has-text-centered">
 				<div class="box">
 					<p class="heading">{{ $t('Expiration Date') }}</p>
 					<p
@@ -205,7 +205,8 @@ export default {
 		},
 
 		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || "";
+			return this.assistance?.dateExpiration
+				? this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") : "";
 		},
 
 		beneficiariesCount() {
