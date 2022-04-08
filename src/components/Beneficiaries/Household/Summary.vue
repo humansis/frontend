@@ -139,7 +139,7 @@ export default {
 		},
 		livelihoodFilled() {
 			return this.livelihood;
-		}
+		},
 	},
 
 	methods: {
