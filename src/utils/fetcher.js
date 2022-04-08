@@ -114,6 +114,8 @@ export const fetcher = async (
 		config.body = JSON.stringify(body);
 	}
 
+	config.credentials = "include";
+
 	const response = await fetch(url, config);
 
 	if (tryRequest) {
@@ -141,8 +143,8 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 	const config = { headers };
 
 	config.method = method;
-
 	config.body = body;
+	config.credentials = "include";
 
 	const response = await fetch(url, config);
 
@@ -169,6 +171,7 @@ export const download = async ({ uri, method = "GET", body = null, version = 1 }
 		headers,
 		method,
 		...(body && { body: JSON.stringify(body) }),
+		credentials: "include",
 	};
 
 	const response = await fetch(url, config);
