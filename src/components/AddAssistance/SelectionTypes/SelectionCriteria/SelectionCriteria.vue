@@ -196,7 +196,7 @@ export default {
 						target: criteriaTarget.code,
 						field: criteria.code,
 						condition: condition.code,
-						value: this.prepareCriteriaValue(value, criteria.type),
+						value: value ? this.prepareCriteriaValue(value, criteria.type) : "",
 						weight: scoreWeight,
 					});
 				});

@@ -149,9 +149,10 @@ export default {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
 				});
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
-				.then((data) => {
+				.then(async (data) => {
 					this.duplicateAssistance = data;
-					this.mapAssistance(data);
+
+					await this.mapAssistance(data);
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
@@ -226,6 +227,7 @@ export default {
 			if (!this.isRemoteAndValid()) return;
 
 			this.loading = true;
+
 			await AssistancesService.createAssistance(this.assistanceBody)
 				.then(({ status, data: { id } }) => {
 					if (status === 200) {
@@ -245,6 +247,7 @@ export default {
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 				});
+
 			this.loading = false;
 		},
 
@@ -291,16 +294,20 @@ export default {
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
+
 				preparedCommodities.push({
 					type: item.modalityType,
 					quantity: item.value,
 					unit: item.unit,
 					description: item.description,
 					modality,
+					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
+					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
+					cashbackLimit: assistance.cashbackLimit,
 				});
 			});
 			if (this.$refs.distributedCommodity) {
-				this.$refs.distributedCommodity.table.data.push(...preparedCommodities);
+				this.$refs.distributedCommodity.table.data = preparedCommodities;
 			}
 			if (this.$refs.activityDetails) {
 				this.$refs.activityDetails.formModel = {
@@ -321,6 +328,7 @@ export default {
 
 		mapSelectionCriteria() {
 			const preparedSelectionCriteria = [];
+
 			this.assistanceSelectionCriteria.forEach((item) => {
 				if (preparedSelectionCriteria[item.group]) {
 					preparedSelectionCriteria[item.group].data.push({
