@@ -115,6 +115,7 @@ export const fetcher = async (
 	}
 
 	config.credentials = "include";
+	config.mode = "cors";
 
 	const response = await fetch(url, config);
 
@@ -145,6 +146,7 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 	config.method = method;
 	config.body = body;
 	config.credentials = "include";
+	config.mode = "cors";
 
 	const response = await fetch(url, config);
 
@@ -172,6 +174,7 @@ export const download = async ({ uri, method = "GET", body = null, version = 1 }
 		method,
 		...(body && { body: JSON.stringify(body) }),
 		credentials: "include",
+		mode: "cors",
 	};
 
 	const response = await fetch(url, config);
