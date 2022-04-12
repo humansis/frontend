@@ -92,6 +92,7 @@ export const fetcher = async (
 	headers = {
 		"Content-Type": contentType || "application/json;charset=utf-8",
 		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
+		"Access-Control-Allow-Credentials": true,
 	};
 
 	if (auth) {
@@ -129,7 +130,9 @@ export const fetcher = async (
 export const upload = async ({ uri, version = 1, auth = true, method, body }) => {
 	const url = `${CONST.API}/v${version}/${uri}`;
 
-	const headers = {};
+	const headers = {
+		"Access-Control-Allow-Credentials": true,
+	};
 
 	if (auth) {
 		const user = getters.getUserFromVuexStorage();
@@ -159,6 +162,7 @@ export const download = async ({ uri, method = "GET", body = null, version = 1 }
 	const headers = {
 		"Content-Type": "application/json;charset=utf-8",
 		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
+		"Access-Control-Allow-Credentials": true,
 	};
 
 	const user = getters.getUserFromVuexStorage();
