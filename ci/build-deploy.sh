@@ -7,7 +7,7 @@ set -e
 
 # build the project (contents will be in directory dist/bms-front)
 echo "Build starting"
-if [[ $1 == "prod" ]]; then
+if [[ $1 == "production" ]]; then
     mv .env.prod .env
 elif [[ $1 == "test" ]]; then
     mv .env.testing .env
@@ -51,7 +51,7 @@ echo "Compression complete"
 # deploy on aws
 echo "Upload starting"
 
-if [[ $1 == "prod" ]]; then
+if [[ $1 == "production" ]]; then
     aws s3 rm s3://prod-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://prod-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E2Y6W09FNZ68XW --paths '/*'
