@@ -83,7 +83,7 @@
 						:disabled="resolversAllLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
 					>
-						{{ $t('Update All') }}
+						{{ $t('All From File') }}
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities"
@@ -92,7 +92,7 @@
 						:disabled="resolversAllLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
 					>
-						{{ $t('Link All') }}
+						{{ $t('All From Humansis') }}
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities"
@@ -101,7 +101,7 @@
 						:loading="resolveDuplicitiesLoading"
 						@click="resolveDuplicities"
 					>
-						{{ $t('Resolve Duplicities') }}
+						{{ $t('Manage Duplicities') }}
 					</b-button>
 					<b-button
 						v-if="canStartSimilarityCheck"
