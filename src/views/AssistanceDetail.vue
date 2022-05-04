@@ -94,6 +94,7 @@
 		<br>
 		<div class="columns">
 			<div class="column buttons">
+				<!-- Temporary hidden
 				<b-button
 					v-if="isAssistanceValidated && !amountDistributed && !isAssistanceCompleted"
 					class="flex-end ml-3"
@@ -103,6 +104,7 @@
 				>
 					{{ $t('Unvalidate Assistance') }}
 				</b-button>
+				-->
 				<b-button
 					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"

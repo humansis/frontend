@@ -152,8 +152,19 @@
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-					@onExport="exportData"
+					@onExport="exportBeneficiaries"
 				/>
+				<b-button
+					class="ml-3"
+					icon-left="file-download"
+					type="is-primary"
+					:loading="exportDistributionListLoading"
+					@click="exportDistributionList"
+				>
+					<template>
+						<span>{{ $t('Bank Distribution List') }}</span>
+					</template>
+				</b-button>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -252,6 +263,7 @@ export default {
 		return {
 			isLoadingList: false,
 			exportLoading: false,
+			exportDistributionListLoading: false,
 			advancedSearchVisible: false,
 			commodities: [],
 			table: {
@@ -690,11 +702,23 @@ export default {
 			this.setAssignedGeneralRelief(generalReliefItemIds);
 		},
 
-		async exportData(format) {
+		async exportBeneficiaries(format) {
 			this.exportLoading = true;
+			await this.exportData(format, false);
+			this.exportLoading = false;
+		},
+
+		async exportDistributionList() {
+			this.exportDistributionListLoading = true;
+			await this.exportData("", true);
+			this.exportDistributionListLoading = false;
+		},
+
+		async exportData(format, exportAsDistributionList = false) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,
+					{ exportAsDistributionList },
 				)
 					.then(({ data }) => {
 						const blob = new Blob([data], { type: data.type });
@@ -704,7 +728,7 @@ export default {
 						link.click();
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
 					});
 			} else {
 				await BeneficiariesService.exportBeneficiaries(format, this.table.data, "id")
@@ -716,10 +740,9 @@ export default {
 						link.click();
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
 					});
 			}
-			this.exportLoading = false;
 		},
 	},
 };
