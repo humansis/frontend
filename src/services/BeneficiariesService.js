@@ -236,10 +236,13 @@ export default {
 		return { data };
 	},
 
-	async exportAssistanceBeneficiaries(format, assistanceId) {
+	async exportAssistanceBeneficiaries(format, assistanceId, { exportAsDistributionList = false }) {
 		const formatText = format ? `type=${format}` : "";
+		const uri = exportAsDistributionList
+			? `assistances/${assistanceId}/bank-report/exports`
+			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
 
-		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
+		const { data } = await download({ uri });
 		return { data };
 	},
 
