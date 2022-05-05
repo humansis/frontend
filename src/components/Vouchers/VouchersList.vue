@@ -109,8 +109,6 @@
 		<template #export>
 			<ExportButton
 				v-if="userCan.exportPrintVouchers"
-				class="ml-3"
-				:label="!bookletsSelects ? $t('Export selection') : null"
 				space-between
 				type="is-primary"
 				:loading="exportLoading"
