@@ -337,7 +337,6 @@ export default {
 		},
 
 		async setGeneralReliefItemAsDistributed() {
-			const dateOfDistribution = new Date().toISOString();
 			let error = "";
 			let success = "";
 
@@ -345,11 +344,11 @@ export default {
 				this.setAtDistributedButtonLoading = true;
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
-					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItemIds[0],
-						true,
-						dateOfDistribution,
-					).then(({ status }) => {
+					const body = beneficiary.reliefPackageIds?.map((id) => ({
+						id, dateDistributed: new Date().toISOString(),
+					}));
+
+					await AssistancesService.updateReliefPackage(body).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
 						}
