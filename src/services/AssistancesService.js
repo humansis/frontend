@@ -179,23 +179,21 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getGeneralReliefItemsForAssistance(generalReliefItemIds) {
-		const idsText = generalReliefItemIds ? idsToUri(generalReliefItemIds) : "";
+	async getReliefPackagesForAssistance(assistanceId, reliefPackageIds) {
+		const idsText = reliefPackageIds ? idsToUri(reliefPackageIds) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `general-relief-items?${idsText}`,
+			uri: `assistances/${assistanceId}/relief-packages?${idsText}`,
 		});
 		return { data, totalCount };
 	},
 
-	async updateGeneralReliefItem(id, value, dateOfDistribution) {
+	// TODO Here we need to change patch endpoint and send there ids of relief packages
+	async updateReliefPackage(body) {
 		const { data, status } = await fetcher({
-			uri: `general-relief-items/${id}`,
+			uri: `assistances/relief-packages/distribute`,
 			method: "PATCH",
-			body: {
-				distributed: value,
-				dateOfDistribution,
-			},
+			body,
 		});
 		return { data, status };
 	},
