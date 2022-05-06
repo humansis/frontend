@@ -154,17 +154,14 @@
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
 					@onExport="exportBeneficiaries"
 				/>
-				<b-button
-					class="ml-3"
-					icon-left="file-download"
+				<ExportButton
+					v-if="exportButton && userCan.exportBeneficiaries && isAssistanceValidated"
 					type="is-primary"
+					label="Bank Distribution List"
 					:loading="exportDistributionListLoading"
-					@click="exportDistributionList"
-				>
-					<template>
-						<span>{{ $t('Bank Distribution List') }}</span>
-					</template>
-				</b-button>
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@onExport="exportDistributionList"
+				/>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -381,6 +378,10 @@ export default {
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
+		},
+
+		isAssistanceValidated() {
+			return this.assistance?.validated;
 		},
 	},
 
@@ -651,17 +652,17 @@ export default {
 
 		async exportBeneficiaries(format) {
 			this.exportLoading = true;
-			await this.exportData(format, false);
+			await this.exportData(format, false, "beneficiaries");
 			this.exportLoading = false;
 		},
 
-		async exportDistributionList() {
+		async exportDistributionList(format) {
 			this.exportDistributionListLoading = true;
-			await this.exportData("", true);
+			await this.exportData(format, true, "distribution-list");
 			this.exportDistributionListLoading = false;
 		},
 
-		async exportData(format, exportAsDistributionList = false) {
+		async exportData(format, exportAsDistributionList = false, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,
@@ -671,7 +672,7 @@ export default {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");
 						link.href = window.URL.createObjectURL(blob);
-						link.download = `beneficiaries.${format}`;
+						link.download = `${filename}.${format}`;
 						link.click();
 					})
 					.catch((e) => {
