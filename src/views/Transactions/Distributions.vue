@@ -63,10 +63,10 @@
 			</template>
 			<template #export>
 				<ExportButton
-					class="ml-2"
 					space-between
-					:formats="{ xlsx: true, csv: true}"
+					type="is-primary"
 					:loading="exportLoading"
+					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="exportDistributions"
 				/>
 			</template>
