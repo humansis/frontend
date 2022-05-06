@@ -250,6 +250,7 @@ export default {
 			this.$v.phone.$touch();
 			if (this.$v.phone.$invalid) return;
 			this.changePhoneLoading = true;
+			this.phone.number = this.phone.number.replace(/\s+/g, "");
 
 			const { id } = this.userProfile;
 
