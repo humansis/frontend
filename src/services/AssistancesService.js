@@ -96,6 +96,13 @@ export default {
 		return { data, status };
 	},
 
+	async calculationCommodities(body) {
+		const { data, status } = await fetcher({
+			uri: "assistances/commodities", method: "POST", body,
+		});
+		return { data, status };
+	},
+
 	async calculationOfBeneficiaries(body) {
 		const { data, status } = await fetcher({
 			uri: "assistances/beneficiaries", method: "POST", body,

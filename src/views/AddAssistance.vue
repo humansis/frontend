@@ -20,13 +20,16 @@
 					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
+					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
 					ref="distributedCommodity"
 					v-if="visibleComponents.distributedCommodity"
 					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
+					:calculated-commodity-value="calculatedCommodityValue"
 					@updatedData="fetchDistributedCommodity"
+					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<ActivityDetails
 					ref="activityDetails"
@@ -118,6 +121,7 @@ export default {
 			duplicate: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
+			calculatedCommodityValue: [],
 		};
 	},
 
@@ -176,6 +180,15 @@ export default {
 						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 					});
 			}
+		},
+
+		async getDeliveredCommodityValue(updatedCommodities) {
+			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
+			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
+
+			if (result.status !== 200) return;
+
+			this.calculatedCommodityValue = result.data.data;
 		},
 
 		validateNewAssistance() {
@@ -300,6 +313,7 @@ export default {
 					quantity: item.value,
 					unit: item.unit,
 					description: item.description,
+					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
 					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,

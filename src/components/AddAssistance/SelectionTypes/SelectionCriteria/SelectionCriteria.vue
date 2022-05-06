@@ -73,6 +73,7 @@
 						v-model="minimumSelectionScore"
 						expanded
 						type="is-dark"
+						max="100000"
 						:controls="false"
 						:loading="vulnerabilityScoreLoading"
 						@input="onVulnerabilityScoreChange"
@@ -297,6 +298,8 @@ export default {
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
 			assistanceBody.threshold = totalCount ? 0 : threshold;
+
+			this.$emit("onDeliveredCommodityValue");
 
 			if (assistanceBody.selectionCriteria?.length) {
 				this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
