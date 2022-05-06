@@ -54,16 +54,17 @@
 				/>
 			</b-table-column>
 		</Table>
+
 		<p
-			v-for="({unit, quantity, type}, key) of modifiedTableData"
-			:key="key"
+			v-for="({modalityType, unit, value}, key) of calculatedCommodityValue"
+			:key="`calculated-commodity-item${key}`"
 			class="subtitle is-5 mb-2 has-text-right"
 		>
 			<strong class="is-size-4">
-				{{ numberWithCommas(quantity * countOfSelectedBeneficiaries) }}
+				{{ value}}
 			</strong>
 			{{ unit }}
-			({{ type }})
+			({{ modalityType }})
 			{{ $t("To Be Delivered") }}
 		</p>
 
@@ -108,6 +109,7 @@ export default {
 				unit: "",
 				quantity: "",
 				description: "",
+				division: null,
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
@@ -121,6 +123,7 @@ export default {
 					{ key: "type" },
 					{ key: "unit" },
 					{ key: "quantity" },
+					{ key: "division", label: "For Each" },
 					{ key: "description" },
 				],
 			},
@@ -137,6 +140,10 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		calculatedCommodityValue: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	created() {
@@ -144,32 +151,36 @@ export default {
 	},
 
 	updated() {
-		const commodities = this.modifiedTableData.map((
-			{
-				type,
-				unit,
-				quantity,
-				description,
-				remoteDistributionAllowed,
-				allowedProductCategoryTypes,
-				cashbackLimit,
-			},
-		) => ({
-			modalityType: type,
-			unit,
-			value: quantity,
-			description: description || "",
-			remoteDistributionAllowed,
-			allowedProductCategoryTypes,
-			cashbackLimit,
-		}));
-
 		if (this.table.data.length) {
-			this.$emit("updatedData", commodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		}
 	},
 
 	computed: {
+		preparedCommodities() {
+			return this.modifiedTableData.map((
+				{
+					type,
+					unit,
+					quantity,
+					description,
+					division,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				},
+			) => ({
+				modalityType: type,
+				unit,
+				value: quantity,
+				description: description || "",
+				division,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
+			}));
+		},
+
 		modifiedTableData() {
 			const tableData = this.table.data.map((
 				{
@@ -179,6 +190,7 @@ export default {
 					currency,
 					quantity,
 					description,
+					division,
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
@@ -190,6 +202,7 @@ export default {
 				unit: unit || currency?.value,
 				quantity: quantity || totalValueOfBooklet,
 				description,
+				division: division?.code || division,
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -218,6 +231,7 @@ export default {
 				unit: null,
 				quantity: null,
 				description: null,
+				division: null,
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
@@ -232,10 +246,12 @@ export default {
 		submitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 
 		removeCommodity(index) {
 			this.table.data.splice(index, 1);
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 
 		numberWithCommas(number) {

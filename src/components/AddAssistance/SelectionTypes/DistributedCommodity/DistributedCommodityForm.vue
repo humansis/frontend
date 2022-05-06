@@ -86,6 +86,24 @@
 			</b-field>
 
 			<b-field
+				v-if="displayedFields.division"
+				:type="validateType('division')"
+				:message="validateMsg('division')"
+				:label="$t('For Each')"
+			>
+				<MultiSelect
+					v-model="formModel.division"
+					label="value"
+					track-by="code"
+					:placeholder="$t('Click to select')"
+					:options="options.division"
+					:loading="loading.division"
+					searchable
+					:class="validateMultiselect('division')"
+				/>
+			</b-field>
+
+			<b-field
 				v-if="displayedFields.description"
 				:type="validateType('description')"
 				:message="validateMsg('description')"
@@ -207,6 +225,7 @@ export default {
 				currency: false,
 				unit: false,
 				quantity: false,
+				division: false,
 				description: false,
 				totalValueOfBooklet: false,
 				remoteDistributionAllowed: false,
@@ -216,6 +235,10 @@ export default {
 				modalities: [],
 				types: [],
 				currencies,
+				division: [
+					{ code: "Per Household", value: "Per Household" },
+					{ code: "Per Household Member", value: "Per Household Member" },
+				],
 			},
 			loading: {
 				modalities: false,
@@ -252,6 +275,10 @@ export default {
 				}),
 				minValue: minValue(1),
 			},
+			// eslint-disable-next-line func-names
+			division: { required: requiredIf(function () {
+				return this.displayedFields.division;
+			}) },
 			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
@@ -312,6 +339,7 @@ export default {
 				currency: false,
 				unit: false,
 				quantity: false,
+				division: false,
 				description: false,
 				totalValueOfBooklet: false,
 				remoteDistributionAllowed: false,
@@ -326,6 +354,17 @@ export default {
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
+					this.displayedFields = {
+						unit: false,
+						description: false,
+						totalValueOfBooklet: false,
+						currency: true,
+						quantity: true,
+						division: true,
+						remoteDistributionAllowed: false,
+						allowedProductCategoryTypes: false,
+					};
+					break;
 				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
@@ -334,6 +373,7 @@ export default {
 						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
+						division: false,
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
 					};
@@ -345,6 +385,7 @@ export default {
 						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
+						division: false,
 						remoteDistributionAllowed: true,
 						allowedProductCategoryTypes: true,
 					};
@@ -365,6 +406,7 @@ export default {
 						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
+						division: false,
 						description: true,
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
@@ -377,6 +419,7 @@ export default {
 						totalValueOfBooklet: false,
 						unit: true,
 						quantity: true,
+						division: false,
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
 					};
@@ -386,6 +429,7 @@ export default {
 					this.displayedFields = {
 						unit: false,
 						quantity: false,
+						division: false,
 						description: false,
 						currency: true,
 						totalValueOfBooklet: true,
