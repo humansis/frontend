@@ -239,7 +239,7 @@ export default {
 	async exportAssistanceBeneficiaries(format, assistanceId, { exportAsDistributionList = false }) {
 		const formatText = format ? `type=${format}` : "";
 		const uri = exportAsDistributionList
-			? `assistances/${assistanceId}/bank-report/exports`
+			? `assistances/${assistanceId}/bank-report/exports?${formatText}`
 			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
 
 		const { data } = await download({ uri });
