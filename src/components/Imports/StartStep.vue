@@ -163,6 +163,7 @@ export default {
 						});
 					}
 				}).catch((e) => {
+					this.startLoading = false;
 					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
 				});
 			} else if (this.importFiles.length) {
