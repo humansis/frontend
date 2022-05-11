@@ -110,6 +110,7 @@
 			<ExportButton
 				v-if="userCan.exportPrintVouchers"
 				space-between
+				class="ml-3"
 				type="is-primary"
 				:loading="exportLoading"
 				:formats="{ xlsx: true, csv: true, ods: true}"

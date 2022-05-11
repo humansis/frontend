@@ -64,6 +64,7 @@
 			<template #export>
 				<ExportButton
 					space-between
+					class="ml-3"
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
