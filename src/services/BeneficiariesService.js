@@ -242,8 +242,8 @@ export default {
 			? `assistances/${assistanceId}/bank-report/exports?${formatText}`
 			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
 
-		const { data } = await download({ uri });
-		return { data };
+		const { data, status, message } = await download({ uri });
+		return { data, status, message };
 	},
 
 	async exportBeneficiaries(format, ids, param = null) {
