@@ -155,11 +155,13 @@
 					@onExport="exportBeneficiaries"
 				/>
 				<ExportButton
-					v-if="exportButton && userCan.exportBeneficiaries && isAssistanceValidated"
+					v-if="exportButton
+						&& isDistributionExportVisible
+						&& userCan.exportBeneficiaries && isAssistanceValidated"
 					type="is-primary"
 					label="Bank Distribution List"
 					:loading="exportDistributionListLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+					:formats="{ xlsx: true }"
 					@onExport="exportDistributionList"
 				/>
 			</template>
@@ -383,6 +385,10 @@ export default {
 		isAssistanceValidated() {
 			return this.assistance?.validated;
 		},
+
+		isDistributionExportVisible() {
+			return !this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH);
+		},
 	},
 
 	async created() {
@@ -545,7 +551,7 @@ export default {
 						this.table.data[key] = item;
 
 						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(item.reliefPackageIds);
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 
@@ -566,7 +572,7 @@ export default {
 						this.table.data[key] = item;
 
 						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(item.reliefPackageIds);
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 
@@ -601,7 +607,7 @@ export default {
 						if (item.phoneIds.length) phoneIds.push(...item.phoneIds);
 
 						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(item.reliefPackageIds);
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 

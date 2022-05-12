@@ -101,9 +101,6 @@ export default {
 				const reliefPackageItems = reliefPackages
 					?.filter(({ id }) => item.reliefPackageIds.includes(id));
 
-				// TODO Replace value after it will be available on BE
-				this.table.data[key].booklet = ["unknown code"];
-
 				this.table.data[key].status = reliefPackageItems.map((i) => (i.state));
 				this.table.data[key].toDistribute = reliefPackageItems.map((i) => (`${i.amountToDistribute} ${i.unit}`));
 				this.table.data[key].distributed = reliefPackageItems.map((i) => (`${i.amountDistributed} ${i.unit}`));
