@@ -387,7 +387,7 @@ export default {
 		},
 
 		isDistributionExportVisible() {
-			return !this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH);
+			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH);
 		},
 	},
 
@@ -674,12 +674,16 @@ export default {
 					format, this.$route.params.assistanceId,
 					{ exportAsDistributionList },
 				)
-					.then(({ data }) => {
+					.then(({ data, status, message }) => {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");
 						link.href = window.URL.createObjectURL(blob);
 						link.download = `${filename}.${format}`;
 						link.click();
+
+						if (status !== 200) {
+							Notification(message, "is-warning");
+						}
 					})
 					.catch((e) => {
 						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
