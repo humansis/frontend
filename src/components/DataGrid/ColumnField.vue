@@ -10,6 +10,16 @@
 			{{ data.row[column.field] || this.$t("None") }}
 		</template>
 
+		<!-- Array Text Break -->
+		<template v-if="column.type === 'arrayTextBreak'">
+			<div
+				v-for="(item, index) in  data.row[column.field]"
+				:key="`array-text-break-${index}`"
+			>
+				{{ item }}
+			</div>
+		</template>
+
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
 			<router-link
@@ -94,6 +104,18 @@
 			</b-tag>
 		</template>
 
+		<!-- Show Custom Tags Array with background color -->
+		<template v-if="column.type === 'tagArray'">
+			<div
+				v-for="(item, index) in  data.row[column.field]"
+				:key="`tags-array-item-${index}`"
+			>
+				<b-tag :type="getTagTypeByItem(item)">
+					{{ $t(data.row[column.field][index]) }}
+				</b-tag>
+			</div>
+		</template>
+
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
 
@@ -164,7 +186,7 @@ export default {
 		formattedDateTime() {
 			const date = this.data.row[this.column.field];
 
-			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "N/A";
+			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "";
 		},
 
 		getTagType() {
@@ -185,6 +207,10 @@ export default {
 
 		getLinkName(field) {
 			return field?.name || "";
+		},
+
+		getTagTypeByItem(item) {
+			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
 	},
 

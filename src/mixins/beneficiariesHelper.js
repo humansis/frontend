@@ -6,29 +6,6 @@ import AddressService from "@/services/AddressService";
 
 export default {
 	methods: {
-		async setAssignedTransactions(transactionIds) {
-			const transactionStatuses = await this.getTransactionStatuses();
-			const transactions = transactionIds.length
-				? await this.getTransactions(transactionIds) : [];
-
-			this.table.data.map(async (item, key) => {
-				const transaction = transactions?.find(({ id }) => id
-					=== item.transactionIds[item.transactionIds.length - 1]);
-
-				this.table.data[key].status = transaction?.status ? transactionStatuses
-					?.find(({ code }) => code === transaction.status)?.value : this.$t("Not Sent");
-				this.table.data[key].value = transaction?.amountSent || `
-						${this.commodities[0].value} ${this.commodities[0].unit}`;
-			});
-
-			this.table.settings = {
-				assignVoucherAction: false,
-				checkableTable: false,
-			};
-
-			this.table.progress = 100;
-		},
-
 		getTransactions(transactionIds) {
 			return AssistancesService
 				.getTransactionsForAssistance(
@@ -47,62 +24,12 @@ export default {
 				});
 		},
 
-		async setAssignedSmartCards(smartcardDepositIds) {
-			const smartCardDeposits = smartcardDepositIds.length
-				? await this.getSmartCardDeposits(smartcardDepositIds) : [];
-
-			this.table.data.map(async (item, key) => {
-				const smartCardDeposit = smartCardDeposits
-					?.find(({ id }) => id === item.smartcardDepositIds[0]);
-
-				this.table.data[key].distributed = smartCardDeposit?.dateOfDistribution
-					? this.$moment(smartCardDeposit.dateOfDistribution)
-						.format("YYYY-MM-DD hh:mm")
-					: this.$t("Not Distributed");
-				this.table.data[key].value = smartCardDeposit?.value ? `
-						${smartCardDeposit.value} ${this.commodities[0].unit}` : this.$t("None");
-			});
-
-			this.table.settings = {
-				assignVoucherAction: false,
-				checkableTable: false,
-			};
-
-			this.table.progress = 100;
-		},
-
 		getSmartCardDeposits(smartcardDepositIds) {
 			return AssistancesService
 				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
 				});
-		},
-
-		async setAssignedBooklets(bookletIds) {
-			const bookletStatuses = await this.getBookletStatuses();
-			const booklets = bookletIds.length ? await this.getBooklets(bookletIds) : [];
-
-			this.table.data.map(async (item, key) => {
-				const booklet = booklets?.find(({ id }) => id === item.bookletIds[0]);
-
-				this.table.data[key].canAssignVoucher = booklet?.status === "0";
-				this.table.data[key].booklet = booklet?.code || this.$t("None");
-				this.table.data[key].status = booklet?.status ? bookletStatuses
-					?.find(({ code }) => code === booklet.status)?.value : this.$t("Not Distributed");
-				this.table.data[key].used = booklet
-					? `${booklet.quantityOfUsedVouchers}/${booklet.quantityOfVouchers}`
-					: this.$t("None");
-				this.table.data[key].value = booklet?.totalValue
-					? `${booklet.totalValue} ${booklet.currency}` : this.$t("None");
-			});
-
-			this.table.settings = {
-				assignVoucherAction: true,
-				checkableTable: false,
-			};
-
-			this.table.progress = 100;
 		},
 
 		getBooklets(bookletIds) {
@@ -166,38 +93,48 @@ export default {
 			this.assignVoucherModal.isWaiting = false;
 		},
 
-		async setAssignedGeneralRelief(generalReliefItemIds) {
-			const generalReliefItems = generalReliefItemIds.length
-				? await this.getGeneralReliefItems(generalReliefItemIds) : [];
+		async setAssignedReliefPackages(reliefPackageIds) {
+			const reliefPackages = reliefPackageIds.length
+				? await this.getReliefPackages(reliefPackageIds) : [];
 
 			this.table.data.map(async (item, key) => {
-				const generalReliefItem = generalReliefItems
-					?.find(({ id }) => id === item.generalReliefItemIds[0]);
+				const reliefPackageItems = reliefPackages
+					?.filter(({ id }) => item.reliefPackageIds.includes(id));
 
-				this.table.data[key].distributed = generalReliefItem.dateOfDistribution
-					? this.$moment(generalReliefItem.dateOfDistribution).format("YYYY-MM-DD hh:mm")
-					: this.$t("Not Distributed");
+				this.table.data[key].status = reliefPackageItems.map((i) => (i.state));
+				this.table.data[key].toDistribute = reliefPackageItems.map((i) => (`${i.amountToDistribute} ${i.unit}`));
+				this.table.data[key].distributed = reliefPackageItems.map((i) => (`${i.amountDistributed} ${i.unit}`));
+				this.table.data[key].lastModified = reliefPackageItems
+					.map((i) => (this.$moment(i.lastModifiedAt)
+						.format("YYYY-MM-DD hh:mm")));
 
-				this.table.data[key].value = `${this.commodities[0].value} ${this.commodities[0].unit}`;
-
-				if (generalReliefItem.distributed) this.table.checkedRows.push(this.table.data[key]);
+				const isDistributed = reliefPackageItems.length
+					&& reliefPackageItems.every((i) => i.state === "Distributed");
+				if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
 			});
 
+			const modality = this.commodities[0]?.modalityType;
+
+			const isTableCheckable = modality !== consts.COMMODITY.SMARTCARD
+				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== consts.COMMODITY.MOBILE_MONEY;
+
 			this.table.settings = {
-				assignVoucherAction: false,
-				checkableTable: true,
+				assignVoucherAction: modality === consts.COMMODITY.QR_CODE_VOUCHER,
+				checkableTable: isTableCheckable,
 			};
 
 			this.table.progress = 100;
 		},
 
-		getGeneralReliefItems(generalReliefItemIds) {
+		getReliefPackages(reliefPackageIds) {
 			return AssistancesService
-				.getGeneralReliefItemsForAssistance(
-					generalReliefItemIds,
+				.getReliefPackagesForAssistance(
+					this.$route.params.assistanceId,
+					reliefPackageIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("General Relief")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Relief Packages")} ${e}`, "is-danger");
 				});
 		},
 

@@ -196,9 +196,8 @@
 
 			<template #export>
 				<ExportButton
-					class="ml-3"
-					:label="!householdsSelects ? $t('Export selection') : null"
 					space-between
+					class="ml-3"
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"

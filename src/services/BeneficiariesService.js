@@ -186,9 +186,9 @@ export default {
 		return data;
 	},
 
-	async getBeneficiariesByProject(id, target) {
+	async getBeneficiariesByProject(id, target, assistanceId) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/targets/${target}/beneficiaries`,
+			uri: `projects/${id}/targets/${target}/beneficiaries?filter[excludeAssistance]=${assistanceId}`,
 		});
 		return { data, totalCount };
 	},
@@ -236,11 +236,14 @@ export default {
 		return { data };
 	},
 
-	async exportAssistanceBeneficiaries(format, assistanceId) {
+	async exportAssistanceBeneficiaries(format, assistanceId, { exportAsDistributionList = false }) {
 		const formatText = format ? `type=${format}` : "";
+		const uri = exportAsDistributionList
+			? `assistances/${assistanceId}/bank-report/exports?${formatText}`
+			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
 
-		const { data } = await download({ uri: `assistances/${assistanceId}/beneficiaries/exports?${formatText}` });
-		return { data };
+		const { data, status, message } = await download({ uri });
+		return { data, status, message };
 	},
 
 	async exportBeneficiaries(format, ids, param = null) {

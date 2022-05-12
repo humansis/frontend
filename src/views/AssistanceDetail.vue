@@ -94,6 +94,7 @@
 		<br>
 		<div class="columns">
 			<div class="column buttons">
+				<!-- Temporary hidden
 				<b-button
 					v-if="isAssistanceValidated && !amountDistributed"
 					class="flex-end ml-3"
@@ -103,6 +104,7 @@
 				>
 					{{ $t('Unvalidate Assistance') }}
 				</b-button>
+				-->
 				<b-button
 					v-if="isAssistanceValidated && !isAssistanceCompleted"
 					class="flex-end ml-3"
@@ -335,7 +337,6 @@ export default {
 		},
 
 		async setGeneralReliefItemAsDistributed() {
-			const dateOfDistribution = new Date().toISOString();
 			let error = "";
 			let success = "";
 
@@ -343,11 +344,11 @@ export default {
 				this.setAtDistributedButtonLoading = true;
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
-					await AssistancesService.updateGeneralReliefItem(
-						beneficiary.generalReliefItemIds[0],
-						true,
-						dateOfDistribution,
-					).then(({ status }) => {
+					const body = beneficiary.reliefPackageIds?.map((id) => ({
+						id, dateDistributed: new Date().toISOString(),
+					}));
+
+					await AssistancesService.updateReliefPackage(body).then(({ status }) => {
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
 						}

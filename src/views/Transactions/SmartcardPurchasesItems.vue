@@ -63,8 +63,9 @@
 			</template>
 			<template #export>
 				<ExportButton
-					class="ml-2"
 					space-between
+					class="ml-3"
+					type="is-primary"
 					:formats="{ xlsx: true, csv: true}"
 					:loading="exportLoading"
 					@onExport="exportPurchases"

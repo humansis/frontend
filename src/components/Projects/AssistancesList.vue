@@ -177,7 +177,7 @@ export default {
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
-					{ key: "dateExpiration", label: "Expiration Date", type: "datetime", sortable: true },
+					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
@@ -261,7 +261,6 @@ export default {
 				commodityIds.push(...item.commodityIds);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
-				this.table.data[key].dateExpiration = item.dateExpiration ?? null;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
 			});
@@ -286,6 +285,18 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0]);
+
+				let dateExpiration = "";
+
+				if (item.dateExpiration) {
+					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD hh:mm");
+				} else {
+					dateExpiration = "No Date";
+				}
+
+				const isCommoditySmartCard = preparedCommodity.modalityType === "Smartcard";
+				this.table.data[key].dateExpiration = isCommoditySmartCard
+					? dateExpiration : "N/A";
 
 				this.table.data[key].commodity = preparedCommodity ? [preparedCommodity]
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];

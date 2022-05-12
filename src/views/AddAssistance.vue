@@ -20,13 +20,16 @@
 					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
+					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
 					ref="distributedCommodity"
 					v-if="visibleComponents.distributedCommodity"
 					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
+					:calculated-commodity-value="calculatedCommodityValue"
 					@updatedData="fetchDistributedCommodity"
+					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<ActivityDetails
 					ref="activityDetails"
@@ -118,6 +121,7 @@ export default {
 			duplicate: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
+			calculatedCommodityValue: [],
 		};
 	},
 
@@ -149,9 +153,10 @@ export default {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
 				});
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
-				.then((data) => {
+				.then(async (data) => {
 					this.duplicateAssistance = data;
-					this.mapAssistance(data);
+
+					await this.mapAssistance(data);
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
@@ -175,6 +180,15 @@ export default {
 						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
 					});
 			}
+		},
+
+		async getDeliveredCommodityValue(updatedCommodities) {
+			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
+			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
+
+			if (result.status !== 200) return;
+
+			this.calculatedCommodityValue = result.data.data;
 		},
 
 		validateNewAssistance() {
@@ -226,6 +240,7 @@ export default {
 			if (!this.isRemoteAndValid()) return;
 
 			this.loading = true;
+
 			await AssistancesService.createAssistance(this.assistanceBody)
 				.then(({ status, data: { id } }) => {
 					if (status === 200) {
@@ -245,6 +260,7 @@ export default {
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
 				});
+
 			this.loading = false;
 		},
 
@@ -291,16 +307,21 @@ export default {
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
+
 				preparedCommodities.push({
 					type: item.modalityType,
 					quantity: item.value,
 					unit: item.unit,
 					description: item.description,
+					division: item.division,
 					modality,
+					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
+					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
+					cashbackLimit: assistance.cashbackLimit,
 				});
 			});
 			if (this.$refs.distributedCommodity) {
-				this.$refs.distributedCommodity.table.data.push(...preparedCommodities);
+				this.$refs.distributedCommodity.table.data = preparedCommodities;
 			}
 			if (this.$refs.activityDetails) {
 				this.$refs.activityDetails.formModel = {
@@ -321,6 +342,7 @@ export default {
 
 		mapSelectionCriteria() {
 			const preparedSelectionCriteria = [];
+
 			this.assistanceSelectionCriteria.forEach((item) => {
 				if (preparedSelectionCriteria[item.group]) {
 					preparedSelectionCriteria[item.group].data.push({
