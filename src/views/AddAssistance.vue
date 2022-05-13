@@ -15,7 +15,7 @@
 			<div class="column is-three-fifths">
 				<SelectionCriteria
 					ref="selectionCriteria"
-					v-if="visibleComponents.selectionCriteria"
+					v-show="visibleComponents.selectionCriteria"
 					:target-type="targetType"
 					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
@@ -24,7 +24,7 @@
 				/>
 				<DistributedCommodity
 					ref="distributedCommodity"
-					v-if="visibleComponents.distributedCommodity"
+					v-show="visibleComponents.distributedCommodity"
 					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
@@ -33,7 +33,7 @@
 				/>
 				<ActivityDetails
 					ref="activityDetails"
-					v-if="visibleComponents.activityDescription
+					v-show="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
 					:visible="visibleActivityDetails"
@@ -41,7 +41,7 @@
 				/>
 				<TargetTypeSelect
 					ref="targetTypeSelect"
-					v-if="visibleComponents.communities || visibleComponents.institutions"
+					v-show="visibleComponents.communities || visibleComponents.institutions"
 					:visible="targetTypeSelectVisible"
 					@updatedData="fetchTargetType"
 				/>
@@ -152,17 +152,20 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
 				});
+
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
 				.then(async (data) => {
 					this.duplicateAssistance = data;
-
-					await this.mapAssistance(data);
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 					this.$router.push({ name: "NotFound" });
 				});
 		}
+
+		await this.$nextTick(() => {
+			this.mapAssistance(this.duplicateAssistance);
+		});
 
 		await this.fetchProject();
 	},
