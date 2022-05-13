@@ -26,13 +26,19 @@
 		</div>
 		<h4 class="title is-4 has-text-centered">{{ $t('Household Information Summary') }}</h4>
 		<div class="columns mb-5">
-			<div class="column is-half">
+			<div v-if="livelihoodFilled" class="column is-one-third">
+				<div class="box">
+					<p class="title is-6">{{ $t('Livelihood') }}</p>
+					<p class="subtitle is-4">{{ livelihood }}</p>
+				</div>
+			</div>
+			<div class="column" :class="{'is-half': !livelihoodFilled, 'is-one-third': livelihoodFilled}">
 				<div class="box">
 					<p class="title is-6">{{ $t('Current Address') }}</p>
 					<p class="subtitle is-4">{{ address }}</p>
 				</div>
 			</div>
-			<div class="column is-half">
+			<div class="column" :class="{'is-half': !livelihoodFilled, 'is-one-third': livelihoodFilled}">
 				<div class="box">
 					<p class="title is-6">{{ $t('Current Location') }}</p>
 					<p class="subtitle is-4">{{ location }}</p>
@@ -80,6 +86,7 @@ export default {
 	props: {
 		members: Array,
 		detailOfHousehold: Object,
+		livelihood: String,
 		location: String,
 		address: String,
 		isEditing: {
@@ -129,6 +136,9 @@ export default {
 	computed: {
 		membersData() {
 			return this.members;
+		},
+		livelihoodFilled() {
+			return this.livelihood;
 		},
 	},
 

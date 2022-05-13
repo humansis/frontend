@@ -152,7 +152,17 @@
 					type="is-primary"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
-					@onExport="exportData"
+					@onExport="exportBeneficiaries"
+				/>
+				<ExportButton
+					v-if="exportButton
+						&& isDistributionExportVisible
+						&& userCan.exportBeneficiaries && isAssistanceValidated"
+					type="is-primary"
+					label="Bank Distribution List"
+					:loading="exportDistributionListLoading"
+					:formats="{ xlsx: true }"
+					@onExport="exportDistributionList"
 				/>
 			</template>
 			<b-table-column
@@ -218,6 +228,14 @@ import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignV
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
 
+const statusTags = [
+	{ code: "To distribute", type: "is-light" },
+	{ code: "Distribution in progress", type: "is-info" },
+	{ code: "Distributed", type: "is-success" },
+	{ code: "Expired", type: "is-danger" },
+	{ code: "Canceled", type: "is-warning" },
+];
+
 export default {
 	name: "BeneficiariesList",
 
@@ -252,6 +270,7 @@ export default {
 		return {
 			isLoadingList: false,
 			exportLoading: false,
+			exportDistributionListLoading: false,
 			advancedSearchVisible: false,
 			commodities: [],
 			table: {
@@ -282,8 +301,12 @@ export default {
 				householdsAndIndividualDetailColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
 					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Family Name", sortable: true, sortKey: "localFamilyName" },
+					{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
 					{ key: "nationalId", label: "ID Number", sortable: true },
+					{ key: "status", type: "tagArray", customTags: statusTags },
+					{ key: "toDistribute", type: "arrayTextBreak" },
+					{ key: "distributed", type: "arrayTextBreak" },
+					{ key: "lastModified", type: "arrayTextBreak" },
 				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
@@ -357,6 +380,14 @@ export default {
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
+		},
+
+		isAssistanceValidated() {
+			return this.assistance?.validated;
+		},
+
+		isDistributionExportVisible() {
+			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH);
 		},
 	},
 
@@ -474,39 +505,21 @@ export default {
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
+			const modality = this.commodities[0]?.modalityType;
+
 			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
-				switch (this.commodities[0]?.modalityType) {
-					case consts.COMMODITY.MOBILE_MONEY:
-						additionalColumns = [
-							{ key: "phone" },
-							{ key: "status" },
-							{ key: "value" },
-						];
-						break;
-					case consts.COMMODITY.QR_CODE_VOUCHER:
-						additionalColumns = [
-							{ key: "booklet" },
-							{ key: "status" },
-							{ key: "used" },
-							{ key: "value" },
-						];
-						break;
-					case consts.COMMODITY.SMARTCARD:
-					default:
-						/** @summary For commodity type GENERAL RELIEF and SMART CARD */
-						additionalColumns = [
-							{ key: "distributed" },
-							{ key: "value" },
-						];
+				if (modality === consts.COMMODITY.MOBILE_MONEY) {
+					additionalColumns = [
+						{ key: "phone" },
+					];
+				} else if (modality === consts.COMMODITY.QR_CODE_VOUCHER) {
+					additionalColumns = [
+						// Temporary hidden
+						// { key: "booklet", type: "arrayTextBreak" },
+					];
 				}
 			}
 
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
-				additionalColumns = [
-					{ key: "distributed" },
-					{ key: "value" },
-				];
-			}
 			this.table.visibleColumns = [...baseColumns, ...additionalColumns];
 			this.table.columns = generateColumns(this.table.visibleColumns);
 		},
@@ -521,10 +534,7 @@ export default {
 			const nationalIdIds = [];
 
 			const distributionItems = {
-				bookletIds: [],
-				generalReliefItemIds: [],
-				smartcardDepositIds: [],
-				transactionIds: [],
+				reliefPackageIds: [],
 			};
 
 			switch (this.assistance.target) {
@@ -540,11 +550,8 @@ export default {
 						const item = { ...community, ...foundCommunity };
 						this.table.data[key] = item;
 
-						if (item.bookletIds.length) {
-							distributionItems.bookletIds.push(item.bookletIds[0]);
-						}
-						if (item.generalReliefItemIds.length) {
-							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
+						if (item.reliefPackageIds.length) {
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 
@@ -564,12 +571,8 @@ export default {
 						const item = { ...institution, ...foundInstitution };
 						this.table.data[key] = item;
 
-						if (item.bookletIds.length) {
-							distributionItems.bookletIds.push(item.bookletIds[0]);
-						}
-
-						if (item.generalReliefItemIds.length) {
-							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
+						if (item.reliefPackageIds.length) {
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 
@@ -603,17 +606,8 @@ export default {
 						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
 						if (item.phoneIds.length) phoneIds.push(...item.phoneIds);
 
-						if (item.bookletIds.length) {
-							distributionItems.bookletIds.push(item.bookletIds);
-						}
-						if (item.generalReliefItemIds.length) {
-							distributionItems.generalReliefItemIds.push(item.generalReliefItemIds[0]);
-						}
-						if (item.smartcardDepositIds.length) {
-							distributionItems.smartcardDepositIds.push(item.smartcardDepositIds[0]);
-						}
-						if (item.transactionIds.length) {
-							distributionItems.transactionIds.push(item.transactionIds[0]);
+						if (item.reliefPackageIds.length) {
+							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
 						}
 					});
 
@@ -623,15 +617,9 @@ export default {
 					this.prepareNationalIdForTable(nationalIdIds);
 			}
 
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
-				await this.settingOfBeneficiariesDistribution(distributionItems);
-			}
-
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.ACTIVITY) {
-				await this.settingOfBeneficiariesActivity(distributionItems);
-			}
-
-			if (!this.isAssistanceDetail) {
+			if (this.isAssistanceDetail) {
+				await this.setAssignedReliefPackages(distributionItems.reliefPackageIds);
+			} else {
 				this.table.progress = 100;
 			}
 		},
@@ -668,43 +656,37 @@ export default {
 				});
 		},
 
-		settingOfBeneficiariesDistribution(
-			{ bookletIds, generalReliefItemIds, smartcardDepositIds, transactionIds },
-		) {
-			switch (this.commodities[0].modalityType) {
-				case consts.COMMODITY.SMARTCARD:
-					this.setAssignedSmartCards(smartcardDepositIds);
-					break;
-				case consts.COMMODITY.MOBILE_MONEY:
-					this.setAssignedTransactions(transactionIds);
-					break;
-				case consts.COMMODITY.QR_CODE_VOUCHER:
-					this.setAssignedBooklets(bookletIds);
-					break;
-				default:
-					this.setAssignedGeneralRelief(generalReliefItemIds);
-			}
-		},
-
-		settingOfBeneficiariesActivity({ generalReliefItemIds }) {
-			this.setAssignedGeneralRelief(generalReliefItemIds);
-		},
-
-		async exportData(format) {
+		async exportBeneficiaries(format) {
 			this.exportLoading = true;
+			await this.exportData(format, false, "beneficiaries");
+			this.exportLoading = false;
+		},
+
+		async exportDistributionList(format) {
+			this.exportDistributionListLoading = true;
+			await this.exportData(format, true, "distribution-list");
+			this.exportDistributionListLoading = false;
+		},
+
+		async exportData(format, exportAsDistributionList = false, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,
+					{ exportAsDistributionList },
 				)
-					.then(({ data }) => {
+					.then(({ data, status, message }) => {
 						const blob = new Blob([data], { type: data.type });
 						const link = document.createElement("a");
 						link.href = window.URL.createObjectURL(blob);
-						link.download = `beneficiaries.${format}`;
+						link.download = `${filename}.${format}`;
 						link.click();
+
+						if (status !== 200) {
+							Notification(message, "is-warning");
+						}
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
 					});
 			} else {
 				await BeneficiariesService.exportBeneficiaries(format, this.table.data, "id")
@@ -716,10 +698,9 @@ export default {
 						link.click();
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Beneficiaries")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
 					});
 			}
-			this.exportLoading = false;
 		},
 	},
 };

@@ -175,6 +175,7 @@ export default {
 			await BeneficiariesService.getBeneficiariesByProject(
 				projectId,
 				this.target,
+				this.$route.params.assistanceId,
 			)
 				.then(({ data }) => {
 					this.options.beneficiaries = data;

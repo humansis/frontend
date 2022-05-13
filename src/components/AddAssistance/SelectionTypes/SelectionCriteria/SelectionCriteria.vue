@@ -73,6 +73,7 @@
 						v-model="minimumSelectionScore"
 						expanded
 						type="is-dark"
+						max="100000"
 						:controls="false"
 						:loading="vulnerabilityScoreLoading"
 						@input="onVulnerabilityScoreChange"
@@ -196,7 +197,7 @@ export default {
 						target: criteriaTarget.code,
 						field: criteria.code,
 						condition: condition.code,
-						value: this.prepareCriteriaValue(value, criteria.type),
+						value: value ? this.prepareCriteriaValue(value, criteria.type) : "",
 						weight: scoreWeight,
 					});
 				});
@@ -297,6 +298,8 @@ export default {
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
 			assistanceBody.threshold = totalCount ? 0 : threshold;
+
+			this.$emit("onDeliveredCommodityValue");
 
 			if (assistanceBody.selectionCriteria?.length) {
 				this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });

@@ -24,9 +24,9 @@
 				<table>
 					<thead>
 						<tr>
-							<th>{{ $t('Reasons') }}</th>
-							<th>{{ $t('Records From Database') }} / {{ $t('Imported Record') }} </th>
-							<th class="has-text-right">{{ $t('Actions') }}</th>
+							<th>{{ $t('Household') }}</th>
+							<th>{{ $t('Records From File') }} / {{ $t('Humansis') }} </th>
+							<th class="has-text-right">{{ $t('Use Record From') }}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -112,7 +112,7 @@
 											duplicityKey
 										)"
 									>
-										{{ $t('To Update') }}
+										{{ $t('File') }}
 									</b-button>
 									<b-button
 										:class="[
@@ -127,7 +127,7 @@
 											duplicityKey
 										)"
 									>
-										{{ $t('To Link') }}
+										{{ $t('Humansis') }}
 									</b-button>
 								</b-field>
 							</td>
@@ -186,12 +186,12 @@ export default {
 			let result = "";
 
 			if (typeof items.database === "string" || typeof items.import === "string") {
-				result = Object.values(items).join(" / ");
+				result = Object.values(items).reverse().join(" / ");
 			} else {
 				const database = items.database[0] || "-";
 				const imp = items.import[0] || "-";
 
-				result = `${database} / ${imp}`;
+				result = `${imp} / ${database}`;
 			}
 
 			return result;

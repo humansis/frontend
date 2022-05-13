@@ -47,6 +47,7 @@
 					ref="householdSummary"
 					:detailOfHousehold="detailOfHousehold"
 					:members="summaryMembers"
+					:livelihood="livelihood"
 					:address="address"
 					:location="location"
 					:is-editing="isEditing"
@@ -123,6 +124,7 @@ export default {
 			householdMembers: [],
 			summaryMembers: [],
 			selectedProjects: [],
+			livelihood: "",
 			location: "",
 			address: "",
 			saveButtonLoading: false,
@@ -161,6 +163,9 @@ export default {
 			if (this.$refs.householdForm?.$parent === active) {
 				if (this.$refs.householdForm.submit()) {
 					this.household = this.$refs.householdForm.formModel;
+					this.livelihood = this.prepareLivelihoodForSummary();
+					this.address = this.prepareAddressForSummary();
+					this.location = this.prepareLocationForSummary();
 					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);
@@ -206,6 +211,9 @@ export default {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
 						this.household = this.$refs.householdForm.formModel;
+						this.livelihood = this.prepareLivelihoodForSummary();
+						this.address = this.prepareAddressForSummary();
+						this.location = this.prepareLocationForSummary();
 						next.action();
 					}
 					break;
@@ -221,8 +229,6 @@ export default {
 						this.prepareSummaryMembers(
 							[this.householdHead, ...this.$refs.householdMembers.members],
 						);
-						this.address = this.prepareAddressForSummary();
-						this.location = this.prepareLocationForSummary();
 						next.action();
 					}
 					break;
@@ -366,6 +372,10 @@ export default {
 			}
 
 			this.summaryMembers = [...membersData];
+		},
+
+		prepareLivelihoodForSummary() {
+			return this.household.livelihood.livelihood?.value;
 		},
 
 		prepareAddressForSummary() {
