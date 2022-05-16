@@ -145,27 +145,30 @@ export default {
 			this.dropFiles.splice(index, 1);
 		},
 
-		startImport() {
+		async startImport() {
 			const { importId } = this.$route.params;
 			this.startLoading = true;
 
 			if (this.dropFiles.length) {
-				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
-					if (status === 200) {
-						Toast(this.$t("Uploaded Successfully"), "is-success");
-						this.dropFiles = [];
-						this.startLoading = false;
+				await ImportService.uploadFilesIntoImport(importId, this.dropFiles)
+					.then(({ status, message }) => {
+						if (status === 200) {
+							Toast(this.$t("Uploaded Successfully"), "is-success");
+							this.dropFiles = [];
+							this.startLoading = false;
 
-						this.$emit("changeImportState", {
-							state: consts.STATE.INTEGRITY_CHECKING,
-							successMessage: "Integrity Check Started Successfully",
-							goNext: true,
-						});
-					}
-				}).catch((e) => {
-					this.startLoading = false;
-					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-				});
+							this.$emit("changeImportState", {
+								state: consts.STATE.INTEGRITY_CHECKING,
+								successMessage: "Integrity Check Started Successfully",
+								goNext: true,
+							});
+						} else {
+							Notification(message, "is-warning");
+						}
+					}).catch((e) => {
+						this.startLoading = false;
+						if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+					});
 			} else if (this.importFiles.length) {
 				this.$emit("changeImportState", {
 					state: consts.STATE.INTEGRITY_CHECKING,
@@ -173,6 +176,8 @@ export default {
 					goNext: true,
 				});
 			}
+
+			this.startLoading = false;
 		},
 
 		cancelImport() {
