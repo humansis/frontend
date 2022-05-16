@@ -142,7 +142,7 @@ export default {
 		},
 	},
 
-	async mounted() {
+	async created() {
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
@@ -293,10 +293,10 @@ export default {
 
 		async mapAssistance(assistance) {
 			this.$refs.newAssistanceForm.formModel = {
-				adm1Id: assistance.adm1Id,
-				adm2Id: assistance.adm2Id,
-				adm3Id: assistance.adm3Id,
-				adm4Id: assistance.adm4Id,
+				adm1Id: assistance?.adm1Id,
+				adm2Id: assistance?.adm2Id,
+				adm3Id: assistance?.adm3Id,
+				adm4Id: assistance?.adm4Id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
 				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
