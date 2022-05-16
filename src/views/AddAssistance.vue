@@ -185,7 +185,7 @@ export default {
 			}
 		},
 
-		async getDeliveredCommodityValue(updatedCommodities) {
+		async getDeliveredCommodityValue(updatedCommodities = null) {
 			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
 
@@ -306,6 +306,11 @@ export default {
 			};
 			this.targetType = assistance.target;
 			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.target = assistance.target;
+			this.assistanceBody.type = assistance.type;
+			this.assistanceBody.sector = assistance.sector;
+			this.assistanceBody.subsector = assistance.subsector;
+
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
@@ -341,6 +346,8 @@ export default {
 					this.$refs.selectionCriteria.getCountOfBeneficiariesInGroup(key);
 				});
 			}
+
+			await this.getDeliveredCommodityValue(preparedCommodities);
 		},
 
 		mapSelectionCriteria() {
