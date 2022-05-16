@@ -24,7 +24,8 @@ async function getErrorsFromResponse(data) {
 }
 
 export const getResponseJSON = async (response, download = false) => {
-	const success = response.status <= 400;
+	const success = response.status < 400;
+	const badRequest = response.status === 400;
 	const unauthorized = response.status === 401;
 	const forbidden = response.status === 403;
 	const notFound = response.status === 404;
@@ -53,10 +54,14 @@ export const getResponseJSON = async (response, download = false) => {
 
 	let data = null;
 
-	if (download) {
+	if (download && success) {
 		data = await response.blob();
 	} else {
 		data = await response.json();
+	}
+
+	if (badRequest) {
+		return { data, status: response.status, message: await getErrorsFromResponse(data) };
 	}
 
 	if (success) {

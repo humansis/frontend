@@ -675,13 +675,14 @@ export default {
 					{ exportAsDistributionList },
 				)
 					.then(({ data, status, message }) => {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `${filename}.${format}`;
-						link.click();
-
-						if (status !== 200) {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `${filename}.${format}`;
+							link.click();
+						} else {
+							console.log(message);
 							Notification(message, "is-warning");
 						}
 					})
