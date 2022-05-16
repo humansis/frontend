@@ -52,12 +52,12 @@ export default {
 			formData.append(file.name, file);
 		});
 
-		const { data, status } = await upload({
+		const { data, status, message } = await upload({
 			uri: `imports/${importId}/files`,
 			method: "POST",
 			body: formData,
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 	async removeFilesFromImport(fileId) {

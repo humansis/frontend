@@ -430,24 +430,27 @@ export default {
 			if (this.dropFiles.length) {
 				this.startIntegrityCheckAgainLoading = true;
 
-				ImportService.uploadFilesIntoImport(importId, this.dropFiles).then(({ status }) => {
-					if (status === 200) {
-						Toast("Uploaded Successfully", "is-success");
-						this.$emit("changeImportState", {
-							state: consts.STATE.INTEGRITY_CHECKING,
-							successMessage: "Integrity Check Started Successfully",
-							goNext: false,
-							withConfirm: false,
-						});
+				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
+					.then(({ status, message }) => {
+						if (status === 200) {
+							Toast("Uploaded Successfully", "is-success");
+							this.$emit("changeImportState", {
+								state: consts.STATE.INTEGRITY_CHECKING,
+								successMessage: "Integrity Check Started Successfully",
+								goNext: false,
+								withConfirm: false,
+							});
 
-						this.filesUpload = false;
-						this.invalidFiles = [];
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.startIntegrityCheckAgainLoading = false;
-				});
+							this.filesUpload = false;
+							this.invalidFiles = [];
+						} else {
+							Notification(message, "is-warning");
+						}
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
+					}).finally(() => {
+						this.startIntegrityCheckAgainLoading = false;
+					});
 			}
 		},
 

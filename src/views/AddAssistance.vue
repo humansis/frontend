@@ -28,6 +28,7 @@
 					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
+					:target-type="targetType"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>

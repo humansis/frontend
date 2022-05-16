@@ -217,6 +217,10 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		targetType: {
+			type: String,
+			default: "",
+		},
 	},
 
 	data() {
@@ -360,7 +364,7 @@ export default {
 						totalValueOfBooklet: false,
 						currency: true,
 						quantity: true,
-						division: true,
+						division: this.targetType === "household",
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
 					};
