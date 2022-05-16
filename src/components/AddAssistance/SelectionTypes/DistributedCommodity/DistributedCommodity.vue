@@ -97,6 +97,10 @@ export default {
 		ActionButton,
 	},
 
+	mounted() {
+		this.$emit("onDeliveredCommodityValue");
+	},
+
 	data() {
 		return {
 			commodityModal: {
