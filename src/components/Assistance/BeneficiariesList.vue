@@ -151,7 +151,7 @@
 					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
 					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true, pdf: true}"
+					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="exportBeneficiaries"
 				/>
 				<ExportButton
