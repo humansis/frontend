@@ -23,6 +23,7 @@
 				:project="project"
 				:submit-button-label="$t('Create')"
 				:formModel="formModel"
+				:target-type="targetType"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -97,6 +98,10 @@ export default {
 		ActionButton,
 	},
 
+	mounted() {
+		this.$emit("onDeliveredCommodityValue");
+	},
+
 	data() {
 		return {
 			commodityModal: {
@@ -143,6 +148,10 @@ export default {
 		calculatedCommodityValue: {
 			type: Array,
 			default: () => [],
+		},
+		targetType: {
+			type: String,
+			default: "",
 		},
 	},
 

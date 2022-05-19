@@ -34,7 +34,7 @@ export default {
 		},
 
 		prepareLocationEntityForTable(id, entities, returnedParam = null) {
-			if (!entities?.length) return "";
+			if (!id || !entities?.length) return "";
 			const entity = entities.find((item) => item.locationId === id);
 
 			return returnedParam ? entity[returnedParam] : entity;

@@ -28,6 +28,7 @@
 					:project="project"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
+					:target-type="targetType"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
@@ -142,7 +143,7 @@ export default {
 		},
 	},
 
-	async mounted() {
+	async created() {
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
@@ -185,7 +186,7 @@ export default {
 			}
 		},
 
-		async getDeliveredCommodityValue(updatedCommodities) {
+		async getDeliveredCommodityValue(updatedCommodities = null) {
 			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
 
@@ -293,10 +294,10 @@ export default {
 
 		async mapAssistance(assistance) {
 			this.$refs.newAssistanceForm.formModel = {
-				adm1Id: assistance.adm1Id,
-				adm2Id: assistance.adm2Id,
-				adm3Id: assistance.adm3Id,
-				adm4Id: assistance.adm4Id,
+				adm1Id: assistance?.adm1Id,
+				adm2Id: assistance?.adm2Id,
+				adm3Id: assistance?.adm3Id,
+				adm4Id: assistance?.adm4Id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
 				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
@@ -306,6 +307,11 @@ export default {
 			};
 			this.targetType = assistance.target;
 			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.target = assistance.target;
+			this.assistanceBody.type = assistance.type;
+			this.assistanceBody.sector = assistance.sector;
+			this.assistanceBody.subsector = assistance.subsector;
+
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
@@ -341,6 +347,8 @@ export default {
 					this.$refs.selectionCriteria.getCountOfBeneficiariesInGroup(key);
 				});
 			}
+
+			await this.getDeliveredCommodityValue(preparedCommodities);
 		},
 
 		mapSelectionCriteria() {
