@@ -98,8 +98,10 @@ export default {
 		ActionButton,
 	},
 
-	mounted() {
-		this.$emit("onDeliveredCommodityValue");
+	watch: {
+		formModel() {
+			this.$emit("onDeliveredCommodityValue");
+		},
 	},
 
 	data() {
