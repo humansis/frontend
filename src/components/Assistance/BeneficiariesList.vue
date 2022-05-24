@@ -150,6 +150,7 @@
 				<ExportButton
 					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
+					label="Distribution List"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="exportBeneficiaries"
@@ -387,7 +388,9 @@ export default {
 		},
 
 		isDistributionExportVisible() {
-			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH);
+			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH)
+				&& this.assistance?.type === "distribution"
+				&& this.assistance?.subsector === "multi_purpose_cash_assistance";
 		},
 	},
 
@@ -682,7 +685,6 @@ export default {
 							link.download = `${filename}.${format}`;
 							link.click();
 						} else {
-							console.log(message);
 							Notification(message, "is-warning");
 						}
 					})

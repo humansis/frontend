@@ -180,8 +180,10 @@ export default {
 		this.$emit("beneficiariesCounted", this.countOf);
 	},
 
-	mounted() {
-		this.$emit("onDeliveredCommodityValue");
+	watch: {
+		groups() {
+			this.$emit("onDeliveredCommodityValue");
+		},
 	},
 
 	methods: {
