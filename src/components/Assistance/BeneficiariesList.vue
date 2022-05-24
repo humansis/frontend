@@ -150,6 +150,7 @@
 				<ExportButton
 					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
+					label="Distribution List"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="exportBeneficiaries"
