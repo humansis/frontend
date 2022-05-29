@@ -30,7 +30,6 @@
 				{{ $t('Add') }}
 			</b-button>
 		</div>
-
 		<ProductsList
 			ref="productsList"
 			:categories="categories"
