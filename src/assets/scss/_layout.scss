@@ -30,6 +30,17 @@
 	}
 }
 
+.add-config-btn {
+	display: flex;
+	justify-content: flex-end;
+	height: 0;
+
+	& button {
+		position: relative;
+		top: -4em;
+	}
+}
+
 html.has-aside-left.has-aside-expanded {
 	nav.navbar,
 	body {

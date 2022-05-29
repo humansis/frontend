@@ -18,15 +18,17 @@
 				@formClosed="closeCategoryModal"
 			/>
 		</Modal>
-		<b-button
-			v-if="userCan.addEditProducts"
-			class="mb-4"
-			type="is-primary"
-			icon-left="plus"
-			@click="addNewCategory"
-		>
-			{{ $t('Add') }}
-		</b-button>
+		<div class="add-config-btn">
+			<b-button
+				v-if="userCan.addEditProducts"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="addNewCategory"
+			>
+				{{ $t('Add') }}
+			</b-button>
+		</div>
 		<CategoriesList
 			ref="categoriesList"
 			@onRemove="onRemoveCategory"
