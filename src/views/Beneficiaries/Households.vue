@@ -77,6 +77,7 @@
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
 			:checked-rows="table.checkedRows"
+			:search-phrase="table.searchPhrase"
 			@checked="onRowsChecked"
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"

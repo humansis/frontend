@@ -211,7 +211,7 @@ export default {
 				modality: modality?.value || modality,
 				type: type?.value || type,
 				unit: unit || currency?.value,
-				quantity: quantity || totalValueOfBooklet,
+				quantity: Number(quantity) || Number(totalValueOfBooklet),
 				description,
 				division: division?.code || division,
 				remoteDistributionAllowed,
