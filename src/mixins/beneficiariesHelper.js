@@ -105,7 +105,7 @@ export default {
 				this.table.data[key].toDistribute = reliefPackageItems.map((i) => (`${i.amountToDistribute} ${i.unit}`));
 				this.table.data[key].distributed = reliefPackageItems.map((i) => (`${i.amountDistributed} ${i.unit}`));
 				this.table.data[key].lastModified = reliefPackageItems
-					.map((i) => (this.$moment(i.lastModifiedAt)
+					.map((i) => (this.$moment(i.distributedAt || i.lastModifiedAt)
 						.format("YYYY-MM-DD hh:mm")));
 
 				const isDistributed = reliefPackageItems.length
