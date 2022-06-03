@@ -40,7 +40,7 @@ export default {
 		return {
 			map: null,
 			zoom: 7,
-			url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+			url: "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 			positions: [
 				{
