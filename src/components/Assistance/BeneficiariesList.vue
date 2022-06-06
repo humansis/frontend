@@ -91,7 +91,7 @@
 		</Modal>
 		<div class="buttons space-between">
 			<b-button
-				v-if="addButton && userCan.editDistribution"
+				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null, true)"
@@ -182,7 +182,7 @@
 						@click="showEdit(props.row)"
 					/>
 					<ActionButton
-						v-if="userCan.editDistribution"
+						v-if="userCan.editDistribution && !isAssistanceValidated"
 						icon="trash"
 						type="is-danger"
 						:disabled="props.row.removed || isAssistanceCompleted"
