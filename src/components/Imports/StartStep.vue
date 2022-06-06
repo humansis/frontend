@@ -16,11 +16,15 @@
 									size="is-large"
 								/>
 							</p>
-							<p>{{ $t("Drop your files here or click to upload") }}</p>
+							<p>{{ $t("Drop your file here or click to upload") }}</p>
 						</div>
 					</section>
 				</b-upload>
 			</b-field>
+
+			<b-message v-if="dropFiles.length > 1" type="is-warning">
+				You can upload only one file.
+			</b-message>
 
 			<div class="tags">
 				<span v-for="(file, index) in dropFiles"
@@ -118,7 +122,7 @@ export default {
 	computed: {
 		disabledStartImport() {
 			return this.importStatus === consts.STATUS.NEW
-				&& (this.dropFiles.length || this.importFiles.length);
+				&& (this.dropFiles.length === 1 || this.importFiles.length);
 		},
 
 		allowedFileExtensions() {
