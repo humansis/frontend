@@ -64,10 +64,23 @@ export default {
 		};
 	},
 
+	watch: {
+		data(data) {
+			if (data) {
+				this.formModel = data;
+			}
+		},
+	},
+
 	mixins: [validation],
 
 	props: {
 		visible: Object,
+
+		data: {
+			type: Object,
+			default: null,
+		},
 	},
 
 	validations: {

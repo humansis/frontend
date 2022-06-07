@@ -99,8 +99,17 @@ export default {
 	},
 
 	watch: {
-		formModel() {
-			this.$emit("onDeliveredCommodityValue");
+		table: {
+			deep: true,
+			handler() {
+				this.$emit("onDeliveredCommodityValue");
+			},
+		},
+
+		data(data) {
+			if (data.length) {
+				this.table.data = data;
+			}
 		},
 	},
 
@@ -138,6 +147,11 @@ export default {
 	},
 
 	props: {
+		data: {
+			type: Array,
+			default: () => [],
+		},
+
 		selectedBeneficiaries: {
 			type: Number,
 			required: true,

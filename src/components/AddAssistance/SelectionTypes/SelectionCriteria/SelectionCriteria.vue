@@ -126,6 +126,11 @@ export default {
 	props: {
 		targetType: String,
 		assistanceBody: Object,
+
+		data: {
+			type: Array,
+			default: null,
+		},
 	},
 
 	data() {
@@ -183,6 +188,12 @@ export default {
 	watch: {
 		groups() {
 			this.$emit("onDeliveredCommodityValue");
+		},
+
+		data(data) {
+			if (data) {
+				this.groups = data;
+			}
 		},
 	},
 
@@ -263,6 +274,10 @@ export default {
 
 			this.criteriaModal.isOpened = false;
 
+			this.fetchCriteriaInfo();
+		},
+
+		fetchCriteriaInfo() {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
