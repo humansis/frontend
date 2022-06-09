@@ -46,14 +46,12 @@ export default {
 		const idsText = ids ? idsToUri(ids) : "";
 
 		const formatText = format ? `type=${format}` : "";
-		const { data } = await download({ uri: `booklets/exports?${formatText + idsText}` });
-		return { data };
+		return download({ uri: `booklets/exports?${formatText + idsText}` });
 	},
 
 	async exportQRVouchers(ids) {
 		const idsText = ids ? idsToUri(ids) : "";
 
-		const { data } = await download({ uri: `booklets/prints?${idsText}` });
-		return { data };
+		return download({ uri: `booklets/prints?${idsText}` });
 	},
 };

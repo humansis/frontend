@@ -138,12 +138,16 @@ export default {
 		async exportCountrySpecifics(format) {
 			this.exportLoading = true;
 			await CountrySpecificOptionsService.exportCountrySpecificOptions(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `country_specific_options.${format}`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `country_specific_options.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");

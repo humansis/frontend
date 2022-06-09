@@ -376,12 +376,16 @@ export default {
 		async exportAssistances(format) {
 			this.exportLoading = true;
 			await AssistancesService.exportAssistances(format, this.$route.params.projectId)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `assistances.${format}`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `assistances.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");

@@ -51,8 +51,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `distributed-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
-		return { data };
+		return download({ uri: `distributed-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 	},
 
 	async exportPurchases(format, page, size, sort, search, filters) {
@@ -63,8 +62,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
-		return { data };
+		return download({ uri: `purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 	},
 
 	async exportSmartcardPurchasesItems(format, page, size, sort, search, filters) {
@@ -75,8 +73,7 @@ export default {
 		const sizeText = size ? `&size=${size}` : "";
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `smartcard-purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
-		return { data };
+		return download({ uri: `smartcard-purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
 	},
 
 };

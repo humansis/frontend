@@ -66,7 +66,6 @@ export default {
 	async exportVendors(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `vendors/exports?${formatText}` });
-		return { data };
+		return download({ uri: `vendors/exports?${formatText}` });
 	},
 };

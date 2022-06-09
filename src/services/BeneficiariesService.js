@@ -232,8 +232,7 @@ export default {
 		const formatText = format ? `type=${format}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
 
-		const { data } = await download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
-		return { data };
+		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
 	},
 
 	async exportAssistanceBeneficiaries(format, assistanceId, { exportAsDistributionList = false }) {
@@ -242,16 +241,14 @@ export default {
 			? `assistances/${assistanceId}/bank-report/exports?${formatText}`
 			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
 
-		const { data, status, message } = await download({ uri });
-		return { data, status, message };
+		return download({ uri });
 	},
 
 	async exportBeneficiaries(format, ids, param = null) {
 		const formatText = format ? `type=${format}` : "";
 		const idsText = ids ? idsToUri(ids, param) : "";
 
-		const { data } = await download({ uri: `beneficiaries/exports?${formatText + idsText}` });
-		return { data };
+		return download({ uri: `beneficiaries/exports?${formatText + idsText}` });
 	},
 
 	async getBeneficiaryTypes() {

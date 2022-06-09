@@ -37,8 +37,7 @@ export default {
 	async exportDonors(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `donors/exports?${formatText}` });
-		return { data };
+		return download({ uri: `donors/exports?${formatText}` });
 	},
 
 	async uploadImage(id, image) {

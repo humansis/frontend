@@ -334,14 +334,12 @@ export default {
 	async exportAssistances(format, projectId) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
-		return { data };
+		return download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
 	},
 
 	async exportAssistance(format, assistanceId) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `assistances/${assistanceId}/exports?${formatText}` });
-		return { data };
+		return download({ uri: `assistances/${assistanceId}/exports?${formatText}` });
 	},
 };

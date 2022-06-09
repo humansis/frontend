@@ -22,13 +22,11 @@ export default {
 	},
 
 	async printSmartcardBatches(id) {
-		const { data } = await download({ uri: `smartcard-redemption-batches/${id}/exports` });
-		return { data };
+		return download({ uri: `smartcard-redemption-batches/${id}/exports` });
 	},
 
 	async legacyPrintSmartcardBatches(id) {
-		const { data } = await download({ uri: `smartcard-redemption-batches/${id}/legacy-exports` });
-		return { data };
+		return download({ uri: `smartcard-redemption-batches/${id}/legacy-exports` });
 	},
 
 	async redeemBatch(id, purchaseIds) {

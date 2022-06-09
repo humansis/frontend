@@ -94,8 +94,7 @@ export default {
 	},
 
 	async downloadFileWithInvalidEntriesFromImport(id) {
-		const { data } = await download({ uri: `imports/invalid-files/${id}` });
-		return { data };
+		return download({ uri: `imports/invalid-files/${id}` });
 	},
 
 	async getFilesWithInvalidEntriesFromImport(importId) {
@@ -131,7 +130,6 @@ export default {
 	async exportTemplate(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `imports/template?${formatText}` });
-		return { data };
+		return download({ uri: `imports/template?${formatText}` });
 	},
 };
