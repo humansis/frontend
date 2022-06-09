@@ -151,7 +151,7 @@
 		<div class="card" v-if="importFiles.length">
 			<div>
 				<div class="card-content">
-					<b-message v-if="amountIntegrityFailed" type="is-info">
+					<b-message v-if="canUploadAndDownloadAffectedRecords" type="is-info">
 						Do not repair your original file. Repair only the file with Affected Records.
 					</b-message>
 				</div>
