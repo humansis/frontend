@@ -185,14 +185,19 @@
 							<tr v-for="item of notImportedRows" :key="`item-${item.beneficiaryId}`">
 								<td>
 									<router-link
+										v-if="item.householdId"
 										class="table-link"
 										target="_blank"
 										:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
 									>
 										{{ item.householdId }}
 									</router-link>
+									<span v-else>{{ $t("None") }}</span>
 								</td>
-								<td>{{ item.beneficiaryId }}</td>
+								<td>
+									<span v-if="item.beneficiaryId">{{ item.beneficiaryId }}</span>
+									<span v-else>{{ $t("None") }}</span>
+								</td>
 								<td>{{ item.failedAction }}</td>
 								<td>{{ item.errorMessage }}</td>
 								<td>

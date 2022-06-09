@@ -151,7 +151,7 @@
 		<div class="card" v-if="importFiles.length">
 			<div>
 				<div class="card-content">
-					<b-message type="is-info">
+					<b-message v-if="amountIntegrityFailed" type="is-info">
 						Do not repair your original file. Repair only the file with Affected Records.
 					</b-message>
 				</div>
@@ -471,7 +471,9 @@ export default {
 						if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
 					}).finally(() => {
 						this.startIntegrityCheckAgainLoading = false;
-						this.getAffectedRecords();
+						setTimeout(() => {
+							this.getAffectedRecords();
+						}, 1500);
 					});
 			}
 		},

@@ -212,7 +212,7 @@ export default {
 						target: criteriaTarget.code,
 						field: criteria.code,
 						condition: condition.code,
-						value: value ? this.prepareCriteriaValue(value, criteria.type) : "",
+						value: this.prepareCriteriaValue(value, criteria.type),
 						weight: scoreWeight,
 					});
 				});
@@ -222,6 +222,10 @@ export default {
 		},
 
 		prepareCriteriaValue(value, dataType) {
+			if (value === null || value === undefined) {
+				return "";
+			}
+
 			let newValue = value.code || value;
 			let result = null;
 
