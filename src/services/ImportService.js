@@ -93,6 +93,13 @@ export default {
 		return { data, status };
 	},
 
+	async getNotImportedRowsInImport(importId) {
+		const { data, status } = await fetcher({
+			uri: `imports/${importId}/fails`,
+		});
+		return { data, status };
+	},
+
 	async downloadFileWithInvalidEntriesFromImport(id) {
 		return download({ uri: `imports/invalid-files/${id}` });
 	},
