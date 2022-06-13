@@ -239,12 +239,16 @@ export default {
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
 				this.filters,
-			).then(({ data }) => {
-				const blob = new Blob([data], { type: data.type });
-				const link = document.createElement("a");
-				link.href = window.URL.createObjectURL(blob);
-				link.download = `purchases.${format}`;
-				link.click();
+			).then(({ data, status, message }) => {
+				if (status === 200) {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `purchases.${format}`;
+					link.click();
+				} else {
+					Notification(message, "is-warning");
+				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Export Purchases")} ${e}`, "is-danger");
 			});

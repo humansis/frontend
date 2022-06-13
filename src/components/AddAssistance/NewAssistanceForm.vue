@@ -172,6 +172,11 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
+		data: {
+			type: Object,
+			default: null,
+		},
 	},
 
 	data() {
@@ -216,8 +221,14 @@ export default {
 	},
 
 	watch: {
-		async formModel() {
-			await this.mapTargets();
+		formModel() {
+			this.mapTargets();
+		},
+
+		data(data) {
+			if (data) {
+				this.formModel = data;
+			}
 		},
 	},
 

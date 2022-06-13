@@ -215,12 +215,16 @@ export default {
 		async print() {
 			this.printLoading = true;
 			await SmartcardService.printSmartcardBatches(this.redemptionBatch.id)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Print")} ${e}`, "is-danger");
@@ -231,12 +235,16 @@ export default {
 		async legacyPrint() {
 			this.legacyPrintLoading = true;
 			await SmartcardService.legacyPrintSmartcardBatches(this.redemptionBatch.id)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Legacy_Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Legacy_Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Legacy Print")} ${e}`, "is-danger");

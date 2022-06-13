@@ -91,7 +91,7 @@
 		</Modal>
 		<div class="buttons space-between">
 			<b-button
-				v-if="addButton && userCan.editDistribution"
+				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null, true)"
@@ -182,7 +182,7 @@
 						@click="showEdit(props.row)"
 					/>
 					<ActionButton
-						v-if="userCan.editDistribution"
+						v-if="userCan.editDistribution && !isAssistanceValidated"
 						icon="trash"
 						type="is-danger"
 						:disabled="props.row.removed || isAssistanceCompleted"
@@ -693,12 +693,16 @@ export default {
 					});
 			} else {
 				await BeneficiariesService.exportBeneficiaries(format, this.table.data, "id")
-					.then(({ data }) => {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `beneficiaries.${format}`;
-						link.click();
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `beneficiaries.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
 					})
 					.catch((e) => {
 						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");

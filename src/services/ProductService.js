@@ -65,8 +65,7 @@ export default {
 	async exportProducts(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `products/exports?${formatText}` });
-		return { data };
+		return download({ uri: `products/exports?${formatText}` });
 	},
 
 	async getListOfCategories(page, size, sort, search = null) {

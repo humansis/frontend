@@ -113,8 +113,7 @@ export default {
 	async exportUsers(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `users/exports?${formatText}` });
-		return { data };
+		return download({ uri: `users/exports?${formatText}` });
 	},
 
 	async patchUser(id, body) {

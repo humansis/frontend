@@ -6,6 +6,7 @@
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					:project="project"
+					:data="componentsData.newAssistanceForm"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -17,6 +18,7 @@
 					ref="selectionCriteria"
 					v-show="visibleComponents.selectionCriteria"
 					:target-type="targetType"
+					:data="componentsData.selectionCriteria"
 					:assistance-body="assistanceBody"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
@@ -26,6 +28,7 @@
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
+					:data="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
 					:target-type="targetType"
@@ -38,6 +41,7 @@
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
 					:visible="visibleActivityDetails"
+					:data="componentsData.activityDetails"
 					@updatedData="fetchActivityDetails"
 				/>
 				<TargetTypeSelect
@@ -82,6 +86,12 @@ export default {
 
 	data() {
 		return {
+			componentsData: {
+				newAssistanceForm: null,
+				distributedCommodity: null,
+				activityDetails: null,
+				selectionCriteria: null,
+			},
 			project: {},
 			visibleComponents: {
 				selectionCriteria: false,
@@ -162,11 +172,9 @@ export default {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 					this.$router.push({ name: "NotFound" });
 				});
-		}
 
-		await this.$nextTick(() => {
-			this.mapAssistance(this.duplicateAssistance);
-		});
+			await this.mapAssistance(this.duplicateAssistance);
+		}
 
 		await this.fetchProject();
 	},
@@ -293,7 +301,7 @@ export default {
 		},
 
 		async mapAssistance(assistance) {
-			this.$refs.newAssistanceForm.formModel = {
+			this.componentsData.newAssistanceForm = {
 				adm1Id: assistance?.adm1Id,
 				adm2Id: assistance?.adm2Id,
 				adm3Id: assistance?.adm3Id,
@@ -305,6 +313,7 @@ export default {
 				subsector: assistance.subsector,
 				targetType: assistance.target,
 			};
+
 			this.targetType = assistance.target;
 			this.assistanceBody.locationId = assistance.locationId;
 			this.assistanceBody.target = assistance.target;
@@ -329,26 +338,19 @@ export default {
 					cashbackLimit: assistance.cashbackLimit,
 				});
 			});
-			if (this.$refs.distributedCommodity) {
-				this.$refs.distributedCommodity.table.data = preparedCommodities;
-			}
-			if (this.$refs.activityDetails) {
-				this.$refs.activityDetails.formModel = {
-					activityDescription: assistance.description || "",
-					householdsTargeted: assistance.householdsTargeted || 0,
-					individualsTargeted: assistance.individualsTargeted || 0,
-				};
-			}
-			if (this.$refs.selectionCriteria) {
-				this.$refs.selectionCriteria.groups = this.mapSelectionCriteria();
-				this.$refs.selectionCriteria.getCountOfBeneficiaries({ totalCount: false });
-				this.$refs.selectionCriteria.getCountOfBeneficiaries({ totalCount: true });
-				this.$refs.selectionCriteria.groups.forEach((item, key) => {
-					this.$refs.selectionCriteria.getCountOfBeneficiariesInGroup(key);
-				});
-			}
+
+			this.componentsData.distributedCommodity = preparedCommodities;
+
+			this.componentsData.activityDetails = {
+				activityDescription: assistance.description || "",
+				householdsTargeted: assistance.householdsTargeted || 0,
+				individualsTargeted: assistance.individualsTargeted || 0,
+			};
+
+			this.componentsData.selectionCriteria = this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
+			await this.$refs.selectionCriteria.fetchCriteriaInfo();
 		},
 
 		mapSelectionCriteria() {
@@ -378,6 +380,7 @@ export default {
 					});
 				}
 			});
+
 			return preparedSelectionCriteria;
 		},
 

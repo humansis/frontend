@@ -227,13 +227,4 @@ export default {
 	top: -20px;
 	left: -5px;
 }
-
-.table-link {
-	color: #0D92B3;
-	font-weight: bold;
-}
-
-.table-link:hover {
-	text-decoration: underline;
-}
 </style>

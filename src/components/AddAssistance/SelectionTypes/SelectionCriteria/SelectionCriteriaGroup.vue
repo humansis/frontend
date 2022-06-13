@@ -81,7 +81,10 @@ export default {
 	},
 
 	props: {
-		data: Array,
+		data: {
+			type: Array,
+			default: () => [],
+		},
 		groupId: Number,
 		targetType: String,
 		count: Number,
@@ -104,8 +107,8 @@ export default {
 			const criteriaGroups = this.data.map((
 				{ criteria, criteriaTarget, value, scoreWeight, condition },
 			) => ({
-				criteriaTarget: criteriaTarget?.value,
-				criteria: criteria?.value,
+				criteriaTarget: criteriaTarget?.code || criteriaTarget?.value,
+				criteria: criteria?.code || criteria?.value,
 				value: this.prepareCriteriaValue(value),
 				scoreWeight,
 				condition: condition?.code,

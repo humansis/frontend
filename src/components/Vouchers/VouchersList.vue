@@ -258,12 +258,16 @@ export default {
 				ids = this.table.checkedRows.map((item) => item.id);
 			}
 			await BookletsService.exportBooklets(format, ids)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Booklets.${format}`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Booklets.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
@@ -281,12 +285,16 @@ export default {
 			const ids = this.table.checkedRows.map((item) => item.id);
 
 			await BookletsService.exportQRVouchers(ids)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Booklets.pdf`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Booklets.pdf`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				}).catch((e) => {
 					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
 				});
@@ -297,12 +305,16 @@ export default {
 			Notification(`${this.$t("Your Voucher Download is Starting")}`, "is-success");
 
 			await BookletsService.exportQRVouchers([id])
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `Booklet-${code}.pdf`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Booklet-${code}.pdf`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				}).catch((e) => {
 					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
 				});

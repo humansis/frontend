@@ -106,7 +106,6 @@
 					"
 					v-model="formModel.value"
 					:step="(fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
-					min="0"
 					expanded
 					:controls="false"
 					@blur="validate('value')"

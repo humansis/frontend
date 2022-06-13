@@ -79,16 +79,6 @@
 						{{ $t('Cancel Import') }}
 					</b-button>
 					<div>
-
-						<b-button
-							v-if="canUploadAndDownloadAffectedRecords"
-							type="is-primary"
-							icon-right="file-download"
-							:loading="downloadAffectedRecordsLoading"
-							@click="getAffectedRecords"
-						>
-							{{ $t('Get Affected Records') }}
-						</b-button>
 						<b-button
 							v-if="canUploadAndDownloadAffectedRecords"
 							type="is-primary"
@@ -133,11 +123,15 @@
 										size="is-large"
 									/>
 								</p>
-								<p>{{ $t("Drop your files here or click to upload") }}</p>
+								<p>{{ $t("Drop file here or click to upload") }}</p>
 							</div>
 						</section>
 					</b-upload>
 				</b-field>
+
+				<b-message v-if="dropFiles.length > 1" type="is-warning">
+					You can upload only one file.
+				</b-message>
 
 				<div class="tags">
 					<span v-for="(file, index) in dropFiles"
@@ -151,98 +145,84 @@
 						/>
 					</span>
 				</div>
-
-				<div v-if="invalidFiles.length" class="content">
-					<table>
-						<tbody>
-							<tr
-								v-for="({id, name}, key) of invalidFiles"
-								:key="key"
-							>
-								<td>{{ name }}</td>
-								<td class="has-text-right">
-									<b-button
-										type="is-info"
-										icon-right="file-download"
-										@click="downloadAffectedFile(id, name)"
-									>
-										{{ $t('Download') }}
-									</b-button>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
 			</div>
 		</div>
 
-		<div v-if="importFiles.length" class="card">
-			<div v-for="({
-					id,
-					expectedColumns,
-					missingColumns,
-					name,
-					unexpectedColumns,
-					uploadedDate,
-					violations}) of importFiles"
-				:key="`import-file-${id}`"
-				class="card-content"
-			>
-				<h2 class="subtitle is-5">
-					{{ name }}
-					<b-taglist class="mt-3 mb-1" attached>
-						<b-tag size="is-medium" type="is-warning is-light">
-							{{ $t('Expected Columns') }}
-						</b-tag>
-						<b-tag size="is-medium" type="is-light">
-							{{ expectedColumns.length }}
-						</b-tag>
-					</b-taglist>
-
-					<b-taglist attached>
-						<b-tag size="is-medium" type="is-info is-light">
-							{{ $t('Upload Date') }}
-						</b-tag>
-						<b-tag size="is-medium" type="is-light">
-							{{ getDate(uploadedDate) }}
-						</b-tag>
-					</b-taglist>
-				</h2>
-				<div class="content">
-					<div>
-						<table>
-							<thead>
-								<tr>
-									<th>{{ $t('Missing Columns') }}</th>
-									<th>{{ $t('Unexpected Columns') }}</th>
-									<th>{{ $t('Violations') }}</th>
+		<div class="card" v-if="importFiles.length">
+			<div>
+				<div class="card-content">
+					<b-message v-if="canUploadAndDownloadAffectedRecords" type="is-info">
+						Do not repair your original file. Repair only the file with Affected Records.
+					</b-message>
+				</div>
+				<div v-for="({
+						id,
+						expectedColumns,
+						missingColumns,
+						name,
+						unexpectedColumns,
+						uploadedDate,
+						violations
+					}, index) of importFiles"
+					:key="`import-file-${id}`"
+					class="card-content"
+				>
+					<div v-if="invalidFiles.length">
+						<table class="mb-4">
+							<tbody>
+								<tr
+									v-for="({id, name: invalidFileName, uploadedDate}, key) of invalidFiles"
+									:key="key"
+									v-show="key === 0"
+								>
+									<td>
+										<div>
+											<h2 class="subtitle mb-0"><strong>{{name}}</strong></h2>
+											<small>Upload date:
+												{{ $moment(uploadedDate).format("YYYY-MM-DD hh:mm") }}
+											</small>
+										</div>
+									</td>
+									<td v-if="index === 0" class="has-text-right">
+										<b-button
+											type="is-info"
+											icon-right="file-download"
+											@click="downloadAffectedFile(id, invalidFileName)"
+										>
+											{{ $t('Get Affected Records') }}
+										</b-button>
+										<small class="mt-2 is-block">{{invalidFileName}}</small>
+									</td>
 								</tr>
-							</thead>
+							</tbody>
+						</table>
+					</div>
+
+					<h2 class="subtitle is-5">
+						<b-taglist class="mt-3 mb-1" attached>
+							<b-tag size="is-medium" type="is-warning is-light">
+								{{ $t('Expected Columns') }}
+							</b-tag>
+							<b-tag size="is-medium" type="is-light">
+								{{ expectedColumns.length }}
+							</b-tag>
+						</b-taglist>
+
+						<b-taglist attached>
+							<b-tag size="is-medium" type="is-info is-light">
+								{{ $t('Upload Date') }}
+							</b-tag>
+							<b-tag size="is-medium" type="is-light">
+								{{ getDate(uploadedDate) }}
+							</b-tag>
+						</b-taglist>
+					</h2>
+					<div class="content">
+						<table>
 							<tbody>
 								<tr>
-									<td class="td-width-30">
-										<b-tag
-											v-for="(column, key) of missingColumns"
-											:key="`missing-column-${id}-${key}`"
-											class="has-text-weight-bold mr-2 mb-2"
-											type="is-warning is-light"
-											size="is-medium"
-										>
-											{{ column }}
-										</b-tag>
-									</td>
-									<td class="td-width-30">
-										<b-tag
-											v-for="(column, key) of unexpectedColumns"
-											:key="`missing-column-${id}-${key}`"
-											class="has-text-weight-bold mr-2 mb-2"
-											type="is-light"
-											size="is-medium"
-										>
-											{{ column }}
-										</b-tag>
-									</td>
-									<td class="td-width-30">
+									<td><strong>{{ $t('Violations') }}</strong></td>
+									<td>
 										<span
 											v-for="({
 												columns,
@@ -265,13 +245,44 @@
 										</span>
 									</td>
 								</tr>
+								<tr>
+									<td>
+										<strong>{{ $t('Missing Columns') }}</strong>
+									</td>
+									<td>
+										<b-tag
+											v-for="(column, key) of missingColumns"
+											:key="`missing-column-${id}-${key}`"
+											class="has-text-weight-bold mr-2 mb-2"
+											type="is-warning is-light"
+											size="is-medium"
+										>
+											{{ column }}
+										</b-tag>
+									</td>
+								</tr>
+								<tr>
+									<td style="width: 200px"><strong>{{ $t('Unexpected Columns') }}</strong></td>
+									<td class="td-width-30">
+										<b-tag
+											v-for="(column, key) of unexpectedColumns"
+											:key="`missing-column-${id}-${key}`"
+											class="has-text-weight-bold mr-2 mb-2"
+											type="is-light"
+											size="is-medium"
+										>
+											{{ column }}
+										</b-tag>
+									</td>
+								</tr>
 							</tbody>
 						</table>
 					</div>
+					<hr>
 				</div>
-				<hr>
 			</div>
 		</div>
+
 	</div>
 </template>
 
@@ -329,8 +340,13 @@ export default {
 		},
 
 		status(value) {
+			this.getAffectedRecords();
 			this.importStatus = value;
 		},
+	},
+
+	mounted() {
+		this.getAffectedRecords();
 	},
 
 	computed: {
@@ -358,7 +374,7 @@ export default {
 
 		canStartIntegrityCheckAgain() {
 			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
-				&& this.dropFiles.length;
+				&& this.dropFiles.length === 1;
 		},
 
 		canStartIdentityCheck() {
@@ -382,6 +398,7 @@ export default {
 			const { importId } = this.$route.params;
 
 			this.downloadAffectedRecordsLoading = true;
+			this.dropFiles = [];
 
 			ImportService.getFilesWithInvalidEntriesFromImport(importId)
 				.then(({ data: { data } }) => {
@@ -400,12 +417,16 @@ export default {
 
 		downloadAffectedFile(id, file) {
 			ImportService.downloadFileWithInvalidEntriesFromImport(id)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `${file}`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `${file}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				}).catch((e) => {
 					if (e.message) {
 						Notification(
@@ -427,7 +448,7 @@ export default {
 		startIntegrityCheckAgain() {
 			const { importId } = this.$route.params;
 
-			if (this.dropFiles.length) {
+			if (this.dropFiles.length === 1) {
 				this.startIntegrityCheckAgainLoading = true;
 
 				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
@@ -450,6 +471,9 @@ export default {
 						if (e.message) Notification(`${this.$t("Upload")} ${e}`, "is-danger");
 					}).finally(() => {
 						this.startIntegrityCheckAgainLoading = false;
+						setTimeout(() => {
+							this.getAffectedRecords();
+						}, 1500);
 					});
 			}
 		},
@@ -472,3 +496,9 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+table {
+	width: 100%;
+}
+</style>

@@ -259,8 +259,12 @@ export default {
 				assistanceTarget,
 				body,
 			)
-				.then(() => {
-					Toast(successMessage, "is-success");
+				.then(({ data, status }) => {
+					if (status === 400) {
+						Toast(data, "is-warning");
+					} else {
+						Toast(successMessage, "is-success");
+					}
 				})
 				.catch((e) => {
 					if (e.message) {

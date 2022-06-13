@@ -26,3 +26,13 @@
 .radio-pictogram {
 	max-width: 40px;
 }
+
+.table-link {
+	color: #0D92B3;
+	font-weight: bold;
+
+	&:hover {
+		color: #0D92B3;
+		text-decoration: underline;
+	}
+}

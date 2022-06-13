@@ -259,12 +259,16 @@ export default {
 		async downloadTemplate(format) {
 			this.exportLoading = true;
 			await ImportService.exportTemplate(format)
-				.then(({ data }) => {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `import-template.${format}`;
-					link.click();
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `import-template.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
 				})
 				.catch((e) => {
 					if (e.message) {

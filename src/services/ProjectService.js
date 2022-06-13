@@ -39,7 +39,6 @@ export default {
 	async exportProjects(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		const { data } = await download({ uri: `projects/exports?${formatText}` });
-		return { data };
+		return download({ uri: `projects/exports?${formatText}` });
 	},
 };

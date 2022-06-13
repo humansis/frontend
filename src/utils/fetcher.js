@@ -9,7 +9,7 @@ async function getErrorsFromResponse(data) {
 
 	if (data.errors && data.errors.length) {
 		data.errors.forEach((error) => {
-			errors += `${error.message} (${error.source}), `;
+			errors += error.message;
 		});
 	}
 	// TODO Please remove this code before release because it reads

@@ -12,11 +12,7 @@
 						'is-previous': activeItem.index > childItem.index
 					}]"
 				>
-					<a
-						class="step-link"
-						:class="{'is-clickable': isItemClickable(childItem)}"
-						@click="isItemClickable(childItem) && childClick(childItem)"
-					>
+					<a class="step-link">
 						<div class="step-marker">
 							<b-icon
 								v-if="childItem.icon"
