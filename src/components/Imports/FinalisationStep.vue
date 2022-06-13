@@ -356,7 +356,7 @@ export default {
 
 			if (importId) {
 				ImportService.getNotImportedRowsInImport(importId).then(({ data }) => {
-					this.notImportedRows = data;
+					this.notImportedRows = data.data;
 				});
 			}
 		},
