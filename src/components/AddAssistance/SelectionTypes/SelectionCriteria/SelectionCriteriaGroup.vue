@@ -55,7 +55,10 @@
 					:is-full-page="false"
 					:can-cancel="false"
 				/>
-				{{ countOfCriteriaBeneficiaries }} {{ targetType }}
+
+				<span v-if="countOfCriteriaBeneficiaries">
+					{{ countOfCriteriaBeneficiaries }} {{ targetType }}
+				</span>
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
 				{{ $t('Remove') }}
@@ -170,7 +173,9 @@ export default {
 		},
 
 		showDetail() {
-			this.$emit("showDetail", this.data);
+			if (this.countOfCriteriaBeneficiaries) {
+				this.$emit("showDetail", this.data);
+			}
 		},
 	},
 };

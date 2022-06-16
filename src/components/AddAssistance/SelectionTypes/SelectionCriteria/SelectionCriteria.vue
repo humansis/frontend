@@ -49,8 +49,8 @@
 				:target-type="selectedTargetType"
 				:loading="calculationLoading"
 				@addCriteria="addCriteria"
-				@removeGroup="removeCriteriaGroup(key)"
 				@updatedCriteria="onUpdatedCriteria"
+				@removeGroup="removeCriteriaGroup(key)"
 				@showDetail="showBeneficiariesInGroup(key)"
 			/>
 			<b-notification
@@ -73,11 +73,19 @@
 						v-model="minimumSelectionScore"
 						expanded
 						type="is-dark"
-						max="100000"
 						:controls="false"
+						:disabled="vulnerabilityScoreLoading"
 						:loading="vulnerabilityScoreLoading"
-						@input="onVulnerabilityScoreChange"
+						@input="onVulnerabilityScoreInput"
 					/>
+					<b-button
+						class="ml-2"
+						type="is-primary"
+						:loading="vulnerabilityScoreLoading"
+						@click="updateVulnerabilityScores"
+					>
+						{{ $t('Update') }}
+					</b-button>
 				</b-field>
 			</div>
 			<div class="level-right" ref="groupsCalculation">
@@ -93,6 +101,7 @@
 							class="is-pulled-right"
 							icon="detail"
 							type="is-link"
+							:disabled="vulnerabilityScoreTouched"
 							@click="showTotalBeneficiaries"
 						>
 							{{ $t('Details') }}
@@ -158,7 +167,7 @@ export default {
 			minimumSelectionScore: 0,
 			calculationLoading: false,
 			vulnerabilityScoreLoading: false,
-			vulnerabilityScoreTimer: null,
+			vulnerabilityScoreTouched: false,
 		};
 	},
 
@@ -181,7 +190,7 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", this.prepareCriteria(), this.minimumSelectionScore);
+		this.$emit("updatedData", this.prepareCriteria(), this.minimumSelectionScore, this.vulnerabilityScoreTouched);
 		this.$emit("beneficiariesCounted", this.countOf);
 	},
 
@@ -290,14 +299,26 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
-		onVulnerabilityScoreChange() {
-			clearTimeout(this.vulnerabilityScoreTimer);
+		onVulnerabilityScoreInput() {
+			this.vulnerabilityScoreTouched = true;
+
+			this.groups = [...this.groups.map((group) => ({
+				...group,
+				tableData: [],
+			}))];
+
+			this.totalCount = 0;
+			this.countOf = 0;
+		},
+
+		async updateVulnerabilityScores() {
 			this.vulnerabilityScoreLoading = true;
 
-			this.vulnerabilityScoreTimer = setTimeout(() => {
-				this.getCountOfBeneficiaries({ totalCount: false });
-				this.vulnerabilityScoreLoading = false;
-			}, 1000);
+			console.log("ahoj");
+			await this.fetchCriteriaInfo();
+
+			this.vulnerabilityScoreLoading = false;
+			this.vulnerabilityScoreTouched = false;
 		},
 
 		async getCountOfBeneficiariesInGroup(groupKey) {

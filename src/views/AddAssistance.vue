@@ -55,7 +55,12 @@
 
 		<div class="buttons flex-end">
 			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
-			<b-button type="is-primary" :loading="loading" @click="validateNewAssistance">
+			<b-button
+				type="is-primary"
+				:loading="loading"
+				:disabled="createAssistanceButtonDisabled"
+				@click="validateNewAssistance"
+			>
 				{{ $t('Create') }}
 			</b-button>
 		</div>
@@ -133,6 +138,7 @@ export default {
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
+			createAssistanceButtonDisabled: false,
 		};
 	},
 
@@ -436,7 +442,9 @@ export default {
 			};
 		},
 
-		fetchSelectionCriteria(selectionCriteria, minimumSelectionScore) {
+		fetchSelectionCriteria(selectionCriteria, minimumSelectionScore, vulnerabilityScoreTouched) {
+			this.createAssistanceButtonDisabled = vulnerabilityScoreTouched;
+
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
