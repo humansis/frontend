@@ -74,14 +74,13 @@
 						expanded
 						type="is-dark"
 						:controls="false"
-						:disabled="vulnerabilityScoreLoading"
-						:loading="vulnerabilityScoreLoading"
+						:disabled="calculationLoading || !groups.length"
 						@input="onVulnerabilityScoreInput"
 					/>
 					<b-button
 						class="ml-2"
 						type="is-primary"
-						:loading="vulnerabilityScoreLoading"
+						:disabled="calculationLoading || !groups.length"
 						@click="updateVulnerabilityScores"
 					>
 						{{ $t('Update') }}
@@ -101,7 +100,7 @@
 							class="is-pulled-right"
 							icon="detail"
 							type="is-link"
-							:disabled="vulnerabilityScoreTouched"
+							:disabled="vulnerabilityScoreTouched || calculationLoading"
 							@click="showTotalBeneficiaries"
 						>
 							{{ $t('Details') }}
@@ -166,7 +165,6 @@ export default {
 			totalCount: 0,
 			minimumSelectionScore: 0,
 			calculationLoading: false,
-			vulnerabilityScoreLoading: false,
 			vulnerabilityScoreTouched: false,
 		};
 	},
@@ -190,7 +188,12 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", this.prepareCriteria(), this.minimumSelectionScore, this.vulnerabilityScoreTouched);
+		this.$emit(
+			"updatedData",
+			this.prepareCriteria(),
+			this.minimumSelectionScore,
+			this.vulnerabilityScoreTouched || this.calculationLoading,
+		);
 		this.$emit("beneficiariesCounted", this.countOf);
 	},
 
@@ -312,12 +315,8 @@ export default {
 		},
 
 		async updateVulnerabilityScores() {
-			this.vulnerabilityScoreLoading = true;
-
-			console.log("ahoj");
 			await this.fetchCriteriaInfo();
 
-			this.vulnerabilityScoreLoading = false;
 			this.vulnerabilityScoreTouched = false;
 		},
 
