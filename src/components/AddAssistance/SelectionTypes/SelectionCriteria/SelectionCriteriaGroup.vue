@@ -140,6 +140,10 @@ export default {
 		prepareCriteriaValue(value) {
 			let newValue = value?.code || value;
 
+			if (!value) {
+				return value;
+			}
+
 			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
 				const locationId = Number(newValue.replace("locationId-", ""));
 				this.fetchLocation(locationId);

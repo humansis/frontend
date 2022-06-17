@@ -165,7 +165,9 @@ export default {
 		customValue() {
 			const value = this.data.row[this.column.field];
 
-			if (!value) return "";
+			if (!value) {
+				return value;
+			}
 
 			if (typeof value === "object") {
 				if (value.value) return value.value;
