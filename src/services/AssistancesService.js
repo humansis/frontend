@@ -337,6 +337,16 @@ export default {
 		return download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
 	},
 
+	async exportVulnerabilityScores(format, body) {
+		const formatText = format ? `type=${format}` : "";
+
+		return download({
+			uri: `assistances/vulnerability-scores/exports?${formatText}`,
+			method: "POST",
+			body,
+		});
+	},
+
 	async exportAssistance(format, assistanceId) {
 		const formatText = format ? `type=${format}` : "";
 

@@ -145,10 +145,13 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 	return getResponseJSON(response);
 };
 
-export const download = async ({ uri, version = 1 }) => {
+export const download = async ({ uri, method = "GET", body = null, version = 1 }) => {
 	const url = `${CONST.API}/v${version}/${uri}`;
 
-	const headers = {};
+	const headers = {
+		"Content-Type": "application/json;charset=utf-8",
+		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
+	};
 
 	const user = getters.getUserFromVuexStorage();
 
@@ -160,7 +163,8 @@ export const download = async ({ uri, version = 1 }) => {
 
 	const config = {
 		headers,
-		method: "GET",
+		method,
+		...(body && { body: JSON.stringify(body) }),
 	};
 
 	const response = await fetch(url, config);

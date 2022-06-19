@@ -3,6 +3,7 @@
 		v-model="currentFormat"
 		aria-role="list"
 		:position="position"
+		:disabled="disabled"
 	>
 		<b-button
 			icon-right="arrow-down"
@@ -50,6 +51,10 @@ export default {
 			default: "is-bottom-right",
 		},
 		loading: {
+			type: Boolean,
+			default: false,
+		},
+		disabled: {
 			type: Boolean,
 			default: false,
 		},

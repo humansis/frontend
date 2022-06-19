@@ -100,11 +100,20 @@
 							class="is-pulled-right"
 							icon="detail"
 							type="is-link"
-							:disabled="vulnerabilityScoreTouched || calculationLoading"
+							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
 							@click="showTotalBeneficiaries"
 						>
 							{{ $t('Details') }}
 						</b-button>
+						<ExportButton
+							type="is-primary"
+							class="ml-2"
+							:label="$t('Export Details')"
+							:loading="exportLoading"
+							:formats="{ xlsx: true }"
+							:disabled="vulnerabilityScoreTouched || !groups.length"
+							@onExport="exportSelectedBeneficiaries"
+						/>
 					</div>
 				</b-field>
 			</div>
@@ -113,6 +122,7 @@
 </template>
 
 <script>
+import ExportButton from "@/components/ExportButton";
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaForm";
 import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaGroup";
@@ -129,6 +139,7 @@ export default {
 		SelectionCriteriaGroup,
 		Modal,
 		SelectionCriteriaForm,
+		ExportButton,
 	},
 
 	props: {
@@ -166,6 +177,7 @@ export default {
 			minimumSelectionScore: 0,
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
+			exportLoading: false,
 		};
 	},
 
@@ -212,6 +224,30 @@ export default {
 	methods: {
 		submit() {
 			return !!this.groups.length;
+		},
+
+		async exportSelectedBeneficiaries(format) {
+			this.exportLoading = true;
+
+			await AssistancesService.exportVulnerabilityScores(
+				format, this.assistanceBody,
+			)
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `vulnerability-scores.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
+				});
+
+			this.exportLoading = false;
 		},
 
 		prepareCriteria() {
