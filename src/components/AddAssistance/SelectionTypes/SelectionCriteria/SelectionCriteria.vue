@@ -68,19 +68,25 @@
 		</div>
 		<div class="level is-align-items-flex-end">
 			<div class="level-left">
-				<b-field :label="$t('Minimum Vulnerability Score')">
-					<b-numberinput
-						v-model="minimumSelectionScore"
-						expanded
-						type="is-dark"
-						:controls="false"
-						:disabled="calculationLoading || !groups.length"
-						@input="onVulnerabilityScoreInput"
-					/>
+				<b-field :label="vulnerabilityScoreLabel">
+					<div>
+						<b-numberinput
+							v-model.number="minimumSelectionScore"
+							expanded
+							class="vulnerability-number-input"
+							type="is-dark"
+							:min="minimumVulnerabilityScore"
+							:max="maximumVulnerabilityScore"
+							:controls="false"
+							:disabled="calculationLoading || !groups.length"
+							@input="onVulnerabilityScoreInput"
+						/>
+					</div>
+
 					<b-button
 						class="ml-2"
 						type="is-primary"
-						:disabled="calculationLoading || !groups.length"
+						:disabled="calculationLoading || !isMinimumSelectionScoreValid || !groups.length"
 						@click="updateVulnerabilityScores"
 					>
 						{{ $t('Update') }}
@@ -111,7 +117,7 @@
 							:label="$t('Export Details')"
 							:loading="exportLoading"
 							:formats="{ xlsx: true }"
-							:disabled="vulnerabilityScoreTouched || !groups.length"
+							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
 							@onExport="exportSelectedBeneficiaries"
 						/>
 					</div>
@@ -178,6 +184,8 @@ export default {
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
 			exportLoading: false,
+			minimumVulnerabilityScore: 0,
+			maximumVulnerabilityScore: 0,
 		};
 	},
 
@@ -197,6 +205,15 @@ export default {
 
 			return result.charAt(0).toUpperCase() + result.slice(1);
 		},
+
+		vulnerabilityScoreLabel() {
+			return `${this.$t("Minimum Vulnerability Score")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
+		},
+
+		isMinimumSelectionScoreValid() {
+			return this.minimumSelectionScore <= this.maximumVulnerabilityScore
+				&& this.minimumSelectionScore >= this.minimumVulnerabilityScore;
+		},
 	},
 
 	updated() {
@@ -206,6 +223,7 @@ export default {
 			this.minimumSelectionScore,
 			this.vulnerabilityScoreTouched || this.calculationLoading,
 		);
+
 		this.$emit("beneficiariesCounted", this.countOf);
 	},
 
@@ -433,6 +451,15 @@ export default {
 						}
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					}).finally(() => {
+						const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
+
+						this.minimumVulnerabilityScore = Math.min.apply(null, scores);
+						this.maximumVulnerabilityScore = Math.max.apply(null, scores);
+
+						if (this.minimumSelectionScore === 0) {
+							this.minimumSelectionScore = this.minimumVulnerabilityScore;
+						}
 					});
 			}
 		},
@@ -486,6 +513,8 @@ export default {
 			this.countOf = 0;
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
+			this.minimumVulnerabilityScore = 0;
+			this.maximumVulnerabilityScore = 0;
 		},
 
 	},
@@ -497,5 +526,11 @@ export default {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+}
+
+.vulnerability-number-input {
+	border-bottom-right-radius: 4px !important;
+	border-top-right-radius: 4px !important;
+	width: 100px;
 }
 </style>
