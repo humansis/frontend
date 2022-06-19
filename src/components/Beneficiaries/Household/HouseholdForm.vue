@@ -207,14 +207,16 @@
 						v-if="option.type === 'text'"
 						v-model="formModel.countrySpecificOptions[option.id]"
 					/>
-					<b-numberinput
-						v-if="option.type === 'number'"
-						v-model="formModel.countrySpecificOptions[option.id]"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-					/>
+
+					<div v-if="option.type === 'number'" class="b-numberinput field is-grouped is-expanded">
+						<div class="control is-expanded is-clearfix">
+							<input
+								v-model.number="formModel.countrySpecificOptions[option.id]"
+								type="number"
+								class="input"
+							>
+						</div>
+					</div>
 				</b-field>
 			</div>
 		</div>
