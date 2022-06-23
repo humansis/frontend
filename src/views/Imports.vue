@@ -27,7 +27,7 @@
 					tag="a"
 					type="is-primary"
 					icon-left="question"
-					href="https://docs.humansis.org/display/HD/Imports"
+					href="https://docs.humansis.org/x/RwBf"
 					target="_blank"
 				>
 					{{ $t('Help') }}
