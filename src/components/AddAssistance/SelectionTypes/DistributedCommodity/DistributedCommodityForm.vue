@@ -240,8 +240,8 @@ export default {
 				types: [],
 				currencies,
 				division: [
-					{ code: "Per Household", value: "Per Household" },
-					{ code: "Per Household Member", value: "Per Household Member" },
+					{ code: "Per Household", value: this.$t("Per Household") },
+					{ code: "Per Household Member", value: this.$t("Per Household Member") },
 				],
 			},
 			loading: {

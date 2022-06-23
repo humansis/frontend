@@ -137,7 +137,7 @@ export default {
 			}
 
 			this.redemptionSummary = true;
-			this.header = "Vendor Redemption Summary";
+			this.header = this.$t("Vendor Redemption Summary");
 		},
 
 		getProjectName(id) {
@@ -152,7 +152,7 @@ export default {
 				this.header = "Redeemed Batches";
 			} else if (this.history) {
 				this.history = false;
-				this.header = "Vendor Transaction Summary";
+				this.header = this.$t("Vendor Transaction Summary");
 			}
 		},
 

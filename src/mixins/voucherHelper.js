@@ -70,7 +70,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`Beneficiaries ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					return [];
 				});
 		},
@@ -80,7 +80,7 @@ export default {
 			return AssistancesService.getAssistances(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`Assistances ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
 					return [];
 				});
 		},
@@ -90,7 +90,7 @@ export default {
 			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`Projects ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 					return [];
 				});
 		},

@@ -93,7 +93,7 @@ export default {
 			vendorSummary: {
 				isOpened: false,
 				isWaiting: false,
-				header: "Vendor Transaction Summary",
+				header: this.$t("Vendor Transaction Summary"),
 				show: true,
 			},
 			vendorModel: {
