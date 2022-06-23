@@ -111,7 +111,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`Countries ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

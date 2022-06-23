@@ -73,7 +73,7 @@
 										class="mt-2 mr-2"
 										type="is-light"
 									>
-										No difference
+										{{ $t('No difference') }}
 									</b-tag>
 									<template v-else>
 										<div

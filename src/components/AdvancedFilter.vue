@@ -3,7 +3,7 @@
 		<div class="columns is-multiline">
 			<div v-for="(options, filter) in filtersOptions" :key="filter" :class="filterClass">
 				<b-field v-if="options.type === 'empty'" />
-				<b-field v-else :label="options.name">
+				<b-field v-else :label="$t(options.name)">
 					<MultiSelect
 						v-if="!options.type || options.type === 'multiselect'"
 						v-model="selectedFiltersOptions[filter]"
@@ -11,7 +11,7 @@
 						:label="options.label || 'value'"
 						:track-by="options.trackBy || 'code'"
 						:multiple="options.multiple"
-						:placeholder="options.placeholder || $t('Click to select')"
+						:placeholder="$t(options.placeholder) || $t('Click to select')"
 						:loading="options.loading"
 						:options="options.data"
 						:selectLabel="$t('Select')"
@@ -36,7 +36,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
-							:placeholder="options.placeholder || ''"
+							:placeholder="$t(options.placeholder) || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button
@@ -49,7 +49,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
-							:placeholder="options.placeholder || ''"
+							:placeholder="$t(options.placeholder) || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button
@@ -62,7 +62,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							icon="clock"
 							expanded
-							:placeholder="options.placeholder || ''"
+							:placeholder="$t(options.placeholder) || ''"
 							@input="filterChanged(filter)"
 						/>
 						<b-button

@@ -107,15 +107,15 @@ export default {
 				categoryTypes: [
 					{
 						code: "Food",
-						value: "Food",
+						value: this.$t("Food"),
 					},
 					{
 						code: "Non-Food",
-						value: "Non-Food",
+						value: this.$t("Non-Food"),
 					},
 					{
 						code: "Cashback",
-						value: "Cashback",
+						value: this.$t("Cashback"),
 					},
 				],
 			},

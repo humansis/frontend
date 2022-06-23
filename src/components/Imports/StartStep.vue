@@ -23,7 +23,7 @@
 			</b-field>
 
 			<b-message v-if="dropFiles.length > 1" type="is-warning">
-				You can upload only one file.
+				{{ $t('You can upload only one file.') }}
 			</b-message>
 
 			<div class="tags">

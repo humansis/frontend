@@ -38,7 +38,7 @@
 				<ActionButton
 					v-if="userCan.addEditProducts"
 					icon="edit"
-					tooltip="Edit"
+					:tooltip="$t('Edit')"
 					@click="showEdit(props.row.id)"
 				/>
 				<SafeDelete

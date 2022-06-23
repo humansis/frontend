@@ -164,16 +164,16 @@ export default {
 
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
+			this.filtersOptions.adm1.placeholder = `${this.$t("Select")} ${this.admNames.adm1}`;
 
 			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
+			this.filtersOptions.adm2.placeholder = `${this.$t("Select")} ${this.admNames.adm2}`;
 
 			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
+			this.filtersOptions.adm3.placeholder = `${this.$t("Select")} ${this.admNames.adm3}`;
 
 			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
+			this.filtersOptions.adm4.placeholder = `${this.$t("Select")} ${this.admNames.adm4}`;
 		},
 
 		async filterChanged(filters, filterName) {

@@ -213,7 +213,7 @@
 						@blur="validate('allowedProductCategoryTypes')"
 					>
 						<div class="is-flex is-align-items-center">
-							{{ item }}
+							{{ $t(item) }}
 							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
 						</div>
 					</b-checkbox>
