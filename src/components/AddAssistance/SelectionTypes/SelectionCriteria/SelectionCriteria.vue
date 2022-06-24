@@ -68,25 +68,26 @@
 		</div>
 		<div class="level is-align-items-flex-end">
 			<div class="level-left">
-				<b-field :label="vulnerabilityScoreLabel">
+				<b-field
+					:label="vulnerabilityScoreLabel"
+					:type="minimumSelectionScoreFieldType"
+					:message="minimumSelectionScoreFieldMessage"
+				>
 					<div>
 						<b-numberinput
-							v-model.number="minimumSelectionScore"
+							v-model="minimumSelectionScore"
 							expanded
 							class="vulnerability-number-input"
 							type="is-dark"
-							:min="minimumVulnerabilityScore"
-							:max="maximumVulnerabilityScore"
 							:controls="false"
 							:disabled="calculationLoading || !groups.length"
 							@input="onVulnerabilityScoreInput"
 						/>
 					</div>
-
 					<b-button
 						class="ml-2"
 						type="is-primary"
-						:disabled="calculationLoading || !isMinimumSelectionScoreValid || !groups.length"
+						:disabled="calculationLoading || !groups.length"
 						@click="updateVulnerabilityScores"
 					>
 						{{ $t('Update') }}
@@ -175,12 +176,13 @@ export default {
 			detailModal: {
 				isOpened: false,
 			},
+			minimumSelectionScore: 0,
+			minimumSelectionScoreValid: null,
 			beneficiariesData: [],
 			beneficiariesScores: [],
 			totalBeneficiariesData: [],
 			countOf: 0,
 			totalCount: 0,
-			minimumSelectionScore: 0,
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
 			exportLoading: false,
@@ -210,9 +212,16 @@ export default {
 			return `${this.$t("Minimum Vulnerability Score")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
 		},
 
-		isMinimumSelectionScoreValid() {
-			return this.minimumSelectionScore <= this.maximumVulnerabilityScore
-				&& this.minimumSelectionScore >= this.minimumVulnerabilityScore;
+		minimumSelectionScoreFieldType() {
+			if (this.minimumSelectionScoreValid === null) return "";
+
+			return this.minimumSelectionScoreValid ? "is-success" : "is-danger";
+		},
+
+		minimumSelectionScoreFieldMessage() {
+			if (this.minimumSelectionScoreValid === null) return "";
+
+			return this.minimumSelectionScoreValid ? "" : `${this.$t("Use number in this interval")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
 		},
 	},
 
@@ -228,7 +237,13 @@ export default {
 	},
 
 	watch: {
-		groups() {
+		groups(groups) {
+			if (!groups.length) {
+				this.minimumSelectionScore = 0;
+				this.minimumVulnerabilityScore = 0;
+				this.maximumVulnerabilityScore = 0;
+			}
+
 			this.$emit("onDeliveredCommodityValue");
 		},
 
@@ -344,32 +359,36 @@ export default {
 
 			this.criteriaModal.isOpened = false;
 
-			this.fetchCriteriaInfo();
+			this.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
-		fetchCriteriaInfo() {
+		fetchCriteriaInfo({ changeScoreInterval = true }) {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
+			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
+			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
 		},
 
 		onVulnerabilityScoreInput() {
 			this.vulnerabilityScoreTouched = true;
-
-			this.groups = [...this.groups.map((group) => ({
-				...group,
-				tableData: [],
-			}))];
-
 			this.totalCount = 0;
 			this.countOf = 0;
 		},
 
 		async updateVulnerabilityScores() {
-			await this.fetchCriteriaInfo();
+			if (this.minimumSelectionScore >= this.minimumVulnerabilityScore
+				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore
+			) {
+				this.minimumSelectionScoreValid = true;
+			} else {
+				this.minimumSelectionScoreValid = false;
+
+				return;
+			}
+
+			await this.fetchCriteriaInfo({ changeScoreInterval: false });
 
 			this.vulnerabilityScoreTouched = false;
 		},
@@ -389,7 +408,7 @@ export default {
 			}
 		},
 
-		getCountOfBeneficiaries({ totalCount = false }) {
+		getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
 			const threshold = this.minimumSelectionScore || 0;
 			const assistanceBody = { ...this.assistanceBody };
 
@@ -398,7 +417,7 @@ export default {
 
 			if (assistanceBody.selectionCriteria?.length) {
 				this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
-				this.calculationOfAssistanceBeneficiariesScores({ assistanceBody });
+				this.calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval });
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
@@ -442,7 +461,7 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {
+		async calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval }) {
 			if (this.assistanceBodyIsValid(assistanceBody)) {
 				await AssistancesService.calculationOfBeneficiariesScores(assistanceBody)
 					.then(({ data, status }) => {
@@ -452,14 +471,14 @@ export default {
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 					}).finally(() => {
-						const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
+						if (changeScoreInterval) {
+							const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
 
-						this.minimumVulnerabilityScore = Math.min.apply(null, scores);
-						this.maximumVulnerabilityScore = Math.max.apply(null, scores);
-
-						if (this.minimumSelectionScore === 0) {
-							this.minimumSelectionScore = this.minimumVulnerabilityScore;
+							this.minimumVulnerabilityScore = Math.min.apply(null, scores);
+							this.maximumVulnerabilityScore = Math.max.apply(null, scores);
 						}
+
+						this.minimumSelectionScoreValid = null;
 					});
 			}
 		},
@@ -475,8 +494,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
+			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -488,8 +507,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
+			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
 		},
 
 		showBeneficiariesInGroup(key) {
