@@ -281,7 +281,7 @@
 				:native-value="vulnerability.code"
 				:key="vulnerability.code"
 			>
-				{{ normalizeText(vulnerability.value) }}
+				{{ $t(normalizeText(vulnerability.value)) }}
 			</b-checkbox>
 		</div>
 	</form>

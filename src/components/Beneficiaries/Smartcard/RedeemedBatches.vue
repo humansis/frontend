@@ -24,7 +24,7 @@
 					<ActionButton
 						icon="search"
 						type="is-primary"
-						tooltip="Vendor Redemption Summary"
+						:tooltip="$t('Vendor Redemption Summary')"
 						@click="$emit('showRedemptionSummary', props.row)"
 					/>
 				</div>

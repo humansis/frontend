@@ -57,7 +57,7 @@
 				/>
 
 				<span v-if="countOfCriteriaBeneficiaries">
-					{{ countOfCriteriaBeneficiaries }} {{ targetType }}
+					{{ countOfCriteriaBeneficiaries }} {{ $t(targetType) }}
 				</span>
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
@@ -99,7 +99,7 @@ export default {
 
 	computed: {
 		groupName() {
-			return `Group ${(this.groupId + 1)}`;
+			return `${this.$t("Group")} ${(this.groupId + 1)}`;
 		},
 
 		countOfCriteriaBeneficiaries() {
@@ -110,8 +110,8 @@ export default {
 			const criteriaGroups = this.data.map((
 				{ criteria, criteriaTarget, value, scoreWeight, condition },
 			) => ({
-				criteriaTarget: criteriaTarget?.code || criteriaTarget?.value,
-				criteria: criteria?.code || criteria?.value,
+				criteriaTarget: criteriaTarget?.value || criteriaTarget?.code,
+				criteria: criteria?.value || criteria?.code,
 				value: this.prepareCriteriaValue(value),
 				scoreWeight,
 				condition: condition?.code,
