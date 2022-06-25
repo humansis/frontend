@@ -16,7 +16,7 @@
 				</span>
 				<span>
 					<b-button class="is-right is-pulled-right" @click="showHistory">
-						See History
+						{{ $t('See History')}}
 					</b-button>
 				</span>
 				<div v-for="batch in batches" :key="batch.id">
@@ -59,12 +59,12 @@
 		<footer class="modal-card-foot level">
 			<span class="level-item is-justify-content-start">
 				<b-button v-if="history" @click.native="goBack">
-					Back
+					{{ $t('Back')}}
 				</b-button>
 			</span>
 			<span class="level-right">
 				<b-button @click.native="$emit('close')">
-					Close
+					{{ $t('Close') }}
 				</b-button>
 				<b-button
 					v-if="redemptionSummary"
@@ -107,7 +107,7 @@ export default {
 
 	data() {
 		return {
-			header: "Vendor Transaction Summary",
+			header: this.$t("Vendor Transaction Summary"),
 			legacyPrintLoading: false,
 			printLoading: false,
 			redeemLoading: false,
@@ -149,7 +149,7 @@ export default {
 
 			if (this.redemptionSummary) {
 				this.redemptionSummary = false;
-				this.header = "Redeemed Batches";
+				this.header = this.$t("Redeemed Batches");
 			} else if (this.history) {
 				this.history = false;
 				this.header = this.$t("Vendor Transaction Summary");
@@ -158,7 +158,7 @@ export default {
 
 		showHistory() {
 			this.history = true;
-			this.header = "Redeemed Batches";
+			this.header = this.$t("Redeemed Batches");
 		},
 
 		formatPrice(price, currency) {

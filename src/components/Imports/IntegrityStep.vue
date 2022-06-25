@@ -455,7 +455,7 @@ export default {
 				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
 					.then(({ status, message }) => {
 						if (status === 200) {
-							Toast("Uploaded Successfully", "is-success");
+							Toast(this.$t("Uploaded Successfully"), "is-success");
 							this.$emit("changeImportState", {
 								state: consts.STATE.INTEGRITY_CHECKING,
 								successMessage: "Integrity Check Started Successfully",

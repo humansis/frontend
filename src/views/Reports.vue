@@ -1,6 +1,6 @@
 <template>
 	<div class="reports-container">
-		<h1 class="title has-text-centered">Reports</h1>
+		<h1 class="title has-text-centered">{{ $t('Reports') }}</h1>
 
 		<iframe
 			class="reports"
