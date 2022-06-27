@@ -69,6 +69,10 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", sortable: true, searchable: true },
+					{ key: "householdId", sortable: true, searchable: true },
+					{ key: "localGivenName", sortable: true, searchable: true },
+					{ key: "localFamilyName", sortable: true, searchable: true },
+					{ key: "dateOfBirth", type: "date", sortable: true, searchable: true },
 				],
 				total: 0,
 			},
