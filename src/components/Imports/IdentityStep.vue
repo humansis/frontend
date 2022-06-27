@@ -103,6 +103,7 @@
 					>
 						{{ $t('Manage Duplicities') }}
 					</b-button>
+					<!--
 					<b-button
 						v-if="canStartSimilarityCheck"
 						type="is-primary"
@@ -111,6 +112,16 @@
 						@click="startSimilarityCheck"
 					>
 						{{ $t('Start Similarity Check') }}
+					</b-button>
+					-->
+					<b-button
+						v-if="canGoToFinalisation"
+						type="is-primary"
+						icon-right="play-circle"
+						:loading="changeStateButtonLoading"
+						@click="goToFinalisation"
+					>
+						{{ $t('Go to Finalisation') }}
 					</b-button>
 				</div>
 			</div>
@@ -214,6 +225,10 @@ export default {
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
+
+		canGoToFinalisation() {
+			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
+		},
 	},
 
 	methods: {
@@ -249,6 +264,10 @@ export default {
 				successMessage: "Similarity Check Started Successfully",
 				goNext: true,
 			});
+		},
+
+		goToFinalisation() {
+			this.$emit("goToFinalStep");
 		},
 
 		update() {
