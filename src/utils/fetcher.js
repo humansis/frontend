@@ -11,6 +11,8 @@ async function getErrorsFromResponse(data) {
 		data.errors.forEach((error) => {
 			errors += error.message;
 		});
+	} else {
+		errors = data;
 	}
 	// TODO Please remove this code before release because it reads
 	// data that is not supposed to be visible for user

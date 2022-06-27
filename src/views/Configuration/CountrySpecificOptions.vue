@@ -49,7 +49,7 @@ import CountrySpecificOptionForm from "@/components/Configuration/CountrySpecifi
 import CountrySpecificOptionsList from "@/components/Configuration/CountrySpecificOptionsList";
 import Modal from "@/components/Modal";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
-import { Toast } from "@/utils/UI";
+import { Toast, Notification } from "@/utils/UI";
 
 export default {
 	name: "CountrySpecificOptionPage",
@@ -195,9 +195,12 @@ export default {
 						);
 						this.$refs.countrySpecificOptionsList.fetchData();
 						this.closeCountrySpecificOptionModal();
+					} else if (response.message) {
+						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+				}).finally(() => {
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -213,9 +216,12 @@ export default {
 						);
 						this.$refs.countrySpecificOptionsList.fetchData();
 						this.closeCountrySpecificOptionModal();
+					} else if (response.message) {
+						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+				}).finally(() => {
 					this.countrySpecificOptionModal.isWaiting = false;
 				});
 		},
@@ -228,6 +234,8 @@ export default {
 							this.$t("Country Specific Option Successfully Removed"), "is-success",
 						);
 						this.$refs.countrySpecificOptionsList.removeFromList(id);
+					} else if (response.message) {
+						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
