@@ -18,6 +18,20 @@
 				@formClosed="closeTransactionModal"
 			/>
 		</Modal>
+		<Modal
+			:header="$t('Input Distributed')"
+			:active="inputDistributedModal.isOpened"
+			:is-waiting="inputDistributedModal.isWaiting"
+			@close="closeInputDistributedModal"
+		>
+			<InputDistributed
+				close-button
+				:submit-button-label="$t('Confirm')"
+				class="modal-card"
+				@submit="fetchBeneficiariesAndStatistics"
+				@close="closeInputDistributedModal"
+			/>
+		</Modal>
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
@@ -127,6 +141,17 @@
 					{{ $t(setAtDistributedButtonLabel) }}
 				</b-button>
 				<b-button
+					v-if="inputDistributedButtonVisible
+						&& (isAssistanceValidated && !isAssistanceCompleted)
+						&& userCan.assignDistributionItems"
+					class="flex-end ml-3"
+					type="is-primary"
+					icon-right="parachute-box"
+					@click="openInputDistributedModal"
+				>
+					{{ $t("Input Distributed") }}
+				</b-button>
+				<b-button
 					v-if="startTransactionButtonVisible
 						&& (isAssistanceValidated && !isAssistanceCompleted)
 						&& userCan.authoriseElectronicCashTransfer
@@ -154,12 +179,14 @@ import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
 import Modal from "@/components/Modal";
 import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
 
 export default {
 	name: "AssistanceDetail",
 
 	components: {
 		StartTransactionForm,
+		InputDistributed,
 		BeneficiariesList,
 		AssistanceSummary,
 		Modal,
@@ -184,6 +211,10 @@ export default {
 				isEditing: false,
 				isWaiting: false,
 			},
+			inputDistributedModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
 		};
 	},
 
@@ -200,6 +231,14 @@ export default {
 
 		startTransactionButtonVisible() {
 			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
+		},
+
+		inputDistributedButtonVisible() {
+			const modality = this.commodities[0]?.modalityType;
+
+			return modality !== consts.COMMODITY.SMARTCARD
+			&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
+			&& modality !== consts.COMMODITY.MOBILE_MONEY;
 		},
 
 		setAtDistributedButtonLabel() {
@@ -295,6 +334,11 @@ export default {
 			this.fetchAssistanceStatistics();
 		},
 
+		fetchBeneficiariesAndStatistics() {
+			this.$refs.beneficiariesList.fetchData();
+			this.fetchAssistanceStatistics();
+		},
+
 		async fetchAssistance() {
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
@@ -370,6 +414,14 @@ export default {
 
 		closeTransactionModal() {
 			this.transactionModal.isOpened = false;
+		},
+
+		openInputDistributedModal() {
+			this.inputDistributedModal.isOpened = true;
+		},
+
+		closeInputDistributedModal() {
+			this.inputDistributedModal.isOpened = false;
 		},
 
 		async startTransaction() {
