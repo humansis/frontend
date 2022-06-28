@@ -8,7 +8,7 @@
 					:message="validateMsg('input')"
 				>
 					<b-input
-						v-model="formModel.input"
+						v-model.trim="formModel.input"
 						type="textarea"
 						@blur="validate('input')"
 					/>
@@ -171,8 +171,8 @@ export default {
 			await AssistancesService.updateReliefPackagesWithNumberIds(
 				this.$route.params.assistanceId, body,
 			)
-				.then(({ data, message }) => {
-					if (data) {
+				.then(({ data, status, message }) => {
+					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
 					} else {
