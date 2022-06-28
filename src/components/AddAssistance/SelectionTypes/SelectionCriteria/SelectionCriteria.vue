@@ -68,31 +68,33 @@
 		</div>
 		<div class="level is-align-items-flex-end">
 			<div class="level-left">
-				<b-field
-					:label="vulnerabilityScoreLabel"
-					:type="minimumSelectionScoreFieldType"
-					:message="minimumSelectionScoreFieldMessage"
-				>
-					<div>
-						<b-numberinput
-							v-model="minimumSelectionScore"
-							expanded
-							class="vulnerability-number-input"
-							type="is-dark"
-							:controls="false"
-							:disabled="calculationLoading || !groups.length"
-							@input="onVulnerabilityScoreInput"
-						/>
-					</div>
-					<b-button
-						class="ml-2"
-						type="is-primary"
-						:disabled="calculationLoading || !groups.length"
-						@click="updateVulnerabilityScores"
+				<form @submit.prevent="updateVulnerabilityScores">
+					<b-field
+						:label="vulnerabilityScoreLabel"
+						:type="minimumSelectionScoreFieldType"
+						:message="minimumSelectionScoreFieldMessage"
 					>
-						{{ $t('Update') }}
-					</b-button>
-				</b-field>
+						<div>
+							<b-numberinput
+								v-model="minimumSelectionScore"
+								expanded
+								class="vulnerability-number-input"
+								type="is-dark"
+								:controls="false"
+								:disabled="calculationLoading || !groups.length"
+								@input="onVulnerabilityScoreInput"
+							/>
+						</div>
+						<b-button
+							class="ml-2"
+							type="is-primary"
+							:disabled="calculationLoading || !groups.length"
+							@click="updateVulnerabilityScores"
+						>
+							{{ $t('Update') }}
+						</b-button>
+					</b-field>
+				</form>
 			</div>
 			<div class="level-right" ref="groupsCalculation">
 				<b-field>
@@ -359,16 +361,16 @@ export default {
 
 			this.criteriaModal.isOpened = false;
 
-			this.fetchCriteriaInfo({ changeScoreInterval: true });
+			this.fetchCriteriaInfo();
 		},
 
-		fetchCriteriaInfo({ changeScoreInterval = true }) {
+		fetchCriteriaInfo() {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
+			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: false });
 		},
 
 		onVulnerabilityScoreInput() {
@@ -378,6 +380,8 @@ export default {
 		},
 
 		async updateVulnerabilityScores() {
+			if (this.calculationLoading || !this.groups.length) return;
+
 			if (this.minimumSelectionScore >= this.minimumVulnerabilityScore
 				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore
 			) {
@@ -388,7 +392,7 @@ export default {
 				return;
 			}
 
-			await this.fetchCriteriaInfo({ changeScoreInterval: false });
+			await this.fetchCriteriaInfo();
 
 			this.vulnerabilityScoreTouched = false;
 		},
@@ -408,7 +412,7 @@ export default {
 			}
 		},
 
-		getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
+		async getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
 			const threshold = this.minimumSelectionScore || 0;
 			const assistanceBody = { ...this.assistanceBody };
 
@@ -416,8 +420,10 @@ export default {
 			assistanceBody.threshold = totalCount ? 0 : threshold;
 
 			if (assistanceBody.selectionCriteria?.length) {
-				this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
-				this.calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval });
+				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
+				await this.calculationOfAssistanceBeneficiariesScores(
+					{ assistanceBody, changeScoreInterval },
+				);
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
