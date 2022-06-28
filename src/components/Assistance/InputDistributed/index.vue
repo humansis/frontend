@@ -2,9 +2,6 @@
 	<div class="modal-card-body">
 		<form @submit.prevent="submit" v-if="distributedFormVisible">
 			<section>
-				<b-message type="is-info">
-					{{ $t('Split ID numbers with white space') }}.
-				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
 					:type="validateType('input')"
@@ -163,7 +160,7 @@ export default {
 
 			this.distributedButtonLoading = true;
 
-			const numberIds = this.formModel.input.split(" ");
+			const numberIds = this.formModel.input.split(/[\r\n\t\s]+/g);
 
 			if (!numberIds.length) {
 				Notification(this.$t("Invalid Input"), "is-danger");
