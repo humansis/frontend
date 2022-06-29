@@ -156,8 +156,6 @@ export default {
 
 			if (this.$v.$invalid) { return; }
 
-			this.$emit("submit");
-
 			this.distributedButtonLoading = true;
 
 			const numberIds = this.formModel.input.split(/[\r\n\t\s]+/g);
@@ -182,6 +180,7 @@ export default {
 					Notification(error, "is-danger");
 				}).finally(() => {
 					this.distributedButtonLoading = false;
+					this.$emit("submit");
 				});
 
 			this.$v.$reset();
