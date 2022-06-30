@@ -89,6 +89,7 @@
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
 					:searchable="false"
+					:disabled="valueDisabled"
 					:class="validateMultiselect('value')"
 					@input="validate('value')"
 				/>
@@ -184,6 +185,7 @@ export default {
 			criteriaLoading: false,
 			criteriaConditionsLoading: false,
 			advancedOptions: false,
+			valueDisabled: false,
 		};
 	},
 
@@ -246,6 +248,8 @@ export default {
 			}
 
 			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);
+
+			this.presetValueBasedOnCriteria(criteria);
 		},
 
 		async fetchCriteriaTargets() {
@@ -328,6 +332,17 @@ export default {
 				});
 
 			this.valueSelectLoading = false;
+		},
+
+		presetValueBasedOnCriteria(criteria) {
+			const criteriaWithPresetValue = ["disabled", "soloParent", "lactating", "pregnant"];
+			// if any of these criteria is set, preset value to true and disable the field
+			if (criteriaWithPresetValue.includes(criteria.code)) {
+				[this.formModel.value] = this.options.boolean;
+				this.valueDisabled = true;
+			} else {
+				this.valueDisabled = false;
+			}
 		},
 
 		submitForm() {
