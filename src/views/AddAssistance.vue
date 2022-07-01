@@ -365,7 +365,7 @@ export default {
 			this.assistanceSelectionCriteria.forEach((item) => {
 				if (preparedSelectionCriteria[item.group]) {
 					preparedSelectionCriteria[item.group].data.push({
-						criteriaTarget: { value: item.target },
+						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
 						criteria: { code: item.field },
 						condition: { code: item.condition },
