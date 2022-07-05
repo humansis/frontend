@@ -99,6 +99,28 @@ html.has-aside-right {
   }
 }
 
+.localhost-aside-style {
+  background: $localhost-color !important;
+
+  .menu-list {
+    a {
+      color: white;
+
+      &.is-active {
+        background-color: $menu-item-hover-background-color;
+      }
+
+      &:hover {
+        background-color: $menu-item-hover-background-color;
+      }
+    }
+
+    li ul {
+      background-color: $menu-item-hover-background-color !important;
+    }
+  }
+}
+
 .dev-aside-style {
   background: $dev-color !important;
 
