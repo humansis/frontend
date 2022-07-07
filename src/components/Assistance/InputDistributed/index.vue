@@ -11,7 +11,7 @@
 					:message="validateMsg('input')"
 				>
 					<b-input
-						v-model="formModel.input"
+						v-model.trim="formModel.input"
 						type="textarea"
 						@blur="validate('input')"
 					/>

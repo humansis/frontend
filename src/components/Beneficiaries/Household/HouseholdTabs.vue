@@ -185,6 +185,8 @@ export default {
 					this.prepareSummaryMembers(
 						[this.householdHead, ...this.$refs.householdMembers.members],
 					);
+					this.address = this.prepareAddressForSummary();
+					this.location = this.prepareLocationForSummary();
 					this.loading[next.step] = !this.steps[next.step];
 					this.steps[next.step] = true;
 					this.$refs.customSteps.changeStep(next);

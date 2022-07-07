@@ -205,12 +205,12 @@ export default {
 	},
 
 	async updateReliefPackagesWithNumberIds(id, body) {
-		const { data, status } = await fetcher({
+		const { data, status, message } = await fetcher({
 			uri: `assistances/${id}/relief-packages/distribute`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 	async getSmartCardDepositsForAssistance(smartcardDepositIds) {

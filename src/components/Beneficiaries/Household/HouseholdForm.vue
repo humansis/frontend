@@ -13,7 +13,7 @@
 				/>
 			</div>
 			<div class="column is-half">
-				<h4 class="title is-4">{{ $t('Address') }}</h4>
+				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					is-editing

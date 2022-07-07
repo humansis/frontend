@@ -110,7 +110,7 @@
 			<div class="column buttons">
 				<!-- Temporary hidden
 				<b-button
-					v-if="isAssistanceValidated && !amountDistributed && !isAssistanceCompleted"
+					v-if="isAssistanceValidated && !amountDistributed"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="check"
