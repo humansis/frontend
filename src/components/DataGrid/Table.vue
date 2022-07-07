@@ -17,6 +17,7 @@
 							/>
 						</div>
 					</slot>
+					<slot name="title" />
 					<slot name="filterButton" />
 					<slot name="export" />
 					<slot name="actions" />

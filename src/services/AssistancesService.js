@@ -195,7 +195,6 @@ export default {
 		return { data, totalCount };
 	},
 
-	// TODO Here we need to change patch endpoint and send there ids of relief packages
 	async updateReliefPackage(body) {
 		const { data, status } = await fetcher({
 			uri: `assistances/relief-packages/distribute`,
@@ -203,6 +202,15 @@ export default {
 			body,
 		});
 		return { data, status };
+	},
+
+	async updateReliefPackagesWithNumberIds(id, body) {
+		const { data, status, message } = await fetcher({
+			uri: `assistances/${id}/relief-packages/distribute`,
+			method: "PATCH",
+			body,
+		});
+		return { data, status, message };
 	},
 
 	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
