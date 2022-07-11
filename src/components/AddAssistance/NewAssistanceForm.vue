@@ -16,6 +16,7 @@
 					trap-focus
 					:max-date="maxDateOfAssistance"
 					:placeholder="$t('Click to select')"
+					@input="dateOfAssistanceChanged"
 				/>
 			</b-field>
 
@@ -234,6 +235,7 @@ export default {
 
 	async mounted() {
 		await this.fetchSectors();
+		this.setExpirationDate();
 	},
 
 	updated() {
@@ -248,6 +250,16 @@ export default {
 	},
 
 	methods: {
+		setExpirationDate() {
+			this.formModel.dateExpiration = this.maxDateOfAssistance;
+		},
+
+		dateOfAssistanceChanged() {
+			if (this.formModel.dateExpiration < this.formModel.dateOfAssistance) {
+				this.formModel.dateExpiration = this.formModel.dateOfAssistance;
+			}
+		},
+
 		async mapTargets() {
 			const { sector, subsector, assistanceType, targetType } = this.formModel;
 			if (sector && typeof sector !== "object") {
