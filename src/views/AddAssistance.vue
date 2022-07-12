@@ -4,6 +4,7 @@
 		<div class="columns">
 			<div class="column">
 				<NewAssistanceForm
+					v-if="project"
 					ref="newAssistanceForm"
 					:project="project"
 					:data="componentsData.newAssistanceForm"
