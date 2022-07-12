@@ -365,7 +365,7 @@ export default {
 							gender: member.personalInformation.gender,
 							dateBirth: member.personalInformation.dateOfBirth,
 							phone,
-							nationalId: member.id.idNumber,
+							nationalId: member.primaryId.idNumber,
 						});
 					}
 				});
