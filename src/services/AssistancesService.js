@@ -91,6 +91,13 @@ export default {
 		return data;
 	},
 
+	async getScoringTypes() {
+		const { data } = await fetcher({
+			uri: "scoring-blueprints?filter[archived]=false",
+		});
+		return data;
+	},
+
 	async createAssistance(body) {
 		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
 		return { data, status };
@@ -112,7 +119,7 @@ export default {
 
 	async calculationOfBeneficiariesScores(body) {
 		const { data, status } = await fetcher({
-			uri: "assistances/vulnerability-scores", method: "POST", body,
+			uri: "assistances/vulnerability-scores", method: "POST", body, version: 2,
 		});
 		return { data, status };
 	},

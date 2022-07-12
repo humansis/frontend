@@ -118,6 +118,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
+				scoringType: "",
 				subsector: "",
 				locationId: null,
 				commodities: [],
@@ -132,6 +133,7 @@ export default {
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
 			},
+			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
 			duplicate: false,
@@ -177,6 +179,14 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
 					this.$router.push({ name: "NotFound" });
+				});
+
+			await AssistancesService.getScoringTypes()
+				.then(({ data }) => { this.scoringTypes = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.scoringTypesLoading = false;
 				});
 
 			await this.mapAssistance(this.duplicateAssistance);
@@ -327,6 +337,15 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 
+			const scoringType = this.scoringTypes
+				.find(({ code }) => code === assistance.scoringType);
+
+			if (assistance.scoringType && !scoringType) {
+				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
+			}
+
+			this.$refs.selectionCriteria.scoringType = scoringType || "";
+
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
@@ -353,9 +372,10 @@ export default {
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
 
-			this.componentsData.selectionCriteria = this.mapSelectionCriteria();
+			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
+
 			await this.$refs.selectionCriteria.fetchCriteriaInfo();
 		},
 
@@ -442,12 +462,15 @@ export default {
 			};
 		},
 
-		fetchSelectionCriteria(selectionCriteria, minimumSelectionScore, vulnerabilityScoreTouched) {
+		fetchSelectionCriteria(
+			selectionCriteria, minimumSelectionScore, vulnerabilityScoreTouched, scoringType,
+		) {
 			this.createAssistanceButtonDisabled = vulnerabilityScoreTouched;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
+				scoringType: scoringType?.code || "",
 				threshold: minimumSelectionScore,
 			};
 		},
