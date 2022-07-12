@@ -108,37 +108,37 @@
 					</span>
 				</h4>
 				<!-- primary ID-->
-				<b-tabs type="is-boxed">
+				<b-tabs>
 					<b-tab-item label="Primary">
 						<b-field
 							:label="$t('ID Type')"
-							:type="validateType('id.idType', true)"
-							:message="validateMsg('id.idType')"
+							:type="validateType('primaryId.idType', true)"
+							:message="validateMsg('primaryId.idType')"
 						>
 							<MultiSelect
-								v-model="formModel.id.idType"
+								v-model="formModel.primaryId.idType"
 								label="value"
 								track-by="code"
 								searchable
 								:placeholder="$t('Click to select')"
 								:loading="idTypeLoading"
 								:options="options.idType"
-								:class="validateMultiselect('id.idType', true)"
-								@select="validate('id.idType')"
+								:class="validateMultiselect('primaryId.idType', true)"
+								@select="validate('primaryId.idType')"
 							/>
 						</b-field>
 						<b-field
 							:label="$t('ID Number')"
-							:type="validateType('id.idNumber', true)"
-							:message="validateMsg('id.idNumber')"
+							:type="validateType('primaryId.idNumber', true)"
+							:message="validateMsg('primaryId.idNumber')"
 						>
 							<b-input
-								v-model="formModel.id.idNumber"
-								@blur="validate('id.idNumber', true)"
+								v-model="formModel.primaryId.idNumber"
+								@blur="validate('primaryId.idNumber', true)"
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Secondary" :disabled="!formModel.id.idNumber">
+					<b-tab-item label="Secondary" :disabled="!formModel.primaryId.idNumber">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('secondaryId.idType', true)"
@@ -167,32 +167,32 @@
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Ternary" :disabled="!formModel.secondaryId.idNumber">
+					<b-tab-item label="Tertiary" :disabled="!formModel.secondaryId.idNumber">
 						<b-field
 							:label="$t('ID Type')"
-							:type="validateType('ternaryId.idType', true)"
-							:message="validateMsg('ternaryId.idType')"
+							:type="validateType('tertiaryId.idType', true)"
+							:message="validateMsg('tertiaryId.idType')"
 						>
 							<MultiSelect
-								v-model="formModel.ternaryId.idType"
+								v-model="formModel.tertiaryId.idType"
 								label="value"
 								track-by="code"
 								searchable
 								:placeholder="$t('Click to select')"
 								:loading="idTypeLoading"
 								:options="options.idType"
-								:class="validateMultiselect('ternaryId.idType', true)"
-								@select="validate('ternaryId.idType')"
+								:class="validateMultiselect('tertiaryId.idType', true)"
+								@select="validate('tertiaryId.idType')"
 							/>
 						</b-field>
 						<b-field
 							:label="$t('ID Number')"
-							:type="validateType('ternaryId.idNumber', true)"
-							:message="validateMsg('ternaryId.idNumber')"
+							:type="validateType('tertiaryId.idNumber', true)"
+							:message="validateMsg('tertiaryId.idNumber')"
 						>
 							<b-input
-								v-model="formModel.ternaryId.idNumber"
-								@blur="validate('ternaryId.idNumber', true)"
+								v-model="formModel.tertiaryId.idNumber"
+								@blur="validate('tertiaryId.idNumber', true)"
 							/>
 						</b-field>
 					</b-tab-item>
@@ -394,7 +394,7 @@ export default {
 				gender: { required },
 				dateOfBirth: { required },
 			},
-			id: {
+			primaryId: {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
@@ -402,7 +402,7 @@ export default {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
-			ternaryId: {
+			tertiaryId: {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
@@ -429,17 +429,20 @@ export default {
 					gender: "",
 					dateOfBirth: null,
 				},
-				id: {
+				primaryId: {
 					idType: "",
 					idNumber: "",
+					priority: 1,
 				},
 				secondaryId: {
 					idType: "",
 					idNumber: "",
+					priority: 2,
 				},
-				ternaryId: {
+				tertiaryId: {
 					idType: "",
 					idNumber: "",
+					priority: 3,
 				},
 				residencyStatus: "",
 				addAReferral: false,
