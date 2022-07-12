@@ -66,37 +66,55 @@
 				</p>
 			</b-notification>
 		</div>
-		<div class="level is-align-items-flex-end">
-			<div class="level-left">
-				<form @submit.prevent="updateVulnerabilityScores">
+		<div class="is-align-items-flex-end">
+			<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
+				<b-field grouped group-multiline>
 					<b-field
 						:label="vulnerabilityScoreLabel"
 						:type="minimumSelectionScoreFieldType"
 						:message="minimumSelectionScoreFieldMessage"
+						expanded
 					>
-						<div>
-							<b-numberinput
-								v-model="minimumSelectionScore"
-								expanded
-								class="vulnerability-number-input"
-								type="is-dark"
-								:controls="false"
-								:disabled="calculationLoading || !groups.length"
-								@input="onVulnerabilityScoreInput"
-							/>
-						</div>
+						<b-numberinput
+							v-model="minimumSelectionScore"
+							expanded
+							class="vulnerability-number-input"
+							type="is-dark"
+							:controls="false"
+							:disabled="calculationLoading || !groups.length"
+							@input="onVulnerabilityScoreInput"
+						/>
+					</b-field>
+					<b-field
+						class="vulnerability-type-field"
+						:label="$t('Scoring Type')"
+						expanded
+					>
+						<MultiSelect
+							v-model="scoringType"
+							:placeholder="$t('Click to select')"
+							label="name"
+							track-by="id"
+							:options="options.scoringTypes"
+							:loading="scoringTypesLoading"
+							:disabled="calculationLoading || !groups.length"
+							:searchable="false"
+							@select="scoringTypeChanged"
+						/>
+					</b-field>
+					<div class="score-vulnerability-actions">
 						<b-button
-							class="ml-2"
+							class="ml-2 vulnerability-update-button"
 							type="is-primary"
 							:disabled="calculationLoading || !groups.length"
 							@click="updateVulnerabilityScores"
 						>
 							{{ $t('Update') }}
 						</b-button>
-					</b-field>
-				</form>
-			</div>
-			<div class="level-right" ref="groupsCalculation">
+					</div>
+				</b-field>
+			</form>
+			<div ref="groupsCalculation">
 				<b-field>
 					<div class="selection-details">
 						<p class="subtitle is-4 mb-0 mr-3 ml-3">
@@ -178,7 +196,12 @@ export default {
 			detailModal: {
 				isOpened: false,
 			},
+			options: {
+				scoringTypes: [{ archived: false, name: "Default", id: 0 }],
+			},
 			minimumSelectionScore: 0,
+			scoringType: { archived: false, name: "Default", id: 0 },
+			scoringTypesLoading: false,
 			minimumSelectionScoreValid: null,
 			beneficiariesData: [],
 			beneficiariesScores: [],
@@ -211,20 +234,39 @@ export default {
 		},
 
 		vulnerabilityScoreLabel() {
-			return `${this.$t("Minimum Vulnerability Score")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
+			const interval = this.minimumVulnerabilityScore !== Infinity
+			&& this.maximumVulnerabilityScore !== Infinity
+				? `(${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`
+				: "";
+
+			return `${this.$t("Minimum Vulnerability Score")} ${interval}`;
 		},
 
 		minimumSelectionScoreFieldType() {
 			if (this.minimumSelectionScoreValid === null) return "";
 
-			return this.minimumSelectionScoreValid ? "is-success" : "is-danger";
+			return this.isMinimumSelectionScoreValid ? "is-success" : "is-danger";
 		},
 
 		minimumSelectionScoreFieldMessage() {
 			if (this.minimumSelectionScoreValid === null) return "";
 
-			return this.minimumSelectionScoreValid ? "" : `${this.$t("Use number in this interval")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
+			return this.isMinimumSelectionScoreValid ? "" : `${this.$t("Use number in this interval")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
 		},
+
+		isMinimumSelectionScoreValid() {
+			const infinityCheck = this.minimumVulnerabilityScore !== Infinity
+				&& this.maximumVulnerabilityScore !== Infinity;
+
+			if (!infinityCheck) return null;
+
+			return this.minimumSelectionScore >= this.minimumVulnerabilityScore
+				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore;
+		},
+	},
+
+	created() {
+		this.fetchScoringTypes();
 	},
 
 	updated() {
@@ -233,6 +275,7 @@ export default {
 			this.prepareCriteria(),
 			this.minimumSelectionScore,
 			this.vulnerabilityScoreTouched || this.calculationLoading,
+			this.scoringType,
 		);
 
 		this.$emit("beneficiariesCounted", this.countOf);
@@ -283,6 +326,12 @@ export default {
 				});
 
 			this.exportLoading = false;
+		},
+
+		scoringTypeChanged() {
+			this.minimumVulnerabilityScore = 0;
+			this.maximumVulnerabilityScore = 0;
+			this.minimumSelectionScore = 0;
 		},
 
 		prepareCriteria() {
@@ -369,8 +418,11 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: false });
+			const changeScoreInterval = this.minimumVulnerabilityScore === this.maximumVulnerabilityScore
+				&& this.minimumVulnerabilityScore === 0;
+
+			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
+			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
 		},
 
 		onVulnerabilityScoreInput() {
@@ -382,15 +434,9 @@ export default {
 		async updateVulnerabilityScores() {
 			if (this.calculationLoading || !this.groups.length) return;
 
-			if (this.minimumSelectionScore >= this.minimumVulnerabilityScore
-				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore
-			) {
-				this.minimumSelectionScoreValid = true;
-			} else {
-				this.minimumSelectionScoreValid = false;
+			this.minimumSelectionScoreValid = this.isMinimumSelectionScoreValid;
 
-				return;
-			}
+			if (!this.minimumSelectionScoreValid) return;
 
 			await this.fetchCriteriaInfo();
 
@@ -418,6 +464,7 @@ export default {
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
 			assistanceBody.threshold = totalCount ? 0 : threshold;
+			assistanceBody.scoringType = "";
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
@@ -468,25 +515,45 @@ export default {
 		},
 
 		async calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval }) {
-			if (this.assistanceBodyIsValid(assistanceBody)) {
-				await AssistancesService.calculationOfBeneficiariesScores(assistanceBody)
-					.then(({ data, status }) => {
-						if (status === 200) {
-							this.beneficiariesScores = data.data;
-						}
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-					}).finally(() => {
-						if (changeScoreInterval) {
-							const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
+			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
-							this.minimumVulnerabilityScore = Math.min.apply(null, scores);
-							this.maximumVulnerabilityScore = Math.max.apply(null, scores);
-						}
+			const body = {
+				beneficiaryIds,
+				sector: assistanceBody.sector,
+				scoringBlueprint: this.scoringType.id || null,
+				threshold: this.minimumSelectionScore,
+			};
 
-						this.minimumSelectionScoreValid = null;
-					});
-			}
+			await AssistancesService.calculationOfBeneficiariesScores(body)
+				.then(({ data, status }) => {
+					if (status === 200) {
+						this.beneficiariesScores = data.data;
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+				}).finally(() => {
+					if (changeScoreInterval) {
+						const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
+
+						this.minimumVulnerabilityScore = Math.min.apply(null, scores);
+						this.maximumVulnerabilityScore = Math.max.apply(null, scores);
+					}
+
+					this.minimumSelectionScoreValid = null;
+				});
+		},
+
+		async fetchScoringTypes() {
+			this.scoringTypesLoading = true;
+
+			await AssistancesService.getScoringTypes()
+				.then(({ data }) => { this.options.scoringTypes.push(...data); })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.scoringTypesLoading = false;
+					this.scoringType = this.options.scoringTypes?.[0] || null;
+				});
 		},
 
 		assistanceBodyIsValid({ sector, subsector, target, type }) {
@@ -546,7 +613,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .selection-details {
 	display: flex;
 	justify-content: flex-end;
@@ -554,8 +621,23 @@ export default {
 }
 
 .vulnerability-number-input {
-	border-bottom-right-radius: 4px !important;
-	border-top-right-radius: 4px !important;
-	width: 100px;
+	border-bottom-right-radius: 4px;
+	border-top-right-radius: 4px;
+	width: 100%;
+}
+
+.vulnerability-number-input input, .vulnerability-update-button {
+	height: 40px;
+}
+
+.vulnerability-type-field {
+	min-width: 310px;
+}
+
+.score-vulnerability-actions {
+	display: flex;
+	justify-content: space-between;
+	flex: 1;
+	padding-top: 28px;
 }
 </style>
