@@ -539,11 +539,22 @@ export default {
 				isHead,
 				residencyStatus,
 			} = beneficiary;
+
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
-			const cardId = await this.getNationalIdCard(nationalIds[0]);
+
+			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
+
+			const secondaryCardId = nationalIds[1]
+				? await this.getNationalIdCard(nationalIds[1])
+				: { idNumber: "", idType: "" };
+
+			const tertiaryCardId = nationalIds[2]
+				? await this.getNationalIdCard(nationalIds[2])
+				: { idNumber: "", idType: "" };
+
 			this.formModel = {
 				...this.formModel,
 				beneficiaryId: id,
@@ -561,7 +572,9 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: new Date(dateOfBirth),
 				},
-				id: cardId,
+				primaryId: primaryCardId,
+				secondaryId: secondaryCardId,
+				tertiaryId: tertiaryCardId,
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
@@ -604,9 +617,10 @@ export default {
 
 		async getNationalIdCard(id) {
 			const nationalIdCard = {
-				idType: this.formModel.id.idNumber,
-				idNumber: this.formModel.id.idType,
+				idType: this.formModel.primaryId.idType,
+				idNumber: this.formModel.primaryId.idNumber,
 			};
+
 			if (id) {
 				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
