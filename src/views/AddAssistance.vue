@@ -4,6 +4,7 @@
 		<div class="columns">
 			<div class="column">
 				<NewAssistanceForm
+					v-if="project"
 					ref="newAssistanceForm"
 					:project="project"
 					:data="componentsData.newAssistanceForm"
@@ -25,6 +26,7 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
+					v-if="project"
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
@@ -118,7 +120,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
-				scoringType: "",
+				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
 				commodities: [],
@@ -338,13 +340,13 @@ export default {
 			this.assistanceBody.subsector = assistance.subsector;
 
 			const scoringType = this.scoringTypes
-				.find(({ code }) => code === assistance.scoringType);
+				.find(({ code }) => code === assistance.scoringBlueprintId);
 
-			if (assistance.scoringType && !scoringType) {
+			if (assistance.scoringBlueprintId && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
-			this.$refs.selectionCriteria.scoringType = scoringType || "";
+			this.$refs.selectionCriteria.scoringType = scoringType || null;
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
@@ -432,6 +434,10 @@ export default {
 			});
 		},
 
+		isDateValid(inputDate) {
+			return inputDate instanceof Date && !Number.isNaN(inputDate);
+		},
+
 		fetchAssistanceCommodities() {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
@@ -452,8 +458,12 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
-				dateDistribution: dateOfAssistance.toISOString(),
-				dateExpiration: dateExpiration ? dateExpiration.toISOString() : null,
+				dateDistribution: this.isDateValid(dateOfAssistance)
+					? dateOfAssistance.toISOString()
+					: new Date(),
+				dateExpiration: this.isDateValid(dateExpiration)
+					? dateExpiration.toISOString()
+					: new Date(),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -470,7 +480,7 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
-				scoringType: scoringType?.code || "",
+				scoringBlueprintId: scoringType?.code || null,
 				threshold: minimumSelectionScore,
 			};
 		},

@@ -190,7 +190,7 @@ export default {
 		},
 
 		assistanceScoringType() {
-			return this.assistance?.scoringType || this.$t("None");
+			return this.assistance?.scoringBlueprintId || this.$t("None");
 		},
 
 		assistanceDescription() {
