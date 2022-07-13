@@ -26,6 +26,7 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
+					v-if="project"
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
@@ -433,6 +434,10 @@ export default {
 			});
 		},
 
+		isDateValid(inputDate) {
+			return inputDate instanceof Date && !Number.isNaN(inputDate);
+		},
+
 		fetchAssistanceCommodities() {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
@@ -453,8 +458,12 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
-				dateDistribution: dateOfAssistance.toISOString(),
-				dateExpiration: dateExpiration ? dateExpiration.toISOString() : null,
+				dateDistribution: this.isDateValid(dateOfAssistance)
+					? dateOfAssistance.toISOString()
+					: new Date(),
+				dateExpiration: this.isDateValid(dateExpiration)
+					? dateExpiration.toISOString()
+					: new Date(),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,

@@ -245,7 +245,7 @@ export default {
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
-			return new Date(endDate);
+			return endDate ? new Date(endDate) : new Date();
 		},
 	},
 
