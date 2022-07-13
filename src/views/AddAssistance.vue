@@ -120,7 +120,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
-				scoringType: "",
+				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
 				commodities: [],
@@ -340,13 +340,13 @@ export default {
 			this.assistanceBody.subsector = assistance.subsector;
 
 			const scoringType = this.scoringTypes
-				.find(({ code }) => code === assistance.scoringType);
+				.find(({ code }) => code === assistance.scoringBlueprintId);
 
-			if (assistance.scoringType && !scoringType) {
+			if (assistance.scoringBlueprintId && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
-			this.$refs.selectionCriteria.scoringType = scoringType || "";
+			this.$refs.selectionCriteria.scoringType = scoringType || null;
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
@@ -480,7 +480,7 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
-				scoringType: scoringType?.code || "",
+				scoringBlueprintId: scoringType?.code || null,
 				threshold: minimumSelectionScore,
 			};
 		},

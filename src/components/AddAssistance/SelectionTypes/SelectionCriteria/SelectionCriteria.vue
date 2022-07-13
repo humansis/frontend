@@ -197,10 +197,10 @@ export default {
 				isOpened: false,
 			},
 			options: {
-				scoringTypes: [{ archived: false, name: "Default", id: 0 }],
+				scoringTypes: [{ archived: false, name: "Default", id: null }],
 			},
 			minimumSelectionScore: 0,
-			scoringType: { archived: false, name: "Default", id: 0 },
+			scoringType: { archived: false, name: "Default", id: null },
 			scoringTypesLoading: false,
 			minimumSelectionScoreValid: null,
 			beneficiariesData: [],
@@ -464,7 +464,7 @@ export default {
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
 			assistanceBody.threshold = totalCount ? 0 : threshold;
-			assistanceBody.scoringType = "";
+			assistanceBody.scoringBlueprintId = null;
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
@@ -520,7 +520,7 @@ export default {
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
-				scoringBlueprint: this.scoringType.id || null,
+				scoringBlueprintId: this.scoringType.id || null,
 				threshold: this.minimumSelectionScore,
 			};
 
