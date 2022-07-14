@@ -227,7 +227,7 @@ import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
-	from "../../components/Beneficiaries/Household/AddProjectToHouseholdModal";
+	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 

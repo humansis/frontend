@@ -100,7 +100,7 @@
 		<!-- Show Custom Tag with background color -->
 		<template v-if="column.type === 'tag'">
 			<b-tag :type="getTagType">
-				{{ $t(data.row[column.field]) }}
+				{{ normalizeText($t(data.row[column.field])) }}
 			</b-tag>
 		</template>
 
@@ -148,6 +148,7 @@
 <script>
 import ImageColumn from "@/components/DataGrid/ImageColumn";
 import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "TableColumn",
@@ -214,6 +215,8 @@ export default {
 		getTagTypeByItem(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
+
+		normalizeText,
 	},
 
 	props: {

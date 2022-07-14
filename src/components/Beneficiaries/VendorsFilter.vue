@@ -29,7 +29,7 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: {
-				isInvoiced: [],
+				invoicing: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
@@ -37,12 +37,13 @@ export default {
 				locations: [],
 			},
 			filtersOptions: {
-				isInvoiced: {
+				invoicing: {
 					name: "Invoicing",
 					placeholder: this.$t("Select invoicing"),
 					data: [
-						{ code: "true", value: this.$t("Invoiced") },
-						{ code: "false", value: this.$t("To Redeem") },
+						{ code: "toRedeem", value: this.$t("To Redeem") },
+						{ code: "syncRequired", value: this.$t("Sync Required") },
+						{ code: "invoiced", value: this.$t("Invoiced") },
 					],
 				},
 				adm1: {
@@ -111,9 +112,9 @@ export default {
 
 	methods: {
 		setDefaultFilters() {
-			if (this.defaultFilters.isInvoiced) {
-				this.selectedFiltersOptions.isInvoiced = this.filtersOptions
-					.isInvoiced.data.find((item) => item.code === this.defaultFilters.isInvoiced);
+			if (this.defaultFilters.invoicing) {
+				this.selectedFiltersOptions.invoicing = this.filtersOptions
+					.invoicing.data.find((item) => item.code === this.defaultFilters.invoicing);
 			}
 		},
 
@@ -155,7 +156,7 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					isInvoiced: filters.isInvoiced[0],
+					invoicing: filters.invoicing[0],
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
@@ -219,7 +220,7 @@ export default {
 
 		eraseFilters() {
 			this.selectedFiltersOptions = {
-				isInvoiced: [],
+				invoicing: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
