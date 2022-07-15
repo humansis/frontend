@@ -156,7 +156,7 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					invoicing: filters.invoicing[0],
+					invoicing: filters.invoicing?.[0] || null,
 					locations: location ? [location] : [],
 				},
 				locationsFilter: {
