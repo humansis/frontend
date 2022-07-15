@@ -2,9 +2,8 @@
 	<div>
 		<h1 class="title">{{ $t('New Assistance') }}</h1>
 		<div class="columns">
-			<div class="column">
+			<div v-if="isProjectReady" class="column">
 				<NewAssistanceForm
-					v-if="project"
 					ref="newAssistanceForm"
 					:project="project"
 					:data="componentsData.newAssistanceForm"
@@ -26,7 +25,7 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
-					v-if="project"
+					v-if="isProjectReady"
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
@@ -100,6 +99,7 @@ export default {
 				selectionCriteria: null,
 			},
 			project: {},
+			isProjectReady: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -164,6 +164,8 @@ export default {
 	},
 
 	async created() {
+		await this.fetchProject();
+
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
@@ -193,18 +195,18 @@ export default {
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}
-
-		await this.fetchProject();
 	},
 
 	methods: {
 		async fetchProject() {
+			this.isProjectReady = false;
 			const { projectId } = this.$route.params;
 
 			if (projectId) {
 				await ProjectService.getDetailOfProject(projectId)
 					.then(({ data }) => {
 						this.project = data;
+						this.isProjectReady = true;
 					})
 					.catch((e) => {
 						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
@@ -435,7 +437,9 @@ export default {
 		},
 
 		isDateValid(inputDate) {
-			return inputDate instanceof Date && !Number.isNaN(inputDate);
+			return inputDate instanceof Date && !Number.isNaN(inputDate)
+				&& inputDate >= new Date(this.project.startDate)
+				&& inputDate <= new Date(this.project.endDate);
 		},
 
 		fetchAssistanceCommodities() {
@@ -460,10 +464,10 @@ export default {
 				...this.assistanceBody,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
-					: new Date(),
+					: new Date(this.project.startDate),
 				dateExpiration: this.isDateValid(dateExpiration)
 					? dateExpiration.toISOString()
-					: new Date(),
+					: new Date(this.project.endDate),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
