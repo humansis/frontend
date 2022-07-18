@@ -173,10 +173,9 @@ export default {
 			if (typeof value === "object") {
 				if (value.value) return value.value;
 
-				const newDate = this.$moment(this.data.row[this.column.field])
-					.format("YYYY-MM-DD hh:mm");
+				const newDate = this.$moment(this.data.row[this.column.field]);
 
-				if (newDate.isValid()) return newDate;
+				if (newDate.isValid()) return newDate.format("YYYY-MM-DD hh:mm");
 			}
 
 			return value;
