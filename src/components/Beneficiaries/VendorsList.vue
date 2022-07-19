@@ -170,8 +170,8 @@ export default {
 					{ key: "username" },
 					{ key: "name" },
 					{ key: "categoryType", width: "200", type: "svgIcon" },
-					{ key: "vendorNo", label: this.$t("Vendor No.") },
-					{ key: "contractNo", label: this.$t("Contract No.") },
+					{ key: "vendorNo", label: "Vendor No." },
+					{ key: "contractNo", label: "Contract No." },
 					// TODO Temporary hidden (not implemented yet)
 					// { key: "invoicing", width: "100", type: "tag", customTags: statusTags },
 					{ key: "addressNumber" },
