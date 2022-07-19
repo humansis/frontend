@@ -86,6 +86,7 @@
 
 		<template #export>
 			<ExportButton
+				v-if="table.data.length"
 				space-between
 				class="ml-3"
 				type="is-primary"
