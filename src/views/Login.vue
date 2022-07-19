@@ -18,7 +18,7 @@
 							</div>
 
 							<b-field
-								label="Username"
+								:label="$t('Username')"
 								label-position="inside"
 								:type="validateType('username')"
 								:message="validateMsg('username', 'Required')"
@@ -31,7 +31,7 @@
 							</b-field>
 
 							<b-field
-								label="Password"
+								:label="$t('Password')"
 								label-position="inside"
 								:type="validateType('password')"
 								:message="validateMsg('password', 'Required')"
@@ -50,7 +50,9 @@
 									native-type="submit"
 									:loading="loginButtonLoading"
 								>
-									<span :class="{ 'is-invisible': loginButtonLoading }">Login</span>
+									<span :class="{ 'is-invisible': loginButtonLoading }">
+										{{ $t('Login') }}
+									</span>
 								</b-button>
 							</b-field>
 						</form>

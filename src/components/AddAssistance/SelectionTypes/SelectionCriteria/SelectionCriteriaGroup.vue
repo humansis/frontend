@@ -55,7 +55,10 @@
 					:is-full-page="false"
 					:can-cancel="false"
 				/>
-				{{ countOfCriteriaBeneficiaries }} {{ targetType }}
+
+				<span v-if="countOfCriteriaBeneficiaries">
+					{{ countOfCriteriaBeneficiaries }} {{ $t(targetType) }}
+				</span>
 			</a>
 			<a class="card-footer-item" @click="removeGroup">
 				{{ $t('Remove') }}
@@ -96,7 +99,7 @@ export default {
 
 	computed: {
 		groupName() {
-			return `Group ${(this.groupId + 1)}`;
+			return `${this.$t("Group")} ${(this.groupId + 1)}`;
 		},
 
 		countOfCriteriaBeneficiaries() {
@@ -107,8 +110,8 @@ export default {
 			const criteriaGroups = this.data.map((
 				{ criteria, criteriaTarget, value, scoreWeight, condition },
 			) => ({
-				criteriaTarget: criteriaTarget?.code || criteriaTarget?.value,
-				criteria: criteria?.code || criteria?.value,
+				criteriaTarget: criteriaTarget?.value || criteriaTarget?.code,
+				criteria: criteria?.value || criteria?.code,
 				value: this.prepareCriteriaValue(value),
 				scoreWeight,
 				condition: condition?.code,
@@ -136,6 +139,10 @@ export default {
 	methods: {
 		prepareCriteriaValue(value) {
 			let newValue = value?.code || value;
+
+			if (!value) {
+				return value;
+			}
 
 			if (typeof newValue === "string" && newValue.indexOf("locationId-") > -1) {
 				const locationId = Number(newValue.replace("locationId-", ""));
@@ -170,7 +177,9 @@ export default {
 		},
 
 		showDetail() {
-			this.$emit("showDetail", this.data);
+			if (this.countOfCriteriaBeneficiaries) {
+				this.$emit("showDetail", this.data);
+			}
 		},
 	},
 };

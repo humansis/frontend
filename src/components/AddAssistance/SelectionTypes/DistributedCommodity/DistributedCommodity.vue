@@ -65,7 +65,7 @@
 				{{ value}}
 			</strong>
 			{{ unit }}
-			({{ modalityType }})
+			({{ $t(modalityType) }})
 			{{ $t("To Be Delivered") }}
 		</p>
 

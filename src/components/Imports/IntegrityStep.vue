@@ -123,14 +123,14 @@
 										size="is-large"
 									/>
 								</p>
-								<p>{{ $t("Drop file here or click to upload") }}</p>
+								<p>{{ $t("Drop file here or click to upload.") }}</p>
 							</div>
 						</section>
 					</b-upload>
 				</b-field>
 
 				<b-message v-if="dropFiles.length > 1" type="is-warning">
-					You can upload only one file.
+					{{ $t('You can upload only one file')}}
 				</b-message>
 
 				<div class="tags">
@@ -152,7 +152,8 @@
 			<div>
 				<div class="card-content">
 					<b-message v-if="canUploadAndDownloadAffectedRecords" type="is-info">
-						Do not repair your original file. Repair only the file with Affected Records.
+						{{ $t('Do not repair your original file.') }}
+						{{ $t('Repair only the file with Affected Records.') }}
 					</b-message>
 				</div>
 				<div v-for="({
@@ -454,7 +455,7 @@ export default {
 				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
 					.then(({ status, message }) => {
 						if (status === 200) {
-							Toast("Uploaded Successfully", "is-success");
+							Toast(this.$t("Uploaded Successfully"), "is-success");
 							this.$emit("changeImportState", {
 								state: consts.STATE.INTEGRITY_CHECKING,
 								successMessage: "Integrity Check Started Successfully",

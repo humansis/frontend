@@ -10,7 +10,7 @@
 					class="mr-3"
 					space-between
 					type="is-primary"
-					label="Download Template"
+					:label="$t('Download Template')"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="downloadTemplate"
