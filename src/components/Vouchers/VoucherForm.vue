@@ -47,7 +47,7 @@
 			</b-field>
 
 			<b-field
-				label="Quantity of Vouchers"
+				:label="$t('Quantity of Vouchers')"
 				:type="validateType('quantityOfVouchers')"
 				:message="validateMsg('quantityOfVouchers')"
 			>

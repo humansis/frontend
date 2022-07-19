@@ -12,7 +12,7 @@
 				close-button
 				class="modal-card"
 				:formModel="countryModel"
-				:submit-button-label="countryModal.isEditing ? 'Update' : 'Create'"
+				:submit-button-label="countryModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="countryModal.isDetail"
 				@formSubmitted="submitCountryForm"
 				@formClosed="closeCountryModal"

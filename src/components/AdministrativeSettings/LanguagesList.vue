@@ -99,7 +99,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`Languages ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Languages")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

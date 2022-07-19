@@ -222,7 +222,7 @@
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
-								<b-tooltip label="Transactions" position="is-right" always>
+								<b-tooltip :label="$t('Transactions')" position="is-right" always>
 									Transactions
 								</b-tooltip>
 							</template>

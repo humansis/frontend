@@ -8,7 +8,7 @@
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
 				@click="filtersToggle"
 			>
-				Advanced Search
+				{{ $t('Advanced Search') }}
 			</b-button>
 		</div>
 		<b-collapse v-model="advancedSearchVisible">
@@ -32,8 +32,8 @@
 					role="button"
 				>
 					<p class="card-header-title">
-						<b-tag type="is-primary mr-1">{{ index + 1 }}. Batch</b-tag>
-						<b-tag type="is-info mr-4">{{ batch.booklets.length }} x Booklets</b-tag>
+						<b-tag type="is-primary mr-1">{{ index + 1 }}. {{ $t('Batch') }}</b-tag>
+						<b-tag type="is-info mr-4">{{ batch.booklets.length }} x {{ $t('Booklets') }}</b-tag>
 						{{ batch.code }}
 					</p>
 					<div v-if="isLoadingList" class="card-header-icon">
@@ -67,20 +67,20 @@
 						</template>
 						<b-table-column
 							v-slot="props"
-							label="Actions"
+							:label="$t('Actions')"
 							width="145"
 						>
 							<div class="buttons is-right">
 								<ActionButton
 									icon="search"
 									type="is-primary"
-									tooltip="Show Detail"
+									:tooltip="$t('Show Detail')"
 									@click="showDetailWithId(props.row.id)"
 								/>
 								<SafeDelete
 									icon="trash"
 									entity="Voucher"
-									tooltip="Delete"
+									:tooltip="$t('Delete')"
 									:disabled="!props.row.deletable"
 									:id="props.row.id"
 									@submitted="remove"
@@ -194,7 +194,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`Booklet ${e}`, "is-danger");
+				if (e.message) Notification(`${"Booklet"} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

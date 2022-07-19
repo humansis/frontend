@@ -38,7 +38,7 @@
 			<div class="buttons is-right">
 				<ActionButton
 					icon="hand-holding-usd"
-					tooltip="Show Vendor Summary"
+					:tooltip="$t('Show Vendor Summary')"
 					@click="showSummary(props.row)"
 				/>
 				<ActionButton
@@ -161,8 +161,8 @@ export default {
 					{ key: "username" },
 					{ key: "name" },
 					{ key: "categoryType", width: "200", type: "svgIcon" },
-					{ key: "vendorNo", label: this.$t("Vendor No.") },
-					{ key: "contractNo", label: this.$t("Contract No.") },
+					{ key: "vendorNo", label: "Vendor No." },
+					{ key: "contractNo", label: "Contract No." },
 					{ key: "addressNumber" },
 					{ key: "addressPostcode" },
 					{ key: "addressStreet" },
