@@ -107,33 +107,96 @@
 						- {{ $t('Optional') }}
 					</span>
 				</h4>
-				<b-field
-					:label="$t('ID Type')"
-					:type="validateType('id.idType', true)"
-					:message="validateMsg('id.idType')"
-				>
-					<MultiSelect
-						v-model="formModel.id.idType"
-						label="value"
-						track-by="code"
-						searchable
-						:placeholder="$t('Click to select')"
-						:loading="idTypeLoading"
-						:options="options.idType"
-						:class="validateMultiselect('id.idType', true)"
-						@select="validate('id.idType')"
-					/>
-				</b-field>
-				<b-field
-					:label="$t('ID Number')"
-					:type="validateType('id.idNumber', true)"
-					:message="validateMsg('id.idNumber')"
-				>
-					<b-input
-						v-model="formModel.id.idNumber"
-						@blur="validate('id.idNumber', true)"
-					/>
-				</b-field>
+				<!-- primary ID-->
+				<b-tabs>
+					<b-tab-item :label="$t('Primary')">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('primaryId.idType', true)"
+							:message="validateMsg('primaryId.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.primaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('primaryId.idType', true)"
+								@select="validate('primaryId.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('primaryId.idNumber', true)"
+							:message="validateMsg('primaryId.idNumber')"
+						>
+							<b-input
+								v-model="formModel.primaryId.idNumber"
+								@blur="validate('primaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item :label="$t('Secondary')" :disabled="!formModel.primaryId.idNumber">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('secondaryId.idType', true)"
+							:message="validateMsg('secondaryId.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.secondaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('secondaryId.idType', true)"
+								@select="validate('secondaryId.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('secondaryId.idNumber', true)"
+							:message="validateMsg('secondaryId.idNumber')"
+						>
+							<b-input
+								v-model="formModel.secondaryId.idNumber"
+								@blur="validate('secondaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item :label="$t('Tertiary')" :disabled="!formModel.secondaryId.idNumber">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('tertiaryId.idType', true)"
+							:message="validateMsg('tertiaryId.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.tertiaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('tertiaryId.idType', true)"
+								@select="validate('tertiaryId.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('tertiaryId.idNumber', true)"
+							:message="validateMsg('tertiaryId.idNumber')"
+						>
+							<b-input
+								v-model="formModel.tertiaryId.idNumber"
+								@blur="validate('tertiaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+				</b-tabs>
 			</div>
 
 			<div class="column is-one-quarter">
@@ -331,7 +394,15 @@ export default {
 				gender: { required },
 				dateOfBirth: { required },
 			},
-			id: {
+			primaryId: {
+				idType: { required: requiredIf((form) => form.idNumber) },
+				idNumber: { required: requiredIf((form) => form.idType) },
+			},
+			secondaryId: {
+				idType: { required: requiredIf((form) => form.idNumber) },
+				idNumber: { required: requiredIf((form) => form.idType) },
+			},
+			tertiaryId: {
 				idType: { required: requiredIf((form) => form.idNumber) },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
@@ -358,9 +429,20 @@ export default {
 					gender: "",
 					dateOfBirth: null,
 				},
-				id: {
+				primaryId: {
 					idType: "",
 					idNumber: "",
+					priority: 1,
+				},
+				secondaryId: {
+					idType: "",
+					idNumber: "",
+					priority: 2,
+				},
+				tertiaryId: {
+					idType: "",
+					idNumber: "",
+					priority: 3,
 				},
 				residencyStatus: "",
 				addAReferral: false,
@@ -457,11 +539,22 @@ export default {
 				isHead,
 				residencyStatus,
 			} = beneficiary;
+
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
-			const cardId = await this.getNationalIdCard(nationalIds[0]);
+
+			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
+
+			const secondaryCardId = nationalIds[1]
+				? await this.getNationalIdCard(nationalIds[1])
+				: { idNumber: "", idType: "" };
+
+			const tertiaryCardId = nationalIds[2]
+				? await this.getNationalIdCard(nationalIds[2])
+				: { idNumber: "", idType: "" };
+
 			this.formModel = {
 				...this.formModel,
 				beneficiaryId: id,
@@ -479,7 +572,9 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: new Date(dateOfBirth),
 				},
-				id: cardId,
+				primaryId: primaryCardId,
+				secondaryId: secondaryCardId,
+				tertiaryId: tertiaryCardId,
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
@@ -522,9 +617,10 @@ export default {
 
 		async getNationalIdCard(id) {
 			const nationalIdCard = {
-				idType: this.formModel.id.idNumber,
-				idNumber: this.formModel.id.idType,
+				idType: this.formModel.primaryId.idType,
+				idNumber: this.formModel.primaryId.idNumber,
 			};
+
 			if (id) {
 				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
