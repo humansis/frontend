@@ -367,7 +367,7 @@ export default {
 
 			switch (dataType) {
 				case consts.FIELD_TYPE.DATE:
-					result = new Date(newValue.toString()).toISOString();
+					result = this.$moment(newValue).format("YYYY-MM-DD");
 					break;
 				case consts.FIELD_TYPE.LOCATION:
 					result = Number(newValue.replace("locationId-", ""));
