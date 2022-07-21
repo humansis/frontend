@@ -172,6 +172,17 @@
 				</MultiSelect>
 			</b-field>
 		</div>
+		<div class="box">
+			<b-field
+				:label="$t('Note')"
+			>
+				<b-input
+					v-model.trim="formModel.note"
+					type="textarea"
+					:placeholder="$t('Type...')"
+				/>
+			</b-field>
+		</div>
 	</div>
 </template>
 

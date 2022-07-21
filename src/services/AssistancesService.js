@@ -333,6 +333,17 @@ export default {
 		return { data, status };
 	},
 
+	async updateAssistanceNote({ assistanceId, note }) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}`,
+			method: "PATCH",
+			body: {
+				note,
+			},
+		});
+		return { data, status };
+	},
+
 	async updateAssistanceToStatusCompleted({ assistanceId, completed }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}`,
