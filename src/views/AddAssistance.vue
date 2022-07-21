@@ -134,6 +134,7 @@ export default {
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
+				note: "",
 			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
@@ -340,6 +341,7 @@ export default {
 			this.assistanceBody.type = assistance.type;
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
+			this.assistanceBody.note = assistance.note;
 
 			const scoringType = this.scoringTypes
 				.find(({ code }) => code === assistance.scoringBlueprintId);
@@ -458,6 +460,7 @@ export default {
 				subsector,
 				targetType,
 				dateExpiration,
+				note,
 			} = data;
 
 			this.assistanceBody = {
@@ -473,6 +476,7 @@ export default {
 				sector: sector?.code,
 				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
+				note,
 			};
 		},
 

@@ -148,6 +148,17 @@
 				</MultiSelect>
 			</b-field>
 		</div>
+		<div class="box">
+			<b-field
+				:label="$t('Note')"
+			>
+				<b-input
+					v-model.trim="formModel.note"
+					type="textarea"
+					:placeholder="$t('Type...')"
+				/>
+			</b-field>
+		</div>
 	</div>
 </template>
 
@@ -195,6 +206,7 @@ export default {
 				subsector: null,
 				targetType: null,
 				assistanceType: null,
+				note: "",
 			},
 			options: {
 				sectors: [],
