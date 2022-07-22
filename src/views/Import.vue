@@ -37,6 +37,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
+					@moveStepForward="changeTab(1)"
 				/>
 			</b-step-item>
 
@@ -215,11 +216,13 @@ export default {
 		changeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
-			this.$router.replace({
-				name: "Import",
-				params: { importId: this.$route.params.importId },
-				query: { step: slug },
-			});
+			if (this.$route.query.step !== slug) {
+				this.$router.replace({
+					name: "Import",
+					params: { importId: this.$route.params.importId },
+					query: { step: slug },
+				});
+			}
 
 			this.activeStep = code;
 		},
@@ -246,7 +249,7 @@ export default {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics();
 					this.fetchImportFiles();
-				}, 30000);
+				}, 5000);
 			}
 		},
 
@@ -355,7 +358,12 @@ export default {
 			});
 		},
 
-		onChangeImportState({ state, successMessage, goNext, withConfirm = true }) {
+		onChangeImportState({
+			state,
+			successMessage,
+			goNext,
+			withConfirm = true,
+		}) {
 			if ((this.integrityStepHasError || this.identityStepHasError) && withConfirm) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
