@@ -66,84 +66,89 @@
 				</p>
 			</b-notification>
 		</div>
-		<div class="is-align-items-flex-end">
-			<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
-				<b-field grouped group-multiline>
-					<b-field
-						:label="vulnerabilityScoreLabel"
-						:type="minimumSelectionScoreFieldType"
-						:message="minimumSelectionScoreFieldMessage"
-						expanded
-					>
-						<b-numberinput
-							v-model="minimumSelectionScore"
+
+		<div class="columns">
+			<div class="column is-4">
+				<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
+					<b-field grouped>
+						<b-field
+							:label="vulnerabilityScoreLabel"
+							:type="minimumSelectionScoreFieldType"
+							:message="minimumSelectionScoreFieldMessage"
 							expanded
-							class="vulnerability-number-input"
-							type="is-dark"
-							:controls="false"
-							:disabled="calculationLoading || !groups.length"
-							@input="onVulnerabilityScoreInput"
-						/>
-					</b-field>
-					<b-field
-						class="vulnerability-type-field"
-						:label="$t('Scoring Type')"
-						expanded
-					>
-						<MultiSelect
-							v-model="scoringType"
-							:placeholder="$t('Click to select')"
-							label="name"
-							track-by="id"
-							:options="options.scoringTypes"
-							:loading="scoringTypesLoading"
-							:disabled="calculationLoading || !groups.length"
-							:searchable="false"
-							@select="scoringTypeChanged"
-						/>
-					</b-field>
-					<div class="score-vulnerability-actions">
-						<b-button
-							class="ml-2 vulnerability-update-button"
-							type="is-primary"
-							:disabled="calculationLoading || !groups.length"
-							@click="updateVulnerabilityScores"
 						>
-							{{ $t('Update') }}
-						</b-button>
-					</div>
-				</b-field>
-			</form>
-			<div ref="groupsCalculation">
-				<b-field>
-					<div class="selection-details">
-						<p class="subtitle is-4 mb-0 mr-3 ml-3">
-							<strong>
-								{{ countOf }}/{{ totalCount }}
-							</strong>
-							{{ $t(selectedTargetType) }}
-						</p>
-						<b-button
-							class="is-pulled-right"
-							icon="detail"
-							type="is-link"
-							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-							@click="showTotalBeneficiaries"
-						>
-							{{ $t('Details') }}
-						</b-button>
-						<ExportButton
-							type="is-primary"
-							class="ml-2"
-							:label="$t('Export Details')"
-							:loading="exportLoading"
-							:formats="{ xlsx: true }"
-							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-							@onExport="exportSelectedBeneficiaries"
-						/>
-					</div>
+							<b-numberinput
+								v-model="minimumSelectionScore"
+								expanded
+								class="vulnerability-number-input"
+								type="is-dark"
+								:controls="false"
+								:disabled="calculationLoading || !groups.length"
+								@input="onVulnerabilityScoreInput"
+							/>
+						</b-field>
+					</b-field>
+				</form>
+			</div>
+
+			<div class="column is-3">
+				<b-field
+					class="vulnerability-type-field"
+					:label="$t('Scoring Type')"
+					expanded
+				>
+					<MultiSelect
+						v-model="scoringType"
+						:placeholder="$t('Click to select')"
+						label="name"
+						track-by="id"
+						:options="options.scoringTypes"
+						:loading="scoringTypesLoading"
+						:disabled="calculationLoading || !groups.length"
+						:searchable="false"
+						@select="scoringTypeChanged"
+					/>
 				</b-field>
 			</div>
+
+			<div class="column is-5 is-flex is-justify-content-space-between scoring-actions">
+				<b-button
+					class="vulnerability-update-button"
+					type="is-info"
+					:disabled="calculationLoading || !groups.length"
+					@click="updateVulnerabilityScores"
+				>
+					{{ $t('Update') }}
+				</b-button>
+
+				<div>
+					<b-button
+						icon="detail"
+						type="is-link"
+						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+						@click="showTotalBeneficiaries"
+					>
+						{{ $t('Details') }}
+					</b-button>
+
+					<ExportButton
+						type="is-primary"
+						class="ml-1"
+						:label="$t('Export Details')"
+						:loading="exportLoading"
+						:formats="{ xlsx: true }"
+						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+						@onExport="exportSelectedBeneficiaries"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div class="subtitle is-4 mb-0 has-text-right">
+			<strong>
+				{{ countOf }}/{{ totalCount }}
+			</strong>
+			{{ $t(selectedTargetType) }}
 		</div>
 	</div>
 </template>
@@ -630,14 +635,7 @@ export default {
 	height: 40px;
 }
 
-.vulnerability-type-field {
-	min-width: 310px;
-}
-
-.score-vulnerability-actions {
-	display: flex;
-	justify-content: space-between;
-	flex: 1;
-	padding-top: 28px;
+.scoring-actions {
+	padding-top: 39px;
 }
 </style>

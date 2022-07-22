@@ -494,7 +494,7 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
-				scoringBlueprintId: scoringType?.code || null,
+				scoringBlueprintId: scoringType?.id || null,
 				threshold: minimumSelectionScore,
 			};
 		},
