@@ -173,6 +173,7 @@ export default {
 				visibleColumns: [
 					{ key: "id", label: "Assistance ID", sortable: true },
 					{ key: "name", sortable: true },
+					{ key: "round", sortable: true },
 					{ key: "type", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
@@ -256,6 +257,7 @@ export default {
 			const assistanceIds = [];
 			const commodityIds = [];
 			data.forEach((item, key) => {
+				const roundIsNaN = Number.isNaN(parseInt(item.round, 10));
 				locationIds.push(item.locationId);
 				assistanceIds.push(item.id);
 				commodityIds.push(...item.commodityIds);
@@ -263,6 +265,7 @@ export default {
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
+				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
 			});
 			this.table.progress += 10;
 
