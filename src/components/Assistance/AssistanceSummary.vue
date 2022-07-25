@@ -31,13 +31,6 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Round') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ assistanceRound }}</p>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
 					<p class="heading">{{ $t('Beneficiaries') }}</p>
 					<p
 						v-if="beneficiariesCount || beneficiariesCount === 0"
@@ -186,11 +179,6 @@ export default {
 
 		assistanceName() {
 			return this.assistance?.name || "";
-		},
-
-		assistanceRound() {
-			const isRoundNaN = Number.isNaN(parseInt(this.assistance?.round, 10));
-			return isRoundNaN ? "N/A" : this.assistance.round;
 		},
 
 		assistanceType() {
