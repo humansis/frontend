@@ -352,7 +352,7 @@ export default {
 			} = this.formModel;
 
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {
-				switch (targetType) {
+				switch (targetType?.toLowerCase()) {
 					case consts.TARGET.INDIVIDUAL:
 						return [
 							consts.COMPONENT.SELECTION_CRITERIA,
