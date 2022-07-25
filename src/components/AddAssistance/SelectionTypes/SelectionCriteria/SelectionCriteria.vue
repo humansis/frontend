@@ -106,6 +106,7 @@
 						:loading="scoringTypesLoading"
 						:disabled="calculationLoading || !groups.length"
 						:searchable="false"
+						:allow-empty="false"
 						@select="scoringTypeChanged"
 					/>
 				</b-field>
@@ -204,7 +205,7 @@ export default {
 			options: {
 				scoringTypes: [{ archived: false, name: "Default", id: null }],
 			},
-			minimumSelectionScore: 0,
+			minimumSelectionScore: null,
 			scoringType: { archived: false, name: "Default", id: null },
 			scoringTypesLoading: false,
 			minimumSelectionScoreValid: null,
@@ -289,7 +290,7 @@ export default {
 	watch: {
 		groups(groups) {
 			if (!groups.length) {
-				this.minimumSelectionScore = 0;
+				this.minimumSelectionScore = null;
 				this.minimumVulnerabilityScore = 0;
 				this.maximumVulnerabilityScore = 0;
 			}
@@ -336,7 +337,7 @@ export default {
 		scoringTypeChanged() {
 			this.minimumVulnerabilityScore = 0;
 			this.maximumVulnerabilityScore = 0;
-			this.minimumSelectionScore = 0;
+			this.minimumSelectionScore = null;
 		},
 
 		prepareCriteria() {
@@ -454,7 +455,7 @@ export default {
 
 			assistanceBody.selectionCriteria = preparedCriteria
 				.filter(({ group }) => group === groupKey);
-			assistanceBody.threshold = 0;
+			assistanceBody.threshold = null;
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({
@@ -464,12 +465,15 @@ export default {
 		},
 
 		async getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
-			const threshold = this.minimumSelectionScore || 0;
+			const threshold = this.minimumSelectionScore ?? null;
 			const assistanceBody = { ...this.assistanceBody };
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
-			assistanceBody.threshold = totalCount ? 0 : threshold;
-			assistanceBody.scoringBlueprintId = null;
+			assistanceBody.threshold = totalCount ? null : threshold;
+
+			if (totalCount) {
+				assistanceBody.scoringBlueprintId = null;
+			}
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });

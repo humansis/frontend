@@ -127,7 +127,7 @@ export default {
 				selectionCriteria: [],
 				communities: [],
 				institutions: [],
-				threshold: 0,
+				threshold: null,
 				completed: false,
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
@@ -341,10 +341,10 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 
-			const scoringType = this.scoringTypes
-				.find(({ code }) => code === assistance.scoringBlueprintId);
+			const scoringType = this.scoringTypes.filter(({ archived }) => archived)
+				.find(({ id }) => id === assistance.scoringBlueprint?.id);
 
-			if (assistance.scoringBlueprintId && !scoringType) {
+			if (assistance.scoringBlueprint?.id && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
