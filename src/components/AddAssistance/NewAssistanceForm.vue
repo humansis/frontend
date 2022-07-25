@@ -348,7 +348,7 @@ export default {
 			if (!(this.formModel.assistanceType && this.formModel.targetType)) return [];
 			const {
 				assistanceType: { code: assistanceType },
-				targetType: { value: targetType },
+				targetType: { code: targetType },
 			} = this.formModel;
 
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {
