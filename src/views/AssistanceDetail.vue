@@ -32,9 +32,6 @@
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
-
-		<EditNote :assistance="assistance" />
-
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
@@ -176,7 +173,6 @@
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
-import EditNote from "@/components/Assistance/EditNote";
 import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
@@ -193,7 +189,6 @@ export default {
 		InputDistributed,
 		BeneficiariesList,
 		AssistanceSummary,
-		EditNote,
 		Modal,
 	},
 
