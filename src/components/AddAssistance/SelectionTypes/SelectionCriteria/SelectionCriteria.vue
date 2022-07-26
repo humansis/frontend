@@ -416,16 +416,13 @@ export default {
 
 			this.criteriaModal.isOpened = false;
 
-			this.fetchCriteriaInfo();
+			this.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
-		fetchCriteriaInfo() {
+		fetchCriteriaInfo({ changeScoreInterval = true }) {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
-
-			const changeScoreInterval = this.minimumVulnerabilityScore === this.maximumVulnerabilityScore
-				&& this.minimumVulnerabilityScore === 0;
 
 			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
 			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
@@ -444,7 +441,7 @@ export default {
 
 			if (!this.minimumSelectionScoreValid) return;
 
-			await this.fetchCriteriaInfo();
+			await this.fetchCriteriaInfo({ changeScoreInterval: false });
 
 			this.vulnerabilityScoreTouched = false;
 		},
@@ -533,23 +530,25 @@ export default {
 				threshold: this.minimumSelectionScore,
 			};
 
-			await AssistancesService.calculationOfBeneficiariesScores(body)
-				.then(({ data, status }) => {
-					if (status === 200) {
-						this.beneficiariesScores = data.data;
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-				}).finally(() => {
-					if (changeScoreInterval) {
-						const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
+			if (beneficiaryIds.length) {
+				await AssistancesService.calculationOfBeneficiariesScores(body)
+					.then(({ data, status }) => {
+						if (status === 200) {
+							this.beneficiariesScores = data.data;
+						}
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					}).finally(() => {
+						if (changeScoreInterval) {
+							const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
 
-						this.minimumVulnerabilityScore = Math.min.apply(null, scores);
-						this.maximumVulnerabilityScore = Math.max.apply(null, scores);
-					}
+							this.minimumVulnerabilityScore = Math.min.apply(null, scores);
+							this.maximumVulnerabilityScore = Math.max.apply(null, scores);
+						}
 
-					this.minimumSelectionScoreValid = null;
-				});
+						this.minimumSelectionScoreValid = null;
+					});
+			}
 		},
 
 		async fetchScoringTypes() {

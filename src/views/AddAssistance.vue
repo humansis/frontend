@@ -380,7 +380,7 @@ export default {
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
 
-			await this.$refs.selectionCriteria.fetchCriteriaInfo();
+			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		mapSelectionCriteria() {
