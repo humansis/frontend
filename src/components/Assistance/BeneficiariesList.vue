@@ -89,9 +89,10 @@
 				@formClosed="closeCommunityModal"
 			/>
 		</Modal>
-		<div class="buttons space-between">
+		<div class="buttons space-between align-end">
 			<b-button
 				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
 				@click="openAddBeneficiaryModal(null, true)"

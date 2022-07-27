@@ -41,6 +41,11 @@
 	}
 }
 
+.space-between.align-end {
+	justify-content: flex-end;
+	margin-bottom: 0;
+}
+
 html.has-aside-left.has-aside-expanded {
 	nav.navbar,
 	body {
