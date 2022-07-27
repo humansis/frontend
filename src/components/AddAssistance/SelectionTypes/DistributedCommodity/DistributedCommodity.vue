@@ -119,11 +119,11 @@ export default {
 				isOpened: false,
 			},
 			formModel: {
-				modality: "",
+				modalityType: "",
 				type: "",
 				currency: "",
 				unit: "",
-				quantity: "",
+				value: "",
 				description: "",
 				division: null,
 				totalValueOfBooklet: null,
@@ -135,10 +135,10 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "modality" },
+					{ key: "modalityType" },
 					{ key: "type" },
 					{ key: "unit" },
-					{ key: "quantity" },
+					{ key: "value" },
 					{ key: "division", label: "For Each" },
 					{ key: "description" },
 				],
@@ -187,7 +187,7 @@ export default {
 				{
 					type,
 					unit,
-					quantity,
+					value,
 					description,
 					division,
 					remoteDistributionAllowed,
@@ -197,7 +197,7 @@ export default {
 			) => ({
 				modalityType: type,
 				unit,
-				value: quantity,
+				value,
 				description: description || "",
 				division,
 				remoteDistributionAllowed,
@@ -209,11 +209,11 @@ export default {
 		modifiedTableData() {
 			const tableData = this.table.data.map((
 				{
-					modality,
+					modalityType,
 					type,
 					unit,
 					currency,
-					quantity,
+					value,
 					description,
 					division,
 					totalValueOfBooklet,
@@ -222,10 +222,10 @@ export default {
 					cashbackLimit,
 				},
 			) => ({
-				modality: modality?.value || modality,
+				modalityType: modalityType?.value || modalityType,
 				type: type?.value || type,
 				unit: unit || currency?.value,
-				quantity: Number(quantity) || Number(totalValueOfBooklet),
+				value: Number(value) || Number(totalValueOfBooklet),
 				description,
 				division: division?.code || division,
 				remoteDistributionAllowed,
@@ -250,11 +250,11 @@ export default {
 			this.commodityModal.isOpened = true;
 
 			this.formModel = {
-				modality: null,
+				modalityType: null,
 				type: null,
 				currency: null,
 				unit: null,
-				quantity: null,
+				value: null,
 				description: null,
 				division: null,
 				totalValueOfBooklet: null,

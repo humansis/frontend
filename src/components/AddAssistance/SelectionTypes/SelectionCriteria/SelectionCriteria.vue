@@ -203,10 +203,10 @@ export default {
 				isOpened: false,
 			},
 			options: {
-				scoringTypes: [{ archived: false, name: "Default", id: null }],
+				scoringTypes: [AssistancesService.getDefaultScoringType()],
 			},
 			minimumSelectionScore: null,
-			scoringType: { archived: false, name: "Default", id: null },
+			scoringType: AssistancesService.getDefaultScoringType(),
 			scoringTypesLoading: false,
 			minimumSelectionScoreValid: null,
 			beneficiariesData: [],
@@ -526,7 +526,7 @@ export default {
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
-				scoringBlueprintId: this.scoringType.id || null,
+				scoringBlueprintId: this.scoringType?.id || null,
 				threshold: this.minimumSelectionScore,
 			};
 

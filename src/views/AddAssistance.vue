@@ -341,10 +341,12 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 
-			const scoringType = this.scoringTypes.filter(({ archived }) => archived)
-				.find(({ id }) => id === assistance.scoringBlueprint?.id);
+			const scoringType = assistance.scoringBlueprint === null
+				? AssistancesService.getDefaultScoringType()
+				: this.scoringTypes.filter(({ archived }) => !archived)
+					.find(({ id }) => id === assistance.scoringBlueprint?.id);
 
-			if (assistance.scoringBlueprint?.id && !scoringType) {
+			if (assistance.scoringBlueprint && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
@@ -353,15 +355,15 @@ export default {
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
-				const modality = this.getModalityByType(item.modalityType);
+				const modalityType = this.getModalityByType(item.modalityType);
 
 				preparedCommodities.push({
 					type: item.modalityType,
-					quantity: item.value,
+					value: item.value,
 					unit: item.unit,
 					description: item.description,
 					division: item.division,
-					modality,
+					modalityType,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
 					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
 					cashbackLimit: assistance.cashbackLimit,
@@ -468,10 +470,10 @@ export default {
 				dateExpiration: this.isDateValid(dateExpiration)
 					? dateExpiration.toISOString()
 					: new Date(this.project.endDate),
-				target: targetType?.code,
-				type: assistanceType?.code,
-				sector: sector?.code,
-				subsector: subsector?.code,
+				target: this.assistanceBody.target || targetType?.code,
+				type: this.assistanceBody.type || assistanceType?.code,
+				sector: this.assistanceBody.sector || sector?.code,
+				subsector: this.assistanceBody.subsector || subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
 			};
 		},

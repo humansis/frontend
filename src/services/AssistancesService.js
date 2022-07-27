@@ -1,6 +1,10 @@
 import { download, fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
+	getDefaultScoringType() {
+		return { archived: false, name: "Default", id: null };
+	},
+
 	async getListOfAssistances(page, size, sort, upcoming, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";

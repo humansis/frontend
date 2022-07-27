@@ -3,19 +3,19 @@
 		<section class="modal-card-body pb-6">
 			<b-field
 				class="relative-select"
-				:type="validateType('modality')"
-				:message="validateMsg('modality')"
+				:type="validateType('modalityType')"
+				:message="validateMsg('modalityType')"
 				:label="$t('Modality')"
 			>
 				<MultiSelect
-					v-model="formModel.modality"
+					v-model="formModel.modalityType"
 					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.modalities"
 					searchable
 					:loading="loading.modalities"
-					:class="validateMultiselect('modality')"
+					:class="validateMultiselect('modalityType')"
 					@select="onModalitySelect"
 				/>
 			</b-field>
@@ -69,18 +69,18 @@
 			</b-field>
 
 			<b-field
-				v-if="displayedFields.quantity"
-				:type="validateType('quantity')"
-				:message="validateMsg('quantity')"
+				v-if="displayedFields.value"
+				:type="validateType('value')"
+				:message="validateMsg('value')"
 				:label="$t('Quantity')"
 			>
 				<b-numberinput
-					v-model="formModel.quantity"
+					v-model="formModel.value"
 					type="is-dark"
 					expanded
 					min="0"
 					:controls="false"
-					@blur="validate('quantity')"
+					@blur="validate('value')"
 					@input="checkQuantity"
 				/>
 			</b-field>
@@ -172,7 +172,7 @@
 					expanded
 					min="1"
 					:disabled="cashbackLimitDisabled"
-					:max="formModel.quantity"
+					:max="formModel.value"
 					:controls="false"
 					@blur="validate('cashbackLimit')"
 					@input="checkCashbackLimit"
@@ -228,7 +228,7 @@ export default {
 			displayedFields: {
 				currency: false,
 				unit: false,
-				quantity: false,
+				value: false,
 				division: false,
 				description: false,
 				totalValueOfBooklet: false,
@@ -253,8 +253,8 @@ export default {
 
 	computed: {
 		cashbackLimitDisabled() {
-			return this.formModel.quantity >= 1
-				&& this.formModel.cashbackLimit === this.formModel.quantity
+			return this.formModel.value >= 1
+				&& this.formModel.cashbackLimit === this.formModel.value
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
 		},
@@ -262,7 +262,7 @@ export default {
 
 	validations: {
 		formModel: {
-			modality: { required },
+			modalityType: { required },
 			type: { required },
 			// eslint-disable-next-line func-names
 			currency: { required: requiredIf(function () {
@@ -272,10 +272,10 @@ export default {
 			unit: { required: requiredIf(function () {
 				return this.displayedFields.unit;
 			}) },
-			quantity: {
+			value: {
 				// eslint-disable-next-line func-names
 				required: requiredIf(function () {
-					return this.displayedFields.quantity;
+					return this.displayedFields.value;
 				}),
 				minValue: minValue(1),
 			},
@@ -311,7 +311,7 @@ export default {
 			if (this.displayedFields.allowedProductCategoryTypes
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
-				this.formModel.cashbackLimit = this.formModel.quantity;
+				this.formModel.cashbackLimit = this.formModel.value;
 			}
 
 			if (this.displayedFields.allowedProductCategoryTypes
@@ -323,13 +323,13 @@ export default {
 		checkCashbackLimit() {
 			if (this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
-				this.formModel.cashbackLimit = this.formModel.quantity;
+				this.formModel.cashbackLimit = this.formModel.value;
 			}
 		},
 
 		checkAllowedProductCategoryTypes() {
-			if (this.formModel.quantity >= 1) {
-				this.formModel.cashbackLimit = this.formModel.quantity;
+			if (this.formModel.value >= 1) {
+				this.formModel.cashbackLimit = this.formModel.value;
 			} else {
 				this.formModel.cashbackLimit = null;
 			}
@@ -342,7 +342,7 @@ export default {
 			this.displayedFields = {
 				currency: false,
 				unit: false,
-				quantity: false,
+				value: false,
 				division: false,
 				description: false,
 				totalValueOfBooklet: false,
@@ -363,7 +363,7 @@ export default {
 						description: false,
 						totalValueOfBooklet: false,
 						currency: true,
-						quantity: true,
+						value: true,
 						division: this.targetType === "household",
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
@@ -376,7 +376,7 @@ export default {
 						description: false,
 						totalValueOfBooklet: false,
 						currency: true,
-						quantity: true,
+						value: true,
 						division: false,
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
@@ -388,7 +388,7 @@ export default {
 						description: false,
 						totalValueOfBooklet: false,
 						currency: true,
-						quantity: true,
+						value: true,
 						division: false,
 						remoteDistributionAllowed: true,
 						allowedProductCategoryTypes: true,
@@ -409,7 +409,7 @@ export default {
 						currency: false,
 						totalValueOfBooklet: false,
 						unit: true,
-						quantity: true,
+						value: true,
 						division: false,
 						description: true,
 						remoteDistributionAllowed: false,
@@ -422,7 +422,7 @@ export default {
 						description: false,
 						totalValueOfBooklet: false,
 						unit: true,
-						quantity: true,
+						value: true,
 						division: false,
 						remoteDistributionAllowed: false,
 						allowedProductCategoryTypes: false,
@@ -432,7 +432,7 @@ export default {
 				case consts.COMMODITY.PAPER_VOUCHER:
 					this.displayedFields = {
 						unit: false,
-						quantity: false,
+						value: false,
 						division: false,
 						description: false,
 						currency: true,
