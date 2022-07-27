@@ -145,6 +145,8 @@ export default {
 				this.formModel.vulnerabilities,
 				this.options.vulnerabilities,
 				"code",
+				true,
+				"code",
 			);
 		},
 
