@@ -334,10 +334,8 @@ export default {
 			this.exportLoading = false;
 		},
 
-		scoringTypeChanged() {
-			this.minimumVulnerabilityScore = 0;
-			this.maximumVulnerabilityScore = 0;
-			this.minimumSelectionScore = null;
+		async scoringTypeChanged() {
+			await this.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		prepareCriteria() {
