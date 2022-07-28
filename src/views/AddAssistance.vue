@@ -351,6 +351,7 @@ export default {
 			}
 
 			this.$refs.selectionCriteria.scoringType = scoringType || null;
+			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];

@@ -473,7 +473,7 @@ export default {
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
 				await this.calculationOfAssistanceBeneficiariesScores(
-					{ assistanceBody, changeScoreInterval },
+					{ assistanceBody, changeScoreInterval, totalCount },
 				);
 			} else {
 				this.totalCount = 0;
@@ -518,14 +518,16 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval }) {
+		async calculationOfAssistanceBeneficiariesScores(
+			{ assistanceBody, changeScoreInterval, totalCount },
+		) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
 				scoringBlueprintId: this.scoringType?.id || null,
-				threshold: this.minimumSelectionScore,
+				threshold: totalCount ? null : this.minimumSelectionScore,
 			};
 
 			if (beneficiaryIds.length) {
