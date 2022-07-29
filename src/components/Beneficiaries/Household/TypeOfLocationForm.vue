@@ -151,17 +151,18 @@ export default {
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.campName) },
-			campName: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.camp) },
-			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.code === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
-			street: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
+			camp: { required: requiredIf((form) => form.typeOfLocation?.value === "camp" && !form.campName) },
+			campName: { required: requiredIf((form) => form.typeOfLocation?.value === "camp" && !form.camp) },
+			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.value === "camp") },
+			number: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
+			street: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
+			postcode: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
 		},
 	},
 
 	async mounted() {
 		await this.fetchLocationsTypes();
+		await this.mapLocations();
 	},
 
 	methods: {
@@ -202,8 +203,11 @@ export default {
 			}
 			if (this.formModel.type) {
 				this.campSelected = this.formModel.type === "camp";
-				this.formModel.typeOfLocation = this.options.typeOfLocation
-					.find((item) => this.formModel.type === item.code);
+				const typeOfLocation = this.options.typeOfLocation
+					.find((item) => this.formModel.type?.toLowerCase() === item.value?.toLowerCase());
+				if (typeOfLocation) {
+					this.formModel.typeOfLocation = typeOfLocation;
+				}
 			}
 			const campId = this.formModel?.campId || this.formModel.camp?.id;
 			if (campId && !this.formModel.camp) {
@@ -216,7 +220,7 @@ export default {
 
 		selectTypeOfLocation(value) {
 			this.$v.$reset();
-			this.campSelected = value.code === "camp";
+			this.campSelected = value.value === "camp";
 			this.validate("typeOfLocation");
 		},
 

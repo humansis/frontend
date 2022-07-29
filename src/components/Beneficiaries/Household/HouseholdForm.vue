@@ -290,7 +290,9 @@ export default {
 			countrySpecificOptions: [],
 			formModel: {
 				id: null,
-				currentLocation: {},
+				currentLocation: {
+					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
+				},
 				isCurrentLocationOtherThanAddress: false,
 				livelihood: {
 					livelihood: [],
@@ -366,7 +368,7 @@ export default {
 			this.loadingComponent.close();
 
 			await this.mapCurrentLocation().then((response) => {
-				this.formModel.currentLocation = response;
+				this.formModel.currentLocation = { ...this.formModel.currentLocation, ...response };
 			});
 		}
 		this.$emit("loaded");

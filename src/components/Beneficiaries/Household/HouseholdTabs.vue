@@ -387,7 +387,7 @@ export default {
 				street,
 				postcode,
 			} = this.household.currentLocation;
-			if (typeOfLocation.code === "camp") {
+			if (typeOfLocation.value === "camp") {
 				return `${campName}, ${tentNumber}`;
 			}
 			return `${number}, ${street}, ${postcode}`;
@@ -426,7 +426,7 @@ export default {
 			},
 		) {
 			const address = {};
-			if (typeOfLocation.code === "camp") {
+			if (typeOfLocation.value === "camp") {
 				address.campAddress = {
 					tentNumber,
 					camp: {
@@ -434,14 +434,14 @@ export default {
 						locationId: locationId || camp?.locationId,
 					},
 				};
-			} else if (typeOfLocation.code === "residence") {
+			} else if (typeOfLocation.value === "residence") {
 				address.residenceAddress = {
 					number: number || null,
 					street: street || null,
 					postcode: postcode || null,
 					locationId,
 				};
-			} else if (typeOfLocation.code === "temporary_settlement") {
+			} else if (typeOfLocation.value === "temporary_settlement") {
 				address.temporarySettlementAddress = {
 					number: number || null,
 					street: street || null,
