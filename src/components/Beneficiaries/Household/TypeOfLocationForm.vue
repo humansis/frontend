@@ -116,6 +116,7 @@ import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import AddressService from "@/services/AddressService";
+import CONST from "@/const";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -151,12 +152,24 @@ export default {
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation?.value === "camp" && !form.campName) },
-			campName: { required: requiredIf((form) => form.typeOfLocation?.value === "camp" && !form.camp) },
-			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.value === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
-			street: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation?.value === "residence") },
+			camp: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code && !form.campName
+			)) },
+			campName: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code && !form.camp
+			)) },
+			tentNumber: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code
+			)) },
+			number: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
+			street: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
+			postcode: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
 		},
 	},
 
@@ -220,7 +233,7 @@ export default {
 
 		selectTypeOfLocation(value) {
 			this.$v.$reset();
-			this.campSelected = value.value === "camp";
+			this.campSelected = value.code === CONST.LOCATION_TYPE.camp.code;
 			this.validate("typeOfLocation");
 		},
 

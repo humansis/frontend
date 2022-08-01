@@ -14,6 +14,12 @@ const DEFAULT_LANGUAGE = {
 	name: "English",
 };
 
+const LOCATION_TYPE = {
+	camp: { code: "0" },
+	residence: { code: "1" },
+	temporarySettlement: { code: "2" },
+};
+
 export default {
 	ENV,
 	API_HOST,
@@ -21,4 +27,5 @@ export default {
 	API,
 	DEFAULT_COUNTRY,
 	DEFAULT_LANGUAGE,
+	LOCATION_TYPE,
 };

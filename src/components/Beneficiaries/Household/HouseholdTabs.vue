@@ -96,6 +96,7 @@ import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import permissions from "@/mixins/permissions";
+import CONST from "@/const";
 
 export default {
 	name: "HouseholdTabs",
@@ -426,7 +427,7 @@ export default {
 			},
 		) {
 			const address = {};
-			if (typeOfLocation.value === "camp") {
+			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
 				address.campAddress = {
 					tentNumber,
 					camp: {
@@ -434,14 +435,14 @@ export default {
 						locationId: locationId || camp?.locationId,
 					},
 				};
-			} else if (typeOfLocation.value === "residence") {
+			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.residence.code) {
 				address.residenceAddress = {
 					number: number || null,
 					street: street || null,
 					postcode: postcode || null,
 					locationId,
 				};
-			} else if (typeOfLocation.value === "temporary_settlement") {
+			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.temporarySettlement.code) {
 				address.temporarySettlementAddress = {
 					number: number || null,
 					street: street || null,
