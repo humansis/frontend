@@ -217,8 +217,6 @@ export default {
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
 			exportLoading: false,
-			minimumVulnerabilityScore: 0,
-			maximumVulnerabilityScore: 0,
 		};
 	},
 
@@ -240,34 +238,7 @@ export default {
 		},
 
 		vulnerabilityScoreLabel() {
-			const interval = this.minimumVulnerabilityScore !== Infinity
-			&& this.maximumVulnerabilityScore !== Infinity
-				? `(${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`
-				: "";
-
-			return `${this.$t("Minimum Vulnerability Score")} ${interval}`;
-		},
-
-		minimumSelectionScoreFieldType() {
-			if (this.minimumSelectionScoreValid === null) return "";
-
-			return this.isMinimumSelectionScoreValid ? "is-success" : "is-danger";
-		},
-
-		minimumSelectionScoreFieldMessage() {
-			if (this.minimumSelectionScoreValid === null) return "";
-
-			return this.isMinimumSelectionScoreValid ? "" : `${this.$t("Use number in this interval")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
-		},
-
-		isMinimumSelectionScoreValid() {
-			const infinityCheck = this.minimumVulnerabilityScore !== Infinity
-				&& this.maximumVulnerabilityScore !== Infinity;
-
-			if (!infinityCheck) return null;
-
-			return this.minimumSelectionScore >= this.minimumVulnerabilityScore
-				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore;
+			return this.$t("Minimum Vulnerability Score");
 		},
 	},
 
@@ -291,8 +262,6 @@ export default {
 		groups(groups) {
 			if (!groups.length) {
 				this.minimumSelectionScore = null;
-				this.minimumVulnerabilityScore = 0;
-				this.maximumVulnerabilityScore = 0;
 			}
 
 			this.$emit("onDeliveredCommodityValue");
@@ -335,7 +304,7 @@ export default {
 		},
 
 		async scoringTypeChanged() {
-			await this.fetchCriteriaInfo({ changeScoreInterval: true });
+			await this.fetchCriteriaInfo();
 		},
 
 		prepareCriteria() {
@@ -414,16 +383,16 @@ export default {
 
 			this.criteriaModal.isOpened = false;
 
-			this.fetchCriteriaInfo({ changeScoreInterval: true });
+			this.fetchCriteriaInfo();
 		},
 
-		fetchCriteriaInfo({ changeScoreInterval = true }) {
+		fetchCriteriaInfo() {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		onVulnerabilityScoreInput() {
@@ -435,11 +404,7 @@ export default {
 		async updateVulnerabilityScores() {
 			if (this.calculationLoading || !this.groups.length) return;
 
-			this.minimumSelectionScoreValid = this.isMinimumSelectionScoreValid;
-
-			if (!this.minimumSelectionScoreValid) return;
-
-			await this.fetchCriteriaInfo({ changeScoreInterval: false });
+			await this.fetchCriteriaInfo();
 
 			this.vulnerabilityScoreTouched = false;
 		},
@@ -459,7 +424,7 @@ export default {
 			}
 		},
 
-		async getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
+		async getCountOfBeneficiaries({ totalCount = false }) {
 			const threshold = this.minimumSelectionScore ?? null;
 			const assistanceBody = { ...this.assistanceBody };
 
@@ -473,7 +438,7 @@ export default {
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
 				await this.calculationOfAssistanceBeneficiariesScores(
-					{ assistanceBody, changeScoreInterval, totalCount },
+					{ assistanceBody, totalCount },
 				);
 			} else {
 				this.totalCount = 0;
@@ -519,7 +484,7 @@ export default {
 		},
 
 		async calculationOfAssistanceBeneficiariesScores(
-			{ assistanceBody, changeScoreInterval, totalCount },
+			{ assistanceBody, totalCount },
 		) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
@@ -539,13 +504,6 @@ export default {
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
 					}).finally(() => {
-						if (changeScoreInterval) {
-							const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
-
-							this.minimumVulnerabilityScore = Math.min.apply(null, scores);
-							this.maximumVulnerabilityScore = Math.max.apply(null, scores);
-						}
-
 						this.minimumSelectionScoreValid = null;
 					});
 			}
@@ -575,8 +533,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -588,8 +546,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		showBeneficiariesInGroup(key) {
@@ -613,8 +571,6 @@ export default {
 			this.countOf = 0;
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
-			this.minimumVulnerabilityScore = 0;
-			this.maximumVulnerabilityScore = 0;
 		},
 
 	},
