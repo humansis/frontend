@@ -388,7 +388,7 @@ export default {
 				street,
 				postcode,
 			} = this.household.currentLocation;
-			if (typeOfLocation.value === "camp") {
+			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
 				return `${campName}, ${tentNumber}`;
 			}
 			return `${number}, ${street}, ${postcode}`;

@@ -3,6 +3,7 @@ import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
 import baseHelper from "@/mixins/baseHelper";
 import i18n from "@/plugins/i18n";
+import CONST from "@/const";
 
 export default {
 	mixins: [baseHelper],
@@ -47,9 +48,24 @@ export default {
 				campAddressId,
 			},
 		) {
-			if (temporarySettlementAddressId) return { typeOfLocation: "temporary_settlement", addressId: temporarySettlementAddressId };
-			if (residenceAddressId) return { typeOfLocation: "residence", addressId: residenceAddressId };
-			if (campAddressId) return { typeOfLocation: "camp", addressId: campAddressId };
+			if (temporarySettlementAddressId) {
+				return {
+					typeOfLocation: CONST.LOCATION_TYPE.temporarySettlement.type,
+					addressId: temporarySettlementAddressId,
+				};
+			}
+			if (residenceAddressId) {
+				return {
+					typeOfLocation: CONST.LOCATION_TYPE.residence.type,
+					addressId: residenceAddressId,
+				};
+			}
+			if (campAddressId) {
+				return {
+					typeOfLocation: CONST.LOCATION_TYPE.camp.type,
+					addressId: campAddressId,
+				};
+			}
 
 			return { typeOfLocation: null, addressId: null };
 		},

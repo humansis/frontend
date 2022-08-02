@@ -215,16 +215,30 @@ export default {
 				await this.fetchCamps();
 			}
 			if (this.formModel.type) {
-				this.campSelected = this.formModel.type === "camp";
+				this.campSelected = this.formModel.type === CONST.LOCATION_TYPE.camp.type;
 				const typeOfLocation = this.options.typeOfLocation
-					.find((item) => this.formModel.type?.toLowerCase() === item.value?.toLowerCase());
+					.find((item) => {
+						const isCamp = this.formModel.type === CONST.LOCATION_TYPE.camp.type
+							&& item.code === CONST.LOCATION_TYPE.camp.code;
+
+						const isResidence = this.formModel.type === CONST.LOCATION_TYPE.residence.type
+							&& item.code === CONST.LOCATION_TYPE.residence.code;
+
+						// Save settlement.type to const variable to shorten line length
+						const TEMPORARY_SETTLEMENT_TYPE = CONST.LOCATION_TYPE.temporarySettlement.type;
+						const isTemporarySettlement = this.formModel.type === TEMPORARY_SETTLEMENT_TYPE
+							&& item.code === CONST.LOCATION_TYPE.temporarySettlement.code;
+
+						return isCamp || isResidence || isTemporarySettlement;
+					});
+
 				if (typeOfLocation) {
 					this.formModel.typeOfLocation = typeOfLocation;
 				}
 			}
 			const campId = this.formModel?.campId || this.formModel.camp?.id;
 			if (campId && !this.formModel.camp) {
-				this.campSelected = this.formModel.type === "camp";
+				this.campSelected = this.formModel.type === CONST.LOCATION_TYPE.camp.type;
 				this.formModel.camp = this.options.camps
 					.find((item) => campId === item.id);
 				this.campKey += 1;

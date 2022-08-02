@@ -15,9 +15,18 @@ const DEFAULT_LANGUAGE = {
 };
 
 const LOCATION_TYPE = {
-	camp: { code: "0" },
-	residence: { code: "1" },
-	temporarySettlement: { code: "2" },
+	camp: {
+		code: "0",
+		type: "camp",
+	},
+	residence: {
+		code: "1",
+		type: "residence",
+	},
+	temporarySettlement: {
+		code: "2",
+		type: "temporary_settlement",
+	},
 };
 
 export default {
