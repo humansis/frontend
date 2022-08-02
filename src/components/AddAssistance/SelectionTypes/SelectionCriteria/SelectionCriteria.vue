@@ -42,8 +42,8 @@
 		<div class="mb-2">
 			<SelectionCriteriaGroup
 				v-for="(group, key) of groups"
-				:data="group.data"
-				:count="group.tableData.length"
+				:data="group && group.data"
+				:count="group && group.tableData.length"
 				:key="key"
 				:group-id="key"
 				:target-type="selectedTargetType"
@@ -73,8 +73,6 @@
 					<b-field grouped>
 						<b-field
 							:label="vulnerabilityScoreLabel"
-							:type="minimumSelectionScoreFieldType"
-							:message="minimumSelectionScoreFieldMessage"
 							expanded
 						>
 							<b-numberinput
