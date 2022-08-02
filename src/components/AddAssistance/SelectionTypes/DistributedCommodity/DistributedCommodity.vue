@@ -119,8 +119,8 @@ export default {
 				isOpened: false,
 			},
 			formModel: {
+				modality: "",
 				modalityType: "",
-				type: "",
 				currency: "",
 				unit: "",
 				value: "",
@@ -135,8 +135,8 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "modality" },
 					{ key: "modalityType" },
-					{ key: "type" },
 					{ key: "unit" },
 					{ key: "value" },
 					{ key: "division", label: "For Each" },
@@ -185,7 +185,7 @@ export default {
 		preparedCommodities() {
 			return this.modifiedTableData.map((
 				{
-					type,
+					modalityType,
 					unit,
 					value,
 					description,
@@ -195,7 +195,7 @@ export default {
 					cashbackLimit,
 				},
 			) => ({
-				modalityType: type,
+				modalityType,
 				unit,
 				value,
 				description: description || "",
@@ -209,8 +209,8 @@ export default {
 		modifiedTableData() {
 			const tableData = this.table.data.map((
 				{
+					modality,
 					modalityType,
-					type,
 					unit,
 					currency,
 					value,
@@ -222,8 +222,8 @@ export default {
 					cashbackLimit,
 				},
 			) => ({
+				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
-				type: type?.value || type,
 				unit: unit || currency?.value,
 				value: Number(value) || Number(totalValueOfBooklet),
 				description,
@@ -250,8 +250,8 @@ export default {
 			this.commodityModal.isOpened = true;
 
 			this.formModel = {
+				modality: null,
 				modalityType: null,
-				type: null,
 				currency: null,
 				unit: null,
 				value: null,

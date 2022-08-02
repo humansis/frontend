@@ -356,15 +356,15 @@ export default {
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
-				const modalityType = this.getModalityByType(item.modalityType);
+				const modality = this.getModalityByType(item.modalityType);
 
 				preparedCommodities.push({
-					type: item.modalityType,
+					modalityType: item.modalityType,
 					value: item.value,
 					unit: item.unit,
 					description: item.description,
 					division: item.division,
-					modalityType,
+					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
 					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
 					cashbackLimit: assistance.cashbackLimit,

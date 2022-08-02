@@ -3,38 +3,38 @@
 		<section class="modal-card-body pb-6">
 			<b-field
 				class="relative-select"
-				:type="validateType('modalityType')"
-				:message="validateMsg('modalityType')"
+				:type="validateType('modality')"
+				:message="validateMsg('modality')"
 				:label="$t('Modality')"
 			>
 				<MultiSelect
-					v-model="formModel.modalityType"
+					v-model="formModel.modality"
 					:placeholder="$t('Click to select')"
 					label="value"
 					track-by="code"
 					:options="options.modalities"
 					searchable
 					:loading="loading.modalities"
-					:class="validateMultiselect('modalityType')"
+					:class="validateMultiselect('modality')"
 					@select="onModalitySelect"
 				/>
 			</b-field>
 
 			<b-field
 				class="relative-select"
-				:type="validateType('type')"
-				:message="validateMsg('type')"
-				:label="$t('Type')"
+				:type="validateType('modalityType')"
+				:message="validateMsg('modalityType')"
+				:label="$t('Modality Type')"
 			>
 				<MultiSelect
-					v-model="formModel.type"
+					v-model="formModel.modalityType"
 					label="value"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:options="options.types"
 					:loading="loading.types"
 					searchable
-					:class="validateMultiselect('type')"
+					:class="validateMultiselect('modalityType')"
 					@select="onModalityTypeSelect"
 				/>
 			</b-field>
@@ -262,8 +262,8 @@ export default {
 
 	validations: {
 		formModel: {
+			modality: { required },
 			modalityType: { required },
-			type: { required },
 			// eslint-disable-next-line func-names
 			currency: { required: requiredIf(function () {
 				return this.displayedFields.currency;
