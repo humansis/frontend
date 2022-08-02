@@ -77,7 +77,7 @@
 				</b-button>
 				<div>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:type="['is-link' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
 						:disabled="resolversAllLoading"
@@ -86,7 +86,7 @@
 						{{ $t('All From File') }}
 					</b-button>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:type="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
 						:disabled="resolversAllLoading"
@@ -95,7 +95,7 @@
 						{{ $t('All From Humansis') }}
 					</b-button>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						type="is-primary"
 						icon-right="tasks"
 						:loading="resolveDuplicitiesLoading"
@@ -201,6 +201,11 @@ export default {
 		identityStepActive() {
 			return this.status === consts.STATUS.IDENTITY_CHECK
 				|| this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+		},
+
+		canResolveDuplicities() {
+			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
 				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
