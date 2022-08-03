@@ -151,7 +151,15 @@
 				<ExportButton
 					v-if="exportButton && userCan.exportBeneficiaries"
 					type="is-primary"
-					label="Distribution List"
+					:label="$t(export_types.EXP_RAW)"
+					:loading="exportRawLoading"
+					:formats="{ xlsx: true, csv: true, ods: true}"
+					@onExport="exportBeneficiariesRaw"
+				/>
+				<ExportButton
+					v-if="exportButton && userCan.exportBeneficiaries"
+					type="is-primary"
+					:label="$t(export_types.EXP_DEFAULT)"
 					:loading="exportLoading"
 					:formats="{ xlsx: true, csv: true, ods: true}"
 					@onExport="exportBeneficiaries"
@@ -161,7 +169,7 @@
 						&& isDistributionExportVisible
 						&& userCan.exportBeneficiaries && isAssistanceValidated"
 					type="is-primary"
-					label="Bank Distribution List"
+					:label="$t(export_types.EXP_BANK)"
 					:loading="exportDistributionListLoading"
 					:formats="{ xlsx: true }"
 					@onExport="exportDistributionList"
@@ -226,6 +234,7 @@ import { generateColumns } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
+import exp from "@/utils/exportConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
@@ -272,6 +281,7 @@ export default {
 		return {
 			isLoadingList: false,
 			exportLoading: false,
+			exportRawLoading: false,
 			exportDistributionListLoading: false,
 			advancedSearchVisible: false,
 			commodities: [],
@@ -374,6 +384,7 @@ export default {
 				isWaiting: false,
 			},
 			assignVoucherToBeneficiaryId: null,
+			export_types: exp.TYPE,
 		};
 	},
 
@@ -662,21 +673,27 @@ export default {
 
 		async exportBeneficiaries(format) {
 			this.exportLoading = true;
-			await this.exportData(format, false, "beneficiaries");
+			await this.exportData(format, exp.TYPE.EXP_DEFAULT, "beneficiaries");
 			this.exportLoading = false;
+		},
+
+		async exportBeneficiariesRaw(format) {
+			this.exportRawLoading = true;
+			await this.exportData(format, exp.TYPE.EXP_RAW, "beneficiaries-raw");
+			this.exportRawLoading = false;
 		},
 
 		async exportDistributionList(format) {
 			this.exportDistributionListLoading = true;
-			await this.exportData(format, true, "distribution-list");
+			await this.exportData(format, exp.TYPE.EXP_BANK, "distribution-list");
 			this.exportDistributionListLoading = false;
 		},
 
-		async exportData(format, exportAsDistributionList = false, filename) {
+		async exportData(format, exportType = exp.TYPE.EXP_DEFAULT, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,
-					{ exportAsDistributionList },
+					{ exportType },
 				)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
