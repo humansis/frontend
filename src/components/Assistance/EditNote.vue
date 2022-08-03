@@ -1,27 +1,54 @@
 <template>
 	<div class="edit-note">
-		<div v-if="!edit">
+		<template v-if="!edit">
 			<div
 				class="note-text"
+				:class="displayFull ? 'note-text__full' : ''"
 			>
 				{{ noteComputed }}
 			</div>
-			<b-tooltip v-if="!completed" class="edit-btn-tooltip" label="Edit note">
+			<b-tooltip
+				v-if="!completed"
+				class="btn-tooltip"
+				:label="displayFull ? $t('Show less') : $t('Show full note')"
+			>
+				<b-button
+					v-if="noteComputed"
+					class="edit-btn"
+					:icon-left="displayFull ? 'arrow-up' : 'arrow-down'"
+					@click="toggleDisplayFull"
+				/>
+			</b-tooltip>
+			<b-tooltip v-if="!completed" class="btn-tooltip" :label="$t('Edit note')">
 				<b-button
 					class="edit-btn"
 					icon-left="pen"
 					@click="toggleEdit"
 				/>
 			</b-tooltip>
-		</div>
-		<b-field v-else>
+		</template>
+		<template v-else>
 			<b-input
 				v-model.trim="noteComputed"
 				type="textarea"
+				class="note-text-field"
 				:placeholder="$t('Type note...')"
-				@change.native="saveNote"
 			/>
-		</b-field>
+			<b-tooltip v-if="!completed" class="btn-tooltip" :label="$t('Save note')">
+				<b-button
+					class="edit-btn is-primary"
+					icon-left="save"
+					@click="saveNote"
+				/>
+			</b-tooltip>
+			<b-tooltip v-if="!completed" class="btn-tooltip" :label="$t('Discard changes')">
+				<b-button
+					class="edit-btn"
+					icon-left="times-circle"
+					@click="discardNoteChanges"
+				/>
+			</b-tooltip>
+		</template>
 	</div>
 </template>
 
@@ -35,6 +62,7 @@ export default {
 	data() {
 		return {
 			note: "",
+			displayFull: false,
 			edit: false,
 		};
 	},
@@ -80,9 +108,20 @@ export default {
 						Notification(this.$t("Note Successfully Updated"), "is-success");
 						this.edit = false;
 					}
+					this.assistance.note = this.note;
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				});
+		},
+
+		discardNoteChanges() {
+			this.note = this?.assistance?.note;
+			this.edit = false;
+		},
+
+		toggleDisplayFull() {
+			console.log(this.note, this.noteComputed);
+			this.displayFull = !this.displayFull;
 		},
 
 		toggleEdit() {
@@ -96,22 +135,26 @@ export default {
 .edit-note {
 	margin-bottom: 20px;
 	margin-right: 15px;
+	display: flex;
+	justify-content: space-evenly;
+	gap: 5px;
 	.note-text {
 		margin-left: 15px;
-		display: inline-block;
-		width: 95%;
-		@media only screen and (max-width: 750px) {
-			width: 90%;
-		}
+		margin-top: 8px;
+		flex-grow: 1;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		&__full {
+			white-space: break-spaces;
+			overflow: auto;
+		}
 	}
-	.edit-btn-tooltip {
+	.note-text-field {
+		flex-grow: 1;
+	}
+	.btn-tooltip {
 		float: right;
-	}
-	.edit-btn {
-		margin-top: -15px;
 	}
 }
 </style>
