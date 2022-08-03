@@ -471,10 +471,10 @@ export default {
 				dateExpiration: this.isDateValid(dateExpiration)
 					? dateExpiration.toISOString()
 					: new Date(this.project.endDate),
-				target: this.assistanceBody.target || targetType?.code,
-				type: this.assistanceBody.type || assistanceType?.code,
-				sector: this.assistanceBody.sector || sector?.code,
-				subsector: this.assistanceBody.subsector || subsector?.code,
+				target: targetType?.code,
+				type: assistanceType?.code,
+				sector: sector?.code,
+				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
 			};
 		},
