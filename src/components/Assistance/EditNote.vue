@@ -8,12 +8,11 @@
 				{{ noteComputed }}
 			</div>
 			<b-tooltip
-				v-if="!completed"
+				v-if="noteComputed"
 				class="btn-tooltip"
 				:label="displayFull ? $t('Show less') : $t('Show full note')"
 			>
 				<b-button
-					v-if="noteComputed"
 					class="edit-btn"
 					:icon-left="displayFull ? 'arrow-up' : 'arrow-down'"
 					@click="toggleDisplayFull"
