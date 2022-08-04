@@ -294,7 +294,7 @@ export default {
 					dateExpiration = "No Date";
 				}
 
-				const isCommoditySmartCard = preparedCommodity.modalityType === "Smartcard";
+				const isCommoditySmartCard = preparedCommodity?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
 					? dateExpiration : "N/A";
 

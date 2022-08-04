@@ -454,18 +454,17 @@ export default {
 
 			this.table.progress += 10;
 			const nationalIdIds = [];
-			this.table.data.forEach((item, key) => {
+			this.table.data.forEach(async (item, key) => {
 				const {
 					givenName,
 					familyName,
 					nationalId,
 					vulnerabilities,
-				} = this.prepareBeneficiaries(item.householdHeadId, beneficiaries);
-
+				} = await this
+					.prepareBeneficiaries(item.householdHeadId, item.beneficiaryIds, beneficiaries);
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
 						.find((vulnerability) => vulnerability === code));
-
 				this.table.data[key].givenName = givenName;
 				this.table.data[key].familyName = familyName;
 				this.table.data[key].nationalId = nationalId;
@@ -587,8 +586,9 @@ export default {
 				});
 		},
 
-		prepareBeneficiaries(id, beneficiaries) {
+		async prepareBeneficiaries(id, beneficiaryIds, beneficiaries) {
 			if (!beneficiaries?.length) return "";
+			const promises = [];
 			const result = {
 				familyName: "",
 				givenName: "",
@@ -602,6 +602,17 @@ export default {
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
 				result.vulnerabilities = beneficiary.vulnerabilityCriteria;
+				beneficiaryIds.forEach((memberId) => {
+					if (memberId !== id) {
+						const promise = BeneficiariesService.getBeneficiary(memberId).then((data) => {
+							result.vulnerabilities
+								.push(...data.vulnerabilityCriteria
+									.filter((item) => result.vulnerabilities.every(({ code }) => code !== item)));
+						});
+						promises.push(promise);
+					}
+				});
+				await Promise.all(promises);
 			}
 
 			return result;

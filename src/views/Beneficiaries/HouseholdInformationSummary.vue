@@ -34,6 +34,7 @@ import AddressService from "@/services/AddressService";
 import grid from "@/mixins/grid";
 import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
+import CONST from "@/const";
 
 export default {
 	name: "HouseholdInformationSummary",
@@ -87,7 +88,7 @@ export default {
 
 		async getAddresses(id, type) {
 			let address = null;
-			if (type === "camp") {
+			if (type === CONST.LOCATION_TYPE.camp.type) {
 				await AddressService.getCampAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {
@@ -97,7 +98,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
-			if (type === "residence") {
+			if (type === CONST.LOCATION_TYPE.residence.type) {
 				await AddressService.getResidenceAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {
@@ -107,7 +108,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 					});
 			}
-			if (type === "temporary_settlement") {
+			if (type === CONST.LOCATION_TYPE.temporarySettlement.type) {
 				await AddressService.getTemporarySettlementAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {

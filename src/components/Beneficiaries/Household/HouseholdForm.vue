@@ -262,6 +262,7 @@ import Validation from "@/mixins/validation";
 import getters from "@/store/getters";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import addressHelper from "@/mixins/addressHelper";
+import CONST from "@/const";
 
 export default {
 	name: "HouseholdForm",
@@ -290,7 +291,9 @@ export default {
 			countrySpecificOptions: [],
 			formModel: {
 				id: null,
-				currentLocation: {},
+				currentLocation: {
+					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
+				},
 				isCurrentLocationOtherThanAddress: false,
 				livelihood: {
 					livelihood: [],
@@ -366,7 +369,7 @@ export default {
 			this.loadingComponent.close();
 
 			await this.mapCurrentLocation().then((response) => {
-				this.formModel.currentLocation = response;
+				this.formModel.currentLocation = { ...this.formModel.currentLocation, ...response };
 			});
 		}
 		this.$emit("loaded");
@@ -382,15 +385,15 @@ export default {
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
 
 				switch (typeOfLocation) {
-					case "camp":
+					case CONST.LOCATION_TYPE.camp.type:
 						return AddressService.getCampAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 						});
-					case "residence":
+					case CONST.LOCATION_TYPE.residence.type:
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 						});
-					case "temporary_settlement":
+					case CONST.LOCATION_TYPE.temporarySettlement.type:
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
 						});
@@ -407,7 +410,9 @@ export default {
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
-				currentLocation: {},
+				currentLocation: {
+					typeOfLocation: null,
+				},
 				livelihood: {
 					...this.formModel.livelihood,
 					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,

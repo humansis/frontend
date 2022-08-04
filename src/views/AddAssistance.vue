@@ -356,15 +356,15 @@ export default {
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
-				const modalityType = this.getModalityByType(item.modalityType);
+				const modality = this.getModalityByType(item.modalityType);
 
 				preparedCommodities.push({
-					type: item.modalityType,
+					modalityType: item.modalityType,
 					value: item.value,
 					unit: item.unit,
 					description: item.description,
 					division: item.division,
-					modalityType,
+					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
 					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
 					cashbackLimit: assistance.cashbackLimit,
@@ -471,10 +471,10 @@ export default {
 				dateExpiration: this.isDateValid(dateExpiration)
 					? dateExpiration.toISOString()
 					: new Date(this.project.endDate),
-				target: this.assistanceBody.target || targetType?.code,
-				type: this.assistanceBody.type || assistanceType?.code,
-				sector: this.assistanceBody.sector || sector?.code,
-				subsector: this.assistanceBody.subsector || subsector?.code,
+				target: targetType?.code,
+				type: assistanceType?.code,
+				sector: sector?.code,
+				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
 			};
 		},
