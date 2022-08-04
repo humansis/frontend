@@ -456,17 +456,13 @@ export default {
 			const nationalIdIds = [];
 			this.table.data.forEach(async (item, key) => {
 				const {
-					givenName,
-					familyName,
 					nationalId,
-					vulnerabilities,
 				} = await this
-					.prepareBeneficiaries(item.householdHeadId, item.beneficiaryIds, beneficiaries);
+					.prepareBeneficiaries(item.householdHeadId, item.beneficiaryIds, beneficiaries, key);
+				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
 						.find((vulnerability) => vulnerability === code));
-				this.table.data[key].givenName = givenName;
-				this.table.data[key].familyName = familyName;
 				this.table.data[key].nationalId = nationalId;
 				this.table.data[key].supportDateReceived = item
 					.supportDateReceived ? new Date(item.supportDateReceived) : null;
@@ -586,28 +582,33 @@ export default {
 				});
 		},
 
-		async prepareBeneficiaries(id, beneficiaryIds, beneficiaries) {
+		async prepareBeneficiaries(id, beneficiaryIds, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
+			this.table.data[tableIndex].loading = true;
 			const promises = [];
 			const result = {
-				familyName: "",
-				givenName: "",
 				nationalId: "",
-				vulnerabilities: "",
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
-				result.familyName = this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-				result.givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
+				this.table.data[tableIndex].givenName = this.prepareName(
+					beneficiary.localFamilyName,
+					beneficiary.enFamilyName,
+				);
+				this.table.data[tableIndex].familyName = this.prepareName(
+					beneficiary.localGivenName,
+					beneficiary.enGivenName,
+				);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
-				result.vulnerabilities = beneficiary.vulnerabilityCriteria;
+				const vulnerabilities = beneficiary.vulnerabilityCriteria;
 				beneficiaryIds.forEach((memberId) => {
 					if (memberId !== id) {
 						const promise = BeneficiariesService.getBeneficiary(memberId).then((data) => {
-							result.vulnerabilities
+							vulnerabilities
 								.push(...data.vulnerabilityCriteria
-									.filter((item) => result.vulnerabilities.every(({ code }) => code !== item)));
+									.filter((item) => vulnerabilities.every(({ code }) => code !== item)));
+							this.$set(this.table.data[tableIndex], "vulnerabilities", vulnerabilities);
 						});
 						promises.push(promise);
 					}
@@ -615,6 +616,7 @@ export default {
 				await Promise.all(promises);
 			}
 
+			this.table.data[tableIndex].loading = false;
 			return result;
 		},
 

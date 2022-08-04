@@ -130,7 +130,12 @@
 			</span>
 
 			<p v-else>
-				{{ $t('None') }}
+				<span v-if="data.row.loading">
+					{{ $t('Loading...') }}
+				</span>
+				<span v-else>
+					{{ $t('None') }}
+				</span>
 			</p>
 		</template>
 
