@@ -234,7 +234,7 @@ import { generateColumns } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
-import exp from "@/utils/exportConst";
+import exportConsts from "@/utils/exportConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
@@ -384,7 +384,7 @@ export default {
 				isWaiting: false,
 			},
 			assignVoucherToBeneficiaryId: null,
-			export_types: exp.TYPE,
+			export_types: exportConsts.TYPE,
 		};
 	},
 
@@ -673,23 +673,23 @@ export default {
 
 		async exportBeneficiaries(format) {
 			this.exportLoading = true;
-			await this.exportData(format, exp.TYPE.EXP_DEFAULT, "beneficiaries");
+			await this.exportData(format, exportConsts.TYPE.EXP_DEFAULT, "beneficiaries");
 			this.exportLoading = false;
 		},
 
 		async exportBeneficiariesRaw(format) {
 			this.exportRawLoading = true;
-			await this.exportData(format, exp.TYPE.EXP_RAW, "beneficiaries-raw");
+			await this.exportData(format, exportConsts.TYPE.EXP_RAW, "beneficiaries-raw");
 			this.exportRawLoading = false;
 		},
 
 		async exportDistributionList(format) {
 			this.exportDistributionListLoading = true;
-			await this.exportData(format, exp.TYPE.EXP_BANK, "distribution-list");
+			await this.exportData(format, exportConsts.TYPE.EXP_BANK, "distribution-list");
 			this.exportDistributionListLoading = false;
 		},
 
-		async exportData(format, exportType = exp.TYPE.EXP_DEFAULT, filename) {
+		async exportData(format, exportType = exportConsts.TYPE.EXP_DEFAULT, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,
