@@ -5,7 +5,8 @@
 				v-if="integrityStepActive && status"
 				class="card-content"
 			>
-				<div class="content">
+				<div class="content loading-wrapper">
+					<Loading v-if="isCheckingIntegrity" b-loading />
 					<b-progress
 						v-if="totalEntries"
 						size="is-large"
@@ -15,13 +16,19 @@
 							<b-progress-bar
 								type="is-light"
 								show-value
-								:value="totalEntries - amountIntegrityFailed"
+								:value="entriesLeft"
 							/>
 							<b-progress-bar
 								v-if="amountIntegrityFailed"
 								type="is-danger"
 								show-value
-								:value="amountIntegrityFailed"
+								:value="amountIntegrityFailedIncrement"
+							/>
+							<b-progress-bar
+								v-if="amountIntegrityCorrect"
+								type="is-success"
+								show-value
+								:value="amountIntegrityCorrectIncrement"
 							/>
 						</template>
 					</b-progress>
@@ -290,15 +297,25 @@
 </template>
 
 <script>
+import graduallyIncrement from "@/mixins/graduallyIncrement";
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
+import Loading from "@/components/Loading";
 import consts from "@/utils/importConst";
 
 export default {
 	name: "IntegrityStep",
 
+	mixins: [graduallyIncrement],
+
+	components: {
+		Loading,
+	},
+
 	data() {
 		return {
+			amountIntegrityCorrectIncrement: 0,
+			amountIntegrityFailedIncrement: 0,
 			importStatistics: {},
 			dropFiles: [],
 			startIntegrityCheckAgainLoading: false,
@@ -346,6 +363,22 @@ export default {
 			this.getAffectedRecords();
 			this.importStatus = value;
 		},
+
+		amountIntegrityCorrect(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, 60);
+			} else {
+				this.amountIntegrityCorrectIncrement = this.amountIntegrityCorrect;
+			}
+		},
+
+		amountIntegrityFailed(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, 120);
+			} else {
+				this.amountIntegrityFailedIncrement = this.amountIntegrityFailed;
+			}
+		},
 	},
 
 	mounted() {
@@ -359,12 +392,24 @@ export default {
 				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
+		isCheckingIntegrity() {
+			return this.status === consts.STATUS.INTEGRITY_CHECK;
+		},
+
 		allowedFileExtensions() {
 			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
 
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
+		},
+
+		entriesLeft() {
+			if (this.amountIntegrityFailed) {
+				return this.totalEntries - this.amountIntegrityFailedIncrement
+					- this.amountIntegrityCorrectIncrement;
+			}
+			return this.totalEntries - this.amountIntegrityCorrectIncrement;
 		},
 
 		amountIntegrityCorrect() {
@@ -501,5 +546,8 @@ export default {
 <style scoped>
 table {
 	width: 100%;
+}
+.loading-wrapper {
+	position: relative;
 }
 </style>
