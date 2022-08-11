@@ -93,9 +93,8 @@
 						:tooltip="$t('View')"
 						@click="goToDetail(props.row.id)"
 					/>
-					{{  }}
 					<SafeDelete
-						:disabled="!props.row.deletable && userCan.deleteDistribution"
+						:disabled="!props.row.deletable || !userCan.deleteDistribution"
 						icon="trash"
 						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 						:entity="$t('Assistance')"
