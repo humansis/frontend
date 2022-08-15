@@ -215,7 +215,7 @@ export default {
 			if (this.isCheckingIdentity) {
 				this.graduallyIncrement("amountIdentityDuplicitiesIncr", newValue, 60);
 			} else {
-				this.amountIdentityDuplicitiesIcr = newValue;
+				this.amountIdentityDuplicitiesIncr = newValue;
 			}
 		},
 
@@ -250,7 +250,7 @@ export default {
 
 		entriesLeft() {
 			if (this.amountIdentityDuplicities) {
-				return this.totalEntries - this.amountIdentityDuplicitiesIcr
+				return this.totalEntries - this.amountIdentityDuplicitiesIncr
 					- this.amountIdentityDuplicitiesResolvedIncr;
 			}
 			return this.totalEntries - this.amountIdentityDuplicitiesResolvedIncr;
