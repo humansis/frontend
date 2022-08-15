@@ -155,7 +155,7 @@ import Loading from "@/components/Loading";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "DuplicityStep",
+	name: "IdentityStep",
 
 	mixins: [graduallyIncrement],
 
@@ -215,7 +215,7 @@ export default {
 			if (this.isCheckingIdentity) {
 				this.graduallyIncrement("amountIdentityDuplicitiesIncr", newValue, 60);
 			} else {
-				this.amountIdentityDuplicitiesIcr = this.amountIdentityDuplicities;
+				this.amountIdentityDuplicitiesIcr = newValue;
 			}
 		},
 
@@ -223,7 +223,7 @@ export default {
 			if (this.isCheckingIdentity) {
 				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncr", newValue, 120);
 			} else {
-				this.amountIdentityDuplicitiesResolvedIncr = this.amountIdentityDuplicitiesResolved;
+				this.amountIdentityDuplicitiesResolvedIncr = newValue;
 			}
 		},
 	},

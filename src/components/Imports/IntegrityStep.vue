@@ -368,7 +368,7 @@ export default {
 			if (this.isCheckingIntegrity) {
 				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, 60);
 			} else {
-				this.amountIntegrityCorrectIncrement = this.amountIntegrityCorrect;
+				this.amountIntegrityCorrectIncrement = newValue;
 			}
 		},
 
@@ -376,7 +376,7 @@ export default {
 			if (this.isCheckingIntegrity) {
 				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, 120);
 			} else {
-				this.amountIntegrityFailedIncrement = this.amountIntegrityFailed;
+				this.amountIntegrityFailedIncrement = newValue;
 			}
 		},
 	},
