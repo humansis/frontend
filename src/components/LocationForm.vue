@@ -89,7 +89,8 @@ import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
-import AddressService from "../services/AddressService";
+import AddressService from "@/services/AddressService";
+import CONST from "@/const";
 
 export default {
 	name: "LocationForm",
@@ -259,7 +260,7 @@ export default {
 
 		async mapLocations() {
 			this.mapping = true;
-			if (this.formModel.type === "camp") {
+			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type) {
 				await this.fetchCamps(this.formModel.campId);
 			}
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;

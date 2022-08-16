@@ -58,6 +58,7 @@
 		</b-table-column>
 		<template #export>
 			<ExportButton
+				v-if="table.data.length"
 				space-between
 				type="is-primary"
 				:loading="exportLoading"

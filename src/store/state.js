@@ -38,7 +38,7 @@ export default {
 	languages: [
 		{ name: "English", key: "en", direction: "ltr" },
 		{ name: "Arabic", key: "ar", direction: "rtl" },
-		{ name: "Ukrainian", key: "ua", direction: "ltr" },
+		{ name: "Ukrainian", key: "uk", direction: "ltr" },
 		{ name: "Russian", key: "ru", direction: "ltr" },
 		{ name: "Amharic", key: "am", direction: "ltr" },
 		{ name: "French", key: "fr", direction: "ltr" },

@@ -75,8 +75,8 @@ export default {
 			const preparedData = [...this.data];
 
 			preparedData.forEach((item, key) => {
-				const criteria = this.scores.find(({ beneficiaryId }) => item.id === beneficiaryId);
-				preparedData[key].vulnerability = criteria?.totalScore || "";
+				const criteria = this.scores.find(({ beneficiaryId }) => item.id === beneficiaryId) || {};
+				preparedData[key].vulnerability = criteria.totalScore;
 			});
 
 			this.table.data = preparedData;

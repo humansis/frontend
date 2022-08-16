@@ -86,6 +86,7 @@
 
 		<template #export>
 			<ExportButton
+				v-if="table.data.length"
 				space-between
 				class="ml-3"
 				type="is-primary"
@@ -133,6 +134,14 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 
+/*
+const statusTags = [
+	{ code: "toRedeem", type: "is-light" },
+	{ code: "syncRequired", type: "is-warning" },
+	{ code: "invoiced", type: "is-success" },
+];
+*/
+
 export default {
 	name: "VendorsList",
 
@@ -163,6 +172,8 @@ export default {
 					{ key: "categoryType", width: "200", type: "svgIcon" },
 					{ key: "vendorNo", label: "Vendor No." },
 					{ key: "contractNo", label: "Contract No." },
+					// TODO Temporary hidden (not implemented yet)
+					// { key: "invoicing", width: "100", type: "tag", customTags: statusTags },
 					{ key: "addressNumber" },
 					{ key: "addressPostcode" },
 					{ key: "addressStreet" },
@@ -263,6 +274,8 @@ export default {
 					categoryTypes.push({ code: "Cashback", value: "Cashback" });
 				}
 
+				// TODO Temporary hidden (not implemented yet)
+				// this.table.data[key].invoicing = "syncRequired";
 				this.table.data[key].categoryType = categoryTypes;
 			});
 

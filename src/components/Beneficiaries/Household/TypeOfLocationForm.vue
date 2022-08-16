@@ -116,6 +116,7 @@ import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import AddressService from "@/services/AddressService";
+import CONST from "@/const";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -151,17 +152,30 @@ export default {
 	validations: {
 		formModel: {
 			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.campName) },
-			campName: { required: requiredIf((form) => form.typeOfLocation?.code === "camp" && !form.camp) },
-			tentNumber: { required: requiredIf((form) => form.typeOfLocation?.code === "camp") },
-			number: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
-			street: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
-			postcode: { required: requiredIf((form) => form.typeOfLocation?.code === "residence") },
+			camp: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code && !form.campName
+			)) },
+			campName: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code && !form.camp
+			)) },
+			tentNumber: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.camp.code
+			)) },
+			number: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
+			street: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
+			postcode: { required: requiredIf((form) => (
+				form.typeOfLocation?.code === CONST.LOCATION_TYPE.residence.code
+			)) },
 		},
 	},
 
 	async mounted() {
 		await this.fetchLocationsTypes();
+		await this.mapLocations();
 	},
 
 	methods: {
@@ -201,13 +215,30 @@ export default {
 				await this.fetchCamps();
 			}
 			if (this.formModel.type) {
-				this.campSelected = this.formModel.type === "camp";
-				this.formModel.typeOfLocation = this.options.typeOfLocation
-					.find((item) => this.formModel.type === item.code);
+				this.campSelected = this.formModel.type === CONST.LOCATION_TYPE.camp.type;
+				const typeOfLocation = this.options.typeOfLocation
+					.find((item) => {
+						const isCamp = this.formModel.type === CONST.LOCATION_TYPE.camp.type
+							&& item.code === CONST.LOCATION_TYPE.camp.code;
+
+						const isResidence = this.formModel.type === CONST.LOCATION_TYPE.residence.type
+							&& item.code === CONST.LOCATION_TYPE.residence.code;
+
+						// Save settlement.type to const variable to shorten line length
+						const TEMPORARY_SETTLEMENT_TYPE = CONST.LOCATION_TYPE.temporarySettlement.type;
+						const isTemporarySettlement = this.formModel.type === TEMPORARY_SETTLEMENT_TYPE
+							&& item.code === CONST.LOCATION_TYPE.temporarySettlement.code;
+
+						return isCamp || isResidence || isTemporarySettlement;
+					});
+
+				if (typeOfLocation) {
+					this.formModel.typeOfLocation = typeOfLocation;
+				}
 			}
 			const campId = this.formModel?.campId || this.formModel.camp?.id;
 			if (campId && !this.formModel.camp) {
-				this.campSelected = this.formModel.type === "camp";
+				this.campSelected = this.formModel.type === CONST.LOCATION_TYPE.camp.type;
 				this.formModel.camp = this.options.camps
 					.find((item) => campId === item.id);
 				this.campKey += 1;
@@ -216,7 +247,7 @@ export default {
 
 		selectTypeOfLocation(value) {
 			this.$v.$reset();
-			this.campSelected = value.code === "camp";
+			this.campSelected = value.code === CONST.LOCATION_TYPE.camp.code;
 			this.validate("typeOfLocation");
 		},
 

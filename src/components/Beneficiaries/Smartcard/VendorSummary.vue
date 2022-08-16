@@ -39,6 +39,7 @@
 								type="is-primary"
 								:loading="redeemLoading === batch"
 								:label="$t('Redeem')"
+								:disabled="!batch.projectId"
 								@click.native="redeem(batch)"
 							/>
 						</div>

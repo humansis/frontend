@@ -93,9 +93,8 @@
 						:tooltip="$t('View')"
 						@click="goToDetail(props.row.id)"
 					/>
-					{{  }}
 					<SafeDelete
-						:disabled="!props.row.deletable && userCan.deleteDistribution"
+						:disabled="!props.row.deletable || !userCan.deleteDistribution"
 						icon="trash"
 						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 						:entity="$t('Assistance')"
@@ -294,7 +293,7 @@ export default {
 					dateExpiration = "No Date";
 				}
 
-				const isCommoditySmartCard = preparedCommodity.modalityType === "Smartcard";
+				const isCommoditySmartCard = preparedCommodity?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
 					? dateExpiration : "N/A";
 

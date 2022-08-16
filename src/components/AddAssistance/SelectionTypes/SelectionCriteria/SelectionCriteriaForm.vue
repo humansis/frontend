@@ -335,7 +335,7 @@ export default {
 		},
 
 		presetValueBasedOnCriteria(criteria) {
-			const criteriaWithPresetValue = ["disabled", "soloParent", "lactating", "pregnant"];
+			const criteriaWithPresetValue = ["disabled", "disabledHeadOfHousehold", "soloParent", "lactating", "pregnant", "chronicallyIll"];
 			// if any of these criteria is set, preset value to true and disable the field
 			if (criteriaWithPresetValue.includes(criteria.code)) {
 				[this.formModel.value] = this.options.boolean;

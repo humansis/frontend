@@ -42,8 +42,8 @@
 		<div class="mb-2">
 			<SelectionCriteriaGroup
 				v-for="(group, key) of groups"
-				:data="group.data"
-				:count="group.tableData.length"
+				:data="group && group.data"
+				:count="group && group.tableData.length"
 				:key="key"
 				:group-id="key"
 				:target-type="selectedTargetType"
@@ -66,84 +66,88 @@
 				</p>
 			</b-notification>
 		</div>
-		<div class="is-align-items-flex-end">
-			<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
-				<b-field grouped group-multiline>
-					<b-field
-						:label="vulnerabilityScoreLabel"
-						:type="minimumSelectionScoreFieldType"
-						:message="minimumSelectionScoreFieldMessage"
-						expanded
-					>
-						<b-numberinput
-							v-model="minimumSelectionScore"
+
+		<div class="columns">
+			<div class="column is-4">
+				<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
+					<b-field grouped>
+						<b-field
+							:label="vulnerabilityScoreLabel"
 							expanded
-							class="vulnerability-number-input"
-							type="is-dark"
-							:controls="false"
-							:disabled="calculationLoading || !groups.length"
-							@input="onVulnerabilityScoreInput"
-						/>
-					</b-field>
-					<b-field
-						class="vulnerability-type-field"
-						:label="$t('Scoring Type')"
-						expanded
-					>
-						<MultiSelect
-							v-model="scoringType"
-							:placeholder="$t('Click to select')"
-							label="name"
-							track-by="id"
-							:options="options.scoringTypes"
-							:loading="scoringTypesLoading"
-							:disabled="calculationLoading || !groups.length"
-							:searchable="false"
-							@select="scoringTypeChanged"
-						/>
-					</b-field>
-					<div class="score-vulnerability-actions">
-						<b-button
-							class="ml-2 vulnerability-update-button"
-							type="is-primary"
-							:disabled="calculationLoading || !groups.length"
-							@click="updateVulnerabilityScores"
 						>
-							{{ $t('Update') }}
-						</b-button>
-					</div>
-				</b-field>
-			</form>
-			<div ref="groupsCalculation">
-				<b-field>
-					<div class="selection-details">
-						<p class="subtitle is-4 mb-0 mr-3 ml-3">
-							<strong>
-								{{ countOf }}/{{ totalCount }}
-							</strong>
-							{{ $t(selectedTargetType) }}
-						</p>
-						<b-button
-							class="is-pulled-right"
-							icon="detail"
-							type="is-link"
-							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-							@click="showTotalBeneficiaries"
-						>
-							{{ $t('Details') }}
-						</b-button>
-						<ExportButton
-							type="is-primary"
-							class="ml-2"
-							:label="$t('Export Details')"
-							:loading="exportLoading"
-							:formats="{ xlsx: true }"
-							:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-							@onExport="exportSelectedBeneficiaries"
-						/>
-					</div>
+							<b-numberinput
+								v-model="minimumSelectionScore"
+								expanded
+								class="vulnerability-number-input"
+								type="is-dark"
+								:controls="false"
+								:disabled="calculationLoading || !groups.length"
+								@input="onVulnerabilityScoreInput"
+							/>
+						</b-field>
+					</b-field>
+				</form>
+			</div>
+
+			<div class="column is-3">
+				<b-field
+					class="vulnerability-type-field"
+					:label="$t('Scoring Type')"
+					expanded
+				>
+					<MultiSelect
+						v-model="scoringType"
+						:placeholder="$t('Click to select')"
+						label="name"
+						track-by="id"
+						:options="options.scoringTypes"
+						:loading="scoringTypesLoading"
+						:disabled="calculationLoading || !groups.length"
+						:searchable="false"
+						:allow-empty="false"
+						@select="scoringTypeChanged"
+					/>
 				</b-field>
 			</div>
+
+			<div class="column is-5 is-flex is-justify-content-space-between scoring-actions">
+				<b-button
+					class="vulnerability-update-button"
+					type="is-info"
+					:disabled="calculationLoading || !groups.length"
+					@click="updateVulnerabilityScores"
+				>
+					{{ $t('Update') }}
+				</b-button>
+
+				<div>
+					<b-button
+						icon="detail"
+						type="is-link"
+						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+						@click="showTotalBeneficiaries"
+					>
+						{{ $t('Details') }}
+					</b-button>
+
+					<ExportButton
+						type="is-primary"
+						class="ml-1"
+						:label="$t('Export Details')"
+						:loading="exportLoading"
+						:formats="{ xlsx: true }"
+						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+						@onExport="exportSelectedBeneficiaries"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div class="subtitle is-4 mb-0 has-text-right">
+			<strong>
+				{{ countOf }}/{{ totalCount }}
+			</strong>
+			{{ $t(selectedTargetType) }}
 		</div>
 	</div>
 </template>
@@ -197,10 +201,10 @@ export default {
 				isOpened: false,
 			},
 			options: {
-				scoringTypes: [{ archived: false, name: "Default", id: null }],
+				scoringTypes: [AssistancesService.getDefaultScoringType()],
 			},
-			minimumSelectionScore: 0,
-			scoringType: { archived: false, name: "Default", id: null },
+			minimumSelectionScore: null,
+			scoringType: AssistancesService.getDefaultScoringType(),
 			scoringTypesLoading: false,
 			minimumSelectionScoreValid: null,
 			beneficiariesData: [],
@@ -211,8 +215,6 @@ export default {
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
 			exportLoading: false,
-			minimumVulnerabilityScore: 0,
-			maximumVulnerabilityScore: 0,
 		};
 	},
 
@@ -234,34 +236,7 @@ export default {
 		},
 
 		vulnerabilityScoreLabel() {
-			const interval = this.minimumVulnerabilityScore !== Infinity
-			&& this.maximumVulnerabilityScore !== Infinity
-				? `(${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`
-				: "";
-
-			return `${this.$t("Minimum Vulnerability Score")} ${interval}`;
-		},
-
-		minimumSelectionScoreFieldType() {
-			if (this.minimumSelectionScoreValid === null) return "";
-
-			return this.isMinimumSelectionScoreValid ? "is-success" : "is-danger";
-		},
-
-		minimumSelectionScoreFieldMessage() {
-			if (this.minimumSelectionScoreValid === null) return "";
-
-			return this.isMinimumSelectionScoreValid ? "" : `${this.$t("Use number in this interval")} (${this.minimumVulnerabilityScore} - ${this.maximumVulnerabilityScore})`;
-		},
-
-		isMinimumSelectionScoreValid() {
-			const infinityCheck = this.minimumVulnerabilityScore !== Infinity
-				&& this.maximumVulnerabilityScore !== Infinity;
-
-			if (!infinityCheck) return null;
-
-			return this.minimumSelectionScore >= this.minimumVulnerabilityScore
-				&& this.minimumSelectionScore <= this.maximumVulnerabilityScore;
+			return this.$t("Minimum Vulnerability Score");
 		},
 	},
 
@@ -284,9 +259,7 @@ export default {
 	watch: {
 		groups(groups) {
 			if (!groups.length) {
-				this.minimumSelectionScore = 0;
-				this.minimumVulnerabilityScore = 0;
-				this.maximumVulnerabilityScore = 0;
+				this.minimumSelectionScore = null;
 			}
 
 			this.$emit("onDeliveredCommodityValue");
@@ -328,10 +301,8 @@ export default {
 			this.exportLoading = false;
 		},
 
-		scoringTypeChanged() {
-			this.minimumVulnerabilityScore = 0;
-			this.maximumVulnerabilityScore = 0;
-			this.minimumSelectionScore = 0;
+		async scoringTypeChanged() {
+			await this.fetchCriteriaInfo();
 		},
 
 		prepareCriteria() {
@@ -367,7 +338,7 @@ export default {
 
 			switch (dataType) {
 				case consts.FIELD_TYPE.DATE:
-					result = new Date(newValue.toString()).toISOString();
+					result = this.$moment(newValue).format("YYYY-MM-DD");
 					break;
 				case consts.FIELD_TYPE.LOCATION:
 					result = Number(newValue.replace("locationId-", ""));
@@ -418,11 +389,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			const changeScoreInterval = this.minimumVulnerabilityScore === this.maximumVulnerabilityScore
-				&& this.minimumVulnerabilityScore === 0;
-
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		onVulnerabilityScoreInput() {
@@ -433,10 +401,6 @@ export default {
 
 		async updateVulnerabilityScores() {
 			if (this.calculationLoading || !this.groups.length) return;
-
-			this.minimumSelectionScoreValid = this.isMinimumSelectionScoreValid;
-
-			if (!this.minimumSelectionScoreValid) return;
 
 			await this.fetchCriteriaInfo();
 
@@ -449,7 +413,7 @@ export default {
 
 			assistanceBody.selectionCriteria = preparedCriteria
 				.filter(({ group }) => group === groupKey);
-			assistanceBody.threshold = 0;
+			assistanceBody.threshold = null;
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({
@@ -458,18 +422,21 @@ export default {
 			}
 		},
 
-		async getCountOfBeneficiaries({ totalCount = false, changeScoreInterval }) {
-			const threshold = this.minimumSelectionScore || 0;
+		async getCountOfBeneficiaries({ totalCount = false }) {
+			const threshold = this.minimumSelectionScore ?? null;
 			const assistanceBody = { ...this.assistanceBody };
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
-			assistanceBody.threshold = totalCount ? 0 : threshold;
-			assistanceBody.scoringBlueprintId = null;
+			assistanceBody.threshold = totalCount ? null : threshold;
+
+			if (totalCount) {
+				assistanceBody.scoringBlueprintId = null;
+			}
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
 				await this.calculationOfAssistanceBeneficiariesScores(
-					{ assistanceBody, changeScoreInterval },
+					{ assistanceBody, totalCount },
 				);
 			} else {
 				this.totalCount = 0;
@@ -514,33 +481,30 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores({ assistanceBody, changeScoreInterval }) {
+		async calculationOfAssistanceBeneficiariesScores(
+			{ assistanceBody, totalCount },
+		) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
-				scoringBlueprintId: this.scoringType.id || null,
-				threshold: this.minimumSelectionScore,
+				scoringBlueprintId: this.scoringType?.id || null,
+				threshold: totalCount ? null : this.minimumSelectionScore,
 			};
 
-			await AssistancesService.calculationOfBeneficiariesScores(body)
-				.then(({ data, status }) => {
-					if (status === 200) {
-						this.beneficiariesScores = data.data;
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-				}).finally(() => {
-					if (changeScoreInterval) {
-						const scores = this.beneficiariesScores.map(({ totalScore }) => totalScore);
-
-						this.minimumVulnerabilityScore = Math.min.apply(null, scores);
-						this.maximumVulnerabilityScore = Math.max.apply(null, scores);
-					}
-
-					this.minimumSelectionScoreValid = null;
-				});
+			if (beneficiaryIds.length) {
+				await AssistancesService.calculationOfBeneficiariesScores(body)
+					.then(({ data, status }) => {
+						if (status === 200) {
+							this.beneficiariesScores = data.data;
+						}
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+					}).finally(() => {
+						this.minimumSelectionScoreValid = null;
+					});
+			}
 		},
 
 		async fetchScoringTypes() {
@@ -567,8 +531,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -580,8 +544,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true, changeScoreInterval: true });
-			this.getCountOfBeneficiaries({ totalCount: false, changeScoreInterval: true });
+			this.getCountOfBeneficiaries({ totalCount: true });
+			this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		showBeneficiariesInGroup(key) {
@@ -605,8 +569,6 @@ export default {
 			this.countOf = 0;
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
-			this.minimumVulnerabilityScore = 0;
-			this.maximumVulnerabilityScore = 0;
 		},
 
 	},
@@ -630,14 +592,7 @@ export default {
 	height: 40px;
 }
 
-.vulnerability-type-field {
-	min-width: 310px;
-}
-
-.score-vulnerability-actions {
-	display: flex;
-	justify-content: space-between;
-	flex: 1;
-	padding-top: 28px;
+.scoring-actions {
+	padding-top: 39px;
 }
 </style>

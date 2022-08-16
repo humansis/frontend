@@ -15,6 +15,7 @@
 					icon="calendar-day"
 					trap-focus
 					:max-date="maxDateOfAssistance"
+					:min-date="minDateOfAssistance"
 					:placeholder="$t('Click to select')"
 					@input="dateOfAssistanceChanged"
 				/>
@@ -234,8 +235,8 @@ export default {
 	},
 
 	async mounted() {
+		this.setExpirationAndAssistanceDate();
 		await this.fetchSectors();
-		this.setExpirationDate();
 	},
 
 	updated() {
@@ -247,10 +248,18 @@ export default {
 			const { endDate } = this.project;
 			return endDate ? new Date(endDate) : new Date();
 		},
+
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return startDate ? new Date(startDate) : new Date();
+		},
 	},
 
 	methods: {
-		setExpirationDate() {
+		setExpirationAndAssistanceDate() {
+			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
+				? this.minDateOfAssistance
+				: new Date();
 			this.formModel.dateExpiration = this.maxDateOfAssistance;
 		},
 
@@ -339,7 +348,7 @@ export default {
 			if (!(this.formModel.assistanceType && this.formModel.targetType)) return [];
 			const {
 				assistanceType: { code: assistanceType },
-				targetType: { value: targetType },
+				targetType: { code: targetType },
 			} = this.formModel;
 
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {

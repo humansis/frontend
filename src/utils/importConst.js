@@ -8,6 +8,7 @@ const IMPORTING = "Importing";
 
 // Import Statuses
 const NEW = "New";
+const UPDATING = "UPDATING";
 const INTEGRITY_CHECK = "Integrity Checking";
 const INTEGRITY_CHECK_CORRECT = "Integrity Check Correct";
 const INTEGRITY_CHECK_FAILED = "Integrity Check Failed";
@@ -38,6 +39,7 @@ export default {
 	},
 	STATUS: {
 		NEW,
+		UPDATING,
 		INTEGRITY_CHECK,
 		INTEGRITY_CHECK_CORRECT,
 		INTEGRITY_CHECK_FAILED,

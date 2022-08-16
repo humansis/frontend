@@ -2,9 +2,8 @@
 	<div>
 		<h1 class="title">{{ $t('New Assistance') }}</h1>
 		<div class="columns">
-			<div class="column">
+			<div v-if="isProjectReady" class="column">
 				<NewAssistanceForm
-					v-if="project"
 					ref="newAssistanceForm"
 					:project="project"
 					:data="componentsData.newAssistanceForm"
@@ -26,7 +25,7 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
-					v-if="project"
+					v-if="isProjectReady"
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
@@ -100,6 +99,7 @@ export default {
 				selectionCriteria: null,
 			},
 			project: {},
+			isProjectReady: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -127,7 +127,7 @@ export default {
 				selectionCriteria: [],
 				communities: [],
 				institutions: [],
-				threshold: 0,
+				threshold: null,
 				completed: false,
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
@@ -164,6 +164,8 @@ export default {
 	},
 
 	async created() {
+		await this.fetchProject();
+
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
@@ -193,18 +195,18 @@ export default {
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}
-
-		await this.fetchProject();
 	},
 
 	methods: {
 		async fetchProject() {
+			this.isProjectReady = false;
 			const { projectId } = this.$route.params;
 
 			if (projectId) {
 				await ProjectService.getDetailOfProject(projectId)
 					.then(({ data }) => {
 						this.project = data;
+						this.isProjectReady = true;
 					})
 					.catch((e) => {
 						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
@@ -339,14 +341,17 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 
-			const scoringType = this.scoringTypes
-				.find(({ code }) => code === assistance.scoringBlueprintId);
+			const scoringType = assistance.scoringBlueprint === null
+				? AssistancesService.getDefaultScoringType()
+				: this.scoringTypes.filter(({ archived }) => !archived)
+					.find(({ id }) => id === assistance.scoringBlueprint?.id);
 
-			if (assistance.scoringBlueprintId && !scoringType) {
+			if (assistance.scoringBlueprint && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
 			this.$refs.selectionCriteria.scoringType = scoringType || null;
+			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
@@ -354,8 +359,8 @@ export default {
 				const modality = this.getModalityByType(item.modalityType);
 
 				preparedCommodities.push({
-					type: item.modalityType,
-					quantity: item.value,
+					modalityType: item.modalityType,
+					value: item.value,
 					unit: item.unit,
 					description: item.description,
 					division: item.division,
@@ -378,7 +383,7 @@ export default {
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
 
-			await this.$refs.selectionCriteria.fetchCriteriaInfo();
+			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		mapSelectionCriteria() {
@@ -435,7 +440,9 @@ export default {
 		},
 
 		isDateValid(inputDate) {
-			return inputDate instanceof Date && !Number.isNaN(inputDate);
+			return inputDate instanceof Date && !Number.isNaN(inputDate)
+				&& inputDate >= new Date(this.project.startDate)
+				&& inputDate <= new Date(this.project.endDate);
 		},
 
 		fetchAssistanceCommodities() {
@@ -460,10 +467,10 @@ export default {
 				...this.assistanceBody,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
-					: new Date(),
+					: new Date(this.project.startDate),
 				dateExpiration: this.isDateValid(dateExpiration)
 					? dateExpiration.toISOString()
-					: new Date(),
+					: new Date(this.project.endDate),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -480,7 +487,7 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
-				scoringBlueprintId: scoringType?.code || null,
+				scoringBlueprintId: scoringType?.id || null,
 				threshold: minimumSelectionScore,
 			};
 		},
