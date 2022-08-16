@@ -450,7 +450,7 @@ export default {
 
 			this.table.progress += 10;
 			const nationalIdIds = [];
-			this.table.data.forEach(async (item, key) => {
+			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalId,
 				} = await this
