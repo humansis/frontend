@@ -310,16 +310,6 @@ export default {
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities", type: "svgIcon" },
 				],
-				householdsAndIndividualDetailColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
-					{ key: "nationalId", label: "ID Number", sortable: true },
-					{ key: "status", type: "tagArray", customTags: statusTags },
-					{ key: "toDistribute", type: "arrayTextBreak" },
-					{ key: "distributed", type: "arrayTextBreak" },
-					{ key: "lastModified", type: "arrayTextBreak" },
-				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
 					{ key: "name", sortable: true },
@@ -391,6 +381,26 @@ export default {
 	computed: {
 		...mapState(["perPage"]),
 
+		householdsAndIndividualDetailColumns() {
+			const baseColumns = [
+				{ key: "id", label: "Beneficiary ID", sortable: true },
+				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
+				{ key: "nationalId", label: "ID Number", sortable: true },
+				{ key: "status", type: "tagArray", customTags: statusTags },
+				{ key: "toDistribute", type: "arrayTextBreak" },
+				{ key: "distributed", type: "arrayTextBreak" },
+				{ key: "lastModified", type: "arrayTextBreak" },
+			];
+
+			if (this.isCommoditySmartcard) {
+				const distributedIndex = baseColumns.findIndex((element) => element.key === "distributed");
+				baseColumns.splice(distributedIndex + 1, 0, { key: "spent", type: "arrayTextBreak" });
+			}
+
+			return baseColumns;
+		},
+
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
 		},
@@ -403,6 +413,10 @@ export default {
 			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH)
 				&& this.assistance?.type === "distribution"
 				&& this.assistance?.subsector === "multi_purpose_cash_assistance";
+		},
+
+		isCommoditySmartcard() {
+			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.SMARTCARD);
 		},
 	},
 
@@ -516,7 +530,7 @@ export default {
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					baseColumns = this.isAssistanceDetail
-						? this.table.householdsAndIndividualDetailColumns
+						? this.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
