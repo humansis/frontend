@@ -46,50 +46,6 @@ export default {
 			this.reload();
 		},
 
-		async prepareAdm1ForTable(adm1Ids) {
-			this.table.progress += 10;
-
-			const adm1s = await this.getAdm1s(adm1Ids);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].adm1 = this.prepareEntityForTable(item.adm1Id, adm1s, "name", "None");
-			});
-
-			this.reload();
-		},
-
-		async prepareAdm2ForTable(adm2Ids) {
-			this.table.progress += 10;
-
-			const adm2s = await this.getAdm2s(adm2Ids);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].adm2 = this.prepareEntityForTable(item.adm2Id, adm2s, "name", "None");
-			});
-
-			this.reload();
-		},
-
-		async prepareAdm3ForTable(adm3Ids) {
-			this.table.progress += 10;
-
-			const adm3s = await this.getAdm3s(adm3Ids);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].adm3 = this.prepareEntityForTable(item.adm3Id, adm3s, "name", "None");
-			});
-
-			this.reload();
-		},
-
-		async prepareAdm4ForTable(adm4Ids) {
-			this.table.progress += 10;
-
-			const adm4s = await this.getAdm4s(adm4Ids);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].adm4 = this.prepareEntityForTable(item.adm4Id, adm4s, "name", "None");
-			});
-
-			this.reload();
-		},
-
 		async prepareCommodityForTable(assistanceIds) {
 			const commodities = await this.getCommodities(assistanceIds);
 			this.table.data.forEach((item, key) => {
