@@ -386,7 +386,7 @@ export default {
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, { status: state })
-				.then(({ status }) => {
+				.then(({ status, message }) => {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
 							Toast("Import Canceled", "is-success");
@@ -402,6 +402,8 @@ export default {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
+					} else if (status >= 400 && status <= 500) {
+						Notification(message, "is-warning");
 					}
 				}).catch((e) => {
 					if (e.message) {
