@@ -418,7 +418,7 @@ export default {
 		},
 
 		goToFinalStep() {
-			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+			if (this.statistics.amountDuplicities) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
