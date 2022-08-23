@@ -18,15 +18,17 @@
 				@formClosed="closeUserModal"
 			/>
 		</Modal>
-		<b-button
-			v-if="userCan.addEditUsers"
-			class="mb-4"
-			type="is-primary"
-			icon-left="plus"
-			@click="addNewUser"
-		>
-			{{ $t('Add') }}
-		</b-button>
+		<div class="add-config-btn">
+			<b-button
+				v-if="userCan.addEditUsers"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="addNewUser"
+			>
+				{{ $t('Add') }}
+			</b-button>
+		</div>
 		<UsersList
 			ref="usersList"
 			@onRemove="removeUser"

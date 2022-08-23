@@ -98,6 +98,9 @@ deploy test:
   variables:
     ENV: test
   extends: .deploy
+  only:
+    - branches
+  when: manual
 
 deploy stage:
   stage: deploy_stage

@@ -1,6 +1,10 @@
 import { download, fetcher, idsToUri } from "@/utils/fetcher";
 
 export default {
+	getDefaultScoringType() {
+		return { archived: false, name: "Default", id: null };
+	},
+
 	async getListOfAssistances(page, size, sort, upcoming, search = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
@@ -91,6 +95,13 @@ export default {
 		return data;
 	},
 
+	async getScoringTypes() {
+		const { data } = await fetcher({
+			uri: "scoring-blueprints?filter[archived]=false",
+		});
+		return data;
+	},
+
 	async createAssistance(body) {
 		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
 		return { data, status };
@@ -112,7 +123,7 @@ export default {
 
 	async calculationOfBeneficiariesScores(body) {
 		const { data, status } = await fetcher({
-			uri: "assistances/vulnerability-scores", method: "POST", body,
+			uri: "assistances/vulnerability-scores", method: "POST", body, version: 2,
 		});
 		return { data, status };
 	},
@@ -343,6 +354,16 @@ export default {
 		const formatText = format ? `type=${format}` : "";
 
 		return download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
+	},
+
+	async exportVulnerabilityScores(format, body) {
+		const formatText = format ? `type=${format}` : "";
+
+		return download({
+			uri: `assistances/vulnerability-scores/exports?${formatText}`,
+			method: "POST",
+			body,
+		});
 	},
 
 	async exportAssistance(format, assistanceId) {

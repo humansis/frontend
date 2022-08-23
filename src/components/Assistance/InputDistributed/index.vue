@@ -2,6 +2,9 @@
 	<div class="modal-card-body">
 		<form @submit.prevent="submit" v-if="distributedFormVisible">
 			<section>
+				<b-message type="is-info">
+					{{ $t('Split ID numbers with white space') }}.
+				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
 					:type="validateType('input')"
@@ -156,9 +159,11 @@ export default {
 
 			if (this.$v.$invalid) { return; }
 
+			this.$emit("submit");
+
 			this.distributedButtonLoading = true;
 
-			const numberIds = this.formModel.input.split(/[\r\n\t\s]+/g);
+			const numberIds = this.formModel.input.split(" ");
 
 			if (!numberIds.length) {
 				Notification(this.$t("Invalid Input"), "is-danger");
@@ -169,8 +174,8 @@ export default {
 			await AssistancesService.updateReliefPackagesWithNumberIds(
 				this.$route.params.assistanceId, body,
 			)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
+				.then(({ data, message }) => {
+					if (data) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
 					} else {
@@ -180,7 +185,6 @@ export default {
 					Notification(error, "is-danger");
 				}).finally(() => {
 					this.distributedButtonLoading = false;
-					this.$emit("submit");
 				});
 
 			this.$v.$reset();

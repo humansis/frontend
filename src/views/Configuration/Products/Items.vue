@@ -19,15 +19,17 @@
 				@formClosed="closeProductModal"
 			/>
 		</Modal>
-		<b-button
-			v-if="userCan.addEditProducts"
-			class="mb-4"
-			type="is-primary"
-			icon-left="plus"
-			@click="addNewProduct"
-		>
-			{{ $t('Add') }}
-		</b-button>
+		<div class="add-config-btn">
+			<b-button
+				v-if="userCan.addEditProducts"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="addNewProduct"
+			>
+				{{ $t('Add') }}
+			</b-button>
+		</div>
 		<ProductsList
 			ref="productsList"
 			:categories="categories"

@@ -274,7 +274,7 @@
 				</b-field>
 			</div>
 		</div>
-		<div v-if="showTypeOfBeneficiary" class="field">
+		<div class="field">
 			<b-checkbox
 				v-for="vulnerability of options.vulnerabilities"
 				v-model="formModel.vulnerabilities[vulnerability.code]"

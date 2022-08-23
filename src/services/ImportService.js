@@ -30,12 +30,12 @@ export default {
 	},
 
 	async changeImportState(importId, body) {
-		const { data, status } = await fetcher({
+		const { data, status, message } = await fetcher({
 			uri: `imports/${importId}`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 	async getFilesInImport(importId) {

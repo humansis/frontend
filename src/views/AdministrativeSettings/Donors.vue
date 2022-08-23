@@ -17,15 +17,17 @@
 				@formClosed="closeDonorModal"
 			/>
 		</Modal>
-		<b-button
-			v-if="userCan.addEditDonors"
-			class="mb-4"
-			type="is-primary"
-			icon-left="plus"
-			@click="addNewDonor"
-		>
-			{{ $t('Add') }}
-		</b-button>
+		<div class="add-config-btn">
+			<b-button
+				v-if="userCan.addEditDonors"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="addNewDonor"
+			>
+				{{ $t('Add') }}
+			</b-button>
+		</div>
 		<DonorsList
 			ref="donorsList"
 			@onShowDetail="showDetail"

@@ -112,6 +112,10 @@ export default {
 	watch: {
 		status(value) {
 			this.importStatus = value;
+
+			if (value === consts.STATUS.INTEGRITY_CHECK) {
+				this.$emit("moveStepForward");
+			}
 		},
 
 		loadingChangeStateButton(value) {
@@ -160,12 +164,6 @@ export default {
 							Toast(this.$t("Uploaded Successfully"), "is-success");
 							this.dropFiles = [];
 							this.startLoading = false;
-
-							this.$emit("changeImportState", {
-								state: consts.STATE.INTEGRITY_CHECKING,
-								successMessage: "Integrity Check Started Successfully",
-								goNext: true,
-							});
 						} else {
 							Notification(message, "is-warning");
 						}

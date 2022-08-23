@@ -77,7 +77,7 @@
 				</b-button>
 				<div>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:type="['is-link' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
 						:disabled="resolversAllLoading"
@@ -86,7 +86,7 @@
 						{{ $t('All From File') }}
 					</b-button>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:type="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
 						:disabled="resolversAllLoading"
@@ -95,7 +95,7 @@
 						{{ $t('All From Humansis') }}
 					</b-button>
 					<b-button
-						v-if="amountIdentityDuplicities"
+						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						type="is-primary"
 						icon-right="tasks"
 						:loading="resolveDuplicitiesLoading"
@@ -103,6 +103,7 @@
 					>
 						{{ $t('Manage Duplicities') }}
 					</b-button>
+					<!--
 					<b-button
 						v-if="canStartSimilarityCheck"
 						type="is-primary"
@@ -111,6 +112,16 @@
 						@click="startSimilarityCheck"
 					>
 						{{ $t('Start Similarity Check') }}
+					</b-button>
+					-->
+					<b-button
+						v-if="canGoToFinalisation"
+						type="is-primary"
+						icon-right="play-circle"
+						:loading="changeStateButtonLoading"
+						@click="goToFinalisation"
+					>
+						{{ $t('Go to Finalisation') }}
 					</b-button>
 				</div>
 			</div>
@@ -193,6 +204,11 @@ export default {
 				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
+		canResolveDuplicities() {
+			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},
@@ -213,6 +229,10 @@ export default {
 			return this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
+		},
+
+		canGoToFinalisation() {
+			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 	},
 
@@ -249,6 +269,10 @@ export default {
 				successMessage: "Similarity Check Started Successfully",
 				goNext: true,
 			});
+		},
+
+		goToFinalisation() {
+			this.$emit("goToFinalStep");
 		},
 
 		update() {

@@ -287,7 +287,7 @@ export default {
 
 	computed: {
 		finalisationStepActive() {
-			return this.status === consts.STATUS.SIMILARITY_CHECK_CORRECT;
+			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		totalEntries() {

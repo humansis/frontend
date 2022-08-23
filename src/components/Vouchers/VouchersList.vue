@@ -108,7 +108,7 @@
 		</template>
 		<template #export>
 			<ExportButton
-				v-if="userCan.exportPrintVouchers"
+				v-if="userCan.exportPrintVouchers && table.data.length"
 				space-between
 				class="ml-3"
 				type="is-primary"

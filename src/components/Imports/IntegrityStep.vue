@@ -456,12 +456,6 @@ export default {
 					.then(({ status, message }) => {
 						if (status === 200) {
 							Toast(this.$t("Uploaded Successfully"), "is-success");
-							this.$emit("changeImportState", {
-								state: consts.STATE.INTEGRITY_CHECKING,
-								successMessage: "Integrity Check Started Successfully",
-								goNext: false,
-								withConfirm: false,
-							});
 
 							this.filesUpload = false;
 							this.invalidFiles = [];

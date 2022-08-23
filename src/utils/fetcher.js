@@ -11,6 +11,10 @@ async function getErrorsFromResponse(data) {
 		data.errors.forEach((error) => {
 			errors += error.message;
 		});
+	} else if (data.errors.message !== undefined) {
+		errors = data.errors.message;
+	} else {
+		errors = data;
 	}
 	// TODO Please remove this code before release because it reads
 	// data that is not supposed to be visible for user
@@ -145,10 +149,13 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 	return getResponseJSON(response);
 };
 
-export const download = async ({ uri, version = 1 }) => {
+export const download = async ({ uri, method = "GET", body = null, version = 1 }) => {
 	const url = `${CONST.API}/v${version}/${uri}`;
 
-	const headers = {};
+	const headers = {
+		"Content-Type": "application/json;charset=utf-8",
+		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
+	};
 
 	const user = getters.getUserFromVuexStorage();
 
@@ -160,7 +167,8 @@ export const download = async ({ uri, version = 1 }) => {
 
 	const config = {
 		headers,
-		method: "GET",
+		method,
+		...(body && { body: JSON.stringify(body) }),
 	};
 
 	const response = await fetch(url, config);

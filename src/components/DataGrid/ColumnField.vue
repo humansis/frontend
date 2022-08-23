@@ -100,7 +100,7 @@
 		<!-- Show Custom Tag with background color -->
 		<template v-if="column.type === 'tag'">
 			<b-tag :type="getTagType">
-				{{ $t(data.row[column.field]) }}
+				{{ normalizeText($t(data.row[column.field])) }}
 			</b-tag>
 		</template>
 
@@ -130,7 +130,12 @@
 			</span>
 
 			<p v-else>
-				{{ $t('None') }}
+				<span v-if="data.row.loading">
+					{{ $t('Loading...') }}
+				</span>
+				<span v-else>
+					{{ $t('None') }}
+				</span>
 			</p>
 		</template>
 
@@ -148,6 +153,7 @@
 <script>
 import ImageColumn from "@/components/DataGrid/ImageColumn";
 import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "TableColumn",
@@ -165,15 +171,16 @@ export default {
 		customValue() {
 			const value = this.data.row[this.column.field];
 
-			if (!value) return "";
+			if (!value) {
+				return value;
+			}
 
 			if (typeof value === "object") {
 				if (value.value) return value.value;
 
-				const newDate = this.$moment(this.data.row[this.column.field])
-					.format("YYYY-MM-DD hh:mm");
+				const newDate = this.$moment(this.data.row[this.column.field]);
 
-				if (newDate.isValid()) return newDate;
+				if (newDate.isValid()) return newDate.format("YYYY-MM-DD hh:mm");
 			}
 
 			return value;
@@ -212,6 +219,8 @@ export default {
 		getTagTypeByItem(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
+
+		normalizeText,
 	},
 
 	props: {

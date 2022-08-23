@@ -15,7 +15,9 @@
 					icon="calendar-day"
 					trap-focus
 					:max-date="maxDateOfAssistance"
+					:min-date="minDateOfAssistance"
 					:placeholder="$t('Click to select')"
+					@input="dateOfAssistanceChanged"
 				/>
 			</b-field>
 
@@ -233,6 +235,7 @@ export default {
 	},
 
 	async mounted() {
+		this.setExpirationAndAssistanceDate();
 		await this.fetchSectors();
 	},
 
@@ -243,11 +246,29 @@ export default {
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
-			return new Date(endDate);
+			return endDate ? new Date(endDate) : new Date();
+		},
+
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return startDate ? new Date(startDate) : new Date();
 		},
 	},
 
 	methods: {
+		setExpirationAndAssistanceDate() {
+			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
+				? this.minDateOfAssistance
+				: new Date();
+			this.formModel.dateExpiration = this.maxDateOfAssistance;
+		},
+
+		dateOfAssistanceChanged() {
+			if (this.formModel.dateExpiration < this.formModel.dateOfAssistance) {
+				this.formModel.dateExpiration = this.formModel.dateOfAssistance;
+			}
+		},
+
 		async mapTargets() {
 			const { sector, subsector, assistanceType, targetType } = this.formModel;
 			if (sector && typeof sector !== "object") {
@@ -327,7 +348,7 @@ export default {
 			if (!(this.formModel.assistanceType && this.formModel.targetType)) return [];
 			const {
 				assistanceType: { code: assistanceType },
-				targetType: { value: targetType },
+				targetType: { code: targetType },
 			} = this.formModel;
 
 			if (assistanceType === consts.TYPE.DISTRIBUTION) {

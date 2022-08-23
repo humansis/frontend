@@ -197,6 +197,7 @@
 
 			<template #export>
 				<ExportButton
+					v-if="table.data.length"
 					space-between
 					class="ml-3"
 					type="is-primary"
@@ -227,7 +228,7 @@ import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
-	from "../../components/Beneficiaries/Household/AddProjectToHouseholdModal";
+	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -296,10 +297,6 @@ export default {
 				projects: false,
 			},
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -453,20 +450,15 @@ export default {
 
 			this.table.progress += 10;
 			const nationalIdIds = [];
-			this.table.data.forEach((item, key) => {
+			await this.table.data.forEach(async (item, key) => {
 				const {
-					givenName,
-					familyName,
 					nationalId,
-					vulnerabilities,
-				} = this.prepareBeneficiaries(item.householdHeadId, beneficiaries);
-
+				} = await this
+					.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
+				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
 						.find((vulnerability) => vulnerability === code));
-
-				this.table.data[key].givenName = givenName;
-				this.table.data[key].familyName = familyName;
 				this.table.data[key].nationalId = nationalId;
 				this.table.data[key].supportDateReceived = item
 					.supportDateReceived ? new Date(item.supportDateReceived) : null;
@@ -586,23 +578,27 @@ export default {
 				});
 		},
 
-		prepareBeneficiaries(id, beneficiaries) {
+		async prepareBeneficiaries(id, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
+			this.table.data[tableIndex].loading = true;
 			const result = {
-				familyName: "",
-				givenName: "",
 				nationalId: "",
-				vulnerabilities: "",
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
-				result.familyName = this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-				result.givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
+				this.table.data[tableIndex].givenName = this.prepareName(
+					beneficiary.localFamilyName,
+					beneficiary.enFamilyName,
+				);
+				this.table.data[tableIndex].familyName = this.prepareName(
+					beneficiary.localGivenName,
+					beneficiary.enGivenName,
+				);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
-				result.vulnerabilities = beneficiary.vulnerabilityCriteria;
 			}
 
+			this.table.data[tableIndex].loading = false;
 			return result;
 		},
 

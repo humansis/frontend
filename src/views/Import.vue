@@ -37,6 +37,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
+					@moveStepForward="changeTab(1)"
 				/>
 			</b-step-item>
 
@@ -59,9 +60,11 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@updated="fetchImportStatistics"
+					@goToFinalStep="goToFinalStep"
 				/>
 			</b-step-item>
 
+			<!--
 			<b-step-item step="4" :label="$t('Similarity Check')" :clickable="false">
 				<SimilarityStep
 					:statistics="statistics"
@@ -73,8 +76,9 @@
 					@updated="fetchImportStatistics"
 				/>
 			</b-step-item>
+			-->
 
-			<b-step-item step="5" :label="$t('Finalisation')" :clickable="false">
+			<b-step-item step="4" :label="$t('Finalisation')" :clickable="false">
 				<FinalisationStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -91,7 +95,6 @@
 import StartStep from "@/components/Imports/StartStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import IdentityStep from "@/components/Imports/IdentityStep";
-import SimilarityStep from "@/components/Imports/SimilarityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
@@ -105,7 +108,6 @@ export default {
 		StartStep,
 		IntegrityStep,
 		IdentityStep,
-		SimilarityStep,
 		FinalisationStep,
 	},
 
@@ -195,8 +197,7 @@ export default {
 				{ code: 0, slug: "start-import" },
 				{ code: 1, slug: "integrity-check" },
 				{ code: 2, slug: "identity-check" },
-				{ code: 3, slug: "similarity-check" },
-				{ code: 4, slug: "finalisation" },
+				{ code: 3, slug: "finalisation" },
 			],
 		};
 	},
@@ -215,11 +216,13 @@ export default {
 		changeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
-			this.$router.replace({
-				name: "Import",
-				params: { importId: this.$route.params.importId },
-				query: { step: slug },
-			});
+			if (this.$route.query.step !== slug) {
+				this.$router.replace({
+					name: "Import",
+					params: { importId: this.$route.params.importId },
+					query: { step: slug },
+				});
+			}
 
 			this.activeStep = code;
 		},
@@ -246,7 +249,7 @@ export default {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics();
 					this.fetchImportFiles();
-				}, 30000);
+				}, 5000);
 			}
 		},
 
@@ -315,7 +318,7 @@ export default {
 				case consts.STATUS.CANCEL:
 				case consts.STATUS.IMPORTING:
 				case consts.STATUS.FINISH:
-					this.changeTab(4);
+					this.changeTab(3);
 					break;
 
 				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
@@ -355,7 +358,12 @@ export default {
 			});
 		},
 
-		onChangeImportState({ state, successMessage, goNext, withConfirm = true }) {
+		onChangeImportState({
+			state,
+			successMessage,
+			goNext,
+			withConfirm = true,
+		}) {
 			if ((this.integrityStepHasError || this.identityStepHasError) && withConfirm) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
@@ -378,11 +386,11 @@ export default {
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, { status: state })
-				.then(({ status }) => {
+				.then(({ status, message }) => {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
 							Toast("Import Canceled", "is-success");
-							this.changeTab(4);
+							this.changeTab(3);
 						}
 
 						if (this.$route.name === "Import") {
@@ -394,6 +402,8 @@ export default {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
+					} else if (status >= 400 && status <= 500) {
+						Notification(message, "is-warning");
 					}
 				}).catch((e) => {
 					if (e.message) {
@@ -408,7 +418,7 @@ export default {
 		},
 
 		goToFinalStep() {
-			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+			if (this.statistics.amountDuplicities) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
@@ -416,11 +426,11 @@ export default {
 					type: "is-warning",
 					hasIcon: true,
 					onConfirm: () => {
-						this.changeTab(4);
+						this.changeTab(3);
 					},
 				});
 			} else {
-				this.changeTab(4);
+				this.changeTab(3);
 			}
 		},
 

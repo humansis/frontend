@@ -89,6 +89,19 @@
 				</div>
 			</div>
 
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<p class="heading">{{ $t('Scoring') }}</p>
+					<p
+						v-if="assistanceTarget"
+						class="has-text-weight-bold is-size-5"
+					>
+						{{ assistanceScoringType }}
+					</p>
+					<Loading v-else type="bubbles" is-normal />
+				</div>
+			</div>
+
 			<div
 				v-if="assistanceType === consts.TYPE.DISTRIBUTION"
 				class="level-item has-text-centered"
@@ -174,6 +187,10 @@ export default {
 
 		assistanceTarget() {
 			return normalizeText(this.assistance?.target);
+		},
+
+		assistanceScoringType() {
+			return this.assistance?.scoringBlueprint?.name || this.$t("Default");
 		},
 
 		assistanceDescription() {

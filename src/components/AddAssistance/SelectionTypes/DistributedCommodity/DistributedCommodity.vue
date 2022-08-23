@@ -120,10 +120,10 @@ export default {
 			},
 			formModel: {
 				modality: "",
-				type: "",
+				modalityType: "",
 				currency: "",
 				unit: "",
-				quantity: "",
+				value: "",
 				description: "",
 				division: null,
 				totalValueOfBooklet: null,
@@ -136,9 +136,9 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "modality" },
-					{ key: "type" },
+					{ key: "modalityType" },
 					{ key: "unit" },
-					{ key: "quantity" },
+					{ key: "value" },
 					{ key: "division", label: "For Each" },
 					{ key: "description" },
 				],
@@ -185,9 +185,9 @@ export default {
 		preparedCommodities() {
 			return this.modifiedTableData.map((
 				{
-					type,
+					modalityType,
 					unit,
-					quantity,
+					value,
 					description,
 					division,
 					remoteDistributionAllowed,
@@ -195,9 +195,9 @@ export default {
 					cashbackLimit,
 				},
 			) => ({
-				modalityType: type,
+				modalityType,
 				unit,
-				value: quantity,
+				value,
 				description: description || "",
 				division,
 				remoteDistributionAllowed,
@@ -210,10 +210,10 @@ export default {
 			const tableData = this.table.data.map((
 				{
 					modality,
-					type,
+					modalityType,
 					unit,
 					currency,
-					quantity,
+					value,
 					description,
 					division,
 					totalValueOfBooklet,
@@ -223,9 +223,9 @@ export default {
 				},
 			) => ({
 				modality: modality?.value || modality,
-				type: type?.value || type,
+				modalityType: modalityType?.value || modalityType,
 				unit: unit || currency?.value,
-				quantity: Number(quantity) || Number(totalValueOfBooklet),
+				value: Number(value) || Number(totalValueOfBooklet),
 				description,
 				division: division?.code || division,
 				remoteDistributionAllowed,
@@ -251,10 +251,10 @@ export default {
 
 			this.formModel = {
 				modality: null,
-				type: null,
+				modalityType: null,
 				currency: null,
 				unit: null,
-				quantity: null,
+				value: null,
 				description: null,
 				division: null,
 				totalValueOfBooklet: null,

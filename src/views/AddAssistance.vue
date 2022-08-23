@@ -2,7 +2,7 @@
 	<div>
 		<h1 class="title">{{ $t('New Assistance') }}</h1>
 		<div class="columns">
-			<div class="column">
+			<div v-if="isProjectReady" class="column">
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					:project="project"
@@ -25,6 +25,7 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<DistributedCommodity
+					v-if="isProjectReady"
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
@@ -55,7 +56,12 @@
 
 		<div class="buttons flex-end">
 			<b-button @click="goBack">{{ $t('Cancel') }}</b-button>
-			<b-button type="is-primary" :loading="loading" @click="validateNewAssistance">
+			<b-button
+				type="is-primary"
+				:loading="loading"
+				:disabled="createAssistanceButtonDisabled"
+				@click="validateNewAssistance"
+			>
 				{{ $t('Create') }}
 			</b-button>
 		</div>
@@ -93,6 +99,7 @@ export default {
 				selectionCriteria: null,
 			},
 			project: {},
+			isProjectReady: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -113,13 +120,14 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
+				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
 				commodities: [],
 				selectionCriteria: [],
 				communities: [],
 				institutions: [],
-				threshold: 0,
+				threshold: null,
 				completed: false,
 				validated: false,
 				iso3: this.$store.state.country?.iso3,
@@ -127,12 +135,14 @@ export default {
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
 			},
+			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
 			duplicate: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
+			createAssistanceButtonDisabled: false,
 		};
 	},
 
@@ -154,6 +164,8 @@ export default {
 	},
 
 	async created() {
+		await this.fetchProject();
+
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
@@ -173,20 +185,28 @@ export default {
 					this.$router.push({ name: "NotFound" });
 				});
 
+			await AssistancesService.getScoringTypes()
+				.then(({ data }) => { this.scoringTypes = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.scoringTypesLoading = false;
+				});
+
 			await this.mapAssistance(this.duplicateAssistance);
 		}
-
-		await this.fetchProject();
 	},
 
 	methods: {
 		async fetchProject() {
+			this.isProjectReady = false;
 			const { projectId } = this.$route.params;
 
 			if (projectId) {
 				await ProjectService.getDetailOfProject(projectId)
 					.then(({ data }) => {
 						this.project = data;
+						this.isProjectReady = true;
 					})
 					.catch((e) => {
 						if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
@@ -321,14 +341,26 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 
+			const scoringType = assistance.scoringBlueprint === null
+				? AssistancesService.getDefaultScoringType()
+				: this.scoringTypes.filter(({ archived }) => !archived)
+					.find(({ id }) => id === assistance.scoringBlueprint?.id);
+
+			if (assistance.scoringBlueprint && !scoringType) {
+				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
+			}
+
+			this.$refs.selectionCriteria.scoringType = scoringType || null;
+			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
 
 				preparedCommodities.push({
-					type: item.modalityType,
-					quantity: item.value,
+					modalityType: item.modalityType,
+					value: item.value,
 					unit: item.unit,
 					description: item.description,
 					division: item.division,
@@ -347,10 +379,11 @@ export default {
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
 
-			this.componentsData.selectionCriteria = this.mapSelectionCriteria();
+			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
-			await this.$refs.selectionCriteria.fetchCriteriaInfo();
+
+			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		mapSelectionCriteria() {
@@ -359,7 +392,7 @@ export default {
 			this.assistanceSelectionCriteria.forEach((item) => {
 				if (preparedSelectionCriteria[item.group]) {
 					preparedSelectionCriteria[item.group].data.push({
-						criteriaTarget: { value: item.target },
+						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
 						criteria: { code: item.field },
 						condition: { code: item.condition },
@@ -406,6 +439,12 @@ export default {
 			});
 		},
 
+		isDateValid(inputDate) {
+			return inputDate instanceof Date && !Number.isNaN(inputDate)
+				&& inputDate >= new Date(this.project.startDate)
+				&& inputDate <= new Date(this.project.endDate);
+		},
+
 		fetchAssistanceCommodities() {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
@@ -426,8 +465,12 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
-				dateDistribution: dateOfAssistance.toISOString(),
-				dateExpiration: dateExpiration ? dateExpiration.toISOString() : null,
+				dateDistribution: this.isDateValid(dateOfAssistance)
+					? dateOfAssistance.toISOString()
+					: new Date(this.project.startDate),
+				dateExpiration: this.isDateValid(dateExpiration)
+					? dateExpiration.toISOString()
+					: new Date(this.project.endDate),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -436,10 +479,15 @@ export default {
 			};
 		},
 
-		fetchSelectionCriteria(selectionCriteria, minimumSelectionScore) {
+		fetchSelectionCriteria(
+			selectionCriteria, minimumSelectionScore, vulnerabilityScoreTouched, scoringType,
+		) {
+			this.createAssistanceButtonDisabled = vulnerabilityScoreTouched;
+
 			this.assistanceBody = {
 				...this.assistanceBody,
 				selectionCriteria,
+				scoringBlueprintId: scoringType?.id || null,
 				threshold: minimumSelectionScore,
 			};
 		},
