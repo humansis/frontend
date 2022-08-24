@@ -40,6 +40,35 @@ const BUSINESS_GRANT = "Business Grant";
 const QR_CODE_VOUCHER = "QR Code Voucher";
 const PAPER_VOUCHER = "Paper Voucher";
 
+// Distribution types
+const PER_HOUSEHOLD = "Per Household";
+const PER_HOUSEHOLD_MEMBER = "Per Household Member";
+const PER_HOUSEHOLD_MEMBERS = "Per Household Members";
+
+// Division quantities
+const DIVISION_QUANTITIES = [
+	{
+		rangeFrom: 1,
+		rangeTo: 3,
+		value: null,
+	},
+	{
+		rangeFrom: 4,
+		rangeTo: 5,
+		value: null,
+	},
+	{
+		rangeFrom: 6,
+		rangeTo: 8,
+		value: null,
+	},
+	{
+		rangeFrom: 9,
+		rangeTo: null,
+		value: null,
+	},
+];
+
 // Create a new criteria - fields types
 const GENDER = "gender";
 const DATE = "date";
@@ -72,6 +101,7 @@ export default {
 		HOUSEHOLD_TARGETED,
 		INDIVIDUALS_TARGETED,
 	},
+	DIVISION_QUANTITIES,
 	COMMODITY: {
 		CASH,
 		MOBILE_MONEY,
@@ -91,6 +121,11 @@ export default {
 		BUSINESS_GRANT,
 		QR_CODE_VOUCHER,
 		PAPER_VOUCHER,
+		DISTRIBUTION: {
+			PER_HOUSEHOLD,
+			PER_HOUSEHOLD_MEMBER,
+			PER_HOUSEHOLD_MEMBERS,
+		},
 	},
 	FIELD_TYPE: {
 		GENDER,

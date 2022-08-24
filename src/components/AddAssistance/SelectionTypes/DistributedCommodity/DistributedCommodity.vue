@@ -38,7 +38,13 @@
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.key">
 					<template v-slot="props">
-						{{ props.row[column.field] }}
+						<span
+							v-if="column.field === 'value' && props.row[column.field] === 0"
+							v-html="mapDivisionQuantities(props.row.divisionQuantities)">
+						</span>
+						<span v-else>
+							{{ props.row[column.field] }}
+						</span>
 					</template>
 				</b-table-column>
 			</template>
@@ -62,7 +68,7 @@
 			class="subtitle is-5 mb-2 has-text-right"
 		>
 			<strong class="is-size-4">
-				{{ value}}
+				{{ value }}
 			</strong>
 			{{ unit }}
 			({{ $t(modalityType) }})
@@ -87,6 +93,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import DistributedCommodityForm from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodityForm";
 import { generateColumns } from "@/utils/datagrid";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "DistributedCommodity",
@@ -126,6 +133,7 @@ export default {
 				value: "",
 				description: "",
 				division: null,
+				divisionQuantities: JSON.parse(JSON.stringify(consts.DIVISION_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
@@ -190,6 +198,7 @@ export default {
 					value,
 					description,
 					division,
+					divisionQuantities,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
 					cashbackLimit,
@@ -199,7 +208,10 @@ export default {
 				unit,
 				value,
 				description: description || "",
-				division,
+				division: {
+					code: division,
+					quantities: value ? null : divisionQuantities,
+				},
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -216,6 +228,7 @@ export default {
 					value,
 					description,
 					division,
+					divisionQuantities,
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
@@ -228,6 +241,7 @@ export default {
 				value: Number(value) || Number(totalValueOfBooklet),
 				description,
 				division: division?.code || division,
+				divisionQuantities,
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -238,6 +252,10 @@ export default {
 
 		countOfSelectedBeneficiaries() {
 			return this.selectedBeneficiaries;
+		},
+
+		showSingleValue() {
+			return this.formModel.division.code !== consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
 		},
 	},
 
@@ -257,6 +275,7 @@ export default {
 				value: null,
 				description: null,
 				division: null,
+				divisionQuantities: JSON.parse(JSON.stringify(consts.DIVISION_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
@@ -281,6 +300,16 @@ export default {
 
 		numberWithCommas(number) {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		},
+
+		mapDivisionQuantities(divisionQuantities) {
+			return divisionQuantities
+				.filter((quantity) => (quantity.value))
+				.map((quantity) => (
+					quantity.rangeTo === null
+						? `${quantity.rangeFrom}+: ${quantity.value}`
+						: `${quantity.rangeFrom} - ${quantity.rangeTo}: ${quantity.value}`
+				)).join("<br/>");
 		},
 	},
 };
