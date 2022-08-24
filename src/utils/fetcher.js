@@ -11,7 +11,7 @@ async function getErrorsFromResponse(data) {
 		data.errors.forEach((error) => {
 			errors += error.message;
 		});
-	} else if (data.errors.message !== undefined) {
+	} else if (data.errors?.message) {
 		errors = data.errors.message;
 	} else {
 		errors = data;
