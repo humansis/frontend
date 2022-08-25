@@ -108,6 +108,8 @@
 				<b-field
 					v-for="(divisionQuantity, i) in divisionQuantities"
 					:key="divisionQuantity.fieldName"
+					:type="validateType('divisionQuantities')"
+					:message="validateMsg('divisionQuantities')"
 					:label="$t(divisionQuantity.label)"
 				>
 					<b-field grouped>
@@ -117,6 +119,8 @@
 							expanded
 							min="0"
 							:controls="false"
+							:class="validateMultiselect('divisionQuantities')"
+							@blur="validate('divisionQuantities')"
 						/>
 					</b-field>
 				</b-field>
@@ -321,6 +325,12 @@ export default {
 			division: { required: requiredIf(function () {
 				return this.displayedFields.division;
 			}) },
+			divisionQuantities: {
+				required,
+				$each: {
+					value: { required },
+				},
+			},
 			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
