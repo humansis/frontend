@@ -21,13 +21,13 @@
 							v-if="amountIdentityDuplicities"
 							type="is-warning"
 							show-value
-							:value="amountIdentityDuplicitiesIncr"
+							:value="amountIdentityDuplicitiesIncrement"
 						/>
 						<b-progress-bar
 							v-if="amountIdentityDuplicitiesResolved"
 							type="is-success"
 							show-value
-							:value="amountIdentityDuplicitiesResolvedIncr"
+							:value="amountIdentityDuplicitiesResolvedIncrement"
 						/>
 					</template>
 				</b-progress>
@@ -175,8 +175,8 @@ export default {
 			importStatus: "",
 			resolversAllLoading: false,
 			resolversAllActive: "",
-			amountIdentityDuplicitiesIncr: 0,
-			amountIdentityDuplicitiesResolvedIncr: 0,
+			amountIdentityDuplicitiesIncrement: 0,
+			amountIdentityDuplicitiesResolvedIncrement: 0,
 		};
 	},
 
@@ -213,17 +213,17 @@ export default {
 
 		amountIdentityDuplicities(newValue) {
 			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesIncr", newValue, 60);
+				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
 			} else {
-				this.amountIdentityDuplicitiesIncr = newValue;
+				this.amountIdentityDuplicitiesIncrement = newValue;
 			}
 		},
 
 		amountIdentityDuplicitiesResolved(newValue) {
 			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncr", newValue, 120);
+				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
 			} else {
-				this.amountIdentityDuplicitiesResolvedIncr = newValue;
+				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
 			}
 		},
 	},
@@ -250,10 +250,10 @@ export default {
 
 		entriesLeft() {
 			if (this.amountIdentityDuplicities) {
-				return this.totalEntries - this.amountIdentityDuplicitiesIncr
-					- this.amountIdentityDuplicitiesResolvedIncr;
+				return this.totalEntries - this.amountIdentityDuplicitiesIncrement
+					- this.amountIdentityDuplicitiesResolvedIncrement;
 			}
-			return this.totalEntries - this.amountIdentityDuplicitiesResolvedIncr;
+			return this.totalEntries - this.amountIdentityDuplicitiesResolvedIncrement;
 		},
 
 		amountIdentityDuplicities() {
