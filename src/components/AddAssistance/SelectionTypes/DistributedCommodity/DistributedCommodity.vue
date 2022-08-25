@@ -39,9 +39,9 @@
 				<b-table-column v-bind="column" sortable :key="column.key">
 					<template v-slot="props">
 						<span
-							v-if="column.field === 'value' && props.row[column.field] === 0"
-							v-html="mapDivisionQuantities(props.row.divisionQuantities)">
-						</span>
+							v-if="column.field === 'value' && isPerHouseholdMembers"
+							v-html="mapDivisionQuantities(props.row.divisionQuantities)"
+						/>
 						<span v-else>
 							{{ props.row[column.field] }}
 						</span>
@@ -254,8 +254,8 @@ export default {
 			return this.selectedBeneficiaries;
 		},
 
-		showSingleValue() {
-			return this.formModel.division.code !== consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
+		isPerHouseholdMembers() {
+			return this.formModel.division.code === consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
 		},
 	},
 
