@@ -326,9 +326,13 @@ export default {
 				return this.displayedFields.division;
 			}) },
 			divisionQuantities: {
-				required,
 				$each: {
-					value: { required },
+					value: {
+						// eslint-disable-next-line func-names
+						required: requiredIf(function () {
+							return this.displayedFields.householdMembersQuantity;
+						}),
+					},
 				},
 			},
 			// eslint-disable-next-line func-names
