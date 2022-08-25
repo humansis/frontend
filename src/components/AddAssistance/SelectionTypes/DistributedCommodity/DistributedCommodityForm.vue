@@ -262,9 +262,18 @@ export default {
 				types: [],
 				currencies,
 				division: [
-					{ code: consts.PER_HOUSEHOLD, value: this.$t(consts.PER_HOUSEHOLD) },
-					{ code: consts.PER_HOUSEHOLD_MEMBER, value: this.$t(consts.PER_HOUSEHOLD_MEMBER) },
-					{ code: consts.PER_HOUSEHOLD_MEMBERS, value: this.$t(consts.PER_HOUSEHOLD_MEMBERS) },
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
+					},
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBER,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBER),
+					},
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS),
+					},
 				],
 			},
 			divisionQuantities: [
