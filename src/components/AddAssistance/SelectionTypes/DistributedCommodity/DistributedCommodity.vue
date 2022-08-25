@@ -39,7 +39,7 @@
 				<b-table-column v-bind="column" sortable :key="column.key">
 					<template v-slot="props">
 						<span
-							v-if="column.field === 'value' && isPerHouseholdMembers"
+							v-if="column.field === 'value' && isPerHouseholdMembers(props.row.division)"
 							v-html="mapDivisionQuantities(props.row.divisionQuantities)"
 						/>
 						<span v-else>
@@ -238,10 +238,12 @@ export default {
 				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
 				unit: unit || currency?.value,
-				value: Number(value) || Number(totalValueOfBooklet),
+				value: this.isPerHouseholdMembers(division)
+					? 0
+					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
 				description,
 				division: division?.code || division,
-				divisionQuantities,
+				divisionQuantities: division?.quantities || divisionQuantities,
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -252,10 +254,6 @@ export default {
 
 		countOfSelectedBeneficiaries() {
 			return this.selectedBeneficiaries;
-		},
-
-		isPerHouseholdMembers() {
-			return this.formModel.division.code === consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
 		},
 	},
 
@@ -307,9 +305,13 @@ export default {
 				.filter((quantity) => (quantity.value))
 				.map((quantity) => (
 					quantity.rangeTo === null
-						? `${quantity.rangeFrom}+: ${quantity.value}`
-						: `${quantity.rangeFrom} - ${quantity.rangeTo}: ${quantity.value}`
+						? `<i>${quantity.rangeFrom}+:</i> <b>${quantity.value}</b>`
+						: `<i>${quantity.rangeFrom} - ${quantity.rangeTo}:</i> <b>${quantity.value}</b>`
 				)).join("<br/>");
+		},
+
+		isPerHouseholdMembers(division) {
+			return division === consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
 		},
 	},
 };
