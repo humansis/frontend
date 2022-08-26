@@ -405,6 +405,7 @@ export default {
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
+				case consts.COMMODITY.MOBILE_MONEY:
 					this.displayedFields = {
 						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
@@ -412,7 +413,6 @@ export default {
 						division: this.targetType === "household",
 					};
 					break;
-				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
 						...DEFAULT_DISPLAYED_FIELDS,
@@ -425,6 +425,7 @@ export default {
 						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						value: true,
+						division: this.targetType === "household",
 						remoteDistributionAllowed: true,
 						allowedProductCategoryTypes: true,
 					};
