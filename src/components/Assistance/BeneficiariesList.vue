@@ -390,12 +390,13 @@ export default {
 				{ key: "status", type: "tagArray", customTags: statusTags },
 				{ key: "toDistribute", type: "arrayTextBreak" },
 				{ key: "distributed", type: "arrayTextBreak" },
+				{ key: "spent", type: "arrayTextBreak" },
 				{ key: "lastModified", type: "arrayTextBreak" },
 			];
 
-			if (this.isCommoditySmartcard) {
-				const distributedIndex = baseColumns.findIndex((element) => element.key === "distributed");
-				baseColumns.splice(distributedIndex + 1, 0, { key: "spent", type: "arrayTextBreak" });
+			if (!this.isCommoditySmartcard) {
+				const spentIndex = baseColumns.findIndex((element) => element.key === "spent");
+				baseColumns.splice(spentIndex, 1);
 			}
 
 			return baseColumns;
