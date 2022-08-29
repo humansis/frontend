@@ -334,13 +334,6 @@ export default {
 				targetType: assistance.target,
 			};
 
-			this.targetType = assistance.target;
-			this.assistanceBody.locationId = assistance.locationId;
-			this.assistanceBody.target = assistance.target;
-			this.assistanceBody.type = assistance.type;
-			this.assistanceBody.sector = assistance.sector;
-			this.assistanceBody.subsector = assistance.subsector;
-
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
 				: this.scoringTypes.filter(({ archived }) => !archived)
@@ -378,6 +371,15 @@ export default {
 				householdsTargeted: assistance.householdsTargeted || 0,
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
+
+			// set assistanceBody after this.fetchAssistanceCommodities
+			// otherwise it causes weird bug with empty assistanceBody values
+			this.targetType = assistance.target;
+			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.target = assistance.target;
+			this.assistanceBody.type = assistance.type;
+			this.assistanceBody.sector = assistance.sector;
+			this.assistanceBody.subsector = assistance.subsector;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 

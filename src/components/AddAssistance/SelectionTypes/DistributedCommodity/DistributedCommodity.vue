@@ -133,7 +133,8 @@ export default {
 				value: "",
 				description: "",
 				division: null,
-				divisionQuantities: JSON.parse(JSON.stringify(consts.DIVISION_QUANTITIES)),
+				divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
+				divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
@@ -209,7 +210,7 @@ export default {
 				value,
 				description: description || "",
 				division: {
-					code: division,
+					code: this.getDivision(division),
 					quantities: value ? null : divisionQuantities,
 				},
 				remoteDistributionAllowed,
@@ -228,7 +229,8 @@ export default {
 					value,
 					description,
 					division,
-					divisionQuantities,
+					divisionNwsQuantities,
+					divisionNesQuantities,
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
@@ -243,7 +245,9 @@ export default {
 					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
 				description,
 				division: division?.code || division,
-				divisionQuantities: division?.quantities || divisionQuantities,
+				divisionQuantities: division?.quantities || (this.isPerMembersNws(division)
+					? divisionNwsQuantities
+					: divisionNesQuantities),
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -262,6 +266,17 @@ export default {
 			return !!this.table.data.length;
 		},
 
+		getDivision(divisionString) {
+			switch (divisionString) {
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					return consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
+				default:
+					return divisionString;
+			}
+		},
+
 		addCriteria() {
 			this.commodityModal.isOpened = true;
 
@@ -273,7 +288,8 @@ export default {
 				value: null,
 				description: null,
 				division: null,
-				divisionQuantities: JSON.parse(JSON.stringify(consts.DIVISION_QUANTITIES)),
+				divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
+				divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
@@ -311,7 +327,22 @@ export default {
 		},
 
 		isPerHouseholdMembers(division) {
-			return division === consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD_MEMBERS;
+			const divisionStr = this.getDivisionStr(division);
+			return divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE
+				|| divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
+				|| divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+		},
+
+		isPerMembersNws(division) {
+			return this.getDivisionStr(division) === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+		},
+
+		isPerMembersNes(division) {
+			return this.getDivisionStr(division) === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+		},
+
+		getDivisionStr(division) {
+			return division.code || division;
 		},
 	},
 };

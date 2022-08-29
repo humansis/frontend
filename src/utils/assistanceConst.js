@@ -42,11 +42,16 @@ const PAPER_VOUCHER = "Paper Voucher";
 
 // Distribution types
 const PER_HOUSEHOLD = "Per Household";
-const PER_HOUSEHOLD_MEMBER = "Per Household Member";
-const PER_HOUSEHOLD_MEMBERS = "Per Household Members";
+const PER_MEMBER_CODE = "Per Household Member";
+const PER_MEMBER_LABEL = "Per Member";
+const PER_MEMBERS_CODE = "Per Household Members";
+const PER_MEMBERS_NWS_CODE = "Per Members NWS";
+const PER_MEMBERS_NES_CODE = "Per Members NES";
+const PER_MEMBERS_NWS_LABEL = "Per Members NWS (1-3, 4-5, 6-8, 9+)";
+const PER_MEMBERS_NES_LABEL = "Per Members NES (1-3, 4-8, 9+)";
 
 // Division quantities
-const DIVISION_QUANTITIES = [
+const DIVISION_NWS_QUANTITIES = [
 	{
 		rangeFrom: 1,
 		rangeTo: 3,
@@ -59,6 +64,24 @@ const DIVISION_QUANTITIES = [
 	},
 	{
 		rangeFrom: 6,
+		rangeTo: 8,
+		value: null,
+	},
+	{
+		rangeFrom: 9,
+		rangeTo: null,
+		value: null,
+	},
+];
+
+const DIVISION_NES_QUANTITIES = [
+	{
+		rangeFrom: 1,
+		rangeTo: 3,
+		value: null,
+	},
+	{
+		rangeFrom: 4,
 		rangeTo: 8,
 		value: null,
 	},
@@ -101,7 +124,8 @@ export default {
 		HOUSEHOLD_TARGETED,
 		INDIVIDUALS_TARGETED,
 	},
-	DIVISION_QUANTITIES,
+	DIVISION_NWS_QUANTITIES,
+	DIVISION_NES_QUANTITIES,
 	COMMODITY: {
 		CASH,
 		MOBILE_MONEY,
@@ -123,8 +147,13 @@ export default {
 		PAPER_VOUCHER,
 		DISTRIBUTION: {
 			PER_HOUSEHOLD,
-			PER_HOUSEHOLD_MEMBER,
-			PER_HOUSEHOLD_MEMBERS,
+			PER_MEMBER_CODE,
+			PER_MEMBER_LABEL,
+			PER_MEMBERS_CODE,
+			PER_MEMBERS_NWS_CODE,
+			PER_MEMBERS_NWS_LABEL,
+			PER_MEMBERS_NES_CODE,
+			PER_MEMBERS_NES_LABEL,
 		},
 	},
 	FIELD_TYPE: {
