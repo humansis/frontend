@@ -134,6 +134,8 @@ export default {
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
+				note: "",
+				round: null,
 			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
@@ -332,6 +334,8 @@ export default {
 				sector: assistance.sector,
 				subsector: assistance.subsector,
 				targetType: assistance.target,
+				note: assistance.note,
+				round: assistance.round,
 			};
 
 			const scoringType = assistance.scoringBlueprint === null
@@ -380,6 +384,8 @@ export default {
 			this.assistanceBody.type = assistance.type;
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
+			this.assistanceBody.note = assistance.note;
+			this.assistanceBody.round = assistance.round;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
@@ -463,6 +469,8 @@ export default {
 				subsector,
 				targetType,
 				dateExpiration,
+				note,
+				round,
 			} = data;
 
 			this.assistanceBody = {
@@ -478,6 +486,8 @@ export default {
 				sector: sector?.code,
 				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
+				note,
+				round: round?.code,
 			};
 		},
 

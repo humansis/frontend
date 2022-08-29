@@ -104,6 +104,11 @@ const LOCATION = "location";
 const LOCATION_TYPE = "locationType";
 const STRING = "string";
 
+// Rounds options
+// ROUNDS_OPTIONS = [{ code: n, value: n },...]
+const ROUNDS_OPTIONS = Array.from(Array(100).keys()).slice(1, 100)
+	.map((num) => ({ code: num, value: num }));
+
 export default {
 	TARGET: {
 		INSTITUTION,
@@ -168,4 +173,5 @@ export default {
 		LOCATION_TYPE,
 		STRING,
 	},
+	ROUNDS_OPTIONS,
 };

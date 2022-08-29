@@ -393,6 +393,7 @@ export default {
 				this.closeAddToProjectModal();
 				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
+				this.onRowsChecked();
 			}
 		},
 
@@ -647,6 +648,7 @@ export default {
 			await this.removeHousehold(null, true);
 			this.actionsButtonVisible = false;
 			await this.fetchData();
+			this.onRowsChecked();
 		},
 
 		saveDeleteOfMultipleHouseholds() {
