@@ -40,6 +40,37 @@
 			</b-field>
 
 			<b-field
+				v-if="displayedFields.unit"
+				:label="$t('Unit')"
+				:type="validateType('unit')"
+				:message="validateMsg('unit')"
+			>
+				<b-input
+					v-model="formModel.unit"
+					@blur="validate('unit')"
+				/>
+			</b-field>
+
+			<b-field
+				v-if="displayedFields.division"
+				:type="validateType('division')"
+				:message="validateMsg('division')"
+				:label="$t('Distribute')"
+			>
+				<MultiSelect
+					v-model="formModel.division"
+					label="value"
+					track-by="code"
+					:placeholder="$t('Click to select')"
+					:options="options.division"
+					:loading="loading.division"
+					searchable
+					:class="validateMultiselect('division')"
+					@select="onDivisionSelect"
+				/>
+			</b-field>
+
+			<b-field
 				v-if="displayedFields.currency"
 				:type="validateType('currency')"
 				:message="validateMsg('currency')"
@@ -57,19 +88,7 @@
 			</b-field>
 
 			<b-field
-				v-if="displayedFields.unit"
-				:label="$t('Unit')"
-				:type="validateType('unit')"
-				:message="validateMsg('unit')"
-			>
-				<b-input
-					v-model="formModel.unit"
-					@blur="validate('unit')"
-				/>
-			</b-field>
-
-			<b-field
-				v-if="displayedFields.value"
+				v-if="showValue"
 				:type="validateType('value')"
 				:message="validateMsg('value')"
 				:label="$t('Quantity')"
@@ -85,23 +104,27 @@
 				/>
 			</b-field>
 
-			<b-field
-				v-if="displayedFields.division"
-				:type="validateType('division')"
-				:message="validateMsg('division')"
-				:label="$t('For Each')"
-			>
-				<MultiSelect
-					v-model="formModel.division"
-					label="value"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:options="options.division"
-					:loading="loading.division"
-					searchable
-					:class="validateMultiselect('division')"
-				/>
-			</b-field>
+			<div v-if="showDivisionQuantities">
+				<b-field
+					v-for="(divisionQuantity, i) in divisionQuantities"
+					:key="divisionQuantity.fieldName"
+					:type="validateType(divisionQuantitiesValidationString)"
+					:message="validateMsg(divisionQuantitiesValidationString)"
+					:label="$t(divisionQuantity.label)"
+				>
+					<b-field grouped>
+						<b-numberinput
+							v-model="formModel[divisionQuantitiesValidationString][i].value"
+							type="is-dark"
+							expanded
+							min="0"
+							:controls="false"
+							:class="validateMultiselect(divisionQuantitiesValidationString)"
+							@blur="validate(divisionQuantitiesValidationString)"
+						/>
+					</b-field>
+				</b-field>
+			</div>
 
 			<b-field
 				v-if="displayedFields.description"
@@ -202,6 +225,19 @@ import currencies from "@/utils/currencies";
 import Validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
 
+const DEFAULT_DISPLAYED_FIELDS = {
+	currency: false,
+	unit: false,
+	value: false,
+	division: false,
+	description: false,
+	totalValueOfBooklet: false,
+	remoteDistributionAllowed: false,
+	allowedProductCategoryTypes: false,
+	householdMembersNwsQuantity: false,
+	householdMembersNesQuantity: false,
+};
+
 export default {
 	name: "DistributedCommodityForm",
 
@@ -225,25 +261,41 @@ export default {
 
 	data() {
 		return {
-			displayedFields: {
-				currency: false,
-				unit: false,
-				value: false,
-				division: false,
-				description: false,
-				totalValueOfBooklet: false,
-				remoteDistributionAllowed: false,
-				allowedProductCategoryTypes: false,
-			},
+			displayedFields: DEFAULT_DISPLAYED_FIELDS,
 			options: {
 				modalities: [],
 				types: [],
 				currencies,
 				division: [
-					{ code: "Per Household", value: this.$t("Per Household") },
-					{ code: "Per Household Member", value: this.$t("Per Household Member") },
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
+					},
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBER_LABEL),
+					},
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
+					},
+					{
+						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
+						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
+					},
 				],
 			},
+			divisionNwsQuantities: [
+				{ label: this.$t("Quantity (1 - 3 members)"), fieldName: "quantityNwsValue1" },
+				{ label: this.$t("Quantity (4 - 5 members)"), fieldName: "quantityNwsValue2" },
+				{ label: this.$t("Quantity (6 - 8 members)"), fieldName: "quantityNwsValue3" },
+				{ label: this.$t("Quantity (9+ members)"), fieldName: "quantityNwsValue4" },
+			],
+			divisionNesQuantities: [
+				{ label: this.$t("Quantity (1 - 3 members)"), fieldName: "quantityNesValue1" },
+				{ label: this.$t("Quantity (4 - 8 members)"), fieldName: "quantityNesValue2" },
+				{ label: this.$t("Quantity (9+ members)"), fieldName: "quantityNesValue3" },
+			],
 			loading: {
 				modalities: false,
 				types: false,
@@ -257,6 +309,25 @@ export default {
 				&& this.formModel.cashbackLimit === this.formModel.value
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
+		},
+		showDivisionQuantities() {
+			return this.displayedFields.householdMembersNwsQuantity
+				|| this.displayedFields.householdMembersNesQuantity;
+		},
+		divisionQuantitiesValidationString() {
+			return this.displayedFields.householdMembersNwsQuantity
+				? "divisionNwsQuantities"
+				: "divisionNesQuantities";
+		},
+		divisionQuantities() {
+			return this.displayedFields.householdMembersNwsQuantity
+				? this.divisionNwsQuantities
+				: this.divisionNesQuantities;
+		},
+		showValue() {
+			return this.displayedFields.value
+				&& !this.displayedFields.householdMembersNwsQuantity
+				&& !this.displayedFields.householdMembersNesQuantity;
 		},
 	},
 
@@ -275,7 +346,7 @@ export default {
 			value: {
 				// eslint-disable-next-line func-names
 				required: requiredIf(function () {
-					return this.displayedFields.value;
+					return this.showValue;
 				}),
 				minValue: minValue(1),
 			},
@@ -283,6 +354,26 @@ export default {
 			division: { required: requiredIf(function () {
 				return this.displayedFields.division;
 			}) },
+			divisionNwsQuantities: {
+				$each: {
+					value: {
+						// eslint-disable-next-line func-names
+						required: requiredIf(function () {
+							return this.displayedFields.householdMembersNwsQuantity;
+						}),
+					},
+				},
+			},
+			divisionNesQuantities: {
+				$each: {
+					value: {
+						// eslint-disable-next-line func-names
+						required: requiredIf(function () {
+							return this.displayedFields.householdMembersNesQuantity;
+						}),
+					},
+				},
+			},
 			// eslint-disable-next-line func-names
 			description: { required: requiredIf(function () {
 				return this.displayedFields.description;
@@ -339,57 +430,41 @@ export default {
 			this.formModel.type = "";
 			this.fetchModalityTypes(code);
 
-			this.displayedFields = {
-				currency: false,
-				unit: false,
-				value: false,
-				division: false,
-				description: false,
-				totalValueOfBooklet: false,
-				remoteDistributionAllowed: false,
-				allowedProductCategoryTypes: false,
-			};
+			this.displayedFields = DEFAULT_DISPLAYED_FIELDS;
 		},
 
 		async onModalityTypeSelect({ code }) {
 			this.displayedFields = await this.getFormFieldsToShow(code);
 		},
 
+		async onDivisionSelect({ code }) {
+			this.displayedFields = await this.getFormFieldsToShow(code);
+		},
+
 		async getFormFieldsToShow(code) {
 			switch (code) {
 				case consts.COMMODITY.CASH:
+				case consts.COMMODITY.MOBILE_MONEY:
 					this.displayedFields = {
-						unit: false,
-						description: false,
-						totalValueOfBooklet: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						value: true,
 						division: this.targetType === "household",
-						remoteDistributionAllowed: false,
-						allowedProductCategoryTypes: false,
 					};
 					break;
-				case consts.COMMODITY.MOBILE_MONEY:
 				case consts.COMMODITY.LOAN:
 					this.displayedFields = {
-						unit: false,
-						description: false,
-						totalValueOfBooklet: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						value: true,
-						division: false,
-						remoteDistributionAllowed: false,
-						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.SMARTCARD:
 					this.displayedFields = {
-						unit: false,
-						description: false,
-						totalValueOfBooklet: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						value: true,
-						division: false,
+						division: this.targetType === "household",
 						remoteDistributionAllowed: true,
 						allowedProductCategoryTypes: true,
 					};
@@ -406,39 +481,50 @@ export default {
 				case consts.COMMODITY.WINTERIZATION_KIT:
 				case consts.COMMODITY.ACTIVITY_ITEM:
 					this.displayedFields = {
-						currency: false,
-						totalValueOfBooklet: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						unit: true,
 						value: true,
-						division: false,
 						description: true,
-						remoteDistributionAllowed: false,
-						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.BUSINESS_GRANT:
 					this.displayedFields = {
-						currency: false,
-						description: false,
-						totalValueOfBooklet: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						unit: true,
 						value: true,
-						division: false,
-						remoteDistributionAllowed: false,
-						allowedProductCategoryTypes: false,
 					};
 					break;
 				case consts.COMMODITY.QR_CODE_VOUCHER:
 				case consts.COMMODITY.PAPER_VOUCHER:
 					this.displayedFields = {
-						unit: false,
-						value: false,
-						division: false,
-						description: false,
+						...DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						totalValueOfBooklet: true,
-						remoteDistributionAllowed: false,
-						allowedProductCategoryTypes: false,
+					};
+					break;
+				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
+					this.displayedFields = {
+						...DEFAULT_DISPLAYED_FIELDS,
+						currency: true,
+						division: true,
+						value: true,
+					};
+					break;
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+					this.displayedFields = {
+						...DEFAULT_DISPLAYED_FIELDS,
+						currency: true,
+						division: true,
+						householdMembersNwsQuantity: true,
+					};
+					break;
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					this.displayedFields = {
+						...DEFAULT_DISPLAYED_FIELDS,
+						currency: true,
+						division: true,
+						householdMembersNesQuantity: true,
 					};
 					break;
 				default:
