@@ -309,13 +309,14 @@ export default {
 		return { data, status };
 	},
 
-	async updateAssistanceDateOfDistribution(id, dateDistribution, dateExpiration) {
+	async updateAssistanceDateOfDistribution(id, dateDistribution, dateExpiration, round) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
 			body: {
 				dateDistribution,
 				dateExpiration,
+				round,
 			},
 		});
 		return { data, status };
