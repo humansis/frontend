@@ -117,6 +117,8 @@
 						<b-numberinput
 							v-model="divisionQuantity.value.$model"
 							type="is-dark"
+							:min-step="0.001"
+							:step="null"
 							expanded
 							:controls="false"
 							:class="validateMultiselect(divisionQuantity)"
@@ -218,7 +220,7 @@
 </template>
 
 <script>
-import { minValue, required, requiredIf, numeric } from "vuelidate/lib/validators";
+import { minValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
@@ -367,7 +369,6 @@ export default {
 						required: requiredIf(function () {
 							return this.displayedFields.householdMembersNwsQuantity;
 						}),
-						numeric,
 					},
 				},
 			},
@@ -378,7 +379,6 @@ export default {
 						required: requiredIf(function () {
 							return this.displayedFields.householdMembersNesQuantity;
 						}),
-						numeric,
 					},
 				},
 			},
