@@ -177,7 +177,7 @@ export default {
 				adm3Id,
 				adm4Id,
 				dateDistribution: new Date(dateDistribution),
-				dateExpiration: dateExpiration ? new Date(dateExpiration) : null,
+				dateExpiration: !Number.isNaN(Date.parse(dateExpiration)) ? new Date(dateExpiration) : null,
 				allowedProductCategoryTypes,
 				cashbackLimit,
 				target,
