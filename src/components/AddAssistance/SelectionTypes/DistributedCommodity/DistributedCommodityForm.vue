@@ -438,7 +438,35 @@ export default {
 		},
 
 		async onDivisionSelect({ code }) {
-			this.displayedFields = await this.getFormFieldsToShow(code);
+			this.displayedFields = await this.getDivisionFormFieldsToShow(code);
+		},
+
+		async getDivisionFormFieldsToShow(code) {
+			switch (code) {
+				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
+					this.displayedFields.currency = true;
+					this.displayedFields.division = true;
+					this.displayedFields.value = true;
+
+					break;
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+					this.displayedFields.currency = true;
+					this.displayedFields.division = true;
+					this.displayedFields.householdMembersNwsQuantity = true;
+
+					break;
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					this.displayedFields.currency = true;
+					this.displayedFields.division = true;
+					this.displayedFields.householdMembersNesQuantity = true;
+
+					break;
+				default:
+					return this.displayedFields;
+			}
+
+			return this.displayedFields;
 		},
 
 		async getFormFieldsToShow(code) {
@@ -502,34 +530,10 @@ export default {
 						totalValueOfBooklet: true,
 					};
 					break;
-				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
-					this.displayedFields = {
-						...DEFAULT_DISPLAYED_FIELDS,
-						currency: true,
-						division: true,
-						value: true,
-					};
-					break;
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
-					this.displayedFields = {
-						...DEFAULT_DISPLAYED_FIELDS,
-						currency: true,
-						division: true,
-						householdMembersNwsQuantity: true,
-					};
-					break;
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
-					this.displayedFields = {
-						...DEFAULT_DISPLAYED_FIELDS,
-						currency: true,
-						division: true,
-						householdMembersNesQuantity: true,
-					};
-					break;
 				default:
 					return this.displayedFields;
 			}
+
 			return this.displayedFields;
 		},
 
