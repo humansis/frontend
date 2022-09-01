@@ -310,18 +310,13 @@ export default {
 	},
 
 	async updateAssistanceDateOfDistribution(id, dateDistribution, dateExpiration) {
-		const body = {
-			dateDistribution,
-		};
-
-		if (dateExpiration) {
-			body.dateExpiration = dateExpiration;
-		}
-
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
-			body,
+			body: {
+				dateDistribution,
+				...(dateExpiration && { dateExpiration }),
+			},
 		});
 		return { data, status };
 	},
