@@ -2,18 +2,22 @@ import i18n from "@/plugins/i18n";
 
 export default {
 	methods: {
-		validate(fieldName) {
-			const validation = this.validationPropertyLevel(fieldName);
+		getValidation(field) {
+			return typeof field === "string" ? this.validationPropertyLevel(field) : field;
+		},
+
+		validate(field) {
+			const validation = this.getValidation(field);
 			validation.$touch();
 		},
 
-		validateMsg(fieldName, message = i18n.t("Required")) {
-			const validation = this.validationPropertyLevel(fieldName);
+		validateMsg(field, message = i18n.t("Required")) {
+			const validation = this.getValidation(field);
 			return validation.$error ? i18n.t(message) : "";
 		},
 
-		validateType(fieldName, errorOrNothing = false) {
-			const validation = this.validationPropertyLevel(fieldName);
+		validateType(field, errorOrNothing = false) {
+			const validation = this.getValidation(field);
 
 			let result = "";
 			if (validation.$dirty) {
@@ -27,8 +31,8 @@ export default {
 			return result;
 		},
 
-		validateMultiselect(fieldName, errorOrNothing = false) {
-			const validation = this.validationPropertyLevel(fieldName);
+		validateMultiselect(field, errorOrNothing = false) {
+			const validation = this.getValidation(field);
 
 			let result = "";
 			if (validation.$dirty) {
