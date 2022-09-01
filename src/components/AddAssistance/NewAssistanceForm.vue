@@ -33,9 +33,7 @@
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
-		</div>
 
-		<div class="box">
 			<b-field
 				:label="$t('Round')"
 			>

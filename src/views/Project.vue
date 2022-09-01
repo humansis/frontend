@@ -85,6 +85,7 @@ export default {
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
 				target: "",
+				round: null,
 			},
 		};
 	},
@@ -108,9 +109,9 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		async editAssistance({ id, dateDistribution, dateExpiration }) {
+		async editAssistance({ id, dateDistribution, dateExpiration, round }) {
 			await AssistancesService.updateAssistanceDateOfDistribution(
-				id, dateDistribution, dateExpiration,
+				id, dateDistribution, dateExpiration, round,
 			)
 				.then((response) => {
 					if (response.status === 200) {
@@ -167,6 +168,7 @@ export default {
 				projectId,
 				target,
 				type,
+				round,
 			},
 		) {
 			return {
@@ -184,6 +186,7 @@ export default {
 				name,
 				projectId,
 				type,
+				round: { code: round, value: round },
 			};
 		},
 	},

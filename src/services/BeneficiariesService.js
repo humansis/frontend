@@ -1,4 +1,5 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import exportConsts from "@/utils/exportConst";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
@@ -235,11 +236,21 @@ export default {
 		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
 	},
 
-	async exportAssistanceBeneficiaries(format, assistanceId, { exportAsDistributionList = false }) {
+	async exportAssistanceBeneficiaries(
+		format,
+		assistanceId,
+		{ exportType = exportConsts.TYPE.EXP_DEFAULT },
+	) {
 		const formatText = format ? `type=${format}` : "";
-		const uri = exportAsDistributionList
-			? `assistances/${assistanceId}/bank-report/exports?${formatText}`
-			: `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
+		let uri = `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
+
+		if (exportType === exportConsts.TYPE.EXP_RAW) {
+			uri = `assistances/${assistanceId}/beneficiaries/exports-raw?${formatText}`;
+		}
+
+		if (exportType === exportConsts.TYPE.EXP_BANK) {
+			uri = `assistances/${assistanceId}/bank-report/exports?${formatText}`;
+		}
 
 		return download({ uri });
 	},
