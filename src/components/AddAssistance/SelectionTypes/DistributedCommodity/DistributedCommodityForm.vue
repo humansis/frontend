@@ -113,12 +113,11 @@
 					:message="validateMsg(divisionQuantity)"
 					:label="$t(divisionQuantities[divisionQuantitiesValidationString][i].label)"
 				>
-					<b-field grouped>
-						<b-numberinput
-							v-model="divisionQuantity.value.$model"
-							type="is-dark"
-							:min-step="0.001"
-							:step="null"
+					<b-field>
+						<b-input
+							v-model.number="divisionQuantity.value.$model"
+							type="number"
+							min="1"
 							expanded
 							:controls="false"
 							:class="validateMultiselect(divisionQuantity)"
