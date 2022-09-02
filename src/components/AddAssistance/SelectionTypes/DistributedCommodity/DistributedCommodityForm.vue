@@ -106,21 +106,23 @@
 
 			<div v-if="showDivisionQuantities">
 				<b-field
-					v-for="(divisionQuantity, i) in divisionQuantities"
-					:key="divisionQuantity.fieldName"
-					:type="validateType(divisionQuantitiesValidationString)"
-					:message="validateMsg(divisionQuantitiesValidationString)"
-					:label="$t(divisionQuantity.label)"
+					v-for="(divisionQuantity, i)
+						in $v.formModel[divisionQuantitiesValidationString].$each.$iter"
+					:key="i"
+					:type="validateType(divisionQuantity)"
+					:message="validateMsg(divisionQuantity)"
+					:label="$t(divisionQuantities[divisionQuantitiesValidationString][i].label)"
 				>
-					<b-field grouped>
-						<b-numberinput
-							v-model="formModel[divisionQuantitiesValidationString][i].value"
-							type="is-dark"
+					<b-field>
+						<b-input
+							v-model.number="divisionQuantity.value.$model"
+							type="number"
+							min="1"
 							expanded
-							min="0"
 							:controls="false"
-							:class="validateMultiselect(divisionQuantitiesValidationString)"
-							@blur="validate(divisionQuantitiesValidationString)"
+							:class="validateMultiselect(divisionQuantity)"
+							@keydown="validate(divisionQuantity)"
+							@blur="validate(divisionQuantity)"
 						/>
 					</b-field>
 				</b-field>
@@ -310,20 +312,25 @@ export default {
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
 		},
+
 		showDivisionQuantities() {
 			return this.displayedFields.householdMembersNwsQuantity
 				|| this.displayedFields.householdMembersNesQuantity;
 		},
+
 		divisionQuantitiesValidationString() {
 			return this.displayedFields.householdMembersNwsQuantity
 				? "divisionNwsQuantities"
 				: "divisionNesQuantities";
 		},
+
 		divisionQuantities() {
-			return this.displayedFields.householdMembersNwsQuantity
-				? this.divisionNwsQuantities
-				: this.divisionNesQuantities;
+			return {
+				divisionNwsQuantities: this.divisionNwsQuantities,
+				divisionNesQuantities: this.divisionNesQuantities,
+			};
 		},
+
 		showValue() {
 			return this.displayedFields.value
 				&& !this.displayedFields.householdMembersNwsQuantity
@@ -428,12 +435,14 @@ export default {
 
 		onModalitySelect({ code }) {
 			this.formModel.type = "";
+			this.formModel.modalityType = null;
 			this.fetchModalityTypes(code);
 
 			this.displayedFields = DEFAULT_DISPLAYED_FIELDS;
 		},
 
 		async onModalityTypeSelect({ code }) {
+			this.formModel.division = "";
 			this.displayedFields = await this.getFormFieldsToShow(code);
 		},
 
@@ -442,6 +451,9 @@ export default {
 		},
 
 		async getDivisionFormFieldsToShow(code) {
+			this.displayedFields.householdMembersNwsQuantity = false;
+			this.displayedFields.householdMembersNewQuantity = false;
+
 			switch (code) {
 				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
 				case consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
