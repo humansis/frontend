@@ -673,7 +673,8 @@ export default {
 
 		async exportBeneficiaries(format) {
 			this.exportLoading = true;
-			await this.exportData(format, exportConsts.TYPE.EXP_DEFAULT, "beneficiaries");
+			const filename = `Distribution protocol ${this.assistance.name}`;
+			await this.exportData(format, filename, "beneficiaries");
 			this.exportLoading = false;
 		},
 
