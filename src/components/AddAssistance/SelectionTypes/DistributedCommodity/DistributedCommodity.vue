@@ -209,10 +209,12 @@ export default {
 				unit,
 				value,
 				description: description || "",
-				division: {
-					code: this.getDivision(division),
-					quantities: value ? null : divisionQuantities,
-				},
+				division: (division === "" || division === null)
+					? null
+					: {
+						code: this.getDivision(division),
+						quantities: value ? null : divisionQuantities,
+					},
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
