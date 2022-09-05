@@ -344,7 +344,7 @@ export default {
 		},
 
 		getDivisionStr(division) {
-			return division.code || division;
+			return division?.code || division;
 		},
 	},
 };
