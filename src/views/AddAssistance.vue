@@ -331,8 +331,6 @@ export default {
 				} else {
 					round = { code: assistance.round, value: assistance.round };
 				}
-			} else {
-				round = { code: 1, value: 1 };
 			}
 
 			this.componentsData.newAssistanceForm = {
@@ -395,7 +393,7 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 			this.assistanceBody.note = assistance.note;
-			this.assistanceBody.round = assistance.round ? assistance.round + 1 : 1;
+			this.assistanceBody.round = this.componentsData.newAssistanceForm.round.code;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
