@@ -386,7 +386,7 @@ export default {
 			this.loadingChangeStateButton = true;
 
 			ImportService.changeImportState(importId, { status: state })
-				.then(({ status }) => {
+				.then(({ status, message }) => {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
 							Toast("Import Canceled", "is-success");
@@ -402,6 +402,8 @@ export default {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
+					} else if (status >= 400 && status <= 500) {
+						Notification(message, "is-warning");
 					}
 				}).catch((e) => {
 					if (e.message) {
@@ -416,7 +418,7 @@ export default {
 		},
 
 		goToFinalStep() {
-			if (this.statistics.amountIntegrityFailed || this.statistics.amountDuplicities) {
+			if (this.statistics.amountDuplicities) {
 				this.$buefy.dialog.confirm({
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),

@@ -299,10 +299,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("households");
 		this.fetchData();
@@ -397,6 +393,7 @@ export default {
 				this.closeAddToProjectModal();
 				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
+				this.onRowsChecked();
 			}
 		},
 
@@ -454,11 +451,11 @@ export default {
 
 			this.table.progress += 10;
 			const nationalIdIds = [];
-			this.table.data.forEach(async (item, key) => {
+			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalId,
 				} = await this
-					.prepareBeneficiaries(item.householdHeadId, item.beneficiaryIds, beneficiaries, key);
+					.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
@@ -582,10 +579,9 @@ export default {
 				});
 		},
 
-		async prepareBeneficiaries(id, beneficiaryIds, beneficiaries, tableIndex) {
+		async prepareBeneficiaries(id, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
 			this.table.data[tableIndex].loading = true;
-			const promises = [];
 			const result = {
 				nationalId: "",
 			};
@@ -601,19 +597,6 @@ export default {
 				);
 				const [nationalId] = beneficiary.nationalIds;
 				result.nationalId = nationalId;
-				const vulnerabilities = beneficiary.vulnerabilityCriteria;
-				beneficiaryIds.forEach((memberId) => {
-					if (memberId !== id) {
-						const promise = BeneficiariesService.getBeneficiary(memberId).then((data) => {
-							vulnerabilities
-								.push(...data.vulnerabilityCriteria
-									.filter((item) => vulnerabilities.every(({ code }) => code !== item)));
-							this.$set(this.table.data[tableIndex], "vulnerabilities", vulnerabilities);
-						});
-						promises.push(promise);
-					}
-				});
-				await Promise.all(promises);
 			}
 
 			this.table.data[tableIndex].loading = false;
@@ -665,6 +648,7 @@ export default {
 			await this.removeHousehold(null, true);
 			this.actionsButtonVisible = false;
 			await this.fetchData();
+			this.onRowsChecked();
 		},
 
 		saveDeleteOfMultipleHouseholds() {

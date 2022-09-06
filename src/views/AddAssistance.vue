@@ -134,6 +134,8 @@ export default {
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
+				note: "",
+				round: null,
 			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
@@ -321,6 +323,10 @@ export default {
 		},
 
 		async mapAssistance(assistance) {
+			const round = assistance.round
+				? { code: assistance.round + 1, value: assistance.round + 1 }
+				: { code: 1, value: 1 };
+
 			this.componentsData.newAssistanceForm = {
 				adm1Id: assistance?.adm1Id,
 				adm2Id: assistance?.adm2Id,
@@ -332,14 +338,9 @@ export default {
 				sector: assistance.sector,
 				subsector: assistance.subsector,
 				targetType: assistance.target,
+				note: assistance.note,
+				round,
 			};
-
-			this.targetType = assistance.target;
-			this.assistanceBody.locationId = assistance.locationId;
-			this.assistanceBody.target = assistance.target;
-			this.assistanceBody.type = assistance.type;
-			this.assistanceBody.sector = assistance.sector;
-			this.assistanceBody.subsector = assistance.subsector;
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
@@ -378,6 +379,15 @@ export default {
 				householdsTargeted: assistance.householdsTargeted || 0,
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
+
+			this.targetType = assistance.target;
+			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.target = assistance.target;
+			this.assistanceBody.type = assistance.type;
+			this.assistanceBody.sector = assistance.sector;
+			this.assistanceBody.subsector = assistance.subsector;
+			this.assistanceBody.note = assistance.note;
+			this.assistanceBody.round = assistance.round ? assistance.round + 1 : 1;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
@@ -461,6 +471,8 @@ export default {
 				subsector,
 				targetType,
 				dateExpiration,
+				note,
+				round,
 			} = data;
 
 			this.assistanceBody = {
@@ -476,6 +488,8 @@ export default {
 				sector: sector?.code,
 				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
+				note,
+				round: round?.code,
 			};
 		},
 

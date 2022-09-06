@@ -33,6 +33,30 @@
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
+
+			<b-field
+				:label="$t('Round')"
+			>
+				<MultiSelect
+					v-model="formModel.round"
+					searchable
+					label="value"
+					track-by="code"
+					:placeholder="$t('N/A')"
+					:options="options.rounds"
+				>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #singleLabel="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
 		</div>
 
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
@@ -195,8 +219,11 @@ export default {
 				subsector: null,
 				targetType: null,
 				assistanceType: null,
+				note: "",
+				round: null,
 			},
 			options: {
+				rounds: consts.ROUNDS_OPTIONS,
 				sectors: [],
 				subsectors: [],
 				assistanceTypes: [],

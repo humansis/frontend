@@ -38,7 +38,13 @@
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.key">
 					<template v-slot="props">
-						{{ props.row[column.field] }}
+						<span
+							v-if="column.field === 'value' && isPerHouseholdMembers(props.row.division)"
+							v-html="mapDivisionQuantities(props.row.divisionQuantities)"
+						/>
+						<span v-else>
+							{{ props.row[column.field] }}
+						</span>
 					</template>
 				</b-table-column>
 			</template>
@@ -62,7 +68,7 @@
 			class="subtitle is-5 mb-2 has-text-right"
 		>
 			<strong class="is-size-4">
-				{{ value}}
+				{{ value }}
 			</strong>
 			{{ unit }}
 			({{ $t(modalityType) }})
@@ -87,6 +93,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import DistributedCommodityForm from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodityForm";
 import { generateColumns } from "@/utils/datagrid";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "DistributedCommodity",
@@ -126,6 +133,8 @@ export default {
 				value: "",
 				description: "",
 				division: null,
+				divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
+				divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: ["Food"],
@@ -190,6 +199,7 @@ export default {
 					value,
 					description,
 					division,
+					divisionQuantities,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
 					cashbackLimit,
@@ -199,7 +209,12 @@ export default {
 				unit,
 				value,
 				description: description || "",
-				division,
+				division: (division === "" || division === null)
+					? null
+					: {
+						code: this.getDivision(division),
+						quantities: value ? null : divisionQuantities,
+					},
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -216,6 +231,8 @@ export default {
 					value,
 					description,
 					division,
+					divisionNwsQuantities,
+					divisionNesQuantities,
 					totalValueOfBooklet,
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
@@ -225,9 +242,14 @@ export default {
 				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
 				unit: unit || currency?.value,
-				value: Number(value) || Number(totalValueOfBooklet),
+				value: this.isPerHouseholdMembers(division)
+					? 0
+					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
 				description,
 				division: division?.code || division,
+				divisionQuantities: division?.quantities || (this.isPerMembersNws(division)
+					? divisionNwsQuantities
+					: divisionNesQuantities),
 				remoteDistributionAllowed,
 				allowedProductCategoryTypes,
 				cashbackLimit,
@@ -246,6 +268,17 @@ export default {
 			return !!this.table.data.length;
 		},
 
+		getDivision(divisionString) {
+			switch (divisionString) {
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					return consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
+				default:
+					return divisionString;
+			}
+		},
+
 		addCriteria() {
 			this.commodityModal.isOpened = true;
 
@@ -257,6 +290,8 @@ export default {
 				value: null,
 				description: null,
 				division: null,
+				divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
+				divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
 				totalValueOfBooklet: null,
 				remoteDistributionAllowed: false,
 				allowedProductCategoryTypes: [],
@@ -281,6 +316,35 @@ export default {
 
 		numberWithCommas(number) {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		},
+
+		mapDivisionQuantities(divisionQuantities) {
+			return divisionQuantities
+				.filter((quantity) => (quantity.value))
+				.map((quantity) => (
+					quantity.rangeTo === null
+						? `<i>${quantity.rangeFrom}+:</i> <b>${quantity.value}</b>`
+						: `<i>${quantity.rangeFrom} - ${quantity.rangeTo}:</i> <b>${quantity.value}</b>`
+				)).join("<br/>");
+		},
+
+		isPerHouseholdMembers(division) {
+			const divisionStr = this.getDivisionStr(division);
+			return divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE
+				|| divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
+				|| divisionStr === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+		},
+
+		isPerMembersNws(division) {
+			return this.getDivisionStr(division) === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+		},
+
+		isPerMembersNes(division) {
+			return this.getDivisionStr(division) === consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+		},
+
+		getDivisionStr(division) {
+			return division?.code || division;
 		},
 	},
 };
