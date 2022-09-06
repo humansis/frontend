@@ -393,7 +393,7 @@ export default {
 			this.assistanceBody.sector = assistance.sector;
 			this.assistanceBody.subsector = assistance.subsector;
 			this.assistanceBody.note = assistance.note;
-			this.assistanceBody.round = this.componentsData.newAssistanceForm.round.code;
+			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
