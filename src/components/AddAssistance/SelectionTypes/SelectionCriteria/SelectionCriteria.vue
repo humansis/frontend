@@ -69,7 +69,7 @@
 
 		<div class="columns">
 			<div class="column is-4">
-				<form class="mb-5" @submit.prevent="updateVulnerabilityScores">
+				<form @submit.prevent="updateVulnerabilityScores">
 					<b-field grouped>
 						<b-field
 							:label="vulnerabilityScoreLabel"
@@ -89,9 +89,9 @@
 				</form>
 			</div>
 
-			<div class="column is-3">
+			<div class="column is-8 is-flex">
 				<b-field
-					class="vulnerability-type-field"
+					class="vulnerability-type-field is-flex-grow-1"
 					:label="$t('Scoring Type')"
 					expanded
 				>
@@ -108,38 +108,37 @@
 						@select="scoringTypeChanged"
 					/>
 				</b-field>
-			</div>
-
-			<div class="column is-5 is-flex is-justify-content-space-between scoring-actions">
 				<b-button
-					class="vulnerability-update-button"
-					type="is-info"
+					class="vulnerability-update-button is-align-self-center ml-1 mt-2"
+					type="is-primary"
 					:disabled="calculationLoading || !groups.length"
 					@click="updateVulnerabilityScores"
 				>
 					{{ $t('Update') }}
 				</b-button>
+			</div>
+		</div>
 
-				<div>
-					<b-button
-						icon="detail"
-						type="is-link"
-						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-						@click="showTotalBeneficiaries"
-					>
-						{{ $t('Details') }}
-					</b-button>
+		<div class="columns">
+			<div class="column has-text-right pt-0">
+				<b-button
+					icon="detail"
+					type="is-link"
+					:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+					@click="showTotalBeneficiaries"
+				>
+					{{ $t('Details') }}
+				</b-button>
 
-					<ExportButton
-						type="is-primary"
-						class="ml-1"
-						:label="$t('Export Details')"
-						:loading="exportLoading"
-						:formats="{ xlsx: true }"
-						:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
-						@onExport="exportSelectedBeneficiaries"
-					/>
-				</div>
+				<ExportButton
+					type="is-primary"
+					class="ml-1"
+					:label="$t('Export Details')"
+					:loading="exportLoading"
+					:formats="{ xlsx: true }"
+					:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+					@onExport="exportSelectedBeneficiaries"
+				/>
 			</div>
 		</div>
 

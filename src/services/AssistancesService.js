@@ -315,7 +315,7 @@ export default {
 			method: "PATCH",
 			body: {
 				dateDistribution,
-				dateExpiration,
+				...(dateExpiration && { dateExpiration }), // include dateExpiration only when it's defined
 				round,
 			},
 		});
