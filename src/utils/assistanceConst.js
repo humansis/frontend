@@ -106,8 +106,10 @@ const STRING = "string";
 
 // Rounds options
 // ROUNDS_OPTIONS = [{ code: n, value: n },...]
-const ROUNDS_OPTIONS = Array.from(Array(100).keys()).slice(1, 100)
-	.map((num) => ({ code: num, value: num }));
+const ROUNDS_OPTIONS = [{ code: null, value: "N/A" }]
+	.concat(
+		Array.from(Array(100).keys()).slice(1, 100).map((num) => ({ code: num, value: num })),
+	);
 
 export default {
 	TARGET: {
