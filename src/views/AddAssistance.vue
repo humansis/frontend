@@ -323,9 +323,17 @@ export default {
 		},
 
 		async mapAssistance(assistance) {
-			const round = assistance.round
-				? { code: assistance.round + 1, value: assistance.round + 1 }
-				: { code: 1, value: 1 };
+			let round;
+
+			if (assistance.round) {
+				if (assistance.round < 99) {
+					round = { code: assistance.round + 1, value: assistance.round + 1 };
+				} else {
+					round = { code: assistance.round, value: assistance.round };
+				}
+			} else {
+				round = { code: 1, value: 1 };
+			}
 
 			this.componentsData.newAssistanceForm = {
 				adm1Id: assistance?.adm1Id,
