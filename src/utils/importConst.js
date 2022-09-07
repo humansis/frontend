@@ -27,6 +27,10 @@ const TO_UPDATE = "To Update";
 const TO_LINK = "To Link";
 const TO_IGNORE = "To Ignore";
 
+// Import Item State
+const DUPLICITY_KEEP_THEIRS = "Duplicity Keep Theirs";
+const DUPLICITY_KEEP_OURS = "Duplicity Keep Ours";
+
 export default {
 	STATE: {
 		NEW,
@@ -58,5 +62,9 @@ export default {
 		TO_UPDATE,
 		TO_LINK,
 		TO_IGNORE,
+	},
+	ITEM_STATE: {
+		DUPLICITY_KEEP_THEIRS,
+		DUPLICITY_KEEP_OURS,
 	},
 };
