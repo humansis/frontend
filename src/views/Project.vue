@@ -186,7 +186,10 @@ export default {
 				name,
 				projectId,
 				type,
-				round: { code: round, value: round },
+				round: {
+					code: (round === "N/A" ? null : round),
+					value: round,
+				},
 			};
 		},
 	},
