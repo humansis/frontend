@@ -43,7 +43,7 @@ const PAPER_VOUCHER = "Paper Voucher";
 // Distribution types
 const PER_HOUSEHOLD = "Per Household";
 const PER_MEMBER_CODE = "Per Household Member";
-const PER_MEMBER_LABEL = "Per Member";
+const PER_MEMBER_LABEL = "Per Member (uniformly)";
 const PER_MEMBERS_CODE = "Per Household Members";
 const PER_MEMBERS_NWS_CODE = "Per Members NWS";
 const PER_MEMBERS_NES_CODE = "Per Members NES";

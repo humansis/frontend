@@ -246,7 +246,7 @@ export default {
 					? 0
 					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
 				description,
-				division: division?.code || division,
+				division: this.getDivisionName(division),
 				divisionQuantities: division?.quantities || (this.isPerMembersNws(division)
 					? divisionNwsQuantities
 					: divisionNesQuantities),
@@ -266,6 +266,18 @@ export default {
 	methods: {
 		submit() {
 			return !!this.table.data.length;
+		},
+
+		getDivisionName(division) {
+			if (division?.quantities) {
+				if (division.quantities?.length === 4) {
+					return consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+				}
+
+				return consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+			}
+
+			return division?.code || "";
 		},
 
 		getDivision(divisionString) {
