@@ -113,7 +113,7 @@
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('primaryId.idType', true)"
-							:message="validateMsg('primaryId.idType')"
+							:message="validateMsg('primaryId.idType', primaryIdValidationMessage)"
 						>
 							<MultiSelect
 								v-model="formModel.primaryId.idType"
@@ -124,7 +124,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('primaryId.idType', true)"
-								@select="validate('primaryId.idType')"
+								@select="validate('primaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -142,7 +142,7 @@
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('secondaryId.idType', true)"
-							:message="validateMsg('secondaryId.idType')"
+							:message="validateMsg('secondaryId.idType', secondaryIdValidationMessage)"
 						>
 							<MultiSelect
 								v-model="formModel.secondaryId.idType"
@@ -153,7 +153,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('secondaryId.idType', true)"
-								@select="validate('secondaryId.idType')"
+								@select="validate('secondaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -171,7 +171,7 @@
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('tertiaryId.idType', true)"
-							:message="validateMsg('tertiaryId.idType')"
+							:message="validateMsg('tertiaryId.idType', tertiaryIdValidationMessage)"
 						>
 							<MultiSelect
 								v-model="formModel.tertiaryId.idType"
@@ -182,7 +182,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('tertiaryId.idType', true)"
-								@select="validate('tertiaryId.idType')"
+								@select="validate('tertiaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -359,6 +359,17 @@ import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 
+/**
+ * Custom validations
+ */
+let isPrimaryIdValid = false;
+let isSecondaryIdValid = false;
+let isTertiaryIdValid = false;
+
+const checkPrimaryId = () => isPrimaryIdValid;
+const checkSecondaryId = () => isSecondaryIdValid;
+const checkTertiaryId = () => isTertiaryIdValid;
+
 export default {
 	name: "HouseholdHeadForm",
 
@@ -395,15 +406,15 @@ export default {
 				dateOfBirth: { required },
 			},
 			primaryId: {
-				idType: { required: requiredIf((form) => form.idNumber) },
+				idType: { required: requiredIf((form) => form.idNumber), checkPrimaryId },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
 			secondaryId: {
-				idType: { required: requiredIf((form) => form.idNumber) },
+				idType: { required: requiredIf((form) => form.idNumber), checkSecondaryId },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
 			tertiaryId: {
-				idType: { required: requiredIf((form) => form.idNumber) },
+				idType: { required: requiredIf((form) => form.idNumber), checkTertiaryId },
 				idNumber: { required: requiredIf((form) => form.idType) },
 			},
 			residencyStatus: { required },
@@ -412,6 +423,9 @@ export default {
 
 	data() {
 		return {
+			primaryIdValidationMessage: null,
+			secondaryIdValidationMessage: null,
+			tertiaryIdValidationMessage: null,
 			loadingComponent: null,
 			formModel: {
 				beneficiaryId: null,
@@ -679,6 +693,35 @@ export default {
 				});
 
 			this.referralTypeLoading = false;
+		},
+
+		onIdChange(val) {
+			isPrimaryIdValid = this.formModel.secondaryId.idType?.code !== val.code
+				&& this.formModel.tertiaryId.idType?.code !== val.code;
+
+			isSecondaryIdValid = this.formModel.primaryId.idType?.code !== val.code
+				&& this.formModel.tertiaryId.idType?.code !== val.code;
+
+			isTertiaryIdValid = this.formModel.primaryId.idType?.code !== val.code
+				&& this.formModel.secondaryId.idType?.code !== val.code;
+
+			if (isPrimaryIdValid) {
+				this.primaryIdValidationMessage = null;
+			} else {
+				this.primaryIdValidationMessage = "Primary ID cannot be the same as the secondary or tertiary ID";
+			}
+
+			if (isSecondaryIdValid) {
+				this.secondaryIdValidationMessage = null;
+			} else {
+				this.secondaryIdValidationMessage = "Secondary ID cannot be the same as the primary or tertiary ID";
+			}
+
+			if (isTertiaryIdValid) {
+				this.tertiaryIdValidationMessage = null;
+			} else {
+				this.tertiaryIdValidationMessage = "Tertiary ID cannot be the same as the primary or secondary ID";
+			}
 		},
 
 		submit() {
