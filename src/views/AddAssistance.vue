@@ -172,7 +172,7 @@ export default {
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
 				.then(({ data }) => {
-					this.assistanceSelectionCriteria = data;
+					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
@@ -547,6 +547,19 @@ export default {
 				householdsTargeted,
 				individualsTargeted,
 			};
+		},
+
+		getValidSelectionCriteria(criteria = []) {
+			const validCriteria = criteria.filter(({ deprecated }) => !deprecated);
+
+			if (criteria.length !== validCriteria.length) {
+				Notification(
+					this.$t("Some selection criteria are outdated and have not been duplicated."),
+					"is-warning",
+				);
+			}
+
+			return validCriteria;
 		},
 
 		fetchTargetType(data) {
