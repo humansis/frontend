@@ -452,7 +452,7 @@ export default {
 
 		async getDivisionFormFieldsToShow(code) {
 			this.displayedFields.householdMembersNwsQuantity = false;
-			this.displayedFields.householdMembersNewQuantity = false;
+			this.displayedFields.householdMembersNesQuantity = false;
 
 			switch (code) {
 				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
