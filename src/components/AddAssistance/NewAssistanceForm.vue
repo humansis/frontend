@@ -47,12 +47,12 @@
 				>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ props.option.value }}</span>
 						</div>
 					</template>
 					<template #singleLabel="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ props.option.value }}</span>
 						</div>
 					</template>
 				</MultiSelect>
@@ -264,6 +264,8 @@ export default {
 	async mounted() {
 		this.setExpirationAndAssistanceDate();
 		await this.fetchSectors();
+
+		console.log(consts.ROUNDS_OPTIONS);
 	},
 
 	updated() {
