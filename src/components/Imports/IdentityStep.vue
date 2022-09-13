@@ -99,6 +99,7 @@
 						type="is-primary"
 						icon-right="tasks"
 						:loading="resolveDuplicitiesLoading"
+						:disabled="resolversAllLoading"
 						@click="resolveDuplicities"
 					>
 						{{ $t('Manage Duplicities') }}
