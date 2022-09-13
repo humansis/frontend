@@ -136,7 +136,7 @@
 					:label="$t('Export Details')"
 					:loading="exportLoading"
 					:formats="{ xlsx: true }"
-					:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+					:disabled="isExportButtonDisabled"
 					@onExport="exportSelectedBeneficiaries"
 				/>
 			</div>
@@ -236,6 +236,11 @@ export default {
 
 		vulnerabilityScoreLabel() {
 			return this.$t("Minimum Vulnerability Score");
+		},
+
+		isExportButtonDisabled() {
+			return this.vulnerabilityScoreTouched || this.calculationLoading
+				|| !this.groups.length || !this.totalCount;
 		},
 	},
 
