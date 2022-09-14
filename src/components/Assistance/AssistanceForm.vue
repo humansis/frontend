@@ -41,6 +41,31 @@
 				<b-input v-else value="N/A" disabled />
 			</b-field>
 
+			<b-field
+				v-if="editing"
+				:label="$t('Round')"
+			>
+				<MultiSelect
+					v-model="formModel.round"
+					searchable
+					label="value"
+					track-by="code"
+					:placeholder="$t('N/A')"
+					:options="options.rounds"
+				>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ props.option.value }}</span>
+						</div>
+					</template>
+					<template #singleLabel="props">
+						<div class="option__desc">
+							<span class="option__title">{{ props.option.value }}</span>
+						</div>
+					</template>
+				</MultiSelect>
+			</b-field>
+
 			<b-field :label="$t('Target')">
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
@@ -85,6 +110,7 @@
 <script>
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceForm",
@@ -97,6 +123,7 @@ export default {
 	data() {
 		return {
 			options: {
+				rounds: consts.ROUNDS_OPTIONS,
 				allowedProductCategoryTypes: [
 					"Food", "Non-Food", "Cashback",
 				],
@@ -122,7 +149,9 @@ export default {
 
 	methods: {
 		submitForm() {
-			this.$emit("formSubmitted", this.formModel);
+			const data = { ...this.formModel };
+			data.round = this.formModel.round?.code;
+			this.$emit("formSubmitted", data);
 			this.closeForm();
 		},
 

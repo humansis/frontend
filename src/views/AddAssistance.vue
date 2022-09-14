@@ -134,6 +134,8 @@ export default {
 				remoteDistributionAllowed: null,
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
+				note: "",
+				round: null,
 			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
@@ -170,7 +172,7 @@ export default {
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
 				.then(({ data }) => {
-					this.assistanceSelectionCriteria = data;
+					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
@@ -321,6 +323,16 @@ export default {
 		},
 
 		async mapAssistance(assistance) {
+			let round;
+
+			if (assistance.round) {
+				if (assistance.round < 99) {
+					round = { code: assistance.round + 1, value: assistance.round + 1 };
+				} else {
+					round = { code: assistance.round, value: assistance.round };
+				}
+			}
+
 			this.componentsData.newAssistanceForm = {
 				adm1Id: assistance?.adm1Id,
 				adm2Id: assistance?.adm2Id,
@@ -332,14 +344,9 @@ export default {
 				sector: assistance.sector,
 				subsector: assistance.subsector,
 				targetType: assistance.target,
+				note: assistance.note,
+				round,
 			};
-
-			this.targetType = assistance.target;
-			this.assistanceBody.locationId = assistance.locationId;
-			this.assistanceBody.target = assistance.target;
-			this.assistanceBody.type = assistance.type;
-			this.assistanceBody.sector = assistance.sector;
-			this.assistanceBody.subsector = assistance.subsector;
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
@@ -378,6 +385,15 @@ export default {
 				householdsTargeted: assistance.householdsTargeted || 0,
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
+
+			this.targetType = assistance.target;
+			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.target = assistance.target;
+			this.assistanceBody.type = assistance.type;
+			this.assistanceBody.sector = assistance.sector;
+			this.assistanceBody.subsector = assistance.subsector;
+			this.assistanceBody.note = assistance.note;
+			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
@@ -461,6 +477,8 @@ export default {
 				subsector,
 				targetType,
 				dateExpiration,
+				note,
+				round,
 			} = data;
 
 			this.assistanceBody = {
@@ -476,6 +494,8 @@ export default {
 				sector: sector?.code,
 				subsector: subsector?.code,
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
+				note,
+				round: round?.code,
 			};
 		},
 
@@ -527,6 +547,19 @@ export default {
 				householdsTargeted,
 				individualsTargeted,
 			};
+		},
+
+		getValidSelectionCriteria(criteria = []) {
+			const validCriteria = criteria.filter(({ deprecated }) => !deprecated);
+
+			if (criteria.length !== validCriteria.length) {
+				Notification(
+					this.$t("Some selection criteria are outdated and have not been duplicated."),
+					"is-warning",
+				);
+			}
+
+			return validCriteria;
 		},
 
 		fetchTargetType(data) {
