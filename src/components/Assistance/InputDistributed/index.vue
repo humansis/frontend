@@ -189,6 +189,11 @@ import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseD
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
 
+const DEFAULT_FORM_MODEL = {
+	idType: null,
+	idsList: "",
+	justification: "",
+};
 const IDS_LIST_MAX_LENGTH = 5000;
 const splitBySpace = (str) => str.split(/\s+/);
 const isIdsListLengthValid = (idsList) => splitBySpace(idsList).length <= IDS_LIST_MAX_LENGTH;
@@ -218,11 +223,7 @@ export default {
 			distributedButtonLoading: false,
 			distributeData: null,
 			idsListErrorMessage: null,
-			formModel: {
-				idType: null,
-				idsList: "",
-				justification: "",
-			},
+			formModel: { ...DEFAULT_FORM_MODEL },
 		};
 	},
 
@@ -329,7 +330,7 @@ export default {
 		},
 
 		openDistributedForm() {
-			this.formModel.idsList = "";
+			this.formModel = { ...DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
 		},
