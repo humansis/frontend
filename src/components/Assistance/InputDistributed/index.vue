@@ -190,7 +190,8 @@ import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
 
 const IDS_LIST_MAX_LENGTH = 5000;
-const isIdsListLengthValid = (idsList) => idsList.split(" ").length <= IDS_LIST_MAX_LENGTH;
+const splitBySpace = (str) => str.split(/\s+/);
+const isIdsListLengthValid = (idsList) => splitBySpace(idsList).length <= IDS_LIST_MAX_LENGTH;
 const validateLength = (idsList) => isIdsListLengthValid(idsList);
 
 export default {
@@ -246,7 +247,7 @@ export default {
 			this.distributedButtonLoading = true;
 			let body;
 
-			const numberIds = this.formModel.idsList.split(" ");
+			const numberIds = splitBySpace(this.formModel.idsList);
 
 			if (!numberIds.length) {
 				Notification(this.$t("Invalid Input"), "is-danger");
