@@ -266,8 +266,12 @@ export default {
 				)
 					.then(({ data, message }) => {
 						if (data) {
-							this.distributeData = this.mapDistributeData(data);
-							this.distributedFormVisible = false;
+							if (data.errors?.message) {
+								Notification(data.errors.message, "is-warning", "is-bottom");
+							} else {
+								this.distributeData = this.mapDistributeData(data);
+								this.distributedFormVisible = false;
+							}
 						} else {
 							Notification(message, "is-warning");
 						}
