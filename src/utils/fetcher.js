@@ -85,7 +85,12 @@ export const fetcher = async (
 		contentType,
 		tryRequest = false,
 	}) => {
-	const url = `${CONST.API}/v${version}/${uri}`;
+	let url;
+	if (uri.includes("http://") || uri.includes("https://")) {
+		url = uri;
+	} else {
+		url = `${CONST.API}/v${version}/${uri}`;
+	}
 
 	let headers = {};
 

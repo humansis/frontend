@@ -214,6 +214,15 @@ export default {
 		return { data, status };
 	},
 
+	async removeBeneficiaryFromAssistance(assistanceId, target, body) {
+		const { data, status } = await fetcher({
+			uri: `https://apitest.humansis.org/api/jwt/support-app/v1/assistances/${assistanceId}/assistances-${target}`,
+			method: "DELETE",
+			body,
+		});
+		return { data, status };
+	},
+
 	async getListOfHouseholdPurchases(id) {
 		const { data: { data, totalCount } } = await fetcher({
 			uri: `households/${id}/purchased-items`,
