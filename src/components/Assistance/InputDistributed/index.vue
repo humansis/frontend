@@ -270,7 +270,7 @@ export default {
 							if (data.errors?.message) {
 								Notification(data.errors.message, "is-warning", "is-bottom");
 							} else {
-								this.distributeData = this.mapDistributeData(data);
+								this.distributeData = data;
 								this.distributedFormVisible = false;
 							}
 						} else {
@@ -318,15 +318,6 @@ export default {
 			return this.idsListErrorMessage
 				? this.validateMsg("idsList", this.idsListErrorMessage)
 				: this.validateMsg("idsList");
-		},
-
-		mapDistributeData(dataFromServer) {
-			return {
-				alreadyRemoved: dataFromServer.already_removed,
-				failed: dataFromServer.failed,
-				notFound: dataFromServer.not_found,
-				success: dataFromServer.success,
-			};
 		},
 
 		openDistributedForm() {

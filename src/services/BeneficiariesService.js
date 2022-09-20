@@ -205,7 +205,7 @@ export default {
 		return data;
 	},
 
-	async addOrRemoveBeneficiaryFromAssistance(assistanceId, target, body) {
+	async addBeneficiaryToAssistance(assistanceId, target, body) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "PUT",
@@ -216,7 +216,7 @@ export default {
 
 	async removeBeneficiaryFromAssistance(assistanceId, target, body) {
 		const { data, status } = await fetcher({
-			uri: `https://apitest.humansis.org/api/jwt/support-app/v1/assistances/${assistanceId}/assistances-${target}`,
+			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "DELETE",
 			body,
 		});
