@@ -9,7 +9,7 @@
 					required
 				/>
 				<b-message type="is-info">
-					{{ $t('Split ID numbers with white space') }}.
+					{{ $t('Split ID numbers with white space. Maximum 5000 IDs allowed') }}.
 				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
