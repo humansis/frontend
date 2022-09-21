@@ -98,7 +98,6 @@
 			<InputDistributed
 				close-button
 				deduplication
-				:submit-button-label="$t('Confirm')"
 				class="modal-card"
 				@submit="reloadBeneficiariesList"
 				@close="closeInputDistributedModal"

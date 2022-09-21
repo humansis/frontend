@@ -10,7 +10,10 @@ export const BookletStatusArray = [
 export const getBookletStatus = (code) => BookletStatusArray
 	.find((status) => status.code === code);
 
+export const splitBySpace = (str) => str.split(/\s+/);
+
 export default {
 	BookletStatusArray,
 	getBookletStatus,
+	splitBySpace,
 };

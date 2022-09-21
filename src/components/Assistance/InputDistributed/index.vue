@@ -9,7 +9,7 @@
 					required
 				/>
 				<b-message type="is-info">
-					{{ $t('Split ID numbers with white space. Maximum 5000 IDs allowed') }}.
+					{{ $t('Split ID numbers with white space') }}. {{ $t('Maximum 5000 IDs allowed') }}.
 				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
@@ -188,16 +188,9 @@ import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/Bas
 import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseDistributedTable";
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
-
-const DEFAULT_FORM_MODEL = {
-	idType: null,
-	idsList: "",
-	justification: "",
-};
-const IDS_LIST_MAX_LENGTH = 5000;
-const splitBySpace = (str) => str.split(/\s+/);
-const isIdsListLengthValid = (idsList) => splitBySpace(idsList).length <= IDS_LIST_MAX_LENGTH;
-const validateLength = (idsList) => isIdsListLengthValid(idsList);
+import { isIdsListLengthValid } from "@/utils/customValidators";
+import { splitBySpace } from "@/utils/helpers";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "StartTransactionsForm",
@@ -210,7 +203,10 @@ export default {
 	},
 
 	props: {
-		submitButtonLabel: String,
+		submitButtonLabel: {
+			type: String,
+			default: "Confirm",
+		},
 		deduplication: Boolean,
 		closeButton: Boolean,
 	},
@@ -222,20 +218,22 @@ export default {
 			distributedFormVisible: true,
 			distributedButtonLoading: false,
 			distributeData: null,
-			idsListErrorMessage: null,
-			formModel: { ...DEFAULT_FORM_MODEL },
+			idsListErrorMessage: "",
+			formModel: { ...consts.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL },
 		};
 	},
 
-	validations: {
-		formModel: {
-			idType: { required: requiredIf(function fn() { return this.deduplication; }) },
-			idsList: {
-				required,
-				validateLength,
+	validations() {
+		return {
+			formModel: {
+				idType: { required: requiredIf(() => this.deduplication) },
+				idsList: {
+					required,
+					isIdsListLengthValid,
+				},
+				justification: { required: requiredIf(() => this.deduplication) },
 			},
-			justification: { required: requiredIf(function fn() { return this.deduplication; }) },
-		},
+		};
 	},
 
 	methods: {
@@ -308,9 +306,10 @@ export default {
 
 		onIdsListChange() {
 			if (isIdsListLengthValid(this.formModel.idsList)) {
-				this.idsListErrorMessage = null;
+				this.idsListErrorMessage = "";
 			} else {
-				this.idsListErrorMessage = this.$t(`Length of IDs list must not exceed ${IDS_LIST_MAX_LENGTH}`);
+				const msg = `Length of IDs list must not exceed ${consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH}`;
+				this.idsListErrorMessage = this.$t(msg);
 			}
 		},
 
@@ -321,7 +320,7 @@ export default {
 		},
 
 		openDistributedForm() {
-			this.formModel = { ...DEFAULT_FORM_MODEL };
+			this.formModel = { ...consts.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
 		},

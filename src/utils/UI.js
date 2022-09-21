@@ -10,11 +10,11 @@ export const Toast = (message, type) => {
 	});
 };
 
-export const Notification = (message, type, position) => {
+export const Notification = (message, type, position = "is-bottom-right") => {
 	NotificationProgrammatic.open({
 		duration: 7000,
 		message,
-		position: position || "is-bottom-right",
+		position,
 		hasIcon: true,
 		queue: false,
 		type,

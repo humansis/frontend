@@ -42,8 +42,10 @@ export default {
 
 	mixins: [validation],
 
-	validations: {
-		idType: { required: requiredIf(function fn() { return this.required; }) },
+	validations() {
+		return {
+			idType: { required: requiredIf(() => this.required) },
+		};
 	},
 
 	computed: {
