@@ -149,6 +149,7 @@
 			:current-page="table.currentPage"
 			:custom-per-page="table.customPerPage"
 			:is-loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
 			:checkable="table.settings.checkableTable"
 			:checked-rows="table.checkedRows"
 			:row-class="(row) => row.removed && 'removed-row'"
@@ -157,8 +158,9 @@
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
-			@search="onSearch"
+			@onSearch="onSearch"
 			@checked="onRowsCheck"
+			@updateSearchPhrase="updateSearchPhrase"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column

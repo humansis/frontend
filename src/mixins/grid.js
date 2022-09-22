@@ -1,6 +1,9 @@
 import { mapActions, mapState } from "vuex";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 export default {
+	mixins: [urlFiltersHelper],
+
 	data() {
 		return {
 			show: true,
@@ -12,8 +15,27 @@ export default {
 		...mapState(["perPage"]),
 	},
 
+	created() {
+		document.addEventListener("keypress", this.onKeyPress);
+	},
+
+	beforeDestroy() {
+		document.removeEventListener("keypress", this.onKeyPress);
+	},
+
 	methods: {
 		...mapActions(["storePerPage"]),
+
+		onKeyPress(event) {
+			// On press enter
+			if (event.keyCode === 13) {
+				this.onSearch();
+			}
+		},
+
+		updateSearchPhrase(value) {
+			this.table.searchPhrase = value;
+		},
 
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
@@ -34,10 +56,10 @@ export default {
 			this.fetchData();
 		},
 
-		onSearch(value) {
-			this.table.searchPhrase = value;
+		onSearch() {
 			this.table.currentPage = 1;
-			this.fetchData();
+			// This will trigger this.fetchData()
+			this.setGridFiltersToUrl("households");
 		},
 
 		onChangePerPage() {

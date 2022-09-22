@@ -8,11 +8,13 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		:backend-pagination="false"
 		:backend-sorting="false"
 		:backend-searching="false"
 		:columns="table.visibleColumns"
 		@resetSort="resetSort"
+		@updateSearchPhrase="updateSearchPhrase"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column

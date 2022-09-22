@@ -9,12 +9,14 @@
 		:default-sort-direction="table.sortDirection"
 		:default-sort-key="table.sortColumn"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		@clicked="goToDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 		@resetSort="resetSort"
-		@search="onSearch"
+		@onSearch="onSearch"
+		@updateSearchPhrase="updateSearchPhrase"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column

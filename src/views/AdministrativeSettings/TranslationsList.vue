@@ -7,10 +7,12 @@
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
+			:search-phrase="table.searchPhrase"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@resetSort="resetSort"
-			@search="onSearch"
+			@onSearch="onSearch"
+			@updateSearchPhrase="updateSearchPhrase"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column

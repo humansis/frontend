@@ -6,12 +6,14 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 		@resetSort="resetSort"
-		@search="onSearch"
+		@onSearch="onSearch"
+		@updateSearchPhrase="updateSearchPhrase"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column v-bind="column" sortable :key="column.id">
