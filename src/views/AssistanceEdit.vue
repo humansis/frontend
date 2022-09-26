@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
+import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import AssistancesService from "@/services/AssistancesService";

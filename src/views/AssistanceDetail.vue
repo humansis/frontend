@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
+import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
