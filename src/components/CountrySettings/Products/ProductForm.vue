@@ -162,6 +162,10 @@ export default {
 		},
 	},
 
+	destroyed() {
+		this.formModel.uploadedImage = false;
+	},
+
 	validations: {
 		formModel: {
 			name: { required },
