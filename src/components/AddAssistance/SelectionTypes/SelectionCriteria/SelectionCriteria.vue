@@ -110,7 +110,6 @@
 				</form>
 				<b-button
 					class="vulnerability-update-button is-align-self-center ml-2"
-					style="margin-top:2rem"
 					type="is-primary"
 					:disabled="calculationLoading || !groups.length"
 					@click="updateVulnerabilityScores"
@@ -605,6 +604,7 @@ export default {
 
 .vulnerability-number-input input, .vulnerability-update-button {
 	height: 40px;
+	margin-top: 2rem;
 }
 
 .scoring-actions {
