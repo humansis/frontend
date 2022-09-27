@@ -13,7 +13,7 @@
 								v-if="hasSearch"
 								:value="searchPhrase"
 								class="mr-3"
-								@onSearch="$emit('onSearch');"
+								@onSearch="$emit('onSearch')"
 								@updateSearchPhrase="$emit('updateSearchPhrase', $event)"
 							/>
 						</div>
