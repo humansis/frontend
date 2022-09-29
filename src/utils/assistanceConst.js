@@ -105,7 +105,7 @@ const LOCATION_TYPE = "locationType";
 const STRING = "string";
 
 // Input distributed consts
-const DELETE_IDS_LIST_MAX_LENGTH = 5000;
+const IDS_LIST_MAX_LENGTH = 5000;
 const DEFAULT_INPUT_DISTRIBUTED_FORM_MODEL = {
 	idType: null,
 	idsList: "",
@@ -185,7 +185,7 @@ export default {
 	},
 	ROUNDS_OPTIONS,
 	INPUT_DISTRIBUTED: {
-		DELETE_IDS_LIST_MAX_LENGTH,
+		IDS_LIST_MAX_LENGTH,
 		DEFAULT_FORM_MODEL: DEFAULT_INPUT_DISTRIBUTED_FORM_MODEL,
 	},
 };

@@ -120,7 +120,7 @@
 				icon-left="minus"
 				@click="openInputDistributedModal"
 			>
-				{{ $t('Remove') }}
+				{{ $t('Bulk remove') }}
 			</b-button>
 			<b-field v-if="changeButton">
 				<p class="control">

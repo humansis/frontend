@@ -91,7 +91,7 @@
 			</b-tab-item>
 			<b-tab-item v-if="distributeData.success">
 				<template #header>
-					<span>{{ $t('Success') }}
+					<span>{{ deduplication ? $t('Removed') : $t('Success') }}
 						<b-tag class="ml-1" type="is-success" rounded>
 							{{ distributeData.success.length }}
 						</b-tag>
@@ -107,7 +107,7 @@
 			</b-tab-item>
 			<b-tab-item v-if="distributeData.alreadyRemoved">
 				<template #header>
-					<span>{{ $t('Already removed') }}
+					<span>{{ $t('Removed in the past') }}
 						<b-tag class="ml-1" type="is-info" rounded>
 							{{ distributeData.alreadyRemoved.length }}
 						</b-tag>
@@ -207,6 +207,10 @@ export default {
 			type: String,
 			default: "Confirm",
 		},
+		defaultIdType: {
+			type: String,
+			default: "Tax Number",
+		},
 		deduplication: Boolean,
 		closeButton: Boolean,
 	},
@@ -234,6 +238,10 @@ export default {
 				justification: { required: requiredIf(() => this.deduplication) },
 			},
 		};
+	},
+
+	created() {
+		this.setDefaultIdType();
 	},
 
 	methods: {
@@ -323,6 +331,14 @@ export default {
 			this.formModel = { ...consts.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
+			this.setDefaultIdType();
+		},
+
+		setDefaultIdType() {
+			this.formModel.idType = {
+				code: this.defaultIdType,
+				value: this.defaultIdType,
+			};
 		},
 
 		close() {
