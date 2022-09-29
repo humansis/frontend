@@ -107,7 +107,6 @@ export default {
 				this.table.data[key].lastModified = reliefPackageItems
 					.map((i) => (this.$moment(i.distributedAt || i.lastModifiedAt)
 						.format("YYYY-MM-DD hh:mm")));
-				this.table.data[key].spent = reliefPackageItems.map((i) => (`${i.amountSpent ?? 0} ${i.unit}`));
 
 				const isDistributed = reliefPackageItems.length
 					&& reliefPackageItems.every((i) => i.state === "Distributed");
