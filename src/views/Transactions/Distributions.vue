@@ -135,14 +135,12 @@ export default {
 					{ key: "localFamilyName" },
 					{ key: "project" },
 					{ key: "assistance", label: "Name" },
-					{ key: "adm1" },
-					{ key: "adm2" },
-					{ key: "adm3" },
-					{ key: "adm4" },
+					{ key: "fullLocationNames", label: "Location" },
 					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
 					{ key: "commodity" },
 					{ key: "carrierNumber" },
-					{ key: "amount" },
+					{ key: "amount", label: "Distributed" },
+					{ key: "spent" },
 					{ key: "unit" },
 				],
 				total: 0,
@@ -206,10 +204,6 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const adm1Ids = [];
-			const adm2Ids = [];
-			const adm3Ids = [];
-			const adm4Ids = [];
 			const locationIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
@@ -222,10 +216,6 @@ export default {
 				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
 				commodityIds.push(item.commodityId);
-				adm1Ids.push(item.adm1Id);
-				adm2Ids.push(item.adm2Id);
-				adm3Ids.push(item.adm3Id);
-				adm4Ids.push(item.adm4Id);
 				locationIds.push(item.locationId);
 			});
 
@@ -233,10 +223,6 @@ export default {
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
 			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
-			this.prepareAdm1ForTable([...new Set(adm1Ids)]);
-			this.prepareAdm2ForTable([...new Set(adm2Ids)]);
-			this.prepareAdm3ForTable([...new Set(adm3Ids)]);
-			this.prepareAdm4ForTable([...new Set(adm4Ids)]);
 		},
 
 		filtersToggle() {
