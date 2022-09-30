@@ -161,6 +161,7 @@ export default {
 			default: () => [],
 		},
 	},
+
 	validations: {
 		formModel: {
 			name: { required },
