@@ -78,6 +78,7 @@ export default {
 				unitPrice: 0,
 				currency: "",
 				image: "",
+				uploadedImage: null,
 			},
 			categories: [],
 			currencies,
@@ -133,6 +134,7 @@ export default {
 				unit,
 				unitPrice,
 				currency,
+				uploadedImage,
 			},
 		) {
 			const productCategory = this.categories.find((item) => productCategoryId === item.id);
@@ -148,6 +150,7 @@ export default {
 				unit,
 				unitPrice,
 				currency: productCurrency,
+				uploadedImage,
 			};
 		},
 
@@ -182,6 +185,7 @@ export default {
 				unit: "",
 				unitPrice: 0,
 				currency: "",
+				uploadedImage: null,
 			};
 		},
 
