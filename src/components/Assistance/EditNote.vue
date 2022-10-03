@@ -4,9 +4,7 @@
 			<div
 				class="note-text"
 				:class="displayFull ? 'note-text__full' : ''"
-			>
-				{{ noteComputed }}
-			</div>
+			>{{ noteComputed }}</div>
 			<b-tooltip
 				v-if="noteComputed"
 				class="btn-tooltip"
