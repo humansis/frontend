@@ -8,9 +8,6 @@
 					v-model="formModel.idType"
 					required
 				/>
-				<b-message type="is-info">
-					{{ $t('Split ID numbers with white space') }}. {{ $t('Maximum 5000 IDs allowed') }}.
-				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
 					:type="validateType('idsList')"
@@ -23,6 +20,10 @@
 						@blur="validate('idsList')"
 					/>
 				</b-field>
+				<p class="help mt-2n mb-4">
+					{{ this.$t("Split ID numbers with white space") }}.
+					{{ this.$t("Maximum 5000 IDs allowed") }}.
+				</p>
 				<b-field
 					v-if="deduplication"
 					:label="$t('Justification')"
@@ -30,7 +31,7 @@
 					:message="validateMsg('justification')"
 				>
 					<b-input
-						v-model="formModel.justification"
+						v-model.trim="formModel.justification"
 					/>
 				</b-field>
 			</section>
@@ -168,7 +169,7 @@
 			</b-button>
 			<b-button class="is-primary" @click="openDistributedForm">
 				<span v-if="deduplication">
-					{{ $t('Input Deduplication Again') }}
+					{{ $t('Bulk Remove Again') }}
 				</span>
 				<span v-else>
 					{{ $t('Input Distributed Again') }}
@@ -316,7 +317,7 @@ export default {
 			if (isIdsListLengthValid(this.formModel.idsList)) {
 				this.idsListErrorMessage = "";
 			} else {
-				const msg = `Length of IDs list must not exceed ${consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH}`;
+				const msg = this.$t(`You have entered more than ${consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`);
 				this.idsListErrorMessage = this.$t(msg);
 			}
 		},
