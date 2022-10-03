@@ -74,7 +74,7 @@ export default {
 	computed: {
 		noteComputed: {
 			get() {
-				return this.note || this?.assistance?.note;
+				return (this.note !== undefined) ? this.note : this?.assistance?.note;
 			},
 			set(val) {
 				this.note = val;
@@ -117,7 +117,6 @@ export default {
 		},
 
 		toggleDisplayFull() {
-			console.log(this.note, this.noteComputed);
 			this.displayFull = !this.displayFull;
 		},
 
