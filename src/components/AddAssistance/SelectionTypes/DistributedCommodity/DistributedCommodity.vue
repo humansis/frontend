@@ -141,9 +141,7 @@ export default {
 			commodityModal: {
 				isOpened: false,
 			},
-			formModel: {
-				DEFAULT_FORM_MODEL,
-			},
+			formModel: { ...DEFAULT_FORM_MODEL },
 			table: {
 				data: [],
 				columns: [],
@@ -365,7 +363,7 @@ export default {
 
 		clearComponent() {
 			this.table.data = [];
-			this.formModel = DEFAULT_FORM_MODEL;
+			this.formModel = { ...DEFAULT_FORM_MODEL };
 			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 	},
