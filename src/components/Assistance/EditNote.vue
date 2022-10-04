@@ -71,6 +71,12 @@ export default {
 		},
 	},
 
+	watch: {
+		assistance() {
+			this.note = this?.assistance?.note;
+		},
+	},
+
 	computed: {
 		noteComputed: {
 			get() {
