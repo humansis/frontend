@@ -64,32 +64,26 @@ export default {
 	props: {
 		projectName: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		admName: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		provinceName: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		round: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		dateDistribution: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		dateExpiration: {
 			type: String,
-			default: "",
 			required: true,
 		},
 	},

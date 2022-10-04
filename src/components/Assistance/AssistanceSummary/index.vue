@@ -136,7 +136,7 @@ export default {
 		},
 
 		assistanceType() {
-			return this.assistance?.type;
+			return this.assistance?.type || "";
 		},
 
 		assistanceTarget() {
@@ -218,7 +218,6 @@ export default {
 </script>
 
 <style lang="scss">
-// Cannot be scoped CSS, we need to adjust .tab-content
 .assistance-summary {
 	.box {
 		height: 90px;
@@ -235,7 +234,7 @@ export default {
 	.level {
 		justify-content: flex-start;
 		.level-item:not(.is-narrow) {
-			flex-grow: 0.05;
+			flex-grow: .05;
 		}
 	}
 

@@ -58,22 +58,18 @@ export default {
 	props: {
 		assistanceType: {
 			type: String,
-			default: "",
 			required: true,
 		},
 		assistanceRemote: {
 			type: Boolean,
-			default: false,
 			required: true,
 		},
 		commodity: {
 			type: Array,
-			default: () => [],
 			required: true,
 		},
 		beneficiariesCount: {
 			type: Number,
-			default: 0,
 			required: true,
 		},
 	},
