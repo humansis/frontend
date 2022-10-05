@@ -8,6 +8,10 @@
 					v-model="formModel.idType"
 					required
 				/>
+				<b-message type="is-info">
+					{{ $t('Split ID numbers with white space') }}.
+					{{ $t('Maximum 5000 IDs allowed') }}.
+				</b-message>
 				<b-field
 					:label="$t('ID Numbers')"
 					:type="validateType('idsList')"
@@ -20,10 +24,6 @@
 						@blur="validate('idsList')"
 					/>
 				</b-field>
-				<p class="help mt-2n mb-4">
-					{{ this.$t("Split ID numbers with white space") }}.
-					{{ this.$t("Maximum 5000 IDs allowed") }}.
-				</p>
 				<b-field
 					v-if="deduplication"
 					:label="$t('Justification')"
