@@ -132,7 +132,10 @@ export default {
 	},
 
 	computed: {
-		...mapState(["availableProjects"]),
+		...mapState([
+			"availableProjects",
+			"language",
+		]),
 	},
 
 	methods: {
@@ -206,7 +209,15 @@ export default {
 		},
 
 		goToDetail(project) {
-			if (this.userCan.viewProject) this.$router.push({ name: "Project", params: { projectId: project.id } });
+			if (this.userCan.viewProject) {
+				this.$router.push({
+					name: "Project",
+					params: {
+						projectId: project.id,
+						lang: this.language.key,
+					},
+				});
+			}
 		},
 
 		edit(id) {

@@ -48,11 +48,11 @@ const routes = [
 		},
 	},
 	{
-		path: "",
+		path: "/:lang?",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
 		children: [
 			{
-				path: "/",
+				path: "",
 				name: "Home",
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				beforeEnter: ifAuthenticated,
@@ -63,7 +63,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/projects",
+				path: "projects",
 				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
@@ -78,7 +78,7 @@ const routes = [
 						},
 					},
 					{
-						path: "/project/:projectId",
+						path: "/:lang?/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: () => i18n.t("Project"),
@@ -133,7 +133,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/imports",
+				path: "imports",
 				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
@@ -169,7 +169,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/beneficiaries",
+				path: "beneficiaries",
 				redirect: { name: "Households" },
 				component: { render(c) { return c("router-view"); } },
 				meta: {
@@ -266,7 +266,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/reports",
+				path: "reports",
 				name: "Reports",
 				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
 				beforeEnter: ifAuthenticated,
@@ -277,7 +277,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/vouchers",
+				path: "vouchers",
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				beforeEnter: ifAuthenticated,
@@ -288,7 +288,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/country-settings",
+				path: "country-settings",
 				name: "Country Settings",
 				component: { render(c) { return c("router-view"); } },
 				children: [
@@ -317,7 +317,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/administrative-settings",
+				path: "administrative-settings",
 				name: "Administrative Settings",
 				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 				beforeEnter: ifAuthenticated,
@@ -328,7 +328,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/transactions",
+				path: "transactions",
 				name: "Transactions",
 				component: { render(c) { return c("router-view"); } },
 				beforeEnter: ifAuthenticated,
@@ -363,7 +363,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/logs",
+				path: "logs",
 				name: "Logs",
 				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
 				beforeEnter: ifAuthenticated,
@@ -374,7 +374,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/profile",
+				path: "profile",
 				name: "Profile",
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				beforeEnter: ifAuthenticated,

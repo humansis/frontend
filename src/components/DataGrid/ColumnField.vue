@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ImageColumn from "@/components/DataGrid/ImageColumn";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
@@ -168,6 +169,10 @@ export default {
 	},
 
 	computed: {
+		...mapState([
+			"language",
+		]),
+
 		fontFamily() {
 			return `font-family: ${this.data.row[this.column.field]}, sans-serif`;
 		},
@@ -213,7 +218,7 @@ export default {
 		},
 
 		getLink(field) {
-			return field?.link || "";
+			return `${this.language.key}/${field?.link}` || this.language.key || "";
 		},
 
 		getLinkName(field) {

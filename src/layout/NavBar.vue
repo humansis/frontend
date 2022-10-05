@@ -86,7 +86,7 @@
 					<b-icon icon="user" size="is-medium" />
 				</a>
 
-				<router-link :to="{ name: 'Profile' }">
+				<router-link :to="{ name: 'Profile', params: { lang: language } }">
 					<b-dropdown-item value="profile">
 						<b-icon class="mr-1" icon="user" />
 						{{ $t('Profile') }}
@@ -105,7 +105,6 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import { Notification } from "@/utils/UI";
-import TranslationService from "@/services/TranslationService";
 import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 
@@ -178,20 +177,12 @@ export default {
 		},
 
 		async handleChangeLanguage(language) {
-			await TranslationService.getTranslations(language.key).then(async (response) => {
-				if (response.status === 200) {
-					this.$i18n.locale = language.key.toLowerCase();
-					this.$i18n.fallbackLocale = language.key.toLowerCase();
-					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-					await this.storeLanguage(language);
-					await this.storeTranslations(response.data);
-					await this.fetchAdmNames();
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+			this.$router.push({
+				name: this.$router.name,
+				params: {
+					lang: language.key,
+				},
 			});
-
-			this.$router.go();
 		},
 
 		setTooltip() {

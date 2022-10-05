@@ -188,7 +188,13 @@
 										v-if="item.householdId"
 										class="table-link"
 										target="_blank"
-										:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
+										:to="{
+											name: 'EditHousehold',
+											params: {
+												householdId: item.householdId,
+												lang: language.key
+											}
+										}"
 									>
 										{{ item.householdId }}
 									</router-link>
@@ -233,6 +239,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import consts from "@/utils/importConst";
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
@@ -286,6 +293,10 @@ export default {
 	},
 
 	computed: {
+		...mapState([
+			"language",
+		]),
+
 		finalisationStepActive() {
 			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
