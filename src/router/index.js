@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import getters from "@/store/getters";
 import store from "@/store/index";
 import { Notification } from "@/utils/UI";
+import i18n from "@/plugins/i18n";
 
 Vue.use(VueRouter);
 
@@ -57,7 +58,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
-					breadcrumb: "Home",
+					breadcrumb: () => i18n.t("Home"),
 					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
 				},
 			},
@@ -72,7 +73,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Projects",
+							breadcrumb: () => i18n.t("Projects"),
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
@@ -80,7 +81,7 @@ const routes = [
 						path: "/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
-							breadcrumb: "Project",
+							breadcrumb: () => i18n.t("Project"),
 						},
 						children: [
 							{
@@ -100,7 +101,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["editDistribution"],
-									breadcrumb: "Assistance Edit",
+									breadcrumb: () => i18n.t("Edit Assistance"),
 									description: "",
 								},
 							},
@@ -111,7 +112,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
-									breadcrumb: "Assistance Detail",
+									breadcrumb: () => i18n.t("Assistance Detail"),
 									description: "",
 								},
 							},
@@ -122,7 +123,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["addDistribution"],
-									breadcrumb: "Add Assistance",
+									breadcrumb: () => i18n.t("Add Assistance"),
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
 								},
@@ -142,7 +143,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Imports",
+							breadcrumb: () => i18n.t("Imports"),
 							description: "",
 						},
 					},
@@ -150,7 +151,7 @@ const routes = [
 						path: "/import/:importId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
-							breadcrumb: "Import",
+							breadcrumb: () => i18n.t("Import"),
 						},
 						children: [
 							{
@@ -172,14 +173,14 @@ const routes = [
 				redirect: { name: "Households" },
 				component: { render(c) { return c("router-view"); } },
 				meta: {
-					breadcrumb: "Beneficiaries",
+					breadcrumb: () => i18n.t("Beneficiaries"),
 				},
 				children: [
 					{
 						path: "households",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
-							breadcrumb: "Households",
+							breadcrumb: () => i18n.t("Households"),
 							parent: "Beneficiaries",
 						},
 						children: [
@@ -200,7 +201,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["addBeneficiary"],
-									breadcrumb: "Add Household",
+									breadcrumb: () => i18n.t("Add Household"),
 									description: "This page is a form to add a new household to the platform.",
 								},
 							},
@@ -211,7 +212,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewBeneficiary", "editBeneficiary"],
-									breadcrumb: "Edit Household",
+									breadcrumb: () => i18n.t("Edit Household"),
 									description: "",
 								},
 							},
@@ -222,7 +223,7 @@ const routes = [
 								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewBeneficiary"],
-									breadcrumb: "Household Information Summary",
+									breadcrumb: () => i18n.t("Household Information Summary"),
 									description: "",
 									parent: "Households",
 								},
@@ -236,7 +237,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Communities",
+							breadcrumb: () => i18n.t("Communities"),
 							description: "",
 						},
 					},
@@ -247,7 +248,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Institutions",
+							breadcrumb: () => i18n.t("Institutions"),
 							description: "",
 						},
 					},
@@ -258,7 +259,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["viewVendors"],
-							breadcrumb: "Vendors",
+							breadcrumb: () => i18n.t("Vendors"),
 							description: "",
 						},
 					},
@@ -271,7 +272,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
-					breadcrumb: "Reports",
+					breadcrumb: () => i18n.t("Reports"),
 					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances",
 				},
 			},
@@ -282,7 +283,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: ["viewVouchers"],
-					breadcrumb: "Vouchers",
+					breadcrumb: () => i18n.t("Vouchers"),
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
 				},
 			},
@@ -298,7 +299,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["viewProducts"],
-							breadcrumb: "Products",
+							breadcrumb: () => i18n.t("Products"),
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},
 					},
@@ -309,7 +310,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["countrySettings"],
-							breadcrumb: "Country Specifics",
+							breadcrumb: () => i18n.t("Country specifics"),
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
 						},
 					},
@@ -322,7 +323,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: ["adminSettings"],
-					breadcrumb: "Administrative Settings",
+					breadcrumb: () => i18n.t("Administrative Settings"),
 					description: "This page is where you can manage users, donors and your organization's specifics",
 				},
 			},
@@ -333,7 +334,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
-					breadcrumb: "Transactions",
+					breadcrumb: () => i18n.t("Transactions"),
 					description: "",
 				},
 				children: [
@@ -344,7 +345,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Assistances",
+							breadcrumb: () => i18n.t("Assistances"),
 							description: "",
 						},
 					},
@@ -355,7 +356,7 @@ const routes = [
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
-							breadcrumb: "Purchases",
+							breadcrumb: () => i18n.t("Purchases"),
 							description: "",
 						},
 					},
@@ -368,7 +369,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
-					breadcrumb: "Logs",
+					breadcrumb: () => i18n.t("Logs"),
 					description: "",
 				},
 			},
@@ -379,7 +380,7 @@ const routes = [
 				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
-					breadcrumb: "Profile",
+					breadcrumb: () => i18n.t("Profile"),
 					description: "This page is where you can change your password",
 				},
 			},
@@ -406,7 +407,7 @@ router.beforeEach((to, from, next) => {
 	const user = getters.getUserFromVuexStorage();
 
 	window.document.title = to.meta && to.meta.breadcrumb
-		? `${to.meta.breadcrumb} | Humansis` : "Humansis";
+		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
 
 	if (
 		to.name === "Login"
