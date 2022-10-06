@@ -158,3 +158,8 @@
 	}
 }
 
+.notification {
+	&.is-bottom-right {
+		padding: 1rem 2.5rem 1rem 0.7rem;
+	}
+}
