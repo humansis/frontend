@@ -163,7 +163,7 @@ export default {
 
 			this.distributedButtonLoading = true;
 
-			const numberIds = this.formModel.input.split(" ");
+			const numberIds = this.formModel.input.split(/\s+/);
 
 			if (!numberIds.length) {
 				Notification(this.$t("Invalid Input"), "is-danger");
