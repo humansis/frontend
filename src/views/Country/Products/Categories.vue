@@ -40,8 +40,8 @@
 
 <script>
 import { mapState } from "vuex";
-import CategoriesList from "@/components/Configuration/Products/CategoriesList";
-import CategoryForm from "@/components/Configuration/Products/CategoryForm";
+import CategoriesList from "@/components/Country/Products/CategoriesList";
+import CategoryForm from "@/components/Country/Products/CategoryForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Toast } from "@/utils/UI";

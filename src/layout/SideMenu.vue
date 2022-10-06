@@ -158,15 +158,15 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
-							icon="cog"
+							icon="globe-africa"
 							class="to-dropdown-item"
-							:active="configurationActive"
+							:active="countryActive"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
-							@click="configurationActive = !configurationActive"
+							@click="countryActive = !countryActive"
 						>
 							<template #label>
-								<b-tooltip :label="$t('Configuration')" position="is-right" always>
-									{{ $t('Configuration') }}
+								<b-tooltip :label="$t('Country')" position="is-right" always>
+									{{ $t('Country') }}
 								</b-tooltip>
 							</template>
 							<b-menu-item
@@ -248,7 +248,7 @@ export default {
 		return {
 			gitInfo,
 			beneficiariesActive: false,
-			configurationActive: false,
+			countryActive: false,
 			isSmallerMenuItem: false,
 		};
 	},
