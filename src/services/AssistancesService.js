@@ -356,10 +356,10 @@ export default {
 	},
 
 	async getSelectionCriteria(id) {
-		const { data: { data, totalCount } } = await fetcher({
+		const { data: { data, totalCount }, message } = await fetcher({
 			uri: `assistances/${id}/selection-criteria`,
 		});
-		return { data, totalCount };
+		return { data, totalCount, message };
 	},
 
 	async exportAssistances(format, projectId) {

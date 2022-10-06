@@ -171,8 +171,12 @@ export default {
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
-				.then(({ data }) => {
-					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
+				.then(({ data, message }) => {
+					if (data) {
+						this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
+					} else {
+						Notification(this.$t(message), "is-danger");
+					}
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
