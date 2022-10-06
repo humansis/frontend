@@ -8,7 +8,7 @@ module.exports = {
 		"@vue/airbnb",
 	],
 	parserOptions: {
-		parser: "@babel/eslint-parser"
+		parser: "@babel/eslint-parser",
 	},
 	rules: {
 		"import/extensions": ["warn", "ignorePackages"],
