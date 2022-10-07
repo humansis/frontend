@@ -69,6 +69,9 @@ export default {
 
 			this.$router.replace({
 				name,
+				params: {
+					country: this.country.iso3.toLowerCase(),
+				},
 				query: {
 					...query,
 					page: this.table.currentPage,
