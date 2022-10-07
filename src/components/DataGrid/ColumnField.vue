@@ -218,7 +218,8 @@ export default {
 		},
 
 		getLink(field) {
-			return `${this.country.iso3}/${field?.link}` || this.country.iso3 || "";
+			const countryCode = this.country.iso3.toLowerCase();
+			return `${countryCode}/${field?.link}` || countryCode || "";
 		},
 
 		getLinkName(field) {

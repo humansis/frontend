@@ -214,7 +214,7 @@ export default {
 					name: "Project",
 					params: {
 						projectId: project.id,
-						country: this.country.iso3,
+						country: this.country.iso3.toLowerCase(),
 					},
 				});
 			}
