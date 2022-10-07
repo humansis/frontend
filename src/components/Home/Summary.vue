@@ -87,6 +87,7 @@ export default {
 		},
 
 		async fetchData() {
+			this.summary = [];
 			this.summaryCodes.forEach((item, index) => {
 				this.summary.push({
 					id: index,

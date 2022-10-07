@@ -170,7 +170,7 @@ export default {
 
 	computed: {
 		...mapState([
-			"language",
+			"country",
 		]),
 
 		fontFamily() {
@@ -218,7 +218,7 @@ export default {
 		},
 
 		getLink(field) {
-			return `${this.language.key}/${field?.link}` || this.language.key || "";
+			return `${this.country.iso3}/${field?.link}` || this.country.iso3 || "";
 		},
 
 		getLinkName(field) {

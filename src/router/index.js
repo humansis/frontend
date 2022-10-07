@@ -48,7 +48,7 @@ const routes = [
 		},
 	},
 	{
-		path: "/:lang?",
+		path: "/:country?",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
 		children: [
 			{
@@ -78,7 +78,7 @@ const routes = [
 						},
 					},
 					{
-						path: "/:lang?/project/:projectId",
+						path: "/:country?/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: () => i18n.t("Project"),

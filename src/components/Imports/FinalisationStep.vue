@@ -192,7 +192,7 @@
 											name: 'EditHousehold',
 											params: {
 												householdId: item.householdId,
-												lang: language.key
+												country: country.iso3.toLowerCase()
 											}
 										}"
 									>
@@ -294,7 +294,7 @@ export default {
 
 	computed: {
 		...mapState([
-			"language",
+			"country",
 		]),
 
 		finalisationStepActive() {

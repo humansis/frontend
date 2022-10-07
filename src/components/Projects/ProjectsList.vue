@@ -134,7 +134,7 @@ export default {
 	computed: {
 		...mapState([
 			"availableProjects",
-			"language",
+			"country",
 		]),
 	},
 
@@ -214,7 +214,7 @@ export default {
 					name: "Project",
 					params: {
 						projectId: project.id,
-						lang: this.language.key,
+						country: this.country.iso3,
 					},
 				});
 			}

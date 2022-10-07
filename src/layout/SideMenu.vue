@@ -24,7 +24,7 @@
 							icon="home"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Home', params: { lang: language.key } }"
+							:to="{ name: 'Home', params: { country: country.iso3.toLowerCase() } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -38,7 +38,7 @@
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Projects', params: { lang: language.key } }"
+							:to="{ name: 'Projects', params: { country: country.iso3.toLowerCase() } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -64,7 +64,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Households', params: { lang: language.key } }"
+								:to="{ name: 'Households', params: { country: country.iso3.toLowerCase() } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -78,7 +78,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Institutions', params: { lang: language.key } }"
+								:to="{ name: 'Institutions', params: { country: country.iso3.toLowerCase() } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -92,7 +92,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Communities', params: { lang: language.key } }"
+								:to="{ name: 'Communities', params: { country: country.iso3.toLowerCase() } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -107,7 +107,7 @@
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Vendors', params: { lang: language.key } }"
+								:to="{ name: 'Vendors', params: { country: country.iso3.toLowerCase() } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -121,7 +121,7 @@
 							icon="file-import"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Imports', params: { lang: language.key } }"
+							:to="{ name: 'Imports', params: { country: country.iso3.toLowerCase() } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -134,7 +134,7 @@
 							icon="chart-line"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Reports', params: { lang: language.key } }"
+							:to="{ name: 'Reports', params: { country: country.iso3.toLowerCase() } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -148,7 +148,7 @@
 							icon="ticket-alt"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Vouchers', params: { lang: language.key } }"
+							:to="{ name: 'Vouchers', params: { country: country.iso3.toLowerCase() } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -175,7 +175,7 @@
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Products', params: { lang: language.key } }"
+								:to="{ name: 'Products', params: { country: country.iso3.toLowerCase() } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -190,7 +190,10 @@
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'CountrySpecificOptions', params: { lang: language.key } }"
+								:to="{
+									name: 'CountrySpecificOptions',
+									params: { country: country.iso3.toLowerCase() }
+								}"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -205,7 +208,10 @@
 							icon="wrench"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Administrative Settings', params: { lang: language.key } }"
+							:to="{
+								name: 'Administrative Settings',
+								params: { country: country.iso3.toLowerCase() }
+							}"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -218,7 +224,10 @@
 							icon="exchange-alt"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'TransactionsAssistances', params: { lang: language.key } }"
+							:to="{
+								name: 'TransactionsAssistances',
+								params: { country: country.iso3.toLowerCase() }
+							}"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -257,7 +266,7 @@ export default {
 		...mapState([
 			"isAsideVisible",
 			"isAsideExpanded",
-			"language",
+			"country",
 		]),
 
 		environment() {
