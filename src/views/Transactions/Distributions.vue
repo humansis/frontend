@@ -217,6 +217,7 @@ export default {
 				assistanceIds.push(item.assistanceId);
 				commodityIds.push(item.commodityId);
 				locationIds.push(item.locationId);
+				this.table.data[key].spent = item.spent ?? 0;
 			});
 
 			this.prepareProjectForTable([...new Set(projectIds)]);
