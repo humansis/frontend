@@ -115,6 +115,7 @@ export default {
 			history: false,
 			redemptionBatch: null,
 			redemptionSummary: false,
+			redeemButtonPressed: false,
 			printButtonVisible: true,
 			batches: [],
 			projects: [],
@@ -148,11 +149,18 @@ export default {
 		goBack() {
 			this.fetchSmartcardRedemptions();
 
-			if (this.redemptionSummary) {
+			if (!this.redeemButtonPressed) {
+				if (this.redemptionSummary) {
+					this.redemptionSummary = false;
+					this.header = this.$t("Redeemed Batches");
+				} else if (this.history) {
+					this.history = false;
+					this.header = this.$t("Vendor Transaction Summary");
+				}
+			} else if (this.redeemButtonPressed && this.redemptionSummary && this.history) {
 				this.redemptionSummary = false;
-				this.header = this.$t("Redeemed Batches");
-			} else if (this.history) {
 				this.history = false;
+				this.redeemButtonPressed = false;
 				this.header = this.$t("Vendor Transaction Summary");
 			}
 		},
@@ -204,8 +212,9 @@ export default {
 			await SmartcardService.redeemBatch(this.vendor.id, batch.purchaseIds)
 				.then(({ data }) => {
 					this.history = true;
-					this.redemptionBatch = data;
 					this.redemptionSummary = true;
+					this.redeemButtonPressed = true;
+					this.redemptionBatch = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Redeem Batch")} ${e}`, "is-danger");
