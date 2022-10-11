@@ -203,7 +203,7 @@
 			<b-field
 				:label="$t('Allowed Product Category Types')"
 				:type="validateType('allowedProductCategoryTypes')"
-				:message="validateMsg('allowedProductCategoryTypes')"
+				:message="validateMsg('allowedProductCategoryTypes', $t('Required. Atleast 1 category'))"
 				:addons="false"
 			>
 				<div
@@ -317,7 +317,7 @@ export default {
 			totalTarget: { required, minValue: minValue(1) },
 			projectInvoiceAddressLocal: {},
 			projectInvoiceAddressEnglish: {},
-			allowedProductCategoryTypes: {},
+			allowedProductCategoryTypes: { required },
 		},
 	},
 
