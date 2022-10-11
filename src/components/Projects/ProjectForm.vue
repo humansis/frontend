@@ -203,7 +203,7 @@
 			<b-field
 				:label="$t('Allowed Product Category Types')"
 				:type="validateType('allowedProductCategoryTypes')"
-				:message="validateMsg('allowedProductCategoryTypes', $t('Required. Atleast 1 category'))"
+				:message="validateMsg('allowedProductCategoryTypes', $t('Required. At least 1 category'))"
 				:addons="false"
 			>
 				<div
