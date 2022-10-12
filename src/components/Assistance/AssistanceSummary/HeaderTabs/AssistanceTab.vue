@@ -74,17 +74,20 @@ export default {
 			type: String,
 			required: true,
 		},
-		round: {
-			type: String,
-			required: true,
+	},
+
+	computed: {
+		round() {
+			const isRoundNaN = Number.isNaN(parseInt(this.assistance?.round, 10));
+			return isRoundNaN ? "N/A" : this.assistance.round;
 		},
-		dateDistribution: {
-			type: String,
-			required: true,
+
+		dateDistribution() {
+			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm") || "";
 		},
-		dateExpiration: {
-			type: String,
-			required: true,
+
+		dateExpiration() {
+			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || "";
 		},
 	},
 };

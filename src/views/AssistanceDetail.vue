@@ -2,6 +2,7 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:commodities="commodities"
 			:project="project"
 		/>
 		<Modal
@@ -42,59 +43,6 @@
 				</div>
 			</div>
 			<b-progress v-model="assistanceProgress" type="is-success" />
-			<div class="columns">
-				<div class="column is-3">
-					<div class="has-text-weight-bold">
-						{{ $t('Total Amount') }}:
-					</div>
-					<span>{{ amountTotal }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType !== consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
-					</div>
-					<span>{{ amountDistributed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.QR_CODE_VOUCHER"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Used') }}:
-					</div>
-					<span>{{ amountUsed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Sent') }}:
-					</div>
-					<span>{{ amountSent }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Picked Up') }}:
-					</div>
-					<span>{{ amountPickedUp }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-			</div>
 		</div>
 		<BeneficiariesList
 			ref="beneficiariesList"
@@ -302,7 +250,7 @@ export default {
 				}
 			}
 
-			return (result !== Infinity) ? Math.round(result) : 0;
+			return (result !== Infinity) ? Math.floor(result) : 0;
 		},
 
 		amountTotal() {

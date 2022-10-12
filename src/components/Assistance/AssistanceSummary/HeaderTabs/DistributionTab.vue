@@ -14,6 +14,24 @@
 		</div>
 
 		<div
+			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
+			class="level-item has-text-centered"
+		>
+			<div class="box">
+				<p class="heading">{{ $t('Reached') }}</p>
+				<p
+					v-if="beneficiariesReached || beneficiariesReached === 0"
+					class="has-text-weight-bold is-size-5"
+				>
+					{{ beneficiariesReached }}
+					{{ $t("of") }}
+					{{ beneficiariesCount }}
+				</p>
+				<Loading v-else type="bubbles" is-normal />
+			</div>
+		</div>
+
+		<div
 			v-if="assistanceType === consts.TYPE.DISTRIBUTION"
 			class="level-item has-text-centered"
 		>
@@ -39,6 +57,25 @@
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
+
+		<div
+			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
+			class="level-item has-text-centered"
+		>
+			<div class="box">
+				<p class="heading">{{ $t('Distributed') }}</p>
+				<p
+					v-if="amountDistributed || amountDistributed === 0"
+					class="has-text-weight-bold is-size-5"
+				>
+					{{ amountDistributed }}
+					{{ $t("of") }}
+					{{ amountTotal }}
+					{{ assistanceUnit }}
+				</p>
+				<Loading v-else type="bubbles" is-normal />
+			</div>
+		</div>
 	</nav>
 </template>
 
@@ -56,21 +93,21 @@ export default {
 	},
 
 	props: {
-		assistanceType: {
-			type: String,
-			required: true,
+		assistance: {
+			type: Object,
+			default: () => {},
 		},
-		assistanceRemote: {
-			type: Boolean,
-			required: true,
+		statistics: {
+			type: Object,
+			default: () => {},
 		},
 		commodity: {
 			type: Array,
-			required: true,
+			default: () => [],
 		},
-		beneficiariesCount: {
-			type: Number,
-			required: true,
+		commodities: {
+			type: Array,
+			default: () => [],
 		},
 	},
 
@@ -78,6 +115,42 @@ export default {
 		return {
 			consts,
 		};
+	},
+
+	computed: {
+		beneficiariesCount() {
+			return this.statistics?.beneficiariesTotal || 0;
+		},
+
+		beneficiariesReached() {
+			return this.statistics?.beneficiariesReached || 0;
+		},
+
+		amountDistributed() {
+			return this.statistics?.amountDistributed || 0;
+		},
+
+		amountTotal() {
+			return this.statistics?.amountTotal || 0;
+		},
+
+		assistanceUnit() {
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+				return this.commodities?.[0]?.unit || "";
+			}
+
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+
+			return "";
+		},
+
+		assistanceType() {
+			return this.assistance?.type || "";
+		},
+
+		assistanceRemote() {
+			return !!this.assistance?.remoteDistributionAllowed;
+		},
 	},
 };
 </script>

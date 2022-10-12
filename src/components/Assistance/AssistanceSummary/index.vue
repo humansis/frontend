@@ -29,27 +29,22 @@
 					:projectName="projectName"
 					:admName="admNames.adm1"
 					:provinceName="provinceName"
-					:round="assistanceRound"
-					:dateDistribution="dateDistribution"
-					:dateExpiration="dateExpiration"
 				/>
 			</b-tab-item>
 
 			<b-tab-item :label="$t('Selection')" icon="home" class="relative-position">
 				<SelectionTab
-					:assistanceTarget="assistanceTarget"
-					:assistanceScoringType="assistanceScoringType"
-					:beneficiariesCount="beneficiariesCount"
-					:beneficiariesDeleted="beneficiariesDeleted"
+					:assistance="assistance"
+					:statistics="statistics"
 				/>
 			</b-tab-item>
 
 			<b-tab-item :label="$t('Distribution')" icon="bullseye" class="relative-position">
 				<DistributionTab
-					:assistanceType="assistanceType"
-					:assistanceRemote="assistanceRemote"
+					:assistance="assistance"
+					:statistics="statistics"
 					:commodity="commodity"
-					:beneficiariesCount="beneficiariesCount"
+					:commodities="commodities"
 				/>
 			</b-tab-item>
 		</b-tabs>
@@ -59,21 +54,16 @@
 				:projectName="projectName"
 				:admName="admNames.adm1"
 				:provinceName="provinceName"
-				:round="assistanceRound"
-				:dateDistribution="dateDistribution"
-				:dateExpiration="dateExpiration"
 			/>
 			<SelectionTab
-				:assistanceTarget="assistanceTarget"
-				:assistanceScoringType="assistanceScoringType"
-				:beneficiariesCount="beneficiariesCount"
-				:beneficiariesDeleted="beneficiariesDeleted"
+				:assistance="assistance"
+				:statistics="statistics"
 			/>
 			<DistributionTab
-				:assistanceType="assistanceType"
-				:assistanceRemote="assistanceRemote"
+				:assistance="assistance"
+				:statistics="statistics"
 				:commodity="commodity"
-				:beneficiariesCount="beneficiariesCount"
+				:commodities="commodities"
 			/>
 		</nav>
 		<hr>
@@ -100,8 +90,18 @@ export default {
 	},
 
 	props: {
-		assistance: Object,
-		project: Object,
+		assistance: {
+			type: Object,
+			default: () => {},
+		},
+		project: {
+			type: Object,
+			default: () => {},
+		},
+		commodities: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	data() {
@@ -130,15 +130,6 @@ export default {
 			return this.assistance?.name || "";
 		},
 
-		assistanceRound() {
-			const isRoundNaN = Number.isNaN(parseInt(this.assistance?.round, 10));
-			return isRoundNaN ? "N/A" : this.assistance.round;
-		},
-
-		assistanceType() {
-			return this.assistance?.type || "";
-		},
-
 		assistanceTarget() {
 			return normalizeText(this.assistance?.target);
 		},
@@ -149,10 +140,6 @@ export default {
 
 		assistanceDescription() {
 			return this.assistance?.description;
-		},
-
-		assistanceRemote() {
-			return !!this.assistance?.remoteDistributionAllowed;
 		},
 
 		provinceName() {
@@ -171,20 +158,8 @@ export default {
 			return this.assistance?.completed || false;
 		},
 
-		dateDistribution() {
-			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm") || "";
-		},
-
-		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || "";
-		},
-
-		beneficiariesCount() {
-			return this.statistics?.beneficiariesTotal || 0;
-		},
-
-		beneficiariesDeleted() {
-			return this.statistics?.beneficiariesDeleted || 0;
+		modalityType() {
+			return this.commodities?.[0]?.modalityType;
 		},
 	},
 

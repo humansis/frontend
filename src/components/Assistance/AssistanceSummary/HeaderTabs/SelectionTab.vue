@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { normalizeText } from "@/utils/datagrid";
 import Loading from "@/components/Loading";
 
 export default {
@@ -52,25 +53,35 @@ export default {
 	},
 
 	props: {
-		assistanceTarget: {
-			type: String,
-			default: "",
-			required: true,
+		assistance: {
+			type: Object,
+			default: () => {},
 		},
-		assistanceScoringType: {
-			type: String,
-			default: "",
-			required: true,
+		statistics: {
+			type: Object,
+			default: () => {},
 		},
-		beneficiariesCount: {
-			type: Number,
-			default: 0,
-			required: true,
+	},
+
+	computed: {
+		assistanceName() {
+			return this.assistance?.name || "";
 		},
-		beneficiariesDeleted: {
-			type: Number,
-			default: 0,
-			required: true,
+
+		assistanceTarget() {
+			return normalizeText(this.assistance?.target);
+		},
+
+		assistanceScoringType() {
+			return this.assistance?.scoringBlueprint?.name || this.$t("Default");
+		},
+
+		beneficiariesCount() {
+			return this.statistics?.beneficiariesTotal || 0;
+		},
+
+		beneficiariesDeleted() {
+			return this.statistics?.beneficiariesTotal || 0;
 		},
 	},
 };
