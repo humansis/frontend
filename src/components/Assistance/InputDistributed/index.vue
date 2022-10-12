@@ -159,8 +159,6 @@ export default {
 
 			if (this.$v.$invalid) { return; }
 
-			this.$emit("submit");
-
 			this.distributedButtonLoading = true;
 
 			const numberIds = this.formModel.input.split(/\s+/);
@@ -174,8 +172,8 @@ export default {
 			await AssistancesService.updateReliefPackagesWithNumberIds(
 				this.$route.params.assistanceId, body,
 			)
-				.then(({ data, message }) => {
-					if (data) {
+				.then(({ data, status, message }) => {
+					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
 					} else {
@@ -185,6 +183,7 @@ export default {
 					Notification(error, "is-danger");
 				}).finally(() => {
 					this.distributedButtonLoading = false;
+					this.$emit("submit");
 				});
 
 			this.$v.$reset();
