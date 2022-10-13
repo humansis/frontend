@@ -366,7 +366,7 @@ export default {
 
 		amountIntegrityCorrect(newValue) {
 			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, 60);
+				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, this.totalEntries, 60);
 			} else {
 				this.amountIntegrityCorrectIncrement = newValue;
 			}
@@ -374,7 +374,7 @@ export default {
 
 		amountIntegrityFailed(newValue) {
 			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, 120);
+				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, this.totalEntries, 120);
 			} else {
 				this.amountIntegrityFailedIncrement = newValue;
 			}
