@@ -13,7 +13,7 @@
 					:placeholder="$t('Click to select')"
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('criteriaTarget')"
 					@select="onCriteriaTargetSelect"
 					@input="validate('criteriaTarget')"
@@ -32,7 +32,7 @@
 					:loading="criteriaLoading"
 					label="value"
 					track-by="code"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('criteria')"
 					@select="onCriteriaSelect"
 					@input="validate('criteria')"
@@ -51,7 +51,7 @@
 					track-by="code"
 					:options="options.conditions"
 					:loading="criteriaConditionsLoading"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('condition')"
 					@input="validate('condition')"
 				/>
@@ -88,7 +88,7 @@
 					:placeholder="$t('Click to select')"
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
-					:searchable="false"
+					searchable
 					:disabled="valueDisabled"
 					:class="validateMultiselect('value')"
 					@input="validate('value')"
