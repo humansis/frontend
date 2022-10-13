@@ -26,7 +26,6 @@
 		>
 			<InputDistributed
 				close-button
-				:submit-button-label="$t('Confirm')"
 				class="modal-card"
 				@submit="fetchBeneficiariesAndStatistics"
 				@close="closeInputDistributedModal"

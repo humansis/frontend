@@ -49,6 +49,10 @@ export default {
 			let result;
 			const fieldsLevel = fields.split(".");
 
+			if (!this.$v.formModel) {
+				return this.$v[fieldsLevel[0]];
+			}
+
 			switch (fieldsLevel.length) {
 				case 1:
 					result = this.$v.formModel[fieldsLevel[0]];

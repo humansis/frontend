@@ -89,6 +89,20 @@
 				@formClosed="closeCommunityModal"
 			/>
 		</Modal>
+		<Modal
+			:header="$t('Input Deduplication')"
+			:active="inputDistributedModal.isOpened"
+			:is-waiting="inputDistributedModal.isWaiting"
+			@close="closeInputDistributedModal"
+		>
+			<InputDistributed
+				close-button
+				deduplication
+				class="modal-card"
+				@submit="reloadBeneficiariesList"
+				@close="closeInputDistributedModal"
+			/>
+		</Modal>
 		<div class="buttons space-between align-end">
 			<b-button
 				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
@@ -98,6 +112,15 @@
 				@click="openAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
+			</b-button>
+			<b-button
+				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				class="mb-4"
+				type="is-primary"
+				icon-left="minus"
+				@click="openInputDistributedModal"
+			>
+				{{ $t('Bulk remove') }}
 			</b-button>
 			<b-field v-if="changeButton">
 				<p class="control">
@@ -238,6 +261,7 @@ import exportConsts from "@/utils/exportConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -273,6 +297,7 @@ export default {
 		Modal,
 		ExportButton,
 		ColumnField,
+		InputDistributed,
 	},
 
 	mixins: [permissions, baseHelper, beneficiariesHelper],
@@ -357,6 +382,10 @@ export default {
 				isEditing: false,
 				isWaiting: false,
 			},
+			inputDistributedModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -431,6 +460,14 @@ export default {
 		addedOrRemovedBeneficiary() {
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
+		},
+
+		openInputDistributedModal() {
+			this.inputDistributedModal.isOpened = true;
+		},
+
+		closeInputDistributedModal() {
+			this.inputDistributedModal.isOpened = false;
 		},
 
 		async fetchData(page, size) {
