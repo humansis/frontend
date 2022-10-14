@@ -287,14 +287,14 @@ const routes = [
 				},
 			},
 			{
-				path: "/configuration",
-				name: "Configuration",
+				path: "/country-settings",
+				name: "Country Settings",
 				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "products",
 						name: "Products",
-						component: () => import(/* webpackChunkName: "Products" */ "@/views/Configuration/Products"),
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["viewProducts"],
@@ -305,7 +305,7 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Configuration/CountrySpecificOptions"),
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/CountrySettings/CountrySpecificOptions"),
 						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["countrySettings"],
