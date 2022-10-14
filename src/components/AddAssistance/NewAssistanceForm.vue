@@ -211,7 +211,9 @@ export default {
 
 	data() {
 		return {
+			nameSwitcher: "generated",
 			formModel: {
+				name: "",
 				adm1: null,
 				adm2: null,
 				adm3: null,
@@ -482,3 +484,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+	.new-assistance-form {
+		.name-input {
+			width: 100%;
+		}
+	}
+</style>

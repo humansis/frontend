@@ -340,6 +340,7 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
+				name: assistance.name,
 				adm1: null,
 				adm2: null,
 				adm3: null,
@@ -485,6 +486,7 @@ export default {
 
 		fetchNewAssistanceForm(data) {
 			const {
+				name,
 				assistanceType,
 				dateOfAssistance,
 				sector,
@@ -496,6 +498,7 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
+				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
 					: this.project?.startDate,
