@@ -334,6 +334,7 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
+				name: assistance.name,
 				adm1Id: assistance?.adm1Id,
 				adm2Id: assistance?.adm2Id,
 				adm3Id: assistance?.adm3Id,
@@ -387,6 +388,7 @@ export default {
 			};
 
 			this.targetType = assistance.target;
+			this.assistanceBody.name = assistance.name;
 			this.assistanceBody.locationId = assistance.locationId;
 			this.assistanceBody.target = assistance.target;
 			this.assistanceBody.type = assistance.type;
@@ -471,6 +473,7 @@ export default {
 
 		fetchNewAssistanceForm(data) {
 			const {
+				name,
 				assistanceType,
 				dateOfAssistance,
 				sector,
@@ -483,6 +486,7 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
+				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
 					: new Date(this.project.startDate),

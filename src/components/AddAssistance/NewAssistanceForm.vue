@@ -1,5 +1,35 @@
 <template>
-	<div>
+	<div class="new-assistance-form">
+		<h3 class="title is-4">{{ $t('Name') }}</h3>
+		<div class="box">
+			<b-field
+				class="name-field"
+			>
+				<b-input
+					v-model.trim="formModel.name"
+					class="name-input"
+					type="text"
+					:placeholder="$t('Name of the assistance')"
+					:disabled="nameSwitcher === 'generated'"
+				/>
+				<p class="control">
+					<b-radio-button v-model="nameSwitcher"
+						native-value="custom"
+					>
+						<b-icon icon="edit" />
+						<span>{{ $t('Custom') }}</span>
+					</b-radio-button>
+				</p>
+				<p class="control">
+					<b-radio-button v-model="nameSwitcher"
+						native-value="generated"
+					>
+						<span>{{ $t('Generated') }}</span>
+					</b-radio-button>
+				</p>
+			</b-field>
+		</div>
+
 		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
 		<div class="box">
 			<LocationForm
@@ -218,7 +248,9 @@ export default {
 
 	data() {
 		return {
+			nameSwitcher: "generated",
 			formModel: {
+				name: "",
 				adm1Id: null,
 				adm2Id: null,
 				adm3Id: null,
@@ -498,3 +530,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+	.new-assistance-form {
+		.name-input {
+			width: 100%;
+		}
+	}
+</style>
