@@ -16,6 +16,7 @@
 				:class="validateMultiselect('typeOfLocation')"
 				@select="selectTypeOfLocation"
 			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
 				<template slot="singleLabel" slot-scope="props">
 					<div class="option__desc">
 						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -44,7 +45,9 @@
 					:searchable="false"
 					:class="validateMultiselect('camp')"
 					@select="selectCamp"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field

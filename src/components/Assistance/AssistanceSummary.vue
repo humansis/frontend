@@ -90,7 +90,7 @@
 						v-if="assistanceTarget"
 						class="has-text-weight-bold is-size-5"
 					>
-						{{ assistanceTarget }}
+						{{ $t(assistanceTarget) }}
 					</p>
 					<Loading v-else type="bubbles" is-normal />
 				</div>

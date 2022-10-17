@@ -17,8 +17,9 @@
 						:selectLabel="$t('Select')"
 						:deselectLabel="$t('Remove')"
 						:closeOnSelect="!options.multiple"
-						@input="filterChanged(filter)"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-field v-else-if="options.type === 'text'">
 						<b-input
 							v-model="selectedFiltersOptions[filter]"
@@ -36,6 +37,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
+							:month-names="months()"
 							:placeholder="$t(options.placeholder) || ''"
 							@input="filterChanged(filter)"
 						/>
@@ -77,8 +79,12 @@
 </template>
 
 <script>
+import calendarHelper from "@/mixins/calendarHelper";
+
 export default {
 	name: "AdvancedFilter",
+
+	mixins: [calendarHelper],
 
 	props: {
 		selectedFiltersOptions: Object,

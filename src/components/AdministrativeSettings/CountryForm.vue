@@ -41,7 +41,9 @@
 					:class="validateMultiselect('availableCurrencies')"
 					:options="currencies"
 					@select="validate('availableCurrencies')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -60,6 +62,7 @@
 					:class="validateMultiselect('countryFlag')"
 					@select="validate('countryFlag')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel="props">
 						<CountryFlag :country="props.option.code" size="normal" />
 						<span class="option__desc ml-2">

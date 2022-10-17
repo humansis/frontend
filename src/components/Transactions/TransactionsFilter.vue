@@ -12,6 +12,7 @@
 						:options="filter.data"
 						@input="filterChanged"
 					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
 						<template
 							#singleLabel
 							v-slot:default="option"
@@ -25,6 +26,7 @@
 						trap-focus
 						locale="en-CA"
 						icon="calendar-day"
+						:month-names="months()"
 						:placeholder="filter.placeholder"
 						@input="filterChanged"
 					/>
@@ -35,8 +37,12 @@
 </template>
 
 <script>
+import calendarHelper from "@/mixins/calendarHelper";
+
 export default {
 	name: "TransactionsFilter",
+
+	mixins: [calendarHelper],
 
 	data() {
 		return {

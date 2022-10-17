@@ -96,7 +96,9 @@
 					:allow-empty="false"
 					:show-labels="false"
 					@input="onChangePerPage"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 				<div class="mr-3">
 					<b-taglist attached>
 						<b-tag size="is-medium" type="is-info is-light">{{ $t('Total Count') }}</b-tag>
