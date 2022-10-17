@@ -17,7 +17,9 @@
 					:loading="loading.modalities"
 					:class="validateMultiselect('modality')"
 					@select="onModalitySelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -36,7 +38,9 @@
 					searchable
 					:class="validateMultiselect('modalityType')"
 					@select="onModalityTypeSelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -67,7 +71,9 @@
 					searchable
 					:class="validateMultiselect('division')"
 					@select="onDivisionSelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -84,7 +90,9 @@
 					:options="options.currencies"
 					:class="validateMultiselect('currency')"
 					searchable
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field

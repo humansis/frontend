@@ -16,7 +16,9 @@
 					:options="options.projects"
 					:class="validateMultiselect('projectId')"
 					@select="validate('projectId')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -91,7 +93,9 @@
 					:options="options.currencies"
 					:class="validateMultiselect('currency')"
 					@select="validate('currency')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -104,7 +108,9 @@
 					track-by="value"
 					:disabled="formDisabled || isEditing"
 					:options="options.statuses"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field v-if="!formDisabled" :label="$t('Define a Password')">

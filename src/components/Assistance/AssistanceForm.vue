@@ -20,6 +20,7 @@
 					icon="calendar-day"
 					trap-focus
 					:max-date="maxDateOfAssistance"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
@@ -35,6 +36,7 @@
 					trap-focus
 					:min-date="formModel.dateDistribution"
 					:max-date="maxDateOfAssistance"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
@@ -53,6 +55,7 @@
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ props.option.value }}</span>
@@ -111,9 +114,12 @@
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import consts from "@/utils/assistanceConst";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "AssistanceForm",
+
+	mixins: [calendarHelper],
 
 	components: {
 		LocationForm,

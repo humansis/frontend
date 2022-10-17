@@ -521,6 +521,7 @@ export default {
 				title: this.$t("Close Assistance"),
 				message: this.$t("Are you sure you want to close this Assistance?"),
 				confirmText: this.$t("Confirm"),
+				cancelText: this.$t("Cancel"),
 				type: "is-primary",
 				onConfirm: async () => {
 					const assistanceId = Number(this.$route.params.assistanceId);

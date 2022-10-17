@@ -106,7 +106,9 @@
 						:searchable="false"
 						:allow-empty="false"
 						@select="scoringTypeChanged"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-button
 					class="vulnerability-update-button is-align-self-center ml-1 mt-2"

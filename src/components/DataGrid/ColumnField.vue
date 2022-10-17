@@ -5,6 +5,10 @@
 			{{ data.row[column.field] }}
 		</template>
 
+		<template v-if="column.type === 'assistancesType'">
+			{{ normalizeText($t(data.row[column.field])) }}
+		</template>
+
 		<!-- Simple Text -->
 		<template v-if="column.type === 'textOrNone'">
 			{{ data.row[column.field] || this.$t("None") }}

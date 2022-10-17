@@ -16,6 +16,7 @@
 					trap-focus
 					:max-date="maxDateOfAssistance"
 					:min-date="minDateOfAssistance"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					@input="dateOfAssistanceChanged"
 				/>
@@ -30,6 +31,7 @@
 					trap-focus
 					:min-date="formModel.dateOfAssistance"
 					:max-date="maxDateOfAssistance"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
@@ -45,6 +47,7 @@
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ props.option.value }}</span>
@@ -77,6 +80,7 @@
 					:class="validateMultiselect('sector')"
 					@select="onSectorSelect"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -105,6 +109,7 @@
 					:class="validateMultiselect('subsector')"
 					@select="onSubsectorSelect"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -131,6 +136,7 @@
 					:class="validateMultiselect('assistanceType')"
 					@select="onAssistanceTypeSelect"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -159,6 +165,7 @@
 					:class="validateMultiselect('targetType')"
 					@input="onTargetTypeSelect"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -196,13 +203,14 @@ import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "NewAssistanceForm",
 
 	components: { LocationForm },
 
-	mixins: [Validation],
+	mixins: [Validation, calendarHelper],
 
 	props: {
 		project: {

@@ -21,6 +21,7 @@
 					icon="calendar-day"
 					trap-focus
 					disabled
+					:month-names="months()"
 				/>
 			</b-field>
 
@@ -44,7 +45,9 @@
 					:disabled="disabled"
 					:placeholder="$t('Click to select')"
 					:options="options.referralType"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field v-if="addAReferral" :label="$t('Comment')">
@@ -73,6 +76,7 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "EditBeneficiaryForm",
@@ -83,6 +87,8 @@ export default {
 		closeButton: Boolean,
 		disabled: Boolean,
 	},
+
+	mixins: [calendarHelper],
 
 	data() {
 		return {

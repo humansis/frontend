@@ -14,7 +14,9 @@
 			:options="options.idType"
 			:class="validateMultiselect('idType', true)"
 			@select="validate('idType')"
-		/>
+		>
+			<span slot="noOptions">{{ $t("List is empty")}}</span>
+		</MultiSelect>
 	</b-field>
 </template>
 

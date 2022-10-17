@@ -21,7 +21,9 @@
 					label="value"
 					track-by="code"
 					:options="options.vulnerabilities"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field :label="$t('Projects')">
@@ -40,7 +42,9 @@
 					label="value"
 					track-by="code"
 					:options="options.externalSupportReceivedType"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field :label="$t('Support Date Received')">
@@ -51,6 +55,7 @@
 					icon="calendar-day"
 					trap-focus
 					disabled
+					:month-names="months()"
 				/>
 			</b-field>
 
@@ -63,7 +68,9 @@
 					label="value"
 					track-by="code"
 					:options="options.assets"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field :label="$t('Shelter Type')">
@@ -74,7 +81,9 @@
 					label="value"
 					track-by="code"
 					:options="options.shelterStatuses"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field :label="$t('Current Location')">
@@ -93,6 +102,7 @@
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdDetail",
@@ -100,6 +110,8 @@ export default {
 	props: {
 		formModel: Object,
 	},
+
+	mixins: [calendarHelper],
 
 	data() {
 		return {

@@ -29,7 +29,9 @@
 					:options="options.projects"
 					:class="validateMultiselect('projects')"
 					@select="validate('projects')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field

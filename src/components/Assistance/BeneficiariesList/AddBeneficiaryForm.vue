@@ -29,6 +29,7 @@
 					:class="validateMultiselect('beneficiaries')"
 					@select="validate('beneficiaries')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">

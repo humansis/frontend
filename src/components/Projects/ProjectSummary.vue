@@ -61,7 +61,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Total target beneficiaries') }}</p>
+					<p class="heading">{{ $t('Total Target beneficiaries') }}</p>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>

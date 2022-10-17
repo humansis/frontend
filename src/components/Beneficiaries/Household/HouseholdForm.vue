@@ -39,7 +39,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="livelihoodLoading"
 						:options="options.livelihood"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 
 				<b-field>
@@ -109,7 +111,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="assetsLoading"
 						:options="options.assets"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 
 				<b-field>
@@ -161,7 +165,9 @@
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.externalSupportReceivedType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 
 				<b-field>
@@ -178,6 +184,7 @@
 						icon="calendar-day"
 						trap-focus
 						:placeholder="$t('Click to select')"
+						:month-names="months()"
 					/>
 				</b-field>
 
@@ -236,7 +243,9 @@
 				:placeholder="$t('Click to select')"
 				:loading="shelterStatusLoading"
 				:options="options.shelterStatuses"
-			/>
+			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
+			</MultiSelect>
 		</b-field>
 		<b-field>
 			<template #label>
@@ -263,11 +272,12 @@ import getters from "@/store/getters";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import addressHelper from "@/mixins/addressHelper";
 import CONST from "@/const";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdForm",
 
-	mixins: [Validation, addressHelper],
+	mixins: [Validation, addressHelper, calendarHelper],
 
 	props: {
 		detailOfHousehold: Object,

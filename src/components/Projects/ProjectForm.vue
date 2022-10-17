@@ -45,6 +45,7 @@
 					:class="validateMultiselect('selectedSectors')"
 					@select="validate('selectedSectors')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -71,6 +72,7 @@
 					icon="calendar-day"
 					trap-focus
 					locale="en-CA"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('startDate')"
@@ -90,6 +92,7 @@
 					icon="calendar-day"
 					trap-focus
 					locale="en-CA"
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					@input="validate('endDate')"
@@ -114,6 +117,7 @@
 					:options="options.donors"
 					:loading="donorsLoading"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel v-slot:default="option">
 						{{ option.shortname }}
 					</template>
@@ -137,6 +141,7 @@
 					:disabled="formDisabled"
 					:loading="targetTypesLoading"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -260,6 +265,7 @@ import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import MultiSelectTag from "@/components/MultiSelectTag";
 import SvgIcon from "@/components/SvgIcon";
+import calendarHelper from "@/mixins/calendarHelper";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 
@@ -271,7 +277,7 @@ export default {
 		SvgIcon,
 	},
 
-	mixins: [Validation],
+	mixins: [Validation, calendarHelper],
 
 	props: {
 		formModel: Object,

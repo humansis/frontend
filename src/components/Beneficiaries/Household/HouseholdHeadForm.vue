@@ -81,7 +81,9 @@
 						:options="options.gender"
 						:class="validateMultiselect('personalInformation.gender')"
 						@select="validate('personalInformation.gender')"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field
 					:label="$t('Date of Birth')"
@@ -94,6 +96,7 @@
 						locale="en-CA"
 						icon="calendar-day"
 						trap-focus
+						:month-names="months()"
 						:placeholder="$t('Click to select')"
 						@blur="validate('personalInformation.dateOfBirth')"
 					/>
@@ -122,7 +125,9 @@
 						:options="options.idType"
 						:class="validateMultiselect('id.idType', true)"
 						@select="validate('id.idType')"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field
 					:label="$t('ID Number')"
@@ -154,6 +159,7 @@
 						:class="validateMultiselect('residencyStatus')"
 						@select="validate('residencyStatus')"
 					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
 						<template slot="singleLabel" slot-scope="props">
 							<div class="option__desc">
 								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -189,7 +195,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="referralTypeLoading"
 						:options="options.referralType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field v-if="formModel.addAReferral" :label="$t('Comment')">
 					<b-input v-model="formModel.referral.comment" />
@@ -214,7 +222,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
 						{{ $t('Proxy') }}
 					</b-checkbox>
@@ -227,7 +237,9 @@
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field :label="$t('Phone No.') + ' 1'">
 					<b-input v-model="formModel.phone1.phoneNo" />
@@ -254,7 +266,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
 						{{ $t('Proxy') }}
 					</b-checkbox>
@@ -267,7 +281,9 @@
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field :label="$t('Phone No.') + ' 2'">
 					<b-input v-model="formModel.phone2.phoneNo" />
@@ -295,11 +311,12 @@ import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdHeadForm",
 
-	mixins: [Validation],
+	mixins: [Validation, calendarHelper],
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
