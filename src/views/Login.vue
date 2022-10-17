@@ -68,6 +68,7 @@ import { mapActions, mapState } from "vuex";
 import JWTDecode from "jwt-decode";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import routerHelper from "@/mixins/routerHelper";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
 import gitInfo from "@/gitInfo";
@@ -90,7 +91,7 @@ export default {
 		};
 	},
 
-	mixins: [Validation],
+	mixins: [Validation, routerHelper],
 
 	validations: {
 		formModel: {
@@ -217,7 +218,7 @@ export default {
 					await this.storePermissions(privileges);
 
 					if (countries.length) {
-						this.$router.push(this.$route.query.redirect?.toString() || "/");
+						this.$router.push(this.$route.query.redirect?.toString() || `${this.countryUrlParam}`);
 					} else {
 						Notification(`${this.$t("No Countries")}`, "is-warning");
 					}

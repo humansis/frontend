@@ -54,6 +54,7 @@ import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "Project",
@@ -65,7 +66,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -106,7 +107,12 @@ export default {
 		},
 
 		goToAddAssistance() {
-			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
+			this.routerPush({
+				name: "AddAssistance",
+				params: {
+					projectId: this.$route.params.projectId,
+				},
+			});
 		},
 
 		async editAssistance({ id, dateDistribution, dateExpiration, round }) {

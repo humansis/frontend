@@ -6,7 +6,9 @@
 	>
 		<div ref="container" class="aside-container">
 			<div class="image">
-				<router-link to="/">
+				<router-link
+					:to="{ name: 'Home', params: { country: countryUrlParam } }"
+				>
 					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
 				</router-link>
 			</div>
@@ -24,7 +26,7 @@
 							icon="home"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Home', params: { country: country.iso3.toLowerCase() } }"
+							:to="{ name: 'Home', params: { country: countryUrlParam } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -38,7 +40,7 @@
 							icon="clipboard-list"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Projects', params: { country: country.iso3.toLowerCase() } }"
+							:to="{ name: 'Projects', params: { country: countryUrlParam } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -64,7 +66,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Households', params: { country: country.iso3.toLowerCase() } }"
+								:to="{ name: 'Households', params: { country: countryUrlParam } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -78,7 +80,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Institutions', params: { country: country.iso3.toLowerCase() } }"
+								:to="{ name: 'Institutions', params: { country: countryUrlParam } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -92,7 +94,7 @@
 								class="nested-item"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Communities', params: { country: country.iso3.toLowerCase() } }"
+								:to="{ name: 'Communities', params: { country: countryUrlParam } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -107,7 +109,7 @@
 								icon="store"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Vendors', params: { country: country.iso3.toLowerCase() } }"
+								:to="{ name: 'Vendors', params: { country: countryUrlParam } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -121,7 +123,7 @@
 							icon="file-import"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Imports', params: { country: country.iso3.toLowerCase() } }"
+							:to="{ name: 'Imports', params: { country: countryUrlParam } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -134,7 +136,7 @@
 							icon="chart-line"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Reports', params: { country: country.iso3.toLowerCase() } }"
+							:to="{ name: 'Reports', params: { country: countryUrlParam } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -148,7 +150,7 @@
 							icon="ticket-alt"
 							exact-active-class="is-active"
 							tag="router-link"
-							:to="{ name: 'Vouchers', params: { country: country.iso3.toLowerCase() } }"
+							:to="{ name: 'Vouchers', params: { country: countryUrlParam } }"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
@@ -175,7 +177,7 @@
 								icon="shopping-cart"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'Products', params: { country: country.iso3.toLowerCase() } }"
+								:to="{ name: 'Products', params: { country: countryUrlParam } }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>
@@ -192,7 +194,7 @@
 								tag="router-link"
 								:to="{
 									name: 'CountrySpecificOptions',
-									params: { country: country.iso3.toLowerCase() }
+									params: { country: countryUrlParam }
 								}"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
@@ -210,7 +212,7 @@
 							tag="router-link"
 							:to="{
 								name: 'Administrative Settings',
-								params: { country: country.iso3.toLowerCase() }
+								params: { country: countryUrlParam }
 							}"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
@@ -226,7 +228,7 @@
 							tag="router-link"
 							:to="{
 								name: 'TransactionsAssistances',
-								params: { country: country.iso3.toLowerCase() }
+								params: { country: countryUrlParam }
 							}"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
@@ -268,6 +270,10 @@ export default {
 			"isAsideExpanded",
 			"country",
 		]),
+
+		countryUrlParam() {
+			return this.country.iso3.toLowerCase();
+		},
 
 		environment() {
 			return process.env.VUE_APP_ENV.toUpperCase();

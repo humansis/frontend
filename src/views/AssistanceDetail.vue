@@ -180,6 +180,7 @@ import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import Modal from "@/components/Modal";
 import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
@@ -196,7 +197,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -354,7 +355,7 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
+				this.routerPush({ name: "NotFound" });
 			});
 		},
 
@@ -375,7 +376,7 @@ export default {
 				this.project = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
+				this.routerPush({ name: "NotFound" });
 			});
 		},
 
@@ -504,7 +505,7 @@ export default {
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Unvalidated"), "is-success");
 
-							this.$router.push({
+							this.routerPush({
 								name: "AssistanceEdit",
 								params: { assistanceId, projectId },
 							});
@@ -531,7 +532,7 @@ export default {
 					).then(({ status }) => {
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Closed"), "is-success");
-							this.$router.push({ name: "Project",
+							this.routerPush({ name: "Project",
 								params: { projectId: this.$route.params.projectId },
 							});
 						}

@@ -127,6 +127,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
+import routerHelper from "@/mixins/routerHelper";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
@@ -160,7 +161,7 @@ export default {
 		ImportsFilter,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [grid, baseHelper, routerHelper],
 
 	data() {
 		return {
@@ -334,7 +335,7 @@ export default {
 					slug = "start-import";
 			}
 
-			this.$router.push({
+			this.routerPush({
 				name: "Import",
 				params: { importId: importItem.id },
 				query: { step: slug },

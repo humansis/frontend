@@ -82,6 +82,7 @@ import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import ExportButton from "@/components/ExportButton";
 
 export default {
@@ -95,7 +96,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [permissions, grid, baseHelper, routerHelper],
 
 	data() {
 		return {
@@ -210,11 +211,10 @@ export default {
 
 		goToDetail(project) {
 			if (this.userCan.viewProject) {
-				this.$router.push({
+				this.routerPush({
 					name: "Project",
 					params: {
 						projectId: project.id,
-						country: this.country.iso3.toLowerCase(),
 					},
 				});
 			}

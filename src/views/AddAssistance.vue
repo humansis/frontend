@@ -188,7 +188,7 @@ export default {
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
-					this.$router.push({ name: "NotFound" });
+					this.routerPush({ name: "NotFound" });
 				});
 
 			await AssistancesService.getScoringTypes()
@@ -284,12 +284,12 @@ export default {
 					if (status === 200) {
 						Toast(this.$t("Assistance Successfully Created"), "is-success");
 						if (id) {
-							this.$router.push({
+							this.routerPush({
 								name: "AssistanceEdit",
 								params: { assistanceId: id },
 							});
 						} else {
-							this.$router.push({
+							this.routerPush({
 								name: "Project",
 								params: { projectId: this.$route.params.projectId },
 							});
@@ -458,7 +458,7 @@ export default {
 		},
 
 		goBack() {
-			this.$router.push({ name: "Project",
+			this.routerPush({ name: "Project",
 				params: { projectId: this.$route.params.projectId },
 			});
 		},

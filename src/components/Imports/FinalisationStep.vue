@@ -141,14 +141,14 @@
 						<b-button
 							v-if="finishedImport"
 							type="is-primary"
-							@click="$router.push({ name: 'Imports' })"
+							@click="routerPush({ name: 'Imports' })"
 						>
 							{{ $t('Back to Imports') }}
 						</b-button>
 						<b-button
 							v-if="finishedImport"
 							type="is-primary"
-							@click="$router.push({ name: 'Households' })"
+							@click="routerPush({ name: 'Households' })"
 						>
 							{{ $t('Go to Beneficiaries') }}
 						</b-button>
@@ -243,9 +243,12 @@ import { mapState } from "vuex";
 import consts from "@/utils/importConst";
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "FinalisationStep",
+
+	mixins: [routerHelper],
 
 	data() {
 		return {

@@ -7,7 +7,7 @@
 			icon-left="home"
 			outlined
 			type="is-info is-light is-large"
-			@click="$router.push('/')"
+			@click="routerPush('/')"
 		>
 			<span class="button-text">{{ $t("Go to Dashboard") }}</span>
 		</b-button>
@@ -15,8 +15,12 @@
 </template>
 
 <script>
+import routerHelper from "@/mixins/routerHelper";
+
 export default {
 	name: "NotFound",
+
+	mixins: [routerHelper],
 };
 </script>
 

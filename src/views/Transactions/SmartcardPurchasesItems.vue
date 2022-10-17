@@ -107,6 +107,7 @@ import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import routerHelper from "@/mixins/routerHelper";
 
 const SmartcardPurchasesItemsFilter = () => import("@/components/Transactions/SmartcardPurchasesItemsFilter");
 
@@ -120,7 +121,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [grid, urlFiltersHelper, transactionHelper],
+	mixins: [grid, urlFiltersHelper, transactionHelper, routerHelper],
 
 	data() {
 		return {
@@ -200,9 +201,9 @@ export default {
 
 		redirectToTab(tab) {
 			if (tab) {
-				this.$router.push({ name: "TransactionsPurchases" });
+				this.routerPush({ name: "TransactionsPurchases" });
 			} else {
-				this.$router.push({ name: "TransactionsAssistances" });
+				this.routerPush({ name: "TransactionsAssistances" });
 			}
 		},
 

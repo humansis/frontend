@@ -140,6 +140,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "AssistancesList",
@@ -161,7 +162,7 @@ export default {
 		},
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [permissions, grid, baseHelper, routerHelper],
 
 	data() {
 		return {
@@ -229,7 +230,7 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
+				this.routerPush({ name: "NotFound" });
 			});
 		},
 
@@ -344,7 +345,7 @@ export default {
 		},
 
 		goToDetail(id) {
-			this.$router.push({
+			this.routerPush({
 				name: "AssistanceDetail",
 				params: {
 					assistanceId: id,
@@ -362,7 +363,7 @@ export default {
 			if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
-				this.$router.push({
+				this.routerPush({
 					name: "AssistanceEdit",
 					params: {
 						assistanceId: assistance.id,
@@ -372,7 +373,7 @@ export default {
 		},
 
 		duplicate(id) {
-			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
+			this.routerPush({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
 		async exportAssistances(format) {

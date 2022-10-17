@@ -71,6 +71,7 @@ import { Toast, Notification } from "@/utils/UI.js";
 import ImportsList from "@/components/Imports/ImportsList";
 import ExportButton from "@/components/ExportButton";
 import ProjectService from "@/services/ProjectService";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "Imports",
@@ -81,6 +82,8 @@ export default {
 		ImportForm,
 		ExportButton,
 	},
+
+	mixins: [routerHelper],
 
 	data() {
 		return {
@@ -231,7 +234,7 @@ export default {
 					this.$refs.importList.fetchData();
 					this.closeImportModal();
 
-					this.$router.push({ name: "Import", params: { importId: data.id } });
+					this.routerPush({ name: "Import", params: { importId: data.id } });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");

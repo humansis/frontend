@@ -75,11 +75,14 @@ import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "ProjectSummary",
 
 	components: { SvgIcon },
+
+	mixins: [routerHelper],
 
 	data() {
 		return {
@@ -103,7 +106,7 @@ export default {
 				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
+				this.routerPush({ name: "NotFound" });
 			});
 		},
 

@@ -106,6 +106,7 @@ import EditNote from "@/components/Assistance/EditNote";
 import { Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "AssistanceEdit",
@@ -116,6 +117,8 @@ export default {
 		ImportAndCompare,
 		EditNote,
 	},
+
+	mixins: [routerHelper],
 
 	data() {
 		return {
@@ -176,7 +179,7 @@ export default {
 				if (status === 200) {
 					Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
 
-					this.$router.push({
+					this.routerPush({
 						name: "AssistanceDetail",
 						params: {
 							assistanceId: this.$route.params.assistanceId,

@@ -96,6 +96,7 @@ import CardComponent from "@/components/CardComponent";
 import { Toast, Notification } from "@/utils/UI";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import CONST from "@/const";
 
 export default {
@@ -114,7 +115,7 @@ export default {
 		CustomSteps,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -203,7 +204,7 @@ export default {
 		},
 
 		close() {
-			this.$router.push({ name: "Households" });
+			this.routerPush({ name: "Households" });
 		},
 
 		nextPage(next) {
@@ -320,7 +321,7 @@ export default {
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Household Successfully Updated"), "is-success");
-					this.$router.push({ name: "Households" });
+					this.routerPush({ name: "Households" });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
@@ -335,7 +336,7 @@ export default {
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
 					Toast(this.$t("Household Successfully Created"), "is-success");
-					this.$router.push({ name: "Households" });
+					this.routerPush({ name: "Households" });
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
@@ -349,7 +350,7 @@ export default {
 				this.detailOfHousehold = response;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
+				this.routerPush({ name: "NotFound" });
 			});
 		},
 

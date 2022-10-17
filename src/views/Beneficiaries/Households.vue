@@ -227,6 +227,7 @@ import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetai
 import permissions from "@/mixins/permissions";
 import ExportButton from "@/components/ExportButton";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import routerHelper from "@/mixins/routerHelper";
 import AddProjectToHouseholdModal
 	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
 
@@ -247,7 +248,7 @@ export default {
 		ExportButton,
 	},
 
-	mixins: [grid, addressHelper, permissions, urlFiltersHelper],
+	mixins: [grid, addressHelper, permissions, urlFiltersHelper, routerHelper],
 
 	data() {
 		return {
@@ -636,11 +637,11 @@ export default {
 		},
 
 		goToCreatePage() {
-			this.$router.push({ name: "AddHousehold" });
+			this.routerPush({ name: "AddHousehold" });
 		},
 
 		goToImportPage() {
-			this.$router.push({ name: "Imports", query: { openModal: "1" } });
+			this.routerPush({ name: "Imports", query: { openModal: "1" } });
 		},
 
 		normalizeText(text) {
@@ -652,11 +653,11 @@ export default {
 		},
 
 		goToSummaryDetail({ id }) {
-			this.$router.push({ name: "HouseholdInformationSummary", params: { householdId: id } });
+			this.routerPush({ name: "HouseholdInformationSummary", params: { householdId: id } });
 		},
 
 		editHousehold(id) {
-			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
+			this.routerPush({ name: "EditHousehold", params: { householdId: id } });
 		},
 
 		async removeMultipleHouseholds() {

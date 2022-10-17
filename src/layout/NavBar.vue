@@ -108,9 +108,12 @@ import { Notification } from "@/utils/UI";
 import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
+import routerHelper from "@/mixins/routerHelper";
 
 export default {
 	name: "NavBar",
+
+	mixins: [routerHelper],
 
 	data() {
 		return {
@@ -170,23 +173,7 @@ export default {
 			await this.storeCountry(country);
 			await this.fetchAdmNames();
 
-			if (this.$route.name !== "Home") {
-				await this.$router.push({
-					name: "Home",
-					params: {
-						country: country.iso3.toLowerCase(),
-					},
-				});
-			} else {
-				await this.$router.push({
-					name: "Home",
-					params: {
-						country: country.iso3.toLowerCase(),
-					},
-				});
-			}
-
-			// this.$router.go();
+			await this.routerPush({ name: "Home" });
 		},
 
 		async handleChangeLanguage(language) {
@@ -230,7 +217,7 @@ export default {
 		},
 
 		logout() {
-			this.$router.push({ name: "Logout" });
+			this.routerPush({ name: "Logout" });
 		},
 	},
 

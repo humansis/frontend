@@ -24,3 +24,8 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## Router
+
+### Redirect (router.push)
+In Vue components use `this.routerPush` from routerHelper mixin instead of `this.$router.push`

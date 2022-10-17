@@ -30,6 +30,7 @@ import CardComponent from "@/components/CardComponent";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import addressHelper from "@/mixins/addressHelper";
+import routerHelper from "@/mixins/routerHelper";
 import AddressService from "@/services/AddressService";
 import grid from "@/mixins/grid";
 import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
@@ -45,7 +46,7 @@ export default {
 		CardComponent,
 	},
 
-	mixins: [addressHelper, grid],
+	mixins: [addressHelper, grid, routerHelper],
 
 	data() {
 		return {
@@ -72,7 +73,7 @@ export default {
 					this.prepareData(data);
 				}).catch((e) => {
 					if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-					this.$router.push({ name: "NotFound" });
+					this.routerPush({ name: "NotFound" });
 				});
 		},
 
