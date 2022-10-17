@@ -148,7 +148,7 @@ const routes = [
 						},
 					},
 					{
-						path: "/import/:importId",
+						path: "/:country?/import/:importId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: () => i18n.t("Import"),

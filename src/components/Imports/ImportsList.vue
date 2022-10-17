@@ -152,7 +152,7 @@ const statusTags = [
 ];
 
 export default {
-	name: "ProjectList",
+	name: "ImportsList",
 
 	components: {
 		Table,
