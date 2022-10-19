@@ -10,6 +10,7 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
+import locationHelper from "@/mixins/locationHelper";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
@@ -18,7 +19,7 @@ export default {
 
 	components: { AdvancedFilter },
 
-	mixins: [urlFiltersHelper, transactionHelper],
+	mixins: [locationHelper, transactionHelper, urlFiltersHelper],
 
 	props: {
 		defaultFilters: {
