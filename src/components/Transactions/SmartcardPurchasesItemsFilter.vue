@@ -75,7 +75,6 @@ export default {
 					label: "name",
 					loading: true,
 					data: [],
-					selectValue: "locationId",
 					filterForSend: "locations",
 				},
 				adm2: {
@@ -84,7 +83,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				adm3: {
 					name: "Commune",
@@ -92,7 +90,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				adm4: {
 					name: "Village",
@@ -100,7 +97,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				dateFrom: {
 					name: "Date From",
