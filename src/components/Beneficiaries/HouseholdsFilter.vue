@@ -18,6 +18,20 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
+const DEFAULT_FILTERS = {
+	projects: [],
+	vulnerabilities: [],
+	gender: [],
+	residencyStatuses: [],
+	referralTypes: [],
+	livelihoods: [],
+	adm1: null,
+	adm2: null,
+	adm3: null,
+	adm4: null,
+	locations: [],
+};
+
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "HouseholdsFilter",
@@ -30,19 +44,7 @@ export default {
 
 	data() {
 		return {
-			selectedFiltersOptions: {
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencyStatuses: [],
-				referralTypes: [],
-				livelihoods: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			},
+			selectedFiltersOptions: { ...DEFAULT_FILTERS },
 			filtersOptions: {
 				projects: {
 					name: "Project",
@@ -248,24 +250,35 @@ export default {
 		},
 
 		async filterChanged(filters, filterName) {
-			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+			const filtersCopy = { ...filters };
 
-			let location = null;
+			let location = [];
 			if (this.selectedFiltersOptions.adm4) {
 				const [a] = filtersCopy.adm4;
-				location = a;
-			} else
+				location = location.concat(a);
+			}
 			if (this.selectedFiltersOptions.adm3) {
 				const [a] = filtersCopy.adm3;
-				location = a;
-			} else
+				location = location.concat(a);
+			}
 			if (this.selectedFiltersOptions.adm2) {
 				const [a] = filtersCopy.adm2;
-				location = a;
-			} else
+				location = location.concat(a);
+			}
 			if (this.selectedFiltersOptions.adm1) {
 				const [a] = filtersCopy.adm1;
-				location = a;
+				location = location.concat(a);
+			}
+
+			if (filterName.includes("adm")) {
+				const admNum = parseInt(filterName.slice(-1), 10);
+				for (let i = admNum; i >= 2; i -= 1) {
+					if (this.selectedFiltersOptions[`adm${i}`]) {
+						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
+							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
+						));
+					}
+				}
 			}
 
 			this.$emit("filtersChanged", {
@@ -276,7 +289,7 @@ export default {
 					residencyStatuses: filters.residencyStatuses,
 					referralTypes: filters.referralTypes,
 					livelihoods: filters.livelihoods,
-					locations: location ? [location] : [],
+					locations: location,
 				},
 				locationsFilter: {
 					adm1: filtersCopy.adm1,
@@ -390,19 +403,7 @@ export default {
 		},
 
 		eraseFilters() {
-			this.selectedFiltersOptions = {
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencyStatuses: [],
-				referralTypes: [],
-				livelihoods: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			};
+			this.selectedFiltersOptions = { ...DEFAULT_FILTERS };
 			this.$nextTick(() => {
 				this.$refs.advancedFilter.filterChanged();
 			});
