@@ -106,6 +106,9 @@ export default {
 	},
 
 	methods: {
+		customLabel({ name, subLabel }) {
+			return `${name} – ${subLabel}`;
+		},
 		filterChanged(filterName) {
 			const filters = {};
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {
@@ -146,3 +149,10 @@ export default {
 	},
 };
 </script>
+
+<style>
+.option__subtitle--block {
+	display: block;
+	font-size: 0.8em;
+}
+</style>

@@ -104,6 +104,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 				adm3: {
 					name: "Commune",
@@ -111,6 +112,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 				adm4: {
 					name: "Village",
@@ -118,6 +120,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 			},
 		};
@@ -146,7 +149,11 @@ export default {
 			this.fetchVulnerabilities(),
 			this.fetchResidenceStatuses(),
 			this.fetchReferralTypes(),
-		]);
+		]).then(() => {
+			this.fillParentCommunes();
+			this.fillParentDistricts();
+			this.fillParentProvinces();
+		});
 
 		await Promise.all([
 			this.setDefaultFilters(),
@@ -155,6 +162,40 @@ export default {
 	},
 
 	methods: {
+		/* TODO move fillParent methods to urlFiltersHelper? */
+		fillParentCommunes() {
+			this.filtersOptions.adm4.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm3.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+				}
+			});
+		},
+
+		fillParentDistricts() {
+			this.filtersOptions.adm3.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm2.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+				}
+			});
+		},
+
+		fillParentProvinces() {
+			this.filtersOptions.adm2.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm1.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+				}
+			});
+		},
+
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;
 			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
