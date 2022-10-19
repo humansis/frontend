@@ -2,32 +2,10 @@
 	<div class="new-assistance-form">
 		<h3 class="title is-4">{{ $t('Name') }}</h3>
 		<div class="box">
-			<b-field
-				class="name-field"
-			>
-				<b-input
-					v-model.trim="formModel.name"
-					class="name-input"
-					type="text"
-					:placeholder="$t('Name of the assistance')"
-					:disabled="nameSwitcher === 'generated'"
-				/>
-				<p class="control">
-					<b-radio-button v-model="nameSwitcher"
-						native-value="custom"
-					>
-						<b-icon icon="edit" />
-						<span>{{ $t('Custom') }}</span>
-					</b-radio-button>
-				</p>
-				<p class="control">
-					<b-radio-button v-model="nameSwitcher"
-						native-value="generated"
-					>
-						<span>{{ $t('Generated') }}</span>
-					</b-radio-button>
-				</p>
-			</b-field>
+			<AssistanceName
+				:form-model="formModel"
+				ref="assistanceName"
+			/>
 		</div>
 
 		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
@@ -221,6 +199,7 @@ import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
@@ -230,7 +209,10 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 export default {
 	name: "NewAssistanceForm",
 
-	components: { LocationForm },
+	components: {
+		LocationForm,
+		AssistanceName,
+	},
 
 	mixins: [Validation],
 
@@ -283,6 +265,7 @@ export default {
 
 	validations: {
 		formModel: {
+			name: { required },
 			dateOfAssistance: { required },
 			dateExpiration: { required },
 			sector: { required },
@@ -365,7 +348,8 @@ export default {
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
-			return !this.$v.$invalid || (!this.$v.$invalid && !invalidLocationForm);
+			return !this.$v.$invalid
+				|| (!this.$v.$invalid && !invalidLocationForm && this.$refs.assistanceName.isValid());
 		},
 
 		normalizeText(text) {
@@ -530,11 +514,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-	.new-assistance-form {
-		.name-input {
-			width: 100%;
-		}
-	}
-</style>
