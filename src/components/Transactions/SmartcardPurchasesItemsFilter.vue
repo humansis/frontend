@@ -10,7 +10,7 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import transactionHelper from "@/mixins/transactionHelper";
+import locationHelper from "@/mixins/locationHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
 export default {
@@ -18,7 +18,7 @@ export default {
 
 	components: { AdvancedFilter },
 
-	mixins: [urlFiltersHelper, transactionHelper],
+	mixins: [urlFiltersHelper, locationHelper],
 
 	props: {
 		defaultFilters: {
@@ -156,20 +156,6 @@ export default {
 			if (this.defaultFilters.dateFrom) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
 			}
-		},
-
-		setLocationNames() {
-			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `${this.$t("Select")} ${this.admNames.adm1}`;
-
-			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `${this.$t("Select")} ${this.admNames.adm2}`;
-
-			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `${this.$t("Select")} ${this.admNames.adm3}`;
-
-			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `${this.$t("Select")} ${this.admNames.adm4}`;
 		},
 
 		async filterChanged(filters, filterName) {
