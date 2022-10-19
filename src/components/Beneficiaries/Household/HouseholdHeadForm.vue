@@ -576,13 +576,29 @@ export default {
 
 			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
 
+			if (primaryCardId) {
+				isPrimaryIdValid = primaryCardId && ((primaryCardId.idType && primaryCardId.idNumber)
+					|| (!primaryCardId.idType && !primaryCardId.idNumber));
+			}
+
 			const secondaryCardId = nationalIds[1]
 				? await this.getNationalIdCard(nationalIds[1])
 				: { idNumber: "", idType: "" };
 
+			if (secondaryCardId) {
+				isSecondaryIdValid = secondaryCardId
+					&& ((secondaryCardId.idType && secondaryCardId.idNumber)
+					|| (!secondaryCardId.idType && !secondaryCardId.idNumber));
+			}
+
 			const tertiaryCardId = nationalIds[2]
 				? await this.getNationalIdCard(nationalIds[2])
 				: { idNumber: "", idType: "" };
+
+			if (tertiaryCardId) {
+				isTertiaryIdValid = tertiaryCardId && ((tertiaryCardId.idType && tertiaryCardId.idNumber)
+					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber));
+			}
 
 			this.formModel = {
 				...this.formModel,
