@@ -132,7 +132,7 @@ export default {
 		async filterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 
-			let location = null;
+			let location = [];
 
 			if (this.selectedFiltersOptions.adm4) {
 				const [a] = filters.adm4;
@@ -165,7 +165,7 @@ export default {
 			this.$emit("filtersChanged", {
 				filters: {
 					invoicing: filters.invoicing?.[0] || null,
-					locations: location ? [location] : [],
+					locations: location,
 				},
 				locationsFilter: {
 					adm1: filtersCopy.adm1,

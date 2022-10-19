@@ -253,21 +253,22 @@ export default {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 
 			let location = [];
+
 			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filtersCopy.adm4;
-				location = location.concat(a);
-			}
+				const [a] = filters.adm4;
+				location = a;
+			} else
 			if (this.selectedFiltersOptions.adm3) {
-				const [a] = filtersCopy.adm3;
-				location = location.concat(a);
-			}
+				const [a] = filters.adm3;
+				location = a;
+			} else
 			if (this.selectedFiltersOptions.adm2) {
-				const [a] = filtersCopy.adm2;
-				location = location.concat(a);
-			}
+				const [a] = filters.adm2;
+				location = a;
+			} else
 			if (this.selectedFiltersOptions.adm1) {
-				const [a] = filtersCopy.adm1;
-				location = location.concat(a);
+				const [a] = filters.adm1;
+				location = a;
 			}
 
 			if (filterName && filterName.includes("adm")) {
