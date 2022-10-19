@@ -13,6 +13,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import locationHelper from "@/mixins/locationHelper";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "SmartcardPurchasesItemsFilter",
@@ -30,6 +31,7 @@ export default {
 
 	data() {
 		return {
+			filtersOptionsCopy: {},
 			selectedFiltersOptions: {
 				project: [],
 				distribution: [],
@@ -123,7 +125,12 @@ export default {
 			this.fetchVillages(),
 			this.fetchVendors(),
 			this.fetchAssistance(),
-		]);
+		]).then(() => {
+			this.fillParentCommunes();
+			this.fillParentDistricts();
+			this.fillParentProvinces();
+			this.filtersOptionsCopy = copyObject(this.filtersOptions);
+		});
 
 		await Promise.all([
 			this.setDefaultFilters(),
@@ -163,6 +170,9 @@ export default {
 			const preparedFilters = { ...filters };
 
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+
+			this.setAdmParents(filterName);
+			this.filterAdmChildren(filterName);
 
 			if (filterName === "project") {
 				this.selectedFiltersOptions.distribution = [];

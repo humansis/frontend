@@ -162,18 +162,6 @@ export default {
 	},
 
 	methods: {
-		/* TODO move fillParent methods to urlFiltersHelper? */
-		fillParentCommunes() {
-			this.filtersOptions.adm4.data.forEach((item, index) => {
-				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm3.data
-						.filter((item2) => item2.id === item.parentId)[0];
-
-					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
-				}
-			});
-		},
-
 		setDefaultFilters() {
 			if (this.defaultFilters.projects?.length) {
 				this.selectedFiltersOptions.projects = this.filtersOptions
