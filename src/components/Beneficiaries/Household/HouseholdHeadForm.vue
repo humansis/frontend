@@ -577,7 +577,8 @@ export default {
 			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
 
 			if (primaryCardId) {
-				isPrimaryIdValid = primaryCardId && ((primaryCardId.idType && primaryCardId.idNumber)
+				isPrimaryIdValid = primaryCardId
+					&& ((primaryCardId.idType && primaryCardId.idNumber)
 					|| (!primaryCardId.idType && !primaryCardId.idNumber));
 			}
 
@@ -596,7 +597,8 @@ export default {
 				: { idNumber: "", idType: "" };
 
 			if (tertiaryCardId) {
-				isTertiaryIdValid = tertiaryCardId && ((tertiaryCardId.idType && tertiaryCardId.idNumber)
+				isTertiaryIdValid = tertiaryCardId
+					&& ((tertiaryCardId.idType && tertiaryCardId.idNumber)
 					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber));
 			}
 
