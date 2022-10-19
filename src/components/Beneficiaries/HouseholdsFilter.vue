@@ -13,10 +13,10 @@
 import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectService from "@/services/ProjectService";
-import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import transactionHelper from "@/mixins/transactionHelper";
 
 const DEFAULT_FILTERS = {
 	projects: [],
@@ -40,7 +40,7 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper],
+	mixins: [urlFiltersHelper, transactionHelper],
 
 	data() {
 		return {
@@ -308,53 +308,6 @@ export default {
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchDistricts(id) {
-			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchCommunes(id) {
-			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchVillages(id) {
-			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 

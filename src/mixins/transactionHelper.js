@@ -236,6 +236,9 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm1.data = data;
 					this.filtersOptions.adm1.loading = false;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
 				});
 		},
 
@@ -245,6 +248,9 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm2.data = data;
 					this.filtersOptions.adm2.loading = false;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
 				});
 		},
 
@@ -254,6 +260,9 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm3.data = data;
 					this.filtersOptions.adm3.loading = false;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
 		},
 
@@ -263,6 +272,9 @@ export default {
 				.then(({ data }) => {
 					this.filtersOptions.adm4.data = data;
 					this.filtersOptions.adm4.loading = false;
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 
