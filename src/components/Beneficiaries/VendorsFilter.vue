@@ -12,9 +12,8 @@
 <script>
 import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
-import LocationsService from "@/services/LocationsService";
-import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import transactionHelper from "@/mixins/transactionHelper";
 
 const DEFAULT_FILTERS = {
 	invoicing: [],
@@ -33,7 +32,7 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper],
+	mixins: [urlFiltersHelper, transactionHelper],
 
 	data() {
 		return {
@@ -175,56 +174,6 @@ export default {
 					adm4: filtersCopy.adm4,
 				},
 			});
-		},
-
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchDistricts() {
-			this.filtersOptions.adm2.loading = true;
-
-			await LocationsService.getListOfAdm2(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchCommunes() {
-			this.filtersOptions.adm3.loading = true;
-
-			await LocationsService.getListOfAdm3(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchVillages() {
-			this.filtersOptions.adm4.loading = true;
-
-			await LocationsService.getListOfAdm4(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
-				});
 		},
 
 		eraseFilters() {
