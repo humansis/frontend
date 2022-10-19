@@ -124,6 +124,26 @@ export default {
 			}
 		},
 
+		getLocation(filters) {
+			let location = null;
+
+			if (this.selectedFiltersOptions.adm4) {
+				const [a] = filters.adm4;
+				location = a;
+			} else if (this.selectedFiltersOptions.adm3) {
+				const [a] = filters.adm3;
+				location = a;
+			} else if (this.selectedFiltersOptions.adm2) {
+				const [a] = filters.adm2;
+				location = a;
+			} else if (this.selectedFiltersOptions.adm1) {
+				const [a] = filters.adm1;
+				location = a;
+			}
+
+			return location;
+		},
+
 		clearedLocationFilters(filters, filterName) {
 			const filtersCopy = { ...filters };
 
