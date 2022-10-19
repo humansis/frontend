@@ -16,6 +16,15 @@ import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
+const DEFAULT_FILTERS = {
+	invoicing: [],
+	adm1: null,
+	adm2: null,
+	adm3: null,
+	adm4: null,
+	locations: [],
+};
+
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "VendorsFilter",
@@ -28,14 +37,7 @@ export default {
 
 	data() {
 		return {
-			selectedFiltersOptions: {
-				invoicing: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			},
+			selectedFiltersOptions: { ...DEFAULT_FILTERS },
 			filtersOptions: {
 				invoicing: {
 					name: "Invoicing",
@@ -150,6 +152,17 @@ export default {
 				location = a;
 			}
 
+			if (filterName && filterName.includes("adm")) {
+				const admNum = parseInt(filterName.slice(-1), 10);
+				for (let i = admNum; i >= 2; i -= 1) {
+					if (this.selectedFiltersOptions[`adm${i}`]) {
+						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
+							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
+						));
+					}
+				}
+			}
+
 			this.$emit("filtersChanged", {
 				filters: {
 					invoicing: filters.invoicing?.[0] || null,
@@ -215,14 +228,7 @@ export default {
 		},
 
 		eraseFilters() {
-			this.selectedFiltersOptions = {
-				invoicing: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			};
+			this.selectedFiltersOptions = { ...DEFAULT_FILTERS };
 			this.$nextTick(() => {
 				this.$refs.advancedFilter.filterChanged();
 			});
