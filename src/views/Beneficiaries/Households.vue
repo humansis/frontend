@@ -299,6 +299,10 @@ export default {
 		};
 	},
 
+	watch: {
+		$route: "fetchData",
+	},
+
 	created() {
 		this.setGridFilters("households");
 		this.fetchData();
