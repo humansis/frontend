@@ -242,6 +242,17 @@ export default {
 				});
 		},
 
+		fillParentProvinces() {
+			this.filtersOptions.adm2.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm1.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+				}
+			});
+		},
+
 		async fetchDistricts() {
 			this.filtersOptions.adm2.loading = true;
 			await LocationsService.getListOfAdm2()
@@ -254,6 +265,17 @@ export default {
 				});
 		},
 
+		fillParentDistricts() {
+			this.filtersOptions.adm3.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm2.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+				}
+			});
+		},
+
 		async fetchCommunes() {
 			this.filtersOptions.adm3.loading = true;
 			await LocationsService.getListOfAdm3()
@@ -264,6 +286,17 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
 				});
+		},
+
+		fillParentCommunes() {
+			this.filtersOptions.adm4.data.forEach((item, index) => {
+				if (item.hasDuplicity) {
+					const parentLocation = this.filtersOptions.adm3.data
+						.filter((item2) => item2.id === item.parentId)[0];
+
+					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+				}
+			});
 		},
 
 		async fetchVillages() {

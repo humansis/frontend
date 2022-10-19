@@ -92,18 +92,35 @@ export default {
 				this.selectedFiltersOptions.adm2 = this.filtersOptions
 					.adm2.data
 					.find((item) => item.locationId === this.defaultFilters.adm2[0]);
+				this.setAdmParents("adm2");
 			}
 
 			if (this.defaultFilters.adm3?.length) {
 				this.selectedFiltersOptions.adm3 = this.filtersOptions
 					.adm3.data
 					.find((item) => item.locationId === this.defaultFilters.adm3[0]);
+				this.setAdmParents("adm3");
 			}
 
 			if (this.defaultFilters.adm4?.length) {
 				this.selectedFiltersOptions.adm4 = this.filtersOptions
 					.adm4.data
 					.find((item) => item.locationId === this.defaultFilters.adm4[0]);
+
+				this.setAdmParents("adm4");
+			}
+		},
+
+		setAdmParents(filterName) {
+			if (filterName && filterName.includes("adm")) {
+				const admNum = parseInt(filterName.slice(-1), 10);
+				for (let i = admNum; i >= 2; i -= 1) {
+					if (this.selectedFiltersOptions[`adm${i}`]) {
+						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
+							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
+						));
+					}
+				}
 			}
 		},
 
