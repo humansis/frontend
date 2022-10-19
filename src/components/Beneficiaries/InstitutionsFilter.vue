@@ -10,6 +10,8 @@
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
+import filtersHelper from "@/mixins/filtersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "InstitutionsFilter",
@@ -18,11 +20,20 @@ export default {
 		AdvancedFilter,
 	},
 
+	mixins: [filtersHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
+				projects: [],
+			}),
+		},
+	},
+
 	data() {
 		return {
-			selectedFiltersOptions: {
-				projects: [],
-			},
+			selectedFiltersOptions: copyObject(this.filtersHelper),
 			filtersOptions: {
 				projects: {
 					name: "Project",

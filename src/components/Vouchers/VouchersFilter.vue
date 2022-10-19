@@ -13,7 +13,9 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByParams } from "@/utils/codeList";
 import currencies from "@/utils/currencies";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "VouchersFilter",
@@ -22,23 +24,23 @@ export default {
 		AdvancedFilter,
 	},
 
+	mixins: [filtersHelper, urlFiltersHelper],
+
 	props: {
 		defaultFilters: {
 			type: Object,
-			default: () => {},
-		},
-	},
-
-	mixins: [urlFiltersHelper],
-
-	data() {
-		return {
-			selectedFiltersOptions: {
+			default: () => ({
 				currencies: [],
 				statuses: [],
 				assistances: [],
 				beneficiaries: [],
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptions: {
 				currencies: {
 					name: "Currency",
@@ -87,7 +89,7 @@ export default {
 		await this.fetchAssistances();
 
 		await Promise.all([
-			this.setDefaultFilters(false),
+			this.setDefaultFilters(),
 		]);
 	},
 
@@ -124,18 +126,6 @@ export default {
 					.assistances.data
 					.filter((item) => this.defaultFilters.distributions.includes(item.id));
 			}
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				currencies: [],
-				statuses: [],
-				assistances: [],
-				beneficiaries: [],
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
-			});
 		},
 
 		async fetchAssistances() {
