@@ -183,20 +183,7 @@ export default {
 				this.fetchAssistance();
 			}
 
-			let location = null;
-			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filtersCopy.adm4;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm3) {
-				const [a] = filtersCopy.adm3;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm2) {
-				const [a] = filtersCopy.adm2;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm1) {
-				const [a] = filtersCopy.adm1;
-				location = a;
-			}
+			const location = this.getLocation(filters);
 
 			this.$emit("filtersChanged", {
 				filters: {
