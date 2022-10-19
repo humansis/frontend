@@ -2,7 +2,10 @@
 	<form>
 		<section class="modal-card-body">
 			<b-field :label="$t('Name')">
-				<b-input v-model="formModel.name" disabled />
+				<AssistanceName
+					:form-model="formModel"
+					ref="assistanceName"
+				/>
 			</b-field>
 
 			<LocationForm
@@ -116,6 +119,8 @@
 </template>
 
 <script>
+import { required } from "vuelidate/lib/validators";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import consts from "@/utils/assistanceConst";
@@ -127,6 +132,7 @@ export default {
 	mixins: [calendarHelper],
 
 	components: {
+		AssistanceName,
 		LocationForm,
 		SvgIcon,
 	},
@@ -162,12 +168,23 @@ export default {
 		},
 	},
 
+	validations: {
+		formModel: {
+			name: { required },
+		},
+	},
+
 	methods: {
 		submitForm() {
+			this.$v.$touch();
+			const isValid = !this.$v.$invalid && this.$refs.assistanceName.isValid();
 			const data = { ...this.formModel };
 			data.round = this.formModel.round?.code;
-			this.$emit("formSubmitted", data);
-			this.closeForm();
+
+			if (isValid) {
+				this.$emit("formSubmitted", data);
+				this.closeForm();
+			}
 		},
 
 		closeForm() {

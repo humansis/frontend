@@ -1,5 +1,13 @@
 <template>
-	<div>
+	<div class="new-assistance-form">
+		<h3 class="title is-4">{{ $t('Name') }}</h3>
+		<div class="box">
+			<AssistanceName
+				:form-model="formModel"
+				ref="assistanceName"
+			/>
+		</div>
+
 		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
 		<div class="box">
 			<LocationForm
@@ -183,6 +191,7 @@ import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
@@ -193,7 +202,10 @@ import calendarHelper from "@/mixins/calendarHelper";
 export default {
 	name: "NewAssistanceForm",
 
-	components: { LocationForm },
+	components: {
+		LocationForm,
+		AssistanceName,
+	},
 
 	mixins: [Validation, calendarHelper],
 
@@ -245,6 +257,7 @@ export default {
 
 	validations: {
 		formModel: {
+			name: { required },
 			dateOfAssistance: { required },
 			sector: { required },
 			subsector: { required },
@@ -313,7 +326,8 @@ export default {
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
-			return !this.$v.$invalid || (!this.$v.$invalid && !invalidLocationForm);
+			return !this.$v.$invalid
+				|| (!this.$v.$invalid && !invalidLocationForm && this.$refs.assistanceName.isValid());
 		},
 
 		normalizeText(text) {
