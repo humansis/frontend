@@ -184,7 +184,9 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0" class="has-text-right">
+									<td v-if="index === 0 && statistics.status === 'Integrity Check Failed'"
+										class="has-text-right"
+									>
 										<b-button
 											type="is-info"
 											icon-right="file-download"
