@@ -62,6 +62,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 				adm3: {
 					name: "Commune",
@@ -69,6 +70,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 				adm4: {
 					name: "Village",
@@ -76,6 +78,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
+					type: "multiselectDescription",
 				},
 			},
 		};
@@ -99,7 +102,11 @@ export default {
 			this.fetchDistricts(),
 			this.fetchCommunes(),
 			this.fetchVillages(),
-		]);
+		]).then(() => {
+			this.fillParentCommunes();
+			this.fillParentDistricts();
+			this.fillParentProvinces();
+		});
 
 		await Promise.all([
 			this.setDefaultFilters(),
@@ -151,16 +158,7 @@ export default {
 				location = a;
 			}
 
-			if (filterName && filterName.includes("adm")) {
-				const admNum = parseInt(filterName.slice(-1), 10);
-				for (let i = admNum; i >= 2; i -= 1) {
-					if (this.selectedFiltersOptions[`adm${i}`]) {
-						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
-							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
-						));
-					}
-				}
-			}
+			this.setAdmParents(filterName);
 
 			this.$emit("filtersChanged", {
 				filters: {

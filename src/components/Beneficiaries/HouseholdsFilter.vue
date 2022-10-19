@@ -176,28 +176,6 @@ export default {
 			});
 		},
 
-		fillParentDistricts() {
-			this.filtersOptions.adm3.data.forEach((item, index) => {
-				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm2.data
-						.filter((item2) => item2.id === item.parentId)[0];
-
-					this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
-				}
-			});
-		},
-
-		fillParentProvinces() {
-			this.filtersOptions.adm2.data.forEach((item, index) => {
-				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm1.data
-						.filter((item2) => item2.id === item.parentId)[0];
-
-					this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
-				}
-			});
-		},
-
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;
 			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
@@ -271,16 +249,7 @@ export default {
 				location = a;
 			}
 
-			if (filterName && filterName.includes("adm")) {
-				const admNum = parseInt(filterName.slice(-1), 10);
-				for (let i = admNum; i >= 2; i -= 1) {
-					if (this.selectedFiltersOptions[`adm${i}`]) {
-						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
-							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
-						));
-					}
-				}
-			}
+			this.setAdmParents(filterName);
 
 			this.$emit("filtersChanged", {
 				filters: {
