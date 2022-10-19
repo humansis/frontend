@@ -10,13 +10,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectService from "@/services/ProjectService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import transactionHelper from "@/mixins/transactionHelper";
+import locationHelper from "@/mixins/locationHelper";
 import { copyObject } from "@/utils/helpers";
 
 const DEFAULT_FILTERS = {
@@ -41,7 +40,7 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper, transactionHelper],
+	mixins: [urlFiltersHelper, locationHelper],
 
 	data() {
 		return {
@@ -137,10 +136,6 @@ export default {
 		},
 	},
 
-	computed: {
-		...mapState(["admNames"]),
-	},
-
 	async created() {
 		await Promise.all([
 			this.setLocationNames(),
@@ -177,20 +172,6 @@ export default {
 					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
 				}
 			});
-		},
-
-		setLocationNames() {
-			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
-
-			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
-
-			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
-
-			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
 		},
 
 		setDefaultFilters() {
