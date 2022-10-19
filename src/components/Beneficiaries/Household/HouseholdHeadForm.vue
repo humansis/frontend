@@ -111,7 +111,7 @@
 					</span>
 				</h4>
 				<!-- primary ID-->
-				<b-tabs type="is-boxed">
+				<b-tabs>
 					<b-tab-item label="Primary">
 						<b-field
 							:label="$t('ID Type')"
