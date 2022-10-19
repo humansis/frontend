@@ -110,35 +110,96 @@
 						- {{ $t('Optional') }}
 					</span>
 				</h4>
-				<b-field
-					:label="$t('ID Type')"
-					:type="validateType('id.idType', true)"
-					:message="validateMsg('id.idType')"
-				>
-					<MultiSelect
-						v-model="formModel.id.idType"
-						label="value"
-						track-by="code"
-						searchable
-						:placeholder="$t('Click to select')"
-						:loading="idTypeLoading"
-						:options="options.idType"
-						:class="validateMultiselect('id.idType', true)"
-						@select="validate('id.idType')"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-				<b-field
-					:label="$t('ID Number')"
-					:type="validateType('id.idNumber', true)"
-					:message="validateMsg('id.idNumber')"
-				>
-					<b-input
-						v-model="formModel.id.idNumber"
-						@blur="validate('id.idNumber', true)"
-					/>
-				</b-field>
+				<!-- primary ID-->
+				<b-tabs type="is-boxed">
+					<b-tab-item label="Primary">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('id.idType', true)"
+							:message="validateMsg('id.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.id.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('id.idType', true)"
+								@select="validate('id.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('id.idNumber', true)"
+							:message="validateMsg('id.idNumber')"
+						>
+							<b-input
+								v-model="formModel.id.idNumber"
+								@blur="validate('id.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item label="Secondary" :disabled="!formModel.id.idNumber">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('id.idType', true)"
+							:message="validateMsg('id.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.id.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('id.idType', true)"
+								@select="validate('id.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('id.idNumber', true)"
+							:message="validateMsg('id.idNumber')"
+						>
+							<b-input
+								v-model="formModel.id.idNumber"
+								@blur="validate('id.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item label="Ternary" :disabled="!formModel.id.idNumber">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('id.idType', true)"
+							:message="validateMsg('id.idType')"
+						>
+							<MultiSelect
+								v-model="formModel.id.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('id.idType', true)"
+								@select="validate('id.idType')"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('id.idNumber', true)"
+							:message="validateMsg('id.idNumber')"
+						>
+							<b-input
+								v-model="formModel.id.idNumber"
+								@blur="validate('id.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+				</b-tabs>
 			</div>
 
 			<div class="column is-one-quarter">
