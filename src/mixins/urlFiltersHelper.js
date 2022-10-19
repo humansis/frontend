@@ -1,4 +1,5 @@
 import { mapActions, mapState } from "vuex";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	computed: {
@@ -86,6 +87,7 @@ export default {
 				this.selectedFiltersOptions.adm1 = this.filtersOptions
 					.adm1.data
 					.find((item) => item.locationId === this.defaultFilters.adm1[0]);
+				this.filterAdmChildren("adm1");
 			}
 
 			if (this.defaultFilters.adm2?.length) {
@@ -93,6 +95,7 @@ export default {
 					.adm2.data
 					.find((item) => item.locationId === this.defaultFilters.adm2[0]);
 				this.setAdmParents("adm2");
+				this.filterAdmChildren("adm2");
 			}
 
 			if (this.defaultFilters.adm3?.length) {
@@ -100,6 +103,7 @@ export default {
 					.adm3.data
 					.find((item) => item.locationId === this.defaultFilters.adm3[0]);
 				this.setAdmParents("adm3");
+				this.filterAdmChildren("adm3");
 			}
 
 			if (this.defaultFilters.adm4?.length) {
@@ -119,6 +123,34 @@ export default {
 						this.selectedFiltersOptions[`adm${i - 1}`] = this.filtersOptions[`adm${i - 1}`].data.find((adm) => (
 							adm.id === this.selectedFiltersOptions[`adm${i}`].parentId
 						));
+					}
+				}
+			}
+		},
+
+		filterAdmChildren(filterName) {
+			if (filterName && filterName.includes("adm")) {
+				const admNum = parseInt(filterName.slice(-1), 10);
+				if (!this.selectedFiltersOptions[filterName]) {
+					for (let i = admNum; i <= 4; i += 1) {
+						this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+					}
+					return;
+				}
+
+				for (let i = admNum; i <= 3; i += 1) {
+					if (this.selectedFiltersOptions[`adm${i}`]) {
+						// Copy array so it is not affected by .filter function
+						const filtersCopy = this.filtersOptionsCopy[`adm${i + 1}`].data.slice(0);
+						this.filtersOptions[`adm${i + 1}`].data = filtersCopy.filter((adm) => (
+							adm.parentId === this.selectedFiltersOptions[`adm${i}`].id
+						));
+						for (let j = i + 1; j <= 3; j += 1) {
+							const filtersCopy2 = this.filtersOptionsCopy[`adm${j + 1}`].data.slice(0);
+							this.filtersOptions[`adm${j + 1}`].data = filtersCopy2.filter((adm) => (
+								adm.parentId === this.filtersOptions[`adm${j}`].data[0].id
+							));
+						}
 					}
 				}
 			}

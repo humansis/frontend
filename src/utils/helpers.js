@@ -7,6 +7,8 @@ export const BookletStatusArray = [
 	{ code: "3", value: i18n.t("Deactivated") },
 ];
 
+export const copyObject = (obj) => JSON.parse(JSON.stringify(obj));
+
 export const getBookletStatus = (code) => BookletStatusArray
 	.find((status) => status.code === code);
 
@@ -16,4 +18,5 @@ export default {
 	BookletStatusArray,
 	getBookletStatus,
 	splitBySpace,
+	copyObject,
 };

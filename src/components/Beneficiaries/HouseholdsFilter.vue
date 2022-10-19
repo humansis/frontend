@@ -17,6 +17,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import transactionHelper from "@/mixins/transactionHelper";
+import { copyObject } from "@/utils/helpers";
 
 const DEFAULT_FILTERS = {
 	projects: [],
@@ -45,6 +46,7 @@ export default {
 	data() {
 		return {
 			selectedFiltersOptions: { ...DEFAULT_FILTERS },
+			filtersOptionsCopy: {},
 			filtersOptions: {
 				projects: {
 					name: "Project",
@@ -155,6 +157,7 @@ export default {
 			this.fillParentCommunes();
 			this.fillParentDistricts();
 			this.fillParentProvinces();
+			this.filtersOptionsCopy = copyObject(this.filtersOptions);
 		});
 
 		await Promise.all([
@@ -232,6 +235,7 @@ export default {
 			const location = this.getLocation(filters);
 
 			this.setAdmParents(filterName);
+			this.filterAdmChildren(filterName);
 
 			this.$emit("filtersChanged", {
 				filters: {
