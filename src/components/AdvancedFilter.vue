@@ -116,16 +116,16 @@ export default {
 				if (Array.isArray(this.selectedFiltersOptions[key])) {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
-						const select = this.filtersOptions[key].trackBy || "code";
+						const select = this.filtersOptions[key]?.trackBy || "code";
 						filters[filterKey].push(value[select]);
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					if (this.filtersOptions[key].type === "date" || this.filtersOptions[key].type === "datetime") {
+					if (this.filtersOptions[key]?.type === "date" || this.filtersOptions[key]?.type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
-					} else if (this.filtersOptions[key].type === "text") {
+					} else if (this.filtersOptions[key]?.type === "text") {
 						filters[filterKey] = this.selectedFiltersOptions[key];
 					} else {
-						const select = this.filtersOptions[key].trackBy || "code";
+						const select = this.filtersOptions[key]?.trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 					}
 				}

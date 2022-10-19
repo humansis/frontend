@@ -10,6 +10,7 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
+import filtersHelper from "@/mixins/filtersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
@@ -20,30 +21,30 @@ export default {
 
 	components: { AdvancedFilter },
 
-	mixins: [locationHelper, transactionHelper, urlFiltersHelper],
+	mixins: [filtersHelper, locationHelper, transactionHelper, urlFiltersHelper],
 
 	props: {
 		defaultFilters: {
 			type: Object,
-			default: () => {},
+			default: () => ({
+				beneficiaryType: [],
+				project: [],
+				distribution: [],
+				commodity: [],
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
+				dateFrom: null,
+				dateTo: null,
+			}),
 		},
 	},
 
 	data() {
 		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptionsCopy: {},
-			selectedFiltersOptions: {
-				beneficiaryType: [],
-				project: [],
-				distribution: [],
-				commodity: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				dateFrom: null,
-				dateTo: null,
-			},
 			filtersOptions: {
 				beneficiaryType: {
 					name: "Beneficiary Type",
@@ -210,24 +211,6 @@ export default {
 					adm3: filtersCopy.adm3,
 					adm4: filtersCopy.adm4,
 				},
-			});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				beneficiaryType: [],
-				project: [],
-				distribution: [],
-				commodity: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				dateFrom: null,
-				dateTo: null,
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
 			});
 		},
 	},

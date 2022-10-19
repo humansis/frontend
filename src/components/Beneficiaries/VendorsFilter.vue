@@ -11,18 +11,10 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import { copyObject } from "@/utils/helpers";
-
-const DEFAULT_FILTERS = {
-	invoicing: [],
-	adm1: null,
-	adm2: null,
-	adm3: null,
-	adm4: null,
-	locations: [],
-};
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -32,11 +24,25 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper, locationHelper],
+	mixins: [filtersHelper, urlFiltersHelper, locationHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
+				invoicing: [],
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
+				locations: [],
+			}),
+		},
+	},
 
 	data() {
 		return {
-			selectedFiltersOptions: { ...DEFAULT_FILTERS },
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptionsCopy: {},
 			filtersOptions: {
 				invoicing: {
@@ -85,13 +91,6 @@ export default {
 		};
 	},
 
-	props: {
-		defaultFilters: {
-			type: Object,
-			default: () => {},
-		},
-	},
-
 	async created() {
 		await Promise.all([
 			this.setLocationNames(),
@@ -138,13 +137,6 @@ export default {
 					adm3: filtersCopy.adm3,
 					adm4: filtersCopy.adm4,
 				},
-			});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = { ...DEFAULT_FILTERS };
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
 			});
 		},
 	},

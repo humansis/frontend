@@ -9,6 +9,8 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
+import filtersHelper from "@/mixins/filtersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "SyncFilter",
@@ -17,12 +19,21 @@ export default {
 		AdvancedFilter,
 	},
 
-	data() {
-		return {
-			selectedFiltersOptions: {
+	mixins: [filtersHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
 				dateFrom: null,
 				dateTo: null,
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptions: {
 				dateFrom: {
 					name: "Date From",
@@ -41,16 +52,6 @@ export default {
 	methods: {
 		filterChanged(filters) {
 			this.$emit("filtersChanged", filters);
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				dateFrom: null,
-				dateTo: null,
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
-			});
 		},
 	},
 };

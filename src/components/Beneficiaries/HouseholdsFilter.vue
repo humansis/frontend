@@ -14,23 +14,10 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectService from "@/services/ProjectService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import { copyObject } from "@/utils/helpers";
-
-const DEFAULT_FILTERS = {
-	projects: [],
-	vulnerabilities: [],
-	gender: [],
-	residencyStatuses: [],
-	referralTypes: [],
-	livelihoods: [],
-	adm1: null,
-	adm2: null,
-	adm3: null,
-	adm4: null,
-	locations: [],
-};
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -40,11 +27,30 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper, locationHelper],
+	mixins: [filtersHelper, urlFiltersHelper, locationHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
+				projects: [],
+				vulnerabilities: [],
+				gender: [],
+				residencyStatuses: [],
+				referralTypes: [],
+				livelihoods: [],
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
+				locations: [],
+			}),
+		},
+	},
 
 	data() {
 		return {
-			selectedFiltersOptions: { ...DEFAULT_FILTERS },
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptionsCopy: {},
 			filtersOptions: {
 				projects: {
@@ -127,13 +133,6 @@ export default {
 				},
 			},
 		};
-	},
-
-	props: {
-		defaultFilters: {
-			type: Object,
-			default: () => {},
-		},
 	},
 
 	async created() {
@@ -278,13 +277,6 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = { ...DEFAULT_FILTERS };
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
-			});
 		},
 	},
 };

@@ -11,6 +11,8 @@
 import AdvancedFilter from "@/components/AdvancedFilter";
 import { Notification } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import filtersHelper from "@/mixins/filtersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "ImportsFilter",
@@ -19,12 +21,21 @@ export default {
 		AdvancedFilter,
 	},
 
-	data() {
-		return {
-			selectedFiltersOptions: {
+	mixins: [filtersHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
 				projects: [],
 				status: [],
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptions: {
 				projects: {
 					name: "Project",
@@ -75,16 +86,6 @@ export default {
 				.catch((e) => {
 					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				projects: [],
-				status: [],
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
-			});
 		},
 	},
 };
