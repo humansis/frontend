@@ -250,7 +250,7 @@ export default {
 		},
 
 		async filterChanged(filters, filterName) {
-			const filtersCopy = { ...filters };
+			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 
 			let location = [];
 			if (this.selectedFiltersOptions.adm4) {
@@ -270,7 +270,7 @@ export default {
 				location = location.concat(a);
 			}
 
-			if (filterName.includes("adm")) {
+			if (filterName && filterName.includes("adm")) {
 				const admNum = parseInt(filterName.slice(-1), 10);
 				for (let i = admNum; i >= 2; i -= 1) {
 					if (this.selectedFiltersOptions[`adm${i}`]) {
