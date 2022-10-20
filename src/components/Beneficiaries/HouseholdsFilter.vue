@@ -113,7 +113,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					type: "multiselectDescription",
+					type: "multiselect",
 				},
 				adm3: {
 					name: "Commune",
@@ -121,7 +121,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					type: "multiselectDescription",
+					type: "multiselect",
 				},
 				adm4: {
 					name: "Village",
@@ -129,7 +129,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					type: "multiselectDescription",
+					type: "multiselect",
 				},
 			},
 		};
