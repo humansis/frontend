@@ -17,6 +17,7 @@
 						:selectLabel="$t('Select')"
 						:deselectLabel="$t('Remove')"
 						:closeOnSelect="!options.multiple"
+						@input="filterChanged(filter)"
 					>
 						<span slot="noOptions">{{ $t("List is empty")}}</span>
 					</MultiSelect>
