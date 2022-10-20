@@ -184,7 +184,7 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0 && statistics.status === 'Integrity Check Failed'"
+									<td v-if="index === 0 && itegrityCheckFailed"
 										class="has-text-right"
 									>
 										<b-button
@@ -393,6 +393,10 @@ export default {
 			return this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
+		},
+
+		itegrityCheckFailed() {
+			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 	},
 
