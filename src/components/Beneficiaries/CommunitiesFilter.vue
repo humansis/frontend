@@ -34,7 +34,7 @@ export default {
 
 	data() {
 		return {
-			selectedFiltersOptions: copyObject(this.filtersHelper),
+			selectedFiltersOptions: copyObject(this.defaultFilters),
 			filtersOptions: {
 				projects: {
 					name: "Project",
