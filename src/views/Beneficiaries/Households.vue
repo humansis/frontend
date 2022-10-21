@@ -727,7 +727,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.householdsFilter.eraseFilters();
+			this.$refs.householdsFilter.resetFilters();
 		},
 
 		resetTableSort() {

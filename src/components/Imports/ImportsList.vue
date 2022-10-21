@@ -298,7 +298,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.importFilter.eraseFilters();
+			this.$refs.importFilter.resetFilters();
 		},
 
 		resetTableSort() {

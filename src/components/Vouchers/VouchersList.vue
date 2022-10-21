@@ -321,7 +321,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.vouchersFilter.eraseFilters();
+			this.$refs.vouchersFilter.resetFilters();
 		},
 
 		resetTableSort() {
