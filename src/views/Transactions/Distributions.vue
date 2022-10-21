@@ -262,24 +262,6 @@ export default {
 			});
 			this.exportLoading = false;
 		},
-
-		async onFiltersChange({ filters, locationsFilter }) {
-			this.locationsFilter = locationsFilter;
-
-			Object.keys(filters).forEach((key) => {
-				if (Array.isArray(filters[key])) {
-					this.filters[key] = [];
-					filters[key].forEach((value) => {
-						this.filters[key].push(value);
-					});
-				} else {
-					this.filters[key] = filters[key];
-				}
-			});
-
-			this.table.currentPage = 1;
-			await this.fetchData();
-		},
 	},
 };
 
