@@ -117,7 +117,7 @@ export default {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
 						const select = this.filtersOptions[key]?.trackBy || "code";
-						if (filters[filterKey] && value) {
+						if (filters[filterKey] && value && value[select]) {
 							filters[filterKey].push(value[select]);
 						}
 					});
