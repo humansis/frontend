@@ -235,7 +235,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.syncFilter.eraseFilters();
+			this.$refs.syncFilter.resetFilters();
 		},
 
 		async onFiltersChange(selectedFilters) {

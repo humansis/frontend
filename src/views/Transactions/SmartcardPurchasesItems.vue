@@ -236,7 +236,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.purchasesFilter.eraseFilters();
+			this.$refs.purchasesFilter.resetFilters();
 		},
 
 		resetTableSort() {

@@ -2,7 +2,7 @@ import { copyObject } from "@/utils/helpers";
 
 export default {
 	methods: {
-		eraseFilters() {
+		resetFilters() {
 			this.selectedFiltersOptions = copyObject(this.defaultFilters);
 
 			if (this.filtersOptions.adm1) {

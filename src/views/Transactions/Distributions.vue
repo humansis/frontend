@@ -231,7 +231,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.distributionFilter.eraseFilters();
+			this.$refs.distributionFilter.resetFilters();
 		},
 
 		resetTableSort() {
