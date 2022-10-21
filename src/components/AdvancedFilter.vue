@@ -117,7 +117,9 @@ export default {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
 						const select = this.filtersOptions[key]?.trackBy || "code";
-						filters[filterKey].push(value[select]);
+						if (filters[filterKey] && value) {
+							filters[filterKey].push(value[select]);
+						}
 					});
 				} else if (this.selectedFiltersOptions[key]) {
 					if (this.filtersOptions[key]?.type === "date" || this.filtersOptions[key]?.type === "datetime") {
