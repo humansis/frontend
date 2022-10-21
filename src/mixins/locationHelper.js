@@ -201,7 +201,7 @@ export default {
 		},
 
 		clearedLocationFilters(filters, filterName) {
-			const filtersCopy = { ...filters };
+			const filtersCopy = copyObject(filters);
 
 			switch (filterName) {
 				case "adm1":
