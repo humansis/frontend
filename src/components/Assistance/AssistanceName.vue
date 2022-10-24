@@ -10,6 +10,7 @@
 			type="text"
 			:placeholder="$t('Will be generated')"
 			:disabled="!isCustomLocal"
+			@input="validate('name')"
 		/>
 		<p class="control">
 			<b-field class="name-switch">
@@ -23,12 +24,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "AssistanceName",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: {
@@ -55,7 +56,7 @@ export default {
 
 	methods: {
 		isValid() {
-			this.$v.$touch();
+			this.validate('name');
 			return !this.$v.$invalid;
 		},
 	},
