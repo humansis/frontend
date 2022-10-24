@@ -4,10 +4,13 @@ import consts from "@/utils/filterConst";
 export default {
 	methods: {
 		resetFilters() {
+			const filters = {};
 			Object.keys(this.filtersOptions).forEach((key) => {
 				const filterKey = this.filtersOptions[key]?.filterKey || key;
-				this.selectedFiltersOptions[filterKey] = consts.DEFAULT_FILTERS[filterKey];
+				filters[filterKey] = consts.DEFAULT_FILTERS[filterKey] || [];
 			});
+
+			this.selectedFiltersOptions = filters;
 
 			if (this.filtersOptions.adm1) {
 				this.filtersOptions.adm1 = copyObject(this.filtersOptionsCopy.adm1);

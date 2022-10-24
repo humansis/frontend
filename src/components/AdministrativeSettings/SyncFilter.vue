@@ -51,7 +51,7 @@ export default {
 
 	methods: {
 		filterChanged(filters) {
-			this.$emit("filtersChanged", filters);
+			this.$emit("filtersChanged", { filters });
 		},
 	},
 };

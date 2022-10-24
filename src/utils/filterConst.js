@@ -2,6 +2,7 @@ const DEFAULT_FILTERS = {
 	invoicing: null,
 	locations: [],
 	projects: [],
+	assistances: [],
 	distributions: [],
 	vulnerabilities: [],
 	residencyStatuses: [],

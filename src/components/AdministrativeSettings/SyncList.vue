@@ -238,9 +238,9 @@ export default {
 			this.$refs.syncFilter.resetFilters();
 		},
 
-		async onFiltersChange(selectedFilters) {
+		async onFiltersChange({ filters }) {
 			this.table.progress = 0;
-			this.filters = selectedFilters;
+			this.filters = filters;
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},

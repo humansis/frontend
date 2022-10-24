@@ -105,7 +105,7 @@ export default {
 				this.fetchBeneficiaries(filters.distributions);
 			}
 
-			this.$emit("filtersChanged", filters);
+			this.$emit("filtersChanged", { filters });
 		},
 
 		setDefaultFilters() {
