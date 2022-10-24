@@ -1,15 +1,11 @@
 <template>
 	<div class="new-assistance-form">
-		<h3 class="title is-4">{{ $t('Name') }}</h3>
+		<h3 class="title is-4">{{ $t('Basic properties') }}</h3>
 		<div class="box">
 			<AssistanceName
 				:form-model="formModel"
 				ref="assistanceName"
 			/>
-		</div>
-
-		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
-		<div class="box">
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"

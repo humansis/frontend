@@ -1,12 +1,10 @@
 <template>
 	<form>
 		<section class="modal-card-body">
-			<b-field :label="$t('Name')">
-				<AssistanceName
-					:form-model="formModel"
-					ref="assistanceName"
-				/>
-			</b-field>
+			<AssistanceName
+				:form-model="formModel"
+				ref="assistanceName"
+			/>
 
 			<LocationForm
 				v-if="!editing"
