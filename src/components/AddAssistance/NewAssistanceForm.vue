@@ -348,8 +348,9 @@ export default {
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
+			const invalidAssistanceName = this.$refs.assistanceName.isValid();
 			return !this.$v.$invalid
-				|| (!this.$v.$invalid && !invalidLocationForm && this.$refs.assistanceName.isValid());
+				|| (!this.$v.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
 		normalizeText(text) {
