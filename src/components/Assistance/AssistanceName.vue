@@ -1,6 +1,7 @@
 <template>
 	<b-field
 		class="name-field"
+		:label="$t('Name of Assistance')"
 		:type="validateType('name')"
 		:message="validateMsg('name')"
 	>
@@ -11,7 +12,7 @@
 			maxlength="80"
 			:placeholder="$t('Will be generated')"
 			:disabled="!isCustomLocal"
-			@input="validate('name')"
+			@input="isValid"
 		/>
 		<p class="control">
 			<b-field class="name-switch">
@@ -57,19 +58,24 @@ export default {
 
 	methods: {
 		isValid() {
-			this.validate('name');
+			this.validate("name");
 			return !this.$v.$invalid;
 		},
 	},
 };
 </script>
 
-<style lang="scss" scoped>
-	.name-input {
-		width: 100%;
-	}
-	.name-switch {
-		margin-left: 10px;
-		margin-top: 5px;
+<style lang="scss">
+	.name-field {
+		.name-input {
+			width: 100%;
+		}
+		.name-switch {
+			margin-left: 10px;
+			margin-top: 5px;
+		}
+		.has-addons {
+			height: 2.5em;
+		}
 	}
 </style>
