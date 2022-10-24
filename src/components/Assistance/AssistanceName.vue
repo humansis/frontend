@@ -8,6 +8,7 @@
 			v-model.trim="formModel.name"
 			class="name-input"
 			type="text"
+			maxlength="80"
 			:placeholder="$t('Will be generated')"
 			:disabled="!isCustomLocal"
 			@input="validate('name')"
