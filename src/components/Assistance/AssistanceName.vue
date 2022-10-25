@@ -6,7 +6,7 @@
 		:message="validateMsg('name')"
 	>
 		<b-input
-			v-model.trim="formModel.name"
+			v-model.trim="name"
 			class="name-input"
 			type="text"
 			maxlength="80"
@@ -34,8 +34,8 @@ export default {
 	mixins: [validation],
 
 	props: {
-		formModel: {
-			type: Object,
+		value: {
+			type: String,
 			required: true,
 		},
 		isCustom: {
@@ -51,8 +51,17 @@ export default {
 	},
 
 	validations: {
-		formModel: {
-			name: { required },
+		name: { required },
+	},
+
+	computed: {
+		name: {
+			get() {
+				return this.value;
+			},
+			set(value) {
+				this.$emit("input", value);
+			},
 		},
 	},
 

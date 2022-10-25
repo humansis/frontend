@@ -3,7 +3,7 @@
 		<h3 class="title is-4">{{ $t('Basic properties') }}</h3>
 		<div class="box">
 			<AssistanceName
-				:form-model="formModel"
+				v-model="formModel.name"
 				ref="assistanceName"
 			/>
 			<LocationForm
