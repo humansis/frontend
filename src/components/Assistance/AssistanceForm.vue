@@ -2,7 +2,7 @@
 	<form>
 		<section class="modal-card-body">
 			<AssistanceName
-				:form-model="formModel"
+				v-model="formModel.name"
 				ref="assistanceName"
 			/>
 
