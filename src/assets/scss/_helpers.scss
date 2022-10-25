@@ -39,13 +39,13 @@
 
 @media only screen and (min-width: $desktop) {
 	.hide-desktop {
-		display: none;
+		display: none !important;
 	}
 }
 
 @media only screen and (min-width: $tablet) and (max-width: $desktop) {
 	.hide-tablet {
-		display: none;
+		display: none !important;
 	}
 }
 
