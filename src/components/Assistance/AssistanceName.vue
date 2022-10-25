@@ -38,6 +38,10 @@ export default {
 			type: String,
 			required: true,
 		},
+		duplicateAssistance: {
+			type: Boolean,
+			default: false,
+		},
 		isCustom: {
 			type: Boolean,
 			default: false,
@@ -57,7 +61,7 @@ export default {
 	computed: {
 		name: {
 			get() {
-				return this.value;
+				return this.duplicateAssistance && this.isCustomLocal ? `${this.value} - ${this.$t("copy")}` : this.value;
 			},
 			set(value) {
 				this.$emit("input", value);

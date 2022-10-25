@@ -4,6 +4,7 @@
 		<div class="box">
 			<AssistanceName
 				v-model="formModel.name"
+				:duplicate-assistance="data !== null"
 				ref="assistanceName"
 			/>
 			<LocationForm
