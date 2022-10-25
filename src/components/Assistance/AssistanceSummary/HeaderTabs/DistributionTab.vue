@@ -139,7 +139,7 @@ export default {
 				return this.commodities?.[0]?.unit || "";
 			}
 
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return this.$t("Activity");
 
 			return "";
 		},
