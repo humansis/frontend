@@ -136,7 +136,7 @@
 							:message="validateMsg('primaryId.idNumber')"
 						>
 							<b-input
-								v-model="formModel.primaryId.idNumber"
+								v-model.trim="formModel.primaryId.idNumber"
 								@blur="validate('primaryId.idNumber', true)"
 							/>
 						</b-field>
@@ -165,7 +165,7 @@
 							:message="validateMsg('secondaryId.idNumber')"
 						>
 							<b-input
-								v-model="formModel.secondaryId.idNumber"
+								v-model.trim="formModel.secondaryId.idNumber"
 								@blur="validate('secondaryId.idNumber', true)"
 							/>
 						</b-field>
@@ -194,7 +194,7 @@
 							:message="validateMsg('tertiaryId.idNumber')"
 						>
 							<b-input
-								v-model="formModel.tertiaryId.idNumber"
+								v-model.trim="formModel.tertiaryId.idNumber"
 								@blur="validate('tertiaryId.idNumber', true)"
 							/>
 						</b-field>
@@ -422,15 +422,21 @@ export default {
 			},
 			primaryId: {
 				idType: { required: requiredIf((form) => form.idNumber), checkPrimaryId },
-				idNumber: { required: requiredIf((form) => form.idType) },
+				idNumber: {
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
 			},
 			secondaryId: {
 				idType: { required: requiredIf((form) => form.idNumber), checkSecondaryId },
-				idNumber: { required: requiredIf((form) => form.idType) },
+				idNumber: {
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
 			},
 			tertiaryId: {
 				idType: { required: requiredIf((form) => form.idNumber), checkTertiaryId },
-				idNumber: { required: requiredIf((form) => form.idType) },
+				idNumber: {
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
 			},
 			residencyStatus: { required },
 		},
