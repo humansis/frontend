@@ -2,7 +2,7 @@
 	<nav class="level">
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('In assistance') }}</p>
+				<h2 class="heading">{{ $t('In assistance') }}</h2>
 				<p
 					v-if="beneficiariesCount || beneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"
@@ -18,7 +18,7 @@
 			class="level-item has-text-centered"
 		>
 			<div class="box">
-				<p class="heading">{{ $t('Reached') }}</p>
+				<h2 class="heading">{{ $t('Reached') }}</h2>
 				<p
 					v-if="beneficiariesReached || beneficiariesReached === 0"
 					class="has-text-weight-bold is-size-5"
@@ -36,7 +36,7 @@
 			class="level-item has-text-centered"
 		>
 			<div class="box commodity-item">
-				<p class="heading">{{ $t('Commodity') }}</p>
+				<h2 class="heading">{{ $t('Commodity') }}</h2>
 				<p
 					v-if="commodity.length"
 					class="has-text-weight-bold is-size-5"
@@ -63,7 +63,7 @@
 			class="level-item has-text-centered"
 		>
 			<div class="box">
-				<p class="heading">{{ $t('Distributed') }}</p>
+				<h2 class="heading">{{ $t('Distributed') }}</h2>
 				<p
 					v-if="amountDistributed || amountDistributed === 0"
 					class="has-text-weight-bold is-size-5"

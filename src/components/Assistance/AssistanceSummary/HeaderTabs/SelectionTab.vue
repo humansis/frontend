@@ -2,7 +2,7 @@
 	<nav class="level">
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Target') }}</p>
+				<h2 class="heading">{{ $t('Target') }}</h2>
 				<p
 					v-if="assistanceTarget"
 					class="has-text-weight-bold is-size-5"
@@ -15,7 +15,7 @@
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Scoring') }}</p>
+				<h2 class="heading">{{ $t('Scoring') }}</h2>
 				<p
 					v-if="assistanceTarget"
 					class="has-text-weight-bold is-size-5"
@@ -28,7 +28,7 @@
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Selected') }}</p>
+				<h2 class="heading">{{ $t('Selected') }}</h2>
 				<p
 					v-if="beneficiariesCount || beneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"

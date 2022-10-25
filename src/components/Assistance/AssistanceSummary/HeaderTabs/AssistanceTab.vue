@@ -2,7 +2,7 @@
 	<div class="level">
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Project') }}</p>
+				<h2 class="heading">{{ $t('Project') }}</h2>
 				<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
@@ -10,7 +10,7 @@
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t(admName) }}</p>
+				<h2 class="heading">{{ $t(admName) }}</h2>
 				<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
@@ -18,14 +18,14 @@
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Round') }}</p>
+				<h2 class="heading">{{ $t('Round') }}</h2>
 				<p class="has-text-weight-bold is-size-5">{{ round }}</p>
 			</div>
 		</div>
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Date of Assistance') }}</p>
+				<h2 class="heading">{{ $t('Date of Assistance') }}</h2>
 				<p
 					v-if="dateDistribution"
 					class="has-text-weight-bold is-size-5"
@@ -38,7 +38,7 @@
 
 		<div class="level-item has-text-centered">
 			<div class="box">
-				<p class="heading">{{ $t('Expiration Date') }}</p>
+				<h2 class="heading">{{ $t('Expiration Date') }}</h2>
 				<p
 					v-if="dateExpiration"
 					class="has-text-weight-bold is-size-5"

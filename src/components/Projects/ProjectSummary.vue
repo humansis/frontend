@@ -5,7 +5,7 @@
 		<nav class="level">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Sectors') }}</p>
+					<h2 class="heading">{{ $t('Sectors') }}</h2>
 					<span>
 						<svg-icon
 							v-if="projectSummary.sectors.length"
@@ -20,7 +20,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Start Date') }}</p>
+					<h2 class="heading">{{ $t('Start Date') }}</h2>
 					<p class="has-text-weight-bold is-size-5">
 						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
@@ -29,7 +29,7 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('End Date') }}</p>
+					<h2 class="heading">{{ $t('End Date') }}</h2>
 					<p class="has-text-weight-bold is-size-5">
 						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
 					</p>
@@ -38,14 +38,14 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Number of Households') }}</p>
+					<h2 class="heading">{{ $t('Number of Households') }}</h2>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Number of Beneficiaries') }}</p>
+					<h2 class="heading"> {{ $t('Number of Beneficiaries') }}</h2>
 					<p class="has-text-weight-bold is-size-5">
 						{{ projectSummary.beneficiariesReached }}
 					</p>
@@ -54,14 +54,14 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Donors') }}</p>
+					<h2 class="heading">{{ $t('Donors') }}</h2>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</p>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Total Target Beneficiaries') }}</p>
+					<h2 class="heading">{{ $t('Total target beneficiaries') }}</h2>
 					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
 				</div>
 			</div>

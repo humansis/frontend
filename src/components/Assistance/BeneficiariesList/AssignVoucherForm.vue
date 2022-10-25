@@ -4,13 +4,13 @@
 			<div class="level-left">
 				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
-						<p class="heading">{{ $t('Project') }}</p>
+						<h2 class="heading">{{ $t('Project') }}</h2>
 						<p class="subtitle is-5">{{projectName}}</p>
 					</div>
 				</div>
 				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
-						<p class="heading">{{ $t('Assistance') }}</p>
+						<h2 class="heading">{{ $t('Assistance') }}</h2>
 						<p class="subtitle is-5">{{ assistanceName }}</p>
 					</div>
 				</div>
@@ -18,7 +18,7 @@
 			<div class="level-left">
 				<div class="level-item has-text-centered-mobile mb-3">
 					<div>
-						<p class="heading">{{ $t('Beneficiary') }}</p>
+						<h2 class="heading">{{ $t('Beneficiary') }}</h2>
 						<p class="subtitle is-5">{{ beneficiaryName }}</p>
 					</div>
 				</div>
