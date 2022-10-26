@@ -443,6 +443,10 @@ export default {
 			if (this.$refs.selectionCriteria) {
 				this.$refs.selectionCriteria.clearComponent();
 			}
+
+			if (this.$refs.distributedCommodity) {
+				this.$refs.distributedCommodity.clearComponent();
+			}
 			// TODO Reset all components in AddAssistance on targetSelected change
 		},
 
