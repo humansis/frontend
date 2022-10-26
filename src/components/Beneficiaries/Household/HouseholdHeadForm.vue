@@ -110,7 +110,6 @@
 						- {{ $t('Optional') }}
 					</span>
 				</h4>
-				<!-- primary ID-->
 				<b-tabs>
 					<b-tab-item label="Primary">
 						<b-field
@@ -127,7 +126,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('primaryId.idType', true)"
-								@select="validate('primaryId.idType'); onIdChange($event)"
+								@input="validate('primaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -141,7 +140,7 @@
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Secondary" :disabled="!formModel.primaryId.idNumber">
+					<b-tab-item label="Secondary" :disabled="isSecondaryIdTabDisabled">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('secondaryId.idType', true)"
@@ -156,7 +155,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('secondaryId.idType', true)"
-								@select="validate('secondaryId.idType'); onIdChange($event)"
+								@input="validate('secondaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -170,7 +169,7 @@
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Tertiary" :disabled="!formModel.secondaryId.idNumber">
+					<b-tab-item label="Tertiary" :disabled="isTertiaryIdTabDisabled">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('tertiaryId.idType', true)"
@@ -185,7 +184,7 @@
 								:loading="idTypeLoading"
 								:options="options.idType"
 								:class="validateMultiselect('tertiaryId.idType', true)"
-								@select="validate('tertiaryId.idType'); onIdChange($event)"
+								@input="validate('tertiaryId.idType'); onIdChange($event)"
 							/>
 						</b-field>
 						<b-field
@@ -374,17 +373,6 @@ import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 import calendarHelper from "@/mixins/calendarHelper";
 
-/**
- * Custom validations
- */
-let isPrimaryIdValid = false;
-let isSecondaryIdValid = false;
-let isTertiaryIdValid = false;
-
-const checkPrimaryId = () => isPrimaryIdValid;
-const checkSecondaryId = () => isSecondaryIdValid;
-const checkTertiaryId = () => isTertiaryIdValid;
-
 export default {
 	name: "HouseholdHeadForm",
 
@@ -421,19 +409,28 @@ export default {
 				dateOfBirth: { required },
 			},
 			primaryId: {
-				idType: { required: requiredIf((form) => form.idNumber), checkPrimaryId },
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isPrimaryIdValid; },
+				},
 				idNumber: {
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
 			},
 			secondaryId: {
-				idType: { required: requiredIf((form) => form.idNumber), checkSecondaryId },
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isSecondaryIdValid; },
+				},
 				idNumber: {
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
 			},
 			tertiaryId: {
-				idType: { required: requiredIf((form) => form.idNumber), checkTertiaryId },
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isTertiaryIdValid; },
+				},
 				idNumber: {
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
@@ -444,10 +441,13 @@ export default {
 
 	data() {
 		return {
+			loadingComponent: null,
+			isPrimaryIdValid: true,
+			isSecondaryIdValid: true,
+			isTertiaryIdValid: true,
 			primaryIdValidationMessage: null,
 			secondaryIdValidationMessage: null,
 			tertiaryIdValidationMessage: null,
-			loadingComponent: null,
 			formModel: {
 				beneficiaryId: null,
 				nameLocal: {
@@ -465,17 +465,17 @@ export default {
 					dateOfBirth: null,
 				},
 				primaryId: {
-					idType: "",
+					idType: null,
 					idNumber: "",
 					priority: 1,
 				},
 				secondaryId: {
-					idType: "",
+					idType: null,
 					idNumber: "",
 					priority: 2,
 				},
 				tertiaryId: {
-					idType: "",
+					idType: null,
 					idNumber: "",
 					priority: 3,
 				},
@@ -540,6 +540,17 @@ export default {
 		await this.map();
 	},
 
+	computed: {
+		isSecondaryIdTabDisabled() {
+			return !this.formModel.primaryId.idNumber || !this.formModel.primaryId.idType;
+		},
+
+		isTertiaryIdTabDisabled() {
+			return this.isSecondaryIdTabDisabled
+				|| (!this.formModel.secondaryId.idNumber || !this.formModel.secondaryId.idType);
+		},
+	},
+
 	methods: {
 		async map() {
 			if (this.isEditing) {
@@ -583,29 +594,26 @@ export default {
 			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
 
 			if (primaryCardId) {
-				isPrimaryIdValid = primaryCardId
-					&& ((primaryCardId.idType && primaryCardId.idNumber)
-					|| (!primaryCardId.idType && !primaryCardId.idNumber));
+				this.isPrimaryIdValid = (primaryCardId.idType && primaryCardId.idNumber)
+					|| (!primaryCardId.idType && !primaryCardId.idNumber);
 			}
 
 			const secondaryCardId = nationalIds[1]
 				? await this.getNationalIdCard(nationalIds[1])
-				: { idNumber: "", idType: "" };
+				: { idNumber: "", idType: null };
 
 			if (secondaryCardId) {
-				isSecondaryIdValid = secondaryCardId
-					&& ((secondaryCardId.idType && secondaryCardId.idNumber)
-					|| (!secondaryCardId.idType && !secondaryCardId.idNumber));
+				this.isSecondaryIdValid = (secondaryCardId.idType && secondaryCardId.idNumber)
+					|| (!secondaryCardId.idType && !secondaryCardId.idNumber);
 			}
 
 			const tertiaryCardId = nationalIds[2]
 				? await this.getNationalIdCard(nationalIds[2])
-				: { idNumber: "", idType: "" };
+				: { idNumber: "", idType: null };
 
 			if (tertiaryCardId) {
-				isTertiaryIdValid = tertiaryCardId
-					&& ((tertiaryCardId.idType && tertiaryCardId.idNumber)
-					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber));
+				this.isTertiaryIdValid = (tertiaryCardId.idType && tertiaryCardId.idNumber)
+					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber);
 			}
 
 			this.formModel = {
@@ -734,32 +742,28 @@ export default {
 			this.referralTypeLoading = false;
 		},
 
-		onIdChange(val) {
-			isPrimaryIdValid = this.formModel.secondaryId.idType?.code !== val.code
-				&& this.formModel.tertiaryId.idType?.code !== val.code;
+		onIdChange() {
+			const primaryIdCode = this.formModel.primaryId.idType?.code;
+			const secondaryIdCode = this.formModel.secondaryId.idType?.code;
+			const tertiaryIdCode = this.formModel.tertiaryId.idType?.code;
 
-			isSecondaryIdValid = this.formModel.primaryId.idType?.code !== val.code
-				&& this.formModel.tertiaryId.idType?.code !== val.code;
+			const isPrimaryEqualsSecondary = primaryIdCode === secondaryIdCode;
+			const isSecondaryEqualsTertiary = secondaryIdCode === tertiaryIdCode;
+			const isPrimaryEqualsTertiary = primaryIdCode === tertiaryIdCode;
 
-			isTertiaryIdValid = this.formModel.primaryId.idType?.code !== val.code
-				&& this.formModel.secondaryId.idType?.code !== val.code;
+			this.isPrimaryIdValid = (this.isSecondaryIdTabDisabled || !isPrimaryEqualsSecondary)
+				&& (this.isTertiaryIdTabDisabled || !isPrimaryEqualsTertiary);
+			this.primaryIdValidationMessage = this.isPrimaryIdValid ? null : this.$t("Primary ID cannot be the same as the secondary or tertiary ID");
 
-			if (isPrimaryIdValid) {
-				this.primaryIdValidationMessage = null;
-			} else {
-				this.primaryIdValidationMessage = "Primary ID cannot be the same as the secondary or tertiary ID";
+			if (!this.isSecondaryIdTabDisabled) {
+				this.isSecondaryIdValid = !isPrimaryEqualsSecondary
+					&& (this.isTertiaryIdTabDisabled || !isSecondaryEqualsTertiary);
+				this.secondaryIdValidationMessage = this.isSecondaryIdValid ? null : this.$t("Secondary ID cannot be the same as the primary or tertiary ID");
 			}
 
-			if (isSecondaryIdValid) {
-				this.secondaryIdValidationMessage = null;
-			} else {
-				this.secondaryIdValidationMessage = "Secondary ID cannot be the same as the primary or tertiary ID";
-			}
-
-			if (isTertiaryIdValid) {
-				this.tertiaryIdValidationMessage = null;
-			} else {
-				this.tertiaryIdValidationMessage = "Tertiary ID cannot be the same as the primary or secondary ID";
+			if (!this.isTertiaryIdTabDisabled) {
+				this.isTertiaryIdValid = !isPrimaryEqualsTertiary && !isSecondaryEqualsTertiary;
+				this.tertiaryIdValidationMessage = this.isTertiaryIdValid ? null : this.$t("Tertiary ID cannot be the same as the primary or secondary ID");
 			}
 		},
 
