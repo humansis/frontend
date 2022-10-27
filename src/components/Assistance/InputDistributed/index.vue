@@ -248,7 +248,10 @@ export default {
 	methods: {
 		async submit() {
 			this.$v.$touch();
-			this.$refs.idTypeSelect.onSubmit();
+
+			if (this.deduplication) {
+				this.$refs.idTypeSelect.onSubmit();
+			}
 
 			if (this.$v.$invalid) { return; }
 
