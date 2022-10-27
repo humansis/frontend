@@ -18,8 +18,7 @@
 			ref="table"
 			has-reset-sort
 			has-search
-			:default-sort-direction="table.sortDirection"
-			:default-sort-key="table.sortColumn"
+			default-sort-key="dateDistribution"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
