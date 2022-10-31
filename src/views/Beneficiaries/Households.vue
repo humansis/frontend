@@ -263,7 +263,7 @@ export default {
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
 					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
-					{ key: "idNumber", label: "ID Number", width: "30", sortKey: "nationalId" },
+					{ key: "idNumbers", label: "ID Numbers", width: "30", sortKey: "nationalId" },
 					{ key: "projects", label: "Projects", width: "30" },
 					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
 				],
@@ -450,28 +450,39 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			const nationalIdIds = [];
+			const allNationalIdIds = [];
 			await this.table.data.forEach(async (item, key) => {
 				const {
-					nationalId,
+					nationalIds,
 				} = await this
 					.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
 						.find((vulnerability) => vulnerability === code));
-				this.table.data[key].nationalId = nationalId;
+				this.table.data[key].nationalIds = nationalIds;
 				this.table.data[key].supportDateReceived = item
 					.supportDateReceived ? new Date(item.supportDateReceived) : null;
-				nationalIdIds.push(nationalId);
+				allNationalIdIds.push(...nationalIds);
 			});
 			this.table.progress += 5;
-			this.getNationalIds(nationalIdIds)
+			this.getNationalIds(allNationalIdIds)
 				.then((nationalIdResult) => {
 					this.table.progress += 5;
 					this.table.data.forEach((item, key) => {
-						this.table.data[key]
-							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "None");
+						let idsText = "";
+						if (item.nationalIds) {
+							item.nationalIds.forEach((nationalId, index) => {
+								if (index !== 0) {
+									idsText += "<br />";
+								}
+								const idEntity = nationalIdResult.find((idItem) => idItem.id === nationalId);
+								if (idEntity) {
+									idsText += `${idEntity.type}: <b>${idEntity.number}</b>`;
+								}
+							});
+						}
+						this.table.data[key].idNumbers = idsText || this.$t("None");
 					});
 				});
 		},
@@ -583,7 +594,7 @@ export default {
 			if (!beneficiaries?.length) return "";
 			this.table.data[tableIndex].loading = true;
 			const result = {
-				nationalId: "",
+				nationalIds: [],
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
@@ -595,8 +606,8 @@ export default {
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
 				);
-				const [nationalId] = beneficiary.nationalIds;
-				result.nationalId = nationalId;
+				const { nationalIds } = beneficiary;
+				result.nationalIds = nationalIds;
 			}
 
 			this.table.data[tableIndex].loading = false;
