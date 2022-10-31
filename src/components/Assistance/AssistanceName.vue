@@ -87,8 +87,11 @@ export default {
 			margin-left: 10px;
 			margin-top: 5px;
 		}
-		.has-addons {
-			height: 2.5em;
+		.control {
+			.help.counter {
+				position: absolute;
+				right: 0;
+			}
 		}
 	}
 </style>
