@@ -325,7 +325,7 @@ export default {
 		async mapAssistance(assistance) {
 			let round;
 
-			if (assistance.round) {
+			if (assistance?.round) {
 				if (assistance.round < 99) {
 					round = { code: assistance.round + 1, value: assistance.round + 1 };
 				} else {
@@ -334,32 +334,32 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
-				name: assistance.name,
+				name: assistance?.name,
 				adm1Id: assistance?.adm1Id,
 				adm2Id: assistance?.adm2Id,
 				adm3Id: assistance?.adm3Id,
 				adm4Id: assistance?.adm4Id,
-				dateOfAssistance: new Date(assistance.dateDistribution),
-				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
-				assistanceType: assistance.type,
-				sector: assistance.sector,
-				subsector: assistance.subsector,
-				targetType: assistance.target,
-				note: assistance.note,
+				dateOfAssistance: new Date(assistance?.dateDistribution),
+				dateExpiration: assistance?.dateExpiration ? new Date(assistance.dateExpiration) : null,
+				assistanceType: assistance?.type,
+				sector: assistance?.sector,
+				subsector: assistance?.subsector,
+				targetType: assistance?.target,
+				note: assistance?.note,
 				round,
 			};
 
-			const scoringType = assistance.scoringBlueprint === null
+			const scoringType = assistance?.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
 				: this.scoringTypes.filter(({ archived }) => !archived)
-					.find(({ id }) => id === assistance.scoringBlueprint?.id);
+					.find(({ id }) => id === assistance?.scoringBlueprint?.id);
 
-			if (assistance.scoringBlueprint && !scoringType) {
+			if (assistance?.scoringBlueprint && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
 			this.$refs.selectionCriteria.scoringType = scoringType || null;
-			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+			this.$refs.selectionCriteria.minimumSelectionScore = assistance?.threshold;
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
@@ -373,28 +373,28 @@ export default {
 					description: item.description,
 					division: item.division,
 					modality,
-					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
-					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
-					cashbackLimit: assistance.cashbackLimit,
+					remoteDistributionAllowed: assistance?.remoteDistributionAllowed,
+					allowedProductCategoryTypes: assistance?.allowedProductCategoryTypes,
+					cashbackLimit: assistance?.cashbackLimit,
 				});
 			});
 
 			this.componentsData.distributedCommodity = preparedCommodities;
 
 			this.componentsData.activityDetails = {
-				activityDescription: assistance.description || "",
-				householdsTargeted: assistance.householdsTargeted || 0,
-				individualsTargeted: assistance.individualsTargeted || 0,
+				activityDescription: assistance?.description || "",
+				householdsTargeted: assistance?.householdsTargeted || 0,
+				individualsTargeted: assistance?.individualsTargeted || 0,
 			};
 
-			this.targetType = assistance.target;
-			this.assistanceBody.name = assistance.name;
-			this.assistanceBody.locationId = assistance.locationId;
-			this.assistanceBody.target = assistance.target;
-			this.assistanceBody.type = assistance.type;
-			this.assistanceBody.sector = assistance.sector;
-			this.assistanceBody.subsector = assistance.subsector;
-			this.assistanceBody.note = assistance.note;
+			this.targetType = assistance?.target;
+			this.assistanceBody.name = assistance?.name;
+			this.assistanceBody.locationId = assistance?.locationId;
+			this.assistanceBody.target = assistance?.target;
+			this.assistanceBody.type = assistance?.type;
+			this.assistanceBody.sector = assistance?.sector;
+			this.assistanceBody.subsector = assistance?.subsector;
+			this.assistanceBody.note = assistance?.note;
 			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
