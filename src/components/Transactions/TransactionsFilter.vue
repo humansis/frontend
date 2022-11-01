@@ -90,7 +90,7 @@ export default {
 
 	methods: {
 		filterChanged() {
-			this.$emit("filtersChanged", this.selectedFiltersOptions);
+			this.$emit("filtersChanged", { filters: this.selectedFiltersOptions });
 		},
 	},
 };

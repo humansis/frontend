@@ -299,6 +299,10 @@ export default {
 		};
 	},
 
+	watch: {
+		$route: "fetchData",
+	},
+
 	created() {
 		this.setGridFilters("households");
 		this.fetchData();
@@ -709,24 +713,6 @@ export default {
 			this.table.checkedRows = [];
 		},
 
-		async onFiltersChange({ filters, locationsFilter }) {
-			this.locationsFilter = locationsFilter;
-
-			Object.keys(filters).forEach((key) => {
-				if (Array.isArray(filters[key])) {
-					this.filters[key] = [];
-					filters[key].forEach((value) => {
-						this.filters[key].push(value);
-					});
-				} else {
-					this.filters[key] = filters[key];
-				}
-			});
-
-			this.table.currentPage = 1;
-			await this.fetchData();
-		},
-
 		closeHouseholdDetailModal() {
 			this.householdDetailModal.isOpened = false;
 		},
@@ -752,7 +738,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.householdsFilter.eraseFilters();
+			this.$refs.householdsFilter.resetFilters();
 		},
 
 		resetTableSort() {

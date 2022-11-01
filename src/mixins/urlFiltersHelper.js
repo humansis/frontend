@@ -81,72 +81,22 @@ export default {
 			});
 		},
 
-		async setDefaultLocationsFilter() {
-			if (this.defaultFilters.adm1?.length) {
-				this.selectedFiltersOptions.adm1 = this.filtersOptions
-					.adm1.data
-					.find((item) => item.locationId === this.defaultFilters.adm1[0]);
-			}
+		async onFiltersChange({ filters, locationsFilter }) {
+			this.locationsFilter = locationsFilter;
 
-			if (this.defaultFilters.adm2?.length) {
-				this.selectedFiltersOptions.adm2 = this.filtersOptions
-					.adm2.data
-					.find((item) => item.locationId === this.defaultFilters.adm2[0]);
-			}
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
+					this.filters[key] = [];
+					filters[key].forEach((value) => {
+						this.filters[key].push(value);
+					});
+				} else {
+					this.filters[key] = filters[key];
+				}
+			});
 
-			if (this.defaultFilters.adm3?.length) {
-				this.selectedFiltersOptions.adm3 = this.filtersOptions
-					.adm3.data
-					.find((item) => item.locationId === this.defaultFilters.adm3[0]);
-			}
-
-			if (this.defaultFilters.adm4?.length) {
-				this.selectedFiltersOptions.adm4 = this.filtersOptions
-					.adm4.data
-					.find((item) => item.locationId === this.defaultFilters.adm4[0]);
-			}
-		},
-
-		clearedLocationFilters(filters, filterName) {
-			const filtersCopy = { ...filters };
-
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm4":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					break;
-				default: break;
-			}
-
-			return filtersCopy;
+			this.table.currentPage = 1;
+			await this.fetchData();
 		},
 	},
 };

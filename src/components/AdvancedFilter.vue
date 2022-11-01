@@ -106,6 +106,9 @@ export default {
 	},
 
 	methods: {
+		customLabel({ name, subLabel }) {
+			return `${name} – ${subLabel}`;
+		},
 		filterChanged(filterName) {
 			const filters = {};
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {
@@ -113,16 +116,18 @@ export default {
 				if (Array.isArray(this.selectedFiltersOptions[key])) {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
-						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
-						filters[filterKey].push(value[select]);
+						const select = this.filtersOptions[key]?.trackBy || "code";
+						if (filters[filterKey] && value && value[select]) {
+							filters[filterKey].push(value[select]);
+						}
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					if (this.filtersOptions[key].type === "date" || this.filtersOptions[key].type === "datetime") {
+					if (this.filtersOptions[key]?.type === "date" || this.filtersOptions[key]?.type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
-					} else if (this.filtersOptions[key].type === "text") {
+					} else if (this.filtersOptions[key]?.type === "text") {
 						filters[filterKey] = this.selectedFiltersOptions[key];
 					} else {
-						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
+						const select = this.filtersOptions[key]?.trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 					}
 				}
@@ -146,3 +151,10 @@ export default {
 	},
 };
 </script>
+
+<style>
+.option__subtitle--block {
+	display: block;
+	font-size: 0.8em;
+}
+</style>

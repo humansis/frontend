@@ -231,41 +231,6 @@ export default {
 				});
 		},
 
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				});
-		},
-
-		async fetchDistricts() {
-			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2()
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				});
-		},
-
-		async fetchCommunes() {
-			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3()
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				});
-		},
-
-		async fetchVillages() {
-			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4()
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				});
-		},
-
 		async fetchBeneficiaryTypes() {
 			await BeneficiariesService.getBeneficiaryTypes()
 				.then(({ data }) => {

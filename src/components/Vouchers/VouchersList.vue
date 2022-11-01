@@ -231,22 +231,6 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		async onFiltersChange(filters) {
-			Object.keys(filters).forEach((key) => {
-				if (Array.isArray(filters[key])) {
-					this.filters[key] = [];
-					filters[key].forEach((value) => {
-						this.filters[key].push(value);
-					});
-				} else {
-					this.filters[key] = filters[key];
-				}
-			});
-
-			this.table.currentPage = 1;
-			await this.fetchData();
-		},
-
 		getStatus(code) {
 			return getBookletStatus(code).value;
 		},
@@ -321,7 +305,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.vouchersFilter.eraseFilters();
+			this.$refs.vouchersFilter.resetFilters();
 		},
 
 		resetTableSort() {
