@@ -1,5 +1,5 @@
 <template>
-	<card-component>
+	<card-component class="card-select-overlap">
 		<b-progress :value="100" />
 		<CustomSteps
 			v-model="activeStep"

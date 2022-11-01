@@ -3,7 +3,7 @@
 		<b-collapse
 			v-for="(collapse, index) of collapses"
 			ref="members"
-			class="card"
+			class="card card-select-overlap "
 			animation="slide"
 			:key="index"
 			:open="isOpen === index"

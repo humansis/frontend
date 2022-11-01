@@ -2,6 +2,10 @@
   margin-bottom: $default-padding;
 }
 
+.card-select-overlap {
+  overflow: visible;
+}
+
 .card {
   &.has-table {
     overflow: visible;
