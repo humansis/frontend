@@ -13,6 +13,11 @@ export default {
 
 		validateMsg(field, message = i18n.t("Required")) {
 			const validation = this.getValidation(field);
+
+			if (Object.keys(validation).includes("maxLength")
+				&& validation.$error && !validation.maxLength) {
+				return i18n.t("Too long! (max. 255 characters)");
+			}
 			return validation.$error ? i18n.t(message) : "";
 		},
 
@@ -48,7 +53,6 @@ export default {
 		validationPropertyLevel(fields) {
 			let result;
 			const fieldsLevel = fields.split(".");
-
 			if (!this.$v.formModel) {
 				return this.$v[fieldsLevel[0]];
 			}

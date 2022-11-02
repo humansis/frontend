@@ -364,7 +364,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
@@ -414,6 +414,7 @@ export default {
 					function() { return this.isPrimaryIdValid; },
 				},
 				idNumber: {
+					maxLength: maxLength(255),
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
 			},
@@ -423,6 +424,7 @@ export default {
 					function() { return this.isSecondaryIdValid; },
 				},
 				idNumber: {
+					maxLength: maxLength(255),
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
 			},
@@ -432,6 +434,7 @@ export default {
 					function() { return this.isTertiaryIdValid; },
 				},
 				idNumber: {
+					maxLength: maxLength(255),
 					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
 				},
 			},
