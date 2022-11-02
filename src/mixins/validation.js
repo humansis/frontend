@@ -53,6 +53,7 @@ export default {
 		validationPropertyLevel(fields) {
 			let result;
 			const fieldsLevel = fields.split(".");
+
 			if (!this.$v.formModel) {
 				return this.$v[fieldsLevel[0]];
 			}
