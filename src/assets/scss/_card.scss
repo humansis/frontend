@@ -2,14 +2,13 @@
   margin-bottom: $default-padding;
 }
 
-.card-select-overlap {
-  overflow: visible;
-}
-
 .card {
+  &.has-multiselect,
   &.has-table {
     overflow: visible;
+  }
 
+  &.has-table {
     .card-content {
       padding: 0;
     }
