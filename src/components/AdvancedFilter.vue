@@ -19,6 +19,12 @@
 						:closeOnSelect="!options.multiple"
 						@input="filterChanged(filter)"
 					>
+						<template slot="option" slot-scope="props">
+							<span class="option__title">{{ props.option.name }} </span>
+							<span class="option__small" v-if="props.option.parentLocationName">
+								({{ props.option.parentLocationName }})
+							</span>
+						</template>
 						<span slot="noOptions">{{ $t("List is empty")}}</span>
 					</MultiSelect>
 					<b-field v-else-if="options.type === 'text'">
@@ -153,6 +159,9 @@ export default {
 </script>
 
 <style>
+.option__small {
+	font-size: 0.85em;
+}
 .option__subtitle--block {
 	display: block;
 	font-size: 0.8em;
