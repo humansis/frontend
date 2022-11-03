@@ -207,7 +207,9 @@ export const idsToUri = (ids, param = null) => {
 	let query = "";
 
 	ids.forEach((item) => {
-		if (param) {
+		if (Array.isArray(item)) {
+			query += idsToUri(item, param);
+		} else if (param) {
 			if (Array.isArray(item[param])) {
 				query += item[param].length ? `&filter[id][]=${item[param]}` : "";
 			} else {

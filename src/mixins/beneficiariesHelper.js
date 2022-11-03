@@ -154,10 +154,41 @@ export default {
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? this.$t("None")
-					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", "None");
+					: this.prepareNationalIdsValuesForTable(item.nationalIds,
+						nationalIds);
 			});
 			this.table.progress += 15;
+		},
+
+		prepareNationalIdsValuesForTable(ids, entities) {
+			const nationalIds = this.prepareEntityForTable(ids,
+				entities, "number", "None");
+			const nationalType = this.prepareEntityForTable(ids,
+				entities, "type", "None");
+
+			let result = "";
+			if (Array.isArray(nationalIds)) {
+				const primary = nationalIds[0] ? `${this.$t(nationalType[0])} : <b>${nationalIds[0]}</b>` : null;
+				const secondary = nationalIds[1] ? `${this.$t(nationalType[1])} : <b>${nationalIds[1]}</b>` : null;
+				const tertiary = nationalIds[2] ? `${this.$t(nationalType[2])} : <b>${nationalIds[2]}</b>` : null;
+
+				switch (nationalIds.length) {
+					case 1:
+						result = primary;
+						break;
+					case 2:
+						result = `${primary} <br> ${secondary}`;
+						break;
+					case 3:
+						result = `${primary} <br> ${secondary} <br> ${tertiary}`;
+						break;
+					default:
+						break;
+				}
+			} else {
+				result = nationalIds;
+			}
+			return result;
 		},
 
 		prepareGender(gender) {

@@ -680,8 +680,8 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.preparePhoneForTable(phoneIds);
-					this.prepareNationalIdForTable(nationalIdIds);
+					await this.preparePhoneForTable(phoneIds);
+					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
 			if (this.isAssistanceDetail) {
