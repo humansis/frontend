@@ -153,24 +153,31 @@ export default {
 				const admNum = parseInt(filterName.slice(-1), 10);
 				if (!this.selectedFiltersOptions[filterName]) {
 					for (let i = admNum; i <= 4; i += 1) {
+						// Return all original ADMS to select options
 						this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
 					}
 					return;
 				}
 
+				// Filter children options according to parent(s)
 				for (let i = admNum; i <= 3; i += 1) {
-					if (this.selectedFiltersOptions[`adm${i}`]) {
+					const selectedAdm = this.selectedFiltersOptions[`adm${i}`];
+					const admFilterSelected = (!Array.isArray(selectedAdm) && selectedAdm !== null)
+						|| (Array.isArray(selectedAdm) && selectedAdm.length);
+
+					if (admFilterSelected) {
 						// Copy array so it is not affected by .filter function
 						const filtersCopy = this.filtersOptionsCopy[`adm${i + 1}`].data.slice(0);
 						this.filtersOptions[`adm${i + 1}`].data = filtersCopy.filter((adm) => (
-							adm.parentId === this.selectedFiltersOptions[`adm${i}`].id
+							adm.parentId === selectedAdm.id
 						));
 
 						for (let j = i + 1; j <= 3; j += 1) {
 							const filtersCopy2 = this.filtersOptionsCopy[`adm${j + 1}`].data.slice(0);
 							this.filtersOptions[`adm${j + 1}`].data = filtersCopy2.filter((adm) => {
 								if (this.filtersOptions[`adm${j}`].data[0]) {
-									return adm.parentId === this.filtersOptions[`adm${j}`].data[0].id;
+									const parentIdsList = this.filtersOptions[`adm${j}`].data.map((item) => item.id);
+									return parentIdsList?.includes(adm.parentId);
 								}
 								return null;
 							});
