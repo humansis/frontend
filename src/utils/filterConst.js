@@ -1,5 +1,8 @@
 const DEFAULT_FILTERS = {
 	invoicing: null,
+	dateFrom: null,
+	dateTo: null,
+	gender: null,
 	locations: [],
 	projects: [],
 	assistances: [],

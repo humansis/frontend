@@ -140,6 +140,8 @@ export default {
 			});
 
 			this.$emit("filtersChanged", filters, filterName);
+			// Component does not re-render selectedFiltersOptions[filter], need to force update:
+			this.$forceUpdate();
 		},
 
 		filterChangeDelay(filter) {
