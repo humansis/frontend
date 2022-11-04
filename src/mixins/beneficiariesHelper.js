@@ -164,23 +164,12 @@ export default {
 			const nationalType = this.prepareEntityForTable(ids, entities, "type", "None");
 
 			let result = "";
-			const primary = nationalIds[0] ? `${this.$t(nationalType[0])} : <b>${nationalIds[0]}</b>` : null;
-			const secondary = nationalIds[1] ? `${this.$t(nationalType[1])} : <b>${nationalIds[1]}</b>` : null;
-			const tertiary = nationalIds[2] ? `${this.$t(nationalType[2])} : <b>${nationalIds[2]}</b>` : null;
+			const primary = nationalIds[0] ? `${this.$t(nationalType[0])} : <b>${nationalIds[0]}</b>` : "";
+			const secondary = nationalIds[1] ? `${this.$t(nationalType[1])} : <b>${nationalIds[1]}</b>` : "";
+			const tertiary = nationalIds[2] ? `${this.$t(nationalType[2])} : <b>${nationalIds[2]}</b>` : "";
 
-			switch (nationalIds.length) {
-				case 1:
-					result = primary;
-					break;
-				case 2:
-					result = `${primary} <br> ${secondary}`;
-					break;
-				case 3:
-					result = `${primary} <br> ${secondary} <br> ${tertiary}`;
-					break;
-				default:
-					break;
-			}
+			result = `${primary} <br> ${secondary} <br> ${tertiary}`;
+
 			return result;
 		},
 
