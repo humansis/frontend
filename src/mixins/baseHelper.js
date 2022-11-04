@@ -10,15 +10,20 @@ export default {
 				ids.forEach((id) => {
 					const entity = entities.find((item) => item.id === id);
 
-					if (returnedParam) {
-						finalEntity.push(entity[returnedParam]);
-					} else {
-						finalEntity.push(entity);
+					if (entity) {
+						if (returnedParam) {
+							finalEntity.push(entity[returnedParam]);
+						} else {
+							finalEntity.push(entity);
+						}
 					}
 				});
 			} else {
 				const entity = entities.find((item) => item.id === ids);
-				if (returnedParam) return entity[returnedParam];
+
+				if (entity) {
+					if (returnedParam) return entity[returnedParam];
+				}
 			}
 
 			if (!finalEntity.length) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
