@@ -37,7 +37,7 @@
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t(distributionOrActivity) }} {{ $t('Progress') }}:
+					{{ $t(distributionOrActivity) }}:
 					<strong>{{ assistanceProgress }} %</strong>
 				</div>
 			</div>
@@ -252,8 +252,8 @@ export default {
 		},
 
 		distributionOrActivity() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution";
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution Progress";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity Progress";
 			return "";
 		},
 
