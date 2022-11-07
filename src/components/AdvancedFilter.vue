@@ -162,8 +162,4 @@ export default {
 .option__small {
 	font-size: 0.85em;
 }
-.option__subtitle--block {
-	display: block;
-	font-size: 0.8em;
-}
 </style>
