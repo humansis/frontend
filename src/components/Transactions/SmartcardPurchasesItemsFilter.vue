@@ -117,6 +117,12 @@ export default {
 	},
 
 	async created() {
+		// We need to set default filters first to avoid Invalid prop error for dateFrom & dateTo
+		await Promise.all([
+			this.setDefaultFilters(),
+			this.setDefaultLocationsFilter(),
+		]);
+
 		await Promise.all([
 			this.setLocationNames(),
 			this.fetchProjects(),
@@ -133,6 +139,7 @@ export default {
 			this.filtersOptionsCopy = copyObject(this.filtersOptions);
 		});
 
+		// We need to set default filters second time in order to update filters
 		await Promise.all([
 			this.setDefaultFilters(),
 			this.setDefaultLocationsFilter(),
@@ -162,7 +169,7 @@ export default {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}
 
-			if (this.defaultFilters.dateFrom) {
+			if (this.defaultFilters.dateTo) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
 			}
 		},

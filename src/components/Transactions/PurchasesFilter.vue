@@ -185,7 +185,7 @@ export default {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}
 
-			if (this.defaultFilters.dateFrom) {
+			if (this.defaultFilters.dateTo) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
 			}
 		},

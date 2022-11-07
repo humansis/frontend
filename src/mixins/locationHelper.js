@@ -153,8 +153,9 @@ export default {
 				const admNum = parseInt(filterName.slice(-1), 10);
 				if (!this.selectedFiltersOptions[filterName]) {
 					for (let i = admNum; i <= 4; i += 1) {
-						// Return all original ADMS to select options
-						this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+						if (this.filtersOptions[`adm${i}`] && this.filtersOptionsCopy[`adm${i}`]) {
+							this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+						}
 					}
 					return;
 				}
