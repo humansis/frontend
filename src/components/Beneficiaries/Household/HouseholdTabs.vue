@@ -1,5 +1,5 @@
 <template>
-	<card-component>
+	<card-component class="has-multiselect">
 		<b-progress :value="100" />
 		<CustomSteps
 			v-model="activeStep"
