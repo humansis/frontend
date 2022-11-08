@@ -40,6 +40,8 @@ const BUSINESS_GRANT = "Business Grant";
 const QR_CODE_VOUCHER = "QR Code Voucher";
 const PAPER_VOUCHER = "Paper Voucher";
 
+const CASHBACK = "Cashback";
+
 // Distribution types
 const PER_HOUSEHOLD = "Per Household";
 const PER_MEMBER_CODE = "Per Household Member";
@@ -160,6 +162,7 @@ export default {
 		BUSINESS_GRANT,
 		QR_CODE_VOUCHER,
 		PAPER_VOUCHER,
+		CASHBACK,
 		DISTRIBUTION: {
 			PER_HOUSEHOLD,
 			PER_MEMBER_CODE,
