@@ -33,6 +33,7 @@
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
 					:target-type="targetType"
+					:date-of-assistance="assistanceBody.dateDistribution"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
@@ -343,7 +344,6 @@ export default {
 				adm3Id: assistance?.adm3Id,
 				adm4Id: assistance?.adm4Id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
-				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
 				sector: assistance.sector,
 				subsector: assistance.subsector,
@@ -484,7 +484,6 @@ export default {
 				sector,
 				subsector,
 				targetType,
-				dateExpiration,
 				note,
 				round,
 			} = data;
@@ -494,9 +493,6 @@ export default {
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
 					: new Date(this.project.startDate),
-				dateExpiration: this.isDateValid(dateExpiration)
-					? dateExpiration.toISOString()
-					: new Date(this.project.endDate),
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -524,6 +520,9 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
+				dateExpiration: this.isDateValid(commodities?.[0]?.dateExpiration)
+					? commodities[0].dateExpiration.toISOString()
+					: new Date(this.project.endDate),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,
