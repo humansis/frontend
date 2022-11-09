@@ -2,14 +2,27 @@ import i18n from "@/plugins/i18n";
 
 export default {
 	methods: {
-		prepareEntityForTable(id, entities, returnedParam = null, emptyValue = "") {
+		prepareEntityForTable(ids, entities, returnedParam = null, emptyValue = "") {
 			if (!entities?.length) return emptyValue;
-			const entity = entities.find((item) => item.id === id);
+			const finalEntity = [];
 
-			if (!entity) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
-			if (returnedParam) return entity[returnedParam];
+			if (Array.isArray((ids))) {
+				ids.forEach((id) => {
+					const entity = entities.find((item) => item.id === id);
 
-			return entity;
+					if (entity) {
+						finalEntity.push(returnedParam ? entity[returnedParam] : entity);
+					}
+				});
+			} else {
+				const entity = entities.find((item) => item.id === ids);
+
+				if (entity && returnedParam) return entity[returnedParam];
+			}
+
+			if (!finalEntity.length) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
+
+			return finalEntity;
 		},
 
 		preparePhonesForTable(phoneIds, phones = null, emptyValue = "") {

@@ -154,10 +154,22 @@ export default {
 			this.table.data.map(async (item, key) => {
 				this.table.data[key].nationalId = !item.nationalIds.length
 					? this.$t("None")
-					: this.prepareEntityForTable(item.nationalIds[0],
-						nationalIds, "number", "None");
+					: this.prepareNationalIdsValuesForTable(item.nationalIds, nationalIds);
 			});
 			this.table.progress += 15;
+		},
+
+		prepareColumnFormatForNationalIds(nationalIds, nationalType) {
+			return nationalIds ? `${this.$t(nationalType)} : <b>${nationalIds}</b><br>` : "";
+		},
+
+		prepareNationalIdsValuesForTable(ids, entities) {
+			const nationalIds = this.prepareEntityForTable(ids, entities, "number", "None");
+			const nationalType = this.prepareEntityForTable(ids, entities, "type", "None");
+
+			return `${this.prepareColumnFormatForNationalIds(nationalIds[0], nationalType[0])}
+					${this.prepareColumnFormatForNationalIds(nationalIds[1], nationalType[1])}
+					${this.prepareColumnFormatForNationalIds(nationalIds[2], nationalType[2])}`;
 		},
 
 		prepareGender(gender) {
