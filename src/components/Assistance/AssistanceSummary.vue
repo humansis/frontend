@@ -243,7 +243,9 @@ export default {
 		},
 
 		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || "";
+			return this.commodity?.[0].code === consts.COMMODITY.SMARTCARD
+				? this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || ""
+				: "N/A";
 		},
 
 		beneficiariesCount() {

@@ -24,6 +24,7 @@
 				:submit-button-label="$t('Create')"
 				:formModel="formModel"
 				:target-type="targetType"
+				:date-of-assistance="dateOfAssistance"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -36,14 +37,24 @@
 			:paginated="false"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.key">
+				<b-table-column
+					v-bind="column"
+					:sortable="column.sortable"
+					:visible="column.visible"
+					:key="column.key"
+				>
 					<template v-slot="props">
 						<span
 							v-if="column.field === 'value' && isPerHouseholdMembers(props.row.division)"
 							v-html="mapDivisionQuantities(props.row.divisionQuantities)"
 						/>
 						<span v-else>
-							{{ props.row[column.field] }}
+							<span v-if="column.field === 'dateExpiration'">
+								{{ formattedDate }}
+							</span>
+							<span v-else>
+								{{ props.row[column.field] }}
+							</span>
 						</span>
 					</template>
 				</b-table-column>
@@ -146,12 +157,13 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "modality" },
-					{ key: "modalityType" },
-					{ key: "unit" },
-					{ key: "value" },
-					{ key: "division", label: "For Each" },
-					{ key: "description" },
+					{ key: "modality", sortable: true, visible: true },
+					{ key: "modalityType", sortable: true, visible: true },
+					{ key: "unit", sortable: true, visible: true },
+					{ key: "value", sortable: true, visible: true },
+					{ key: "division", label: "For Each", sortable: true, visible: true },
+					{ key: "dateExpiration", label: "Expiration Date", sortable: false, visible: false },
+					{ key: "description", sortable: true, visible: true },
 				],
 			},
 		};
@@ -180,6 +192,10 @@ export default {
 			type: String,
 			default: "",
 		},
+		dateOfAssistance: {
+			type: String,
+			required: true,
+		},
 	},
 
 	created() {
@@ -200,6 +216,7 @@ export default {
 					unit,
 					value,
 					description,
+					dateExpiration,
 					division,
 					divisionQuantities,
 					remoteDistributionAllowed,
@@ -210,6 +227,7 @@ export default {
 				modalityType,
 				unit,
 				value,
+				dateExpiration,
 				description: description || "",
 				division: (division === "" || division === null)
 					? null
@@ -232,6 +250,7 @@ export default {
 					currency,
 					value,
 					description,
+					dateExpiration,
 					division,
 					divisionNwsQuantities,
 					divisionNesQuantities,
@@ -244,6 +263,7 @@ export default {
 				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
 				unit: unit || currency?.value,
+				dateExpiration,
 				value: this.isPerHouseholdMembers(division)
 					? 0
 					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
@@ -262,6 +282,15 @@ export default {
 
 		countOfSelectedBeneficiaries() {
 			return this.selectedBeneficiaries;
+		},
+
+		isModalityTypeSmartCard() {
+			return this.table.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
+		},
+
+		formattedDate() {
+			const date = this.table?.data[0]?.dateExpiration;
+			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "";
 		},
 	},
 
@@ -320,6 +349,7 @@ export default {
 		submitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
+			this.table.columns[5].visible = this.isModalityTypeSmartCard;
 			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 
