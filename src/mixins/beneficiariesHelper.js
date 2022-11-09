@@ -159,15 +159,17 @@ export default {
 			this.table.progress += 15;
 		},
 
+		prepareColumnFormatForNationalIds(nationalIds, nationalType) {
+			return nationalIds ? `${this.$t(nationalType)} : <b>${nationalIds}</b><br>` : "";
+		},
+
 		prepareNationalIdsValuesForTable(ids, entities) {
 			const nationalIds = this.prepareEntityForTable(ids, entities, "number", "None");
 			const nationalType = this.prepareEntityForTable(ids, entities, "type", "None");
 
-			const primary = nationalIds[0] ? `${this.$t(nationalType[0])} : <b>${nationalIds[0]}</b>` : "";
-			const secondary = nationalIds[1] ? `${this.$t(nationalType[1])} : <b>${nationalIds[1]}</b>` : "";
-			const tertiary = nationalIds[2] ? `${this.$t(nationalType[2])} : <b>${nationalIds[2]}</b>` : "";
-
-			return `${primary} <br> ${secondary} <br> ${tertiary}`;
+			return `${this.prepareColumnFormatForNationalIds(nationalIds[0], nationalType[0])}
+					${this.prepareColumnFormatForNationalIds(nationalIds[1], nationalType[1])}
+					${this.prepareColumnFormatForNationalIds(nationalIds[2], nationalType[2])}`;
 		},
 
 		prepareGender(gender) {

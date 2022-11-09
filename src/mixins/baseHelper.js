@@ -11,19 +11,13 @@ export default {
 					const entity = entities.find((item) => item.id === id);
 
 					if (entity) {
-						if (returnedParam) {
-							finalEntity.push(entity[returnedParam]);
-						} else {
-							finalEntity.push(entity);
-						}
+						finalEntity.push(returnedParam ? entity[returnedParam] : entity);
 					}
 				});
 			} else {
 				const entity = entities.find((item) => item.id === ids);
 
-				if (entity) {
-					if (returnedParam) return entity[returnedParam];
-				}
+				if (entity && returnedParam) return entity[returnedParam];
 			}
 
 			if (!finalEntity.length) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
