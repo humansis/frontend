@@ -7,11 +7,7 @@ export default {
 			const filters = {};
 			Object.keys(this.filtersOptions).forEach((key) => {
 				const filterKey = this.filtersOptions[key]?.filterKey || key;
-				if (consts.DEFAULT_FILTERS[filterKey] === null) {
-					filters[filterKey] = null;
-				} else {
-					filters[filterKey] = consts.DEFAULT_FILTERS[filterKey] || [];
-				}
+				filters[filterKey] = consts.DEFAULT_FILTERS[filterKey] === null ? null : [];
 			});
 
 			this.selectedFiltersOptions = filters;

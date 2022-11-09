@@ -18,6 +18,7 @@ import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -33,17 +34,17 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencyStatuses: [],
-				referralTypes: [],
-				livelihoods: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
+				projects: consts.DEFAULT_FILTERS.projects,
+				vulnerabilities: consts.DEFAULT_FILTERS.vulnerabilities,
+				gender: consts.DEFAULT_FILTERS.gender,
+				residencyStatuses: consts.DEFAULT_FILTERS.residencyStatuses,
+				referralTypes: consts.DEFAULT_FILTERS.projects.referralTypes,
+				livelihoods: consts.DEFAULT_FILTERS.livelihoods,
+				adm1: consts.DEFAULT_FILTERS.adm1,
+				adm2: consts.DEFAULT_FILTERS.adm2,
+				adm3: consts.DEFAULT_FILTERS.adm3,
+				adm4: consts.DEFAULT_FILTERS.adm4,
+				locations: consts.DEFAULT_FILTERS.locations,
 			}),
 		},
 	},
@@ -214,13 +215,13 @@ export default {
 					residencyStatuses: filters.residencyStatuses,
 					referralTypes: filters.referralTypes,
 					livelihoods: filters.livelihoods,
-					locations: location ? [location] : [],
+					locations: location ? [location] : consts.DEFAULT_FILTERS.locations,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1,
-					adm2: filtersCopy.adm2,
-					adm3: filtersCopy.adm3,
-					adm4: filtersCopy.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.adm1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.adm2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.adm3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.adm4,
 				},
 			});
 		},

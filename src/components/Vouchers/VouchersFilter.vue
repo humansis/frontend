@@ -16,6 +16,7 @@ import currencies from "@/utils/currencies";
 import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "VouchersFilter",
@@ -30,10 +31,10 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				currencies: [],
-				statuses: [],
-				assistances: [],
-				beneficiaries: [],
+				currencies: consts.DEFAULT_FILTERS.currencies,
+				statuses: consts.DEFAULT_FILTERS.statuses,
+				assistances: consts.DEFAULT_FILTERS.assistances,
+				beneficiaries: consts.DEFAULT_FILTERS.beneficiaries,
 			}),
 		},
 	},
@@ -125,6 +126,12 @@ export default {
 				this.selectedFiltersOptions.assistances = this.filtersOptions
 					.assistances.data
 					.filter((item) => this.defaultFilters.distributions.includes(item.id));
+			}
+
+			if (this.defaultFilters.beneficiaries?.length) {
+				this.selectedFiltersOptions.beneficiaries = this.filtersOptions
+					.beneficiaries.data
+					.filter((item) => this.defaultFilters.beneficiaries.includes(item.id));
 			}
 		},
 

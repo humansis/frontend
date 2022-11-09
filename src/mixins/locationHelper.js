@@ -1,6 +1,7 @@
 import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	computed: {
@@ -213,36 +214,36 @@ export default {
 
 			switch (filterName) {
 				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
+					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
+					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
+					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
+					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
+					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
+					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
 					break;
 				case "adm2":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
+					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
+					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
+					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
+					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
+					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
+					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
 					break;
 				case "adm3":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm4 = [];
+					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
+					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
+					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
+					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
+					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
+					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
 					break;
 				case "adm4":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
+					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
+					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
+					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
+					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
+					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
+					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
 					break;
 				default: break;
 			}

@@ -13,6 +13,7 @@ import { Notification } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "ImportsFilter",
@@ -27,8 +28,8 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: [],
-				status: [],
+				projects: consts.DEFAULT_FILTERS.projects,
+				status: consts.DEFAULT_FILTERS.status,
 			}),
 		},
 	},
