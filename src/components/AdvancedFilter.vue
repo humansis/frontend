@@ -20,7 +20,7 @@
 						@input="filterChanged(filter)"
 					>
 						<template slot="option" slot-scope="props">
-							<span class="option__title">{{ props.option.name }} </span>
+							<span class="option__title">{{ props.option[options.label || 'value'] }}</span>
 							<span class="option__small" v-if="props.option.parentLocationName">
 								({{ props.option.parentLocationName }})
 							</span>
