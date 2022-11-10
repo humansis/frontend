@@ -5,7 +5,7 @@
 				v-if="integrityStepActive && status"
 				class="card-content"
 			>
-				<div class="content loading-wrapper">
+				<div class="content loading-ref">
 					<Loading v-if="isCheckingIntegrity" b-loading />
 					<b-progress
 						v-if="totalEntries"
@@ -546,8 +546,5 @@ export default {
 <style scoped>
 table {
 	width: 100%;
-}
-.loading-wrapper {
-	position: relative;
 }
 </style>

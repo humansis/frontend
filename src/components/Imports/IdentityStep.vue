@@ -4,7 +4,7 @@
 			v-if="identityStepActive && status"
 			class="card-content"
 		>
-			<div class="content loading-wrapper">
+			<div class="content loading-ref">
 				<Loading v-if="isCheckingIdentity" b-loading />
 				<b-progress
 					v-if="totalEntries"
@@ -328,9 +328,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.loading-wrapper {
-	position: relative;
-}
-</style>
