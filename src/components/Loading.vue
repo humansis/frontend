@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<b-loading v-if="bLoading" :active="true" :is-full-page="false" :canCancel="true" />
+		<b-loading v-if="bLoading" active :is-full-page="false" :canCancel="true" />
 		<vue-loading v-else :type="type" :size="computeSize" :color="color" />
 	</div>
 </template>
