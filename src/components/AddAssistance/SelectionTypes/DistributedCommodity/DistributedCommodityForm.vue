@@ -320,11 +320,25 @@ export default {
 		},
 
 		cashbackLimitErrorMessage() {
-			return `Required minimum is 1, maximum is ${this.formModel.value}`;
+			return `Required minimum is 1, maximum is ${this.maxCashback}`;
 		},
 
 		CASHBACK() {
 			return consts.COMMODITY.CASHBACK;
+		},
+
+		maxCashback() {
+			let max = this.formModel.value;
+
+			if (this.formModel.divisionNesQuantities) {
+				max = Math.max(...this.formModel.divisionNesQuantities.map((item) => item.value), max);
+			}
+
+			if (this.formModel.divisionNwsQuantities) {
+				max = Math.max(...this.formModel.divisionNwsQuantities.map((item) => item.value), max);
+			}
+
+			return max;
 		},
 
 		showDivisionQuantities() {
@@ -411,7 +425,7 @@ export default {
 				cashbackLimit: {
 					required: requiredIf((form) => form.allowedProductCategoryTypes.includes(this.CASHBACK)),
 					minValue: minValue(1),
-					maxValue: maxValue(this.formModel.value),
+					maxValue: maxValue(this.maxCashback),
 				},
 			},
 		};
@@ -437,7 +451,9 @@ export default {
 
 		checkCashbackLimit() {
 			if (this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)
+				&& this.formModel.value
+			) {
 				this.formModel.cashbackLimit = this.formModel.value;
 			}
 		},
