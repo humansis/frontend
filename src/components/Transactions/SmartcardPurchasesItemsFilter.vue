@@ -174,6 +174,7 @@ export default {
 
 			this.setAdmParents(filterName);
 			this.filterAdmChildren(filterName);
+			this.$refs.advancedFilter.$forceUpdate();
 
 			if (filterName === "project") {
 				this.selectedFiltersOptions.distribution = [];
