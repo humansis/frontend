@@ -270,6 +270,7 @@ export default {
 	data() {
 		return {
 			displayedFields: DEFAULT_DISPLAYED_FIELDS,
+			CASHBACK: consts.COMMODITY.CASHBACK,
 			options: {
 				modalities: [],
 				types: [],
@@ -321,10 +322,6 @@ export default {
 
 		cashbackLimitErrorMessage() {
 			return `Required minimum is 1, maximum is ${this.maxCashback}`;
-		},
-
-		CASHBACK() {
-			return consts.COMMODITY.CASHBACK;
 		},
 
 		maxCashback() {
