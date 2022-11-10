@@ -194,7 +194,7 @@
 			</b-field>
 
 			<b-field
-				v-if="formModel.allowedProductCategoryTypes.includes(this.CASHBACK)"
+				v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
 				:type="validateType('cashbackLimit')"
 				:message="validateMsg('cashbackLimit', this.cashbackLimitErrorMessage)"
 				:label="$t('Cashback Limit')"
@@ -316,7 +316,7 @@ export default {
 			return this.formModel.value >= 1
 				&& this.formModel.cashbackLimit === this.formModel.value
 				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
 		},
 
 		cashbackLimitErrorMessage() {
