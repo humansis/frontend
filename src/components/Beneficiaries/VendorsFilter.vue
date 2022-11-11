@@ -125,6 +125,7 @@ export default {
 
 			this.setAdmParents(filterName);
 			this.filterAdmChildren(filterName);
+			this.$refs.advancedFilter.$forceUpdate();
 
 			this.$emit("filtersChanged", {
 				filters: {
