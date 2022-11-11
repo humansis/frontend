@@ -34,7 +34,7 @@ export default {
 				this.table.searchPhrase = search;
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;
-				this.filters = JSON.parse(filters);
+				this.filters = filters ? JSON.parse(filters) : {};
 
 				if (hasLocationsFilter) {
 					this.locationsFilter = JSON.parse(locationsFilter);
