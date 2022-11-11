@@ -603,12 +603,12 @@ export default {
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
 				this.table.data[tableIndex].givenName = this.prepareName(
-					beneficiary.localFamilyName,
-					beneficiary.enFamilyName,
-				);
-				this.table.data[tableIndex].familyName = this.prepareName(
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
+				);
+				this.table.data[tableIndex].familyName = this.prepareName(
+					beneficiary.localFamilyName,
+					beneficiary.enFamilyName,
 				);
 				const { nationalIds } = beneficiary;
 				result.nationalIds = nationalIds;
