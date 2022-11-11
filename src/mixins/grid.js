@@ -58,8 +58,7 @@ export default {
 
 		onSearch() {
 			this.table.currentPage = 1;
-			// This will trigger this.fetchData()
-			this.setGridFiltersToUrl("households");
+			this.fetchData();
 		},
 
 		onChangePerPage() {
