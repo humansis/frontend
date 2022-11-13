@@ -71,6 +71,7 @@ export default {
 		},
 		addHouseholdsToProject() {
 			this.$emit("confirm", this.selectedProject);
+			this.selectedProject = null;
 		},
 	},
 };
