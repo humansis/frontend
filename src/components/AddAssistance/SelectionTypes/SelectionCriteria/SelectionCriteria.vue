@@ -604,6 +604,9 @@ export default {
 
 .vulnerability-number-input input, .vulnerability-update-button {
 	height: 40px;
+}
+
+.vulnerability-update-button {
 	margin-top: 2rem;
 }
 
