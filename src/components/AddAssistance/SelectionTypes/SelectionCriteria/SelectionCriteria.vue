@@ -69,7 +69,28 @@
 
 		<div class="columns">
 			<div class="column is-4">
-				<form @submit.prevent="updateVulnerabilityScores">
+				<b-field
+					class="vulnerability-type-field"
+					:label="$t('Scoring')"
+					expanded
+				>
+					<MultiSelect
+						v-model="scoringType"
+						:placeholder="$t('Click to select')"
+						label="name"
+						track-by="id"
+						:options="options.scoringTypes"
+						:loading="scoringTypesLoading"
+						:disabled="calculationLoading || !groups.length"
+						:searchable="false"
+						:allow-empty="false"
+						@select="scoringTypeChanged"
+					/>
+				</b-field>
+			</div>
+
+			<div class="column is-8 is-flex pl-0">
+				<form @submit.prevent="updateVulnerabilityScores"  class="is-flex-grow-1">
 					<b-field grouped>
 						<b-field
 							:label="vulnerabilityScoreLabel"
@@ -87,31 +108,9 @@
 						</b-field>
 					</b-field>
 				</form>
-			</div>
-
-			<div class="column is-8 is-flex">
-				<b-field
-					class="vulnerability-type-field is-flex-grow-1"
-					:label="$t('Scoring Type')"
-					expanded
-				>
-					<MultiSelect
-						v-model="scoringType"
-						:placeholder="$t('Click to select')"
-						label="name"
-						track-by="id"
-						:options="options.scoringTypes"
-						:loading="scoringTypesLoading"
-						:disabled="calculationLoading || !groups.length"
-						:searchable="false"
-						:allow-empty="false"
-						@select="scoringTypeChanged"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
 				<b-button
-					class="vulnerability-update-button is-align-self-center ml-1 mt-2"
+					class="vulnerability-update-button is-align-self-center ml-2"
+					style="margin-top:2rem"
 					type="is-primary"
 					:disabled="calculationLoading || !groups.length"
 					@click="updateVulnerabilityScores"
