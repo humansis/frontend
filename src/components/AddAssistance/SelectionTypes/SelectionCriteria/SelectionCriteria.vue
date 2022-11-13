@@ -85,7 +85,9 @@
 						:searchable="false"
 						:allow-empty="false"
 						@select="scoringTypeChanged"
-					/>
+					>
+						<span slot="noOptions">{{$t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 			</div>
 
