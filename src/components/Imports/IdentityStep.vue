@@ -4,7 +4,8 @@
 			v-if="identityStepActive && status"
 			class="card-content"
 		>
-			<div class="content">
+			<div class="content loading-ref">
+				<Loading v-if="isCheckingIdentity" b-loading />
 				<b-progress
 					v-if="totalEntries"
 					size="is-large"
@@ -14,13 +15,19 @@
 						<b-progress-bar
 							type="is-light"
 							show-value
-							:value="totalEntries - amountIdentityDuplicities"
+							:value="entriesLeft"
 						/>
 						<b-progress-bar
 							v-if="amountIdentityDuplicities"
 							type="is-warning"
 							show-value
-							:value="amountIdentityDuplicities"
+							:value="amountIdentityDuplicitiesIncrement"
+						/>
+						<b-progress-bar
+							v-if="amountIdentityDuplicitiesResolved"
+							type="is-success"
+							show-value
+							:value="amountIdentityDuplicitiesResolvedIncrement"
 						/>
 					</template>
 				</b-progress>
@@ -140,16 +147,21 @@
 </template>
 
 <script>
+import graduallyIncrement from "@/mixins/graduallyIncrement";
 import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
+import Loading from "@/components/Loading";
 import { Toast } from "@/utils/UI";
 
 export default {
-	name: "DuplicityStep",
+	name: "IdentityStep",
+
+	mixins: [graduallyIncrement],
 
 	components: {
 		DuplicityResolver,
+		Loading,
 	},
 
 	data() {
@@ -163,6 +175,8 @@ export default {
 			importStatus: "",
 			resolversAllLoading: false,
 			resolversAllActive: "",
+			amountIdentityDuplicitiesIncrement: 0,
+			amountIdentityDuplicitiesResolvedIncrement: 0,
 		};
 	},
 
@@ -196,6 +210,22 @@ export default {
 		status(value) {
 			this.importStatus = value;
 		},
+
+		amountIdentityDuplicities(newValue) {
+			if (this.isCheckingIdentity) {
+				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
+			} else {
+				this.amountIdentityDuplicitiesIncrement = newValue;
+			}
+		},
+
+		amountIdentityDuplicitiesResolved(newValue) {
+			if (this.isCheckingIdentity) {
+				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
+			} else {
+				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
+			}
+		},
 	},
 
 	computed: {
@@ -203,6 +233,10 @@ export default {
 			return this.status === consts.STATUS.IDENTITY_CHECK
 				|| this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
 				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+		},
+
+		isCheckingIdentity() {
+			return this.status === consts.STATUS.IDENTITY_CHECK;
 		},
 
 		canResolveDuplicities() {
@@ -214,12 +248,20 @@ export default {
 			return this.importStatistics?.totalEntries || 0;
 		},
 
+		entriesLeft() {
+			if (this.amountIdentityDuplicities) {
+				return this.totalEntries - this.amountIdentityDuplicitiesIncrement
+					- this.amountIdentityDuplicitiesResolvedIncrement;
+			}
+			return this.totalEntries - this.amountIdentityDuplicitiesResolvedIncrement;
+		},
+
 		amountIdentityDuplicities() {
 			return this.importStatistics?.amountIdentityDuplicities || 0;
 		},
 
 		amountIdentityDuplicitiesResolved() {
-			return this.importStatistics?.amountIdentityDuplicitiesResolved || 0;
+			return this.importStatistics?.amountEntriesToImport || 0;
 		},
 
 		canStartSimilarityCheck() {
