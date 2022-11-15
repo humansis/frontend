@@ -211,41 +211,15 @@ export default {
 
 		clearedLocationFilters(filters, filterName) {
 			const filtersCopy = copyObject(filters);
+			const admNumber = parseInt(filterName.slice(-1), 10);
 
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
-					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
-					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
-					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
-					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
-					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
-					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
-					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
-					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
-					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
-					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
-					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
-					this.selectedFiltersOptions.adm4 = consts.DEFAULT_FILTERS.adm4;
-					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
-					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
-					filtersCopy.adm4 = consts.DEFAULT_FILTERS.adm4;
-					break;
-				case "adm4":
-					this.selectedFiltersOptions.adm1 = consts.DEFAULT_FILTERS.adm1;
-					this.selectedFiltersOptions.adm2 = consts.DEFAULT_FILTERS.adm2;
-					this.selectedFiltersOptions.adm3 = consts.DEFAULT_FILTERS.adm3;
-					filtersCopy.adm1 = consts.DEFAULT_FILTERS.adm1;
-					filtersCopy.adm2 = consts.DEFAULT_FILTERS.adm2;
-					filtersCopy.adm3 = consts.DEFAULT_FILTERS.adm3;
-					break;
-				default: break;
+			if (!Number.isNaN(admNumber)) {
+				for (let i = 1; i <= 4; i += 1) {
+					if (i !== admNumber) {
+						this.selectedFiltersOptions[`adm${i}`] = consts.DEFAULT_FILTERS[`adm${i}`];
+						filtersCopy[`adm${i}`] = consts.DEFAULT_FILTERS[`adm${i}`];
+					}
+				}
 			}
 
 			return filtersCopy;
