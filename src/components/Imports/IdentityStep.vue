@@ -85,7 +85,7 @@
 				<div>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:type="['is-link' , { 'is-outlined': this.resolversAllActive
+						:type="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
 						:disabled="resolversAllLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
@@ -103,8 +103,9 @@
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						type="is-primary"
-						icon-right="tasks"
+						:type="['is-link' , { 'is-outlined': !duplicitiesContentOpened }]"
+						icon-left="tasks"
+						:icon-right="!duplicitiesContentOpened ? 'arrow-down' : null"
 						:loading="resolveDuplicitiesLoading"
 						:disabled="resolversAllLoading"
 						@click="resolveDuplicities"
@@ -122,11 +123,13 @@
 						{{ $t('Start Similarity Check') }}
 					</b-button>
 					-->
+				</div>
+				<div>
 					<b-button
-						v-if="canGoToFinalisation"
 						type="is-primary"
 						icon-right="play-circle"
 						:loading="changeStateButtonLoading"
+						:disabled="!canGoToFinalisation"
 						@click="goToFinalisation"
 					>
 						{{ $t('Go to Finalisation') }}
