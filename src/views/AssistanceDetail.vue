@@ -2,6 +2,7 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:statistics="statistics"
 			:commodities="commodities"
 			:project="project"
 		/>

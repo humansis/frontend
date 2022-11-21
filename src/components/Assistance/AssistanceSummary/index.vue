@@ -94,6 +94,10 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		statistics: {
+			type: Object,
+			default: () => {},
+		},
 		project: {
 			type: Object,
 			default: () => {},
@@ -109,7 +113,6 @@ export default {
 			consts,
 			province: null,
 			commodity: [],
-			statistics: null,
 		};
 	},
 
@@ -118,7 +121,6 @@ export default {
 			if (newAssistance) {
 				this.fetchLocation(newAssistance.adm1Id);
 				this.fetchCommodity(newAssistance.id);
-				this.fetchStatistics(newAssistance.id);
 			}
 		},
 	},
@@ -181,13 +183,6 @@ export default {
 			});
 		},
 
-		async fetchStatistics(assistanceId) {
-			await AssistancesService.getAssistanceStatistics(
-				assistanceId,
-			).then((data) => {
-				this.statistics = data;
-			});
-		},
 	},
 };
 </script>
