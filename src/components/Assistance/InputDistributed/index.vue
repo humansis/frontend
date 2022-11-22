@@ -257,7 +257,7 @@ export default {
 			this.distributedButtonLoading = true;
 			let body;
 
-			const numberIds = this.formModel.input.split(/\s+/);
+			const numberIds = this.formModel.idsList.split(/\s+/);
 
 			if (!numberIds.length) {
 				Notification(this.$t("Invalid Input"), "is-danger");
@@ -293,9 +293,9 @@ export default {
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
-			await AssistancesService.updateReliefPackagesWithNumberIds(
-				this.$route.params.assistanceId, body,
-			).then(({ data, status, message }) => {
+				await AssistancesService.updateReliefPackagesWithNumberIds(
+					this.$route.params.assistanceId, body,
+				).then(({ data, status, message }) => {
 					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
