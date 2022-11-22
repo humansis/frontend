@@ -26,16 +26,18 @@
 		>
 			<InputDistributed
 				close-button
-				:submit-button-label="$t('Confirm')"
 				class="modal-card"
 				@submit="fetchBeneficiariesAndStatistics"
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
+
+		<EditNote :assistance="assistance" />
+
 		<div class="m-6">
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
-					{{ $t(distributionOrActivity) }} {{ $t('Progress') }}:
+					{{ $t(distributionOrActivity) }}:
 					<strong>{{ assistanceProgress }} %</strong>
 				</div>
 			</div>
@@ -173,6 +175,7 @@
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
+import EditNote from "@/components/Assistance/EditNote";
 import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
@@ -189,6 +192,7 @@ export default {
 		InputDistributed,
 		BeneficiariesList,
 		AssistanceSummary,
+		EditNote,
 		Modal,
 	},
 
@@ -248,8 +252,8 @@ export default {
 		},
 
 		distributionOrActivity() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution";
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution Progress";
+			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity Progress";
 			return "";
 		},
 
@@ -517,6 +521,7 @@ export default {
 				title: this.$t("Close Assistance"),
 				message: this.$t("Are you sure you want to close this Assistance?"),
 				confirmText: this.$t("Confirm"),
+				cancelText: this.$t("Cancel"),
 				type: "is-primary",
 				onConfirm: async () => {
 					const assistanceId = Number(this.$route.params.assistanceId);

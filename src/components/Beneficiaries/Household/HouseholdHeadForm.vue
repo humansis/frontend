@@ -81,7 +81,9 @@
 						:options="options.gender"
 						:class="validateMultiselect('personalInformation.gender')"
 						@select="validate('personalInformation.gender')"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field
 					:label="$t('Date of Birth')"
@@ -94,6 +96,7 @@
 						locale="en-CA"
 						icon="calendar-day"
 						trap-focus
+						:month-names="months()"
 						:placeholder="$t('Click to select')"
 						@blur="validate('personalInformation.dateOfBirth')"
 					/>
@@ -107,33 +110,95 @@
 						- {{ $t('Optional') }}
 					</span>
 				</h4>
-				<b-field
-					:label="$t('ID Type')"
-					:type="validateType('id.idType', true)"
-					:message="validateMsg('id.idType')"
-				>
-					<MultiSelect
-						v-model="formModel.id.idType"
-						label="value"
-						track-by="code"
-						searchable
-						:placeholder="$t('Click to select')"
-						:loading="idTypeLoading"
-						:options="options.idType"
-						:class="validateMultiselect('id.idType', true)"
-						@select="validate('id.idType')"
-					/>
-				</b-field>
-				<b-field
-					:label="$t('ID Number')"
-					:type="validateType('id.idNumber', true)"
-					:message="validateMsg('id.idNumber')"
-				>
-					<b-input
-						v-model="formModel.id.idNumber"
-						@blur="validate('id.idNumber', true)"
-					/>
-				</b-field>
+				<b-tabs>
+					<b-tab-item label="Primary">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('primaryId.idType', true)"
+							:message="validateMsg('primaryId.idType', primaryIdValidationMessage)"
+						>
+							<MultiSelect
+								v-model="formModel.primaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('primaryId.idType', true)"
+								@input="validate('primaryId.idType'); onIdChange($event)"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('primaryId.idNumber', true)"
+							:message="validateMsg('primaryId.idNumber')"
+						>
+							<b-input
+								v-model.trim="formModel.primaryId.idNumber"
+								@blur="validate('primaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item label="Secondary" :disabled="isSecondaryIdTabDisabled">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('secondaryId.idType', true)"
+							:message="validateMsg('secondaryId.idType', secondaryIdValidationMessage)"
+						>
+							<MultiSelect
+								v-model="formModel.secondaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('secondaryId.idType', true)"
+								@input="validate('secondaryId.idType'); onIdChange($event)"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('secondaryId.idNumber', true)"
+							:message="validateMsg('secondaryId.idNumber')"
+						>
+							<b-input
+								v-model.trim="formModel.secondaryId.idNumber"
+								@blur="validate('secondaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+					<b-tab-item label="Tertiary" :disabled="isTertiaryIdTabDisabled">
+						<b-field
+							:label="$t('ID Type')"
+							:type="validateType('tertiaryId.idType', true)"
+							:message="validateMsg('tertiaryId.idType', tertiaryIdValidationMessage)"
+						>
+							<MultiSelect
+								v-model="formModel.tertiaryId.idType"
+								label="value"
+								track-by="code"
+								searchable
+								:placeholder="$t('Click to select')"
+								:loading="idTypeLoading"
+								:options="options.idType"
+								:class="validateMultiselect('tertiaryId.idType', true)"
+								@input="validate('tertiaryId.idType'); onIdChange($event)"
+							/>
+						</b-field>
+						<b-field
+							:label="$t('ID Number')"
+							:type="validateType('tertiaryId.idNumber', true)"
+							:message="validateMsg('tertiaryId.idNumber')"
+						>
+							<b-input
+								v-model.trim="formModel.tertiaryId.idNumber"
+								@blur="validate('tertiaryId.idNumber', true)"
+							/>
+						</b-field>
+					</b-tab-item>
+				</b-tabs>
 			</div>
 
 			<div class="column is-one-quarter">
@@ -154,6 +219,7 @@
 						:class="validateMultiselect('residencyStatus')"
 						@select="validate('residencyStatus')"
 					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
 						<template slot="singleLabel" slot-scope="props">
 							<div class="option__desc">
 								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -189,7 +255,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="referralTypeLoading"
 						:options="options.referralType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field v-if="formModel.addAReferral" :label="$t('Comment')">
 					<b-input v-model="formModel.referral.comment" />
@@ -214,7 +282,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
 						{{ $t('Proxy') }}
 					</b-checkbox>
@@ -227,7 +297,9 @@
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field :label="$t('Phone No.') + ' 1'">
 					<b-input v-model="formModel.phone1.phoneNo" />
@@ -254,7 +326,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
 						:options="options.phoneType"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
 						{{ $t('Proxy') }}
 					</b-checkbox>
@@ -267,7 +341,9 @@
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-field :label="$t('Phone No.') + ' 2'">
 					<b-input v-model="formModel.phone2.phoneNo" />
@@ -288,18 +364,19 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdHeadForm",
 
-	mixins: [Validation],
+	mixins: [Validation, calendarHelper],
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
@@ -331,9 +408,35 @@ export default {
 				gender: { required },
 				dateOfBirth: { required },
 			},
-			id: {
-				idType: { required: requiredIf((form) => form.idNumber) },
-				idNumber: { required: requiredIf((form) => form.idType) },
+			primaryId: {
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isPrimaryIdValid; },
+				},
+				idNumber: {
+					maxLength: maxLength(255),
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
+			},
+			secondaryId: {
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isSecondaryIdValid; },
+				},
+				idNumber: {
+					maxLength: maxLength(255),
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
+			},
+			tertiaryId: {
+				idType: {
+					required: requiredIf((form) => form.idNumber),
+					function() { return this.isTertiaryIdValid; },
+				},
+				idNumber: {
+					maxLength: maxLength(255),
+					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				},
 			},
 			residencyStatus: { required },
 		},
@@ -342,6 +445,12 @@ export default {
 	data() {
 		return {
 			loadingComponent: null,
+			isPrimaryIdValid: true,
+			isSecondaryIdValid: true,
+			isTertiaryIdValid: true,
+			primaryIdValidationMessage: null,
+			secondaryIdValidationMessage: null,
+			tertiaryIdValidationMessage: null,
 			formModel: {
 				beneficiaryId: null,
 				nameLocal: {
@@ -358,9 +467,20 @@ export default {
 					gender: "",
 					dateOfBirth: null,
 				},
-				id: {
-					idType: "",
+				primaryId: {
+					idType: null,
 					idNumber: "",
+					priority: 1,
+				},
+				secondaryId: {
+					idType: null,
+					idNumber: "",
+					priority: 2,
+				},
+				tertiaryId: {
+					idType: null,
+					idNumber: "",
+					priority: 3,
 				},
 				residencyStatus: "",
 				addAReferral: false,
@@ -423,6 +543,17 @@ export default {
 		await this.map();
 	},
 
+	computed: {
+		isSecondaryIdTabDisabled() {
+			return !this.formModel.primaryId.idNumber || !this.formModel.primaryId.idType;
+		},
+
+		isTertiaryIdTabDisabled() {
+			return this.isSecondaryIdTabDisabled
+				|| (!this.formModel.secondaryId.idNumber || !this.formModel.secondaryId.idType);
+		},
+	},
+
 	methods: {
 		async map() {
 			if (this.isEditing) {
@@ -457,11 +588,37 @@ export default {
 				isHead,
 				residencyStatus,
 			} = beneficiary;
+
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
-			const cardId = await this.getNationalIdCard(nationalIds[0]);
+
+			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
+
+			if (primaryCardId) {
+				this.isPrimaryIdValid = (primaryCardId.idType && primaryCardId.idNumber)
+					|| (!primaryCardId.idType && !primaryCardId.idNumber);
+			}
+
+			const secondaryCardId = nationalIds[1]
+				? await this.getNationalIdCard(nationalIds[1])
+				: { idNumber: "", idType: null };
+
+			if (secondaryCardId) {
+				this.isSecondaryIdValid = (secondaryCardId.idType && secondaryCardId.idNumber)
+					|| (!secondaryCardId.idType && !secondaryCardId.idNumber);
+			}
+
+			const tertiaryCardId = nationalIds[2]
+				? await this.getNationalIdCard(nationalIds[2])
+				: { idNumber: "", idType: null };
+
+			if (tertiaryCardId) {
+				this.isTertiaryIdValid = (tertiaryCardId.idType && tertiaryCardId.idNumber)
+					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber);
+			}
+
 			this.formModel = {
 				...this.formModel,
 				beneficiaryId: id,
@@ -479,7 +636,9 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: new Date(dateOfBirth),
 				},
-				id: cardId,
+				primaryId: primaryCardId,
+				secondaryId: secondaryCardId,
+				tertiaryId: tertiaryCardId,
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
@@ -522,9 +681,10 @@ export default {
 
 		async getNationalIdCard(id) {
 			const nationalIdCard = {
-				idType: this.formModel.id.idNumber,
-				idNumber: this.formModel.id.idType,
+				idType: this.formModel.primaryId.idType,
+				idNumber: this.formModel.primaryId.idNumber,
 			};
+
 			if (id) {
 				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
@@ -583,6 +743,31 @@ export default {
 				});
 
 			this.referralTypeLoading = false;
+		},
+
+		onIdChange() {
+			const primaryIdCode = this.formModel.primaryId.idType?.code;
+			const secondaryIdCode = this.formModel.secondaryId.idType?.code;
+			const tertiaryIdCode = this.formModel.tertiaryId.idType?.code;
+
+			const isPrimaryEqualsSecondary = primaryIdCode === secondaryIdCode;
+			const isSecondaryEqualsTertiary = secondaryIdCode === tertiaryIdCode;
+			const isPrimaryEqualsTertiary = primaryIdCode === tertiaryIdCode;
+
+			this.isPrimaryIdValid = (this.isSecondaryIdTabDisabled || !isPrimaryEqualsSecondary)
+				&& (this.isTertiaryIdTabDisabled || !isPrimaryEqualsTertiary);
+			this.primaryIdValidationMessage = this.isPrimaryIdValid ? null : this.$t("Primary ID cannot be the same as the secondary or tertiary ID");
+
+			if (!this.isSecondaryIdTabDisabled) {
+				this.isSecondaryIdValid = !isPrimaryEqualsSecondary
+					&& (this.isTertiaryIdTabDisabled || !isSecondaryEqualsTertiary);
+				this.secondaryIdValidationMessage = this.isSecondaryIdValid ? null : this.$t("Secondary ID cannot be the same as the primary or tertiary ID");
+			}
+
+			if (!this.isTertiaryIdTabDisabled) {
+				this.isTertiaryIdValid = !isPrimaryEqualsTertiary && !isSecondaryEqualsTertiary;
+				this.tertiaryIdValidationMessage = this.isTertiaryIdValid ? null : this.$t("Tertiary ID cannot be the same as the primary or secondary ID");
+			}
 		},
 
 		submit() {

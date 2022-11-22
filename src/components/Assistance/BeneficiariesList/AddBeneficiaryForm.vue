@@ -29,6 +29,7 @@
 					:class="validateMultiselect('beneficiaries')"
 					@select="validate('beneficiaries')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel="props">
 						<div class="option__desc">
 							<span class="option__title">
@@ -254,26 +255,51 @@ export default {
 					assistanceTarget = "beneficiaries";
 			}
 
-			await BeneficiariesService.addOrRemoveBeneficiaryFromAssistance(
-				this.$route.params.assistanceId,
-				assistanceTarget,
-				body,
-			)
-				.then(({ data, status }) => {
-					if (status === 400) {
-						Toast(data, "is-warning");
-					} else {
-						Toast(successMessage, "is-success");
-					}
-				})
-				.catch((e) => {
-					if (e.message) {
-						Notification(
-							`${this.$t("Beneficiary")} ${e}`,
-							"is-danger",
-						);
-					}
-				});
+			if (body.removed) {
+				await BeneficiariesService.removeBeneficiaryFromAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+				)
+					.then(({ data, status }) => {
+						if (status === 400) {
+							Toast(data, "is-warning");
+						} else {
+							Toast(successMessage, "is-success");
+						}
+					})
+					.catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Beneficiary")} ${e}`,
+								"is-danger",
+							);
+						}
+					});
+			}
+
+			if (body.added) {
+				await BeneficiariesService.addBeneficiaryToAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+				)
+					.then(({ data, status }) => {
+						if (status === 400) {
+							Toast(data, "is-warning");
+						} else {
+							Toast(successMessage, "is-success");
+						}
+					})
+					.catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Beneficiary")} ${e}`,
+								"is-danger",
+							);
+						}
+					});
+			}
 
 			this.submitButtonLoading = false;
 			this.closeForm();

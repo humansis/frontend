@@ -10,11 +10,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
-import LocationsService from "@/services/LocationsService";
-import { Notification } from "@/utils/UI";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import locationHelper from "@/mixins/locationHelper";
+import { copyObject } from "@/utils/helpers";
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -24,18 +24,26 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper],
+	mixins: [filtersHelper, urlFiltersHelper, locationHelper],
 
-	data() {
-		return {
-			selectedFiltersOptions: {
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
 				invoicing: [],
 				adm1: [],
 				adm2: [],
 				adm3: [],
 				adm4: [],
 				locations: [],
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
+			filtersOptionsCopy: {},
 			filtersOptions: {
 				invoicing: {
 					name: "Invoicing",
@@ -53,7 +61,6 @@ export default {
 					label: "name",
 					loading: true,
 					data: [],
-					selectValue: "locationId",
 					filterForSend: "locations",
 				},
 				adm2: {
@@ -62,7 +69,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 				adm3: {
 					name: "Commune",
@@ -70,7 +77,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 				adm4: {
 					name: "Village",
@@ -78,21 +85,10 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 			},
 		};
-	},
-
-	props: {
-		defaultFilters: {
-			type: Object,
-			default: () => {},
-		},
-	},
-
-	computed: {
-		...mapState(["admNames"]),
 	},
 
 	async created() {
@@ -102,7 +98,12 @@ export default {
 			this.fetchDistricts(),
 			this.fetchCommunes(),
 			this.fetchVillages(),
-		]);
+		]).then(() => {
+			this.fillParentCommunes();
+			this.fillParentDistricts();
+			this.fillParentProvinces();
+			this.filtersOptionsCopy = copyObject(this.filtersOptions);
+		});
 
 		await Promise.all([
 			this.setDefaultFilters(),
@@ -118,41 +119,13 @@ export default {
 			}
 		},
 
-		setLocationNames() {
-			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
-
-			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
-
-			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
-
-			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
-		},
-
 		async filterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+			const location = this.getLocation(filters);
 
-			let location = null;
-
-			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filters.adm4;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm3) {
-				const [a] = filters.adm3;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm2) {
-				const [a] = filters.adm2;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm1) {
-				const [a] = filters.adm1;
-				location = a;
-			}
+			this.setAdmParents(filterName);
+			this.filterAdmChildren(filterName);
+			this.$refs.advancedFilter.$forceUpdate();
 
 			this.$emit("filtersChanged", {
 				filters: {
@@ -165,70 +138,6 @@ export default {
 					adm3: filtersCopy.adm3,
 					adm4: filtersCopy.adm4,
 				},
-			});
-		},
-
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchDistricts() {
-			this.filtersOptions.adm2.loading = true;
-
-			await LocationsService.getListOfAdm2(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchCommunes() {
-			this.filtersOptions.adm3.loading = true;
-
-			await LocationsService.getListOfAdm3(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchVillages() {
-			this.filtersOptions.adm4.loading = true;
-
-			await LocationsService.getListOfAdm4(null)
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
-				});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				invoicing: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
 			});
 		},
 	},

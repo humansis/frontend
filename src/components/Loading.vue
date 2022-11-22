@@ -1,5 +1,8 @@
 <template>
-	<vue-loading :type="type" :size="computeSize" :color="color" />
+	<div>
+		<b-loading v-if="bLoading" active :is-full-page="false" :canCancel="true" />
+		<vue-loading v-else :type="type" :size="computeSize" :color="color" />
+	</div>
 </template>
 
 <script>
@@ -9,6 +12,7 @@ export default {
 
 	props: {
 		type: String,
+		bLoading: Boolean,
 		color: {
 			type: String,
 			default: "#5ac1dd",

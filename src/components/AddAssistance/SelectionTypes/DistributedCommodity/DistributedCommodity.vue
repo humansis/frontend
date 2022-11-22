@@ -95,6 +95,22 @@ import DistributedCommodityForm from "@/components/AddAssistance/SelectionTypes/
 import { generateColumns } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 
+const DEFAULT_FORM_MODEL = {
+	modality: "",
+	modalityType: "",
+	currency: "",
+	unit: "",
+	value: "",
+	description: "",
+	division: null,
+	divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
+	divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
+	totalValueOfBooklet: null,
+	remoteDistributionAllowed: false,
+	allowedProductCategoryTypes: ["Food"],
+	cashbackLimit: null,
+};
+
 export default {
 	name: "DistributedCommodity",
 
@@ -125,21 +141,7 @@ export default {
 			commodityModal: {
 				isOpened: false,
 			},
-			formModel: {
-				modality: "",
-				modalityType: "",
-				currency: "",
-				unit: "",
-				value: "",
-				description: "",
-				division: null,
-				divisionNwsQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NWS_QUANTITIES)),
-				divisionNesQuantities: JSON.parse(JSON.stringify(consts.DIVISION_NES_QUANTITIES)),
-				totalValueOfBooklet: null,
-				remoteDistributionAllowed: false,
-				allowedProductCategoryTypes: ["Food"],
-				cashbackLimit: null,
-			},
+			formModel: { ...DEFAULT_FORM_MODEL },
 			table: {
 				data: [],
 				columns: [],
@@ -357,6 +359,12 @@ export default {
 
 		getDivisionStr(division) {
 			return division?.code || division;
+		},
+
+		clearComponent() {
+			this.table.data = [];
+			this.formModel = { ...DEFAULT_FORM_MODEL };
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 	},
 };

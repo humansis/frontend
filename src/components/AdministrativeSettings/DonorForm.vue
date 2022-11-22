@@ -13,13 +13,11 @@
 				/>
 			</b-field>
 
-			<b-field>
-				<template #label>
-					{{ $t('Short Name') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
+			<b-field
+				:label="$t('Short Name')"
+				:type="validateType('shortname')"
+				:message="validateMsg('shortname')"
+			>
 				<b-input
 					v-model="formModel.shortname"
 					:disabled="formDisabled"
@@ -115,7 +113,7 @@ export default {
 	validations: {
 		formModel: {
 			fullname: { required },
-			shortname: {},
+			shortname: { required },
 			logo: {},
 			notes: {},
 		},

@@ -1,5 +1,5 @@
 <template>
-	<card-component>
+	<card-component class="has-multiselect">
 		<b-progress :value="100" />
 		<CustomSteps
 			v-model="activeStep"
@@ -366,7 +366,7 @@ export default {
 							gender: member.personalInformation.gender,
 							dateBirth: member.personalInformation.dateOfBirth,
 							phone,
-							nationalId: member.id.idNumber,
+							nationalId: member.primaryId.idNumber,
 						});
 					}
 				});
@@ -473,18 +473,41 @@ export default {
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteria: this.mapVulnerabilities(beneficiary.vulnerabilities),
 					};
-					if (beneficiary.id.idNumber || beneficiary.id.idType) {
+
+					if (beneficiary.primaryId.idNumber || beneficiary.primaryId.idType) {
 						preparedBeneficiary.nationalIdCards = [
 							{
-								number: beneficiary.id.idNumber,
-								type: beneficiary.id.idType.code,
-							},
-						];
+								number: beneficiary.primaryId.idNumber,
+								type: beneficiary.primaryId.idType.code,
+								priority: 1,
+							}];
+
+						if (beneficiary.secondaryId.idNumber || beneficiary.secondaryId.idType) {
+							preparedBeneficiary.nationalIdCards.push(
+								{
+									number: beneficiary.secondaryId.idNumber,
+									type: beneficiary.secondaryId.idType.code,
+									priority: 2,
+								},
+							);
+
+							if (beneficiary.tertiaryId.idNumber || beneficiary.tertiaryId.idType) {
+								preparedBeneficiary.nationalIdCards.push(
+									{
+										number: beneficiary.tertiaryId.idNumber,
+										type: beneficiary.tertiaryId.idType.code,
+										priority: 3,
+									},
+								);
+							}
+						}
 					}
+
 					if (beneficiary.addAReferral) {
 						preparedBeneficiary.referralType = beneficiary.referral.referralType.code;
 						preparedBeneficiary.referralComment = beneficiary.referral.comment;
 					}
+
 					if (beneficiary.phone1.phoneNo !== "") {
 						preparedBeneficiary.phones.push({
 							prefix: beneficiary.phone1.ext.code,

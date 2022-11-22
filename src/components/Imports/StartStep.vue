@@ -7,6 +7,7 @@
 					multiple
 					drag-drop
 					:accept="allowedFileExtensions"
+					:loading="showLoading"
 				>
 					<section class="section">
 						<div class="content has-text-centered">
@@ -56,6 +57,7 @@
 					type="is-light is-danger"
 					icon-right="ban"
 					@click="cancelImport"
+					:disabled="disabledCancelImport"
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
@@ -129,6 +131,10 @@ export default {
 				&& (this.dropFiles.length === 1 || this.importFiles.length);
 		},
 
+		disabledCancelImport() {
+			return this.importStatus !== consts.UPLOADING;
+		},
+
 		allowedFileExtensions() {
 			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
@@ -145,6 +151,11 @@ export default {
 			return this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
+		},
+
+		showLoading() {
+			return this.startLoading
+				|| this.importStatus === consts.STATUS.UPLOADING;
 		},
 	},
 

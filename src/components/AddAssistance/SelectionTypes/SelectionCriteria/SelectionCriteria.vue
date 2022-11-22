@@ -106,7 +106,9 @@
 						:searchable="false"
 						:allow-empty="false"
 						@select="scoringTypeChanged"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 				<b-button
 					class="vulnerability-update-button is-align-self-center ml-1 mt-2"
@@ -136,7 +138,7 @@
 					:label="$t('Export Details')"
 					:loading="exportLoading"
 					:formats="{ xlsx: true }"
-					:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+					:disabled="isExportButtonDisabled"
 					@onExport="exportSelectedBeneficiaries"
 				/>
 			</div>
@@ -236,6 +238,11 @@ export default {
 
 		vulnerabilityScoreLabel() {
 			return this.$t("Minimum Vulnerability Score");
+		},
+
+		isExportButtonDisabled() {
+			return this.vulnerabilityScoreTouched || this.calculationLoading
+				|| !this.groups.length || !this.totalCount;
 		},
 	},
 

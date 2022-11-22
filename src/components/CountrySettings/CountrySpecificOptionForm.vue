@@ -29,7 +29,9 @@
 					:options="options.types"
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -50,7 +52,9 @@
 					:loading="loadingTargets"
 					:class="validateMultiselect('target')"
 					@select="validate('target')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 		</section>
 		<section class="modal-card-foot">

@@ -16,7 +16,9 @@
 				:options="options.provinces"
 				:class="validateMultiselect('adm1Id')"
 				@input="onProvinceSelect"
-			/>
+			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
+			</MultiSelect>
 		</b-field>
 
 		<b-field>
@@ -36,7 +38,9 @@
 				:disabled="formDisabled"
 				:options="options.districts"
 				@input="onDistrictSelect"
-			/>
+			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
+			</MultiSelect>
 		</b-field>
 
 		<b-field>
@@ -56,7 +60,9 @@
 				:disabled="formDisabled"
 				:options="options.communes"
 				@input="onCommuneSelect"
-			/>
+			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
+			</MultiSelect>
 		</b-field>
 
 		<b-field>
@@ -77,7 +83,9 @@
 				:disabled="formDisabled"
 				:options="options.villages"
 				@input="onVillageSelect"
-			/>
+			>
+				<span slot="noOptions">{{ $t("List is empty")}}</span>
+			</MultiSelect>
 		</b-field>
 	</section>
 </template>

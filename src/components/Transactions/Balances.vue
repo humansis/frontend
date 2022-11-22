@@ -118,15 +118,15 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		async onFiltersChange(selectedFilters) {
-			Object.keys(selectedFilters).forEach((key) => {
-				if (Array.isArray(selectedFilters[key])) {
+		async onFiltersChange({ filters }) {
+			Object.keys(filters).forEach((key) => {
+				if (Array.isArray(filters[key])) {
 					this.filters[key] = [];
-					selectedFilters[key].forEach((value) => {
+					filters[key].forEach((value) => {
 						this.filters[key].push(value.id);
 					});
-				} else if (selectedFilters[key]) {
-					const date = new Date(selectedFilters[key]);
+				} else if (filters[key]) {
+					const date = new Date(filters[key]);
 					this.filters[key] = [date.toISOString()];
 				}
 			});

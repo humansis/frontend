@@ -17,7 +17,9 @@
 					:loading="loading.modalities"
 					:class="validateMultiselect('modality')"
 					@select="onModalitySelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -36,7 +38,9 @@
 					searchable
 					:class="validateMultiselect('modalityType')"
 					@select="onModalityTypeSelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -67,7 +71,9 @@
 					searchable
 					:class="validateMultiselect('division')"
 					@select="onDivisionSelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -84,7 +90,9 @@
 					:options="options.currencies"
 					:class="validateMultiselect('currency')"
 					searchable
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -186,18 +194,16 @@
 			</b-field>
 
 			<b-field
-				v-if="formModel.allowedProductCategoryTypes.includes('Cashback')"
+				v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
 				:type="validateType('cashbackLimit')"
-				:message="validateMsg('cashbackLimit', 'Required minimum is 1')"
+				:message="validateMsg('cashbackLimit', this.cashbackLimitErrorMessage)"
 				:label="$t('Cashback Limit')"
 			>
 				<b-numberinput
 					v-model="formModel.cashbackLimit"
 					type="is-dark"
 					expanded
-					min="1"
 					:disabled="cashbackLimitDisabled"
-					:max="formModel.value"
 					:controls="false"
 					@blur="validate('cashbackLimit')"
 					@input="checkCashbackLimit"
@@ -219,7 +225,7 @@
 </template>
 
 <script>
-import { minValue, required, requiredIf } from "vuelidate/lib/validators";
+import { minValue, maxValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
@@ -264,6 +270,7 @@ export default {
 	data() {
 		return {
 			displayedFields: DEFAULT_DISPLAYED_FIELDS,
+			CASHBACK: consts.COMMODITY.CASHBACK,
 			options: {
 				modalities: [],
 				types: [],
@@ -310,7 +317,25 @@ export default {
 			return this.formModel.value >= 1
 				&& this.formModel.cashbackLimit === this.formModel.value
 				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes("Cashback");
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
+		},
+
+		cashbackLimitErrorMessage() {
+			return `Required minimum is 1, maximum is ${this.maxCashback}`;
+		},
+
+		maxCashback() {
+			let max = this.formModel.value;
+
+			if (this.formModel.divisionNesQuantities) {
+				max = Math.max(...this.formModel.divisionNesQuantities.map((item) => item.value), max);
+			}
+
+			if (this.formModel.divisionNwsQuantities) {
+				max = Math.max(...this.formModel.divisionNwsQuantities.map((item) => item.value), max);
+			}
+
+			return max;
 		},
 
 		showDivisionQuantities() {
@@ -338,66 +363,69 @@ export default {
 		},
 	},
 
-	validations: {
-		formModel: {
-			modality: { required },
-			modalityType: { required },
-			// eslint-disable-next-line func-names
-			currency: { required: requiredIf(function () {
-				return this.displayedFields.currency;
-			}) },
-			// eslint-disable-next-line func-names
-			unit: { required: requiredIf(function () {
-				return this.displayedFields.unit;
-			}) },
-			value: {
+	validations() {
+		return {
+			formModel: {
+				modality: { required },
+				modalityType: { required },
 				// eslint-disable-next-line func-names
-				required: requiredIf(function () {
-					return this.showValue;
-				}),
-				minValue: minValue(1),
-			},
-			// eslint-disable-next-line func-names
-			division: { required: requiredIf(function () {
-				return this.displayedFields.division;
-			}) },
-			divisionNwsQuantities: {
-				$each: {
-					value: {
-						// eslint-disable-next-line func-names
-						required: requiredIf(function () {
-							return this.displayedFields.householdMembersNwsQuantity;
-						}),
+				currency: { required: requiredIf(function () {
+					return this.displayedFields.currency;
+				}) },
+				// eslint-disable-next-line func-names
+				unit: { required: requiredIf(function () {
+					return this.displayedFields.unit;
+				}) },
+				value: {
+					// eslint-disable-next-line func-names
+					required: requiredIf(function () {
+						return this.showValue;
+					}),
+					minValue: minValue(1),
+				},
+				// eslint-disable-next-line func-names
+				division: { required: requiredIf(function () {
+					return this.displayedFields.division;
+				}) },
+				divisionNwsQuantities: {
+					$each: {
+						value: {
+							// eslint-disable-next-line func-names
+							required: requiredIf(function () {
+								return this.displayedFields.householdMembersNwsQuantity;
+							}),
+						},
 					},
 				},
-			},
-			divisionNesQuantities: {
-				$each: {
-					value: {
-						// eslint-disable-next-line func-names
-						required: requiredIf(function () {
-							return this.displayedFields.householdMembersNesQuantity;
-						}),
+				divisionNesQuantities: {
+					$each: {
+						value: {
+							// eslint-disable-next-line func-names
+							required: requiredIf(function () {
+								return this.displayedFields.householdMembersNesQuantity;
+							}),
+						},
 					},
 				},
+				// eslint-disable-next-line func-names
+				description: { required: requiredIf(function () {
+					return this.displayedFields.description;
+				}) },
+				// eslint-disable-next-line func-names
+				totalValueOfBooklet: { required: requiredIf(function () {
+					return this.displayedFields.totalValueOfBooklet;
+				}) },
+				// eslint-disable-next-line func-names
+				allowedProductCategoryTypes: { required: requiredIf(function () {
+					return this.displayedFields.allowedProductCategoryTypes;
+				}) },
+				cashbackLimit: {
+					required: requiredIf((form) => form.allowedProductCategoryTypes.includes(this.CASHBACK)),
+					minValue: minValue(1),
+					maxValue: maxValue(this.maxCashback),
+				},
 			},
-			// eslint-disable-next-line func-names
-			description: { required: requiredIf(function () {
-				return this.displayedFields.description;
-			}) },
-			// eslint-disable-next-line func-names
-			totalValueOfBooklet: { required: requiredIf(function () {
-				return this.displayedFields.totalValueOfBooklet;
-			}) },
-			// eslint-disable-next-line func-names
-			allowedProductCategoryTypes: { required: requiredIf(function () {
-				return this.displayedFields.allowedProductCategoryTypes;
-			}) },
-			cashbackLimit: {
-				required: requiredIf((form) => form.allowedProductCategoryTypes.includes("Cashback")),
-				minValue: minValue(1),
-			},
-		},
+		};
 	},
 
 	created() {
@@ -408,19 +436,21 @@ export default {
 		checkQuantity() {
 			if (this.displayedFields.allowedProductCategoryTypes
 				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
 				this.formModel.cashbackLimit = this.formModel.value;
 			}
 
 			if (this.displayedFields.allowedProductCategoryTypes
-				&& !this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				&& !this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
 				this.formModel.cashbackLimit = null;
 			}
 		},
 
 		checkCashbackLimit() {
 			if (this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes("Cashback")) {
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)
+				&& this.formModel.value
+			) {
 				this.formModel.cashbackLimit = this.formModel.value;
 			}
 		},

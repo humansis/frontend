@@ -173,7 +173,7 @@ export default {
 					{ key: "id", label: "Assistance ID", sortable: true },
 					{ key: "name", sortable: true },
 					{ key: "round", sortable: true },
-					{ key: "type", sortable: true },
+					{ key: "type", type: "assistancesType", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
 					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
 					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },

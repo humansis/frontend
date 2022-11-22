@@ -66,6 +66,7 @@
 					:options="fonts"
 					@blur="validate('font')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel="props">
 						<div class="option__desc">
 							<span

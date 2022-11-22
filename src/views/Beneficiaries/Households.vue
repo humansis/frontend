@@ -263,7 +263,7 @@ export default {
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
 					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
-					{ key: "idNumber", label: "ID Number", width: "30", sortKey: "nationalId" },
+					{ key: "idNumbers", label: "ID Numbers", width: "30", sortKey: "nationalId" },
 					{ key: "projects", label: "Projects", width: "30" },
 					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
 				],
@@ -297,6 +297,10 @@ export default {
 				projects: false,
 			},
 		};
+	},
+
+	watch: {
+		$route: "fetchData",
 	},
 
 	created() {
@@ -450,28 +454,39 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			const nationalIdIds = [];
+			const allNationalIdIds = [];
 			await this.table.data.forEach(async (item, key) => {
 				const {
-					nationalId,
+					nationalIds,
 				} = await this
 					.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList
 					?.filter(({ code }) => code === vulnerabilities
 						.find((vulnerability) => vulnerability === code));
-				this.table.data[key].nationalId = nationalId;
+				this.table.data[key].nationalIds = nationalIds;
 				this.table.data[key].supportDateReceived = item
 					.supportDateReceived ? new Date(item.supportDateReceived) : null;
-				nationalIdIds.push(nationalId);
+				allNationalIdIds.push(...nationalIds);
 			});
 			this.table.progress += 5;
-			this.getNationalIds(nationalIdIds)
+			this.getNationalIds(allNationalIdIds)
 				.then((nationalIdResult) => {
 					this.table.progress += 5;
 					this.table.data.forEach((item, key) => {
-						this.table.data[key]
-							.idNumber = this.prepareEntityForTable(item.nationalId, nationalIdResult, "number", "None");
+						let idsText = "";
+						if (item.nationalIds) {
+							item.nationalIds.forEach((nationalId, index) => {
+								if (index !== 0) {
+									idsText += "<br />";
+								}
+								const idEntity = nationalIdResult.find((idItem) => idItem.id === nationalId);
+								if (idEntity) {
+									idsText += `${idEntity.type}: <b>${idEntity.number}</b>`;
+								}
+							});
+						}
+						this.table.data[key].idNumbers = idsText || this.$t("None");
 					});
 				});
 		},
@@ -583,20 +598,20 @@ export default {
 			if (!beneficiaries?.length) return "";
 			this.table.data[tableIndex].loading = true;
 			const result = {
-				nationalId: "",
+				nationalIds: [],
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === id);
 			if (beneficiary) {
 				this.table.data[tableIndex].givenName = this.prepareName(
-					beneficiary.localFamilyName,
-					beneficiary.enFamilyName,
-				);
-				this.table.data[tableIndex].familyName = this.prepareName(
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
 				);
-				const [nationalId] = beneficiary.nationalIds;
-				result.nationalId = nationalId;
+				this.table.data[tableIndex].familyName = this.prepareName(
+					beneficiary.localFamilyName,
+					beneficiary.enFamilyName,
+				);
+				const { nationalIds } = beneficiary;
+				result.nationalIds = nationalIds;
 			}
 
 			this.table.data[tableIndex].loading = false;
@@ -698,24 +713,6 @@ export default {
 			this.table.checkedRows = [];
 		},
 
-		async onFiltersChange({ filters, locationsFilter }) {
-			this.locationsFilter = locationsFilter;
-
-			Object.keys(filters).forEach((key) => {
-				if (Array.isArray(filters[key])) {
-					this.filters[key] = [];
-					filters[key].forEach((value) => {
-						this.filters[key].push(value);
-					});
-				} else {
-					this.filters[key] = filters[key];
-				}
-			});
-
-			this.table.currentPage = 1;
-			await this.fetchData();
-		},
-
 		closeHouseholdDetailModal() {
 			this.householdDetailModal.isOpened = false;
 		},
@@ -741,7 +738,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.householdsFilter.eraseFilters();
+			this.$refs.householdsFilter.resetFilters();
 		},
 
 		resetTableSort() {

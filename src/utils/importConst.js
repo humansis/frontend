@@ -9,6 +9,7 @@ const IMPORTING = "Importing";
 // Import Statuses
 const NEW = "New";
 const UPDATING = "UPDATING";
+const UPLOADING = "Uploading";
 const INTEGRITY_CHECK = "Integrity Checking";
 const INTEGRITY_CHECK_CORRECT = "Integrity Check Correct";
 const INTEGRITY_CHECK_FAILED = "Integrity Check Failed";
@@ -27,6 +28,10 @@ const TO_UPDATE = "To Update";
 const TO_LINK = "To Link";
 const TO_IGNORE = "To Ignore";
 
+// Import Item State
+const DUPLICITY_KEEP_THEIRS = "Duplicity Keep Theirs";
+const DUPLICITY_KEEP_OURS = "Duplicity Keep Ours";
+
 export default {
 	STATE: {
 		NEW,
@@ -40,6 +45,7 @@ export default {
 	STATUS: {
 		NEW,
 		UPDATING,
+		UPLOADING,
 		INTEGRITY_CHECK,
 		INTEGRITY_CHECK_CORRECT,
 		INTEGRITY_CHECK_FAILED,
@@ -58,5 +64,9 @@ export default {
 		TO_UPDATE,
 		TO_LINK,
 		TO_IGNORE,
+	},
+	ITEM_STATE: {
+		DUPLICITY_KEEP_THEIRS,
+		DUPLICITY_KEEP_OURS,
 	},
 };

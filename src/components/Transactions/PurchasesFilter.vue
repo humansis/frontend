@@ -7,32 +7,27 @@
 			:filters-options="filtersOptions"
 			@filtersChanged="filterChanged"
 		/>
-		neeeeee
 	</div>
 </template>
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import transactionHelper from "@/mixins/transactionHelper";
+import locationHelper from "@/mixins/locationHelper";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { copyObject } from "@/utils/helpers";
 
 export default {
 	name: "PurchasesFilter",
 
 	components: { AdvancedFilter },
 
-	mixins: [urlFiltersHelper, transactionHelper],
+	mixins: [filtersHelper, urlFiltersHelper, locationHelper],
 
 	props: {
 		defaultFilters: {
 			type: Object,
-			default: () => {},
-		},
-	},
-
-	data() {
-		return {
-			selectedFiltersOptions: {
+			default: () => ({
 				beneficiaryType: [],
 				project: [],
 				distribution: [],
@@ -44,7 +39,14 @@ export default {
 				vendor: [],
 				dateFrom: null,
 				dateTo: null,
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
+			filtersOptionsCopy: {},
 			filtersOptions: {
 				beneficiaryType: {
 					name: "Beneficiary Type",
@@ -97,7 +99,6 @@ export default {
 					label: "name",
 					loading: true,
 					data: [],
-					selectValue: "locationId",
 					filterForSend: "locations",
 				},
 				adm2: {
@@ -106,7 +107,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				adm3: {
 					name: "Commune",
@@ -114,7 +114,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				adm4: {
 					name: "Village",
@@ -122,7 +121,6 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
 				},
 				dateFrom: {
 					name: "Date From",
@@ -192,20 +190,6 @@ export default {
 			}
 		},
 
-		setLocationNames() {
-			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `${this.$t("Select")} ${this.admNames.adm1}`;
-
-			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `${this.$t("Select")} ${this.admNames.adm2}`;
-
-			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `${this.$t("Select")} ${this.admNames.adm3}`;
-
-			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `${this.$t("Select")} ${this.admNames.adm4}`;
-		},
-
 		async filterChanged(filters, filterName) {
 			const preparedFilters = { ...filters };
 
@@ -217,20 +201,7 @@ export default {
 				this.fetchAssistance();
 			}
 
-			let location = null;
-			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filtersCopy.adm4;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm3) {
-				const [a] = filtersCopy.adm3;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm2) {
-				const [a] = filtersCopy.adm2;
-				location = a;
-			} else if (this.selectedFiltersOptions.adm1) {
-				const [a] = filtersCopy.adm1;
-				location = a;
-			}
+			const location = this.getLocation(filters);
 
 			this.$emit("filtersChanged", {
 				filters: {
@@ -249,25 +220,6 @@ export default {
 					adm3: filtersCopy.adm3,
 					adm4: filtersCopy.adm4,
 				},
-			});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				beneficiaryType: [],
-				project: [],
-				distribution: [],
-				commodity: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				vendor: [],
-				dateFrom: null,
-				dateTo: null,
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
 			});
 		},
 	},

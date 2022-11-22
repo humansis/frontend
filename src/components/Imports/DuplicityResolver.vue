@@ -102,7 +102,7 @@
 									<b-button
 										:class="[
 											'is-link button-to-update',
-											state === 'Duplicity Keep Ours' ? '' : 'is-outlined'
+											state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS ? '' : 'is-outlined'
 										]"
 										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toUpdateLoading"
@@ -117,7 +117,7 @@
 									<b-button
 										:class="[
 											'is-info button-to-link',
-											state === 'Duplicity Keep Theirs' ? '' : 'is-outlined'
+											state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS ? '' : 'is-outlined'
 										]"
 										:disabled="toUpdateLoading || toLinkLoading"
 										:loading="toLinkLoading"
@@ -150,6 +150,7 @@ export default {
 
 	data() {
 		return {
+			consts,
 			duplicities: [],
 		};
 	},
@@ -247,6 +248,14 @@ export default {
 			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
 				.then(({ status }) => {
 					if (status === 202) {
+						if (state === consts.ITEM_STATUS.TO_LINK) {
+							this.duplicities[duplicityKey].state = consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+						}
+
+						if (state === consts.ITEM_STATUS.TO_UPDATE) {
+							this.duplicities[duplicityKey].state = consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
+						}
+
 						Toast(this.$t("Solved"), "is-success");
 					}
 
@@ -265,7 +274,11 @@ export default {
 					}
 				});
 
-			await this.fetchDuplicities();
+			this.duplicities = this.duplicities.map((item) => ({
+				...item,
+				toUpdateLoading: false,
+				toLinkLoading: false,
+			}));
 			this.$emit("updated");
 		},
 	},

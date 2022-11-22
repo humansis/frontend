@@ -333,6 +333,17 @@ export default {
 		return { data, status };
 	},
 
+	async updateAssistanceNote({ assistanceId, note }) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}`,
+			method: "PATCH",
+			body: {
+				note,
+			},
+		});
+		return { data, status };
+	},
+
 	async updateAssistanceToStatusCompleted({ assistanceId, completed }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}`,
@@ -345,10 +356,10 @@ export default {
 	},
 
 	async getSelectionCriteria(id) {
-		const { data: { data, totalCount } } = await fetcher({
+		const { data: { data, totalCount }, message } = await fetcher({
 			uri: `assistances/${id}/selection-criteria`,
 		});
-		return { data, totalCount };
+		return { data, totalCount, message };
 	},
 
 	async exportAssistances(format, projectId) {

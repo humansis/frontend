@@ -20,6 +20,7 @@
 					:class="validateMultiselect('communities')"
 					@select="validate('communities')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel v-slot:default="option">
 						{{ option.code }}
 					</template>
@@ -46,6 +47,7 @@
 					:class="validateMultiselect('institutions')"
 					@select="validate('institutions')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #singleLabel v-slot:default="option">
 						{{ option.code }}
 					</template>

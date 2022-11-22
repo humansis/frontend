@@ -169,8 +169,8 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onFiltersChange({ filters }) {
+			this.filters = filters;
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},

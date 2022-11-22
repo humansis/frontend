@@ -2,7 +2,11 @@
 	<div>
 		<!-- Simple Text -->
 		<template v-if="!column.type || (column.type === 'text')">
-			{{ data.row[column.field] }}
+			<span v-html="data.row[column.field]" />
+		</template>
+
+		<template v-if="column.type === 'assistancesType'">
+			{{ normalizeText($t(data.row[column.field])) }}
 		</template>
 
 		<!-- Simple Text -->

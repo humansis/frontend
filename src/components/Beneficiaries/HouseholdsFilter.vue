@@ -10,13 +10,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import ProjectService from "@/services/ProjectService";
-import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
+import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import locationHelper from "@/mixins/locationHelper";
+import { copyObject } from "@/utils/helpers";
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -26,11 +27,12 @@ export default {
 		AdvancedFilter,
 	},
 
-	mixins: [urlFiltersHelper],
+	mixins: [filtersHelper, urlFiltersHelper, locationHelper],
 
-	data() {
-		return {
-			selectedFiltersOptions: {
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
 				projects: [],
 				vulnerabilities: [],
 				gender: [],
@@ -42,7 +44,14 @@ export default {
 				adm3: [],
 				adm4: [],
 				locations: [],
-			},
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
+			filtersOptionsCopy: {},
 			filtersOptions: {
 				projects: {
 					name: "Project",
@@ -96,7 +105,6 @@ export default {
 					label: "name",
 					loading: true,
 					data: [],
-					selectValue: "locationId",
 					filterForSend: "locations",
 				},
 				adm2: {
@@ -105,7 +113,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 				adm3: {
 					name: "Commune",
@@ -113,7 +121,7 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 				adm4: {
 					name: "Village",
@@ -121,21 +129,10 @@ export default {
 					trackBy: "id",
 					label: "name",
 					data: [],
-					selectValue: "locationId",
+					type: "multiselect",
 				},
 			},
 		};
-	},
-
-	props: {
-		defaultFilters: {
-			type: Object,
-			default: () => {},
-		},
-	},
-
-	computed: {
-		...mapState(["admNames"]),
 	},
 
 	async created() {
@@ -150,7 +147,12 @@ export default {
 			this.fetchVulnerabilities(),
 			this.fetchResidenceStatuses(),
 			this.fetchReferralTypes(),
-		]);
+		]).then(() => {
+			this.fillParentCommunes();
+			this.fillParentDistricts();
+			this.fillParentProvinces();
+			this.filtersOptionsCopy = copyObject(this.filtersOptions);
+		});
 
 		await Promise.all([
 			this.setDefaultFilters(),
@@ -159,20 +161,6 @@ export default {
 	},
 
 	methods: {
-		setLocationNames() {
-			this.filtersOptions.adm1.name = this.admNames.adm1;
-			this.filtersOptions.adm1.placeholder = `Select ${this.admNames.adm1}`;
-
-			this.filtersOptions.adm2.name = this.admNames.adm2;
-			this.filtersOptions.adm2.placeholder = `Select ${this.admNames.adm2}`;
-
-			this.filtersOptions.adm3.name = this.admNames.adm3;
-			this.filtersOptions.adm3.placeholder = `Select ${this.admNames.adm3}`;
-
-			this.filtersOptions.adm4.name = this.admNames.adm4;
-			this.filtersOptions.adm4.placeholder = `Select ${this.admNames.adm4}`;
-		},
-
 		setDefaultFilters() {
 			if (this.defaultFilters.projects?.length) {
 				this.selectedFiltersOptions.projects = this.filtersOptions
@@ -212,24 +200,11 @@ export default {
 
 		async filterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
+			const location = this.getLocation(filters);
 
-			let location = null;
-			if (this.selectedFiltersOptions.adm4) {
-				const [a] = filtersCopy.adm4;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm3) {
-				const [a] = filtersCopy.adm3;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm2) {
-				const [a] = filtersCopy.adm2;
-				location = a;
-			} else
-			if (this.selectedFiltersOptions.adm1) {
-				const [a] = filtersCopy.adm1;
-				location = a;
-			}
+			this.setAdmParents(filterName);
+			this.filterAdmChildren(filterName);
+			this.$refs.advancedFilter.$forceUpdate();
 
 			this.$emit("filtersChanged", {
 				filters: {
@@ -258,53 +233,6 @@ export default {
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchDistricts(id) {
-			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchCommunes(id) {
-			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
-				});
-		},
-
-		async fetchVillages(id) {
-			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4(id)
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
 				});
 		},
 
@@ -350,25 +278,6 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
 				});
-		},
-
-		eraseFilters() {
-			this.selectedFiltersOptions = {
-				projects: [],
-				vulnerabilities: [],
-				gender: [],
-				residencyStatuses: [],
-				referralTypes: [],
-				livelihoods: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
-			};
-			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
-			});
 		},
 	},
 };

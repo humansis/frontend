@@ -75,7 +75,9 @@
 									:placeholder="$t('Click to select')"
 									:class="validateMultiselect('phone.prefix', true)"
 									@select="validate('phone.prefix')"
-								/>
+								>
+									<span slot="noOptions">{{ $t("List is empty")}}</span>
+								</MultiSelect>
 							</b-field>
 							<b-field
 								expanded

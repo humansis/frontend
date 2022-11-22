@@ -18,7 +18,15 @@
 						:deselectLabel="$t('Remove')"
 						:closeOnSelect="!options.multiple"
 						@input="filterChanged(filter)"
-					/>
+					>
+						<template slot="option" slot-scope="props">
+							<span class="option__title">{{ props.option[options.label || 'value'] }}</span>
+							<span class="option__small" v-if="props.option.parentLocationName">
+								({{ props.option.parentLocationName }})
+							</span>
+						</template>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 					<b-field v-else-if="options.type === 'text'">
 						<b-input
 							v-model="selectedFiltersOptions[filter]"
@@ -36,6 +44,7 @@
 							v-model="selectedFiltersOptions[filter]"
 							expanded
 							icon-right="calendar"
+							:month-names="months()"
 							:placeholder="$t(options.placeholder) || ''"
 							@input="filterChanged(filter)"
 						/>
@@ -77,8 +86,12 @@
 </template>
 
 <script>
+import calendarHelper from "@/mixins/calendarHelper";
+
 export default {
 	name: "AdvancedFilter",
+
+	mixins: [calendarHelper],
 
 	props: {
 		selectedFiltersOptions: Object,
@@ -99,6 +112,9 @@ export default {
 	},
 
 	methods: {
+		customLabel({ name, subLabel }) {
+			return `${name} – ${subLabel}`;
+		},
 		filterChanged(filterName) {
 			const filters = {};
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {
@@ -106,16 +122,18 @@ export default {
 				if (Array.isArray(this.selectedFiltersOptions[key])) {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
-						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
-						filters[filterKey].push(value[select]);
+						const select = this.filtersOptions[key]?.trackBy || "code";
+						if (filters[filterKey] && value && value[select]) {
+							filters[filterKey].push(value[select]);
+						}
 					});
 				} else if (this.selectedFiltersOptions[key]) {
-					if (this.filtersOptions[key].type === "date" || this.filtersOptions[key].type === "datetime") {
+					if (this.filtersOptions[key]?.type === "date" || this.filtersOptions[key]?.type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
-					} else if (this.filtersOptions[key].type === "text") {
+					} else if (this.filtersOptions[key]?.type === "text") {
 						filters[filterKey] = this.selectedFiltersOptions[key];
 					} else {
-						const select = this.filtersOptions[key]?.selectValue || this.filtersOptions[key].trackBy || "code";
+						const select = this.filtersOptions[key]?.trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 					}
 				}
@@ -139,3 +157,9 @@ export default {
 	},
 };
 </script>
+
+<style>
+.option__small {
+	font-size: 0.85em;
+}
+</style>

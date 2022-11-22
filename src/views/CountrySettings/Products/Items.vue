@@ -42,8 +42,8 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/Configuration/Products/ProductsList";
-import ProductForm from "@/components/Configuration/Products/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/ProductsList";
+import ProductForm from "@/components/CountrySettings/Products/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Notification, Toast } from "@/utils/UI";
@@ -78,6 +78,7 @@ export default {
 				unitPrice: 0,
 				currency: "",
 				image: "",
+				uploadedImage: null,
 			},
 			categories: [],
 			currencies,
@@ -133,6 +134,7 @@ export default {
 				unit,
 				unitPrice,
 				currency,
+				uploadedImage,
 			},
 		) {
 			const productCategory = this.categories.find((item) => productCategoryId === item.id);
@@ -148,6 +150,7 @@ export default {
 				unit,
 				unitPrice,
 				currency: productCurrency,
+				uploadedImage,
 			};
 		},
 
@@ -182,6 +185,7 @@ export default {
 				unit: "",
 				unitPrice: 0,
 				currency: "",
+				uploadedImage: null,
 			};
 		},
 

@@ -21,7 +21,9 @@
 					:options="options"
 					@open="selectOpened = true"
 					@close="selectOpened = false"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 		</section>
 		<footer class="modal-card-foot">

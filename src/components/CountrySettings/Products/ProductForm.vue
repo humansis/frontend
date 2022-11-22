@@ -41,7 +41,9 @@
 					:options="categories"
 					:class="validateMultiselect('productCategoryId')"
 					@select="validate('productCategoryId')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<span v-if="isCategoryTypeCashback()">
@@ -77,7 +79,9 @@
 						:options="options.currencies"
 						:class="validateMultiselect('currency')"
 						@select="validate('currency')"
-					/>
+					>
+						<span slot="noOptions">{{ $t("List is empty")}}</span>
+					</MultiSelect>
 				</b-field>
 			</span>
 

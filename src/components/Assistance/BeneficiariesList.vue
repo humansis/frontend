@@ -89,6 +89,20 @@
 				@formClosed="closeCommunityModal"
 			/>
 		</Modal>
+		<Modal
+			:header="$t('Input Deduplication')"
+			:active="inputDistributedModal.isOpened"
+			:is-waiting="inputDistributedModal.isWaiting"
+			@close="closeInputDistributedModal"
+		>
+			<InputDistributed
+				close-button
+				deduplication
+				class="modal-card"
+				@submit="reloadBeneficiariesList"
+				@close="closeInputDistributedModal"
+			/>
+		</Modal>
 		<div class="buttons space-between align-end">
 			<b-button
 				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
@@ -98,6 +112,15 @@
 				@click="openAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
+			</b-button>
+			<b-button
+				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				class="mb-4"
+				type="is-primary"
+				icon-left="minus"
+				@click="openInputDistributedModal"
+			>
+				{{ $t('Bulk remove') }}
 			</b-button>
 			<b-field v-if="changeButton">
 				<p class="control">
@@ -238,6 +261,7 @@ import exportConsts from "@/utils/exportConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -273,6 +297,7 @@ export default {
 		Modal,
 		ExportButton,
 		ColumnField,
+		InputDistributed,
 	},
 
 	mixins: [permissions, baseHelper, beneficiariesHelper],
@@ -309,16 +334,6 @@ export default {
 					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities", type: "svgIcon" },
-				],
-				householdsAndIndividualDetailColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
-					{ key: "nationalId", label: "ID Number", sortable: true },
-					{ key: "status", type: "tagArray", customTags: statusTags },
-					{ key: "toDistribute", type: "arrayTextBreak" },
-					{ key: "distributed", type: "arrayTextBreak" },
-					{ key: "lastModified", type: "arrayTextBreak" },
 				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
@@ -357,6 +372,10 @@ export default {
 				isEditing: false,
 				isWaiting: false,
 			},
+			inputDistributedModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -391,6 +410,27 @@ export default {
 	computed: {
 		...mapState(["perPage"]),
 
+		householdsAndIndividualDetailColumns() {
+			const baseColumns = [
+				{ key: "id", label: "Beneficiary ID", sortable: true },
+				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
+				{ key: "nationalId", label: "ID Number", sortable: true },
+				{ key: "status", type: "tagArray", customTags: statusTags },
+				{ key: "toDistribute", type: "arrayTextBreak" },
+				{ key: "distributed", type: "arrayTextBreak" },
+				{ key: "spent", type: "arrayTextBreak" },
+				{ key: "lastModified", type: "arrayTextBreak" },
+			];
+
+			if (!this.isCommoditySmartcard) {
+				const spentIndex = baseColumns.findIndex((element) => element.key === "spent");
+				baseColumns.splice(spentIndex, 1);
+			}
+
+			return baseColumns;
+		},
+
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
 		},
@@ -403,6 +443,10 @@ export default {
 			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH)
 				&& this.assistance?.type === "distribution"
 				&& this.assistance?.subsector === "multi_purpose_cash_assistance";
+		},
+
+		isCommoditySmartcard() {
+			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.SMARTCARD);
 		},
 	},
 
@@ -431,6 +475,14 @@ export default {
 		addedOrRemovedBeneficiary() {
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
+		},
+
+		openInputDistributedModal() {
+			this.inputDistributedModal.isOpened = true;
+		},
+
+		closeInputDistributedModal() {
+			this.inputDistributedModal.isOpened = false;
 		},
 
 		async fetchData(page, size) {
@@ -516,7 +568,7 @@ export default {
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					baseColumns = this.isAssistanceDetail
-						? this.table.householdsAndIndividualDetailColumns
+						? this.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
@@ -628,8 +680,8 @@ export default {
 
 					this.table.data = [...this.table.data];
 
-					this.preparePhoneForTable(phoneIds);
-					this.prepareNationalIdForTable(nationalIdIds);
+					await this.preparePhoneForTable(phoneIds);
+					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
 			if (this.isAssistanceDetail) {

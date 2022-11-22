@@ -43,7 +43,9 @@
 					:loading="rolesLoading"
 					:class="validateMultiselect('rights')"
 					@select="onRightsSelect"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -64,7 +66,9 @@
 					:options="options.projects"
 					:class="validateMultiselect('projectIds')"
 					@select="validate('projectIds')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -85,7 +89,9 @@
 					:loading="countriesLoading"
 					:class="validateMultiselect('countries')"
 					@select="validate('countries')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 				<small v-if="onlyOneCountry" class="ml-2">
 					<strong>{{ $t('You can select only one country') }}</strong>
 				</small>
@@ -106,7 +112,9 @@
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
 					:options="options.languages"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -133,7 +141,9 @@
 					:options="options.phonePrefixes"
 					:class="validateMultiselect('phonePrefix')"
 					@select="validate('phonePrefix')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field>

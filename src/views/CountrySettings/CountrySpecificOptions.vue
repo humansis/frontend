@@ -45,8 +45,8 @@
 
 <script>
 import { mapState } from "vuex";
-import CountrySpecificOptionForm from "@/components/Configuration/CountrySpecificOptionForm";
-import CountrySpecificOptionsList from "@/components/Configuration/CountrySpecificOptionsList";
+import CountrySpecificOptionForm from "@/components/CountrySettings/CountrySpecificOptionForm";
+import CountrySpecificOptionsList from "@/components/CountrySettings/CountrySpecificOptionsList";
 import Modal from "@/components/Modal";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Toast, Notification } from "@/utils/UI";

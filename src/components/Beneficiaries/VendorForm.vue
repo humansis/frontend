@@ -34,7 +34,7 @@
 			>
 				<b-input
 					v-model="formModel.name"
-					:disabled="formDisabled || isEditing"
+					:disabled="formDisabled"
 					@blur="validate('name')"
 				/>
 			</b-field>

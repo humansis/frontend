@@ -57,6 +57,7 @@
 					:class="validateMultiselect('type')"
 					@select="validate('type')"
 				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template slot="singleLabel" slot-scope="props">
 						<div class="option__desc">
 							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
@@ -93,7 +94,9 @@
 							:options="options.phonePrefixes"
 							:class="validateMultiselect('phonePrefix', true)"
 							@select="validate('phonePrefix')"
-						/>
+						>
+							<span slot="noOptions">{{ $t("List is empty")}}</span>
+						</MultiSelect>
 					</b-field>
 					<b-field
 						grouped
@@ -113,7 +116,9 @@
 							:options="options.phoneTypes"
 							:class="validateMultiselect('phoneType', true)"
 							@select="validate('phoneType')"
-						/>
+						>
+							<span slot="noOptions">{{ $t("List is empty")}}</span>
+						</MultiSelect>
 
 					</b-field>
 					<b-field
@@ -157,7 +162,9 @@
 					:options="options.nationalCardTypes"
 					:class="validateMultiselect('nationalCardType', true)"
 					@select="validate('nationalCardType')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -195,7 +202,9 @@
 					:options="options.projects"
 					:class="validateMultiselect('projects')"
 					@select="validate('projects')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<LocationForm

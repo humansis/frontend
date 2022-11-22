@@ -171,7 +171,11 @@ export default {
 		this.duplicate = !!this.$route.query.duplicateAssistance;
 		if (this.duplicate) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
-				.then(({ data }) => {
+				.then(({ data, message }) => {
+					if (!data) {
+						throw new Error(message);
+					}
+
 					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
 				})
 				.catch((e) => {
@@ -438,6 +442,10 @@ export default {
 
 			if (this.$refs.selectionCriteria) {
 				this.$refs.selectionCriteria.clearComponent();
+			}
+
+			if (this.$refs.distributedCommodity) {
+				this.$refs.distributedCommodity.clearComponent();
 			}
 			// TODO Reset all components in AddAssistance on targetSelected change
 		},

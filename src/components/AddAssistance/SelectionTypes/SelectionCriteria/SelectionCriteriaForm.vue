@@ -13,11 +13,13 @@
 					:placeholder="$t('Click to select')"
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('criteriaTarget')"
 					@select="onCriteriaTargetSelect"
 					@input="validate('criteriaTarget')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -32,11 +34,13 @@
 					:loading="criteriaLoading"
 					label="value"
 					track-by="code"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('criteria')"
 					@select="onCriteriaSelect"
 					@input="validate('criteria')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -51,10 +55,12 @@
 					track-by="code"
 					:options="options.conditions"
 					:loading="criteriaConditionsLoading"
-					:searchable="false"
+					searchable
 					:class="validateMultiselect('condition')"
 					@input="validate('condition')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 			</b-field>
 
 			<b-field
@@ -70,6 +76,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					@input="validate('value')"
 				/>
@@ -88,11 +95,13 @@
 					:placeholder="$t('Click to select')"
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
-					:searchable="false"
+					searchable
 					:disabled="valueDisabled"
 					:class="validateMultiselect('value')"
 					@input="validate('value')"
-				/>
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+				</MultiSelect>
 
 				<b-input
 					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.STRING"
@@ -142,6 +151,7 @@ import consts from "@/utils/assistanceConst";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import validation from "@/mixins/validation";
+import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "SelectionCriteriaForm",
@@ -154,7 +164,7 @@ export default {
 		closeButton: Boolean,
 	},
 
-	mixins: [validation],
+	mixins: [validation, calendarHelper],
 
 	data() {
 		return {

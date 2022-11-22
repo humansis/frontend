@@ -5,7 +5,8 @@
 				v-if="integrityStepActive && status"
 				class="card-content"
 			>
-				<div class="content">
+				<div class="content loading-ref">
+					<Loading v-if="isCheckingIntegrity" b-loading />
 					<b-progress
 						v-if="totalEntries"
 						size="is-large"
@@ -15,13 +16,19 @@
 							<b-progress-bar
 								type="is-light"
 								show-value
-								:value="totalEntries - amountIntegrityFailed"
+								:value="entriesLeft"
 							/>
 							<b-progress-bar
 								v-if="amountIntegrityFailed"
 								type="is-danger"
 								show-value
-								:value="amountIntegrityFailed"
+								:value="amountIntegrityFailedIncrement"
+							/>
+							<b-progress-bar
+								v-if="amountIntegrityCorrect"
+								type="is-success"
+								show-value
+								:value="amountIntegrityCorrectIncrement"
 							/>
 						</template>
 					</b-progress>
@@ -184,7 +191,9 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0" class="has-text-right">
+									<td v-if="index === 0 && itegrityCheckFailed"
+										class="has-text-right"
+									>
 										<b-button
 											type="is-info"
 											icon-right="file-download"
@@ -288,15 +297,25 @@
 </template>
 
 <script>
+import graduallyIncrement from "@/mixins/graduallyIncrement";
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
+import Loading from "@/components/Loading";
 import consts from "@/utils/importConst";
 
 export default {
 	name: "IntegrityStep",
 
+	mixins: [graduallyIncrement],
+
+	components: {
+		Loading,
+	},
+
 	data() {
 		return {
+			amountIntegrityCorrectIncrement: 0,
+			amountIntegrityFailedIncrement: 0,
 			importStatistics: {},
 			dropFiles: [],
 			startIntegrityCheckAgainLoading: false,
@@ -344,6 +363,22 @@ export default {
 			this.getAffectedRecords();
 			this.importStatus = value;
 		},
+
+		amountIntegrityCorrect(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, this.totalEntries, 60);
+			} else {
+				this.amountIntegrityCorrectIncrement = newValue;
+			}
+		},
+
+		amountIntegrityFailed(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, this.totalEntries, 120);
+			} else {
+				this.amountIntegrityFailedIncrement = newValue;
+			}
+		},
 	},
 
 	mounted() {
@@ -357,12 +392,24 @@ export default {
 				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
+		isCheckingIntegrity() {
+			return this.status === consts.STATUS.INTEGRITY_CHECK;
+		},
+
 		allowedFileExtensions() {
 			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
 
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
+		},
+
+		entriesLeft() {
+			if (this.amountIntegrityFailed) {
+				return this.totalEntries - this.amountIntegrityFailedIncrement
+					- this.amountIntegrityCorrectIncrement;
+			}
+			return this.totalEntries - this.amountIntegrityCorrectIncrement;
 		},
 
 		amountIntegrityCorrect() {
@@ -391,6 +438,10 @@ export default {
 			return this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
 				&& this.importStatus !== consts.STATUS.IMPORTING;
+		},
+
+		itegrityCheckFailed() {
+			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 	},
 

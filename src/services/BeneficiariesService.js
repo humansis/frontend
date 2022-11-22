@@ -205,10 +205,19 @@ export default {
 		return data;
 	},
 
-	async addOrRemoveBeneficiaryFromAssistance(assistanceId, target, body) {
+	async addBeneficiaryToAssistance(assistanceId, target, body) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "PUT",
+			body,
+		});
+		return { data, status };
+	},
+
+	async removeBeneficiaryFromAssistance(assistanceId, target, body) {
+		const { data, status } = await fetcher({
+			uri: `assistances/${assistanceId}/assistances-${target}`,
+			method: "DELETE",
 			body,
 		});
 		return { data, status };

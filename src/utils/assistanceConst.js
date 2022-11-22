@@ -40,6 +40,8 @@ const BUSINESS_GRANT = "Business Grant";
 const QR_CODE_VOUCHER = "QR Code Voucher";
 const PAPER_VOUCHER = "Paper Voucher";
 
+const CASHBACK = "Cashback";
+
 // Distribution types
 const PER_HOUSEHOLD = "Per Household";
 const PER_MEMBER_CODE = "Per Household Member";
@@ -104,6 +106,14 @@ const LOCATION = "location";
 const LOCATION_TYPE = "locationType";
 const STRING = "string";
 
+// Input distributed consts
+const IDS_LIST_MAX_LENGTH = 5000;
+const DEFAULT_INPUT_DISTRIBUTED_FORM_MODEL = {
+	idType: null,
+	idsList: "",
+	justification: "",
+};
+
 // Rounds options
 // ROUNDS_OPTIONS = [{ code: n, value: n },...]
 const ROUNDS_OPTIONS = [{ code: null, value: "N/A" }]
@@ -152,6 +162,7 @@ export default {
 		BUSINESS_GRANT,
 		QR_CODE_VOUCHER,
 		PAPER_VOUCHER,
+		CASHBACK,
 		DISTRIBUTION: {
 			PER_HOUSEHOLD,
 			PER_MEMBER_CODE,
@@ -176,4 +187,8 @@ export default {
 		STRING,
 	},
 	ROUNDS_OPTIONS,
+	INPUT_DISTRIBUTED: {
+		IDS_LIST_MAX_LENGTH,
+		DEFAULT_FORM_MODEL: DEFAULT_INPUT_DISTRIBUTED_FORM_MODEL,
+	},
 };

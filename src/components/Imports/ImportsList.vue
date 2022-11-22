@@ -233,8 +233,8 @@ export default {
 			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onFiltersChange({ filters }) {
+			this.filters = filters;
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},
@@ -298,7 +298,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.importFilter.eraseFilters();
+			this.$refs.importFilter.resetFilters();
 		},
 
 		resetTableSort() {

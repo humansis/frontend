@@ -4,6 +4,9 @@
 			:assistance="assistance"
 			:project="project"
 		/>
+
+		<EditNote :assistance="assistance" />
+
 		<b-steps
 			v-if="isTargetHouseholdOrIndividual"
 			v-model="activeStep"
@@ -99,6 +102,7 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import AssistancesService from "@/services/AssistancesService";
+import EditNote from "@/components/Assistance/EditNote";
 import { Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
@@ -110,6 +114,7 @@ export default {
 		AssistanceSummary,
 		BeneficiariesList,
 		ImportAndCompare,
+		EditNote,
 	},
 
 	data() {
