@@ -1,13 +1,45 @@
 <template>
 	<nav class="level">
-		<div class="level-item has-text-centered">
+		<div
+			v-if="assistanceType === consts.TYPE.DISTRIBUTION && !assistance.validated"
+			class="level-item has-text-centered"
+		>
 			<div class="box">
 				<h2 class="heading">{{ $t('In assistance') }}</h2>
 				<p
-					v-if="beneficiariesCount || beneficiariesCount === 0"
+					v-if="inAssistanceBeneficiariesCount || inAssistanceBeneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"
 				>
-					{{ beneficiariesCount }}
+					{{ inAssistanceBeneficiariesCount }}
+				</p>
+				<Loading v-else type="bubbles" is-normal />
+			</div>
+		</div>
+
+		<div
+			v-if="assistanceType === consts.TYPE.DISTRIBUTION && !assistance.validated"
+			class="level-item has-text-centered"
+		>
+			<div class="box">
+				<h2 class="heading">{{ $t('To distribute') }}</h2>
+				<p
+					v-if="amountTotal || amountTotal === 0"
+					class="has-text-weight-bold is-size-5"
+				>
+					<b-tooltip
+						v-if="commodity.length"
+						:label="$t(commodity.value)"
+					>
+						<SvgIcon :items="commodity" />
+					</b-tooltip>
+					<span
+						v-if="assistanceRemote"
+						class="remote-disribution-flag"
+					>
+						R
+					</span>
+					{{ amountTotal }}
+					{{ assistanceUnit }}
 				</p>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
@@ -25,20 +57,20 @@
 				>
 					{{ beneficiariesReached }}
 					{{ $t("of") }}
-					{{ beneficiariesCount }}
+					{{ inAssistanceBeneficiariesCount }}
 				</p>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
 
 		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION"
+			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
 			class="level-item has-text-centered"
 		>
-			<div class="box commodity-item">
-				<h2 class="heading">{{ $t('Commodity') }}</h2>
+			<div class="box">
+				<h2 class="heading">{{ $t('Distributed') }}</h2>
 				<p
-					v-if="commodity.length"
+					v-if="amountTotal || amountTotal === 0"
 					class="has-text-weight-bold is-size-5"
 				>
 					<b-tooltip
@@ -53,21 +85,6 @@
 					>
 						R
 					</span>
-				</p>
-				<Loading v-else type="bubbles" is-normal />
-			</div>
-		</div>
-
-		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
-			class="level-item has-text-centered"
-		>
-			<div class="box">
-				<h2 class="heading">{{ $t('Distributed') }}</h2>
-				<p
-					v-if="amountDistributed || amountDistributed === 0"
-					class="has-text-weight-bold is-size-5"
-				>
 					{{ amountDistributed }}
 					{{ $t("of") }}
 					{{ amountTotal }}
@@ -118,8 +135,9 @@ export default {
 	},
 
 	computed: {
-		beneficiariesCount() {
-			return this.statistics?.beneficiariesTotal || 0;
+		inAssistanceBeneficiariesCount() {
+			return this.statistics?.beneficiariesTotal
+				- this.statistics?.beneficiariesDeleted || 0;
 		},
 
 		beneficiariesReached() {

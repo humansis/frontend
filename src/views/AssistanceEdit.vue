@@ -2,6 +2,8 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:statistics="statistics"
+			:commodities="commodities"
 			:project="project"
 		/>
 
@@ -21,7 +23,7 @@
 					add-button
 					:assistance="assistance"
 					@beneficiariesReloaded="reloadOtherTabs"
-					@assistanceUpdated="fetchAssistance"
+					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</b-step-item>
 
@@ -80,7 +82,7 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
-				@assistanceUpdated="fetchAssistance"
+				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">
 				<b-button
@@ -121,6 +123,8 @@ export default {
 		return {
 			assistance: null,
 			project: null,
+			statistics: null,
+			commodities: [],
 			activeStep: 0,
 			target: "",
 			validateAssistanceButtonLoading: false,
@@ -131,6 +135,7 @@ export default {
 	mounted() {
 		this.fetchAssistance();
 		this.fetchProject();
+		this.fetchAssistanceStatistics();
 	},
 
 	methods: {
@@ -155,6 +160,10 @@ export default {
 					|| data.target === consts.TARGET.INDIVIDUAL;
 
 				this.assistance = data;
+
+				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+					this.fetchCommodity();
+				}
 			});
 		},
 
@@ -164,6 +173,21 @@ export default {
 			).then(({ data }) => {
 				this.project = data;
 			});
+		},
+
+		async fetchAssistanceStatistics() {
+			await AssistancesService.getAssistanceStatistics(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.statistics = data;
+			});
+		},
+
+		async fetchCommodity() {
+			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
+				.then(({ data }) => {
+					this.commodities = data;
+				});
 		},
 
 		async validateAssistance() {
@@ -188,6 +212,11 @@ export default {
 			});
 
 			this.validateAssistanceButtonLoading = false;
+		},
+
+		fetchUpdatedData() {
+			this.fetchAssistance();
+			this.fetchAssistanceStatistics();
 		},
 	},
 };

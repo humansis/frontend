@@ -33,7 +33,7 @@
 					v-if="beneficiariesCount || beneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"
 				>
-					{{ beneficiariesCount - beneficiariesDeleted }}
+					{{ beneficiariesCount }}
 				</p>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
