@@ -92,7 +92,7 @@
 			<b-collapse v-model="advancedSearchVisible">
 				<ImportsFilter
 					ref="importFilter"
-					@filtersChanged="onAdvancedFiltersChange"
+					@filtersChanged="onFiltersChange"
 				/>
 			</b-collapse>
 		</template>
@@ -234,13 +234,7 @@ export default {
 		},
 
 		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
-			this.table.currentPage = 1;
-			await this.fetchData();
-		},
-
-		async onAdvancedFiltersChange({ filters }) {
-			this.filters = filters;
+			this.filters = selectedFilters.filters || selectedFilters;
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},
