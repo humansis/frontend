@@ -155,16 +155,15 @@ export default {
 			formModel: { ...DEFAULT_FORM_MODEL },
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "modality", sortable: true, visible: true },
-					{ key: "modalityType", sortable: true, visible: true },
-					{ key: "unit", sortable: true, visible: true },
-					{ key: "value", sortable: true, visible: true },
-					{ key: "division", label: "For Each", sortable: true, visible: true },
-					{ key: "dateExpiration", label: "Expiration Date", sortable: false, visible: false },
-					{ key: "description", sortable: true, visible: true },
-				],
+				columns: generateColumns([
+					{ key: "modality", sortable: true },
+					{ key: "modalityType", sortable: true },
+					{ key: "unit", sortable: true },
+					{ key: "value", sortable: true },
+					{ key: "division", sortable: true, label: "For Each" },
+					{ key: "dateExpiration", label: "Expiration Date", sortable: false },
+					{ key: "description", sortable: true },
+				]),
 			},
 		};
 	},
@@ -196,10 +195,6 @@ export default {
 			type: String,
 			required: true,
 		},
-	},
-
-	created() {
-		this.table.columns = generateColumns(this.table.visibleColumns);
 	},
 
 	updated() {
@@ -290,7 +285,7 @@ export default {
 
 		formattedDate() {
 			const date = this.table?.data[0]?.dateExpiration;
-			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "";
+			return date ? this.$moment(date).format("YYYY-MM-DD hh:mm") : "";
 		},
 	},
 
