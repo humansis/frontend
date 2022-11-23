@@ -184,10 +184,11 @@ export default {
 		},
 
 		async fetchCommodity() {
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => {
-					this.commodities = data;
-				});
+			await AssistancesService.getAssistanceCommodities(
+				this.$route.params.assistanceId,
+			).then(({ data }) => {
+				this.commodities = data;
+			});
 		},
 
 		async validateAssistance() {
