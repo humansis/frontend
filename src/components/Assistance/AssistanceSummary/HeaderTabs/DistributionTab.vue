@@ -1,18 +1,19 @@
 <template>
-	<nav class="level">
+	<nav class="level level-center">
 		<div
 			v-if="assistanceType === consts.TYPE.DISTRIBUTION && !assistance.validated"
 			class="level-item has-text-centered"
 		>
 			<div class="box">
 				<h2 class="heading">{{ $t('In assistance') }}</h2>
-				<p
+
+				<div
 					v-if="inAssistanceBeneficiariesCount || inAssistanceBeneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ inAssistanceBeneficiariesCount }}
-				</p>
-				<Loading v-else type="bubbles" is-normal />
+				</div>
+				<Loading v-else type="bubbles" is-small />
 			</div>
 		</div>
 
@@ -22,9 +23,10 @@
 		>
 			<div class="box">
 				<h2 class="heading">{{ $t('To distribute') }}</h2>
-				<p
+
+				<div
 					v-if="isToDistributeValid"
-					class="has-text-weight-bold is-size-5"
+					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
 				>
 					<b-tooltip
 						v-if="commodity.length"
@@ -40,7 +42,7 @@
 					</span>
 					{{ amountTotal }}
 					{{ assistanceUnit }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -51,14 +53,15 @@
 		>
 			<div class="box">
 				<h2 class="heading">{{ $t('Reached') }}</h2>
-				<p
+
+				<div
 					v-if="isReachedValid"
-					class="has-text-weight-bold is-size-5"
+					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
 				>
 					{{ beneficiariesReached }}
 					{{ $t("of") }}
 					{{ inAssistanceBeneficiariesCount }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -69,9 +72,10 @@
 		>
 			<div class="box">
 				<h2 class="heading">{{ $t('Distributed') }}</h2>
-				<p
+
+				<div
 					v-if="isDistributedValid"
-					class="has-text-weight-bold is-size-5"
+					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
 				>
 					<b-tooltip
 						v-if="commodity.length"
@@ -89,7 +93,7 @@
 					{{ $t("of") }}
 					{{ amountTotal }}
 					{{ assistanceUnit }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -153,7 +157,7 @@ export default {
 
 		assistanceUnit() {
 			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
-				return this.commodities?.[0]?.unit;
+				return this.commodities?.[0]?.unit || "";
 			}
 
 			if (this.assistance?.type === consts.TYPE.ACTIVITY) return this.$t("Activity");

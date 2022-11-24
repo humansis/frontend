@@ -17,13 +17,24 @@
 				type="is-success"
 			/>
 		</h2>
+
 		<p v-if="assistanceDescription" class="has-text-centered mb-6">
 			{{ assistanceDescription }}
 		</p>
+
 		<b-tabs
-			vertical
-			class="hide-mobile ml-3"
+			position="is-centered"
+			class="ml-3"
 		>
+			<b-tab-item :label="$t('Distribution')" icon="bullseye" class="relative-position">
+				<DistributionTab
+					:assistance="assistance"
+					:statistics="statistics"
+					:commodity="commodity"
+					:commodities="commodities"
+				/>
+			</b-tab-item>
+
 			<b-tab-item :label="$t('Assistance')" icon="user" class="relative-position">
 				<AssistanceTab
 					:projectName="projectName"
@@ -38,35 +49,7 @@
 					:statistics="statistics"
 				/>
 			</b-tab-item>
-
-			<b-tab-item :label="$t('Distribution')" icon="bullseye" class="relative-position">
-				<DistributionTab
-					:assistance="assistance"
-					:statistics="statistics"
-					:commodity="commodity"
-					:commodities="commodities"
-				/>
-			</b-tab-item>
 		</b-tabs>
-
-		<nav class="level hide-desktop hide-tablet">
-			<AssistanceTab
-				:projectName="projectName"
-				:admName="admNames.adm1"
-				:provinceName="provinceName"
-			/>
-			<SelectionTab
-				:assistance="assistance"
-				:statistics="statistics"
-			/>
-			<DistributionTab
-				:assistance="assistance"
-				:statistics="statistics"
-				:commodity="commodity"
-				:commodities="commodities"
-			/>
-		</nav>
-		<hr>
 	</div>
 </template>
 
@@ -190,28 +173,18 @@ export default {
 <style lang="scss">
 .assistance-summary {
 	.box {
-		height: 90px;
+		font-size: 17px;
+		line-height: 30px;
 	}
 
-	.tab-content {
-		height: 118px;
-	}
-
-	.relative-position {
-		position: relative !important;
-	}
-
-	.level {
-		justify-content: flex-start;
-		.level-item:not(.is-narrow) {
-			flex-grow: .05;
-		}
+	.tooltip-trigger {
+		height: 1.7em;
 	}
 
 	.remote-disribution-flag {
 		position: relative;
-		top: -18px;
-		left: -10px;
+		top: -10px;
+		left: -5px;
 	}
 }
 </style>

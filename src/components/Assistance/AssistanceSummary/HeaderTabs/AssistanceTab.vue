@@ -1,9 +1,10 @@
 <template>
-	<div class="level">
+	<div class="level level-center">
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Project') }}</h2>
-				<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
+
+				<div v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -11,7 +12,8 @@
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t(admName) }}</h2>
-				<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
+
+				<div v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -19,19 +21,21 @@
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Round') }}</h2>
-				<p class="has-text-weight-bold is-size-5">{{ round }}</p>
+
+				<div class="has-text-weight-bold is-size-5">{{ round }}</div>
 			</div>
 		</div>
 
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Date of Assistance') }}</h2>
-				<p
+
+				<div
 					v-if="dateDistribution"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ dateDistribution }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -39,12 +43,13 @@
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Expiration Date') }}</h2>
-				<p
+
+				<div
 					v-if="dateExpiration"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ dateExpiration }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>

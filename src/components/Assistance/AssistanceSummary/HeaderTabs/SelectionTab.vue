@@ -1,14 +1,15 @@
 <template>
-	<nav class="level">
+	<nav class="level level-center">
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Target') }}</h2>
-				<p
+
+				<div
 					v-if="assistanceTarget"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ assistanceTarget }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -16,12 +17,13 @@
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Scoring') }}</h2>
-				<p
+
+				<div
 					v-if="assistanceTarget"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ assistanceScoringType }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
@@ -29,12 +31,13 @@
 		<div class="level-item has-text-centered">
 			<div class="box">
 				<h2 class="heading">{{ $t('Selected') }}</h2>
-				<p
+
+				<div
 					v-if="beneficiariesCount || beneficiariesCount === 0"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ beneficiariesCount }}
-				</p>
+				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
