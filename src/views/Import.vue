@@ -98,7 +98,6 @@ import IdentityStep from "@/components/Imports/IdentityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
-import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/importConst";
 
 export default {
@@ -125,7 +124,15 @@ export default {
 		},
 
 		importProject() {
-			const projects = this.projects?.map(({ name }) => (name)) || [];
+			if (!this.importDetail.projects
+				|| !this.importDetail.projects.length) return [];
+
+			const projects = [];
+
+			this.importDetail.projects.forEach((item) => {
+				projects.push(item.name);
+			});
+
 			return projects.join(", ");
 		},
 
@@ -288,8 +295,6 @@ export default {
 			ImportService.getDetailOfImport(importId).then(({ data }) => {
 				this.importDetail = data;
 				this.stepsRedirect(data.status);
-
-				this.fetchProjects(data.projects);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
 			});
@@ -303,14 +308,6 @@ export default {
 					this.statistics = data;
 				});
 			}
-		},
-
-		fetchProjects(projectIds) {
-			ProjectService.getListOfProjects(null, null, null, null, projectIds).then(({ data }) => {
-				this.projects = data;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
-			});
 		},
 
 		stepsRedirect(status) {
