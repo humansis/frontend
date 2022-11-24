@@ -162,7 +162,7 @@ export default {
 		},
 
 		assistanceType() {
-			return this.assistance?.type;
+			return this.assistance?.type || "";
 		},
 
 		assistanceRemote() {
