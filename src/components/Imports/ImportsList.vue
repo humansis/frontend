@@ -233,8 +233,8 @@ export default {
 			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 
-		async onFiltersChange({ filters }) {
-			this.filters = filters;
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters.filters || selectedFilters;
 			this.table.currentPage = 1;
 			await this.fetchData();
 		},
