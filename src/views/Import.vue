@@ -124,9 +124,7 @@ export default {
 		},
 
 		importProject() {
-			if (!this.importDetail.projects?.length) return [];
-
-			return this.importDetail.projects.map(({ name }) => name).join(", ");
+			return this.importDetail.projects?.map(({ name }) => name).join(", ") || [];
 		},
 
 		importStatusType() {
