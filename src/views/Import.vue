@@ -126,13 +126,7 @@ export default {
 		importProject() {
 			if (!this.importDetail.projects?.length) return [];
 
-			const projects = [];
-
-			this.importDetail.projects.forEach((item) => {
-				projects.push(item.name);
-			});
-
-			return projects.join(", ");
+			return this.importDetail.projects.map(({ name }) => name).join(", ");
 		},
 
 		importStatusType() {
