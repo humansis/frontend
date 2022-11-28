@@ -124,8 +124,7 @@ export default {
 		},
 
 		importProject() {
-			if (!this.importDetail.projects
-				|| !this.importDetail.projects.length) return [];
+			if (!this.importDetail.projects?.length) return [];
 
 			const projects = [];
 
