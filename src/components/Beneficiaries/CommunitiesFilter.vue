@@ -28,7 +28,7 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: consts.DEFAULT_FILTERS.projects,
+				projects: consts.DEFAULT_FILTERS.PROJECTS,
 			}),
 		},
 	},

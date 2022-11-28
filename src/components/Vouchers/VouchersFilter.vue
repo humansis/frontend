@@ -31,10 +31,10 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				currencies: consts.DEFAULT_FILTERS.currencies,
-				statuses: consts.DEFAULT_FILTERS.statuses,
-				assistances: consts.DEFAULT_FILTERS.assistances,
-				beneficiaries: consts.DEFAULT_FILTERS.beneficiaries,
+				currencies: consts.DEFAULT_FILTERS.CURRENCIES,
+				statuses: consts.DEFAULT_FILTERS.STATUSES,
+				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
+				beneficiaries: consts.DEFAULT_FILTERS.BENEFICIARIES,
 			}),
 		},
 	},

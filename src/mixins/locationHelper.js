@@ -1,7 +1,6 @@
 import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
 
 export default {
 	computed: {
@@ -211,14 +210,11 @@ export default {
 
 		clearedLocationFilters(filters, filterName) {
 			const filtersCopy = copyObject(filters);
-			const admNumber = parseInt(filterName.slice(-1), 10);
 
-			if (!Number.isNaN(admNumber)) {
-				for (let i = 1; i <= 4; i += 1) {
-					if (i !== admNumber) {
-						this.selectedFiltersOptions[`adm${i}`] = consts.DEFAULT_FILTERS[`adm${i}`];
-						filtersCopy[`adm${i}`] = consts.DEFAULT_FILTERS[`adm${i}`];
-					}
+			for (let i = 1; i <= 4; i += 1) {
+				if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
+					this.selectedFiltersOptions[`adm${i}`] = [];
+					filtersCopy[`adm${i}`] = [];
 				}
 			}
 

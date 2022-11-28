@@ -26,8 +26,8 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				dateFrom: consts.DEFAULT_FILTERS.dateFrom,
-				dateTo: consts.DEFAULT_FILTERS.dateTo,
+				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},

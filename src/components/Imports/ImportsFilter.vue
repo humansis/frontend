@@ -28,8 +28,8 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: consts.DEFAULT_FILTERS.projects,
-				status: consts.DEFAULT_FILTERS.status,
+				projects: consts.DEFAULT_FILTERS.PROJECTS,
+				status: consts.DEFAULT_FILTERS.STATUS,
 			}),
 		},
 	},

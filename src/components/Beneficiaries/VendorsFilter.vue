@@ -31,12 +31,12 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				invoicing: consts.DEFAULT_FILTERS.invoicing,
-				adm1: consts.DEFAULT_FILTERS.adm1,
-				adm2: consts.DEFAULT_FILTERS.adm2,
-				adm3: consts.DEFAULT_FILTERS.adm3,
-				adm4: consts.DEFAULT_FILTERS.adm4,
-				locations: consts.DEFAULT_FILTERS.locations,
+				invoicing: consts.DEFAULT_FILTERS.INVOICING,
+				adm1: consts.DEFAULT_FILTERS.ADM1,
+				adm2: consts.DEFAULT_FILTERS.ADM2,
+				adm3: consts.DEFAULT_FILTERS.ADM3,
+				adm4: consts.DEFAULT_FILTERS.ADM4,
+				locations: consts.DEFAULT_FILTERS.LOCATIONS,
 			}),
 		},
 	},
@@ -131,13 +131,13 @@ export default {
 			this.$emit("filtersChanged", {
 				filters: {
 					invoicing: filters.invoicing?.[0] || null,
-					locations: location ? [location] : consts.DEFAULT_FILTERS.locations,
+					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.adm1,
-					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.adm2,
-					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.adm3,
-					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},
