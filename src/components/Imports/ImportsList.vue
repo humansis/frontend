@@ -236,18 +236,18 @@ export default {
 			await this.fetchData();
 		},
 
-		async prepareDataForTable(data) {
+		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 			});
 
 			this.table.progress = 50;
 
-			await this.prepareProjectsForTable();
-			await this.prepareUsersForTable();
+			this.prepareProjectsForTable();
+			this.prepareUsersForTable();
 		},
 
-		async prepareProjectsForTable() {
+		prepareProjectsForTable() {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].project = item.projects.map(({ name }) => name).join(", ");
 			});
@@ -256,7 +256,7 @@ export default {
 			this.reload();
 		},
 
-		async prepareUsersForTable() {
+		prepareUsersForTable() {
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].createdBy = item.createdBy.email;
 			});
