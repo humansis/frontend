@@ -209,9 +209,9 @@ export default {
 		},
 
 		clearedLocationFilters(filters, filterName) {
+			if (!filterName) return filters;
+
 			const filtersCopy = copyObject(filters);
-			console.log(filtersCopy);
-			if (!filterName) return filtersCopy;
 
 			for (let i = 1; i <= 4; i += 1) {
 				if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
