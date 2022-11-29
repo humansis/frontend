@@ -179,11 +179,11 @@ export default {
 			}
 
 			if (this.defaultFilters.dateFrom) {
-				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
+				this.selectedFiltersOptions.dateFrom = this.defaultFilters.dateFrom;
 			}
 
 			if (this.defaultFilters.dateTo) {
-				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
+				this.selectedFiltersOptions.dateTo = this.defaultFilters.dateTo;
 			}
 
 			if (this.$refs.advancedFilter) {
