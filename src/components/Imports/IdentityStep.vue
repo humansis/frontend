@@ -107,7 +107,7 @@
 						icon-left="tasks"
 						icon-right="arrow-down"
 						:loading="resolveDuplicitiesLoading"
-						:disabled="allRecordsFormLoading"
+						:disabled="duplicitiesContentOpened"
 						@click="resolveDuplicities"
 					>
 						{{ $t('Manage Duplicities') }}
