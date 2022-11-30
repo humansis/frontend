@@ -25,25 +25,11 @@
 					:placeholder="$t('Click to select')"
 					:loading="loading.beneficiaries"
 					:disabled="formDisabled"
-					:options="options.beneficiaries"
+					:options="beneficiariesOptions"
 					:class="validateMultiselect('beneficiaries')"
 					@select="validate('beneficiaries')"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">
-								{{ getOptionTitle(props.option) }}
-							</span>
-						</div>
-					</template>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">
-								{{ getOptionTitle(props.option) }}
-							</span>
-						</div>
-					</template>
 				</MultiSelect>
 			</b-field>
 			<b-field
@@ -126,10 +112,17 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					result = "localGivenName";
+					result = "fullName";
 			}
 
 			return result;
+		},
+
+		beneficiariesOptions() {
+			return this.options.beneficiaries.map((beneficiary) => ({
+				...beneficiary,
+				fullName: this.getOptionTitle(beneficiary),
+			}));
 		},
 	},
 
