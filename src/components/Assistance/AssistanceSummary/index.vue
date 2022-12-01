@@ -29,24 +29,33 @@
 			<b-tab-item :label="$t('Distribution')" icon="bullseye" class="relative-position">
 				<DistributionTab
 					:assistance="assistance"
+					:is-assistance-loading="isAssistanceLoading"
 					:statistics="statistics"
+					:is-statistics-loading="isStatisticsLoading"
 					:commodity="commodity"
+					:is-commodity-loading="isCommodityLoading"
 					:commodities="commodities"
+					:is-commodities-loading="isCommoditiesLoading"
 				/>
 			</b-tab-item>
 
 			<b-tab-item :label="$t('Assistance')" icon="user" class="relative-position">
 				<AssistanceTab
-					:projectName="projectName"
-					:admName="admNames.adm1"
-					:provinceName="provinceName"
+					:assistance="assistance"
+					:is-assistance-loading="isAssistanceLoading"
+					:project="project"
+					:is-project-loading="isProjectLoading"
+					:province="province"
+					:is-province-loading="isProvinceLoading"
 				/>
 			</b-tab-item>
 
 			<b-tab-item :label="$t('Selection')" icon="home" class="relative-position">
 				<SelectionTab
 					:assistance="assistance"
+					:is-assistance-loading="isAssistanceLoading"
 					:statistics="statistics"
+					:is-statistics-loading="isStatisticsLoading"
 				/>
 			</b-tab-item>
 		</b-tabs>
@@ -54,7 +63,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";
@@ -81,6 +89,22 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		isStatisticsLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isAssistanceLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isCommoditiesLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isProjectLoading: {
+			type: Boolean,
+			default: false,
+		},
 		project: {
 			type: Object,
 			default: () => {},
@@ -96,6 +120,8 @@ export default {
 			consts,
 			province: null,
 			commodity: [],
+			isProvinceLoading: false,
+			isCommodityLoading: false,
 		};
 	},
 
@@ -109,8 +135,6 @@ export default {
 	},
 
 	computed: {
-		...mapState(["admNames"]),
-
 		assistanceName() {
 			return this.assistance?.name || "";
 		},
@@ -125,14 +149,6 @@ export default {
 
 		assistanceDescription() {
 			return this.assistance?.description;
-		},
-
-		provinceName() {
-			return this.province?.name || "";
-		},
-
-		projectName() {
-			return this.project?.name || "";
 		},
 
 		validated() {
@@ -150,19 +166,27 @@ export default {
 
 	methods: {
 		async fetchLocation(adm1Id) {
+			this.isProvinceLoading = true;
+
 			await LocationsService.getDetailOfAdm1(
 				adm1Id,
 			).then(({ data }) => {
 				this.province = data;
+			}).finally(() => {
+				this.isProvinceLoading = false;
 			});
 		},
 
 		async fetchCommodity(assistanceId) {
+			this.isCommodityLoading = true;
+
 			await AssistancesService.getAssistanceCommodities(
 				assistanceId,
 			).then(({ data }) => {
 				this.commodity = data
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
+			}).finally(() => {
+				this.isCommodityLoading = false;
 			});
 		},
 

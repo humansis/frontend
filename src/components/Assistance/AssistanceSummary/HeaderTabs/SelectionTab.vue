@@ -10,7 +10,12 @@
 				>
 					{{ assistanceTarget }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 
@@ -19,12 +24,17 @@
 				<h2 class="heading">{{ $t('Scoring') }}</h2>
 
 				<div
-					v-if="assistanceTarget"
+					v-if="assistanceTarget && assistanceScoringType"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ assistanceScoringType }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 
@@ -38,7 +48,12 @@
 				>
 					{{ beneficiariesCount }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 	</nav>
@@ -60,6 +75,14 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		isStatisticsLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isAssistanceLoading: {
+			type: Boolean,
+			default: false,
+		},
 		statistics: {
 			type: Object,
 			default: () => {},
@@ -76,15 +99,15 @@ export default {
 		},
 
 		assistanceScoringType() {
-			return this.assistance?.scoringBlueprint?.name || this.$t("Default");
+			return this.assistance?.scoringBlueprint?.name;
 		},
 
 		beneficiariesCount() {
-			return this.statistics?.beneficiariesTotal || 0;
+			return this.statistics?.beneficiariesTotal;
 		},
 
 		beneficiariesDeleted() {
-			return this.statistics?.beneficiariesTotal || 0;
+			return this.statistics?.beneficiariesTotal;
 		},
 	},
 };

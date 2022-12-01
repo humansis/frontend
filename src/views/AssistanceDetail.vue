@@ -2,9 +2,13 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:is-statistics-loading="isStatisticsLoading"
 			:statistics="statistics"
+			:is-assistance-loading="isAssistanceLoading"
 			:commodities="commodities"
+			:is-commodities-loading="isCommoditiesLoading"
 			:project="project"
+			:is-project-loading="isProjectLoading"
 		/>
 		<Modal
 			:header="$t('Start Transaction')"
@@ -152,6 +156,10 @@ export default {
 			consts,
 			assistance: null,
 			statistics: null,
+			isStatisticsLoading: false,
+			isAssistanceLoading: false,
+			isCommoditiesLoading: false,
+			isProjectLoading: false,
 			project: null,
 			beneficiariesCount: 0,
 			countOfCompleted: 0,
@@ -293,6 +301,8 @@ export default {
 		},
 
 		async fetchAssistance() {
+			this.isAssistanceLoading = true;
+
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
@@ -304,20 +314,28 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isAssistanceLoading = false;
 			});
 		},
 
 		async fetchAssistanceStatistics() {
+			this.isStatisticsLoading = true;
+
 			AssistancesService.getAssistanceStatistics(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.statistics = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.isStatisticsLoading = false;
 			});
 		},
 
 		async fetchProject() {
+			this.isProjectLoading = true;
+
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
@@ -325,6 +343,8 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isProjectLoading = false;
 			});
 		},
 
@@ -429,12 +449,16 @@ export default {
 		},
 
 		async fetchCommodity() {
+			this.isCommoditiesLoading = true;
+
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => {
 					this.commodities = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.isCommoditiesLoading = false;
 				});
 		},
 

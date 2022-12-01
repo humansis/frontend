@@ -13,7 +13,12 @@
 				>
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
-				<Loading v-else type="bubbles" is-small />
+				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 
@@ -43,7 +48,12 @@
 					{{ amountTotal }}
 					{{ assistanceUnit }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 
@@ -56,13 +66,18 @@
 
 				<div
 					v-if="isReachedValid"
-					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
+					class="is-flex is-justify-content-center has-text-weight-bold is-size-5"
 				>
 					{{ beneficiariesReached }}
 					{{ $t("of") }}
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 
@@ -94,7 +109,12 @@
 					{{ amountTotal }}
 					{{ assistanceUnit }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
+				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<div v-else class="level-item">
+					<b-tooltip :label="$t('Data not loaded')">
+						<b-icon icon="exclamation-circle" size="is-medium" />
+					</b-tooltip>
+				</div>
 			</div>
 		</div>
 	</nav>
@@ -121,6 +141,18 @@ export default {
 		statistics: {
 			type: Object,
 			default: () => {},
+		},
+		isStatisticsLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isCommoditiesLoading: {
+			type: Boolean,
+			default: false,
+		},
+		isCommodityLoading: {
+			type: Boolean,
+			default: false,
 		},
 		commodity: {
 			type: Array,
