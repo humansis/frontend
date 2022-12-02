@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if="!duplicitiesLoading">
 		<hr>
 
 		<h2 class="subtitle is-5 mb-4">
@@ -14,8 +14,6 @@
 					itemId,
 					memberDuplicities,
 					duplicityCandidateId,
-					toUpdateLoading,
-					toLinkLoading,
 					state,
 				}, duplicityKey) of duplicities"
 				:key="duplicityKey"
@@ -104,8 +102,8 @@
 											'is-link button-to-update',
 											state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS ? '' : 'is-outlined'
 										]"
-										:disabled="toUpdateLoading || toLinkLoading"
-										:loading="toUpdateLoading"
+										:disabled="changesLoading(duplicityKey)"
+										:loading="changesLoading(duplicityKey)"
 										@click="resolveToUpdate(
 											itemId,
 											duplicityCandidateId,
@@ -119,8 +117,8 @@
 											'is-info button-to-link',
 											state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS ? '' : 'is-outlined'
 										]"
-										:disabled="toUpdateLoading || toLinkLoading"
-										:loading="toLinkLoading"
+										:disabled="changesLoading(duplicityKey)"
+										:loading="changesLoading(duplicityKey)"
 										@click="resolveToLink(
 											itemId,
 											duplicityCandidateId,
@@ -137,6 +135,9 @@
 				<hr>
 			</div>
 		</div>
+	</div>
+	<div v-else>
+		<b-loading :is-full-page="false" :active="duplicitiesLoading" />
 	</div>
 </template>
 
@@ -160,10 +161,22 @@ export default {
 			type: String,
 			required: true,
 		},
+		duplicitiesLoading: {
+			type: Boolean,
+		},
+		// changesLoading
+		formChangesLoading: {
+			type: Boolean,
+		},
 	},
 
 	mounted() {
 		this.fetchDuplicities();
+	},
+	watch: {
+		duplicities(value) {
+			this.$emit("duplicitiesChange", value);
+		},
 	},
 
 	methods: {
@@ -176,6 +189,7 @@ export default {
 				toLinkLoading: false }));
 
 			this.$emit("loaded", true);
+			Toast(this.$t("Duplicities were resolved"), "is-success");
 		},
 
 		transformProperty(text) {
@@ -196,6 +210,12 @@ export default {
 			}
 
 			return result;
+		},
+
+		changesLoading(duplicityKey) {
+			return this.duplicities[duplicityKey].toUpdateLoading
+				|| this.duplicities[duplicityKey].toLinkLoading
+					|| this.formChangesLoading;
 		},
 
 		hasDuplicityDifferences(differences) {

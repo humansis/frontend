@@ -77,7 +77,7 @@
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
-					icon-right="ban"
+					icon-left="ban"
 					@click="cancelImport"
 				>
 					{{ $t('Cancel Import') }}
@@ -85,18 +85,18 @@
 				<div>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:type="['is-link' , { 'is-outlined': this.resolversAllActive
+						:class="['is-link' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
-						:disabled="resolversAllLoading"
+						:disabled="allRecordsFormLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
 					>
 						{{ $t('All From File') }}
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:type="['is-info' , { 'is-outlined': this.resolversAllActive
+						:class="['is-info' , { 'is-outlined': this.resolversAllActive
 							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
-						:disabled="resolversAllLoading"
+						:disabled="allRecordsFormLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
 					>
 						{{ $t('All From Humansis') }}
@@ -104,9 +104,10 @@
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						type="is-primary"
-						icon-right="tasks"
+						icon-left="tasks"
+						icon-right="arrow-down"
 						:loading="resolveDuplicitiesLoading"
-						:disabled="resolversAllLoading"
+						:disabled="duplicitiesContentOpened"
 						@click="resolveDuplicities"
 					>
 						{{ $t('Manage Duplicities') }}
@@ -125,7 +126,7 @@
 					<b-button
 						v-if="canGoToFinalisation"
 						type="is-primary"
-						icon-right="play-circle"
+						icon-left="play-circle"
 						:loading="changeStateButtonLoading"
 						@click="goToFinalisation"
 					>
@@ -138,8 +139,11 @@
 				<DuplicityResolver
 					ref="duplicityResolver"
 					:header="$t('Duplicity Cases')"
+					:duplicities-loading="resolveDuplicitiesLoading"
+					:form-changes-loading="allRecordsFormLoading"
 					@loaded="onDuplicityLoaded"
 					@updated="update"
+					@duplicitiesChange="loadDuplicities"
 				/>
 			</div>
 		</div>
@@ -152,7 +156,6 @@ import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
 import Loading from "@/components/Loading";
-import { Toast } from "@/utils/UI";
 
 export default {
 	name: "IdentityStep",
@@ -173,8 +176,10 @@ export default {
 			changeStateButtonLoading: false,
 			resolveDuplicitiesLoading: false,
 			importStatus: "",
+			duplicities: [],
 			resolversAllLoading: false,
 			resolversAllActive: "",
+			allFromSolved: true,
 			amountIdentityDuplicitiesIncrement: 0,
 			amountIdentityDuplicitiesResolvedIncrement: 0,
 		};
@@ -211,6 +216,10 @@ export default {
 			this.importStatus = value;
 		},
 
+		duplicities() {
+			this.allFromSolved = true;
+		},
+
 		amountIdentityDuplicities(newValue) {
 			if (this.isCheckingIdentity) {
 				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
@@ -229,6 +238,22 @@ export default {
 	},
 
 	computed: {
+		allRecordsFormLoading() {
+			if (this.resolversAllActive === consts.ITEM_STATUS.TO_UPDATE) {
+				return this.resolversAllLoading
+					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Ours")
+						&& !this.allFromSolved);
+			}
+
+			if (this.resolversAllActive === consts.ITEM_STATUS.TO_LINK) {
+				return this.resolversAllLoading
+					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Theirs")
+						&& !this.allFromSolved);
+			}
+
+			return this.resolversAllLoading;
+		},
+
 		identityStepActive() {
 			return this.status === consts.STATUS.IDENTITY_CHECK
 				|| this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
@@ -280,16 +305,20 @@ export default {
 	},
 
 	methods: {
+		loadDuplicities(value) {
+			this.duplicities = value;
+		},
+
 		changeBulkDuplicitiesStatus(status) {
 			const { importId } = this.$route.params;
 			this.resolversAllLoading = true;
+			this.allFromSolved = false;
 
 			ImportService.changeBulkDuplicitiesStatus(importId, { status })
 				.then((response) => {
 					if (response.status === 202) {
 						this.resolversAllActive = status;
 						this.$refs.duplicityResolver.fetchDuplicities();
-						Toast(this.$t("Duplicities were resolved"), "is-success");
 					}
 				}).finally(() => {
 					this.resolversAllLoading = false;

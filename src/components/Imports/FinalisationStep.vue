@@ -123,7 +123,7 @@
 					<b-button
 						v-if="canCancelImport"
 						type="is-light is-danger"
-						icon-right="ban"
+						icon-left="ban"
 						@click="cancelImport"
 					>
 						{{ $t('Cancel Import') }}
