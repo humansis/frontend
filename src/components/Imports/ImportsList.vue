@@ -129,9 +129,6 @@ import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import ImportService from "@/services/ImportService";
-import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
-import UsersService from "@/services/UsersService";
 import consts from "@/utils/importConst";
 
 const statusTags = [
@@ -239,58 +236,32 @@ export default {
 			await this.fetchData();
 		},
 
-		async prepareDataForTable(data) {
-			const projectIds = [];
-			const userIds = [];
-
+		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-
-				projectIds.push(item.projectId);
-				userIds.push(item.createdBy);
 			});
 
 			this.table.progress = 50;
 
-			await this.prepareProjectsForTable([...new Set(projectIds)]);
-			await this.prepareUsersForTable([...new Set(userIds)]);
+			this.prepareProjectsForTable();
+			this.prepareUsersForTable();
 		},
 
-		async prepareProjectsForTable(projectIds) {
-			const projects = await this.getProjects(projectIds);
-
+		prepareProjectsForTable() {
 			this.table.data.forEach((item, key) => {
-				const projectsSet = projects?.filter(({ id }) => item.projects?.includes(id));
-				this.table.data[key].project = projectsSet.map(({ name }) => (name)).join(", ");
+				this.table.data[key].project = item.projects.map(({ name }) => name).join(", ");
 			});
 
 			this.table.progress = 75;
 			this.reload();
 		},
 
-		async prepareUsersForTable(userIds) {
-			const users = await this.getUsers(userIds);
+		prepareUsersForTable() {
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].createdBy = this.prepareEntityForTable(item.createdBy, users, "email", "None");
+				this.table.data[key].createdBy = item.createdBy.email;
 			});
 			this.table.progress = 100;
 			this.reload();
-		},
-
-		async getProjects(ids) {
-			return ProjectService.getListOfProjects(null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
-		},
-
-		async getUsers(ids) {
-			return UsersService.getListOfUsers(null, null, null, null, ids, "id", false)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
-				});
 		},
 
 		filtersToggle() {

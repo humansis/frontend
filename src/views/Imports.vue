@@ -181,7 +181,7 @@ export default {
 				...this.importModel,
 				id,
 				title,
-				projects: this.options.projects.filter((item) => projects.includes(item.id)),
+				projects,
 				description,
 			};
 		},
