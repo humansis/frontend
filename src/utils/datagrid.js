@@ -14,6 +14,11 @@ export const normalizeProjectName = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
+export const normalizeFiltersOptions = (text = "") => text
+	.replace(/([A-Z])/g, " $1")
+	.replace(/ /g, "_")
+	.toUpperCase();
+
 export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
 	visibleColumns.forEach((column) => {
