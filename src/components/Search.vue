@@ -2,9 +2,9 @@
 	<b-field>
 		<b-input
 			v-model="value"
+			icon-right-clickable
 			:placeholder="$t('Search')"
 			:icon-right="closeIcon"
-			icon-right-clickable
 			@icon-right-click="clearSearch"
 			@keyup.native.enter="search"
 		/>
