@@ -310,7 +310,7 @@ export default {
 				username,
 				email: username,
 				password,
-				phoneNumber: "",
+				phoneNumber: null,
 				// TODO edit after BE will implement permissions
 				roles: ["ROLE_VENDOR"],
 				changePassword: false,
