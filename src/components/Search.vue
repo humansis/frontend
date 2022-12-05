@@ -2,7 +2,10 @@
 	<b-field>
 		<b-input
 			v-model="value"
+			icon-right-clickable
 			:placeholder="$t('Search')"
+			:icon-right="closeIcon"
+			@icon-right-click="clearSearch"
 			@keyup.native.enter="search"
 		/>
 		<div class="control">
@@ -42,9 +45,20 @@ export default {
 		}
 	},
 
+	computed: {
+		closeIcon() {
+			return this.value.length ? "times" : "";
+		},
+	},
+
 	methods: {
 		search() {
 			this.$emit("search", this.value);
+		},
+
+		clearSearch() {
+			this.value = "";
+			this.search();
 		},
 	},
 };
