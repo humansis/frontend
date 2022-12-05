@@ -3,8 +3,8 @@
 		<b-input
 			v-model="value"
 			icon-right-clickable
+			icon-right="times"
 			:placeholder="$t('Search')"
-			:icon-right="closeIcon"
 			@icon-right-click="clearSearch"
 			@keyup.native.enter="search"
 		/>
@@ -45,20 +45,16 @@ export default {
 		}
 	},
 
-	computed: {
-		closeIcon() {
-			return this.value.length ? "times" : "";
-		},
-	},
-
 	methods: {
 		search() {
 			this.$emit("search", this.value);
 		},
 
 		clearSearch() {
-			this.value = "";
-			this.search();
+			if (this.value) {
+				this.value = "";
+				this.search();
+			}
 		},
 	},
 };
