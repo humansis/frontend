@@ -3,8 +3,7 @@
 		<b-input
 			v-model="value"
 			:placeholder="$t('Search')"
-			type="search"
-			icon="search"
+			@keyup.native.enter="search"
 		/>
 		<div class="control">
 			<b-button
