@@ -2,12 +2,19 @@
 	<b-field>
 		<b-input
 			v-model="value"
+			icon-right-clickable
+			icon-right="times"
 			:placeholder="$t('Search')"
-			type="search"
-			icon="search"
-			:loading="loading"
-			@keypress.enter.native="onSearch"
+			@icon-right-click="clearSearch"
+			@keyup.native.enter="search"
 		/>
+		<div class="control">
+			<b-button
+				icon-left="search"
+				class="button is-primary"
+				@click="search"
+			/>
+		</div>
 	</b-field>
 </template>
 
@@ -29,15 +36,7 @@ export default {
 	data() {
 		return {
 			value: "",
-			timer: null,
-			loading: false,
 		};
-	},
-
-	watch: {
-		value() {
-			this.onSearch();
-		},
 	},
 
 	mounted() {
@@ -47,21 +46,14 @@ export default {
 	},
 
 	methods: {
-		onSearch(event) {
-			if (this.backendSearch) {
-				clearTimeout(this.timer);
-				this.loading = true;
-				if (event) {
-					this.$emit("search", this.value);
-					this.loading = false;
-				} else {
-					this.timer = setTimeout(() => {
-						this.$emit("search", this.value);
-						this.loading = false;
-					}, 1000);
-				}
-			} else {
-				this.$emit("search", this.value);
+		search() {
+			this.$emit("search", this.value);
+		},
+
+		clearSearch() {
+			if (this.value) {
+				this.value = "";
+				this.search();
 			}
 		},
 	},
