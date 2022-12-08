@@ -38,6 +38,7 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@moveStepForward="changeTab(1)"
+					@fetchStatistics="fetchImportStatistics"
 				/>
 			</b-step-item>
 
