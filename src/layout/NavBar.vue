@@ -170,8 +170,8 @@ export default {
 			await this.storeCountry(country);
 			await this.fetchAdmNames();
 
-			if (this.$route.name !== "Home") {
-				await this.$router.push({ name: "Home" });
+			if (this.$route.name !== "Projects") {
+				await this.$router.push({ name: "Projects" });
 			}
 
 			this.$router.go();
