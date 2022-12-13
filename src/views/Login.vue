@@ -217,7 +217,7 @@ export default {
 					await this.storePermissions(privileges);
 
 					if (countries.length) {
-						this.$router.push(this.$route.query.redirect?.toString() || "/");
+						this.$router.push(this.$route.query.redirect?.toString() || "/projects");
 					} else {
 						Notification(`${this.$t("No Countries")}`, "is-warning");
 					}

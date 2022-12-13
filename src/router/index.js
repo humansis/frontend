@@ -17,7 +17,7 @@ const ifAuthenticated = (to, from, next) => {
 	if (user?.token && to.meta.permissions && canGoNext) {
 		next();
 	} else if (!user?.token) {
-		const redirect = to.query?.redirect || to.fullPath;
+		const redirect = to.query?.redirect || (to.fullPath === "/" ? "/projects" : to.fullPath);
 		next({ name: "Login", query: { redirect } });
 	} else {
 		next({ name: "NotFound" });
