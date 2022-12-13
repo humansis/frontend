@@ -66,6 +66,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import JWTDecode from "jwt-decode";
+import { setCookie } from "@/utils/cookie";
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
@@ -169,8 +170,7 @@ export default {
 
 					const user = await JWTDecode(token);
 
-					user.userId = userId;
-					user.token = token;
+					setCookie("token", token, user.exp - user.iat);
 
 					await this.storeUser(user);
 

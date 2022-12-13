@@ -2,6 +2,7 @@ import router from "@/router";
 import CONST from "@/const";
 import store from "@/store/index";
 import getters from "@/store/getters";
+import { getCookie } from "@/utils/cookie";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
@@ -96,11 +97,7 @@ export const fetcher = async (
 	};
 
 	if (auth) {
-		const user = getters.getUserFromVuexStorage();
-
-		if (user?.token) {
-			headers.Authorization = `Bearer ${user.token}`;
-		}
+		headers.Authorization = `Bearer ${getCookie("token")}`;
 	}
 
 	headers.Country = store.state.country?.iso3 || "";
@@ -135,11 +132,7 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 	};
 
 	if (auth) {
-		const user = getters.getUserFromVuexStorage();
-
-		if (user?.token) {
-			headers.Authorization = `Bearer ${user.token}`;
-		}
+		headers.Authorization = `Bearer ${getCookie("token")}`;
 	}
 
 	headers.Country = store.state.country?.iso3 || "";
@@ -165,12 +158,7 @@ export const download = async ({ uri, method = "GET", body = null, version = 1 }
 		"Access-Control-Allow-Credentials": true,
 	};
 
-	const user = getters.getUserFromVuexStorage();
-
-	if (user?.token) {
-		headers.Authorization = `Bearer ${user.token}`;
-	}
-
+	headers.Authorization = `Bearer ${getCookie("token")}`;
 	headers.Country = store.state.country?.iso3 || "";
 
 	const config = {

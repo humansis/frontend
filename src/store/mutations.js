@@ -1,4 +1,5 @@
 import CONST from "@/store/const";
+import { removeCookie } from "@/utils/cookie";
 
 export default {
 	basic(state, payload) {
@@ -87,8 +88,10 @@ export default {
 			exp: null,
 			roles: [],
 			username: null,
-			token: null,
 		};
+
+		removeCookie("token");
+
 		const permissionsCopy = { ...state.permissions };
 
 		Object.keys(permissionsCopy).forEach((permission) => {
