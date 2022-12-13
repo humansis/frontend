@@ -13,6 +13,7 @@ import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "CommunitiesFilter",
@@ -27,7 +28,7 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: [],
+				projects: consts.DEFAULT_FILTERS.PROJECTS,
 			}),
 		},
 	},

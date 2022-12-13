@@ -15,6 +15,7 @@ import locationHelper from "@/mixins/locationHelper";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "DistributionsFilter",
@@ -27,16 +28,16 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				beneficiaryType: [],
-				project: [],
-				distribution: [],
-				commodity: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				dateFrom: null,
-				dateTo: null,
+				beneficiaryTypes: consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+				projects: consts.DEFAULT_FILTERS.PROJECTS,
+				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
+				commodity: consts.DEFAULT_FILTERS.COMMODITY,
+				adm1: consts.DEFAULT_FILTERS.ADM1,
+				adm2: consts.DEFAULT_FILTERS.ADM2,
+				adm3: consts.DEFAULT_FILTERS.ADM3,
+				adm4: consts.DEFAULT_FILTERS.ADM4,
+				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},
@@ -122,6 +123,12 @@ export default {
 	},
 
 	async created() {
+		// We need to set default filters first to avoid Invalid prop error for dateFrom & dateTo
+		await Promise.all([
+			this.setDefaultFilters(),
+			this.setDefaultLocationsFilter(),
+		]);
+
 		await Promise.all([
 			this.setLocationNames(),
 			this.fetchProjects(),
@@ -139,6 +146,7 @@ export default {
 			this.filtersOptionsCopy = copyObject(this.filtersOptions);
 		});
 
+		// We need to set default filters second time in order to update filters
 		await Promise.all([
 			this.setDefaultFilters(),
 			this.setDefaultLocationsFilter(),
@@ -174,8 +182,12 @@ export default {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}
 
-			if (this.defaultFilters.dateFrom) {
+			if (this.defaultFilters.dateTo) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
+			}
+
+			if (this.$refs.advancedFilter) {
+				this.$refs.advancedFilter.$forceUpdate();
 			}
 		},
 
@@ -198,19 +210,20 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					projects: preparedFilters.project || [],
-					dateFrom: preparedFilters.dateFrom || null,
-					dateTo: preparedFilters.dateTo || null,
-					beneficiaryTypes: preparedFilters.beneficiaryType || [],
-					modalityTypes: preparedFilters.commodity || [],
-					assistances: preparedFilters.distribution || [],
-					locations: location ? [location] : [],
+					projects: preparedFilters.project || consts.DEFAULT_FILTERS.PROJECTS,
+					dateFrom: preparedFilters.dateFrom || consts.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: preparedFilters.dateTo || consts.DEFAULT_FILTERS.DATE_TO,
+					beneficiaryTypes: preparedFilters.beneficiaryType
+						|| consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+					modalityTypes: preparedFilters.commodity || consts.DEFAULT_FILTERS.MODALITY_TYPES,
+					assistances: preparedFilters.distribution || consts.DEFAULT_FILTERS.ASSISTANCES,
+					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1,
-					adm2: filtersCopy.adm2,
-					adm3: filtersCopy.adm3,
-					adm4: filtersCopy.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},
