@@ -169,8 +169,9 @@ export default {
 					const { data: { token, userId } } = response;
 
 					const user = await JWTDecode(token);
+					user.userId = userId;
 
-					setCookie("token", token, user.exp - user.iat);
+					await setCookie("token", token, user.exp - user.iat);
 
 					await this.storeUser(user);
 

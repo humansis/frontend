@@ -8,9 +8,8 @@ import { getCookie } from "@/utils/cookie";
 
 Vue.use(VueRouter);
 
-const token = getCookie("token");
-
 const ifAuthenticated = (to, from, next) => {
+	const token = getCookie("token");
 	const permissions = getters.getPermissionsFromVuexStorage();
 
 	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
@@ -408,6 +407,9 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
 	window.document.title = to.meta && to.meta.breadcrumb
 		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
+
+	const token = getCookie("token");
+
 	if (
 		to.name === "Login"
 		&& token

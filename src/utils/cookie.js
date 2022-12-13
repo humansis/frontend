@@ -18,6 +18,7 @@ export const getCookie = (name) => {
 			return c.substring(cookieName.length, c.length);
 		}
 	}
+
 	return "";
 };
 
