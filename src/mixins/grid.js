@@ -16,7 +16,7 @@ export default {
 		...mapActions(["storePerPage"]),
 
 		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
+			this.table.currentPage = currentPage || 1;
 			this.fetchData();
 		},
 
