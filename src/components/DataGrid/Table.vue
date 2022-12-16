@@ -13,8 +13,7 @@
 								v-if="hasSearch"
 								:value="searchPhrase"
 								class="mr-3"
-								@onSearch="$emit('onSearch')"
-								@updateSearchPhrase="$emit('updateSearchPhrase', $event)"
+								@search="onSearch"
 							/>
 						</div>
 					</slot>
@@ -253,6 +252,26 @@ export default {
 		onResetSort() {
 			this.$refs.table.resetMultiSorting();
 			this.$emit("resetSort");
+		},
+
+		onSearch(event) {
+			if (this.backendSearching) {
+				this.$emit("onSearch", event);
+			} else {
+				if (!event) this.searchedData = this.data;
+				this.searchedData = this.data.filter((item) => {
+					let includes = false;
+					Object.keys(item).forEach((key) => {
+						if (!includes) {
+							const column = this.columns.find((value) => value.key === key);
+							if (column && column.searchable) {
+								includes = !!String(item[key]).toLowerCase().includes(event.toLowerCase());
+							}
+						}
+					});
+					return includes;
+				});
+			}
 		},
 	},
 };

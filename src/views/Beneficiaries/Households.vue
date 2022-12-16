@@ -85,7 +85,6 @@
 			@onSearch="onSearch"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
-			@updateSearchPhrase="updateSearchPhrase"
 		>
 			<template #progress>
 				<b-progress :value="table.progress" format="percent" />

@@ -16,7 +16,6 @@
 			@sorted="onSort"
 			@resetSort="resetSort"
 			@onSearch="onSearch"
-			@updateSearchPhrase="updateSearchPhrase"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column

@@ -14,7 +14,6 @@
 		@changePerPage="onChangePerPage"
 		@onSearch="onSearch"
 		@resetSort="resetSort"
-		@updateSearchPhrase="updateSearchPhrase"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column v-bind="column" sortable :key="column.id">

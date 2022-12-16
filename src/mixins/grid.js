@@ -33,10 +33,6 @@ export default {
 			}
 		},
 
-		updateSearchPhrase(value) {
-			this.table.searchPhrase = value;
-		},
-
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
 			this.fetchData();
@@ -56,7 +52,8 @@ export default {
 			this.fetchData();
 		},
 
-		onSearch() {
+		onSearch(value) {
+			this.table.searchPhrase = value;
 			this.table.currentPage = 1;
 			this.fetchData();
 		},

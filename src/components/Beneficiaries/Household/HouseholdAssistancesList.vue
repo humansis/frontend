@@ -14,7 +14,6 @@
 		:backend-searching="false"
 		:columns="table.visibleColumns"
 		@resetSort="resetSort"
-		@updateSearchPhrase="updateSearchPhrase"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column

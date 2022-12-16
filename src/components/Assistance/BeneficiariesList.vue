@@ -160,7 +160,6 @@
 			@resetSort="resetSort"
 			@onSearch="onSearch"
 			@checked="onRowsCheck"
-			@updateSearchPhrase="updateSearchPhrase"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
