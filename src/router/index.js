@@ -410,10 +410,7 @@ router.beforeEach((to, from, next) => {
 
 	const token = getCookie("token");
 
-	if (
-		to.name === "Login"
-		&& token
-	) {
+	if (to.name === "Login" && token) {
 		next({ name: "Home" });
 	} else {
 		next();

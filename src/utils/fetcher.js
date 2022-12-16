@@ -96,8 +96,10 @@ export const fetcher = async (
 		"Access-Control-Allow-Credentials": true,
 	};
 
-	if (auth) {
-		headers.Authorization = `Bearer ${getCookie("token")}`;
+	const token = getCookie("token");
+
+	if (auth && token) {
+		headers.Authorization = `Bearer ${token}`;
 	}
 
 	headers.Country = store.state.country?.iso3 || "";
@@ -131,8 +133,10 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 		"Access-Control-Allow-Credentials": true,
 	};
 
-	if (auth) {
-		headers.Authorization = `Bearer ${getCookie("token")}`;
+	const token = getCookie("token");
+
+	if (auth && token) {
+		headers.Authorization = `Bearer ${token}`;
 	}
 
 	headers.Country = store.state.country?.iso3 || "";
@@ -158,7 +162,12 @@ export const download = async ({ uri, method = "GET", body = null, version = 1 }
 		"Access-Control-Allow-Credentials": true,
 	};
 
-	headers.Authorization = `Bearer ${getCookie("token")}`;
+	const token = getCookie("token");
+
+	if (token) {
+		headers.Authorization = `Bearer ${token}`;
+	}
+
 	headers.Country = store.state.country?.iso3 || "";
 
 	const config = {
