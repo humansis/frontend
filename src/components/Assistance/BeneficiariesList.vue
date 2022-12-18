@@ -90,6 +90,20 @@
 			/>
 		</Modal>
 		<Modal
+			:header="$t('Add to assistance')"
+			:active="addBeneficiariesByIdsModal.isOpened"
+			:is-waiting="addBeneficiariesByIdsModal.isWaiting"
+			@close="closeAddBeneficiariesByIdsModal"
+		>
+			<InputDistributed
+				close-button
+				add-to-assistance
+				class="modal-card"
+				@submit="reloadBeneficiariesList"
+				@close="closeAddBeneficiariesByIdsModal"
+			/>
+		</Modal>
+		<Modal
 			:header="$t('Input Deduplication')"
 			:active="inputDistributedModal.isOpened"
 			:is-waiting="inputDistributedModal.isWaiting"
@@ -112,6 +126,15 @@
 				@click="openAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
+			</b-button>
+			<b-button
+				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="openAddBeneficiariesByIdsModal"
+			>
+				{{ $t('Bulk add') }}
 			</b-button>
 			<b-button
 				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
@@ -377,6 +400,10 @@ export default {
 				isOpened: false,
 				isWaiting: false,
 			},
+			addBeneficiariesByIdsModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -484,6 +511,14 @@ export default {
 
 		closeInputDistributedModal() {
 			this.inputDistributedModal.isOpened = false;
+		},
+
+		openAddBeneficiariesByIdsModal() {
+			this.addBeneficiariesByIdsModal.isOpened = true;
+		},
+
+		closeAddBeneficiariesByIdsModal() {
+			this.addBeneficiariesByIdsModal.isOpened = false;
 		},
 
 		async fetchData(page, size) {
