@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "upgrade": "yarn run upgrade-eslint && yarn run upgrade-yarn",
     "upgrade-eslint": "npx install-peerdeps --yarn --dev @vue/eslint-config-airbnb",
