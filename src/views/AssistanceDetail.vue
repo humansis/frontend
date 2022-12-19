@@ -2,7 +2,13 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:is-statistics-loading="isStatisticsLoading"
+			:statistics="statistics"
+			:is-assistance-loading="isAssistanceLoading"
+			:commodities="commodities"
+			:is-commodities-loading="isCommoditiesLoading"
 			:project="project"
+			:is-project-loading="isProjectLoading"
 		/>
 		<Modal
 			:header="$t('Start Transaction')"
@@ -42,59 +48,6 @@
 				</div>
 			</div>
 			<b-progress v-model="assistanceProgress" type="is-success" />
-			<div class="columns">
-				<div class="column is-3">
-					<div class="has-text-weight-bold">
-						{{ $t('Total Amount') }}:
-					</div>
-					<span>{{ amountTotal }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType !== consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
-					</div>
-					<span>{{ amountDistributed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.QR_CODE_VOUCHER"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Used') }}:
-					</div>
-					<span>{{ amountUsed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Sent') }}:
-					</div>
-					<span>{{ amountSent }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Picked Up') }}:
-					</div>
-					<span>{{ amountPickedUp }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-			</div>
 		</div>
 		<BeneficiariesList
 			ref="beneficiariesList"
@@ -172,7 +125,7 @@
 </template>
 
 <script>
-import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
+import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
@@ -203,6 +156,10 @@ export default {
 			consts,
 			assistance: null,
 			statistics: null,
+			isStatisticsLoading: false,
+			isAssistanceLoading: false,
+			isCommoditiesLoading: false,
+			isProjectLoading: false,
 			project: null,
 			beneficiariesCount: 0,
 			countOfCompleted: 0,
@@ -302,7 +259,7 @@ export default {
 				}
 			}
 
-			return (result !== Infinity) ? Math.round(result) : 0;
+			return (result !== Infinity) ? Math.floor(result) : 0;
 		},
 
 		amountTotal() {
@@ -344,6 +301,8 @@ export default {
 		},
 
 		async fetchAssistance() {
+			this.isAssistanceLoading = true;
+
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
@@ -355,20 +314,28 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isAssistanceLoading = false;
 			});
 		},
 
 		async fetchAssistanceStatistics() {
+			this.isStatisticsLoading = true;
+
 			AssistancesService.getAssistanceStatistics(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.statistics = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.isStatisticsLoading = false;
 			});
 		},
 
 		async fetchProject() {
+			this.isProjectLoading = true;
+
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
@@ -376,6 +343,8 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isProjectLoading = false;
 			});
 		},
 
@@ -480,12 +449,16 @@ export default {
 		},
 
 		async fetchCommodity() {
+			this.isCommoditiesLoading = true;
+
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => {
 					this.commodities = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+				}).finally(() => {
+					this.isCommoditiesLoading = false;
 				});
 		},
 

@@ -1,5 +1,5 @@
 <template>
-	<div class="edit-note">
+	<div class="box edit-note">
 		<template v-if="!edit">
 			<div
 				class="note-text"
@@ -135,11 +135,11 @@ export default {
 
 <style lang="scss" scoped>
 .edit-note {
-	margin-bottom: 20px;
-	margin-right: 15px;
+	margin: 0 1rem 2rem;
 	display: flex;
 	justify-content: space-evenly;
 	gap: 5px;
+
 	.note-text {
 		margin-left: 15px;
 		margin-top: 8px;
@@ -147,14 +147,17 @@ export default {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+
 		&__full {
 			white-space: break-spaces;
 			overflow: auto;
 		}
 	}
+
 	.note-text-field {
 		flex-grow: 1;
 	}
+
 	.btn-tooltip {
 		float: right;
 	}

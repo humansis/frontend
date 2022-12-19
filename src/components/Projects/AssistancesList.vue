@@ -277,7 +277,7 @@ export default {
 			const statistics = await this.getStatistics(assistanceIds);
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].beneficiaries = this.prepareEntityForTable(item.id, statistics, "numberOfBeneficiaries", 0);
+				this.table.data[key].beneficiaries = this.prepareEntityForTable(item.id, statistics, "beneficiariesTotal", 0);
 			});
 			this.table.progress += 10;
 		},
