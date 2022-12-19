@@ -97,7 +97,7 @@
 		>
 			<InputDistributed
 				close-button
-				add-to-assistance
+				adding-to-assistance
 				class="modal-card"
 				@submit="reloadBeneficiariesList"
 				@close="closeAddBeneficiariesByIdsModal"
@@ -119,7 +119,7 @@
 		</Modal>
 		<div class="buttons space-between align-end">
 			<b-button
-				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				v-if="isAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
@@ -128,7 +128,7 @@
 				{{ $t('Add') }}
 			</b-button>
 			<b-button
-				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				v-if="isAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
@@ -137,7 +137,7 @@
 				{{ $t('Bulk add') }}
 			</b-button>
 			<b-button
-				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				v-if="isAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="minus"
@@ -465,6 +465,11 @@ export default {
 
 		isAssistanceValidated() {
 			return this.assistance?.validated;
+		},
+
+		isAddOrRemoveBeneficiaryAllowed() {
+			return this.addButton && this.userCan.editDistribution
+				&& !this.isAssistanceValidated;
 		},
 
 		isDistributionExportVisible() {

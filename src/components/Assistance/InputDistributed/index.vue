@@ -3,7 +3,7 @@
 		<form @submit.prevent="submit" v-if="distributedFormVisible">
 			<section>
 				<IdTypeSelect
-					v-if="deduplication || addToAssistance"
+					v-if="isOperationAddOrRemoveBulk"
 					ref="idTypeSelect"
 					v-model="formModel.idType"
 					required
@@ -25,7 +25,7 @@
 					/>
 				</b-field>
 				<b-field
-					v-if="deduplication || addToAssistance"
+					v-if="isOperationAddOrRemoveBulk"
 					:label="$t('Justification')"
 					:type="validateType('justification')"
 					:message="validateMsg('justification')"
@@ -60,7 +60,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication || addToAssistance"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.notFound"
 					/>
 					<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
@@ -100,7 +100,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication || addToAssistance"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.success"
 					/>
 					<BaseDistributedTable v-else :data="distributeData.success" />
@@ -116,7 +116,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication || addToAssistance"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.alreadyProcessed"
 					/>
 					<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
@@ -156,7 +156,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication || addToAssistance"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.failed"
 					/>
 					<BaseDistributedTable v-else :data="distributeData.failed" />
@@ -209,7 +209,7 @@ export default {
 			default: "Tax Number",
 		},
 		deduplication: Boolean,
-		addToAssistance: Boolean,
+		addingToAssistance: Boolean,
 		closeButton: Boolean,
 	},
 
@@ -228,14 +228,12 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				idType: { required: requiredIf(() => this.deduplication
-						|| this.addToAssistance) },
+				idType: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
 				idsList: {
 					required,
 					isIdsListLengthValid,
 				},
-				justification: { required: requiredIf(() => this.deduplication
-						|| this.addToAssistance) },
+				justification: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
 			},
 		};
 	},
@@ -248,7 +246,7 @@ export default {
 		async submit() {
 			this.$v.$touch();
 
-			if (this.deduplication || this.addToAssistance) {
+			if (this.isOperationAddOrRemoveBulk) {
 				this.$refs.idTypeSelect.onSubmit();
 			}
 
@@ -263,7 +261,7 @@ export default {
 				Notification(this.$t("Invalid Input"), "is-danger");
 			}
 
-			if (this.deduplication || this.addToAssistance) {
+			if (this.isOperationAddOrRemoveBulk) {
 				const target = "beneficiaries";
 				body = {
 					documentType: this.formModel.idType?.code,
@@ -373,16 +371,8 @@ export default {
 
 	computed: {
 		successfulOperationTitle() {
-			let title = "";
-
-			if (this.deduplication) {
-				title = "Removed";
-			} else if (this.addToAssistance) {
-				title = "Added";
-			} else {
-				title = "Success";
-			}
-			return title;
+			return (this.deduplication && "Removed")
+				|| (this.addingToAssistance && "Added") || "Success";
 		},
 
 		alreadyProcessedOperationTitle() {
@@ -391,16 +381,13 @@ export default {
 		},
 
 		nameOfSubmitButton() {
-			let buttonName = "";
+			return (this.deduplication && "Bulk Remove Again")
+				|| (this.addingToAssistance && "Bulk Add Again")
+					|| "Input Distributed Again";
+		},
 
-			if (this.deduplication) {
-				buttonName = "Bulk Remove Again";
-			} else if (this.addToAssistance) {
-				buttonName = "Bulk Add Again";
-			} else {
-				buttonName = "Input Distributed Again";
-			}
-			return buttonName;
+		isOperationAddOrRemoveBulk() {
+			return this.deduplication || this.addingToAssistance;
 		},
 	},
 };
