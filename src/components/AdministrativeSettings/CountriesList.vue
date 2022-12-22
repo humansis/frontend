@@ -5,6 +5,7 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"

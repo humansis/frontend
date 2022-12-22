@@ -82,7 +82,7 @@
 			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
-			@search="onSearch"
+			@onSearch="onSearch"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
 		>

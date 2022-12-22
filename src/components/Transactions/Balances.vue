@@ -7,10 +7,11 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@resetSort="resetSort"
-			@search="onSearch"
+			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column v-bind="column" sortable :key="column.id">
@@ -130,9 +131,6 @@ export default {
 					this.filters[key] = [date.toISOString()];
 				}
 			});
-
-			this.table.currentPage = 1;
-			await this.fetchData();
 		},
 	},
 };

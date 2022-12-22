@@ -11,8 +11,8 @@
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
-								:search-phrase="searchPhrase"
-								:backend-search="backendSearching"
+								:value="searchPhrase"
+								class="mr-3"
 								@search="onSearch"
 							/>
 						</div>
@@ -59,7 +59,7 @@
 			:is-row-checkable="isRowCheckable"
 			:paginated="paginated"
 			:checkable="checkable"
-			:data="preparedData"
+			:data="data"
 			:total="total"
 			:per-page="customPerPage || perPage"
 			:current-page="currentPage"
@@ -204,20 +204,12 @@ export default {
 			options: {
 				perPageNumbers: [10, 20, 50, 100],
 			},
-			searchedData: null,
 			checkedCount: 0,
 		};
 	},
 
 	computed: {
 		...mapState(["perPage"]),
-
-		preparedData() {
-			if (this.backendSearching || this.searchedData === null) {
-				return this.data;
-			}
-			return this.searchedData;
-		},
 	},
 
 	methods: {
@@ -264,7 +256,7 @@ export default {
 
 		onSearch(event) {
 			if (this.backendSearching) {
-				this.$emit("search", event);
+				this.$emit("onSearch", event);
 			} else {
 				if (!event) this.searchedData = this.data;
 				this.searchedData = this.data.filter((item) => {

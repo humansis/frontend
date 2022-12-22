@@ -34,12 +34,13 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
 			@clicked="onRowClick"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
 			@resetSort="resetSort"
-			@search="onSearch"
+			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column

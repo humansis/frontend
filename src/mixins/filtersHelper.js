@@ -30,10 +30,6 @@ export default {
 				this.filtersOptions.adm4 = copyObject(this.filtersOptionsCopy.adm4);
 			}
 
-			if (this.filtersOptions.distribution) {
-				this.filtersOptions.distribution = copyObject(this.filtersOptionsCopy.distribution);
-			}
-
 			this.$nextTick(() => {
 				this.$refs.advancedFilter.filterChanged();
 			});
