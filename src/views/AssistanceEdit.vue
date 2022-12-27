@@ -6,7 +6,6 @@
 			:statistics="statistics"
 			:is-assistance-loading="isAssistanceLoading"
 			:commodities="commodities"
-			:is-commodities-loading="isCommoditiesLoading"
 			:project="project"
 			:is-project-loading="isProjectLoading"
 		/>
@@ -130,7 +129,6 @@ export default {
 			statistics: null,
 			isStatisticsLoading: false,
 			isAssistanceLoading: false,
-			isCommoditiesLoading: false,
 			isProjectLoading: false,
 			commodities: [],
 			activeStep: 0,
@@ -172,7 +170,7 @@ export default {
 				this.assistance = data;
 
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
-					this.fetchCommodity();
+					this.commodities = data.commodities;
 				}
 			}).finally(() => {
 				this.isAssistanceLoading = false;
@@ -200,18 +198,6 @@ export default {
 				this.statistics = data;
 			}).finally(() => {
 				this.isStatisticsLoading = false;
-			});
-		},
-
-		async fetchCommodity() {
-			this.isCommoditiesLoading = true;
-
-			await AssistancesService.getAssistanceCommodities(
-				this.$route.params.assistanceId,
-			).then(({ data }) => {
-				this.commodities = data;
-			}).finally(() => {
-				this.isCommoditiesLoading = false;
 			});
 		},
 

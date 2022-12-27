@@ -29,7 +29,7 @@
 				>
 					{{ provinceName }}
 				</div>
-				<Loading v-else-if="isProvinceLoading" type="bubbles" is-normal />
+				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
 				<div v-else class="level-item">
 					<b-tooltip :label="$t('Data not loaded')">
 						<b-icon icon="exclamation-circle" size="is-medium" />
@@ -122,10 +122,6 @@ export default {
 			default: false,
 		},
 		isProjectLoading: {
-			type: Boolean,
-			default: false,
-		},
-		isProvinceLoading: {
 			type: Boolean,
 			default: false,
 		},

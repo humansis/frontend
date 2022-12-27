@@ -1,4 +1,9 @@
 export default {
+	STATUS: {
+		NEW: "New",
+		VALIDATED: "Validated",
+		CLOSED: "Closed",
+	},
 	TARGET: {
 		INDIVIDUAL: "individual",
 		HOUSEHOLD: "household",
