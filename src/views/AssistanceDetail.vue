@@ -6,7 +6,6 @@
 			:statistics="statistics"
 			:is-assistance-loading="isAssistanceLoading"
 			:commodities="commodities"
-			:is-commodities-loading="isCommoditiesLoading"
 			:project="project"
 			:is-project-loading="isProjectLoading"
 		/>
@@ -158,7 +157,6 @@ export default {
 			statistics: null,
 			isStatisticsLoading: false,
 			isAssistanceLoading: false,
-			isCommoditiesLoading: false,
 			isProjectLoading: false,
 			project: null,
 			beneficiariesCount: 0,
@@ -259,15 +257,11 @@ export default {
 				}
 			}
 
-			return (result !== Infinity) ? Math.floor(result) : 0;
+			return (result !== Infinity) ? Math.round(result) : 0;
 		},
 
 		amountTotal() {
 			return this.statistics?.amountTotal || 0;
-		},
-
-		amountSent() {
-			return this.statistics?.amountSent || 0;
 		},
 
 		amountPickedUp() {
@@ -309,7 +303,7 @@ export default {
 				this.assistance = data;
 
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
-					this.fetchCommodity();
+					this.commodities = data.commodities;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
@@ -446,20 +440,6 @@ export default {
 
 			this.transactionModal.isWaiting = false;
 			this.closeTransactionModal();
-		},
-
-		async fetchCommodity() {
-			this.isCommoditiesLoading = true;
-
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => {
-					this.commodities = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.isCommoditiesLoading = false;
-				});
 		},
 
 		unvalidateAssistance() {

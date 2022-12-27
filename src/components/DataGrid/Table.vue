@@ -18,8 +18,8 @@
 						</div>
 					</slot>
 					<slot name="title" />
-					<slot name="filterButton" />
 					<slot name="export" />
+					<slot name="filterButton" />
 					<slot name="actions" />
 				</div>
 				<slot name="resetSort">
