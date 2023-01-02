@@ -213,7 +213,7 @@ export default {
 			const filtersCopy = copyObject(filters);
 			const startIndex = Number(filterName?.slice(3));
 
-			if (Number(startIndex)) {
+			if (startIndex) {
 				for (let i = startIndex; i <= 4; i += 1) {
 					if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
 						this.selectedFiltersOptions[`adm${i}`] = [];
