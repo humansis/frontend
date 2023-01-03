@@ -90,6 +90,20 @@
 			/>
 		</Modal>
 		<Modal
+			:header="$t('Add to assistance')"
+			:active="addBeneficiariesByIdsModal.isOpened"
+			:is-waiting="addBeneficiariesByIdsModal.isWaiting"
+			@close="closeAddBeneficiariesByIdsModal"
+		>
+			<InputDistributed
+				close-button
+				adding-to-assistance
+				class="modal-card"
+				@submit="reloadBeneficiariesList"
+				@close="closeAddBeneficiariesByIdsModal"
+			/>
+		</Modal>
+		<Modal
 			:header="$t('Input Deduplication')"
 			:active="inputDistributedModal.isOpened"
 			:is-waiting="inputDistributedModal.isWaiting"
@@ -105,7 +119,7 @@
 		</Modal>
 		<div class="buttons space-between align-end">
 			<b-button
-				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				v-if="isAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
@@ -114,7 +128,16 @@
 				{{ $t('Add') }}
 			</b-button>
 			<b-button
-				v-if="addButton && userCan.editDistribution && !isAssistanceValidated"
+				v-if="isAddOrRemoveBeneficiaryAllowed"
+				class="mb-4"
+				type="is-primary"
+				icon-left="plus"
+				@click="openAddBeneficiariesByIdsModal"
+			>
+				{{ $t('Bulk add') }}
+			</b-button>
+			<b-button
+				v-if="isAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="minus"
@@ -377,6 +400,10 @@ export default {
 				isOpened: false,
 				isWaiting: false,
 			},
+			addBeneficiariesByIdsModal: {
+				isOpened: false,
+				isWaiting: false,
+			},
 			beneficiaryModel: {
 				firstName: null,
 				familyName: null,
@@ -440,6 +467,11 @@ export default {
 			return this.assistance?.validated;
 		},
 
+		isAddOrRemoveBeneficiaryAllowed() {
+			return this.addButton && this.userCan.editDistribution
+				&& !this.isAssistanceValidated;
+		},
+
 		isDistributionExportVisible() {
 			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH)
 				&& this.assistance?.type === "distribution"
@@ -484,6 +516,14 @@ export default {
 
 		closeInputDistributedModal() {
 			this.inputDistributedModal.isOpened = false;
+		},
+
+		openAddBeneficiariesByIdsModal() {
+			this.addBeneficiariesByIdsModal.isOpened = true;
+		},
+
+		closeAddBeneficiariesByIdsModal() {
+			this.addBeneficiariesByIdsModal.isOpened = false;
 		},
 
 		async fetchData(page, size) {
