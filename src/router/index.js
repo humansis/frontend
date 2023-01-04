@@ -4,19 +4,20 @@ import getters from "@/store/getters";
 import store from "@/store/index";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
+import { getCookie } from "@/utils/cookie";
 
 Vue.use(VueRouter);
 
 const ifAuthenticated = (to, from, next) => {
-	const user = getters.getUserFromVuexStorage();
+	const token = getCookie("token");
 	const permissions = getters.getPermissionsFromVuexStorage();
 
 	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
 		.some((permission) => permissions?.[permission]) : true;
 
-	if (user?.token && to.meta.permissions && canGoNext) {
+	if (token && to.meta.permissions && canGoNext) {
 		next();
-	} else if (!user?.token) {
+	} else if (!token) {
 		const redirect = to.query?.redirect || (to.fullPath === "/" ? "/projects" : to.fullPath);
 		next({ name: "Login", query: { redirect } });
 	} else {
@@ -404,15 +405,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	const user = getters.getUserFromVuexStorage();
-
 	window.document.title = to.meta && to.meta.breadcrumb
 		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
 
-	if (
-		to.name === "Login"
-		&& user?.token
-	) {
+	const token = getCookie("token");
+
+	if (to.name === "Login" && token) {
 		next({ name: "Home" });
 	} else {
 		next();

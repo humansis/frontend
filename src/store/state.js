@@ -18,7 +18,6 @@ export default {
 		exp: null,
 		roles: [],
 		username: null,
-		token: null,
 	},
 	lastUsername: null,
 	availableProjects: null,

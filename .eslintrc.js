@@ -17,6 +17,7 @@ module.exports = {
 		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-tabs": "off",
+		"no-plusplus": "off",
 		"object-curly-newline": "off",
 		quotes: ["warn", "double", { avoidEscape: true, allowTemplateLiterals: true }],
 		"vue/html-closing-bracket-newline": "warn",
