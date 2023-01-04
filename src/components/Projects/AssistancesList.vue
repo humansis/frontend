@@ -36,7 +36,6 @@
 			:is-loading="isLoadingList"
 			:has-clickable-rows="false"
 			:search-phrase="table.searchPhrase"
-			@clicked="onRowClick"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
@@ -69,8 +68,8 @@
 						@click="goToUpdate(props.row.id)"
 					/>
 					<ActionButton
-						v-if="props.row.validated
-							|| props.row.completed
+						v-if="(props.row.validated
+							|| props.row.completed)
 							&& isAssistanceDetailAllowed"
 						:icon="props.row.validated && props.row.completed
 							? 'eye' : 'edit'"
@@ -244,23 +243,25 @@ export default {
 	},
 
 	computed: {
-		tableCursor() {
-			return () => "default-cursor";
-		},
-
 		filterButtonNew() {
-			return ["btn ml-3 is-light",
-				{ "is-selected": this.statusActive.new }];
+			return [
+				"btn ml-3 is-light",
+				{ "is-selected": this.statusActive.new },
+			];
 		},
 
 		filterButtonValidated() {
-			return ["btn ml-3 is-success is-light",
-				{ "is-selected": this.statusActive.validated }];
+			return [
+				"btn ml-3 is-success is-light",
+				{ "is-selected": this.statusActive.validated },
+			];
 		},
 
 		filterButtonClosed() {
-			return ["btn ml-3 is-info is-light",
-				{ "is-selected": this.statusActive.closed }];
+			return [
+				"btn ml-3 is-info is-light",
+				{ "is-selected": this.statusActive.closed },
+			];
 		},
 
 		isAssistanceDetailAllowed() {
