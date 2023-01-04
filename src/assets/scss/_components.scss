@@ -28,12 +28,8 @@
 }
 
 .b-table {
-	.is-hoverable {
+	&.is-clickable-rows {
 		cursor: pointer;
-	}
-
-	.default-cursor {
-		cursor: default;
 	}
 
 	.table th {
