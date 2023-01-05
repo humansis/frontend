@@ -65,7 +65,7 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
-			:class="{ 'is-clickable-rows' : isClickableRows } "
+			:class="{ 'has-clickable-rows' : hasClickableRows } "
 			:row-class="rowClass"
 			@check="checkboxChecked"
 			@cellclick="onClick"
@@ -198,7 +198,7 @@ export default {
 			type: Number,
 			default: null,
 		},
-		isClickableRows: {
+		hasClickableRows: {
 			type: Boolean,
 			default: true,
 		},
