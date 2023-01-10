@@ -191,20 +191,19 @@ export default {
 		getLocation(filters) {
 			let location = null;
 
-			if (this.selectedFiltersOptions.adm4) {
+			if (this.selectedFiltersOptions.adm4?.id) {
 				const [a] = filters.adm4;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm3) {
+			} else if (this.selectedFiltersOptions.adm3?.id) {
 				const [a] = filters.adm3;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm2) {
+			} else if (this.selectedFiltersOptions.adm2?.id) {
 				const [a] = filters.adm2;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm1) {
+			} else if (this.selectedFiltersOptions.adm1?.id) {
 				const [a] = filters.adm1;
 				location = a;
 			}
-
 			return location;
 		},
 
@@ -212,11 +211,14 @@ export default {
 			if (!filterName) return filters;
 
 			const filtersCopy = copyObject(filters);
+			const startIndex = Number(filterName?.slice(3));
 
-			for (let i = 1; i <= 4; i += 1) {
-				if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
-					this.selectedFiltersOptions[`adm${i}`] = [];
-					filtersCopy[`adm${i}`] = [];
+			if (startIndex) {
+				for (let i = startIndex; i <= 4; i += 1) {
+					if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
+						this.selectedFiltersOptions[`adm${i}`] = [];
+						filtersCopy[`adm${i}`] = [];
+					}
 				}
 			}
 
