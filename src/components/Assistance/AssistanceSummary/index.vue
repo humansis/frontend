@@ -47,6 +47,8 @@
 					:is-project-loading="isProjectLoading"
 					:province="province"
 					:is-province-loading="isProvinceLoading"
+					:commodity="commodity"
+					:is-commodity-loading="isCommodityLoading"
 				/>
 			</b-tab-item>
 

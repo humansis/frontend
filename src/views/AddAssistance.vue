@@ -374,6 +374,8 @@ export default {
 					value: item.value,
 					unit: item.unit,
 					description: item.description,
+					dateExpiration: assistance.dateExpiration
+						? new Date(assistance.dateExpiration) : null,
 					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
@@ -492,7 +494,7 @@ export default {
 				...this.assistanceBody,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
-					: new Date(this.project.startDate),
+					: this.project?.startDate,
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,

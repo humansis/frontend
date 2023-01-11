@@ -284,6 +284,13 @@ export default {
 			type: String,
 			required: true,
 		},
+		commodity: {
+			type: Array,
+			default: () => [],
+		},
+		dateExpiration: {
+			type: String,
+		},
 	},
 
 	data() {
@@ -462,6 +469,7 @@ export default {
 
 	created() {
 		this.fetchModalities();
+		this.setDefaultExpirationDate();
 	},
 
 	methods: {
@@ -635,6 +643,12 @@ export default {
 				});
 
 			this.loading.types = false;
+		},
+
+		setDefaultExpirationDate() {
+			this.formModel.dateExpiration = this.dateExpiration
+				? new Date(this.dateExpiration)
+				: new Date(this.project?.endDate);
 		},
 
 		submitForm() {

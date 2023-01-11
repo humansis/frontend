@@ -25,6 +25,8 @@
 				:formModel="formModel"
 				:target-type="targetType"
 				:date-of-assistance="dateOfAssistance"
+				:date-expiration="dateExpiration"
+				:commodity="data"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -143,6 +145,7 @@ export default {
 		data(data) {
 			if (data.length) {
 				this.table.data = data;
+				this.dateExpiration = data[0]?.dateExpiration.toISOString();
 			}
 		},
 	},
@@ -152,6 +155,7 @@ export default {
 			commodityModal: {
 				isOpened: false,
 			},
+			dateExpiration: "",
 			formModel: { ...DEFAULT_FORM_MODEL },
 			table: {
 				data: [],

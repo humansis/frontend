@@ -265,6 +265,7 @@ export default {
 
 	async mounted() {
 		await this.fetchSectors();
+		this.defaultDateOfAssistance();
 	},
 
 	updated() {
@@ -471,6 +472,12 @@ export default {
 					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 			this.loading.targetTypes = false;
+		},
+
+		defaultDateOfAssistance() {
+			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
+				? this.minDateOfAssistance
+				: new Date();
 		},
 	},
 };
