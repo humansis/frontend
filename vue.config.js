@@ -1,11 +1,10 @@
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 try {
-	crypto.createHash('md4');
+	crypto.createHash("md4");
 } catch (e) {
-	console.warn('Crypto "md4" is not supported anymore by this Node version');
 	const origCreateHash = crypto.createHash;
-	crypto.createHash = (alg, opts) => origCreateHash(alg === 'md4' ? 'md5' : alg, opts);
+	crypto.createHash = (alg, opts) => origCreateHash(alg === "md4" ? "md5" : alg, opts);
 }
 
 module.exports = {
