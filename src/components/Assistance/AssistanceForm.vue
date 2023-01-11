@@ -93,7 +93,10 @@
 				</div>
 			</b-field>
 
-			<b-field v-if="formModel.cashbackLimit" :label="$t('Cashback Limit')">
+			<b-field
+				v-if="formModel.cashbackLimit && isCommoditySmartCard"
+				:label="$t('Cashback Limit')"
+			>
 				<b-input v-model="formModel.cashbackLimit" disabled />
 			</b-field>
 		</section>
