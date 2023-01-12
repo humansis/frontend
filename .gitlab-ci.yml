@@ -1,4 +1,4 @@
-image: artifactory.quanti.cz/docker/node-yarn-awscli:12
+image: artifactory.quanti.cz/docker/node-yarn-awscli:18
 
 variables:
   CHANNEL: "#pin_deployment"

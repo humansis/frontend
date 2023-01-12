@@ -1,3 +1,12 @@
+const crypto = require("crypto");
+
+try {
+	crypto.createHash("md4");
+} catch (e) {
+	const origCreateHash = crypto.createHash;
+	crypto.createHash = (alg, opts) => origCreateHash(alg === "md4" ? "md5" : alg, opts);
+}
+
 module.exports = {
 	chainWebpack: (config) => {
 		config

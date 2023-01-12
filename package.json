@@ -10,6 +10,9 @@
     "upgrade-eslint": "npx install-peerdeps --yarn --dev @vue/eslint-config-airbnb",
     "upgrade-yarn": "yarn upgrade-interactive --latest"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
@@ -46,7 +49,7 @@
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "^7.0.1",
+    "node-sass": "^8.0.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-buefy": "~0.3.7",
