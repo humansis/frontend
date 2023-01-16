@@ -119,7 +119,9 @@ export default {
 	},
 
 	watch: {
-		$route: "fetchData",
+		categories() {
+			this.fetchData();
+		},
 	},
 
 	computed: {
@@ -134,10 +136,6 @@ export default {
 			}
 			return result;
 		},
-	},
-
-	mounted() {
-		this.fetchData();
 	},
 
 	methods: {
