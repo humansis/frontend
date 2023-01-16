@@ -168,9 +168,12 @@ export default {
 				const categoryImage = this.categories?.find(({ id }) => id === item
 					.productCategoryId)?.image || "";
 
+				const categoryName = this.categories?.find(({ id }) => id === item
+					.productCategoryId)?.type;
+
 				this.table.data[key].category = {
 					image: categoryImage,
-					icon: [{ code: "Food", value: "Food" }],
+					icon: [{ code: categoryName, value: categoryName }],
 				};
 			});
 		},
