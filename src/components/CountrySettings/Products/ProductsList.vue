@@ -136,7 +136,7 @@ export default {
 		},
 	},
 
-	created() {
+	mounted() {
 		this.fetchData();
 	},
 
@@ -169,7 +169,7 @@ export default {
 					.productCategoryId)?.image || "";
 
 				const categoryName = this.categories?.find(({ id }) => id === item
-					.productCategoryId)?.type;
+					.productCategoryId)?.type || "";
 
 				this.table.data[key].category = {
 					image: categoryImage,
