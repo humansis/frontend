@@ -35,11 +35,11 @@
 			</b-button>
 			<b-button
 				v-if="!disabled"
-				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+			>
+				{{ $t(submitButtonLabel) }}
+			</b-button>
 		</footer>
 	</form>
 </template>

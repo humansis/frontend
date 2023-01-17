@@ -101,11 +101,11 @@
 			</b-button>
 			<b-button
 				v-if="editing"
-				:value="$t('Update')"
-				tag="input"
 				class="is-primary"
 				@click="submitForm"
-			/>
+			>
+				{{ $t('Update') }}
+			</b-button>
 		</footer>
 	</form>
 </template>
