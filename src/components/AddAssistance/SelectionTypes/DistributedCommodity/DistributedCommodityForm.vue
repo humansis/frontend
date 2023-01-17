@@ -215,11 +215,11 @@
 				{{ $t('Close') }}
 			</b-button>
 			<b-button
-				tag="input"
 				class="is-primary"
 				native-type="submit"
-				:value="submitButtonLabel"
-			/>
+			>
+				{{ $t(submitButtonLabel) }}
+			</b-button>
 		</footer>
 	</form>
 </template>

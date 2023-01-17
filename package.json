@@ -17,7 +17,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/vue-fontawesome": "^2.0.2",
-    "buefy": "^0.9.3",
+    "buefy": "0.9.22",
     "core-js": "^3.6.5",
     "crypto-js": "^4.0.0",
     "jwt-decode": "^3.1.2",
@@ -52,7 +52,7 @@
     "node-sass": "^8.0.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
-    "vue-cli-plugin-buefy": "~0.3.7",
+    "vue-cli-plugin-buefy": "0.3.8",
     "vue-template-compiler": "^2.6.11"
   }
 }

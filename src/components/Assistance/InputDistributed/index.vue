@@ -40,13 +40,13 @@
 					{{ $t('Close') }}
 				</b-button>
 				<b-button
-					tag="input"
 					class="is-primary width-80"
 					native-type="submit"
 					:loading="distributedButtonLoading"
 					:disabled="distributedButtonLoading"
-					:value="submitButtonLabel"
-				/>
+				>
+					{{ $t(submitButtonLabel) }}
+				</b-button>
 			</footer>
 		</form>
 		<b-tabs v-if="!distributedFormVisible && distributeData">
