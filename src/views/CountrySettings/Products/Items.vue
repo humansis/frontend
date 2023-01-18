@@ -101,7 +101,7 @@ export default {
 		...mapState(["country"]),
 	},
 
-	mounted() {
+	created() {
 		this.fetchCategories();
 	},
 
