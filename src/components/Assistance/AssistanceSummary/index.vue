@@ -26,7 +26,7 @@
 			position="is-centered"
 			class="ml-3"
 		>
-			<b-tab-item :label="$t('Distribution')" icon="bullseye" class="relative-position">
+			<b-tab-item :label="$t('To Distribute')" icon="user" class="relative-position">
 				<DistributionTab
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
@@ -39,7 +39,7 @@
 				/>
 			</b-tab-item>
 
-			<b-tab-item :label="$t('Assistance')" icon="user" class="relative-position">
+			<b-tab-item :label="$t('Assistance')" icon="bullseye" class="relative-position">
 				<AssistanceTab
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
