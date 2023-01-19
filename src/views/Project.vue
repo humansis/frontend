@@ -39,6 +39,7 @@
 		<AssistancesList
 			ref="assistancesList"
 			:beneficiaries-count="beneficiariesCount"
+			:project="project"
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"

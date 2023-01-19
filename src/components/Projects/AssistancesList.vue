@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
 		<b-notification
-			v-if="!table.data.length && beneficiariesCount && !isLoadingList && !upcoming"
+			v-if="showNoProjectError"
 			type="is-warning is-light"
 			has-icon
 			icon="exclamation-triangle"
@@ -14,7 +14,7 @@
 			</div>
 		</b-notification>
 		<b-notification
-			v-if="!beneficiariesCount && table.data && !isLoadingList && !upcoming"
+			v-if="showNoBeneficiariesError"
 			type="is-warning is-light"
 			has-icon
 			icon="user-plus"
@@ -191,6 +191,10 @@ export default {
 			required: false,
 			default: 0,
 		},
+		project: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	mixins: [permissions, grid, baseHelper],
@@ -266,6 +270,20 @@ export default {
 
 		isAssistanceDetailAllowed() {
 			return this.userCan.editDistribution || this.userCan.viewDistribution;
+		},
+
+		showNoProjectError() {
+			return !this.project?.assistanceCount
+				&& this.beneficiariesCount
+				&& !this.isLoadingList
+				&& !this.upcoming;
+		},
+
+		showNoBeneficiariesError() {
+			return !this.beneficiariesCount
+				&& this.table.data
+				&& !this.isLoadingList
+				&& !this.upcoming;
 		},
 	},
 
