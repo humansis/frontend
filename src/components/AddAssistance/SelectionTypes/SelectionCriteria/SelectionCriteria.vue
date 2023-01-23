@@ -249,8 +249,10 @@ export default {
 		},
 
 		isExportButtonDisabled() {
-			return this.vulnerabilityScoreTouched || this.calculationLoading
-				|| !this.groups.length || !this.totalCount;
+			return this.vulnerabilityScoreTouched
+				|| this.calculationLoading
+				|| !this.groups.length
+				|| !this.totalCount;
 		},
 
 		isMinVulnerabilityScoreFloat() {
@@ -259,7 +261,8 @@ export default {
 		},
 
 		isUpdateButtonEnabled() {
-			return this.calculationLoading || !this.groups.length
+			return this.calculationLoading
+				|| !this.groups.length
 				|| this.isMinVulnerabilityScoreFloat;
 		},
 	},
@@ -461,9 +464,12 @@ export default {
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({
-					assistanceBody, totalCount });
+					assistanceBody,
+					totalCount,
+				});
 				await this.calculationOfAssistanceBeneficiariesScores({
-					assistanceBody });
+					assistanceBody,
+				});
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
@@ -507,9 +513,9 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores(
-			{ assistanceBody },
-		) {
+		async calculationOfAssistanceBeneficiariesScores({
+			assistanceBody,
+		}) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
 			const body = {
