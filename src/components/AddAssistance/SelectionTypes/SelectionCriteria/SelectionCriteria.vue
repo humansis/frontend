@@ -185,10 +185,6 @@ export default {
 			type: Array,
 			default: null,
 		},
-
-		test: {
-			type: Array,
-		},
 	},
 
 	data() {
@@ -296,7 +292,6 @@ export default {
 		},
 
 		async exportSelectedBeneficiaries(type, format) {
-			console.log(this.test);
 			if (type === EXPORT.VULNERABILITY_SCORES) {
 				this.exportControl.loading = true;
 
