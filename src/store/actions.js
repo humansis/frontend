@@ -68,4 +68,8 @@ export default {
 	storeAdmNames: ({ commit }, admNames) => {
 		commit(CONST.STORE_ADM_NAMES, admNames);
 	},
+
+	storeGridExports: ({ commit }, gridExports) => {
+		commit(CONST.STORE_GRID_EXPORTS, gridExports);
+	},
 };

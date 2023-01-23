@@ -197,13 +197,13 @@
 			</template>
 
 			<template #export>
-				<ExportButton
+				<ExportControl
 					v-if="table.data.length"
-					space-between
-					class="ml-3"
-					type="is-primary"
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+					field-class="ml-5"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="exportHouseholds"
 				/>
 			</template>
@@ -221,12 +221,13 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
 import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import addressHelper from "@/mixins/addressHelper";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import permissions from "@/mixins/permissions";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
 	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
@@ -245,7 +246,7 @@ export default {
 		SafeDelete,
 		ColumnField,
 		Modal,
-		ExportButton,
+		ExportControl,
 	},
 
 	mixins: [grid, addressHelper, permissions, urlFiltersHelper],
@@ -254,7 +255,12 @@ export default {
 		return {
 			advancedSearchVisible: false,
 			householdsSelects: true,
-			exportLoading: false,
+			exportControl: {
+				loading: false,
+				location: "households",
+				types: [EXPORT.HOUSEHOLDS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -336,28 +342,29 @@ export default {
 			});
 		},
 
-		async exportHouseholds(format) {
-			this.exportLoading = true;
-			let ids = null;
-			if (!this.householdsSelects) {
-				ids = this.table.checkedRows.map((item) => item.id);
-			}
-			await BeneficiariesService.exportHouseholds(format, ids, this.filters)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Households.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+		async exportHouseholds(type, format) {
+			if (type === EXPORT.HOUSEHOLDS) {
+				this.exportControl.loading = true;
+				let ids = null;
+				if (!this.householdsSelects) {
+					ids = this.table.checkedRows.map((item) => item.id);
+				}
+				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `BNF Households ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
 
-					/*
+						/*
 					if (this.table.total > 10000 && (e.name !== "Error"
 					|| e.name !== "Something went wrong")) {
 						Notification(
@@ -366,8 +373,9 @@ export default {
 						);
 					} else
 					 */
-				});
-			this.exportLoading = false;
+					});
+				this.exportControl.loading = false;
+			}
 		},
 
 		onRowsChecked(rows) {

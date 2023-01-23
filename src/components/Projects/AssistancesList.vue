@@ -112,11 +112,11 @@
 				</div>
 			</b-table-column>
 			<template v-if="!upcoming" #export>
-				<ExportButton
-					type="is-primary"
-					space-between
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+				<ExportControl
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="exportAssistances"
 				/>
 			</template>
@@ -157,11 +157,12 @@
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
@@ -181,7 +182,7 @@ export default {
 		ActionButton,
 		SafeDelete,
 		ColumnField,
-		ExportButton,
+		ExportControl,
 	},
 
 	props: {
@@ -205,6 +206,12 @@ export default {
 
 	data() {
 		return {
+			exportControl: {
+				loading: false,
+				location: "projectAssistances",
+				types: [EXPORT.ASSISTANCE_OVERVIEW],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			exportLoading: false,
 			selectedFilters: ["new", "validated"],
 			statusActive: {
@@ -484,24 +491,26 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		async exportAssistances(format) {
-			this.exportLoading = true;
-			await AssistancesService.exportAssistances(format, this.$route.params.projectId)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `assistances.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async exportAssistances(type, format) {
+			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
+				this.exportControl.loading = true;
+				await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

@@ -106,4 +106,8 @@ export default {
 	[CONST.STORE_ADM_NAMES]: (state, admNames) => {
 		state.admNames = admNames;
 	},
+
+	[CONST.STORE_GRID_EXPORTS]: (state, selectedExportOptions) => {
+		state.selectedExportsOptions = selectedExportOptions;
+	},
 };

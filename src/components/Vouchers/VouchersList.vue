@@ -109,13 +109,13 @@
 			</b-collapse>
 		</template>
 		<template #export>
-			<ExportButton
+			<ExportControl
 				v-if="userCan.exportPrintVouchers && table.data.length"
-				space-between
-				class="ml-3"
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
+				field-class="mt-3 ml-5"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
 				@onExport="exportBooklets"
 			/>
 			<b-button
@@ -139,13 +139,14 @@ import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import BookletsService from "@/services/BookletsService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { getBookletStatus } from "@/utils/helpers";
 import grid from "@/mixins/grid";
 import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import voucherHelper from "@/mixins/voucherHelper";
 import { Notification } from "@/utils/UI";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 
@@ -153,7 +154,7 @@ export default {
 	name: "VouchersList",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		VouchersFilter,
 		SafeDelete,
 		Table,
@@ -167,10 +168,15 @@ export default {
 		return {
 			advancedSearchVisible: false,
 			filters: {},
-			exportLoading: false,
 			printLoading: false,
 			printSelectionLoading: false,
 			bookletsSelects: true,
+			exportControl: {
+				loading: false,
+				location: "vouchers",
+				types: [EXPORT.VOUCHERS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -237,28 +243,30 @@ export default {
 			return getBookletStatus(code).value;
 		},
 
-		async exportBooklets(format) {
-			this.exportLoading = true;
-			let ids = null;
-			if (!this.bookletsSelects) {
-				ids = this.table.checkedRows.map((item) => item.id);
+		async exportBooklets(type, format) {
+			if (type === EXPORT.VOUCHERS) {
+				this.exportControl.loading = true;
+				let ids = null;
+				if (!this.bookletsSelects) {
+					ids = this.table.checkedRows.map((item) => item.id);
+				}
+				await BookletsService.exportBooklets(format, ids)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Vouchers ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
 			}
-			await BookletsService.exportBooklets(format, ids)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Booklets.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
 		},
 
 		onRowsChecked(rows) {

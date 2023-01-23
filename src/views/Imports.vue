@@ -6,13 +6,12 @@
 			</div>
 
 			<div class="level-right">
-				<ExportButton
-					class="mr-3"
-					space-between
-					type="is-primary"
-					:label="$t('Download Template')"
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+				<ExportControl
+					field-class="mt-2 mr-3"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="downloadTemplate"
 				/>
 				<b-button
@@ -69,7 +68,8 @@ import Modal from "@/components/Modal";
 import ImportService from "@/services/ImportService";
 import { Toast, Notification } from "@/utils/UI.js";
 import ImportsList from "@/components/Imports/ImportsList";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ProjectService from "@/services/ProjectService";
 
 export default {
@@ -79,12 +79,17 @@ export default {
 		ImportsList,
 		Modal,
 		ImportForm,
-		ExportButton,
+		ExportControl,
 	},
 
 	data() {
 		return {
-			exportLoading: false,
+			exportControl: {
+				loading: false,
+				location: "imports",
+				types: [EXPORT.IMPORTS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			importModal: {
 				isOpened: false,
 				isWaiting: false,
@@ -256,26 +261,28 @@ export default {
 				});
 		},
 
-		async downloadTemplate(format) {
-			this.exportLoading = true;
-			await ImportService.exportTemplate(format)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `import-template.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) {
-						Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
-					}
-				});
-			this.exportLoading = false;
+		async downloadTemplate(type, format) {
+			if (type === EXPORT.IMPORTS) {
+				this.exportControl.loading = true;
+				await ImportService.exportTemplate(format)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `import-template.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) {
+							Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
+						}
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };
