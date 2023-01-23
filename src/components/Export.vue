@@ -98,7 +98,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions(["storeGridExports"]),
+		...mapActions(["storeSelectedExportOptions"]),
 
 		setDefaultSelectedValue() {
 			if (this.availableExportTypes.length === 1) {
@@ -148,7 +148,7 @@ export default {
 					}];
 				}
 
-				this.storeGridExports({
+				this.storeSelectedExportOptions({
 					...updatedSelectedOptions,
 				});
 			} else {
