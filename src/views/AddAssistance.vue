@@ -307,7 +307,8 @@ export default {
 
 			if (remoteDistributionAllowed) {
 				const allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
-					.every(({ data }) => data.some(({ criteria, value }) => criteria.code === "hasValidSmartcard" && value.code));
+					.every(({ data }) => data.some(({ criteria, value }) => criteria.code === "hasValidSmartcard"
+						&& (value.code || value === true)));
 
 				if (allCriteriaHasValidCard) {
 					return true;
