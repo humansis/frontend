@@ -39,7 +39,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
+			@resetSort="resetSort('dateDistribution', 'desc')"
 			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
@@ -195,6 +195,10 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		projectLoaded: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	mixins: [permissions, grid, baseHelper],
@@ -281,6 +285,7 @@ export default {
 
 		showNoBeneficiariesError() {
 			return !this.beneficiariesCount
+				&& this.projectLoaded
 				&& this.table.data
 				&& !this.isLoadingList
 				&& !this.upcoming;
@@ -502,14 +507,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.btn {
-		outline: none !important;
-		box-shadow: none !important;
+.btn {
+	outline: none !important;
+	box-shadow: none !important;
 
 		&.is-selected,
+		&.is-selected:hover,
 		&.is-selected:focus {
 			border-color: inherit;
-			border-width: 1px;
+			border-width: 2px;
 		}
 	}
 </style>
