@@ -197,7 +197,7 @@
 			<template #export>
 				<ExportControl
 					:available-export-formats="exportControl.formats"
-					:available-export-types="avaibleExportTypes"
+					:available-export-types="availableExportTypes"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
 					@inputUpdated="exportValuesUpdated"
@@ -421,7 +421,7 @@ export default {
 	computed: {
 		...mapState(["perPage"]),
 
-		avaibleExportTypes() {
+		availableExportTypes() {
 			if (this.exportButton && this.isDistributionExportVisible
 				&& this.userCan.exportBeneficiaries && this.isAssistanceValidated) {
 				return [
@@ -437,6 +437,7 @@ export default {
 					EXPORT.DISTRIBUTION_LIST,
 				];
 			}
+
 			return [];
 		},
 

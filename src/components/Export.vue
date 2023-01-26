@@ -129,31 +129,28 @@ export default {
 
 		setExportInputs(entity, selectedOptions = null) {
 			if (selectedOptions) {
-				const exportOptionsEntityIndex = this.selectedExportsOptions?.[entity]
-					?.findIndex(({ country }) => country === this.country.iso3);
+				const exportOptionsEntityIndex = this.selectedExportsOptions?.[entity]?.findIndex(
+					({ country }) => country === this.country.iso3,
+				);
 
 				const updatedSelectedOptions = { ...this.selectedExportsOptions };
 
 				if (exportOptionsEntityIndex !== -1 && exportOptionsEntityIndex !== undefined) {
 					updatedSelectedOptions[entity][exportOptionsEntityIndex].selected = selectedOptions;
-				} else if (updatedSelectedOptions[entity]?.length) {
+				} else {
 					updatedSelectedOptions[entity].push({
 						country: this.country.iso3,
 						selected: selectedOptions,
 					});
-				} else {
-					updatedSelectedOptions[entity] = [{
-						country: this.country.iso3,
-						selected: selectedOptions,
-					}];
 				}
 
 				this.storeSelectedExportOptions({
 					...updatedSelectedOptions,
 				});
 			} else {
-				const storedSelectedOptions = this.selectedExportsOptions[entity]
-					?.find(({ country }) => country === this.country.iso3);
+				const storedSelectedOptions = this.selectedExportsOptions[entity]?.find(
+					({ country }) => country === this.country.iso3,
+				);
 
 				if (storedSelectedOptions) {
 					const { selected } = storedSelectedOptions;

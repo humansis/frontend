@@ -19,7 +19,7 @@ export const normalizeFiltersOptions = (text = "") => text
 	.replace(/ /g, "_")
 	.toUpperCase();
 
-export const normalizeExportDate = (text = new Date()) => text
+export const normalizeExportDate = (date = new Date()) => date
 	.toISOString().split("T")[0];
 
 export const generateColumns = ((visibleColumns) => {
