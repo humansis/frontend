@@ -188,8 +188,6 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
-				} else {
-					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Smartcard Purchases")} ${e}`, "is-danger");
@@ -229,6 +227,7 @@ export default {
 			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
 			this.prepareVendorForTable([...new Set(vendorIds)]);
 			this.prepareProductForTable([...new Set(productIds)]);
+			this.table.progress = 100;
 		},
 
 		filtersToggle() {
