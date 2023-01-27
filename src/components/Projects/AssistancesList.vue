@@ -357,7 +357,7 @@ export default {
 				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
 				this.table.data[key].status = item.state.value;
 				this.table.data[key].reached = this.reachedTextFormat(item);
-				this.table.data[key].progress = this.progress(item);
+				this.table.data[key].progress = this.assistanceProgress(item);
 			});
 			this.table.progress += 10;
 
@@ -432,9 +432,9 @@ export default {
 				: `/project/${data.projectId}/assistance/${data.id}`;
 		},
 
-		progress(data) {
+		assistanceProgress(data) {
 			return (data.state.value === "New" && "N/A")
-				|| `${Math.round(data.progress * 100)} %`;
+				|| `${(data.progress * 100)} %`;
 		},
 
 		goToDetail(id) {

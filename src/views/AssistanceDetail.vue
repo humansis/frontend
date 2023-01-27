@@ -235,41 +235,7 @@ export default {
 		},
 
 		assistanceProgress() {
-			let result = 0;
-
-			if (this.modalityType) {
-				switch (this.modalityType) {
-					case consts.COMMODITY.MOBILE_MONEY:
-						if (this.amountTotal && this.amountPickedUp) {
-							result = (100 / this.amountTotal) * this.amountPickedUp;
-						}
-						break;
-					case consts.COMMODITY.QR_CODE_VOUCHER:
-						if (this.amountTotal && this.amountUsed) {
-							result = (100 / this.amountTotal) * this.amountUsed;
-						}
-						break;
-					case consts.COMMODITY.SMARTCARD:
-					default:
-						if (this.amountTotal && this.amountDistributed) {
-							result = (100 / this.amountTotal) * this.amountDistributed;
-						}
-				}
-			}
-
-			return (result !== Infinity) ? Math.round(result) : 0;
-		},
-
-		amountTotal() {
-			return this.statistics?.amountTotal || 0;
-		},
-
-		amountPickedUp() {
-			return this.statistics?.amountPickedUp || 0;
-		},
-
-		amountUsed() {
-			return this.statistics?.amountUsed || 0;
+			return this.statistics?.progress * 100;
 		},
 
 		amountDistributed() {
