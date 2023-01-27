@@ -191,6 +191,7 @@
 						ref="householdsFilter"
 						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
+						@onSearch="onSearch(table.searchPhrase)"
 					/>
 				</b-collapse>
 			</template>
@@ -458,15 +459,17 @@ export default {
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
-				} = await this
-					.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
+				} = await this.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
-				this.table.data[key].vulnerabilities = vulnerabilitiesList
-					?.filter(({ code }) => code === vulnerabilities
-						.find((vulnerability) => vulnerability === code));
+				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
+					({ code }) => code === vulnerabilities.find(
+						(vulnerability) => vulnerability === code,
+					),
+				);
 				this.table.data[key].nationalIds = nationalIds;
-				this.table.data[key].supportDateReceived = item
-					.supportDateReceived ? new Date(item.supportDateReceived) : null;
+				this.table.data[key].supportDateReceived = item.supportDateReceived
+					? new Date(item.supportDateReceived)
+					: null;
 				allNationalIdIds.push(...nationalIds);
 			});
 			this.table.progress += 5;
