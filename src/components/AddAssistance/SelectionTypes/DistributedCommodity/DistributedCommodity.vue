@@ -26,7 +26,7 @@
 				:target-type="targetType"
 				:date-of-assistance="dateOfAssistance"
 				:date-expiration="dateExpiration"
-				:commodity="data"
+				:commodity="commodity"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -142,7 +142,7 @@ export default {
 			},
 		},
 
-		data(data) {
+		commodity(data) {
 			if (data.length) {
 				this.table.data = data;
 				this.dateExpiration = data[0]?.dateExpiration.toISOString();
@@ -173,7 +173,7 @@ export default {
 	},
 
 	props: {
-		data: {
+		commodity: {
 			type: Array,
 			default: () => [],
 		},

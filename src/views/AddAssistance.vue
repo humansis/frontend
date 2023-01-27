@@ -29,7 +29,7 @@
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
-					:data="componentsData.distributedCommodity"
+					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
 					:target-type="targetType"

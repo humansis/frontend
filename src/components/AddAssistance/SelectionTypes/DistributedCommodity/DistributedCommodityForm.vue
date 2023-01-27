@@ -646,9 +646,9 @@ export default {
 		},
 
 		setDefaultExpirationDate() {
-			this.formModel.dateExpiration = this.dateExpiration
-				? new Date(this.dateExpiration)
-				: new Date(this.project?.endDate);
+			this.formModel.dateExpiration = new Date(
+				this.dateExpiration || this.project?.endDate,
+			);
 		},
 
 		submitForm() {
