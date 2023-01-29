@@ -124,6 +124,8 @@ const DEFAULT_FORM_MODEL = {
 	cashbackLimit: null,
 };
 
+const EXPIRATION_DATE_COLUMN_INDEX = 5;
+
 export default {
 	name: "DistributedCommodity",
 
@@ -284,7 +286,7 @@ export default {
 		},
 
 		isModalityTypeSmartCard() {
-			return this.table.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
+			return this.table?.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
 		},
 
 		formattedDate() {
@@ -348,7 +350,7 @@ export default {
 		submitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
-			this.table.columns[5].visible = this.isModalityTypeSmartCard;
+			this.table.columns[EXPIRATION_DATE_COLUMN_INDEX].visible = this.isModalityTypeSmartCard;
 			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 
