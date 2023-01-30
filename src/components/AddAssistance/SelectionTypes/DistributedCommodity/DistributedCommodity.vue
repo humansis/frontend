@@ -286,11 +286,11 @@ export default {
 		},
 
 		isModalityTypeSmartCard() {
-			return this.table?.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
+			return this.table.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
 		},
 
 		formattedDate() {
-			const date = this.table?.data[0]?.dateExpiration;
+			const date = this.table.data[0]?.dateExpiration;
 			return date ? this.$moment(date).format("YYYY-MM-DD hh:mm") : "";
 		},
 	},
