@@ -107,6 +107,9 @@
 			</b-table-column>
 		</Table>
 	</div>
+	<div v-else>
+		<b-loading :is-full-page="false" :active="duplicitiesLoading" />
+	</div>
 </template>
 
 <script>
@@ -132,13 +135,13 @@ export default {
 		return {
 			consts,
 			isExportLoading: false,
-			selectedFilters: ["Duplicity Candidate"],
+			selectedFilters: [consts.ITEM_STATE.DUPLICITY_CANDIDATE],
 			statusFilterConvention: {
-				notSolved: "Duplicity Candidate",
-				fromFile: "Duplicity Keep Ours",
-				fromHumansis: "Duplicity Keep Theirs",
+				notSolved: consts.ITEM_STATE.DUPLICITY_CANDIDATE,
+				fromFile: consts.ITEM_STATE.DUPLICITY_KEEP_OURS,
+				fromHumansis: consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
 			},
-			filters: { status: ["Duplicity Candidate"] },
+			filters: { status: [consts.ITEM_STATE.DUPLICITY_CANDIDATE] },
 			statusActive: {
 				notSolved: true,
 				fromFile: false,
@@ -362,7 +365,6 @@ export default {
 				duplicityKey,
 				"toLinkLoading",
 			);
-			console.log(acceptedDuplicityId);
 		},
 
 		async resolveImportItemDuplicity(
@@ -373,8 +375,6 @@ export default {
 			} else {
 				this.table.data[duplicityKey].toCreateLoading = true;
 			}
-
-			console.log(acceptedDuplicityId);
 
 			this.table.data[duplicityKey].disabled = true;
 

@@ -33,5 +33,6 @@ export default {
 	ITEM_STATE: {
 		DUPLICITY_KEEP_THEIRS: "Duplicity Keep Theirs",
 		DUPLICITY_KEEP_OURS: "Duplicity Keep Ours",
+		DUPLICITY_CANDIDATE: "Duplicity Candidate",
 	},
 };

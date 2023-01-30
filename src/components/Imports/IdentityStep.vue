@@ -107,7 +107,7 @@
 						icon-left="tasks"
 						:icon-right="!duplicitiesContentOpened ? 'arrow-down' : null"
 						:loading="resolveDuplicitiesLoading"
-						:disabled="resolversAllLoading"
+						:disabled="duplicitiesContentOpened"
 						@click="resolveDuplicities"
 					>
 						{{ $t('Manage Duplicities') }}
@@ -244,13 +244,17 @@ export default {
 		allRecordsFormLoading() {
 			if (this.resolversAllActive === consts.ITEM_STATUS.TO_UPDATE) {
 				return this.resolversAllLoading
-					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Ours")
+					|| (!this.duplicities.every(
+						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS,
+					)
 						&& !this.allFromSolved);
 			}
 
 			if (this.resolversAllActive === consts.ITEM_STATUS.TO_LINK) {
 				return this.resolversAllLoading
-					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Theirs")
+					|| (!this.duplicities.every(
+						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
+					)
 						&& !this.allFromSolved);
 			}
 
