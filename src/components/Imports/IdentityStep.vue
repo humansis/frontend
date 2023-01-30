@@ -103,11 +103,11 @@
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						type="is-primary"
+						:class="['is-link' , { 'is-outlined': !duplicitiesContentOpened }]"
 						icon-left="tasks"
-						icon-right="arrow-down"
+						:icon-right="!duplicitiesContentOpened ? 'arrow-down' : null"
 						:loading="resolveDuplicitiesLoading"
-						:disabled="duplicitiesContentOpened"
+						:disabled="resolversAllLoading"
 						@click="resolveDuplicities"
 					>
 						{{ $t('Manage Duplicities') }}
@@ -123,11 +123,14 @@
 						{{ $t('Start Similarity Check') }}
 					</b-button>
 					-->
+				</div>
+				<div>
 					<b-button
 						v-if="canGoToFinalisation"
 						type="is-primary"
 						icon-left="play-circle"
 						:loading="changeStateButtonLoading"
+						:disabled="!canGoToFinalisation"
 						@click="goToFinalisation"
 					>
 						{{ $t('Go to Finalisation') }}
@@ -318,7 +321,7 @@ export default {
 				.then((response) => {
 					if (response.status === 202) {
 						this.resolversAllActive = status;
-						this.$refs.duplicityResolver.fetchDuplicities();
+						this.$refs.duplicityResolver.fetchData();
 					}
 				}).finally(() => {
 					this.resolversAllLoading = false;

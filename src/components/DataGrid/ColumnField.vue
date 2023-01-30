@@ -24,6 +24,46 @@
 			</div>
 		</template>
 
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicitiesRecords'">
+			<div
+				v-for="(item, index) in data.row[column.field]"
+				:key="`array-text-break-${index}`"
+			>
+				<b-tag
+					v-if="item === 'hasNoDuplicityDifferences'"
+					class="mt-2 mr-2"
+					type="is-light"
+				>
+					{{ $t('No Difference') }}
+				</b-tag>
+
+				<span
+					v-else
+					:class="{'has-text-weight-bold' : column.boldText }"
+				>
+					{{ item }}
+					<br>
+				</span>
+				<br>
+			</div>
+		</template>
+
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicities'">
+			<div
+				v-for="(item, index) in  data.row[column.field]"
+				:key="`array-text-break-${index}`"
+				:class="{'has-text-weight-bold' : column.boldText }"
+			>
+				<span>
+					{{ item }}
+					<br>
+				</span>
+				<br>
+			</div>
+		</template>
+
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
 			<router-link
