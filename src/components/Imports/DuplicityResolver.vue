@@ -78,7 +78,7 @@
 						:loading="table.data[props.index].toUpdateLoading"
 						@click="resolveToUpdate(
 							table.data[props.index].itemId,
-							table.data[props.index].itemId.duplicityCandidateId,
+							table.data[props.index].duplicityCandidateId,
 							props.index
 						)"
 					>
@@ -97,7 +97,7 @@
 						:loading="table.data[props.index].toLinkLoading"
 						@click="resolveToLink(
 							table.data[props.index].itemId,
-							table.data[props.index].itemId.duplicityCandidateId,
+							table.data[props.index].duplicityCandidateId,
 							props.index
 						)"
 					>
@@ -362,6 +362,7 @@ export default {
 				duplicityKey,
 				"toLinkLoading",
 			);
+			console.log(acceptedDuplicityId);
 		},
 
 		async resolveImportItemDuplicity(
@@ -372,6 +373,8 @@ export default {
 			} else {
 				this.table.data[duplicityKey].toCreateLoading = true;
 			}
+
+			console.log(acceptedDuplicityId);
 
 			this.table.data[duplicityKey].disabled = true;
 
