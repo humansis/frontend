@@ -434,7 +434,7 @@ export default {
 
 		assistanceProgress(data) {
 			return (data.state.value === "New" && "N/A")
-				|| `${data.progress * 100} %`;
+				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
 		goToDetail(id) {

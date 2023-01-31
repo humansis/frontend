@@ -39,7 +39,10 @@
 
 		<EditNote :assistance="assistance" />
 
-		<div class="m-6">
+		<div
+			v-if="!isAssistanceLoading"
+			class="m-6"
+		>
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
 					{{ $t(distributionOrActivity) }}:
@@ -235,7 +238,7 @@ export default {
 		},
 
 		assistanceProgress() {
-			return this.statistics?.progress * 100;
+			return Math.trunc(this.statistics?.progress * 100);
 		},
 
 		amountDistributed() {
