@@ -429,8 +429,8 @@ export default {
 
 		isDataForTableLoading(item) {
 			return this.table.data[item].toUpdateLoading
-			|| this.table.data[item].toLinkLoading
-			|| this.formChangesLoading;
+				|| this.table.data[item].toLinkLoading
+				|| this.formChangesLoading;
 		},
 	},
 
