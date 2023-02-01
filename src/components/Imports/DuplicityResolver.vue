@@ -67,7 +67,7 @@
 			>
 				<b-field grouped class="action-row">
 					<b-button
-						:class="isFromFileSelected(props.index)"
+						:class="fromFileClasses(props.index)"
 						:disabled="isDataForTableLoading(props.index)"
 						:loading="table.data[props.index].toUpdateLoading"
 						@click="resolveToUpdate(
@@ -80,7 +80,7 @@
 					</b-button>
 
 					<b-button
-						:class="isFromHumansisSelected(props.index)"
+						:class="fromHumansisClasses(props.index)"
 						:disabled="isDataForTableLoading(props.index)"
 						:loading="table.data[props.index].toLinkLoading"
 						@click="resolveToLink(
@@ -409,21 +409,23 @@ export default {
 			this.$emit("updated");
 		},
 
-		isFromFileSelected(item) {
+		fromFileClasses(item) {
+			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
+
 			return [
-				"is-info button-to-update",
-				this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS
-					? ""
-					: "is-outlined",
+				"is-info",
+				"button-to-update",
+				{ "is-outlined": isOutlined },
 			];
 		},
 
-		isFromHumansisSelected(item) {
+		fromHumansisClasses(item) {
+			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+
 			return [
-				"is-info button-to-link",
-				this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS
-					? ""
-					: "is-outlined",
+				"is-info",
+				"button-to-link",
+				{ "is-outlined": isOutlined },
 			];
 		},
 
