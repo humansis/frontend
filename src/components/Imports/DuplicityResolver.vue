@@ -1,6 +1,6 @@
 <template>
 	<div v-if="!duplicitiesLoading">
-		<hr style="height: 3px; background: #074f60;">
+		<hr class="content-separator">
 
 		<h2 class="subtitle is-5 mb-4">
 			{{ header }} ({{ table.total }})
@@ -67,14 +67,8 @@
 			>
 				<b-field grouped class="action-row">
 					<b-button
-						:class="[
-							'is-info button-to-update',
-							table.data[props.index].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS
-								? '' : 'is-outlined'
-						]"
-						:disabled="table.data[props.index].toUpdateLoading
-							|| table.data[props.index].toLinkLoading
-							|| formChangesLoading"
+						:class="isFromFileSelected(props.index)"
+						:disabled="isDataForTableLoading(props.index)"
 						:loading="table.data[props.index].toUpdateLoading"
 						@click="resolveToUpdate(
 							table.data[props.index].itemId,
@@ -86,14 +80,8 @@
 					</b-button>
 
 					<b-button
-						:class="[
-							'is-info button-to-link',
-							table.data[props.index].state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS
-								? '' : 'is-outlined'
-						]"
-						:disabled="table.data[props.index].toUpdateLoading
-							|| table.data[props.index].toLinkLoading
-							|| formChangesLoading"
+						:class="isFromHumansisSelected(props.index)"
+						:disabled="isDataForTableLoading(props.index)"
 						:loading="table.data[props.index].toLinkLoading"
 						@click="resolveToLink(
 							table.data[props.index].itemId,
@@ -154,7 +142,11 @@ export default {
 					{ key: "firstName", type: "arrayTextBreakForDuplicities", bold: true },
 					{ key: "idType", type: "arrayTextBreakForDuplicities", label: "ID Type" },
 					{ key: "idNumber", type: "arrayTextBreakForDuplicities", label: "ID Number" },
-					{ key: "recordFrom", type: "arrayTextBreakForDuplicitiesRecords", label: "Records From File / Humansis" },
+					{
+						key: "recordFrom",
+						type: "arrayTextBreakForDuplicitiesRecords",
+						label: "Records From File / Humansis",
+					},
 				]),
 				total: 0,
 				currentPage: 1,
@@ -267,6 +259,8 @@ export default {
 								this.table.data[key].idNumber.push(reason["ID Number"]);
 							}
 						});
+						this.table.data[key].idType.push("memberDuplicitiesLastItem");
+						this.table.data[key].idNumber.push("memberDuplicitiesLastItem");
 					}
 
 					if (Object.hasOwn(memberDuplicity, "differences")) {
@@ -287,17 +281,21 @@ export default {
 								}
 							}
 						});
+						this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 					}
 
 					if (!this.hasDuplicityDifferences(memberDuplicity.differences)) {
 						this.table.data[key].recordFrom.push("hasNoDuplicityDifferences");
 					}
+					this.table.data[key].familyName.push("memberDuplicitiesLastItem");
+					this.table.data[key].firstName.push("memberDuplicitiesLastItem");
 				});
 
 				this.table.data = this.table.data.map((items) => ({
 					...items,
 					toUpdateLoading: false,
-					toLinkLoading: false }));
+					toLinkLoading: false,
+				}));
 			}
 		},
 
@@ -372,8 +370,6 @@ export default {
 		) {
 			if (duplicityKey !== null) {
 				this.table.data[duplicityKey][button] = true;
-			} else {
-				this.table.data[duplicityKey].toCreateLoading = true;
 			}
 
 			this.table.data[duplicityKey].disabled = true;
@@ -399,8 +395,6 @@ export default {
 					if (e.message) {
 						if (duplicityKey !== null) {
 							this.table.data[duplicityKey][button] = false;
-						} else {
-							this.table.data[duplicityKey].toCreateLoading = false;
 						}
 
 						this.table.data[duplicityKey].disabled = false;
@@ -414,7 +408,32 @@ export default {
 			}));
 			this.$emit("updated");
 		},
+
+		isFromFileSelected(item) {
+			return [
+				"is-info button-to-update",
+				this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS
+					? ""
+					: "is-outlined",
+			];
+		},
+
+		isFromHumansisSelected(item) {
+			return [
+				"is-info button-to-link",
+				this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS
+					? ""
+					: "is-outlined",
+			];
+		},
+
+		isDataForTableLoading(item) {
+			return this.table.data[item].toUpdateLoading
+			|| this.table.data[item].toLinkLoading
+			|| this.formChangesLoading;
+		},
 	},
+
 };
 </script>
 
@@ -432,6 +451,11 @@ export default {
 		border-color: transparent;
 		color: #fff;
 	}
+}
+
+.content-separator {
+	height: 3px;
+	background: #074f60;
 }
 </style>
 
