@@ -40,7 +40,7 @@
 				</b-tag>
 
 				<span
-					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord (item)"
+					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
 					:class="{ 'has-text-weight-bold': column.boldText }"
 				>
 					{{ item }}
@@ -55,10 +55,10 @@
 				:key="`array-text-break-${index}`"
 				:class="{
 					'has-text-weight-bold': column.boldText,
-					'mb-4': isMembersLastRecord (item),
+					'mb-4': isMembersLastRecord(item),
 				}"
 			>
-				<span v-if="!isMembersLastRecord (item)">
+				<span v-if="!isMembersLastRecord(item)">
 					{{ item }}
 				</span>
 			</div>

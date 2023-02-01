@@ -181,21 +181,24 @@ export default {
 	computed: {
 		filterButtonNotSolved() {
 			return [
-				"btn mr-1",
+				"btn",
+				"mr-1",
 				{ "is-selected": this.statusActive.notSolved },
 			];
 		},
 
 		filterButtonFromFile() {
 			return [
-				"btn mr-1",
+				"btn",
+				"mr-1",
 				{ "is-selected": this.statusActive.fromFile },
 			];
 		},
 
 		filterButtonFromHumansis() {
 			return [
-				"btn mr-1",
+				"btn",
+				"mr-1",
 				{ "is-selected": this.statusActive.fromHumansis },
 			];
 		},
