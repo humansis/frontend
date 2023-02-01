@@ -44,7 +44,7 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isExportLoading"
-			:showTableHeader="false"
+			:show-table-header="false"
 			no-data-message="No data for these filters"
 			@pageChanged="onPageChange"
 			@changePerPage="onChangePerPage"

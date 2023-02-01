@@ -29,7 +29,7 @@
 			<div
 				v-for="(item, index) in data.row[column.field]"
 				:key="`array-text-break-${index}`"
-				:class="{'mb-4' : memberDuplicitiesLastItem(item)}"
+				:class="{'mb-4' : isMembersLastRecord (item)}"
 			>
 				<b-tag
 					v-if="item === 'hasNoDuplicityDifferences'"
@@ -40,7 +40,7 @@
 				</b-tag>
 
 				<span
-					v-else-if="item !== 'hasNoDuplicityDifferences' && !memberDuplicitiesLastItem(item)"
+					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord (item)"
 					:class="{'has-text-weight-bold' : column.boldText }"
 				>
 					{{ item }}
@@ -55,10 +55,10 @@
 				:key="`array-text-break-${index}`"
 				:class="{
 					'has-text-weight-bold' : column.boldText,
-					'mb-4' : memberDuplicitiesLastItem(item)
+					'mb-4' : isMembersLastRecord (item)
 				}"
 			>
-				<span v-if="!memberDuplicitiesLastItem(item)">
+				<span v-if="!isMembersLastRecord (item)">
 					{{ item }}
 				</span>
 			</div>
@@ -264,7 +264,7 @@ export default {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
 
-		memberDuplicitiesLastItem(item) {
+		isMembersLastRecord(item) {
 			return item === "memberDuplicitiesLastItem";
 		},
 
