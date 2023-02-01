@@ -64,6 +64,7 @@
 			<b-collapse v-model="advancedSearchVisible">
 				<CommunitiesFilter
 					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
 				/>
 			</b-collapse>
 		</template>

@@ -45,6 +45,7 @@
 						ref="purchasesFilter"
 						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
+						@onSearch="onSearch(table.searchPhrase)"
 					/>
 				</b-collapse>
 			</template>

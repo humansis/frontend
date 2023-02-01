@@ -1,13 +1,12 @@
 <template>
-	<div>
-		<AdvancedFilter
-			multiline
-			ref="advancedFilter"
-			:selected-filters-options="selectedFiltersOptions"
-			:filters-options="filtersOptions"
-			@filtersChanged="filterChanged"
-		/>
-	</div>
+	<AdvancedFilter
+		multiline
+		ref="advancedFilter"
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		@filtersChanged="filterChanged"
+		@onSearch="$emit('onSearch')"
+	/>
 </template>
 
 <script>

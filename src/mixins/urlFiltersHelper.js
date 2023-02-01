@@ -25,7 +25,7 @@ export default {
 				locationsFilter,
 			} = query;
 
-			if (filters && Object.keys(filters).length !== 0) {
+			if (filters && Object.keys(JSON.parse(filters)).length !== 0) {
 				this.advancedSearchVisible = true;
 			}
 

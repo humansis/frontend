@@ -104,6 +104,7 @@
 					ref="vouchersFilter"
 					:defaultFilters="{ ...filters }"
 					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
 				/>
 			</b-collapse>
 		</template>

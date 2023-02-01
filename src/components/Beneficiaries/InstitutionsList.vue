@@ -62,7 +62,10 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionsFilter @filtersChanged="onFiltersChange" />
+				<InstitutionsFilter
+					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
+				/>
 			</b-collapse>
 		</template>
 	</Table>
