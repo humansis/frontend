@@ -414,7 +414,7 @@ export default {
 
 		fromFileClasses(item) {
 			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
-			console.log(isOutlined);
+
 			return [
 				"is-info",
 				"button-to-update",
