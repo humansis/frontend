@@ -339,10 +339,10 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
-				adm1Id: assistance?.adm1Id,
-				adm2Id: assistance?.adm2Id,
-				adm3Id: assistance?.adm3Id,
-				adm4Id: assistance?.adm4Id,
+				adm1Id: assistance?.adm1?.id,
+				adm2Id: assistance?.adm2?.id,
+				adm3Id: assistance?.adm3?.id,
+				adm4Id: assistance?.adm4?.id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
 				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
@@ -392,7 +392,7 @@ export default {
 			};
 
 			this.targetType = assistance.target;
-			this.assistanceBody.locationId = assistance.locationId;
+			this.assistanceBody.locationId = assistance.location.locationId;
 			this.assistanceBody.target = assistance.target;
 			this.assistanceBody.type = assistance.type;
 			this.assistanceBody.sector = assistance.sector;
@@ -403,7 +403,6 @@ export default {
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
-
 			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
