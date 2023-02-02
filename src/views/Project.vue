@@ -39,6 +39,8 @@
 		<AssistancesList
 			ref="assistancesList"
 			:beneficiaries-count="beneficiariesCount"
+			:project="project"
+			:project-loaded="projectLoaded"
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -70,6 +72,7 @@ export default {
 	data() {
 		return {
 			project: null,
+			projectLoaded: false,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
@@ -98,6 +101,7 @@ export default {
 
 	methods: {
 		onProjectLoaded(project) {
+			this.projectLoaded = true;
 			this.project = project;
 		},
 

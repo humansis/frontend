@@ -28,7 +28,7 @@
 }
 
 .b-table {
-	.is-hoverable {
+	&.has-clickable-rows {
 		cursor: pointer;
 	}
 

@@ -146,14 +146,6 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		isCommoditiesLoading: {
-			type: Boolean,
-			default: false,
-		},
-		isCommodityLoading: {
-			type: Boolean,
-			default: false,
-		},
 		commodity: {
 			type: Array,
 			default: () => [],

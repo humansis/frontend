@@ -6,7 +6,6 @@
 			:statistics="statistics"
 			:is-assistance-loading="isAssistanceLoading"
 			:commodities="commodities"
-			:is-commodities-loading="isCommoditiesLoading"
 			:project="project"
 			:is-project-loading="isProjectLoading"
 		/>
@@ -40,7 +39,10 @@
 
 		<EditNote :assistance="assistance" />
 
-		<div class="m-6">
+		<div
+			v-if="!isAssistanceLoading"
+			class="m-6"
+		>
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
 					{{ $t(distributionOrActivity) }}:
@@ -158,7 +160,6 @@ export default {
 			statistics: null,
 			isStatisticsLoading: false,
 			isAssistanceLoading: false,
-			isCommoditiesLoading: false,
 			isProjectLoading: false,
 			project: null,
 			beneficiariesCount: 0,
@@ -237,45 +238,7 @@ export default {
 		},
 
 		assistanceProgress() {
-			let result = 0;
-
-			if (this.modalityType) {
-				switch (this.modalityType) {
-					case consts.COMMODITY.MOBILE_MONEY:
-						if (this.amountTotal && this.amountPickedUp) {
-							result = (100 / this.amountTotal) * this.amountPickedUp;
-						}
-						break;
-					case consts.COMMODITY.QR_CODE_VOUCHER:
-						if (this.amountTotal && this.amountUsed) {
-							result = (100 / this.amountTotal) * this.amountUsed;
-						}
-						break;
-					case consts.COMMODITY.SMARTCARD:
-					default:
-						if (this.amountTotal && this.amountDistributed) {
-							result = (100 / this.amountTotal) * this.amountDistributed;
-						}
-				}
-			}
-
-			return (result !== Infinity) ? Math.floor(result) : 0;
-		},
-
-		amountTotal() {
-			return this.statistics?.amountTotal || 0;
-		},
-
-		amountSent() {
-			return this.statistics?.amountSent || 0;
-		},
-
-		amountPickedUp() {
-			return this.statistics?.amountPickedUp || 0;
-		},
-
-		amountUsed() {
-			return this.statistics?.amountUsed || 0;
+			return Math.trunc(this.statistics?.progress * 100);
 		},
 
 		amountDistributed() {
@@ -309,7 +272,7 @@ export default {
 				this.assistance = data;
 
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
-					this.fetchCommodity();
+					this.commodities = data.commodities;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
@@ -446,20 +409,6 @@ export default {
 
 			this.transactionModal.isWaiting = false;
 			this.closeTransactionModal();
-		},
-
-		async fetchCommodity() {
-			this.isCommoditiesLoading = true;
-
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => {
-					this.commodities = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.isCommoditiesLoading = false;
-				});
 		},
 
 		unvalidateAssistance() {

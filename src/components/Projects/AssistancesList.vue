@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
 		<b-notification
-			v-if="!table.data.length && beneficiariesCount && !isLoadingList && !upcoming"
+			v-if="showNoProjectError"
 			type="is-warning is-light"
 			has-icon
 			icon="exclamation-triangle"
@@ -14,7 +14,7 @@
 			</div>
 		</b-notification>
 		<b-notification
-			v-if="!beneficiariesCount && table.data && !isLoadingList && !upcoming"
+			v-if="showNoBeneficiariesError"
 			type="is-warning is-light"
 			has-icon
 			icon="user-plus"
@@ -34,12 +34,12 @@
 			:total="table.total"
 			:current-page="table.currentPage"
 			:is-loading="isLoadingList"
+			:has-clickable-rows="false"
 			:search-phrase="table.searchPhrase"
-			@clicked="onRowClick"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
+			@resetSort="resetSort('dateDistribution', 'desc')"
 			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
@@ -63,36 +63,35 @@
 					<ActionButton
 						v-if="!props.row.validated
 							&& userCan.editDistribution"
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Edit')"
-						@click="showEdit(props.row.id)"
-					/>
-					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
 						icon="edit"
 						:tooltip="$t('Update')"
 						@click="goToUpdate(props.row.id)"
 					/>
 					<ActionButton
-						v-if="props.row.validated
-							&& !props.row.completed
-							&& (userCan.editDistribution
-								|| userCan.viewDistribution )"
-						icon="lock"
-						type="is-warning"
-						:tooltip="$t('Update')"
+						v-if="(props.row.validated
+							|| props.row.completed)
+							&& isAssistanceDetailAllowed"
+						:icon="props.row.validated && props.row.completed
+							? 'eye' : 'edit'"
+						:tooltip="props.row.validated && props.row.completed
+							? $t('View') : $t('Update')"
 						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
-						v-if="props.row.completed
-							&& (userCan.editDistribution
-								|| userCan.viewDistribution)"
-						icon="check"
-						type="is-success"
-						:tooltip="$t('View')"
-						@click="goToDetail(props.row.id)"
+						v-if="!props.row.validated
+							&& userCan.editDistribution"
+						icon="search"
+						type="is-primary"
+						:tooltip="$t('Details')"
+						@click="showEdit(props.row.id)"
+					/>
+					<ActionButton
+						v-if="props.row.validated
+							&& userCan.editDistribution"
+						icon="search"
+						type="is-primary"
+						:tooltip="$t('Details')"
+						@click="showDetail(props.row.id)"
 					/>
 					<SafeDelete
 						:disabled="!props.row.deletable || !userCan.deleteDistribution"
@@ -124,6 +123,32 @@
 			<template #progress>
 				<b-progress :value="table.progress" format="percent" />
 			</template>
+			<template #filterButton>
+				<b-button
+					:class="filterButtonNew"
+					slot="trigger"
+					icon-left="sticky-note"
+					@click="statusFilter('new')"
+				>
+					{{ $t('New') }}
+				</b-button>
+				<b-button
+					:class="filterButtonValidated"
+					slot="trigger"
+					icon-left="spinner"
+					@click="statusFilter('validated')"
+				>
+					{{ $t('Validated') }}
+				</b-button>
+				<b-button
+					:class="filterButtonClosed"
+					slot="trigger"
+					icon-left="check"
+					@click="statusFilter('closed')"
+				>
+					{{ $t('Closed') }}
+				</b-button>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -135,12 +160,18 @@ import ActionButton from "@/components/ActionButton";
 import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
+import consts from "@/utils/assistanceConst";
+
+const statusTags = [
+	{ code: consts.STATUS.NEW, type: "is-light" },
+	{ code: consts.STATUS.VALIDATED, type: "is-success" },
+	{ code: consts.STATUS.CLOSED, type: "is-info" },
+];
 
 export default {
 	name: "AssistancesList",
@@ -160,6 +191,14 @@ export default {
 			required: false,
 			default: 0,
 		},
+		project: {
+			type: Object,
+			default: () => {},
+		},
+		projectLoaded: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	mixins: [permissions, grid, baseHelper],
@@ -167,19 +206,28 @@ export default {
 	data() {
 		return {
 			exportLoading: false,
+			selectedFilters: ["new", "validated"],
+			statusActive: {
+				new: true,
+				validated: true,
+				closed: false,
+			},
+			filters: { states: ["new", "validated"] },
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Assistance ID", sortable: true },
-					{ key: "name", sortable: true },
+					{ key: "assistanceID", label: "Assistance ID", type: "link", sortKey: "id", sortable: true },
+					{ key: "assistanceName", label: "Name", type: "link", sortKey: "name", sortable: true },
+					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
 					{ key: "round", sortable: true },
 					{ key: "type", type: "assistancesType", sortable: true },
 					{ key: "location", label: "Location", sortable: true },
-					{ key: "beneficiaries", label: "Beneficiaries", sortable: true, sortKey: "bnfCount" },
+					{ key: "target", sortable: true },
+					{ key: "reached" },
+					{ key: "progress", sortable: true },
 					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
 					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
-					{ key: "target", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
 				total: 0,
@@ -189,6 +237,8 @@ export default {
 				searchPhrase: "",
 				progress: null,
 			},
+			commodities: [],
+			locations: [],
 		};
 	},
 
@@ -198,6 +248,48 @@ export default {
 
 	created() {
 		this.fetchData();
+	},
+
+	computed: {
+		filterButtonNew() {
+			return [
+				"btn ml-3 is-light",
+				{ "is-selected": this.statusActive.new },
+			];
+		},
+
+		filterButtonValidated() {
+			return [
+				"btn ml-3 is-success is-light",
+				{ "is-selected": this.statusActive.validated },
+			];
+		},
+
+		filterButtonClosed() {
+			return [
+				"btn ml-3 is-info is-light",
+				{ "is-selected": this.statusActive.closed },
+			];
+		},
+
+		isAssistanceDetailAllowed() {
+			return this.userCan.editDistribution || this.userCan.viewDistribution;
+		},
+
+		showNoProjectError() {
+			return !this.project?.assistanceCount
+				&& this.beneficiariesCount
+				&& !this.isLoadingList
+				&& !this.upcoming;
+		},
+
+		showNoBeneficiariesError() {
+			return !this.beneficiariesCount
+				&& this.projectLoaded
+				&& this.table.data
+				&& !this.isLoadingList
+				&& !this.upcoming;
+		},
 	},
 
 	methods: {
@@ -221,6 +313,7 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				this.table.searchPhrase,
+				this.filters,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.progress = 0;
@@ -240,6 +333,8 @@ export default {
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
 				true,
+				null,
+				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;
@@ -253,41 +348,39 @@ export default {
 
 		prepareDataForTable(data) {
 			this.table.progress += 15;
-			const locationIds = [];
-			const assistanceIds = [];
-			const commodityIds = [];
 			data.forEach((item, key) => {
 				const roundIsNaN = Number.isNaN(parseInt(item.round, 10));
-				locationIds.push(item.locationId);
-				assistanceIds.push(item.id);
-				commodityIds.push(...item.commodityIds);
 				this.table.data[key] = item;
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
 				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
+				this.table.data[key].status = item.state.value;
+				this.table.data[key].reached = this.reachedTextFormat(item);
+				this.table.data[key].progress = this.assistanceProgress(item);
 			});
 			this.table.progress += 10;
 
-			this.prepareLocationForTable(locationIds);
-			this.prepareCommodityForTable(commodityIds);
-			this.prepareStatisticsForTable(assistanceIds);
+			this.prepareLocationForTable();
+			this.prepareCommodityForTable();
+			this.prepareStatisticsForTable();
+			this.prepareRowClickForTable();
 		},
 
-		async prepareStatisticsForTable(assistanceIds) {
-			const statistics = await this.getStatistics(assistanceIds);
-			this.table.progress += 15;
+		prepareStatisticsForTable() {
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].beneficiaries = this.prepareEntityForTable(item.id, statistics, "beneficiariesTotal", 0);
+				this.table.data[key].beneficiaries = item.total;
 			});
-			this.table.progress += 10;
+			this.table.progress += 25;
 		},
 
-		async prepareCommodityForTable(assistanceIds) {
-			const commodities = await this.getCommodities(assistanceIds);
+		prepareCommodityForTable() {
+			this.table.data.forEach((item) => {
+				this.commodities.push(item.commodities);
+			});
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
-				const preparedCommodity = commodities?.find(({ id }) => id === item.commodityIds[0]);
+				const preparedCommodity = item.commodities;
 
 				let dateExpiration = "";
 
@@ -297,51 +390,51 @@ export default {
 					dateExpiration = "No Date";
 				}
 
-				const isCommoditySmartCard = preparedCommodity?.modalityType === "Smartcard";
+				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
 					? dateExpiration : "N/A";
 
-				this.table.data[key].commodity = preparedCommodity ? [preparedCommodity]
+				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
 			});
 			this.table.progress += 10;
 		},
 
-		async prepareLocationForTable(locationIds) {
-			const locations = await this.getLocations(locationIds);
-			this.table.progress += 15;
+		prepareLocationForTable() {
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].location = this
-					.prepareLocationEntityForTable(item.locationId, locations, "name");
+				this.table.data[key].location = item.location.name;
 			});
-			this.table.progress += 10;
+			this.table.progress += 25;
 		},
 
-		async getLocations(ids) {
-			if (!ids.length) return [];
-			return LocationsService.getLocations(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Locations")} ${e}`, "is-danger");
-				});
+		prepareRowClickForTable() {
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].assistanceID = {
+					link: this.getUrlToAssistance(this.table.data[key]),
+					name: this.table.data[key].id,
+				};
+				this.table.data[key].assistanceName = {
+					link: this.getUrlToAssistance(this.table.data[key]),
+					name: this.table.data[key].name,
+				};
+			});
 		},
 
-		async getCommodities(ids) {
-			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
+		reachedTextFormat(data) {
+			return data.reached === 0 ? `<b>${data.reached}</b> / ${data.total}`
+				: `${data.reached} / ${data.total}`;
 		},
 
-		async getStatistics(ids) {
-			if (!ids.length) return [];
-			return AssistancesService.getStatistics(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Statistics")} ${e}`, "is-danger");
-				});
+		getUrlToAssistance(data) {
+			return data.state.value === "Closed"
+				|| data.state.value === "Validated"
+				? `/project/${data.projectId}/assistance/detail/${data.id}`
+				: `/project/${data.projectId}/assistance/${data.id}`;
+		},
+
+		assistanceProgress(data) {
+			return (data.state.value === "New" && "N/A")
+				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
 		goToDetail(id) {
@@ -351,10 +444,6 @@ export default {
 					assistanceId: id,
 				},
 			});
-		},
-
-		onRowClick({ id }) {
-			this.showDetailWithId(id);
 		},
 
 		goToUpdate(id) {
@@ -370,6 +459,24 @@ export default {
 					},
 				});
 			}
+		},
+
+		statusFilter(filter) {
+			this.statusActive[filter] = !this.statusActive[filter];
+
+			if (this.selectedFilters.includes(filter)) {
+				this.selectedFilters = this.selectedFilters.filter((item) => item !== filter);
+			} else {
+				this.selectedFilters.push(filter);
+			}
+
+			this.onFiltersChange({ states: this.selectedFilters });
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			this.table.currentPage = 1;
+			await this.fetchData();
 		},
 
 		duplicate(id) {
@@ -398,3 +505,17 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+.btn {
+	outline: none !important;
+	box-shadow: none !important;
+
+		&.is-selected,
+		&.is-selected:hover,
+		&.is-selected:focus {
+			border-color: inherit;
+			border-width: 2px;
+		}
+	}
+</style>

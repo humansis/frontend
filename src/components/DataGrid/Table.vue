@@ -18,8 +18,8 @@
 						</div>
 					</slot>
 					<slot name="title" />
-					<slot name="filterButton" />
 					<slot name="export" />
+					<slot name="filterButton" />
 					<slot name="actions" />
 				</div>
 				<slot name="resetSort">
@@ -65,6 +65,7 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
+			:class="{ 'has-clickable-rows' : hasClickableRows } "
 			:row-class="rowClass"
 			@check="checkboxChecked"
 			@cellclick="onClick"
@@ -196,6 +197,10 @@ export default {
 		customPerPage: {
 			type: Number,
 			default: null,
+		},
+		hasClickableRows: {
+			type: Boolean,
+			default: true,
 		},
 	},
 
