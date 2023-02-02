@@ -414,11 +414,11 @@ export default {
 
 		fromFileClasses(item) {
 			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
-
+			console.log(isOutlined);
 			return [
 				"is-info",
 				"button-to-update",
-				{ "is-outlined": isOutlined },
+				{ "is-outlined": !isOutlined },
 			];
 		},
 
@@ -428,7 +428,7 @@ export default {
 			return [
 				"is-info",
 				"button-to-link",
-				{ "is-outlined": isOutlined },
+				{ "is-outlined": !isOutlined },
 			];
 		},
 
