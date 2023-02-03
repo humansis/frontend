@@ -255,7 +255,6 @@ export default {
 		async fetchCamps(id) {
 			await AddressService.getCamp(id)
 				.then((data) => {
-					console.log(data);
 					this.formModel.adm1Id = data.adm1Id;
 					this.formModel.adm2Id = data.adm2Id;
 					this.formModel.adm3Id = data.adm3Id;
