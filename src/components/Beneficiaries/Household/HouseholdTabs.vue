@@ -403,15 +403,10 @@ export default {
 			} = this.household.currentLocation;
 			let preparedLocation = adm1.name;
 
-			if (adm2) {
-				preparedLocation += `, ${adm2.name}`;
-				if (adm3) {
-					preparedLocation += `, ${adm3.name}`;
-					if (adm4) {
-						preparedLocation += `, ${adm4.name}`;
-					}
-				}
-			}
+			preparedLocation += adm2 ? `, ${adm2.name}` : "";
+			preparedLocation += adm3 ? `, ${adm3.name}` : "";
+			preparedLocation += adm4 ? `, ${adm4.name}` : "";
+
 			return preparedLocation;
 		},
 

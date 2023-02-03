@@ -255,10 +255,11 @@ export default {
 		async fetchCamps(id) {
 			await AddressService.getCamp(id)
 				.then((data) => {
-					this.formModel.adm1 = data.adm1Id;
-					this.formModel.adm2 = data.adm2Id;
-					this.formModel.adm3 = data.adm3Id;
-					this.formModel.adm4 = data.adm4Id;
+					console.log(data);
+					this.formModel.adm1Id = data.adm1Id;
+					this.formModel.adm2Id = data.adm2Id;
+					this.formModel.adm3Id = data.adm3Id;
+					this.formModel.adm4Id = data.adm4Id;
 					this.formModel.locationId = data.locationId;
 				})
 				.catch((e) => {
