@@ -33,6 +33,7 @@ export default {
 		vouchers: [],
 		distributions: [],
 		purchases: [],
+		vendors: [],
 	},
 	languages: [
 		{ name: "English", key: "en", direction: "ltr" },
