@@ -2,11 +2,11 @@
 	<section>
 		<b-field
 			:label="$t(admNames.adm1)"
-			:type="validateType('adm1Id')"
-			:message="validateMsg('adm1Id', 'Required')"
+			:type="validateType('adm1')"
+			:message="validateMsg('adm1', 'Required')"
 		>
 			<MultiSelect
-				v-model="formModel.adm1Id"
+				v-model="formModel.adm1"
 				searchable
 				label="name"
 				track-by="id"
@@ -14,7 +14,7 @@
 				:loading="provincesLoading"
 				:disabled="formDisabled"
 				:options="options.provinces"
-				:class="validateMultiselect('adm1Id')"
+				:class="validateMultiselect('adm1')"
 				@input="onProvinceSelect"
 			>
 				<span slot="noOptions">{{ $t("List is empty")}}</span>
@@ -29,7 +29,7 @@
 				</span>
 			</template>
 			<MultiSelect
-				v-model="formModel.adm2Id"
+				v-model="formModel.adm2"
 				searchable
 				label="name"
 				track-by="id"
@@ -51,7 +51,7 @@
 				</span>
 			</template>
 			<MultiSelect
-				v-model="formModel.adm3Id"
+				v-model="formModel.adm3"
 				searchable
 				label="name"
 				track-by="id"
@@ -73,7 +73,7 @@
 				</span>
 			</template>
 			<MultiSelect
-				v-model="formModel.adm4Id"
+				v-model="formModel.adm4"
 				:key="componentKey"
 				searchable
 				label="name"
@@ -138,10 +138,10 @@ export default {
 
 	validations: {
 		formModel: {
-			adm1Id: { required },
-			adm2Id: {},
-			adm3Id: {},
-			adm4Id: {},
+			adm1: { required },
+			adm2: {},
+			adm3: {},
+			adm4: {},
 		},
 	},
 
@@ -167,7 +167,7 @@ export default {
 				this.formModel.locationId = null;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm1Id");
+				this.validate("adm1");
 				this.fetchDistricts(location.id);
 			}
 			this.componentKey += 1;
@@ -177,10 +177,10 @@ export default {
 
 		onDistrictSelect(location) {
 			if (!location) {
-				this.formModel.locationId = this.formModel.adm1Id.locationId;
+				this.formModel.locationId = this.formModel.adm1.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm2Id");
+				this.validate("adm2");
 				this.fetchCommunes(location.id);
 			}
 			this.componentKey += 1;
@@ -190,10 +190,10 @@ export default {
 
 		onCommuneSelect(location) {
 			if (!location) {
-				this.formModel.locationId = this.formModel.adm2Id.locationId;
+				this.formModel.locationId = this.formModel.adm2.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm3Id");
+				this.validate("adm3");
 				this.fetchVillages(location.id);
 			}
 			this.componentKey += 1;
@@ -203,10 +203,10 @@ export default {
 
 		onVillageSelect(location) {
 			if (!location) {
-				this.formModel.locationId = this.formModel.adm3Id.locationId;
+				this.formModel.locationId = this.formModel.adm3.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm4Id");
+				this.validate("adm4");
 			}
 			this.componentKey += 1;
 			this.$emit("locationChanged", "adm4");
@@ -255,10 +255,10 @@ export default {
 		async fetchCamps(id) {
 			await AddressService.getCamp(id)
 				.then((data) => {
-					this.formModel.adm1Id = data.adm1Id;
-					this.formModel.adm2Id = data.adm2Id;
-					this.formModel.adm3Id = data.adm3Id;
-					this.formModel.adm4Id = data.adm4Id;
+					this.formModel.adm1 = data.adm1Id;
+					this.formModel.adm2 = data.adm2Id;
+					this.formModel.adm3 = data.adm3Id;
+					this.formModel.adm4 = data.adm4Id;
 					this.formModel.locationId = data.locationId;
 				})
 				.catch((e) => {
@@ -271,25 +271,26 @@ export default {
 			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type) {
 				await this.fetchCamps(this.formModel.campId);
 			}
-			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
-			if (adm1Id && typeof adm1Id !== "object") {
-				this.formModel.adm1Id = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
-				this.formModel.locationId = this.formModel.adm1Id.locationId;
-				await this.fetchDistricts(adm1Id);
+			const { adm1, adm2, adm3, adm4 } = this.formModel;
+
+			if (adm1 && typeof adm1 !== "object") {
+				this.formModel.adm1 = getArrayOfCodeListByKey([adm1], this.options.provinces, "id");
+				this.formModel.locationId = this.formModel.adm1.locationId;
+				await this.fetchDistricts(adm1);
 			}
-			if (adm2Id && typeof adm2Id !== "object") {
-				this.formModel.adm2Id = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
-				this.formModel.locationId = this.formModel.adm2Id.locationId;
-				await this.fetchCommunes(adm2Id);
+			if (adm2 && typeof adm2 !== "object") {
+				this.formModel.adm2 = getArrayOfCodeListByKey([adm2], this.options.districts, "id");
+				this.formModel.locationId = this.formModel.adm2.locationId;
+				await this.fetchCommunes(adm2);
 			}
-			if (adm3Id && typeof adm3Id !== "object") {
-				this.formModel.adm3Id = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
-				this.formModel.locationId = this.formModel.adm3Id.locationId;
-				await this.fetchVillages(adm3Id);
+			if (adm3 && typeof adm3 !== "object") {
+				this.formModel.adm3 = getArrayOfCodeListByKey([adm3], this.options.communes, "id");
+				this.formModel.locationId = this.formModel.adm3.locationId;
+				await this.fetchVillages(adm3);
 			}
-			if (adm4Id && typeof adm4Id !== "object") {
-				this.formModel.adm4Id = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
-				this.formModel.locationId = this.formModel.adm4Id.locationId;
+			if (adm4 && typeof adm4 !== "object") {
+				this.formModel.adm4 = getArrayOfCodeListByKey([adm4], this.options.villages, "id");
+				this.formModel.locationId = this.formModel.adm4.locationId;
 			}
 			this.mapping = false;
 			this.$emit("mapped");
@@ -299,16 +300,16 @@ export default {
 		eraseData(type) {
 			switch (type) {
 				case "adm1":
-					this.formModel.adm2Id = null;
-					this.formModel.adm3Id = null;
-					this.formModel.adm4Id = null;
+					this.formModel.adm2 = null;
+					this.formModel.adm3 = null;
+					this.formModel.adm4 = null;
 					break;
 				case "adm2":
-					this.formModel.adm3Id = null;
-					this.formModel.adm4Id = null;
+					this.formModel.adm3 = null;
+					this.formModel.adm4 = null;
 					break;
 				case "adm3":
-					this.formModel.adm4Id = null;
+					this.formModel.adm4 = null;
 					break;
 				default:
 					break;
