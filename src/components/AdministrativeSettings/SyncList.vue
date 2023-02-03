@@ -65,7 +65,11 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<SyncFilter ref="syncFilter" @filtersChanged="onFiltersChange" />
+				<SyncFilter
+					ref="syncFilter"
+					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
+				/>
 			</b-collapse>
 		</template>
 	</Table>

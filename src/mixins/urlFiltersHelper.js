@@ -1,4 +1,5 @@
 import { mapActions, mapState } from "vuex";
+import { deepEqual } from "@/utils/helpers";
 
 export default {
 	computed: {
@@ -9,8 +10,9 @@ export default {
 		...mapActions(["storeGridFilters"]),
 
 		setGridFilters(entity, hasLocationsFilter = true) {
-			const storedFilter = this.gridFilters[entity]
-				?.find(({ country }) => country === this.country.iso3);
+			const storedFilter = this.gridFilters[entity]?.find(
+				({ country }) => country === this.country.iso3,
+			);
 
 			const { query } = storedFilter || this.$route;
 
@@ -23,11 +25,11 @@ export default {
 				locationsFilter,
 			} = query;
 
-			if (query.filters && Object.keys(query.filters).length !== 0) {
+			if (filters && Object.keys(JSON.parse(filters)).length !== 0) {
 				this.advancedSearchVisible = true;
 			}
 
-			if (!query.page) {
+			if (!page) {
 				this.setGridFiltersToUrl(entity, hasLocationsFilter);
 			} else {
 				this.table.currentPage = Number(page);
@@ -46,39 +48,39 @@ export default {
 			const { name, query } = this.$route;
 
 			const updatedGridFilters = { ...this.gridFilters };
-			const filterEntityIndex = this.gridFilters?.[entity]
-				?.findIndex(({ country }) => country === this.country.iso3);
+			const filterEntityIndex = this.gridFilters?.[entity]?.findIndex(
+				({ country }) => country === this.country.iso3,
+			);
 
 			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
 				updatedGridFilters[entity][filterEntityIndex].query = { ...query };
-			} else if (updatedGridFilters[entity]?.length) {
+			} else {
 				updatedGridFilters[entity].push({
 					country: this.country.iso3,
 					query,
 				});
-			} else {
-				updatedGridFilters[entity] = [{
-					country: this.country.iso3,
-					query,
-				}];
 			}
 
 			this.storeGridFilters({
 				...updatedGridFilters,
 			});
 
-			this.$router.replace({
-				name,
-				query: {
-					...query,
-					page: this.table.currentPage,
-					search: this.table.searchPhrase,
-					sortColumn: this.table.sortColumn,
-					sortDirection: this.table.sortDirection,
-					filters: JSON.stringify(this.filters),
-					...(hasLocationsFilter && { locationsFilter: JSON.stringify(this.locationsFilter) }),
-				},
-			});
+			const newQuery = {
+				...query,
+				page: this.table.currentPage.toString(),
+				search: this.table.searchPhrase,
+				sortColumn: this.table.sortColumn,
+				sortDirection: this.table.sortDirection,
+				filters: JSON.stringify(this.filters),
+				...(hasLocationsFilter && { locationsFilter: JSON.stringify(this.locationsFilter) }),
+			};
+
+			if (!deepEqual(query, newQuery)) {
+				this.$router.replace({
+					name,
+					query: newQuery,
+				});
+			}
 		},
 
 		async onFiltersChange({ filters, locationsFilter }) {

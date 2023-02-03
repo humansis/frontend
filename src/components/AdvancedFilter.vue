@@ -82,6 +82,12 @@
 				</b-field>
 			</div>
 		</div>
+
+		<div class="has-text-right">
+			<b-button type="is-primary" icon-left="search" @click="$emit('onSearch')">
+				{{ $t('Search') }}
+			</b-button>
+		</div>
 	</div>
 </template>
 
@@ -115,14 +121,18 @@ export default {
 		customLabel({ name, subLabel }) {
 			return `${name} – ${subLabel}`;
 		},
+
 		filterChanged(filterName) {
 			const filters = {};
+
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {
 				const filterKey = this.filtersOptions[key]?.filterKey || key;
+
 				if (Array.isArray(this.selectedFiltersOptions[key])) {
 					filters[filterKey] = [];
 					this.selectedFiltersOptions[key].forEach((value) => {
 						const select = this.filtersOptions[key]?.trackBy || "code";
+
 						if (filters[filterKey] && value && value[select]) {
 							filters[filterKey].push(value[select]);
 						}

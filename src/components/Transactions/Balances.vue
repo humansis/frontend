@@ -36,6 +36,7 @@
 				>
 					<TransactionsFilter
 						@filtersChanged="onFiltersChange"
+						@onSearch="onSearch(table.searchPhrase)"
 					/>
 				</b-collapse>
 			</template>

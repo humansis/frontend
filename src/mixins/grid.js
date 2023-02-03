@@ -15,23 +15,8 @@ export default {
 		...mapState(["perPage"]),
 	},
 
-	created() {
-		document.addEventListener("keypress", this.onKeyPress);
-	},
-
-	beforeDestroy() {
-		document.removeEventListener("keypress", this.onKeyPress);
-	},
-
 	methods: {
 		...mapActions(["storePerPage"]),
-
-		onKeyPress(event) {
-			// On press enter
-			if (event.keyCode === 13) {
-				this.onSearch();
-			}
-		},
 
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage;

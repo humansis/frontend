@@ -5,6 +5,7 @@
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
+		@onSearch="$emit('onSearch')"
 	/>
 </template>
 

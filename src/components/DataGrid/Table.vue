@@ -11,7 +11,7 @@
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
-								:value="searchPhrase"
+								:search-phrase="searchPhrase"
 								class="mr-3"
 								@search="onSearch"
 							/>
