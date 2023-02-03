@@ -67,7 +67,7 @@ export default {
 
 			const newQuery = {
 				...query,
-				page: this.table.currentPage.toString(),
+				page: this.table.currentPage?.toString() || "1",
 				search: this.table.searchPhrase,
 				sortColumn: this.table.sortColumn,
 				sortDirection: this.table.sortDirection,
