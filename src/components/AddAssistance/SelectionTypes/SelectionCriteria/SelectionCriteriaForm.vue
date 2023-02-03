@@ -170,10 +170,10 @@ export default {
 		return {
 			consts,
 			admModel: {
-				adm1Id: null,
-				adm2Id: null,
-				adm3Id: null,
-				adm4Id: null,
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
 			},
 			options: {
 				criteriaTargets: [],
@@ -367,17 +367,17 @@ export default {
 			}
 
 			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION) {
-				const { adm1Id, adm2Id, adm3Id, adm4Id } = this.admModel;
+				const { adm1, adm2, adm3, adm4 } = this.admModel;
 				const prefix = "locationId-";
 
-				if (adm4Id) {
-					this.formModel.value = prefix + adm4Id.locationId;
-				} else if (adm3Id) {
-					this.formModel.value = prefix + adm3Id.locationId;
-				} else if (adm2Id) {
-					this.formModel.value = prefix + adm2Id.locationId;
-				} else if (adm1Id) {
-					this.formModel.value = prefix + adm1Id.locationId;
+				if (adm4) {
+					this.formModel.value = prefix + adm4.locationId;
+				} else if (adm3) {
+					this.formModel.value = prefix + adm3.locationId;
+				} else if (adm2) {
+					this.formModel.value = prefix + adm2.locationId;
+				} else if (adm1) {
+					this.formModel.value = prefix + adm1.locationId;
 				}
 			}
 

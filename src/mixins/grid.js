@@ -58,7 +58,8 @@ export default {
 			this.showDetail(entity);
 		},
 
-		showDetail(entity) {
+		showDetail(id) {
+			const entity = this.table.data.find((item) => item.id === id);
 			this.$emit("onShowDetail", entity);
 		},
 

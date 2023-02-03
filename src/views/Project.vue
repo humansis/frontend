@@ -158,10 +158,10 @@ export default {
 
 		mapToFormModel(
 			{
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 				id,
 				commodityIds,
 				dateDistribution,
@@ -176,10 +176,10 @@ export default {
 			},
 		) {
 			return {
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 				dateDistribution: new Date(dateDistribution),
 				dateExpiration: !Number.isNaN(Date.parse(dateExpiration)) ? new Date(dateExpiration) : null,
 				allowedProductCategoryTypes,
