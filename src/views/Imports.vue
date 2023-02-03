@@ -27,7 +27,7 @@
 					tag="a"
 					type="is-primary"
 					icon-left="question"
-					href="https://docs.humansis.org/x/RwBf"
+					href="https://docs.pinf.cz/x/RwBf"
 					target="_blank"
 				>
 					{{ $t('Help') }}
