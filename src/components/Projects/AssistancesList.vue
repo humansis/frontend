@@ -355,7 +355,7 @@ export default {
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
 				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
-				this.table.data[key].status = item.state.value;
+				this.table.data[key].status = item.state.code;
 				this.table.data[key].reached = this.reachedTextFormat(item);
 				this.table.data[key].progress = this.assistanceProgress(item);
 			});
