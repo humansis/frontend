@@ -91,7 +91,7 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Details')"
-						@click="showDetail(props.row.id)"
+						@click="showDetailWithId(props.row.id)"
 					/>
 					<SafeDelete
 						:disabled="!props.row.deletable || !userCan.deleteDistribution"
