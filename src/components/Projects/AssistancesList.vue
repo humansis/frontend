@@ -421,7 +421,7 @@ export default {
 		},
 
 		reachedTextFormat(data) {
-			return data.reached === 0 ? `<b>${data.reached}</b> / ${data.total}`
+			return data.reached === 0 ? `${data.reached} / ${data.total}`
 				: `${data.reached} / ${data.total}`;
 		},
 
