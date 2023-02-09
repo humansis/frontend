@@ -26,7 +26,7 @@ export default {
 	},
 	ITEM_STATUS: {
 		TO_CREATE: "To Create",
-		TO_UPDAT: "To Update",
+		TO_UPDATE: "To Update",
 		TO_LINK: "To Link",
 		TO_IGNORE: "To Ignore",
 	},
