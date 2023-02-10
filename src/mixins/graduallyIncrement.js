@@ -8,7 +8,7 @@ export default {
 						clearInterval(interval);
 					}
 
-					if (this[propertyName] < max) {
+					if (this[propertyName] < max && newValue > this[propertyName]) {
 						this[propertyName] += 1;
 					}
 				}, time);
