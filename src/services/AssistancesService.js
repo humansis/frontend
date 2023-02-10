@@ -105,8 +105,8 @@ export default {
 	},
 
 	async createAssistance(body) {
-		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
-		return { data, status };
+		const { data, status, message } = await fetcher({ uri: "assistances", method: "POST", body });
+		return { data, status, message };
 	},
 
 	async calculationCommodities(body) {

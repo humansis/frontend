@@ -63,7 +63,7 @@
 			<b-button
 				type="is-primary"
 				:loading="loading"
-				:disabled="createAssistanceButtonDisabled"
+				:disabled="createAssistanceButtonDisabled || isMoreDistributedCommodity"
 				@click="validateNewAssistance"
 			>
 				{{ $t('Create') }}
@@ -168,6 +168,10 @@ export default {
 				communities: this.visibleComponents.communities,
 				institutions: this.visibleComponents.institutions,
 			};
+		},
+
+		isMoreDistributedCommodity() {
+			return this.assistanceBody?.commodities?.length >= 2;
 		},
 	},
 
@@ -286,7 +290,7 @@ export default {
 			this.loading = true;
 
 			await AssistancesService.createAssistance(this.assistanceBody)
-				.then(({ status, data: { id } }) => {
+				.then(({ status, data: { id }, message }) => {
 					if (status === 200) {
 						Toast(this.$t("Assistance Successfully Created"), "is-success");
 						if (id) {
@@ -300,6 +304,10 @@ export default {
 								params: { projectId: this.$route.params.projectId },
 							});
 						}
+					}
+
+					if (status === 400) {
+						Notification(message, "is-warning");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
