@@ -171,7 +171,7 @@ export default {
 		},
 
 		isMoreDistributedCommodity() {
-			return this.assistanceBody?.commodities?.length >= 2;
+			return this.assistanceBody?.commodities?.length > 1;
 		},
 	},
 
