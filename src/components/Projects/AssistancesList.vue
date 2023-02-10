@@ -337,6 +337,7 @@ export default {
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
+				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
