@@ -51,6 +51,6 @@ export default {
 	async exportCountrySpecificOptions(format) {
 		const formatText = format ? `type=${format}` : "";
 
-		return download({ uri: `donors/exports?${formatText}` });
+		return download({ uri: `country-specifics/exports?${formatText}` });
 	},
 };
