@@ -171,7 +171,7 @@ export default {
 		},
 
 		isMoreDistributedCommodity() {
-			return this.assistanceBody?.commodities?.length > 1;
+			return this.assistanceBody.commodities.length > 1;
 		},
 	},
 
@@ -291,7 +291,10 @@ export default {
 
 			await AssistancesService.createAssistance(this.assistanceBody)
 				.then(({ status, data: { id }, message }) => {
-					if (status === 200) {
+					const success = status === 200;
+					const badRequest = status === 400;
+
+					if (success) {
 						Toast(this.$t("Assistance Successfully Created"), "is-success");
 						if (id) {
 							this.$router.push({
@@ -306,8 +309,8 @@ export default {
 						}
 					}
 
-					if (status === 400) {
-						Notification(message, "is-warning");
+					if (badRequest) {
+						Notification(message || "Error code 400", "is-warning");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
