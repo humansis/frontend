@@ -1,7 +1,7 @@
 <template>
 	<b-image
 		v-if="image"
-		style="height: 35px; width: 35px; padding: 1%;"
+		class="image-column"
 		alt="Image"
 		:src="image"
 	/>
@@ -17,3 +17,11 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.image-column {
+	height: 35px !important;
+	width: 35px !important;
+	overflow: hidden;
+}
+</style>
