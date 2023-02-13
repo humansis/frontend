@@ -310,7 +310,7 @@ export default {
 					}
 
 					if (badRequest) {
-						Notification(message || "Error code 400", "is-warning");
+						Notification(message || `${this.$t("Error code 400")}`, "is-warning");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
