@@ -422,6 +422,10 @@ export default {
 				id: this.detailOfHousehold.id,
 				currentLocation: {
 					typeOfLocation: null,
+					adm1: {},
+					adm2: {},
+					adm3: {},
+					adm4: {},
 				},
 				livelihood: {
 					...this.formModel.livelihood,
