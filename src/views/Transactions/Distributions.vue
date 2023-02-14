@@ -141,7 +141,7 @@ export default {
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
 					{ key: "project", type: "link" },
-					{ key: "assistance", label: "Name", type: "link" },
+					{ key: "assistance", type: "link" },
 					{ key: "fullLocationNames", label: "Location" },
 					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
 					{ key: "commodity" },
