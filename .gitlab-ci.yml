@@ -127,6 +127,20 @@ deploy stage:
   except:
     - tags
 
+deploy stage2:
+  stage: deploy_stage
+  environment:
+    name: stage2
+    url: https://stage2.humansis.org
+  variables:
+    ENV: stage2
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+  when: manual
+
 deploy prod:
   stage: deploy_prod
   environment:
