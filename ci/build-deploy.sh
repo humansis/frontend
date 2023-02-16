@@ -17,8 +17,6 @@ elif [[ $1 == "dev2" ]]; then
     mv .env.development2 .env
 elif [[ $1 == "dev3" ]]; then
     mv .env.development3 .env
-elif [[ $1 == "arm" ]]; then
-    mv .env.arm .env
 elif [[ $1 == "stage" ]]; then
     mv .env.stage .env
 elif [[ $1 == "stage2" ]]; then
@@ -75,10 +73,6 @@ elif [[ $1 == "dev3" ]]; then
     aws s3 rm s3://dev3.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://dev3.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E2RDLDL7FXC18J --paths '/*'
-elif [[ $1 == "arm" ]]; then
-    aws s3 rm s3://arm.humansis.org --recursive
-    aws s3 cp ./dist_gzipped s3://arm.humansis.org --recursive --acl public-read --content-encoding gzip
-    aws cloudfront create-invalidation --distribution-id E317J3BBQGHV31 --paths '/*'
 elif [[ $1 == "stage" ]]; then
     aws s3 rm s3://stage-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip

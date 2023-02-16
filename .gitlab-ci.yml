@@ -90,18 +90,6 @@ deploy dev3:
     - branches
   when: manual
 
-deploy arm:
-  stage: deploy_dev
-  environment:
-    name: arm
-    url: https://arm.humansis.org
-  variables:
-    ENV: arm
-  extends: .deploy
-  only:
-    - branches
-  when: manual
-
 deploy test:
   stage: deploy_test
   environment:
