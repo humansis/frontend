@@ -5,7 +5,7 @@ export default {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 		const idsText = ids ? idsToUri(ids) : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
 

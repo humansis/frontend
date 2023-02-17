@@ -10,6 +10,21 @@ export const isIdsListLengthValid = (idsList) => (
 	splitBySpace(idsList).length <= consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH
 );
 
+export const getUniqueIds = (data, param) => {
+	const uniqueIds = [];
+
+	if (Array.isArray(data) && data.length && param) {
+		data.forEach((item) => {
+			if (!uniqueIds.includes(item[param])) {
+				uniqueIds.push(item[param]);
+			}
+		});
+	}
+
+	return uniqueIds;
+};
+
 export default {
 	isIdsListLengthValid,
+	getUniqueIds,
 };
