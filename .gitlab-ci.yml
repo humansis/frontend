@@ -90,18 +90,6 @@ deploy dev3:
     - branches
   when: manual
 
-deploy arm:
-  stage: deploy_dev
-  environment:
-    name: arm
-    url: https://arm.humansis.org
-  variables:
-    ENV: arm
-  extends: .deploy
-  only:
-    - branches
-  when: manual
-
 deploy test:
   stage: deploy_test
   environment:
@@ -126,6 +114,20 @@ deploy stage:
     - /^release\/.*$/
   except:
     - tags
+
+deploy stage2:
+  stage: deploy_stage
+  environment:
+    name: stage2
+    url: https://stage2.humansis.org
+  variables:
+    ENV: stage2
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+  when: manual
 
 deploy prod:
   stage: deploy_prod
