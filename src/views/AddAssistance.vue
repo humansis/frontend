@@ -339,10 +339,10 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
-				adm1: {},
-				adm2: {},
-				adm3: {},
-				adm4: {},
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
 				adm1Id: assistance.adm1?.id,
 				adm2Id: assistance.adm2?.id,
 				adm3Id: assistance.adm3?.id,
