@@ -127,7 +127,7 @@ export default {
 
 	async created() {
 		if (!this.icons) await this.fetchIcons();
-		if (!this.admNames) await this.fetchAdmNames();
+		if (!Object.hasOwn(this.admNames, "adm1")) await this.fetchAdmNames();
 		this.setTooltip();
 	},
 
