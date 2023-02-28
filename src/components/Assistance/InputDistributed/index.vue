@@ -3,7 +3,7 @@
 		<form @submit.prevent="submit" v-if="distributedFormVisible">
 			<section>
 				<IdTypeSelect
-					v-if="deduplication"
+					v-if="isOperationAddOrRemoveBulk"
 					ref="idTypeSelect"
 					v-model="formModel.idType"
 					required
@@ -25,7 +25,7 @@
 					/>
 				</b-field>
 				<b-field
-					v-if="deduplication"
+					v-if="isOperationAddOrRemoveBulk"
 					:label="$t('Justification')"
 					:type="validateType('justification')"
 					:message="validateMsg('justification')"
@@ -40,13 +40,13 @@
 					{{ $t('Close') }}
 				</b-button>
 				<b-button
-					tag="input"
 					class="is-primary width-80"
 					native-type="submit"
 					:loading="distributedButtonLoading"
 					:disabled="distributedButtonLoading"
-					:value="submitButtonLabel"
-				/>
+				>
+					{{ $t(submitButtonLabel) }}
+				</b-button>
 			</footer>
 		</form>
 		<b-tabs v-if="!distributedFormVisible && distributeData">
@@ -60,7 +60,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.notFound"
 					/>
 					<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
@@ -92,7 +92,7 @@
 			</b-tab-item>
 			<b-tab-item v-if="distributeData.success">
 				<template #header>
-					<span>{{ deduplication ? $t('Removed') : $t('Success') }}
+					<span>{{ $t(successfulOperationTitle) }}
 						<b-tag class="ml-1" type="is-success" rounded>
 							{{ distributeData.success.length }}
 						</b-tag>
@@ -100,26 +100,26 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.success"
 					/>
 					<BaseDistributedTable v-else :data="distributeData.success" />
 				</template>
 			</b-tab-item>
-			<b-tab-item v-if="distributeData.alreadyRemoved">
+			<b-tab-item v-if="distributeData.alreadyProcessed">
 				<template #header>
-					<span>{{ $t('Removed in the past') }}
+					<span>{{ $t(alreadyProcessedOperationTitle) }}
 						<b-tag class="ml-1" type="is-info" rounded>
-							{{ distributeData.alreadyRemoved.length }}
+							{{ distributeData.alreadyProcessed.length }}
 						</b-tag>
 					</span>
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication"
-						:data="distributeData.alreadyRemoved"
+						v-if="isOperationAddOrRemoveBulk"
+						:data="distributeData.alreadyProcessed"
 					/>
-					<BaseDistributedTable v-else :data="distributeData.alreadyRemoved" />
+					<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
 				</template>
 			</b-tab-item>
 			<b-tab-item v-if="distributeData.alreadyDistributed">
@@ -156,7 +156,7 @@
 				</template>
 				<template>
 					<BaseDeduplicationTable
-						v-if="deduplication"
+						v-if="isOperationAddOrRemoveBulk"
 						:data="distributeData.failed"
 					/>
 					<BaseDistributedTable v-else :data="distributeData.failed" />
@@ -168,11 +168,8 @@
 				{{ $t('Close') }}
 			</b-button>
 			<b-button class="is-primary" @click="openDistributedForm">
-				<span v-if="deduplication">
-					{{ $t('Bulk Remove Again') }}
-				</span>
-				<span v-else>
-					{{ $t('Input Distributed Again') }}
+				<span>
+					{{ $t(nameOfSubmitButton) }}
 				</span>
 			</b-button>
 		</footer>
@@ -212,6 +209,7 @@ export default {
 			default: "Tax Number",
 		},
 		deduplication: Boolean,
+		addingToAssistance: Boolean,
 		closeButton: Boolean,
 	},
 
@@ -230,12 +228,12 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				idType: { required: requiredIf(() => this.deduplication) },
+				idType: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
 				idsList: {
 					required,
 					isIdsListLengthValid,
 				},
-				justification: { required: requiredIf(() => this.deduplication) },
+				justification: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
 			},
 		};
 	},
@@ -248,7 +246,7 @@ export default {
 		async submit() {
 			this.$v.$touch();
 
-			if (this.deduplication) {
+			if (this.isOperationAddOrRemoveBulk) {
 				this.$refs.idTypeSelect.onSubmit();
 			}
 
@@ -263,7 +261,7 @@ export default {
 				Notification(this.$t("Invalid Input"), "is-danger");
 			}
 
-			if (this.deduplication) {
+			if (this.isOperationAddOrRemoveBulk) {
 				const target = "beneficiaries";
 				body = {
 					documentType: this.formModel.idType?.code,
@@ -271,25 +269,49 @@ export default {
 					justification: this.formModel.justification,
 				};
 
-				await BeneficiariesService.removeBeneficiaryFromAssistance(
-					this.$route.params.assistanceId, target, body,
-				)
-					.then(({ data, message }) => {
-						if (data) {
-							if (data.errors?.message) {
-								Notification(data.errors.message, "is-warning", "is-bottom");
+				if (this.deduplication) {
+					await BeneficiariesService.removeBeneficiaryFromAssistance(
+						this.$route.params.assistanceId, target, body,
+					)
+						.then(({ data, message }) => {
+							if (data) {
+								if (data.errors?.message) {
+									Notification(data.errors.message, "is-warning", "is-bottom");
+								} else {
+									this.distributeData = data;
+									this.distributedFormVisible = false;
+								}
 							} else {
-								this.distributeData = data;
-								this.distributedFormVisible = false;
+								Notification(message, "is-warning");
 							}
-						} else {
-							Notification(message, "is-warning");
-						}
-					}).catch((error) => {
-						Notification(error, "is-danger");
-					}).finally(() => {
-						this.distributedButtonLoading = false;
-					});
+						}).catch((error) => {
+							Notification(error, "is-danger");
+						}).finally(() => {
+							this.distributedButtonLoading = false;
+							this.$emit("submit");
+						});
+				} else {
+					await BeneficiariesService.addBeneficiaryToAssistance(
+						this.$route.params.assistanceId, target, body,
+					)
+						.then(({ data, message }) => {
+							if (data) {
+								if (data.errors?.message) {
+									Notification(data.errors.message, "is-warning", "is-bottom");
+								} else {
+									this.distributeData = data;
+									this.distributedFormVisible = false;
+								}
+							} else {
+								Notification(message, "is-warning");
+							}
+						}).catch((error) => {
+							Notification(error, "is-danger");
+						}).finally(() => {
+							this.distributedButtonLoading = false;
+							this.$emit("submit");
+						});
+				}
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
@@ -344,6 +366,28 @@ export default {
 
 		close() {
 			this.$emit("close");
+		},
+	},
+
+	computed: {
+		successfulOperationTitle() {
+			return (this.deduplication && "Removed")
+				|| (this.addingToAssistance && "Added") || "Success";
+		},
+
+		alreadyProcessedOperationTitle() {
+			return this.deduplication ? "Removed in the past"
+				: "Added in the past";
+		},
+
+		nameOfSubmitButton() {
+			return (this.deduplication && "Bulk Remove Again")
+				|| (this.addingToAssistance && "Bulk Add Again")
+					|| "Input Distributed Again";
+		},
+
+		isOperationAddOrRemoveBulk() {
+			return this.deduplication || this.addingToAssistance;
 		},
 	},
 };

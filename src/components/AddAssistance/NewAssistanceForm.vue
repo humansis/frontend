@@ -227,10 +227,10 @@ export default {
 	data() {
 		return {
 			formModel: {
-				adm1Id: null,
-				adm2Id: null,
-				adm3Id: null,
-				adm4Id: null,
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
 				locationId: null,
 				dateOfAssistance: new Date(),
 				dateExpiration: new Date(),

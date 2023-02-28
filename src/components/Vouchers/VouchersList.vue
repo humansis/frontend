@@ -8,6 +8,7 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		:checked-rows="table.checkedRows"
 		@checked="onRowsChecked"
 		@clicked="showDetail"
@@ -15,7 +16,7 @@
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 		@resetSort="resetSort"
-		@search="onSearch"
+		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
@@ -103,6 +104,7 @@
 					ref="vouchersFilter"
 					:defaultFilters="{ ...filters }"
 					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
 				/>
 			</b-collapse>
 		</template>

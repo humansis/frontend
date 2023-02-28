@@ -19,6 +19,8 @@ elif [[ $1 == "dev3" ]]; then
     mv .env.development3 .env
 elif [[ $1 == "stage" ]]; then
     mv .env.stage .env
+elif [[ $1 == "stage2" ]]; then
+    mv .env.stage2 .env
 elif [[ $1 == "demo" ]]; then
     mv .env.demo .env
 else
@@ -75,6 +77,10 @@ elif [[ $1 == "stage" ]]; then
     aws s3 rm s3://stage-pin.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://stage-pin.humansis.org --recursive --acl public-read --content-encoding gzip
     aws cloudfront create-invalidation --distribution-id E3T4ZDIOJ7A023 --paths '/*'
+elif [[ $1 == "stage2" ]]; then
+    aws s3 rm s3://stage2.humansis.org --recursive
+    aws s3 cp ./dist_gzipped s3://stage2.humansis.org --recursive --acl public-read --content-encoding gzip
+    aws cloudfront create-invalidation --distribution-id E2N81PJNA8E0EC --paths '/*'
 elif [[ $1 == "demo" ]]; then
     aws s3 rm s3://demo.humansis.org --recursive
     aws s3 cp ./dist_gzipped s3://demo.humansis.org --recursive --acl public-read --content-encoding gzip

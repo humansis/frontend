@@ -1,13 +1,14 @@
 <template>
 	<div class="card overflow-visible">
 		<div class="card-content">
-			<b-field v-if="canStartImport">
+			<b-field v-if="isUploadBoxVisible">
 				<b-upload
 					v-model="dropFiles"
 					multiple
 					drag-drop
 					:accept="allowedFileExtensions"
-					:loading="showLoading"
+					:loading="isUploadStarted"
+					:disabled="isUploadStarted"
 				>
 					<section class="section">
 						<div class="content has-text-centered">
@@ -55,9 +56,8 @@
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
-					icon-right="ban"
+					icon-left="ban"
 					@click="cancelImport"
-					:disabled="disabledCancelImport"
 				>
 					{{ $t('Cancel Import') }}
 				</b-button>
@@ -131,10 +131,6 @@ export default {
 				&& (this.dropFiles.length === 1 || this.importFiles.length);
 		},
 
-		disabledCancelImport() {
-			return this.importStatus !== consts.UPLOADING;
-		},
-
 		allowedFileExtensions() {
 			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
@@ -153,8 +149,13 @@ export default {
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 
-		showLoading() {
+		isUploadStarted() {
 			return this.startLoading
+				|| this.importStatus === consts.STATUS.UPLOADING;
+		},
+
+		isUploadBoxVisible() {
+			return this.importStatus === consts.STATUS.NEW
 				|| this.importStatus === consts.STATUS.UPLOADING;
 		},
 	},
@@ -175,6 +176,7 @@ export default {
 							Toast(this.$t("Uploaded Successfully"), "is-success");
 							this.dropFiles = [];
 							this.startLoading = false;
+							this.$emit("fetchStatistics");
 						} else {
 							Notification(message, "is-warning");
 						}

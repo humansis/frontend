@@ -7,12 +7,13 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 		@resetSort="resetSort"
-		@search="onSearch"
+		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
@@ -64,7 +65,11 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<SyncFilter ref="syncFilter" @filtersChanged="onFiltersChange" />
+				<SyncFilter
+					ref="syncFilter"
+					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
+				/>
 			</b-collapse>
 		</template>
 	</Table>

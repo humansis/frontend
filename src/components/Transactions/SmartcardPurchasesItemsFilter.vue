@@ -5,6 +5,7 @@
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
+		@onSearch="$emit('onSearch')"
 	/>
 </template>
 
@@ -15,6 +16,7 @@ import locationHelper from "@/mixins/locationHelper";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "SmartcardPurchasesItemsFilter",
@@ -27,15 +29,15 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				project: [],
-				distribution: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				vendor: [],
-				dateFrom: null,
-				dateTo: null,
+				project: consts.DEFAULT_FILTERS.PROJECTS,
+				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
+				adm1: consts.DEFAULT_FILTERS.ADM1,
+				adm2: consts.DEFAULT_FILTERS.ADM2,
+				adm3: consts.DEFAULT_FILTERS.ADM3,
+				adm4: consts.DEFAULT_FILTERS.ADM4,
+				vendors: consts.DEFAULT_FILTERS.VENDORS,
+				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},
@@ -117,6 +119,12 @@ export default {
 	},
 
 	async created() {
+		// We need to set default filters first to avoid Invalid prop error for dateFrom & dateTo
+		await Promise.all([
+			this.setDefaultFilters(),
+			this.setDefaultLocationsFilter(),
+		]);
+
 		await Promise.all([
 			this.setLocationNames(),
 			this.fetchProjects(),
@@ -133,6 +141,7 @@ export default {
 			this.filtersOptionsCopy = copyObject(this.filtersOptions);
 		});
 
+		// We need to set default filters second time in order to update filters
 		await Promise.all([
 			this.setDefaultFilters(),
 			this.setDefaultLocationsFilter(),
@@ -153,7 +162,7 @@ export default {
 			}
 
 			if (this.defaultFilters.vendors?.length) {
-				this.selectedFiltersOptions.vendor	= this.filtersOptions
+				this.selectedFiltersOptions.vendor = this.filtersOptions
 					.vendor.data
 					.find((item) => item.id === this.defaultFilters.vendors[0]);
 			}
@@ -162,8 +171,12 @@ export default {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}
 
-			if (this.defaultFilters.dateFrom) {
+			if (this.defaultFilters.dateTo) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
+			}
+
+			if (this.$refs.advancedFilter) {
+				this.$refs.advancedFilter.$forceUpdate();
 			}
 		},
 
@@ -186,18 +199,18 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					projects: preparedFilters.project || [],
-					dateFrom: preparedFilters.dateFrom || null,
-					dateTo: preparedFilters.dateTo || null,
-					assistances: preparedFilters.distribution || [],
-					vendors: preparedFilters.vendor || [],
-					locations: location ? [location] : [],
+					projects: preparedFilters.project || consts.DEFAULT_FILTERS.PROJECTS,
+					dateFrom: preparedFilters.dateFrom || consts.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: preparedFilters.dateTo || consts.DEFAULT_FILTERS.DATE_TO,
+					assistances: preparedFilters.distribution || consts.DEFAULT_FILTERS.ASSISTANCES,
+					vendors: preparedFilters.vendor || consts.DEFAULT_FILTERS.VENDORS,
+					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1,
-					adm2: filtersCopy.adm2,
-					adm3: filtersCopy.adm3,
-					adm4: filtersCopy.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},

@@ -6,12 +6,13 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
 		@resetSort="resetSort"
-		@search="onSearch"
+		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column v-bind="column" sortable :key="column.id">
@@ -61,7 +62,10 @@
 		</template>
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionsFilter @filtersChanged="onFiltersChange" />
+				<InstitutionsFilter
+					@filtersChanged="onFiltersChange"
+					@onSearch="onSearch(table.searchPhrase)"
+				/>
 			</b-collapse>
 		</template>
 	</Table>

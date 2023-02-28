@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<div class="columns">
-			<Search class="column is-two-fifths" @search="onSearch" />
+			<Search class="column is-two-fifths" @onSearch="onSearch" />
 			<b-button
 				slot="trigger"
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"

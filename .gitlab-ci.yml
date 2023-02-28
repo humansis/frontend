@@ -1,4 +1,4 @@
-image: artifactory.quanti.cz/docker/node-yarn-awscli:12
+image: artifactory.quanti.cz/docker/node-yarn-awscli:18
 
 variables:
   CHANNEL: "#pin_deployment"
@@ -114,6 +114,20 @@ deploy stage:
     - /^release\/.*$/
   except:
     - tags
+
+deploy stage2:
+  stage: deploy_stage
+  environment:
+    name: stage2
+    url: https://stage2.humansis.org
+  variables:
+    ENV: stage2
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+  when: manual
 
 deploy prod:
   stage: deploy_prod

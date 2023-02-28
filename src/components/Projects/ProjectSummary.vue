@@ -2,11 +2,12 @@
 	<div v-if="projectSummary" ref="projectSummary">
 		<h1 class="title has-text-centered">{{ projectSummary.name }}</h1>
 
-		<nav class="level">
+		<nav class="level level-center">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Sectors') }}</p>
-					<span>
+					<h2 class="heading">{{ $t('Sectors') }}</h2>
+
+					<div>
 						<svg-icon
 							v-if="projectSummary.sectors.length"
 							:items="projectSummary.sectors"
@@ -14,55 +15,61 @@
 						<p v-else class="has-text-weight-bold is-size-5">
 							{{ $t("None") }}
 						</p>
-					</span>
+					</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Start Date') }}</p>
-					<p class="has-text-weight-bold is-size-5">
+					<h2 class="heading">{{ $t('Start Date') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">
 						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('End Date') }}</p>
-					<p class="has-text-weight-bold is-size-5">
+					<h2 class="heading">{{ $t('End Date') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">
 						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Number of Households') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</p>
+					<h2 class="heading">{{ $t('Number of Households') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Number of Beneficiaries') }}</p>
-					<p class="has-text-weight-bold is-size-5">
+					<h2 class="heading"> {{ $t('Number of Beneficiaries') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">
 						{{ projectSummary.beneficiariesReached }}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Donors') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</p>
+					<h2 class="heading">{{ $t('Donors') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Total Target Beneficiaries') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</p>
+					<h2 class="heading">{{ $t('Total target beneficiaries') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</div>
 				</div>
 			</div>
 		</nav>

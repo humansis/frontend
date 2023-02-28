@@ -39,6 +39,8 @@
 		<AssistancesList
 			ref="assistancesList"
 			:beneficiaries-count="beneficiariesCount"
+			:project="project"
+			:project-loaded="projectLoaded"
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
@@ -70,6 +72,7 @@ export default {
 	data() {
 		return {
 			project: null,
+			projectLoaded: false,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
@@ -98,6 +101,7 @@ export default {
 
 	methods: {
 		onProjectLoaded(project) {
+			this.projectLoaded = true;
 			this.project = project;
 		},
 
@@ -154,10 +158,10 @@ export default {
 
 		mapToFormModel(
 			{
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 				id,
 				commodityIds,
 				dateDistribution,
@@ -172,10 +176,10 @@ export default {
 			},
 		) {
 			return {
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 				dateDistribution: new Date(dateDistribution),
 				dateExpiration: !Number.isNaN(Date.parse(dateExpiration)) ? new Date(dateExpiration) : null,
 				allowedProductCategoryTypes,

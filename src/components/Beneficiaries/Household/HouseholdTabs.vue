@@ -396,21 +396,17 @@ export default {
 
 		prepareLocationForSummary() {
 			const {
-				adm1Id,
-				adm2Id,
-				adm3Id,
-				adm4Id,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 			} = this.household.currentLocation;
-			let preparedLocation = adm1Id.name;
-			if (adm2Id) {
-				preparedLocation += `, ${adm2Id.name}`;
-				if (adm3Id) {
-					preparedLocation += `, ${adm3Id.name}`;
-					if (adm4Id) {
-						preparedLocation += `, ${adm4Id.name}`;
-					}
-				}
-			}
+			let preparedLocation = adm1.name;
+
+			preparedLocation += adm2 ? `, ${adm2.name}` : "";
+			preparedLocation += adm3 ? `, ${adm3.name}` : "";
+			preparedLocation += adm4 ? `, ${adm4.name}` : "";
+
 			return preparedLocation;
 		},
 

@@ -28,7 +28,7 @@
 }
 
 .b-table {
-	.is-hoverable {
+	&.has-clickable-rows {
 		cursor: pointer;
 	}
 
@@ -58,6 +58,21 @@
 
 .loading-overlay {
 	z-index: 20;
+}
+
+.level {
+	&.level-center {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 10px;
+
+		.level-item {
+			flex-grow: 0;
+			margin-bottom: 0;
+		}
+	}
 }
 
 .modal {

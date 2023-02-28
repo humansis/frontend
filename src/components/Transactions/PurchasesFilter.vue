@@ -1,13 +1,12 @@
 <template>
-	<div>
-		<AdvancedFilter
-			multiline
-			ref="advancedFilter"
-			:selected-filters-options="selectedFiltersOptions"
-			:filters-options="filtersOptions"
-			@filtersChanged="filterChanged"
-		/>
-	</div>
+	<AdvancedFilter
+		multiline
+		ref="advancedFilter"
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		@filtersChanged="filterChanged"
+		@onSearch="$emit('onSearch')"
+	/>
 </template>
 
 <script>
@@ -16,6 +15,7 @@ import locationHelper from "@/mixins/locationHelper";
 import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 export default {
 	name: "PurchasesFilter",
@@ -28,17 +28,17 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				beneficiaryType: [],
-				project: [],
-				distribution: [],
-				commodity: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				vendor: [],
-				dateFrom: null,
-				dateTo: null,
+				beneficiaryTypes: consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+				projects: consts.DEFAULT_FILTERS.PROJECTS,
+				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
+				commodity: consts.DEFAULT_FILTERS.COMMODITY,
+				adm1: consts.DEFAULT_FILTERS.ADM1,
+				adm2: consts.DEFAULT_FILTERS.ADM2,
+				adm3: consts.DEFAULT_FILTERS.ADM3,
+				adm4: consts.DEFAULT_FILTERS.ADM4,
+				vendors: consts.DEFAULT_FILTERS.VENDORS,
+				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},
@@ -185,7 +185,7 @@ export default {
 				this.selectedFiltersOptions.dateFrom = new Date(this.defaultFilters.dateFrom);
 			}
 
-			if (this.defaultFilters.dateFrom) {
+			if (this.defaultFilters.dateTo) {
 				this.selectedFiltersOptions.dateTo = new Date(this.defaultFilters.dateTo);
 			}
 		},
@@ -205,20 +205,21 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					projects: preparedFilters.project || [],
-					dateFrom: preparedFilters.dateFrom || null,
-					dateTo: preparedFilters.dateTo || null,
-					beneficiaryTypes: preparedFilters.beneficiaryType || [],
-					modalityTypes: preparedFilters.commodity || [],
-					assistances: preparedFilters.distribution || [],
-					vendors: preparedFilters.vendor || [],
-					locations: location ? [location] : [],
+					projects: preparedFilters.project || consts.DEFAULT_FILTERS.PROJECTS,
+					dateFrom: preparedFilters.dateFrom || consts.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: preparedFilters.dateTo || consts.DEFAULT_FILTERS.DATE_TO,
+					beneficiaryTypes: preparedFilters.beneficiaryType
+						|| consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+					modalityTypes: preparedFilters.commodity || consts.DEFAULT_FILTERS.MODALITY_TYPES,
+					assistances: preparedFilters.distribution || consts.DEFAULT_FILTERS.ASSISTANCES,
+					vendors: preparedFilters.vendor || consts.DEFAULT_FILTERS.VENDORS,
+					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1,
-					adm2: filtersCopy.adm2,
-					adm3: filtersCopy.adm3,
-					adm4: filtersCopy.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},

@@ -153,8 +153,9 @@ export default {
 				const admNum = parseInt(filterName.slice(-1), 10);
 				if (!this.selectedFiltersOptions[filterName]) {
 					for (let i = admNum; i <= 4; i += 1) {
-						// Return all original ADMS to select options
-						this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+						if (this.filtersOptions[`adm${i}`] && this.filtersOptionsCopy[`adm${i}`]) {
+							this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+						}
 					}
 					return;
 				}
@@ -190,60 +191,35 @@ export default {
 		getLocation(filters) {
 			let location = null;
 
-			if (this.selectedFiltersOptions.adm4) {
+			if (this.selectedFiltersOptions.adm4?.id) {
 				const [a] = filters.adm4;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm3) {
+			} else if (this.selectedFiltersOptions.adm3?.id) {
 				const [a] = filters.adm3;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm2) {
+			} else if (this.selectedFiltersOptions.adm2?.id) {
 				const [a] = filters.adm2;
 				location = a;
-			} else if (this.selectedFiltersOptions.adm1) {
+			} else if (this.selectedFiltersOptions.adm1?.id) {
 				const [a] = filters.adm1;
 				location = a;
 			}
-
 			return location;
 		},
 
 		clearedLocationFilters(filters, filterName) {
-			const filtersCopy = copyObject(filters);
+			if (!filterName) return filters;
 
-			switch (filterName) {
-				case "adm1":
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm2":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm3 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm3":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm4 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm4 = [];
-					break;
-				case "adm4":
-					this.selectedFiltersOptions.adm1 = null;
-					this.selectedFiltersOptions.adm2 = null;
-					this.selectedFiltersOptions.adm3 = null;
-					filtersCopy.adm1 = [];
-					filtersCopy.adm2 = [];
-					filtersCopy.adm3 = [];
-					break;
-				default: break;
+			const filtersCopy = copyObject(filters);
+			const startIndex = Number(filterName?.slice(3));
+
+			if (startIndex) {
+				for (let i = startIndex; i <= 4; i += 1) {
+					if (filterName.startsWith("adm") && filterName.length === 4 && filterName !== `adm${i}`) {
+						this.selectedFiltersOptions[`adm${i}`] = [];
+						filtersCopy[`adm${i}`] = [];
+					}
+				}
 			}
 
 			return filtersCopy;

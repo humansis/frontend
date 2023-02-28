@@ -28,7 +28,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@resetSort="resetSort"
-			@search="onSearch"
+			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
@@ -58,6 +58,7 @@
 						ref="distributionFilter"
 						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
+						@onSearch="onSearch(table.searchPhrase)"
 					/>
 				</b-collapse>
 			</template>
@@ -185,8 +186,6 @@ export default {
 				this.table.total = totalCount;
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
-				} else {
-					this.table.progress = 100;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Distributed Items")} ${e}`, "is-danger");
@@ -224,6 +223,7 @@ export default {
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
 			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
+			this.table.progress = 100;
 		},
 
 		filtersToggle() {

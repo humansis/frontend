@@ -6,6 +6,7 @@
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
+		@onSearch="$emit('onSearch')"
 	/>
 </template>
 
@@ -15,6 +16,7 @@ import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import { copyObject } from "@/utils/helpers";
+import consts from "@/utils/filterConst";
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -30,12 +32,12 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				invoicing: [],
-				adm1: [],
-				adm2: [],
-				adm3: [],
-				adm4: [],
-				locations: [],
+				invoicing: consts.DEFAULT_FILTERS.INVOICING,
+				adm1: consts.DEFAULT_FILTERS.ADM1,
+				adm2: consts.DEFAULT_FILTERS.ADM2,
+				adm3: consts.DEFAULT_FILTERS.ADM3,
+				adm4: consts.DEFAULT_FILTERS.ADM4,
+				locations: consts.DEFAULT_FILTERS.LOCATIONS,
 			}),
 		},
 	},
@@ -130,13 +132,13 @@ export default {
 			this.$emit("filtersChanged", {
 				filters: {
 					invoicing: filters.invoicing?.[0] || null,
-					locations: location ? [location] : [],
+					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1,
-					adm2: filtersCopy.adm2,
-					adm3: filtersCopy.adm3,
-					adm4: filtersCopy.adm4,
+					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},

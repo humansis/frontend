@@ -6,12 +6,13 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		:export-format="{xlsx: true, csv: true, ods: true}"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@search="onSearch"
+		@onSearch="onSearch"
 		@resetSort="resetSort"
 	>
 		<template v-for="column in table.columns">

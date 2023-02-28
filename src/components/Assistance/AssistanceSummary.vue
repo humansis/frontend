@@ -20,91 +20,99 @@
 		<p v-if="assistanceDescription" class="has-text-centered mb-6">
 			{{ assistanceDescription }}
 		</p>
-		<nav class="level">
+		<nav class="level level-center">
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t(admNames.adm1) }}</p>
-					<p v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</p>
+					<h2 class="heading">{{ $t(admNames.adm1) }}</h2>
+
+					<div v-if="provinceName" class="has-text-weight-bold is-size-5">{{ provinceName }}</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Round') }}</p>
-					<p class="has-text-weight-bold is-size-5">{{ assistanceRound }}</p>
+					<h2 class="heading">{{ $t('Round') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">{{ assistanceRound }}</div>
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Beneficiaries') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Beneficiaries') }}</h2>
+
+					<div
 						v-if="beneficiariesCount || beneficiariesCount === 0"
 						class="has-text-weight-bold is-size-5"
 					>
 						{{ beneficiariesCount }}
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Date of Assistance') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Date of Assistance') }}</h2>
+
+					<div
 						v-if="dateDistribution"
 						class="has-text-weight-bold is-size-5"
 					>
 						{{ dateDistribution }}
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Expiration Date') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Expiration Date') }}</h2>
+
+					<div
 						v-if="dateExpiration"
 						class="has-text-weight-bold is-size-5"
 					>
 						{{ dateExpiration }}
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Project') }}</p>
-					<p v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</p>
+					<h2 class="heading">{{ $t('Project') }}</h2>
+
+					<div v-if="projectName" class="has-text-weight-bold is-size-5">{{ projectName }}</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Target') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Target') }}</h2>
+
+					<div
 						v-if="assistanceTarget"
 						class="has-text-weight-bold is-size-5"
 					>
 						{{ $t(assistanceTarget) }}
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<p class="heading">{{ $t('Scoring') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Scoring') }}</h2>
+
+					<div
 						v-if="assistanceTarget"
 						class="has-text-weight-bold is-size-5"
 					>
 						{{ assistanceScoringType }}
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>
@@ -114,10 +122,11 @@
 				class="level-item has-text-centered"
 			>
 				<div class="box commodity-item">
-					<p class="heading">{{ $t('Commodity') }}</p>
-					<p
+					<h2 class="heading">{{ $t('Commodity') }}</h2>
+
+					<div
 						v-if="commodity"
-						class="has-text-weight-bold is-size-5"
+						class="is-flex is-align-items-center has-text-weight-bold is-size-5"
 					>
 						<b-tooltip
 							v-if="commodity"
@@ -131,7 +140,7 @@
 						>
 							R
 						</span>
-					</p>
+					</div>
 					<Loading v-else type="bubbles" is-normal />
 				</div>
 			</div>

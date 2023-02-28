@@ -8,6 +8,7 @@
 		:total="table.total"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		:backend-pagination="false"
 		:backend-sorting="false"
 		:backend-searching="false"

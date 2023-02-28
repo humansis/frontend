@@ -1,19 +1,20 @@
-import { download, fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	getDefaultScoringType() {
 		return { archived: false, name: "Default", id: null };
 	},
 
-	async getListOfAssistances(page, size, sort, upcoming, search = null) {
+	async getListOfAssistances(page, size, sort, upcoming, search = null, filter = null) {
 		const fulltext = search ? `&fulltext=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
+		const sizeText = size ? `&size=${size}` : "";
 		const upcomingText = page ? `&upcoming=${upcoming}` : "";
+		const filtersUri = filter ? filtersToUri(filter) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?${pageText + sizeText + upcomingText + sortText + fulltext}`,
+			uri: `assistances?${pageText + sizeText + upcomingText + sortText + filtersUri + fulltext}`,
 		});
 		return { data, totalCount };
 	},
@@ -76,14 +77,15 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfProjectAssistances(id, page, size, sort, search = null) {
+	async getListOfProjectAssistances(id, page, size, sort, search = null, filter = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const filtersUri = filter ? filtersToUri(filter) : "";
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/assistances?${pageText + sizeText + sortText + fulltext}`,
+			uri: `projects/${id}/assistances?${pageText + sizeText + sortText + fulltext + filtersUri}`,
 		});
 		return { data, totalCount };
 	},

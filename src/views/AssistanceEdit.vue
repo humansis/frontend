@@ -2,7 +2,12 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:is-statistics-loading="isStatisticsLoading"
+			:statistics="statistics"
+			:is-assistance-loading="isAssistanceLoading"
+			:commodities="commodities"
 			:project="project"
+			:is-project-loading="isProjectLoading"
 		/>
 
 		<EditNote :assistance="assistance" />
@@ -21,7 +26,7 @@
 					add-button
 					:assistance="assistance"
 					@beneficiariesReloaded="reloadOtherTabs"
-					@assistanceUpdated="fetchAssistance"
+					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</b-step-item>
 
@@ -80,7 +85,7 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
-				@assistanceUpdated="fetchAssistance"
+				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">
 				<b-button
@@ -98,7 +103,7 @@
 </template>
 
 <script>
-import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
+import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import AssistancesService from "@/services/AssistancesService";
@@ -121,6 +126,11 @@ export default {
 		return {
 			assistance: null,
 			project: null,
+			statistics: null,
+			isStatisticsLoading: false,
+			isAssistanceLoading: false,
+			isProjectLoading: false,
+			commodities: [],
 			activeStep: 0,
 			target: "",
 			validateAssistanceButtonLoading: false,
@@ -131,6 +141,7 @@ export default {
 	mounted() {
 		this.fetchAssistance();
 		this.fetchProject();
+		this.fetchAssistanceStatistics();
 	},
 
 	methods: {
@@ -148,6 +159,8 @@ export default {
 		},
 
 		async fetchAssistance() {
+			this.isAssistanceLoading = true;
+
 			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
@@ -155,14 +168,36 @@ export default {
 					|| data.target === consts.TARGET.INDIVIDUAL;
 
 				this.assistance = data;
+
+				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+					this.commodities = data.commodities;
+				}
+			}).finally(() => {
+				this.isAssistanceLoading = false;
 			});
 		},
 
 		async fetchProject() {
+			this.isProjectLoading = true;
+
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
 				this.project = data;
+			}).finally(() => {
+				this.isProjectLoading = false;
+			});
+		},
+
+		async fetchAssistanceStatistics() {
+			this.isStatisticsLoading = true;
+
+			await AssistancesService.getAssistanceStatistics(
+				this.$route.params.assistanceId,
+			).then((data) => {
+				this.statistics = data;
+			}).finally(() => {
+				this.isStatisticsLoading = false;
 			});
 		},
 
@@ -188,6 +223,11 @@ export default {
 			});
 
 			this.validateAssistanceButtonLoading = false;
+		},
+
+		fetchUpdatedData() {
+			this.fetchAssistance();
+			this.fetchAssistanceStatistics();
 		},
 	},
 };

@@ -2,7 +2,12 @@
 	<div>
 		<AssistanceSummary
 			:assistance="assistance"
+			:is-statistics-loading="isStatisticsLoading"
+			:statistics="statistics"
+			:is-assistance-loading="isAssistanceLoading"
+			:commodities="commodities"
 			:project="project"
+			:is-project-loading="isProjectLoading"
 		/>
 		<Modal
 			:header="$t('Start Transaction')"
@@ -34,7 +39,10 @@
 
 		<EditNote :assistance="assistance" />
 
-		<div class="m-6">
+		<div
+			v-if="!isAssistanceLoading"
+			class="m-6"
+		>
 			<div class="has-text-centered mb-3">
 				<div class="subtitle">
 					{{ $t(distributionOrActivity) }}:
@@ -42,59 +50,6 @@
 				</div>
 			</div>
 			<b-progress v-model="assistanceProgress" type="is-success" />
-			<div class="columns">
-				<div class="column is-3">
-					<div class="has-text-weight-bold">
-						{{ $t('Total Amount') }}:
-					</div>
-					<span>{{ amountTotal }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType !== consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount') }} {{ $t(distributedOrCompleted) }}:
-					</div>
-					<span>{{ amountDistributed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.QR_CODE_VOUCHER"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Used') }}:
-					</div>
-					<span>{{ amountUsed }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Sent') }}:
-					</div>
-					<span>{{ amountSent }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-
-				<div
-					v-if="modalityType === consts.COMMODITY.MOBILE_MONEY"
-					class="column is-3"
-				>
-					<div class="has-text-weight-bold">
-						{{ $t('Amount Picked Up') }}:
-					</div>
-					<span>{{ amountPickedUp }} </span>
-					<span v-if="assistanceUnit">{{ assistanceUnit }}</span>
-				</div>
-			</div>
 		</div>
 		<BeneficiariesList
 			ref="beneficiariesList"
@@ -172,7 +127,7 @@
 </template>
 
 <script>
-import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
+import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
@@ -203,6 +158,9 @@ export default {
 			consts,
 			assistance: null,
 			statistics: null,
+			isStatisticsLoading: false,
+			isAssistanceLoading: false,
+			isProjectLoading: false,
 			project: null,
 			beneficiariesCount: 0,
 			countOfCompleted: 0,
@@ -280,45 +238,7 @@ export default {
 		},
 
 		assistanceProgress() {
-			let result = 0;
-
-			if (this.modalityType) {
-				switch (this.modalityType) {
-					case consts.COMMODITY.MOBILE_MONEY:
-						if (this.amountTotal && this.amountPickedUp) {
-							result = (100 / this.amountTotal) * this.amountPickedUp;
-						}
-						break;
-					case consts.COMMODITY.QR_CODE_VOUCHER:
-						if (this.amountTotal && this.amountUsed) {
-							result = (100 / this.amountTotal) * this.amountUsed;
-						}
-						break;
-					case consts.COMMODITY.SMARTCARD:
-					default:
-						if (this.amountTotal && this.amountDistributed) {
-							result = (100 / this.amountTotal) * this.amountDistributed;
-						}
-				}
-			}
-
-			return (result !== Infinity) ? Math.round(result) : 0;
-		},
-
-		amountTotal() {
-			return this.statistics?.amountTotal || 0;
-		},
-
-		amountSent() {
-			return this.statistics?.amountSent || 0;
-		},
-
-		amountPickedUp() {
-			return this.statistics?.amountPickedUp || 0;
-		},
-
-		amountUsed() {
-			return this.statistics?.amountUsed || 0;
+			return Math.trunc(this.statistics?.progress * 100);
 		},
 
 		amountDistributed() {
@@ -344,31 +264,41 @@ export default {
 		},
 
 		async fetchAssistance() {
+			this.isAssistanceLoading = true;
+
 			AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.assistance = data;
 
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
-					this.fetchCommodity();
+					this.commodities = data.commodities;
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isAssistanceLoading = false;
 			});
 		},
 
 		async fetchAssistanceStatistics() {
+			this.isStatisticsLoading = true;
+
 			AssistancesService.getAssistanceStatistics(
 				this.$route.params.assistanceId,
 			).then((data) => {
 				this.statistics = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
+			}).finally(() => {
+				this.isStatisticsLoading = false;
 			});
 		},
 
 		async fetchProject() {
+			this.isProjectLoading = true;
+
 			await ProjectService.getDetailOfProject(
 				this.$route.params.projectId,
 			).then(({ data }) => {
@@ -376,6 +306,8 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 				this.$router.push({ name: "NotFound" });
+			}).finally(() => {
+				this.isProjectLoading = false;
 			});
 		},
 
@@ -477,16 +409,6 @@ export default {
 
 			this.transactionModal.isWaiting = false;
 			this.closeTransactionModal();
-		},
-
-		async fetchCommodity() {
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => {
-					this.commodities = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
 		},
 
 		unvalidateAssistance() {

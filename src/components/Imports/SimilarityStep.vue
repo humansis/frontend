@@ -70,7 +70,7 @@
 				<b-button
 					v-if="canCancelImport"
 					type="is-light is-danger"
-					icon-right="ban"
+					icon-left="ban"
 					@click="cancelImport"
 				>
 					{{ $t('Cancel Import') }}
@@ -87,7 +87,7 @@
 				<b-button
 					v-if="canGoToFinalisation"
 					type="is-primary"
-					icon-right="play-circle"
+					icon-left="play-circle"
 					:loading="changeStateButtonLoading"
 					@click="goToFinalisation"
 				>
