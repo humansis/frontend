@@ -1,14 +1,12 @@
 export default {
 	methods: {
 		graduallyIncrement(propertyName, newValue, max, time) {
-			if (newValue > this[propertyName]) {
+			if (newValue > this[propertyName] && this[propertyName] <= max) {
 				// Increment gradually to animate
 				const interval = setInterval(() => {
 					if (newValue <= this[propertyName]) {
 						clearInterval(interval);
-					}
-
-					if (this[propertyName] < max) {
+					} else if (this[propertyName] < max) {
 						this[propertyName] += 1;
 					}
 				}, time);

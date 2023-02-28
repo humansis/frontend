@@ -26,12 +26,16 @@ export default {
 		...mapState(["country"]),
 
 		getCenter() {
-			const { lat, lng } = this.positions.find(({ country }) => country === this.country.iso3);
+			const { lat, lng } = this.positions.find(
+				({ country }) => country === this.country.iso3,
+			) || {};
 			return L.latLng(lat, lng);
 		},
 
 		getZoom() {
-			const { zoom } = this.positions.find(({ country }) => country === this.country.iso3);
+			const { zoom } = this.positions.find(
+				({ country }) => country === this.country.iso3,
+			) || {};
 			return zoom ?? 7;
 		},
 	},

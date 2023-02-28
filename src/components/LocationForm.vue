@@ -271,27 +271,32 @@ export default {
 			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type) {
 				await this.fetchCamps(this.formModel.campId);
 			}
-			const { adm1, adm2, adm3, adm4 } = this.formModel;
+			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;
 
-			if (adm1 && typeof adm1 !== "object") {
-				this.formModel.adm1 = getArrayOfCodeListByKey([adm1], this.options.provinces, "id");
+			if (adm1Id && typeof adm1Id !== "object") {
+				this.formModel.adm1 = getArrayOfCodeListByKey([adm1Id], this.options.provinces, "id");
 				this.formModel.locationId = this.formModel.adm1.locationId;
-				await this.fetchDistricts(adm1);
+				await this.fetchDistricts(adm1Id);
 			}
-			if (adm2 && typeof adm2 !== "object") {
-				this.formModel.adm2 = getArrayOfCodeListByKey([adm2], this.options.districts, "id");
+			if (adm2Id && typeof adm2Id !== "object") {
+				this.formModel.adm2 = getArrayOfCodeListByKey([adm2Id], this.options.districts, "id");
 				this.formModel.locationId = this.formModel.adm2.locationId;
-				await this.fetchCommunes(adm2);
+				await this.fetchCommunes(adm2Id);
 			}
-			if (adm3 && typeof adm3 !== "object") {
-				this.formModel.adm3 = getArrayOfCodeListByKey([adm3], this.options.communes, "id");
+			if (adm3Id && typeof adm3Id !== "object") {
+				this.formModel.adm3 = getArrayOfCodeListByKey([adm3Id], this.options.communes, "id");
 				this.formModel.locationId = this.formModel.adm3.locationId;
-				await this.fetchVillages(adm3);
+				await this.fetchVillages(adm3Id);
 			}
-			if (adm4 && typeof adm4 !== "object") {
-				this.formModel.adm4 = getArrayOfCodeListByKey([adm4], this.options.villages, "id");
+			if (adm4Id && typeof adm4Id !== "object") {
+				this.formModel.adm4 = getArrayOfCodeListByKey([adm4Id], this.options.villages, "id");
 				this.formModel.locationId = this.formModel.adm4.locationId;
 			}
+
+			for (let i = 1; i <= 4; i += 1) {
+				delete this.formModel[`adm${i}Id`];
+			}
+
 			this.mapping = false;
 			this.$emit("mapped");
 			this.mapping = false;

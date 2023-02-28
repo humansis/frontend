@@ -339,10 +339,14 @@ export default {
 			}
 
 			this.componentsData.newAssistanceForm = {
-				adm1: assistance.adm1?.id,
-				adm2: assistance.adm2?.id,
-				adm3: assistance.adm3?.id,
-				adm4: assistance.adm4?.id,
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
+				adm1Id: assistance.adm1?.id,
+				adm2Id: assistance.adm2?.id,
+				adm3Id: assistance.adm3?.id,
+				adm4Id: assistance.adm4?.id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
 				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,

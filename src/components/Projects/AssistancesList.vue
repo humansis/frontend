@@ -91,7 +91,7 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Details')"
-						@click="showDetail(props.row.id)"
+						@click="showDetailWithId(props.row.id)"
 					/>
 					<SafeDelete
 						:disabled="!props.row.deletable || !userCan.deleteDistribution"
@@ -337,6 +337,7 @@ export default {
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
+				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
@@ -355,7 +356,7 @@ export default {
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
 				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
-				this.table.data[key].status = item.state.value;
+				this.table.data[key].status = item.state.code;
 				this.table.data[key].reached = this.reachedTextFormat(item);
 				this.table.data[key].progress = this.assistanceProgress(item);
 			});
@@ -421,7 +422,7 @@ export default {
 		},
 
 		reachedTextFormat(data) {
-			return data.reached === 0 ? `<b>${data.reached}</b> / ${data.total}`
+			return data.reached === 0 ? `${data.reached} / ${data.total}`
 				: `${data.reached} / ${data.total}`;
 		},
 

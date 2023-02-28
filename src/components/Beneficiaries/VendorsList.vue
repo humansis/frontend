@@ -135,6 +135,7 @@ import ExportButton from "@/components/ExportButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
+import { getUniqueIds } from "@/utils/customValidators";
 
 /*
 const statusTags = [
@@ -241,6 +242,9 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
+			const locationIds = getUniqueIds(data, "locationId");
+			const userIds = getUniqueIds(data, "userId");
+
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 
@@ -263,7 +267,7 @@ export default {
 				this.table.data[key].categoryType = categoryTypes;
 			});
 
-			this.getUsers(data)
+			this.getUsers(userIds)
 				.then((users) => {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
@@ -271,7 +275,8 @@ export default {
 					});
 					this.reload();
 				});
-			this.getLocations(data)
+
+			this.getLocations(locationIds)
 				.then((locations) => {
 					this.table.data.map(async (item, key) => {
 						this.table.data[key] = item;
@@ -286,17 +291,17 @@ export default {
 			this.$emit("onShowSummary", vendor);
 		},
 
-		async getLocations(vendors) {
-			if (!vendors?.length) return [];
-			return LocationsService.getLocations(vendors, "locationId")
+		async getLocations(locationIds) {
+			if (!locationIds?.length) return [];
+			return LocationsService.getLocations(locationIds)
 				.then(({ data }) => data).catch((e) => {
 					if (e.message) Notification(`${this.$t("Locations")} ${e}`, "is-danger");
 				});
 		},
 
-		async getUsers(vendors) {
-			if (!vendors?.length) return [];
-			return UsersService.getListOfUsers(null, null, null, null, vendors, "userId")
+		async getUsers(userIds) {
+			if (!userIds?.length) return [];
+			return UsersService.getListOfUsers(null, null, null, null, userIds)
 				.then(({ data }) => data).catch((e) => {
 					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
 				});

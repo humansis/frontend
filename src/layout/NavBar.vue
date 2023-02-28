@@ -39,13 +39,13 @@
 				</a>
 
 				<b-dropdown-item
-					v-for="country in countries"
-					:key="country.name"
-					:value="country.iso3"
-					@click="handleChangeCountry(country)"
+					v-for="value in countries"
+					:key="value.name"
+					:value="value.iso3"
+					@click="handleChangeCountry(value)"
 				>
 					<b-icon class="mr-1" icon="globe" />
-					{{ $t(country.iso3)  }}
+					{{ $t(value.iso3)  }}
 				</b-dropdown-item>
 			</b-dropdown>
 
