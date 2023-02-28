@@ -111,7 +111,6 @@
 		<template #export>
 			<ExportControl
 				v-if="userCan.exportPrintVouchers && table.data.length"
-				field-class="mt-3 ml-5"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"

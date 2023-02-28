@@ -7,7 +7,6 @@
 
 			<div class="level-right">
 				<ExportControl
-					field-class="mt-2 mr-3"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"

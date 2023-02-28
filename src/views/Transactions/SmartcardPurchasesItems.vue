@@ -65,7 +65,6 @@
 			<template #export>
 				<ExportControl
 					v-if="table.data.length"
-					field-class="ml-5"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"

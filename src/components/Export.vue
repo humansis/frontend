@@ -1,45 +1,47 @@
 <template>
-	<b-field :class="fieldClass">
-		<b-select
-			placeholder="Select export"
-			v-model="selectedExportType"
-			:disabled="disabled"
-			@input="inputChanged"
-		>
-			<option
-				v-for="(value, key) of availableExportTypes"
-				:value="value"
-				:key="key"
+	<div class="level-item" :class="fieldClass">
+		<b-field>
+			<b-select
+				placeholder="Select export"
+				v-model="selectedExportType"
+				:disabled="disabled"
+				@input="inputChanged"
 			>
-				{{ value }}
-			</option>
-		</b-select>
-		<b-select
-			placeholder="Select format"
-			v-model="selectedExportFormat"
-			:disabled="disabled"
-			@input="inputChanged"
-		>
-			<option
-				v-for="(value, key) of availableExportFormats"
-				:value="value"
-				:key="key"
+				<option
+					v-for="(value, key) of availableExportTypes"
+					:value="value"
+					:key="key"
+				>
+					{{ value }}
+				</option>
+			</b-select>
+			<b-select
+				placeholder="Select format"
+				v-model="selectedExportFormat"
+				:disabled="disabled"
+				@input="inputChanged"
 			>
-				{{ value }}
-			</option>
-		</b-select>
-		<div class="control">
-			<b-tooltip label="Export">
-				<b-button
-					type="is-primary"
-					icon-left="download"
-					:loading="isExportLoading"
-					:disabled="!isExportButtonEnabled || isExportLoading"
-					@click="startExport()"
-				/>
-			</b-tooltip>
-		</div>
-	</b-field>
+				<option
+					v-for="(value, key) of availableExportFormats"
+					:value="value"
+					:key="key"
+				>
+					{{ value }}
+				</option>
+			</b-select>
+			<div class="control">
+				<b-tooltip label="Export">
+					<b-button
+						type="is-primary"
+						icon-left="download"
+						:loading="isExportLoading"
+						:disabled="!isExportButtonEnabled || isExportLoading"
+						@click="startExport()"
+					/>
+				</b-tooltip>
+			</div>
+		</b-field>
+	</div>
 </template>
 
 <script>
