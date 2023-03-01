@@ -1,9 +1,9 @@
 <template>
-	<div v-if="!duplicitiesLoading">
+	<div v-if="!duplicitiesLoading && !this.isTotalCountLoading">
 		<hr class="content-separator">
 
 		<h2 class="subtitle is-5 mb-4">
-			{{ header }} ({{ table.total }})
+			{{ header }} ({{ totalCountOfDuplicities  }})
 		</h2>
 
 		<hr>
@@ -96,7 +96,7 @@
 		</Table>
 	</div>
 	<div v-else>
-		<b-loading :is-full-page="false" :active="duplicitiesLoading" />
+		<b-loading :is-full-page="false" :active="duplicitiesLoading || isTotalCountLoading" />
 	</div>
 </template>
 
@@ -123,6 +123,7 @@ export default {
 		return {
 			consts,
 			isExportLoading: false,
+			isTotalCountLoading: false,
 			selectedFilters: [consts.ITEM_STATE.DUPLICITY_CANDIDATE],
 			statusFilterConvention: {
 				notSolved: consts.ITEM_STATE.DUPLICITY_CANDIDATE,
@@ -135,6 +136,7 @@ export default {
 				fromFile: false,
 				fromHumansis: false,
 			},
+			totalCountOfDuplicities: 0,
 			table: {
 				data: [],
 				columns: generateColumns([
@@ -169,6 +171,7 @@ export default {
 	},
 
 	created() {
+		this.getTotalCountOfDuplicities();
 		this.fetchData();
 	},
 
@@ -209,6 +212,20 @@ export default {
 	},
 
 	methods: {
+		async getTotalCountOfDuplicities() {
+			const { importId } = this.$route.params;
+			this.isTotalCountLoading = true;
+
+			await ImportService.getDuplicitiesInImport(
+				importId,
+			).then(({ data: { totalCount } }) => {
+				this.totalCountOfDuplicities = totalCount;
+			}).catch((e) => {
+				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
+			});
+			this.isTotalCountLoading = false;
+		},
+
 		async fetchData() {
 			this.isExportLoading = true;
 			const { importId } = this.$route.params;
@@ -282,13 +299,14 @@ export default {
 									${this.getSlashedArray(difference[1])}
 								`);
 								}
+								this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 							}
 						});
-						this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 					}
 
 					if (!this.hasDuplicityDifferences(memberDuplicity.differences)) {
 						this.table.data[key].recordFrom.push("hasNoDuplicityDifferences");
+						this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 					}
 					this.table.data[key].familyName.push("memberDuplicitiesLastItem");
 					this.table.data[key].firstName.push("memberDuplicitiesLastItem");
@@ -314,7 +332,6 @@ export default {
 			}
 
 			this.$emit("loaded", true);
-			Toast(this.$t("Duplicities were resolved"), "is-success");
 			this.onFiltersChange({ status: this.selectedFilters });
 		},
 

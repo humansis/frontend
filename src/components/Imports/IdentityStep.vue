@@ -85,8 +85,7 @@
 				<div>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="['is-link' , { 'is-outlined': this.resolversAllActive
-							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
+						:class="allFromFileClasses"
 						:disabled="allRecordsFormLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
 					>
@@ -94,9 +93,7 @@
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="['is-info' , { 'is-outlined': this.resolversAllActive
-							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
-						:disabled="allRecordsFormLoading"
+						:class="allFromHumansisClasses"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
 					>
 						{{ $t('All From Humansis') }}
@@ -159,6 +156,7 @@ import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
 import Loading from "@/components/Loading";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "IdentityStep",
@@ -309,6 +307,31 @@ export default {
 		canGoToFinalisation() {
 			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
+
+		isAllFromFileUnselected() {
+			return this.resolversAllActive
+				? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true;
+		},
+
+		isAllFromHumansisUnselected() {
+			return this.resolversAllActive
+				? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true;
+		},
+
+		allFromFileClasses() {
+			return [
+				"is-info",
+				{ "is-outlined": this.isAllFromFileUnselected },
+			];
+		},
+
+		allFromHumansisClasses() {
+			return [
+				"is-info",
+				{ "is-outlined": this.isAllFromHumansisUnselected },
+			];
+		},
+
 	},
 
 	methods: {
@@ -325,7 +348,11 @@ export default {
 				.then((response) => {
 					if (response.status === 202) {
 						this.resolversAllActive = status;
-						this.$refs.duplicityResolver.fetchData();
+
+						if (this.duplicitiesContentOpened) {
+							this.$refs.duplicityResolver.fetchData();
+						}
+						Toast(this.$t("Duplicities were resolved"), "is-success");
 					}
 				}).finally(() => {
 					this.resolversAllLoading = false;

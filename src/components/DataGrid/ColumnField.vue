@@ -33,7 +33,6 @@
 			>
 				<b-tag
 					v-if="item === 'hasNoDuplicityDifferences'"
-					class="mt-2 mr-2"
 					type="is-light"
 				>
 					{{ $t('No Difference') }}
@@ -266,6 +265,10 @@ export default {
 
 		isMembersLastRecord(item) {
 			return item === "memberDuplicitiesLastItem";
+		},
+
+		isMoreRecordsInRow(index) {
+			return (this.data.row[this.column.field].length / 2) > 1 && index > 1;
 		},
 
 		normalizeText,
