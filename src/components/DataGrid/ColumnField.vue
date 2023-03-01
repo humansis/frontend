@@ -267,10 +267,6 @@ export default {
 			return item === "memberDuplicitiesLastItem";
 		},
 
-		isMoreRecordsInRow(index) {
-			return (this.data.row[this.column.field].length / 2) > 1 && index > 1;
-		},
-
 		normalizeText,
 	},
 
