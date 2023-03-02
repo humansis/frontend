@@ -48,7 +48,8 @@
 
 html.has-aside-left.has-aside-expanded {
 	nav.navbar,
-	body {
+	body,
+	.notices {
 		padding-left: 15rem;
 	}
 }

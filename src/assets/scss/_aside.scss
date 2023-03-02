@@ -279,11 +279,11 @@ html.has-aside-right {
     }
     &.has-aside-left {
       &.has-aside-expanded {
-        nav.navbar, body {
+        nav.navbar, body, .notices {
           padding-left: $aside-width;
         }
       }
-      nav.navbar, body {
+      nav.navbar, body, .notices {
         padding-left: $aside-collapsed-width;
       }
       aside.is-placed-left {
