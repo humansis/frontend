@@ -137,11 +137,11 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "beneficiaryId", label: "Beneficiary", sortable: true },
+					{ key: "beneficiaryId", label: "Beneficiary", sortable: true, type: "link" },
 					{ key: "localGivenName" },
 					{ key: "localFamilyName" },
-					{ key: "project" },
-					{ key: "assistance", label: "Name" },
+					{ key: "project", type: "link" },
+					{ key: "assistance", label: "Name", type: "link" },
 					{ key: "fullLocationNames", label: "Location" },
 					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
 					{ key: "commodity" },
@@ -224,9 +224,9 @@ export default {
 				this.table.data[key].spent = item.spent ?? 0;
 			});
 
-			this.prepareProjectForTable([...new Set(projectIds)]);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
+			this.prepareProjectForTable([...new Set(projectIds)], true);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
+			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.table.progress = 100;
 		},
