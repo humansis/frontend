@@ -63,13 +63,12 @@
 				</b-collapse>
 			</template>
 			<template #export>
-				<ExportButton
+				<ExportControl
 					v-if="table.data.length"
-					space-between
-					class="ml-3"
-					type="is-primary"
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="exportDistributions"
 				/>
 			</template>
@@ -100,10 +99,11 @@
 
 <script>
 import Table from "@/components/DataGrid/Table";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import TransactionService from "@/services/TransactionService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
@@ -115,7 +115,7 @@ export default {
 	name: "Distributions",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		Table,
 		DistributionsFilter,
 		ColumnField,
@@ -127,6 +127,12 @@ export default {
 		return {
 			selectedTab: 0,
 			advancedSearchVisible: false,
+			exportControl: {
+				loading: false,
+				location: "transactionsAssistances",
+				types: [EXPORT.TRANSACTIONS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -151,7 +157,6 @@ export default {
 				searchPhrase: "",
 				progress: null,
 			},
-			exportLoading: false,
 			filters: {},
 			locationsFilter: {},
 		};
@@ -238,29 +243,31 @@ export default {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportDistributions(format) {
-			this.exportLoading = true;
-			await TransactionService.exportDistributions(
-				format,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, status, message }) => {
-				if (status === 200) {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `distributions.${format}`;
-					link.click();
-				} else {
-					Notification(message, "is-warning");
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
-			});
-			this.exportLoading = false;
+		async exportDistributions(type, format) {
+			if (type === EXPORT.TRANSACTIONS) {
+				this.exportControl.loading = true;
+				await TransactionService.exportDistributions(
+					format,
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					this.filters,
+				).then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Transactions ${normalizeExportDate()}.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
+				});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

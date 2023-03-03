@@ -106,4 +106,8 @@ export default {
 	[CONST.STORE_ADM_NAMES]: (state, admNames) => {
 		state.admNames = admNames;
 	},
+
+	[CONST.STORE_SELECTED_EXPORT_OPTIONS]: (state, selectedExportOptions) => {
+		state.selectedExportsOptions = selectedExportOptions;
+	},
 };

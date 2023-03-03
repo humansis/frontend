@@ -58,12 +58,11 @@
 			</div>
 		</b-table-column>
 		<template #export>
-			<ExportButton
-				v-if="table.data.length"
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
+			<ExportControl
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
 				@onExport="exportProjects"
 			/>
 		</template>
@@ -78,18 +77,19 @@ import SafeDelete from "@/components/SafeDelete";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
 import permissions from "@/mixins/permissions";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "ProjectList",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -100,7 +100,12 @@ export default {
 
 	data() {
 		return {
-			exportLoading: false,
+			exportControl: {
+				loading: false,
+				location: "projects",
+				types: [EXPORT.PROJECTS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -224,24 +229,26 @@ export default {
 			this.$emit("onShowDetail", project);
 		},
 
-		async exportProjects(format) {
-			this.exportLoading = true;
-			await ProjectService.exportProjects(format)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `projects.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async exportProjects(type, format) {
+			if (type === EXPORT.PROJECTS) {
+				this.exportControl.loading = true;
+				await ProjectService.exportProjects(format)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Projects ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

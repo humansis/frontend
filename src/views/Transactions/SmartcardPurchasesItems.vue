@@ -63,13 +63,12 @@
 				</b-collapse>
 			</template>
 			<template #export>
-				<ExportButton
+				<ExportControl
 					v-if="table.data.length"
-					space-between
-					class="ml-3"
-					type="is-primary"
-					:formats="{ xlsx: true, csv: true}"
-					:loading="exportLoading"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="exportPurchases"
 				/>
 			</template>
@@ -101,10 +100,11 @@
 <script>
 import Table from "@/components/DataGrid/Table";
 import TransactionService from "@/services/TransactionService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
@@ -115,7 +115,7 @@ export default {
 	name: "SmartcardPurchasesItems",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		Table,
 		SmartcardPurchasesItemsFilter,
 		ColumnField,
@@ -127,6 +127,12 @@ export default {
 		return {
 			selectedTab: 1,
 			advancedSearchVisible: false,
+			exportControl: {
+				loading: false,
+				location: "transactionsPurchased",
+				types: [EXPORT.PURCHASED_ITEMS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -154,7 +160,6 @@ export default {
 				progress: null,
 				searchPhrase: "",
 			},
-			exportLoading: false,
 			filters: {},
 			locationsFilter: {},
 		};
@@ -243,29 +248,31 @@ export default {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportPurchases(format) {
-			this.exportLoading = true;
-			await TransactionService.exportSmartcardPurchasesItems(
-				format,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, status, message }) => {
-				if (status === 200) {
-					const blob = new Blob([data], { type: data.type });
-					const link = document.createElement("a");
-					link.href = window.URL.createObjectURL(blob);
-					link.download = `purchases.${format}`;
-					link.click();
-				} else {
-					Notification(message, "is-warning");
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Export Smartcard Purchases")} ${e}`, "is-danger");
-			});
-			this.exportLoading = false;
+		async exportPurchases(type, format) {
+			if (type === EXPORT.PURCHASED_ITEMS) {
+				this.exportControl.loading = true;
+				await TransactionService.exportSmartcardPurchasesItems(
+					format,
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					this.filters,
+				).then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Purchased items ${normalizeExportDate()}.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Export Smartcard Purchases")} ${e}`, "is-danger");
+				});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };
