@@ -29,10 +29,11 @@
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
-					:data="componentsData.distributedCommodity"
+					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
 					:target-type="targetType"
+					:date-of-assistance="assistanceBody.dateDistribution"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
@@ -348,7 +349,6 @@ export default {
 				adm3Id: assistance.adm3?.id,
 				adm4Id: assistance.adm4?.id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
-				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
 				sector: assistance.sector,
 				subsector: assistance.subsector,
@@ -379,6 +379,8 @@ export default {
 					value: item.value,
 					unit: item.unit,
 					description: item.description,
+					dateExpiration: assistance.dateExpiration
+						? new Date(assistance.dateExpiration) : null,
 					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
@@ -488,7 +490,6 @@ export default {
 				sector,
 				subsector,
 				targetType,
-				dateExpiration,
 				note,
 				round,
 			} = data;
@@ -497,10 +498,7 @@ export default {
 				...this.assistanceBody,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
-					: new Date(this.project.startDate),
-				dateExpiration: this.isDateValid(dateExpiration)
-					? dateExpiration.toISOString()
-					: new Date(this.project.endDate),
+					: this.project?.startDate,
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -528,6 +526,9 @@ export default {
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
+				dateExpiration: this.isDateValid(commodities?.[0]?.dateExpiration)
+					? commodities[0].dateExpiration.toISOString()
+					: new Date(this.project.endDate),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,

@@ -112,6 +112,20 @@
 				/>
 			</b-field>
 
+			<b-field v-if="isModalityTypeSmartCard" :label="$t('Expiration Date')">
+				<b-datepicker
+					v-model="formModel.dateExpiration"
+					show-week-number
+					locale="en-CA"
+					icon="calendar-day"
+					trap-focus
+					:min-date="minDateOfDistribution"
+					:max-date="maxDateOfAssistance"
+					:month-names="months()"
+					:placeholder="$t('Click to select')"
+				/>
+			</b-field>
+
 			<div v-if="showDivisionQuantities">
 				<b-field
 					v-for="(divisionQuantity, i)
@@ -232,6 +246,7 @@ import consts from "@/utils/assistanceConst";
 import currencies from "@/utils/currencies";
 import Validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
+import calendarHelper from "@/mixins/calendarHelper";
 
 const DEFAULT_DISPLAYED_FIELDS = {
 	currency: false,
@@ -251,7 +266,7 @@ export default {
 
 	components: { SvgIcon },
 
-	mixins: [Validation],
+	mixins: [Validation, calendarHelper],
 
 	props: {
 		formModel: Object,
@@ -264,6 +279,17 @@ export default {
 		targetType: {
 			type: String,
 			default: "",
+		},
+		dateOfAssistance: {
+			type: String,
+			required: true,
+		},
+		commodity: {
+			type: Array,
+			default: () => [],
+		},
+		dateExpiration: {
+			type: String,
 		},
 	},
 
@@ -361,6 +387,19 @@ export default {
 				&& !this.displayedFields.householdMembersNwsQuantity
 				&& !this.displayedFields.householdMembersNesQuantity;
 		},
+
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return endDate ? new Date(endDate) : new Date();
+		},
+
+		minDateOfDistribution() {
+			return this.dateOfAssistance ? new Date(this.dateOfAssistance) : null;
+		},
+
+		isModalityTypeSmartCard() {
+			return this.formModel?.modalityType?.code === consts.COMMODITY.SMARTCARD;
+		},
 	},
 
 	validations() {
@@ -430,6 +469,7 @@ export default {
 
 	created() {
 		this.fetchModalities();
+		this.setDefaultExpirationDate();
 	},
 
 	methods: {
@@ -603,6 +643,12 @@ export default {
 				});
 
 			this.loading.types = false;
+		},
+
+		setDefaultExpirationDate() {
+			this.formModel.dateExpiration = new Date(
+				this.dateExpiration || this.project?.endDate,
+			);
 		},
 
 		submitForm() {

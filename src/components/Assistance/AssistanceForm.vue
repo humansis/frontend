@@ -26,9 +26,8 @@
 				/>
 			</b-field>
 
-			<b-field :label="$t('Expiration Date')">
+			<b-field v-if="isCommoditySmartCard" :label="$t('Expiration Date')">
 				<b-datepicker
-					v-if="formModel.dateExpiration"
 					v-model="formModel.dateExpiration"
 					show-week-number
 					locale="en-CA"
@@ -40,7 +39,6 @@
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
 				/>
-				<b-input v-else value="N/A" disabled />
 			</b-field>
 
 			<b-field
@@ -73,7 +71,11 @@
 				<b-input v-model="formModel.target" disabled />
 			</b-field>
 
-			<b-field :label="$t('Allowed Product Category Types')" :addons="false">
+			<b-field
+				v-if="isCommoditySmartCard"
+				:label="$t('Allowed Product Category Types')"
+				:addons="false"
+			>
 				<div
 					v-for="item of project.allowedProductCategoryTypes"
 					:key="`product-category-type-${item}`"
@@ -91,7 +93,10 @@
 				</div>
 			</b-field>
 
-			<b-field v-if="formModel.cashbackLimit" :label="$t('Cashback Limit')">
+			<b-field
+				v-if="formModel.cashbackLimit && isCommoditySmartCard"
+				:label="$t('Cashback Limit')"
+			>
 				<b-input v-model="formModel.cashbackLimit" disabled />
 			</b-field>
 		</section>
@@ -150,6 +155,10 @@ export default {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
 			return new Date(endDate);
+		},
+
+		isCommoditySmartCard() {
+			return this.formModel?.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
 		},
 	},
 

@@ -24,6 +24,9 @@
 				:submit-button-label="$t('Create')"
 				:formModel="formModel"
 				:target-type="targetType"
+				:date-of-assistance="dateOfAssistance"
+				:date-expiration="dateExpiration"
+				:commodity="commodity"
 				@formSubmitted="submitCommodityForm"
 				@formClosed="closeCommodityModal"
 			/>
@@ -36,14 +39,24 @@
 			:paginated="false"
 		>
 			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.key">
+				<b-table-column
+					v-bind="column"
+					:sortable="column.sortable"
+					:visible="column.visible"
+					:key="column.key"
+				>
 					<template v-slot="props">
 						<span
 							v-if="column.field === 'value' && isPerHouseholdMembers(props.row.division)"
 							v-html="mapDivisionQuantities(props.row.divisionQuantities)"
 						/>
 						<span v-else>
-							{{ props.row[column.field] }}
+							<span v-if="column.field === 'dateExpiration'">
+								{{ formattedDate }}
+							</span>
+							<span v-else>
+								{{ props.row[column.field] }}
+							</span>
 						</span>
 					</template>
 				</b-table-column>
@@ -111,6 +124,8 @@ const DEFAULT_FORM_MODEL = {
 	cashbackLimit: null,
 };
 
+const EXPIRATION_DATE_COLUMN_INDEX = 5;
+
 export default {
 	name: "DistributedCommodity",
 
@@ -129,9 +144,10 @@ export default {
 			},
 		},
 
-		data(data) {
+		commodity(data) {
 			if (data.length) {
 				this.table.data = data;
+				this.dateExpiration = data[0]?.dateExpiration.toISOString();
 			}
 		},
 	},
@@ -141,24 +157,25 @@ export default {
 			commodityModal: {
 				isOpened: false,
 			},
+			dateExpiration: "",
 			formModel: { ...DEFAULT_FORM_MODEL },
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "modality" },
-					{ key: "modalityType" },
-					{ key: "unit" },
-					{ key: "value" },
-					{ key: "division", label: "For Each" },
-					{ key: "description" },
-				],
+				columns: generateColumns([
+					{ key: "modality", sortable: true },
+					{ key: "modalityType", sortable: true },
+					{ key: "unit", sortable: true },
+					{ key: "value", sortable: true },
+					{ key: "division", sortable: true, label: "For Each" },
+					{ key: "dateExpiration", label: "Expiration Date", sortable: false },
+					{ key: "description", sortable: true },
+				]),
 			},
 		};
 	},
 
 	props: {
-		data: {
+		commodity: {
 			type: Array,
 			default: () => [],
 		},
@@ -180,10 +197,10 @@ export default {
 			type: String,
 			default: "",
 		},
-	},
-
-	created() {
-		this.table.columns = generateColumns(this.table.visibleColumns);
+		dateOfAssistance: {
+			type: String,
+			required: true,
+		},
 	},
 
 	updated() {
@@ -200,6 +217,7 @@ export default {
 					unit,
 					value,
 					description,
+					dateExpiration,
 					division,
 					divisionQuantities,
 					remoteDistributionAllowed,
@@ -210,6 +228,7 @@ export default {
 				modalityType,
 				unit,
 				value,
+				dateExpiration,
 				description: description || "",
 				division: (division === "" || division === null)
 					? null
@@ -232,6 +251,7 @@ export default {
 					currency,
 					value,
 					description,
+					dateExpiration,
 					division,
 					divisionNwsQuantities,
 					divisionNesQuantities,
@@ -244,6 +264,7 @@ export default {
 				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
 				unit: unit || currency?.value,
+				dateExpiration,
 				value: this.isPerHouseholdMembers(division)
 					? 0
 					: Number(value) || (totalValueOfBooklet ? Number(totalValueOfBooklet) : 0),
@@ -262,6 +283,15 @@ export default {
 
 		countOfSelectedBeneficiaries() {
 			return this.selectedBeneficiaries;
+		},
+
+		isModalityTypeSmartCard() {
+			return this.table.data[0]?.modalityType?.value === consts.COMMODITY.SMARTCARD;
+		},
+
+		formattedDate() {
+			const date = this.table.data[0]?.dateExpiration;
+			return date ? this.$moment(date).format("YYYY-MM-DD hh:mm") : "";
 		},
 	},
 
@@ -320,6 +350,7 @@ export default {
 		submitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
+			this.table.columns[EXPIRATION_DATE_COLUMN_INDEX].visible = this.isModalityTypeSmartCard;
 			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},
 

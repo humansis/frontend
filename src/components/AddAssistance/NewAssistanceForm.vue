@@ -18,21 +18,6 @@
 					:min-date="minDateOfAssistance"
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
-					@input="dateOfAssistanceChanged"
-				/>
-			</b-field>
-
-			<b-field :label="$t('Expiration Date')">
-				<b-datepicker
-					v-model="formModel.dateExpiration"
-					show-week-number
-					locale="en-CA"
-					icon="calendar-day"
-					trap-focus
-					:min-date="formModel.dateOfAssistance"
-					:max-date="maxDateOfAssistance"
-					:month-names="months()"
-					:placeholder="$t('Click to select')"
 				/>
 			</b-field>
 
@@ -233,7 +218,6 @@ export default {
 				adm4: null,
 				locationId: null,
 				dateOfAssistance: new Date(),
-				dateExpiration: new Date(),
 				sector: null,
 				subsector: null,
 				targetType: null,
@@ -260,7 +244,6 @@ export default {
 	validations: {
 		formModel: {
 			dateOfAssistance: { required },
-			dateExpiration: { required },
 			sector: { required },
 			subsector: { required },
 			targetType: { required },
@@ -281,8 +264,8 @@ export default {
 	},
 
 	async mounted() {
-		this.setExpirationAndAssistanceDate();
 		await this.fetchSectors();
+		this.defaultDateOfAssistance();
 	},
 
 	updated() {
@@ -302,19 +285,6 @@ export default {
 	},
 
 	methods: {
-		setExpirationAndAssistanceDate() {
-			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
-				? this.minDateOfAssistance
-				: new Date();
-			this.formModel.dateExpiration = this.maxDateOfAssistance;
-		},
-
-		dateOfAssistanceChanged() {
-			if (this.formModel.dateExpiration < this.formModel.dateOfAssistance) {
-				this.formModel.dateExpiration = this.formModel.dateOfAssistance;
-			}
-		},
-
 		async mapTargets() {
 			const { sector, subsector, assistanceType, targetType } = this.formModel;
 			if (sector && typeof sector !== "object") {
@@ -502,6 +472,12 @@ export default {
 					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 			this.loading.targetTypes = false;
+		},
+
+		defaultDateOfAssistance() {
+			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
+				? this.minDateOfAssistance
+				: new Date();
 		},
 	},
 };

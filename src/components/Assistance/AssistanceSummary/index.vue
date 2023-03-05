@@ -44,6 +44,9 @@
 					:project="project"
 					:is-project-loading="isProjectLoading"
 					:province="province"
+					:is-province-loading="isProvinceLoading"
+					:commodity="commodity"
+					:is-commodity-loading="isCommodityLoading"
 				/>
 			</b-tab-item>
 
@@ -60,7 +63,9 @@
 </template>
 
 <script>
+import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
+import AssistancesService from "@/services/AssistancesService";
 import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
@@ -92,6 +97,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		isCommoditiesLoading: {
+			type: Boolean,
+			default: false,
+		},
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
@@ -111,14 +120,16 @@ export default {
 			consts,
 			province: null,
 			commodity: [],
+			isProvinceLoading: false,
+			isCommodityLoading: false,
 		};
 	},
 
 	watch: {
 		assistance(newAssistance) {
 			if (newAssistance) {
-				this.setLocation();
-				this.setCommodity();
+				this.fetchLocation(newAssistance.adm1Id);
+				this.fetchCommodity(newAssistance.id);
 			}
 		},
 	},
@@ -154,13 +165,29 @@ export default {
 	},
 
 	methods: {
-		setLocation() {
-			this.province = this.assistance?.adm1;
+		async fetchLocation(adm1Id) {
+			this.isProvinceLoading = true;
+
+			await LocationsService.getDetailOfAdm1(
+				adm1Id,
+			).then(({ data }) => {
+				this.province = data;
+			}).finally(() => {
+				this.isProvinceLoading = false;
+			});
 		},
 
-		setCommodity() {
-			this.commodity = this.assistance?.commodities
-				.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
+		async fetchCommodity(assistanceId) {
+			this.isCommodityLoading = true;
+
+			await AssistancesService.getAssistanceCommodities(
+				assistanceId,
+			).then(({ data }) => {
+				this.commodity = data
+					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
+			}).finally(() => {
+				this.isCommodityLoading = false;
+			});
 		},
 
 	},
