@@ -345,7 +345,6 @@ export default {
 			ImportService.changeBulkDuplicitiesStatus(importId, { status })
 				.then((response) => {
 					if (response.status === 202) {
-						console.log(status);
 						this.resolversAllActive = status;
 
 						if (this.duplicitiesContentOpened) {
