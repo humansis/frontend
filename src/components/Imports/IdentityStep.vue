@@ -309,15 +309,11 @@ export default {
 		},
 
 		isAllFromFileUnselected() {
-			return this.resolversAllActive
-				? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE
-				: true;
+			return this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE;
 		},
 
 		isAllFromHumansisUnselected() {
-			return this.resolversAllActive
-				? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK
-				: true;
+			return this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK;
 		},
 
 		allFromFileClasses() {
@@ -349,6 +345,7 @@ export default {
 			ImportService.changeBulkDuplicitiesStatus(importId, { status })
 				.then((response) => {
 					if (response.status === 202) {
+						console.log(status);
 						this.resolversAllActive = status;
 
 						if (this.duplicitiesContentOpened) {
