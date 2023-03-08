@@ -310,12 +310,14 @@ export default {
 
 		isAllFromFileUnselected() {
 			return this.resolversAllActive
-				? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true;
+				? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE
+				: true;
 		},
 
 		isAllFromHumansisUnselected() {
 			return this.resolversAllActive
-				? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true;
+				? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK
+				: true;
 		},
 
 		allFromFileClasses() {

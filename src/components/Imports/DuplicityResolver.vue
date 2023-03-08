@@ -96,7 +96,7 @@
 		</Table>
 	</div>
 	<div v-else>
-		<b-loading :is-full-page="false" :active="duplicitiesLoading || isTotalCountLoading" />
+		<b-loading :is-full-page="false" :active="true" />
 	</div>
 </template>
 
