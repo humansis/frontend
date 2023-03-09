@@ -4,6 +4,9 @@
 			<AssistanceName
 				v-model="formModel.name"
 				ref="assistanceName"
+				:is-switch-disabled="!editing"
+				:data-for-assistance-name="dataForAssistanceName"
+				assistance-detail
 			/>
 
 			<LocationForm
@@ -11,6 +14,7 @@
 				ref="locationForm"
 				form-disabled
 				:form-model="formModel"
+				@locationChanged="valuesForAssistanceName"
 			/>
 
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
@@ -24,6 +28,7 @@
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
+					@input="valuesForAssistanceName"
 				/>
 			</b-field>
 
@@ -53,6 +58,7 @@
 					track-by="code"
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
+					@input="valuesForAssistanceName"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -143,6 +149,7 @@ export default {
 					"Food", "Non-Food", "Cashback",
 				],
 			},
+			dataForAssistanceName: {},
 		};
 	},
 
@@ -166,6 +173,10 @@ export default {
 		},
 	},
 
+	created() {
+		this.valuesForAssistanceName();
+	},
+
 	validations: {
 		formModel: {
 			name: { required },
@@ -187,6 +198,26 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+		},
+
+		valuesForAssistanceName() {
+			const {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateDistribution,
+				round,
+			} = this.formModel;
+
+			this.dataForAssistanceName = {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance: dateDistribution,
+				round,
+			};
 		},
 	},
 };

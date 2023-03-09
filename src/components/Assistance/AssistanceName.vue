@@ -2,21 +2,24 @@
 	<b-field
 		class="name-field"
 		:label="$t('Name of Assistance')"
-		:type="validateType('name')"
-		:message="validateMsg('name')"
+		:type="validateType('assistanceName')"
+		:message="validateMsg('assistanceName')"
 	>
 		<b-input
-			v-model.trim="name"
+			v-model.trim="assistanceName"
 			class="name-input"
 			type="text"
 			maxlength="80"
 			:placeholder="$t('Will be generated')"
-			:disabled="!isCustomLocal"
+			:disabled="!isCustom || isSwitchDisabled"
 			@input="isValid"
 		/>
 		<p class="control">
 			<b-field class="name-switch">
-				<b-switch v-model="isCustomLocal">
+				<b-switch
+					v-model="isCustom"
+					:disabled="isSwitchDisabled"
+				>
 					{{ $t("Custom") }}
 				</b-switch>
 			</b-field>
@@ -27,11 +30,32 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import validation from "@/mixins/validation";
+import { normalizeExportDate } from "@/utils/datagrid";
 
 export default {
 	name: "AssistanceName",
 
 	mixins: [validation],
+
+	data() {
+		return {
+			isCustom: false,
+			customName: "",
+			firstLoad: false,
+		};
+	},
+
+	validations: {
+		assistanceName: { required },
+	},
+
+	mounted() {
+		if (this.assistanceDetail) {
+			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+				this.setDefaultValuesForCustomName();
+			}
+		}
+	},
 
 	props: {
 		value: {
@@ -42,27 +66,82 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		isCustom: {
+		isSwitchDisabled: {
 			type: Boolean,
 			default: false,
 		},
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
+		dataForAssistanceName: {
+			type: Object,
+			default: () => {},
+		},
+		dataBeforeDuplicated: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
-	data() {
-		return {
-			isCustomLocal: this.isCustom,
-		};
-	},
+	watch: {
+		dataForAssistanceName: {
+			handler() {
+				if (!this.isCustom) {
+					this.assistanceName = this.setupAssistanceName(this.dataForAssistanceName);
+				}
 
-	validations: {
-		name: { required },
+				if (this.duplicateAssistance) {
+					const assistanceBeforeDuplicated = {
+						...this.dataForAssistanceName,
+						dateOfAssistance: new Date(this.dataBeforeDuplicated?.dateDistribution),
+						round: {
+							value: this.dataBeforeDuplicated?.round,
+							code: this.dataBeforeDuplicated?.round,
+						},
+					};
+
+					if (!this.customName
+						&& this.setupAssistanceName(assistanceBeforeDuplicated) === this.value) {
+						this.firstLoad = true;
+					}
+
+					if (assistanceBeforeDuplicated && !this.firstLoad
+						&& this.setupAssistanceName(assistanceBeforeDuplicated) !== this.value) {
+						this.setDefaultValuesForCustomName();
+					}
+				}
+			},
+			deep: true,
+		},
+
+		assistanceName(value) {
+			if (this.isCustom) {
+				this.customName = value;
+			}
+		},
+
+		isCustom() {
+			if (!this.isCustom) {
+				this.assistanceName = this.setupAssistanceName(this.dataForAssistanceName);
+			} else if (this.customName) {
+				this.assistanceName = this.customName;
+			}
+		},
 	},
 
 	computed: {
-		name: {
+		assistanceName: {
 			get() {
-				return this.duplicateAssistance && this.isCustomLocal ? `${this.value} - ${this.$t("copy")}` : this.value;
+				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+					if (this.duplicateAssistance && this.isCustom) {
+						return this.setCopyIntoAssistanceName();
+					}
+					return this.value;
+				}
+				return this.value;
 			},
+
 			set(value) {
 				this.$emit("input", value);
 			},
@@ -71,8 +150,42 @@ export default {
 
 	methods: {
 		isValid() {
-			this.validate("name");
+			this.$v.assistanceName.$touch();
+			this.validate("assistanceName");
 			return !this.$v.$invalid;
+		},
+
+		setDefaultValuesForCustomName() {
+			this.isCustom = true;
+			this.customName = this.value;
+			this.assistanceName = this.value;
+		},
+
+		setCopyIntoAssistanceName() {
+			return this.value.includes(`- ${this.$t("copy")}`)
+				? this.value
+				: `${this.value} - ${this.$t("copy")}`;
+		},
+
+		setupAssistanceName(assistance) {
+			const adm = assistance.adm4?.name
+				|| assistance.adm3?.name
+				|| assistance.adm2?.name
+				|| assistance.adm1?.name;
+
+			const round = assistance.round?.value;
+
+			const dateOfAssistance = normalizeExportDate(
+				assistance.dateOfAssistance,
+			);
+
+			const roundName = round && round !== "N/A"
+				? ` #${round}`
+				: "";
+
+			return (adm && dateOfAssistance)
+				? `${adm}${roundName} • ${dateOfAssistance}`
+				: "";
 		},
 	},
 };

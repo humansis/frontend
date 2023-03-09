@@ -6,7 +6,9 @@
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					:project="project"
-					:data="componentsData.newAssistanceForm"
+					:new-assistance-form="componentsData.newAssistanceForm"
+					:data-before-duplicated="componentsData.dataBeforeDuplicated"
+					:duplicated-assistance="duplicate"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -95,6 +97,7 @@ export default {
 		return {
 			componentsData: {
 				newAssistanceForm: null,
+				dataBeforeDuplicated: {},
 				distributedCommodity: null,
 				activityDetails: null,
 				selectionCriteria: null,
@@ -121,6 +124,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
+				name: "",
 				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
@@ -338,6 +342,11 @@ export default {
 					round = { code: assistance.round, value: assistance.round };
 				}
 			}
+
+			this.componentsData.dataBeforeDuplicated = {
+				dateDistribution: assistance.dateDistribution,
+				round: assistance.round,
+			};
 
 			this.componentsData.newAssistanceForm = {
 				name: assistance.name,

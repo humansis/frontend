@@ -4,13 +4,16 @@
 		<div class="box">
 			<AssistanceName
 				v-model="formModel.name"
-				:duplicate-assistance="data !== null"
 				ref="assistanceName"
+				:duplicate-assistance="newAssistanceForm !== null"
+				:data-before-duplicated="dataBeforeDuplicated"
+				:data-for-assistance-name="dataForAssistanceName"
 			/>
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
-				@mapped="$emit('updatedData', formModel)"
+				@mapped="updateData"
+				@locationChanged="valuesForAssistanceName"
 			/>
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
@@ -36,6 +39,7 @@
 					track-by="code"
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
+					@input="valuesForAssistanceName"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -211,16 +215,19 @@ export default {
 			type: Object,
 			default: () => {},
 		},
-
-		data: {
+		newAssistanceForm: {
 			type: Object,
 			default: null,
+		},
+		dataBeforeDuplicated: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
 	data() {
 		return {
-			nameSwitcher: "generated",
+			dataForAssistanceName: {},
 			formModel: {
 				name: "",
 				adm1: null,
@@ -268,7 +275,7 @@ export default {
 			this.mapTargets();
 		},
 
-		data(data) {
+		newAssistanceForm(data) {
 			if (data) {
 				this.formModel = data;
 			}
@@ -326,6 +333,11 @@ export default {
 			const invalidAssistanceName = this.$refs.assistanceName.isValid();
 			return !this.$v.$invalid
 				|| (!this.$v.$invalid && !invalidLocationForm && !invalidAssistanceName);
+		},
+
+		updateData() {
+			this.$emit("updatedData", this.formModel);
+			this.valuesForAssistanceName();
 		},
 
 		normalizeText(text) {
@@ -486,6 +498,22 @@ export default {
 					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
 				});
 			this.loading.targetTypes = false;
+		},
+
+		valuesForAssistanceName() {
+			const {
+				assistanceType,
+				dateExpiration,
+				locationId,
+				name,
+				note,
+				sector,
+				subsector,
+				targetType,
+				...data
+			} = this.formModel;
+
+			this.dataForAssistanceName = data;
 		},
 
 		defaultDateOfAssistance() {
