@@ -44,7 +44,6 @@
 					:project="project"
 					:is-project-loading="isProjectLoading"
 					:province="province"
-					:is-province-loading="isProvinceLoading"
 					:commodity="commodity"
 					:is-commodity-loading="isCommodityLoading"
 				/>
@@ -63,7 +62,6 @@
 </template>
 
 <script>
-import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import AssistancesService from "@/services/AssistancesService";
 import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
@@ -120,7 +118,6 @@ export default {
 			consts,
 			province: null,
 			commodity: [],
-			isProvinceLoading: false,
 			isCommodityLoading: false,
 		};
 	},
@@ -128,7 +125,7 @@ export default {
 	watch: {
 		assistance(newAssistance) {
 			if (newAssistance) {
-				this.fetchLocation(newAssistance.adm1Id);
+				this.setLocation();
 				this.fetchCommodity(newAssistance.id);
 			}
 		},
@@ -165,16 +162,8 @@ export default {
 	},
 
 	methods: {
-		async fetchLocation(adm1Id) {
-			this.isProvinceLoading = true;
-
-			await LocationsService.getDetailOfAdm1(
-				adm1Id,
-			).then(({ data }) => {
-				this.province = data;
-			}).finally(() => {
-				this.isProvinceLoading = false;
-			});
+		setLocation() {
+			this.province = this.assistance?.adm1;
 		},
 
 		async fetchCommodity(assistanceId) {
