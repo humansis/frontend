@@ -86,14 +86,14 @@ export default {
 
 	watch: {
 		dataForAssistanceName: {
-			handler() {
+			handler(value) {
 				if (!this.isCustom) {
-					this.assistanceName = this.setupAssistanceName(this.dataForAssistanceName);
+					this.assistanceName = this.setupAssistanceName(value);
 				}
 
 				if (this.duplicateAssistance) {
 					const assistanceBeforeDuplicated = {
-						...this.dataForAssistanceName,
+						...value,
 						dateOfAssistance: new Date(this.dataBeforeDuplicated?.dateDistribution),
 						round: {
 							value: this.dataBeforeDuplicated?.round,
@@ -121,8 +121,8 @@ export default {
 			}
 		},
 
-		isCustom() {
-			if (!this.isCustom) {
+		isCustom(value) {
+			if (!value) {
 				this.assistanceName = this.setupAssistanceName(this.dataForAssistanceName);
 			} else if (this.customName) {
 				this.assistanceName = this.customName;

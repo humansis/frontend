@@ -26,6 +26,7 @@
 					:min-date="minDateOfAssistance"
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
+					@input="valuesForAssistanceName"
 				/>
 			</b-field>
 
