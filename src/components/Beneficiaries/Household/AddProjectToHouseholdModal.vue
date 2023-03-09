@@ -9,7 +9,7 @@
 			class="modal-card-body overflow-visible"
 			:style="{ 'min-height': selectOpened ? `${options.length * 50}px` : '100px' }"
 		>
-			<b-field label="Projects">
+			<b-field label="Project">
 				<MultiSelect
 					v-model="selectedProject"
 					searchable
@@ -71,6 +71,7 @@ export default {
 		},
 		addHouseholdsToProject() {
 			this.$emit("confirm", this.selectedProject);
+			this.selectedProject = null;
 		},
 	},
 };
