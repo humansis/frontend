@@ -199,6 +199,7 @@ import { normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import calendarHelper from "@/mixins/calendarHelper";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 
 export default {
 	name: "NewAssistanceForm",
