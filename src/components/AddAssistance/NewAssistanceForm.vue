@@ -503,18 +503,22 @@ export default {
 
 		valuesForAssistanceName() {
 			const {
-				assistanceType,
-				dateExpiration,
-				locationId,
-				name,
-				note,
-				sector,
-				subsector,
-				targetType,
-				...data
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance,
+				round,
 			} = this.formModel;
 
-			this.dataForAssistanceName = data;
+			this.dataForAssistanceName = {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance,
+				round,
+			};
 		},
 
 		defaultDateOfAssistance() {
