@@ -113,7 +113,7 @@
 				<b-button
 					class="vulnerability-update-button is-align-self-center ml-2"
 					type="is-primary"
-					:disabled="calculationLoading || !groups.length"
+					:disabled="isUpdateButtonEnabled"
 					@click="updateVulnerabilityScores"
 				>
 					{{ $t('Update') }}
@@ -249,8 +249,21 @@ export default {
 		},
 
 		isExportButtonDisabled() {
-			return this.vulnerabilityScoreTouched || this.calculationLoading
-				|| !this.groups.length || !this.totalCount;
+			return this.vulnerabilityScoreTouched
+				|| this.calculationLoading
+				|| !this.groups.length
+				|| !this.totalCount;
+		},
+
+		isMinVulnerabilityScoreFloat() {
+			return Number(this.minimumSelectionScore) === this.minimumSelectionScore
+				&& this.minimumSelectionScore % 1 !== 0;
+		},
+
+		isUpdateButtonEnabled() {
+			return this.calculationLoading
+				|| !this.groups.length
+				|| this.isMinVulnerabilityScoreFloat;
 		},
 	},
 
@@ -450,10 +463,13 @@ export default {
 			}
 
 			if (assistanceBody.selectionCriteria?.length) {
-				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
-				await this.calculationOfAssistanceBeneficiariesScores(
-					{ assistanceBody, totalCount },
-				);
+				await this.calculationOfAssistanceBeneficiaries({
+					assistanceBody,
+					totalCount,
+				});
+				await this.calculationOfAssistanceBeneficiariesScores({
+					assistanceBody,
+				});
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
@@ -497,16 +513,16 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores(
-			{ assistanceBody, totalCount },
-		) {
+		async calculationOfAssistanceBeneficiariesScores({
+			assistanceBody,
+		}) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
 				scoringBlueprintId: this.scoringType?.id || null,
-				threshold: totalCount ? null : this.minimumSelectionScore,
+				threshold: this.minimumSelectionScore,
 			};
 
 			if (beneficiaryIds.length) {
