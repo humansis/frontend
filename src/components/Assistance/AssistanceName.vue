@@ -9,7 +9,7 @@
 			v-model.trim="assistanceName"
 			class="name-input"
 			type="text"
-			maxlength="80"
+			maxlength="70"
 			:placeholder="$t('Will be generated')"
 			:disabled="!isCustom || isSwitchDisabled"
 			@input="isValid"
@@ -30,7 +30,6 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import validation from "@/mixins/validation";
-import { normalizeExportDate } from "@/utils/datagrid";
 
 export default {
 	name: "AssistanceName",
@@ -134,7 +133,7 @@ export default {
 		assistanceName: {
 			get() {
 				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
-					if (this.duplicateAssistance && this.isCustom) {
+					if (this.duplicateAssistance && this.isCustom && !this.firstLoad) {
 						return this.setCopyIntoAssistanceName();
 					}
 					return this.value;
@@ -175,9 +174,7 @@ export default {
 
 			const round = assistance.round?.value;
 
-			const dateOfAssistance = normalizeExportDate(
-				assistance.dateOfAssistance,
-			);
+			const dateOfAssistance = this.$moment(assistance.dateOfAssistance).format("YYYY-MM-DD");
 
 			const roundName = round && round !== "N/A"
 				? ` #${round}`
@@ -192,19 +189,19 @@ export default {
 </script>
 
 <style lang="scss">
-	.name-field {
-		.name-input {
-			width: 100%;
-		}
-		.name-switch {
-			margin-left: 10px;
-			margin-top: 5px;
-		}
-		.control {
-			.help.counter {
-				position: absolute;
-				right: 0;
-			}
+.name-field {
+	.name-input {
+		width: 100%;
+	}
+	.name-switch {
+		margin-left: 10px;
+		margin-top: 5px;
+	}
+	.control {
+		.help.counter {
+			position: absolute;
+			right: 0;
 		}
 	}
+}
 </style>
