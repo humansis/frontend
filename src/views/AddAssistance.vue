@@ -509,7 +509,7 @@ export default {
 				...this.assistanceBody,
 				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
-					? dateOfAssistance.toISOString()
+					? this.$moment(dateOfAssistance).format("YYYY-MM-DD")
 					: this.project?.startDate,
 				target: targetType?.code,
 				type: assistanceType?.code,

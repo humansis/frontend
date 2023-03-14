@@ -144,7 +144,7 @@ export default {
 		},
 
 		dateDistribution() {
-			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD");
 		},
 
 		dateExpiration() {
