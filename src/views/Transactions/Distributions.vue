@@ -18,8 +18,8 @@
 			ref="table"
 			has-reset-sort
 			has-search
-			:default-sort-direction="table.sortDirection"
 			:default-sort-key="table.sortColumn"
+			:default-sort-direction="table.sortDirection"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
@@ -152,8 +152,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "dateDistribution",
 				searchPhrase: "",
 				progress: null,
 			},
