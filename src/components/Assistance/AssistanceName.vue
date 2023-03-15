@@ -39,6 +39,7 @@ export default {
 	data() {
 		return {
 			isCustom: false,
+			isCopyAdded: false,
 			customName: "",
 			firstLoad: false,
 		};
@@ -133,7 +134,7 @@ export default {
 		assistanceName: {
 			get() {
 				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
-					if (this.duplicateAssistance && this.isCustom && !this.firstLoad) {
+					if (this.isCustomNameLoaded) {
 						return this.setCopyIntoAssistanceName();
 					}
 					return this.value;
@@ -144,6 +145,11 @@ export default {
 			set(value) {
 				this.$emit("input", value);
 			},
+		},
+
+		isCustomNameLoaded() {
+			return this.duplicateAssistance && this.isCustom
+				&& !this.firstLoad && !this.isCopyAdded;
 		},
 	},
 
@@ -161,6 +167,8 @@ export default {
 		},
 
 		setCopyIntoAssistanceName() {
+			this.isCopyAdded = true;
+
 			return this.value.includes(`- ${this.$t("copy")}`)
 				? this.value
 				: `${this.value} - ${this.$t("copy")}`;
