@@ -170,11 +170,7 @@ export default {
 			await this.storeCountry(country);
 			await this.fetchAdmNames();
 
-			if (this.$route.name !== "Projects") {
-				await this.$router.push({ name: "Projects" });
-			}
-
-			this.$router.go();
+			this.$router.push({ name: "Projects", params: { countryCode: country.iso3 } });
 		},
 
 		async handleChangeLanguage(language) {

@@ -5,27 +5,13 @@ import store from "@/store/index";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
 import { getCookie } from "@/utils/cookie";
+import CONST from "@/store/const";
 
 Vue.use(VueRouter);
 
-const ifAuthenticated = (to, from, next) => {
-	const token = getCookie("token");
-	const permissions = getters.getPermissionsFromVuexStorage();
-
-	const canGoNext = to.meta.permissions?.length ? to.meta.permissions
-		.some((permission) => permissions?.[permission]) : true;
-
-	if (token && to.meta.permissions && canGoNext) {
-		next();
-	} else if (!token) {
-		const redirect = to.query?.redirect || (to.fullPath === "/" ? "/projects" : to.fullPath);
-		next({ name: "Login", query: { redirect } });
-	} else {
-		next({ name: "NotFound" });
-	}
-};
-
 let singleNotification = true;
+const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
+	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
 const routes = [
 	{
@@ -44,19 +30,75 @@ const routes = [
 				singleNotification = false;
 			}
 
-			next({ name: "Login", query: to.query });
-			Vue.$router.go();
+			return next({ name: "Login", query: to.query });
 		},
 	},
 	{
-		path: "",
+		path: "/",
+		redirect: {
+			name: storedCountryCode ? "Projects" : "Login",
+			...(storedCountryCode && {
+				params: {
+					countryCode: storedCountryCode,
+				},
+			}),
+		},
+	},
+	{
+		path: "/:countryCode",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
+		beforeEnter: (to, from, next) => {
+			const token = getCookie("token");
+
+			if (!token) {
+				return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
+			}
+
+			const storedPermissions = getters.getPermissionsFromVuexStorage();
+			const { permissions } = to.meta;
+			const canGoNext = permissions?.length
+				? permissions.some((permission) => storedPermissions?.[permission])
+				: true;
+
+			if (!canGoNext) {
+				return next({ name: "NotFound" });
+			}
+
+			if (!to.params.countryCode) {
+				let countryCode = getters.getCountryFromVuexStorage()?.iso3;
+
+				if (!countryCode) {
+					store.commit(CONST.STORE_COUNTRY, getters.getCountriesFromVuexStorage()[0]);
+					countryCode = getters.getCountriesFromVuexStorage()[0].iso3;
+				}
+
+				return next({
+					...to,
+					params: {
+						...to.params,
+						countryCode,
+					},
+				});
+			}
+
+			if (getters.getCountryFromVuexStorage().iso3 !== to.params.countryCode) {
+				const newCountry = getters.getCountriesFromVuexStorage()
+					.find((country) => country.iso3 === to.params.countryCode);
+
+				if (!newCountry) {
+					return next({ name: "NotFound" });
+				}
+
+				store.commit(CONST.STORE_COUNTRY, newCountry);
+			}
+
+			return next();
+		},
 		children: [
 			{
 				path: "/",
 				name: "Home",
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Home"),
@@ -64,14 +106,13 @@ const routes = [
 				},
 			},
 			{
-				path: "/projects",
+				path: "projects",
 				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "",
 						name: "Projects",
 						component: () => import(/* webpackChunkName: "Projects" */ "@/views/Projects"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Projects"),
@@ -79,7 +120,7 @@ const routes = [
 						},
 					},
 					{
-						path: "/project/:projectId",
+						path: "/:countryCode/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: () => i18n.t("Project"),
@@ -89,7 +130,6 @@ const routes = [
 								path: "",
 								name: "Project",
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: [],
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
@@ -99,7 +139,6 @@ const routes = [
 								path: "assistance/:assistanceId",
 								name: "AssistanceEdit",
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["editDistribution"],
 									breadcrumb: () => i18n.t("Edit Assistance"),
@@ -110,7 +149,6 @@ const routes = [
 								path: "assistance/detail/:assistanceId",
 								name: "AssistanceDetail",
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
 									breadcrumb: () => i18n.t("Assistance Detail"),
@@ -121,7 +159,6 @@ const routes = [
 								path: "add-assistance",
 								name: "AddAssistance",
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["addDistribution"],
 									breadcrumb: () => i18n.t("Add Assistance"),
@@ -134,14 +171,13 @@ const routes = [
 				],
 			},
 			{
-				path: "/imports",
+				path: "imports",
 				component: { render(c) { return c("router-view"); } },
 				children: [
 					{
 						path: "",
 						name: "Imports",
 						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Imports"),
@@ -149,7 +185,7 @@ const routes = [
 						},
 					},
 					{
-						path: "/import/:importId",
+						path: "/:countryCode/import/:importId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {
 							breadcrumb: () => i18n.t("Import"),
@@ -159,7 +195,6 @@ const routes = [
 								path: "",
 								name: "Import",
 								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: [],
 									description: "",
@@ -170,7 +205,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/beneficiaries",
+				path: "beneficiaries",
 				redirect: { name: "Households" },
 				component: { render(c) { return c("router-view"); } },
 				meta: {
@@ -189,7 +224,6 @@ const routes = [
 								path: "",
 								name: "Households",
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: [],
 									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
@@ -199,7 +233,6 @@ const routes = [
 								path: "add",
 								name: "AddHousehold",
 								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["addBeneficiary"],
 									breadcrumb: () => i18n.t("Add Household"),
@@ -210,7 +243,6 @@ const routes = [
 								path: "edit/:householdId",
 								name: "EditHousehold",
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewBeneficiary", "editBeneficiary"],
 									breadcrumb: () => i18n.t("Edit Household"),
@@ -221,7 +253,6 @@ const routes = [
 								path: "summary/:householdId",
 								name: "HouseholdInformationSummary",
 								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
-								beforeEnter: ifAuthenticated,
 								meta: {
 									permissions: ["viewBeneficiary"],
 									breadcrumb: () => i18n.t("Household Information Summary"),
@@ -235,7 +266,6 @@ const routes = [
 						path: "communities",
 						name: "Communities",
 						component: () => import(/* webpackChunkName: "Communities" */ "@/views/Beneficiaries/Communities"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Communities"),
@@ -246,7 +276,6 @@ const routes = [
 						path: "institutions",
 						name: "Institutions",
 						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Institutions"),
@@ -257,7 +286,6 @@ const routes = [
 						path: "vendors",
 						name: "Vendors",
 						component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["viewVendors"],
 							breadcrumb: () => i18n.t("Vendors"),
@@ -267,10 +295,9 @@ const routes = [
 				],
 			},
 			{
-				path: "/reports",
+				path: "reports",
 				name: "Reports",
 				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Reports"),
@@ -278,10 +305,9 @@ const routes = [
 				},
 			},
 			{
-				path: "/vouchers",
+				path: "vouchers",
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: ["viewVouchers"],
 					breadcrumb: () => i18n.t("Vouchers"),
@@ -289,7 +315,7 @@ const routes = [
 				},
 			},
 			{
-				path: "/country-settings",
+				path: "country-settings",
 				name: "Country Settings",
 				component: { render(c) { return c("router-view"); } },
 				children: [
@@ -297,7 +323,6 @@ const routes = [
 						path: "products",
 						name: "Products",
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["viewProducts"],
 							breadcrumb: () => i18n.t("Products"),
@@ -308,7 +333,6 @@ const routes = [
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/CountrySettings/CountrySpecificOptions"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: ["countrySettings"],
 							breadcrumb: () => i18n.t("Country specifics"),
@@ -318,10 +342,9 @@ const routes = [
 				],
 			},
 			{
-				path: "/administrative-settings",
+				path: "administrative-settings",
 				name: "Administrative Settings",
 				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: ["adminSettings"],
 					breadcrumb: () => i18n.t("Administrative Settings"),
@@ -329,10 +352,9 @@ const routes = [
 				},
 			},
 			{
-				path: "/transactions",
+				path: "transactions",
 				name: "Transactions",
 				component: { render(c) { return c("router-view"); } },
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Transactions"),
@@ -343,7 +365,6 @@ const routes = [
 						path: "assistances",
 						name: "TransactionsAssistances",
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Assistances"),
@@ -354,7 +375,6 @@ const routes = [
 						path: "purchases",
 						name: "TransactionsPurchases",
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
-						beforeEnter: ifAuthenticated,
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Purchases"),
@@ -364,10 +384,9 @@ const routes = [
 				],
 			},
 			{
-				path: "/logs",
+				path: "logs",
 				name: "Logs",
 				component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Logs"),
@@ -375,10 +394,9 @@ const routes = [
 				},
 			},
 			{
-				path: "/profile",
+				path: "profile",
 				name: "Profile",
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
-				beforeEnter: ifAuthenticated,
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Profile"),
