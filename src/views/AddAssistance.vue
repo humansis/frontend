@@ -6,7 +6,9 @@
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					:project="project"
-					:data="componentsData.newAssistanceForm"
+					:new-assistance-form="componentsData.newAssistanceForm"
+					:data-before-duplicated="componentsData.dataBeforeDuplicated"
+					:duplicated-assistance="duplicate"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -95,6 +97,7 @@ export default {
 		return {
 			componentsData: {
 				newAssistanceForm: null,
+				dataBeforeDuplicated: {},
 				distributedCommodity: null,
 				activityDetails: null,
 				selectionCriteria: null,
@@ -121,6 +124,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
+				name: "",
 				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
@@ -339,7 +343,13 @@ export default {
 				}
 			}
 
+			this.componentsData.dataBeforeDuplicated = {
+				dateDistribution: assistance.dateDistribution,
+				round: assistance.round,
+			};
+
 			this.componentsData.newAssistanceForm = {
+				name: assistance.name,
 				adm1: null,
 				adm2: null,
 				adm3: null,
@@ -485,6 +495,7 @@ export default {
 
 		fetchNewAssistanceForm(data) {
 			const {
+				name,
 				assistanceType,
 				dateOfAssistance,
 				sector,
@@ -496,6 +507,7 @@ export default {
 
 			this.assistanceBody = {
 				...this.assistanceBody,
+				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
 					? dateOfAssistance.toISOString()
 					: this.project?.startDate,

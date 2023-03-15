@@ -113,10 +113,10 @@ export default {
 			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
 		},
 
-		async editAssistance({ id, dateDistribution, dateExpiration, round }) {
-			await AssistancesService.updateAssistanceDateOfDistribution(
-				id, dateDistribution, dateExpiration, round,
-			)
+		async editAssistance({ id, name, dateDistribution, dateExpiration, round }) {
+			await AssistancesService.updateAssistance({
+				id, name, dateDistribution, dateExpiration, round,
+			})
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Assistance Successfully Updated"), "is-success");

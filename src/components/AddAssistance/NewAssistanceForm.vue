@@ -1,11 +1,19 @@
 <template>
-	<div>
-		<h3 class="title is-4">{{ $t('Location and Date') }}</h3>
+	<div class="new-assistance-form">
+		<h3 class="title is-4">{{ $t('Basic properties') }}</h3>
 		<div class="box">
+			<AssistanceName
+				v-model="formModel.name"
+				ref="assistanceName"
+				:duplicate-assistance="newAssistanceForm !== null"
+				:data-before-duplicated="dataBeforeDuplicated"
+				:data-for-assistance-name="dataForAssistanceName"
+			/>
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
-				@mapped="$emit('updatedData', formModel)"
+				@mapped="updateData"
+				@locationChanged="valuesForAssistanceName"
 			/>
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
@@ -18,6 +26,7 @@
 					:min-date="minDateOfAssistance"
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
+					@input="valuesForAssistanceName"
 				/>
 			</b-field>
 
@@ -31,6 +40,7 @@
 					track-by="code"
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
+					@input="valuesForAssistanceName"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -183,6 +193,7 @@ import { required } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
@@ -193,7 +204,10 @@ import calendarHelper from "@/mixins/calendarHelper";
 export default {
 	name: "NewAssistanceForm",
 
-	components: { LocationForm },
+	components: {
+		LocationForm,
+		AssistanceName,
+	},
 
 	mixins: [Validation, calendarHelper],
 
@@ -202,16 +216,21 @@ export default {
 			type: Object,
 			default: () => {},
 		},
-
-		data: {
+		newAssistanceForm: {
 			type: Object,
 			default: null,
+		},
+		dataBeforeDuplicated: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
 	data() {
 		return {
+			dataForAssistanceName: {},
 			formModel: {
+				name: "",
 				adm1: null,
 				adm2: null,
 				adm3: null,
@@ -243,6 +262,7 @@ export default {
 
 	validations: {
 		formModel: {
+			name: { required },
 			dateOfAssistance: { required },
 			sector: { required },
 			subsector: { required },
@@ -256,7 +276,7 @@ export default {
 			this.mapTargets();
 		},
 
-		data(data) {
+		newAssistanceForm(data) {
 			if (data) {
 				this.formModel = data;
 			}
@@ -311,7 +331,14 @@ export default {
 		submit() {
 			this.$v.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
-			return !this.$v.$invalid || (!this.$v.$invalid && !invalidLocationForm);
+			const invalidAssistanceName = this.$refs.assistanceName.isValid();
+			return !this.$v.$invalid
+				|| (!this.$v.$invalid && !invalidLocationForm && !invalidAssistanceName);
+		},
+
+		updateData() {
+			this.$emit("updatedData", this.formModel);
+			this.valuesForAssistanceName();
 		},
 
 		normalizeText(text) {
@@ -474,6 +501,26 @@ export default {
 			this.loading.targetTypes = false;
 		},
 
+		valuesForAssistanceName() {
+			const {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance,
+				round,
+			} = this.formModel;
+
+			this.dataForAssistanceName = {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance,
+				round,
+			};
+		},
+
 		defaultDateOfAssistance() {
 			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
 				? this.minDateOfAssistance
@@ -482,3 +529,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+	.new-assistance-form {
+		.name-input {
+			width: 100%;
+		}
+	}
+</style>

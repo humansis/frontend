@@ -1,15 +1,20 @@
 <template>
 	<form>
 		<section class="modal-card-body">
-			<b-field :label="$t('Name')">
-				<b-input v-model="formModel.name" disabled />
-			</b-field>
+			<AssistanceName
+				v-model="formModel.name"
+				ref="assistanceName"
+				:is-switch-disabled="!editing"
+				:data-for-assistance-name="dataForAssistanceName"
+				assistance-detail
+			/>
 
 			<LocationForm
 				v-if="!editing"
 				ref="locationForm"
 				form-disabled
 				:form-model="formModel"
+				@locationChanged="valuesForAssistanceName"
 			/>
 
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
@@ -23,6 +28,7 @@
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
 					:disabled="!editing"
+					@input="valuesForAssistanceName"
 				/>
 			</b-field>
 
@@ -52,6 +58,7 @@
 					track-by="code"
 					:placeholder="$t('N/A')"
 					:options="options.rounds"
+					@input="valuesForAssistanceName"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -116,6 +123,8 @@
 </template>
 
 <script>
+import { required } from "vuelidate/lib/validators";
+import AssistanceName from "@/components/Assistance/AssistanceName";
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import consts from "@/utils/assistanceConst";
@@ -127,6 +136,7 @@ export default {
 	mixins: [calendarHelper],
 
 	components: {
+		AssistanceName,
 		LocationForm,
 		SvgIcon,
 	},
@@ -139,6 +149,7 @@ export default {
 					"Food", "Non-Food", "Cashback",
 				],
 			},
+			dataForAssistanceName: {},
 		};
 	},
 
@@ -162,16 +173,51 @@ export default {
 		},
 	},
 
+	created() {
+		this.valuesForAssistanceName();
+	},
+
+	validations: {
+		formModel: {
+			name: { required },
+		},
+	},
+
 	methods: {
 		submitForm() {
+			this.$v.$touch();
+			const isValid = !this.$v.$invalid && this.$refs.assistanceName.isValid();
 			const data = { ...this.formModel };
 			data.round = this.formModel.round?.code;
-			this.$emit("formSubmitted", data);
-			this.closeForm();
+
+			if (isValid) {
+				this.$emit("formSubmitted", data);
+				this.closeForm();
+			}
 		},
 
 		closeForm() {
 			this.$emit("formClosed");
+		},
+
+		valuesForAssistanceName() {
+			const {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateDistribution,
+				round,
+			} = this.formModel;
+
+			this.dataForAssistanceName = {
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				dateOfAssistance: dateDistribution,
+				round,
+			};
 		},
 	},
 };
