@@ -392,6 +392,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
@@ -400,6 +401,7 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
@@ -408,11 +410,13 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
 		async onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
@@ -426,15 +430,18 @@ export default {
 				this.table.sortColumn = sortKey;
 				this.table.sortDirection = "desc";
 			}
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
 		async onSearch(value) {
 			this.table.searchPhrase = value;
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
 		async onChangePerPage() {
+			this.alreadyFetched = false;
 			await this.reloadBeneficiariesList();
 		},
 
@@ -442,6 +449,7 @@ export default {
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = "";
 				this.table.sortDirection = "";
+				this.alreadyFetched = false;
 				await this.reloadBeneficiariesList();
 			}
 		},

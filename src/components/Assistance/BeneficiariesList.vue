@@ -99,7 +99,7 @@
 				close-button
 				adding-to-assistance
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeAddBeneficiariesByIdsModal"
 			/>
 		</Modal>
@@ -113,7 +113,7 @@
 				close-button
 				deduplication
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
@@ -291,6 +291,18 @@ export default {
 			default: false,
 		},
 		exportButton: Boolean,
+		commodities: {
+			type: Array,
+			default: () => [],
+		},
+		isFetchEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	components: {
@@ -313,12 +325,12 @@ export default {
 		return {
 			isLoadingList: false,
 			advancedSearchVisible: false,
-			commodities: [],
 			exportControl: {
 				loading: false,
 				location: "assistance",
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			alreadyFetched: false,
 			table: {
 				data: [],
 				columns: [],
@@ -488,7 +500,6 @@ export default {
 	},
 
 	async created() {
-		await this.getAssistanceCommodities();
 		await this.reloadBeneficiariesList(false);
 	},
 
@@ -505,7 +516,11 @@ export default {
 			if (this.assistance) {
 				if (emit) this.$emit("beneficiariesReloaded", this);
 				this.prepareTableColumns();
-				await this.fetchData();
+
+				if ((this.isFetchEnabled && !this.alreadyFetched) || this.assistanceDetail) {
+					this.alreadyFetched = true;
+					await this.fetchData();
+				}
 			}
 		},
 
@@ -518,7 +533,13 @@ export default {
 		},
 
 		addedOrRemovedBeneficiary() {
+			this.alreadyFetched = false;
 			this.$emit("assistanceUpdated");
+			this.reloadBeneficiariesList();
+		},
+
+		fetchDataAfterBeneficiaryChange() {
+			this.alreadyFetched = false;
 			this.reloadBeneficiariesList();
 		},
 

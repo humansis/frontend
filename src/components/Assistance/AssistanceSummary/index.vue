@@ -45,7 +45,6 @@
 					:is-project-loading="isProjectLoading"
 					:province="province"
 					:commodity="commodity"
-					:is-commodity-loading="isCommodityLoading"
 				/>
 			</b-tab-item>
 
@@ -63,7 +62,6 @@
 
 <script>
 import { normalizeText } from "@/utils/datagrid";
-import AssistancesService from "@/services/AssistancesService";
 import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
@@ -126,7 +124,7 @@ export default {
 		assistance(newAssistance) {
 			if (newAssistance) {
 				this.setLocation();
-				this.fetchCommodity(newAssistance.id);
+				this.setCommodity();
 			}
 		},
 	},
@@ -166,17 +164,9 @@ export default {
 			this.province = this.assistance?.adm1;
 		},
 
-		async fetchCommodity(assistanceId) {
-			this.isCommodityLoading = true;
-
-			await AssistancesService.getAssistanceCommodities(
-				assistanceId,
-			).then(({ data }) => {
-				this.commodity = data
-					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
-			}).finally(() => {
-				this.isCommodityLoading = false;
-			});
+		async setCommodity() {
+			this.commodity = this.commodities
+				.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
 		},
 
 	},
