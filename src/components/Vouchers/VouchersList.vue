@@ -314,7 +314,9 @@ export default {
 		},
 
 		resetFilters() {
+			this.filters = {};
 			this.$refs.vouchersFilter.resetFilters();
+			this.$refs.vouchersList.onResetSearch();
 		},
 
 		resetTableSort() {

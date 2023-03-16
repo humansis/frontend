@@ -52,8 +52,8 @@ export default {
 			this.$emit("search", this.value);
 		},
 
-		clearSearch() {
-			if (this.value) {
+		clearSearch(resetAllFilters = false) {
+			if (this.value || resetAllFilters === true) {
 				this.value = "";
 				this.search();
 			}
