@@ -196,6 +196,7 @@
 			</template>
 			<template #export>
 				<ExportControl
+					v-if="table.data.length"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
 					:is-export-loading="exportControl.loading"

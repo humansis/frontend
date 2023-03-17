@@ -113,6 +113,7 @@
 			</b-table-column>
 			<template v-if="!upcoming" #export>
 				<ExportControl
+					v-if="table.data.length"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
