@@ -116,9 +116,9 @@ export default {
 		async editAssistance({ id, name, dateDistribution, dateExpiration, round }) {
 			const formattedDateDistribution = this.$moment(dateDistribution).format("YYYY-MM-DD");
 
-			await AssistancesService.updateAssistanceDateOfDistribution(
+			await AssistancesService.updateAssistance({
 				id, name, formattedDateDistribution, dateExpiration, round,
-			)
+			})
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Assistance Successfully Updated"), "is-success");
