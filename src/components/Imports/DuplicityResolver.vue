@@ -266,8 +266,8 @@ export default {
 		extractDataForTable(data, key) {
 			if (Object.hasOwn(data, "memberDuplicities")) {
 				Object.values(data.memberDuplicities).forEach((memberDuplicity) => {
-					this.table.data[key].familyName.push(memberDuplicity.givenName);
-					this.table.data[key].firstName.push(memberDuplicity.familyName);
+					this.table.data[key].familyName.push(memberDuplicity.familyName);
+					this.table.data[key].firstName.push(memberDuplicity.givenName);
 
 					if (Object.hasOwn(memberDuplicity, "reasons")) {
 						Object.values(memberDuplicity.reasons).forEach((reason) => {
