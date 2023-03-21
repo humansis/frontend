@@ -24,6 +24,45 @@
 			</div>
 		</template>
 
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicitiesRecords'">
+			<div
+				v-for="(item, index) in data.row[column.field]"
+				:key="`array-text-break-${index}`"
+				:class="{ 'mb-4': isMembersLastRecord(item) }"
+			>
+				<b-tag
+					v-if="item === 'hasNoDuplicityDifferences'"
+					type="is-light"
+				>
+					{{ $t('No Difference') }}
+				</b-tag>
+
+				<span
+					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
+					:class="{ 'has-text-weight-bold': column.boldText }"
+				>
+					{{ item }}
+				</span>
+			</div>
+		</template>
+
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicities'">
+			<div
+				v-for="(item, index) in  data.row[column.field]"
+				:key="`array-text-break-${index}`"
+				:class="{
+					'has-text-weight-bold': column.boldText,
+					'mb-4': isMembersLastRecord(item),
+				}"
+			>
+				<span v-if="!isMembersLastRecord(item)">
+					{{ item }}
+				</span>
+			</div>
+		</template>
+
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
 			<router-link
@@ -222,6 +261,10 @@ export default {
 
 		getTagTypeByItem(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
+		},
+
+		isMembersLastRecord(item) {
+			return item === "memberDuplicitiesLastItem";
 		},
 
 		normalizeText,

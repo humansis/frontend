@@ -37,6 +37,7 @@ export const generateColumns = ((visibleColumns) => {
 			visible: column.visible,
 			customSort: column.customSort,
 			customTags: column.customTags,
+			boldText: column.bold,
 		});
 	});
 	return preparedColumns;
