@@ -70,6 +70,9 @@
 									v-model="phone.prefix"
 									searchable
 									label="value"
+									:select-label="$t('Press enter to select')"
+									:selected-label="$t('Selected')"
+									:deselect-label="$t('Press enter to remove')"
 									track-by="code"
 									:options="options.phonePrefixes"
 									:placeholder="$t('Click to select')"

@@ -8,6 +8,9 @@
 						v-model="selectedFiltersOptions[name]"
 						searchable
 						multiple
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						:placeholder="filter.placeholder"
 						:options="filter.data"
 						@input="filterChanged"

@@ -77,6 +77,9 @@
 					<MultiSelect
 						v-model="scoringType"
 						:placeholder="$t('Click to select')"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						label="name"
 						track-by="id"
 						:options="options.scoringTypes"

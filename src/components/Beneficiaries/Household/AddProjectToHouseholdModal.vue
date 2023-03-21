@@ -14,6 +14,9 @@
 					v-model="selectedProject"
 					searchable
 					label="name"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					class="is-relative"
 					:placeholder="$t('Click to select')"

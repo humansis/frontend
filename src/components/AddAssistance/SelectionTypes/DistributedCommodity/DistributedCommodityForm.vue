@@ -10,6 +10,9 @@
 				<MultiSelect
 					v-model="formModel.modality"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					label="value"
 					track-by="code"
 					:options="options.modalities"
@@ -33,6 +36,9 @@
 					label="value"
 					track-by="code"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:options="options.types"
 					:loading="loading.types"
 					searchable
@@ -66,6 +72,9 @@
 					label="value"
 					track-by="code"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:options="options.division"
 					:loading="loading.division"
 					searchable
@@ -85,6 +94,9 @@
 				<MultiSelect
 					v-model="formModel.currency"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					label="value"
 					track-by="value"
 					:options="options.currencies"

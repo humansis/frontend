@@ -51,6 +51,9 @@
 					track-by="code"
 					:placeholder="$t('N/A')"
 					:disabled="isAssistanceValidated"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:options="options.rounds"
 					@input="valuesForAssistanceName"
 				>

@@ -10,6 +10,9 @@
 					v-model="formModel.projectId"
 					searchable
 					label="name"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled || isEditing"
@@ -87,6 +90,9 @@
 					v-model="formModel.currency"
 					searchable
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="value"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"

@@ -83,6 +83,7 @@ export default {
 				title,
 				message: this.message || `${message}?`,
 				confirmText: this.$t("Delete"),
+				cancelText: this.$t("Cancel"),
 				type: "is-danger",
 				hasIcon: true,
 				onConfirm: () => {
