@@ -239,9 +239,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.filters = {};
-			this.$refs.vendorsFilter.resetFilters();
-			this.$refs.table.onResetSearch();
+			this.resetSearch("table", "vendorsFilter");
 		},
 
 		resetTableSort() {

@@ -261,8 +261,12 @@ export default {
 			this.$emit("pageChanged");
 		},
 
-		onResetSearch(resetAllFilters = true) {
-			this.$refs.search.clearSearch(resetAllFilters);
+		onResetSearch() {
+			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
 		},
 
 		onResetSort() {

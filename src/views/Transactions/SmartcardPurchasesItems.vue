@@ -241,9 +241,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.filters = {};
-			this.$refs.purchasesFilter.resetFilters();
-			this.$refs.table.onResetSearch();
+			this.resetSearch("table", "purchasesFilter");
 		},
 
 		resetTableSort() {

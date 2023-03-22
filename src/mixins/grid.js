@@ -79,6 +79,21 @@ export default {
 			}
 		},
 
+		resetSearch(tableRef, filtersRef) {
+			const searchValue = this.$refs[tableRef].searchValue();
+
+			if (Object.keys(this.filters).length) {
+				this.filters = {};
+				this.$refs[filtersRef].resetFilters();
+			}
+
+			if (searchValue) {
+				this.$refs[tableRef].onResetSearch();
+			} else {
+				this.fetchData();
+			}
+		},
+
 		reload() {
 			this.show = false;
 			this.show = true;
