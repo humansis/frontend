@@ -375,7 +375,7 @@ export default {
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
-				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
+				this.table.data[key].round = roundIsNaN ? this.$t("N/A") : item.round;
 				this.table.data[key].status = this.$t(normalizeText(item.state.code));
 				this.table.data[key].reached = this.reachedTextFormat(item);
 				this.table.data[key].progress = this.assistanceProgress(item);
@@ -416,7 +416,7 @@ export default {
 
 				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
-					? dateExpiration : "N/A";
+					? dateExpiration : this.$t("N/A");
 
 				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
@@ -465,7 +465,7 @@ export default {
 		},
 
 		assistanceProgress(data) {
-			return (data.state.value === "New" && "N/A")
+			return (data.state.value === "New" && this.$t("N/A"))
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 

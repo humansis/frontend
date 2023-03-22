@@ -12,7 +12,7 @@
 				close-button
 				class="modal-card"
 				:formModel="languageModel"
-				:submit-button-label="'Add'"
+				:submit-button-label="$t('Add')"
 				:form-disabled="languageModal.isDetail"
 				@formSubmitted="submitLanguageForm"
 				@formClosed="closeLanguageModal"
@@ -24,7 +24,7 @@
 			icon-left="plus"
 			@click="addNewLanguage"
 		>
-			Add
+			{{ $t('Add') }}
 		</b-button>
 		<LanguagesList
 			ref="languagesList"
@@ -68,9 +68,9 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.languageModal.isDetail) {
-				result = "Detail of Language";
+				result = this.$t("Detail of Language");
 			} else {
-				result = "Add New Language";
+				result = this.$t("Add New Language");
 			}
 			return result;
 		},
@@ -140,12 +140,12 @@ export default {
 			await LanguagesService.createLanguage(languageBody)
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Language Successfully Added", "is-success");
+						Toast(this.$t("Language Successfully Added"), "is-success");
 						this.$refs.languagesList.fetchData();
 						this.closeLanguageModal();
 					}
 				}).catch((e) => {
-					Toast(`Language ${e}`, "is-danger");
+					Toast(`${this.$t("Language")} ${e}`, "is-danger");
 					this.languageModal.isWaiting = false;
 				});
 		},

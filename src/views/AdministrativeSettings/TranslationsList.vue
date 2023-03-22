@@ -43,7 +43,7 @@
 					icon-left="plus"
 					@click="addTranslation"
 				>
-					Add Translation
+					{{ $t('Add Translation') }}
 				</b-button>
 			</template>
 		</Table>
@@ -54,7 +54,7 @@
 				icon-left="save"
 				@click="submit"
 			>
-				Save
+				{{ $t('Save') }}
 			</b-button>
 		</div>
 	</div>
@@ -119,7 +119,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`Translations ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 		},
 
@@ -128,11 +128,11 @@ export default {
 			await TranslationService.saveTranslation()
 				.then((response) => {
 					if (response.status === 200) {
-						Toast("Translation successfully saved", "is-success");
+						Toast(this.$t("Translation successfully saved"), "is-success");
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`Translations ${e}`, "is-danger");
+					Toast(`${this.$t("Translations")} ${e}`, "is-danger");
 				});
 		},
 

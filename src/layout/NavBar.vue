@@ -15,7 +15,7 @@
 				<b-tooltip
 					multilined
 					position="is-bottom"
-					:label="tooltip.label"
+					:label= "$t(tooltip.label)"
 					:active="tooltip.active"
 				>
 					<a href="https://www.humansis.org/knowledge-base/" target="_blank">
@@ -35,7 +35,7 @@
 					role="button"
 				>
 					<b-icon icon="globe-africa" size="is-medium" />
-					<span class="country-name has-text-centered">{{ country.iso3 }}</span>
+					<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
 				</a>
 
 				<b-dropdown-item

@@ -26,7 +26,7 @@ const routes = [
 			store.dispatch("logoutUser");
 
 			if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
-				Notification("You need to login to continue", "is-warning");
+				Notification(i18n.t("You need to login to continue"), "is-warning");
 				singleNotification = false;
 			}
 
@@ -86,7 +86,7 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Home"),
-					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
+					description: i18n.t("This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones."),
 				},
 			},
 			{
@@ -100,7 +100,7 @@ const routes = [
 						meta: {
 							permissions: [],
 							breadcrumb: () => i18n.t("Projects"),
-							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
+							description: i18n.t("This page is where you can see all the country's projects (only thoses that you have the right to see)."),
 						},
 					},
 					{
@@ -116,7 +116,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
 								meta: {
 									permissions: [],
-									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
+									description: i18n.t("This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions."),
 								},
 							},
 							{
@@ -146,7 +146,7 @@ const routes = [
 								meta: {
 									permissions: ["addDistribution"],
 									breadcrumb: () => i18n.t("Add Assistance"),
-									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
+									description: i18n.t("This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed."),
 									parent: "Assistance",
 								},
 							},
@@ -210,7 +210,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
 									permissions: [],
-									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
+									description: i18n.t("This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list."),
 								},
 							},
 							{
@@ -220,7 +220,7 @@ const routes = [
 								meta: {
 									permissions: ["addBeneficiary"],
 									breadcrumb: () => i18n.t("Add Household"),
-									description: "This page is a form to add a new household to the platform.",
+									description: i18n.t("This page is a form to add a new household to the platform."),
 								},
 							},
 							{
@@ -285,7 +285,7 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Reports"),
-					description: "This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances",
+					description: i18n.t("This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances"),
 				},
 			},
 			{
@@ -295,7 +295,7 @@ const routes = [
 				meta: {
 					permissions: ["viewVouchers"],
 					breadcrumb: () => i18n.t("Vouchers"),
-					description: "This page is where you can create, edit, assign and print vouchers booklets",
+					description: i18n.t("This page is where you can create, edit, assign and print vouchers booklets"),
 				},
 			},
 			{
@@ -310,7 +310,7 @@ const routes = [
 						meta: {
 							permissions: ["viewProducts"],
 							breadcrumb: () => i18n.t("Products"),
-							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+							description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),
 						},
 					},
 					{
@@ -320,7 +320,7 @@ const routes = [
 						meta: {
 							permissions: ["countrySettings"],
 							breadcrumb: () => i18n.t("Country specifics"),
-							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+							description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),
 						},
 					},
 				],
@@ -332,7 +332,7 @@ const routes = [
 				meta: {
 					permissions: ["adminSettings"],
 					breadcrumb: () => i18n.t("Administrative Settings"),
-					description: "This page is where you can manage users, donors and your organization's specifics",
+					description: i18n.t("This page is where you can manage users, donors and your organization's specifics"),
 				},
 			},
 			{
@@ -384,7 +384,7 @@ const routes = [
 				meta: {
 					permissions: [],
 					breadcrumb: () => i18n.t("Profile"),
-					description: "This page is where you can change your password",
+					description: i18n.t("This page is where you can change your password"),
 				},
 			},
 		],

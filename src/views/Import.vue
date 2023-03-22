@@ -378,7 +378,7 @@ export default {
 				.then(({ status, message }) => {
 					if (status === 202) {
 						if (state === consts.STATE.CANCELED) {
-							Toast("Import Canceled", "is-success");
+							Toast(this.$t("Import Canceled"), "is-success");
 							this.changeTab(3);
 						}
 
