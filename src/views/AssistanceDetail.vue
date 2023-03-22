@@ -83,7 +83,7 @@
 					icon-right="check"
 					@click="closeAssistance"
 				>
-					{{ $t('Close Assistance') }}
+					{{ $t('Close and Approve') }}
 				</b-button>
 				<b-button
 					v-if="setAtDistributedButtonVisible
