@@ -101,5 +101,6 @@ export default {
 		countrySettings: false,
 		addEditUsers: false,
 		adminSettings: false,
+		moveAssistance: false,
 	},
 };

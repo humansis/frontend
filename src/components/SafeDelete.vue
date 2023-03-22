@@ -1,5 +1,10 @@
 <template>
-	<b-tooltip :label="tooltip" :active="isActive" type="is-danger">
+	<b-tooltip
+		v-if="componentType === 'Button'"
+		:label="tooltip"
+		:active="isActive"
+		type="is-danger"
+	>
 		<b-button
 			type="is-danger"
 			size="is-small"
@@ -9,6 +14,16 @@
 			<b-icon :icon="icon" />
 		</b-button>
 	</b-tooltip>
+
+	<b-dropdown-item
+		v-else-if="componentType === 'DropDownItem'"
+		@click="confirmDelete"
+		:disabled="disabled"
+	>
+		<b-icon :icon="icon" :type="iconType" />
+
+		{{ name }}
+	</b-dropdown-item>
 </template>
 
 <script>
@@ -31,6 +46,18 @@ export default {
 		message: {
 			type: String,
 			default: "",
+		},
+		componentType: {
+			type: String,
+			default: "Button",
+		},
+		name: {
+			type: String,
+			default: "",
+		},
+		iconType: {
+			type: String,
+			default: "is-danger",
 		},
 	},
 

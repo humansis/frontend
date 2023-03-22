@@ -53,6 +53,11 @@ export default {
 			this.table.data.splice(index, 1);
 		},
 
+		assistanceMove(id) {
+			const entity = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowMove", entity);
+		},
+
 		showDetailWithId(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			this.showDetail(entity);

@@ -10,7 +10,7 @@ async function getErrorsFromResponse(data) {
 
 	if (data.errors && data.errors.length) {
 		data.errors.forEach((error) => {
-			errors += error.message;
+			errors += `${error.message} `;
 		});
 	} else if (data.errors?.message) {
 		errors = data.errors.message;

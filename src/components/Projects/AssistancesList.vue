@@ -93,22 +93,40 @@
 						:tooltip="$t('Details')"
 						@click="showDetailWithId(props.row.id)"
 					/>
-					<SafeDelete
-						:disabled="!props.row.deletable || !userCan.deleteDistribution"
-						icon="trash"
-						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
-						:entity="$t('Assistance')"
-						:tooltip="$t('Delete')"
-						:id="props.row.id"
-						@submitted="$emit('onRemove', $event)"
-					/>
-					<ActionButton
-						v-if="userCan.editDistribution"
-						icon="copy"
-						type="is-dark"
-						:tooltip="$t('Duplicate')"
-						@click="duplicate(props.row.id)"
-					/>
+					<b-dropdown
+						class="is-pulled-right has-text-left"
+						position="is-bottom-left"
+					>
+						<template #trigger>
+							<b-icon icon="ellipsis-h" />
+						</template>
+						<b-dropdown-item
+							v-if="userCan.editDistribution"
+							@click="duplicate(props.row.id)"
+						>
+							<b-icon icon="copy" />
+
+							{{ $t("Duplicate") }}
+						</b-dropdown-item>
+						<b-dropdown-item
+							@click="assistanceMove(props.row.id)"
+							:disabled="props.row.validated || !userCan.moveAssistance"
+						>
+							<b-icon icon="share" />
+
+							{{ $t("Move") }}
+						</b-dropdown-item>
+						<SafeDelete
+							:disabled="!props.row.deletable || !userCan.deleteDistribution"
+							componentType="DropDownItem"
+							:name="$t('Delete')"
+							icon="trash"
+							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
+							:entity="$t('Assistance')"
+							:id="props.row.id"
+							@submitted="$emit('onRemove', $event)"
+						/>
+					</b-dropdown>
 				</div>
 			</b-table-column>
 			<template v-if="!upcoming" #export>
@@ -203,7 +221,7 @@ export default {
 		},
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [permissions, grid, baseHelper, permissions],
 
 	data() {
 		return {
