@@ -113,7 +113,7 @@
 						</b-dropdown-item>
 						<b-dropdown-item
 							@click="assistanceMove(props.row.id)"
-							:disabled="props.row.validated"
+							:disabled="props.row.validated || !userCan.moveAssistance"
 						>
 							<b-icon icon="share" />
 
