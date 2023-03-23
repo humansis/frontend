@@ -95,10 +95,13 @@
 					/>
 					<b-dropdown
 						class="is-pulled-right has-text-left"
-						position="is-bottom-left"
+						:position="isCheckingLastTwo(props.index) ? 'is-top-left' : 'is-bottom-left'"
 					>
 						<template #trigger>
-							<b-icon icon="ellipsis-h" />
+							<b-button
+								size="is-small"
+								icon-left="ellipsis-h"
+							/>
 						</template>
 						<b-dropdown-item
 							v-if="userCan.editDistribution"
@@ -110,7 +113,7 @@
 						</b-dropdown-item>
 						<b-dropdown-item
 							@click="assistanceMove(props.row.id)"
-							:disabled="props.row.validated || !userCan.moveAssistance"
+							:disabled="props.row.validated"
 						>
 							<b-icon icon="share" />
 
@@ -516,6 +519,17 @@ export default {
 
 		duplicate(id) {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
+		},
+
+		isCheckingLastTwo(id) {
+			const value = this.perPage <= this.table.total ? this.perPage : this.table.total;
+
+			for (let i = 1; i <= 3; i++) {
+				if (id === (value - i)) {
+					return true;
+				}
+			}
+			return false;
 		},
 
 		async exportAssistances(type, format) {

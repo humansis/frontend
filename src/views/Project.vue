@@ -170,7 +170,7 @@ export default {
 					}
 
 					if (response.status === 400) {
-						Notification(response.message
+						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
 							|| `${this.$t("Error code 400")}`, "is-warning");
 					}
 				}).catch((e) => {
