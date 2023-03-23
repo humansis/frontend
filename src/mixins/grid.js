@@ -79,7 +79,7 @@ export default {
 			}
 		},
 
-		resetSearch(tableRef, filtersRef) {
+		resetSearch({ tableRef, filtersRef }) {
 			const searchValue = this.$refs[tableRef].searchValue();
 
 			if (Object.keys(this.filters).length) {

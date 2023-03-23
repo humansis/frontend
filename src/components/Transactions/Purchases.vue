@@ -224,7 +224,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.resetSearch("table", "purchasesFilter");
+			this.resetSearch({ tableRef: "table", filtersRef: "purchasesFilter" });
 		},
 
 		resetTableSort() {

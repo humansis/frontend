@@ -271,7 +271,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.resetSearch("table", "importFilter");
+			this.resetSearch({ tableRef: "table", filtersRef: "importFilter" });
 		},
 
 		resetTableSort() {
