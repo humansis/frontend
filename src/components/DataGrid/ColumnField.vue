@@ -67,7 +67,10 @@
 		<template v-if="column.type === 'link'">
 			<router-link
 				class="table-link"
-				:to="getLink(data.row[column.field])" target="_blank"
+				:to="{
+					name: getRouteName(data.row[column.field]),
+					params: getParams(data.row[column.field]),
+				}"
 			>
 				{{ getLinkName(data.row[column.field]) }}
 			</router-link>
@@ -251,8 +254,22 @@ export default {
 			return !!data.remoteDistributionAllowed;
 		},
 
-		getLink(field) {
-			return field?.link || "";
+		getParams(field) {
+			const paramName = field?.paramName;
+			const paramvalue = field?.id;
+			const finalParam = {};
+
+			if (paramName && paramvalue && paramName.length === paramvalue.length) {
+				paramName.forEach((name, index) => {
+					finalParam[name] = paramvalue[index];
+				});
+				return finalParam;
+			}
+			return finalParam;
+		},
+
+		getRouteName(field) {
+			return field?.routeName || "Home";
 		},
 
 		getLinkName(field) {

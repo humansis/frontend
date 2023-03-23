@@ -33,9 +33,13 @@ export default {
 
 			this.table.data.forEach((item, key) => {
 				if (hasLink) {
+					const project = projects.find(({ id }) => id === item.projectId);
+
 					this.table.data[key].project = {
-						link: `/project/${item.projectId}`,
-						name: projects.find(({ id }) => id === item.projectId)?.name || "",
+						routeName: "Project",
+						name: project.name || "",
+						id: [project.id],
+						paramName: ["projectId"],
 					};
 				} else {
 					this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
@@ -65,8 +69,10 @@ export default {
 				if (beneficiary) {
 					if (hasLink) {
 						this.table.data[key].beneficiaryId = {
-							link: `/beneficiaries/households/summary/${beneficiary.householdId}`,
-							name: item.beneficiaryId,
+							routeName: "HouseholdInformationSummary",
+							name: item.beneficiaryId || "",
+							id: [beneficiary.householdId],
+							paramName: ["householdId"],
 						};
 					}
 
@@ -85,8 +91,10 @@ export default {
 
 				if (hasLink) {
 					this.table.data[key].assistance = {
-						link: `/project/${item.projectId}/assistance/detail/${item.assistanceId}`,
-						name: assistances.find(({ id }) => id === item.assistanceId)?.name || "",
+						routeName: "AssistanceDetail",
+						name: assistance.name || "",
+						id: [assistance.projectId, assistance.id],
+						paramName: ["projectId", "assistanceId"],
 					};
 				} else {
 					this.table.data[key].assistance = assistance.name;
