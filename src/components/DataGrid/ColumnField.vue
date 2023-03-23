@@ -213,7 +213,11 @@ export default {
 		},
 
 		simpleText() {
-			return this.isCellDataString ? this.cellData : "";
+			return this.isCellDataString || this.isCellDataNumber ? this.cellData : "";
+		},
+
+		isCellDataNumber() {
+			return typeof this.cellData === "number";
 		},
 
 		isCellDataString() {

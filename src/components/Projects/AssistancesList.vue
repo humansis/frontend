@@ -421,12 +421,16 @@ export default {
 				this.table.data[key].assistanceID = {
 					routeName: this.getRouteNameToAssistance(this.table.data[key]),
 					name: this.table.data[key].id,
-					paramName: { assistanceId: this.table.data[key].id },
+					paramName: this.upcoming
+						? { assistanceId: this.table.data[key].id, projectId: this.table.data[key].projectId }
+						: { assistanceId: this.table.data[key].id },
 				};
 				this.table.data[key].assistanceName = {
 					routeName: this.getRouteNameToAssistance(this.table.data[key]),
 					name: this.table.data[key].name,
-					paramName: { assistanceId: this.table.data[key].id },
+					paramName: this.upcoming
+						? { assistanceId: this.table.data[key].id, projectId: this.table.data[key].projectId }
+						: { assistanceId: this.table.data[key].id },
 				};
 			});
 		},
