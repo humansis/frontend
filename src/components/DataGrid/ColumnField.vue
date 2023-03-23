@@ -2,7 +2,7 @@
 	<div>
 		<!-- Simple Text -->
 		<template v-if="!column.type || (column.type === 'text')">
-			<span v-html="simpleText" />
+			<div v-html="simpleText" />
 		</template>
 
 		<template v-if="column.type === 'assistancesType'">
@@ -123,9 +123,7 @@
 			<p v-if="cellData.value">
 				{{ cellData.value }}
 			</p>
-			<p v-else>
-				{{ cellData }}
-			</p>
+			<pre v-else>{{ cellData }}</pre>
 		</template>
 
 		<!-- Show Date -->
@@ -167,7 +165,7 @@
 
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
-			<span v-if="cellData.length > 0">
+			<span v-if="cellData.length">
 				<SvgIcon
 					:items="cellData"
 				/>
@@ -215,25 +213,30 @@ export default {
 		},
 
 		simpleText() {
-			return Object.keys(this.cellData).length === 0 ? "" : this.cellData;
+			return this.isCellDataString ? this.cellData : "";
 		},
 
 		isCellDataString() {
-			return typeof this.cellData === "string";
+			return typeof this.cellData === "string" && this.cellData.length;
 		},
 
 		fontFamily() {
-			return this.isCellDataString && this.cellData.length
-				? `font-family: ${this.cellData}, sans-serif` : "";
+			return this.isCellDataString
+				? `font-family: ${this.cellData}, sans-serif;`
+				: "";
 		},
 
 		customValue() {
-			if (typeof this.cellData === "object") {
-				if (this.cellData.value) return this.cellData.value;
+			if (this.cellData.value) {
+				return this.cellData.value;
+			}
 
+			if (typeof this.cellData === "object") {
 				const newDate = this.$moment(this.cellData);
 
-				if (newDate.isValid()) return newDate.format("YYYY-MM-DD hh:mm");
+				if (newDate.isValid()) {
+					return newDate.format("YYYY-MM-DD hh:mm");
+				}
 			}
 
 			return this.cellData;
