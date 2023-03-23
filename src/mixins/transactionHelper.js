@@ -37,9 +37,8 @@ export default {
 
 					this.table.data[key].project = {
 						routeName: "Project",
-						name: project.name || "",
-						id: [project.id],
-						paramName: ["projectId"],
+						name: project.name,
+						paramName: { projectId: project.id },
 					};
 				} else {
 					this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
@@ -70,9 +69,8 @@ export default {
 					if (hasLink) {
 						this.table.data[key].beneficiaryId = {
 							routeName: "HouseholdInformationSummary",
-							name: item.beneficiaryId || "",
-							id: [beneficiary.householdId],
-							paramName: ["householdId"],
+							name: item.beneficiaryId,
+							paramName: { householdId: beneficiary.householdId },
 						};
 					}
 
@@ -92,9 +90,8 @@ export default {
 				if (hasLink) {
 					this.table.data[key].assistance = {
 						routeName: "AssistanceDetail",
-						name: assistance.name || "",
-						id: [assistance.projectId, assistance.id],
-						paramName: ["projectId", "assistanceId"],
+						name: assistance.name,
+						paramName: { projectId: assistance.projectId, assistanceId: assistance.id },
 					};
 				} else {
 					this.table.data[key].assistance = assistance.name;

@@ -255,17 +255,7 @@ export default {
 		},
 
 		getParams(field) {
-			const paramName = field?.paramName;
-			const paramvalue = field?.id;
-			const finalParam = {};
-
-			if (paramName && paramvalue && paramName.length === paramvalue.length) {
-				paramName.forEach((name, index) => {
-					finalParam[name] = paramvalue[index];
-				});
-				return finalParam;
-			}
-			return finalParam;
+			return field?.paramName || {};
 		},
 
 		getRouteName(field) {
