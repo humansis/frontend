@@ -148,7 +148,7 @@ export default {
 		},
 
 		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD");
 		},
 
 		provinceName() {

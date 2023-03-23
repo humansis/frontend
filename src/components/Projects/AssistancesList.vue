@@ -394,7 +394,7 @@ export default {
 				let dateExpiration = "";
 
 				if (item.dateExpiration) {
-					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD hh:mm");
+					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
 				} else {
 					dateExpiration = "No Date";
 				}

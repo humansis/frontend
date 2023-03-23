@@ -539,8 +539,8 @@ export default {
 				...this.assistanceBody,
 				commodities,
 				dateExpiration: this.isDateValid(commodities?.[0]?.dateExpiration)
-					? commodities[0].dateExpiration.toISOString()
-					: new Date(this.project.endDate),
+					? this.$moment(commodities[0].dateExpiration).format("YYYY-MM-DD")
+					: this.$moment(new Date(this.project.endDate)).format("YYYY-MM-DD"),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,
