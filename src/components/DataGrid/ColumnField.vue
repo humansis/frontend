@@ -2,7 +2,7 @@
 	<div>
 		<!-- Simple Text -->
 		<template v-if="!column.type || (column.type === 'text')">
-			<span v-html="data.row[column.field]" />
+			<span v-html="simpleText" />
 		</template>
 
 		<template v-if="column.type === 'assistancesType'">
@@ -188,7 +188,7 @@
 		<!-- Column for product category image/icon  -->
 		<template v-if="column.type === 'productCategoryImage'">
 			<ImageColumn
-				v-if="cellData && cellData.image"
+				v-if="cellData.image"
 				:image="cellData.image"
 			/>
 			<SvgIcon v-else :items="cellData.icon" />
@@ -214,12 +214,17 @@ export default {
 			return this.data.row[this.column.field] || {};
 		},
 
+		simpleText() {
+			return Object.keys(this.cellData).length === 0 ? "" : this.cellData;
+		},
+
 		isCellDataString() {
 			return typeof this.cellData === "string";
 		},
 
 		fontFamily() {
-			return `font-family: ${this.cellData}, sans-serif`;
+			return this.isCellDataString && this.cellData.length
+				? `font-family: ${this.cellData}, sans-serif` : "";
 		},
 
 		customValue() {
