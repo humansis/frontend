@@ -6,7 +6,7 @@
 	>
 		<div ref="container" class="aside-container">
 			<div class="image">
-				<router-link to="/">
+				<router-link :to="{ name: 'Home' }">
 					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
 				</router-link>
 			</div>

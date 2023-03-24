@@ -418,13 +418,21 @@ export default {
 
 		prepareRowClickForTable() {
 			this.table.data.forEach((item, key) => {
+				const { id, projectId, name } = this.table.data[key];
+				const routeParams = {
+					assistanceId: id,
+					...(this.upcoming && { projectId }),
+				};
+
 				this.table.data[key].assistanceID = {
-					link: this.getUrlToAssistance(this.table.data[key]),
-					name: this.table.data[key].id,
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name: id,
+					routeParams,
 				};
 				this.table.data[key].assistanceName = {
-					link: this.getUrlToAssistance(this.table.data[key]),
-					name: this.table.data[key].name,
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name,
+					routeParams,
 				};
 			});
 		},
@@ -434,11 +442,11 @@ export default {
 				: `${data.reached} / ${data.total}`;
 		},
 
-		getUrlToAssistance(data) {
+		getRouteNameToAssistance(data) {
 			return data.state.value === "Closed"
 				|| data.state.value === "Validated"
-				? `/project/${data.projectId}/assistance/detail/${data.id}`
-				: `/project/${data.projectId}/assistance/${data.id}`;
+				? "AssistanceDetail"
+				: "AssistanceEdit";
 		},
 
 		assistanceProgress(data) {

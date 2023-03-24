@@ -218,7 +218,16 @@ export default {
 					await this.storePermissions(privileges);
 
 					if (countries.length) {
-						this.$router.push(this.$route.query.redirect?.toString() || "/projects");
+						if (this.$route.query.redirect) {
+							this.$router.push(this.$route.query.redirect.toString());
+						} else {
+							this.$router.push({
+								name: "Projects",
+								params: {
+									countryCode: this.country?.iso3 || countries[0].iso3,
+								},
+							});
+						}
 					} else {
 						Notification(`${this.$t("No Countries")}`, "is-warning");
 					}
