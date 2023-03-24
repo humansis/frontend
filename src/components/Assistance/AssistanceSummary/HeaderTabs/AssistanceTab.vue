@@ -144,11 +144,11 @@ export default {
 		},
 
 		dateDistribution() {
-			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD");
 		},
 
 		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD");
 		},
 
 		provinceName() {

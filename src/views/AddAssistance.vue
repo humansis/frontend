@@ -509,7 +509,7 @@ export default {
 				...this.assistanceBody,
 				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
-					? dateOfAssistance.toISOString()
+					? this.$moment(dateOfAssistance).format("YYYY-MM-DD")
 					: this.project?.startDate,
 				target: targetType?.code,
 				type: assistanceType?.code,
@@ -535,12 +535,14 @@ export default {
 		},
 
 		fetchDistributedCommodity(commodities) {
+			const date = this.isDateValid(commodities?.[0]?.dateExpiration)
+				? commodities[0].dateExpiration
+				: new Date(this.project.endDate);
+
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
-				dateExpiration: this.isDateValid(commodities?.[0]?.dateExpiration)
-					? commodities[0].dateExpiration.toISOString()
-					: new Date(this.project.endDate),
+				dateExpiration: this.$moment(date).format("YYYY-MM-DD"),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,

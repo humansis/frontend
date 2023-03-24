@@ -291,7 +291,7 @@ export default {
 
 		formattedDate() {
 			const date = this.table.data[0]?.dateExpiration;
-			return date ? this.$moment(date).format("YYYY-MM-DD hh:mm") : "";
+			return date ? this.$moment(date).format("YYYY-MM-DD") : "";
 		},
 	},
 

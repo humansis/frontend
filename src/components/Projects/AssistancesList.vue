@@ -234,7 +234,7 @@ export default {
 					{ key: "target", sortable: true },
 					{ key: "reached" },
 					{ key: "progress", sortable: true },
-					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
+					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
 					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
@@ -394,7 +394,7 @@ export default {
 				let dateExpiration = "";
 
 				if (item.dateExpiration) {
-					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD hh:mm");
+					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
 				} else {
 					dateExpiration = "No Date";
 				}
