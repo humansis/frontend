@@ -115,9 +115,12 @@ export default {
 
 		async editAssistance({ id, name, dateDistribution, dateExpiration, round }) {
 			const formattedDateDistribution = this.$moment(dateDistribution).format("YYYY-MM-DD");
+			const formattedDateExpiration = dateExpiration
+				? this.$moment(dateExpiration).format("YYYY-MM-DD")
+				: null;
 
 			await AssistancesService.updateAssistance({
-				id, name, formattedDateDistribution, dateExpiration, round,
+				id, name, formattedDateDistribution, formattedDateExpiration, round,
 			})
 				.then((response) => {
 					if (response.status === 200) {

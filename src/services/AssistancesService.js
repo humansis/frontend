@@ -311,14 +311,14 @@ export default {
 		return { data, status };
 	},
 
-	async updateAssistance({ id, name, formattedDateDistribution, dateExpiration, round }) {
+	async updateAssistance({ id, name, formattedDateDistribution, formattedDateExpiration, round }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
 			body: {
 				name,
 				dateDistribution: formattedDateDistribution,
-				...(dateExpiration && { dateExpiration }), // include dateExpiration only when it's defined
+				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
 				round,
 			},
 		});
