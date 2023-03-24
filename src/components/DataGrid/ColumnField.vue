@@ -267,7 +267,7 @@ export default {
 		},
 
 		getParams() {
-			return this.cellData.paramName || {};
+			return this.cellData.routeParams || {};
 		},
 
 		getRouteName() {

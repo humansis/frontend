@@ -418,19 +418,21 @@ export default {
 
 		prepareRowClickForTable() {
 			this.table.data.forEach((item, key) => {
+				const { id, projectId, name } = this.table.data[key];
+				const routeParams = {
+					assistanceId: id,
+					...(this.upcoming && { projectId }),
+				};
+
 				this.table.data[key].assistanceID = {
 					routeName: this.getRouteNameToAssistance(this.table.data[key]),
-					name: this.table.data[key].id,
-					paramName: this.upcoming
-						? { assistanceId: this.table.data[key].id, projectId: this.table.data[key].projectId }
-						: { assistanceId: this.table.data[key].id },
+					name: id,
+					routeParams,
 				};
 				this.table.data[key].assistanceName = {
 					routeName: this.getRouteNameToAssistance(this.table.data[key]),
-					name: this.table.data[key].name,
-					paramName: this.upcoming
-						? { assistanceId: this.table.data[key].id, projectId: this.table.data[key].projectId }
-						: { assistanceId: this.table.data[key].id },
+					name,
+					routeParams,
 				};
 			});
 		},
