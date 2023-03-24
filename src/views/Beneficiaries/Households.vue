@@ -748,7 +748,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.householdsFilter.resetFilters();
+			this.resetSearch({ tableRef: "householdList", filtersRef: "householdsFilter" });
 		},
 
 		resetTableSort() {

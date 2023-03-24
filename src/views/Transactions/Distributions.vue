@@ -236,7 +236,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.distributionFilter.resetFilters();
+			this.resetSearch({ tableRef: "table", filtersRef: "distributionFilter" });
 		},
 
 		resetTableSort() {

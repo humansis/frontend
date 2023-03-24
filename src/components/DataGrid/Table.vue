@@ -9,6 +9,7 @@
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
+								ref="search"
 								:search-phrase="searchPhrase"
 								class="mr-3"
 								@search="onSearch"
@@ -258,6 +259,14 @@ export default {
 		onChangePerPage(value) {
 			this.storePerPage(value);
 			this.$emit("pageChanged");
+		},
+
+		onResetSearch() {
+			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
 		},
 
 		onResetSort() {
