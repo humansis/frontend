@@ -261,6 +261,11 @@ export default {
 			this.influenceDistributionProtocol.round = this.assistance.round !== value
 				&& this.isAssistanceClosed;
 		},
+		"formModel.dateDistribution": function dateDistribution(value) {
+			if (this.isCommoditySmartCard && this.formModel.dateExpiration < value) {
+				this.formModel.dateExpiration = value;
+			}
+		},
 	},
 
 	created() {
