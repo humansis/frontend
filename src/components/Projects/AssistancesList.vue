@@ -95,7 +95,7 @@
 					/>
 					<b-dropdown
 						class="is-pulled-right has-text-left"
-						:position="isCheckingLastTwo(props.index) ? 'is-top-left' : 'is-bottom-left'"
+						:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"
 					>
 						<template #trigger>
 							<b-button
@@ -521,15 +521,15 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		isCheckingLastTwo(id) {
-			const value = this.perPage <= this.table.total ? this.perPage : this.table.total;
+		isOneOfLastThreeRows(rowId) {
+			const countOfDisplayedRows = this.perPage <= this.table.total
+				? this.perPage
+				: this.table.total;
 
-			for (let i = 1; i <= 3; i++) {
-				if (id === (value - i)) {
-					return true;
-				}
-			}
-			return false;
+			return (rowId === countOfDisplayedRows - 1
+				|| rowId === countOfDisplayedRows - 2
+				|| rowId === countOfDisplayedRows - 3
+			);
 		},
 
 		async exportAssistances(type, format) {

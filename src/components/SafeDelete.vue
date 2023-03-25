@@ -16,7 +16,7 @@
 	</b-tooltip>
 
 	<b-dropdown-item
-		v-else-if="componentType === 'DropDownItem'"
+		v-else
 		@click="confirmDelete"
 		:disabled="disabled"
 	>
