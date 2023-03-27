@@ -118,10 +118,6 @@ export default {
 		};
 	},
 
-	created() {
-		this.getListOfProjects();
-	},
-
 	computed: {
 		beneficiariesCount() {
 			return this.project?.numberOfHouseholds || 0;
@@ -132,6 +128,7 @@ export default {
 		onProjectLoaded(project) {
 			this.projectLoaded = true;
 			this.project = project;
+			this.getListOfProjects();
 		},
 
 		closeAssistanceModal() {
@@ -167,6 +164,7 @@ export default {
 				.then((response) => {
 					if (response.status === 202) {
 						Toast(this.$t("Assistance Successfully Moved"), "is-success");
+						this.$refs.assistancesList.fetchData();
 					}
 
 					if (response.status === 400) {
@@ -230,7 +228,7 @@ export default {
 			this.assistance = assistance;
 			this.assistanceMoveModal = {
 				isOpened: true,
-				title: this.$t("Move the Assistance"),
+				title: this.$t(`Move the Assistance ${assistance.name}`),
 			};
 		},
 

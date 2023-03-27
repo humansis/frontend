@@ -269,6 +269,10 @@ export default {
 			return this.$refs.search.value;
 		},
 
+		makeTableOverflow(value) {
+			this.$refs.table.tableWrapperClasses["overflow-visible"] = value;
+		},
+
 		onResetSort() {
 			this.$refs.table.resetMultiSorting();
 			this.$emit("resetSort");

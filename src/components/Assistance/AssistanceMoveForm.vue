@@ -11,7 +11,7 @@
 					searchable
 					label="name"
 					track-by="id"
-					:placeholder="$t('N/A')"
+					:placeholder="$t('Click to select')"
 					:options="projects"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
@@ -43,7 +43,7 @@ export default {
 
 	data() {
 		return {
-			newProject: {},
+			newProject: null,
 		};
 	},
 

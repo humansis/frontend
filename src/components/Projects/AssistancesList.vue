@@ -26,6 +26,7 @@
 			</div>
 		</b-notification>
 		<Table
+			ref="assistanceTable"
 			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
@@ -113,7 +114,7 @@
 						</b-dropdown-item>
 						<b-dropdown-item
 							@click="assistanceMove(props.row.id)"
-							:disabled="props.row.validated || !userCan.moveAssistance"
+							:disabled="isAssistanceMoveEnable(props.row)"
 						>
 							<b-icon icon="share" />
 
@@ -395,6 +396,9 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
+
+			const maxThreeRows = this.table.data.length <= 3;
+			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -530,6 +534,10 @@ export default {
 				|| rowId === countOfDisplayedRows - 2
 				|| rowId === countOfDisplayedRows - 3
 			);
+		},
+
+		isAssistanceMoveEnable(assistance) {
+			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
 		async exportAssistances(type, format) {
