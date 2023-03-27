@@ -230,8 +230,8 @@ export default {
 				target,
 				targetType: projectForm.selectedTargetType === null ? "" : projectForm.selectedTargetType.code,
 				numberOfHouseholds: 0,
-				startDate: startDate.toISOString(),
-				endDate: endDate.toISOString(),
+				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
+				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
 				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};
