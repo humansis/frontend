@@ -34,7 +34,7 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>{{ $t('Number of Records')}}:</td>
+							<td>{{ $t('Number of Households')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
