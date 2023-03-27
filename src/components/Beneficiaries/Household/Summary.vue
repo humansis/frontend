@@ -119,7 +119,7 @@ export default {
 					{ field: "gender", label: this.$t("Gender"), type: "object" },
 					{ field: "dateBirth", label: this.$t("Date of Birth"), type: "date" },
 					{ field: "phone", label: this.$t("Phone") },
-					{ field: "nationalId", label: this.$t("National ID") },
+					{ field: "nationalId", label: this.$t("ID Number") },
 				],
 				total: 0,
 			},
