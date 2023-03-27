@@ -5,7 +5,6 @@
 				<h4 class="title is-4">{{ $t('Current Location') }}</h4>
 				<LocationForm
 					ref="currentLocationForm"
-					is-editing
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"

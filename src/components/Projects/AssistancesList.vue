@@ -79,8 +79,7 @@
 						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Details')"

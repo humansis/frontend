@@ -12,7 +12,7 @@
 				track-by="id"
 				:placeholder="$t('Click to select')"
 				:loading="provincesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm1"
 				:options="options.provinces"
 				:class="validateMultiselect('adm1')"
 				@input="onProvinceSelect"
@@ -35,7 +35,7 @@
 				track-by="id"
 				:placeholder="$t('Click to select')"
 				:loading="districtsLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm2"
 				:options="options.districts"
 				@input="onDistrictSelect"
 			>
@@ -57,13 +57,20 @@
 				track-by="id"
 				:placeholder="$t('Click to select')"
 				:loading="communesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm3"
 				:options="options.communes"
 				@input="onCommuneSelect"
 			>
 				<span slot="noOptions">{{ $t("List is empty")}}</span>
 			</MultiSelect>
 		</b-field>
+
+		<p
+			v-if="influenceDistributionProtocol.subDistrict"
+			class="help is-danger"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
 
 		<b-field>
 			<template #label>
@@ -80,13 +87,20 @@
 				track-by="id"
 				:placeholder="$t('Click to select')"
 				:loading="villagesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm4"
 				:options="options.villages"
 				@input="onVillageSelect"
 			>
 				<span slot="noOptions">{{ $t("List is empty")}}</span>
 			</MultiSelect>
 		</b-field>
+
+		<p
+			v-if="influenceDistributionProtocol.village"
+			class="help is-danger"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
 	</section>
 </template>
 
@@ -108,9 +122,29 @@ export default {
 	props: {
 		formModel: Object,
 		formDisabled: Boolean,
-		isEditing: {
+		disabledAdm: {
+			type: Object,
+			default: () => ({
+				adm1: false,
+				adm2: false,
+				adm3: false,
+				adm4: false,
+			}),
+		},
+		isAssistanceModal: {
 			type: Boolean,
 			default: false,
+		},
+		influenceDistributionProtocol: {
+			type: Object,
+			default: () => ({
+				subDistrict: false,
+				village: false,
+			}),
+		},
+		distributionProtocolMessage: {
+			type: String,
+			default: "",
 		},
 	},
 
@@ -151,8 +185,18 @@ export default {
 
 	async mounted() {
 		await Promise.all([this.fetchProvinces()]);
+
 		if (this.formModel) {
 			await this.mapLocations();
+		}
+
+		if (this.isAssistanceModal) {
+			if (this.formModel.adm2 && !this.formModel.adm3) {
+				await this.fetchCommunes(this.formModel.adm2?.id);
+			} else {
+				await this.fetchCommunes(this.formModel.adm2?.id);
+				await this.fetchVillages(this.formModel.adm3?.id);
+			}
 		}
 	},
 

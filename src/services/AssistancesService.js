@@ -323,15 +323,27 @@ export default {
 		return { status, message };
 	},
 
-	async updateAssistance({ id, name, formattedDateDistribution, formattedDateExpiration, round }) {
+	async updateAssistance(
+		{
+			id,
+			name,
+			formattedDateDistribution,
+			formattedDateExpiration,
+			round,
+			note,
+			locationId,
+		},
+	) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
 			body: {
 				name,
-				dateDistribution: formattedDateDistribution,
+				...(formattedDateDistribution && { dateDistribution: formattedDateDistribution }),
 				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
 				round,
+				note,
+				locationId,
 			},
 		});
 		return { data, status };

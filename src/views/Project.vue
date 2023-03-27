@@ -30,6 +30,7 @@
 				class="modal-card"
 				:project="project"
 				:formModel="assistanceModel"
+				:assistance="assistance"
 				:editing="assistanceModal.isEditing"
 				@formClosed="closeAssistanceModal"
 				@formSubmitted="editAssistance"
@@ -57,7 +58,6 @@
 			:project="project"
 			:project-loaded="projectLoaded"
 			@onRemove="removeAssistance"
-			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
 			@onShowMove="showMove"
 		/>
@@ -94,6 +94,7 @@ export default {
 			projects: [],
 			assistance: {},
 			projectLoaded: false,
+			assistance: {},
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
@@ -113,6 +114,7 @@ export default {
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
 				target: "",
+				note: "",
 				round: null,
 			},
 		};
@@ -176,14 +178,17 @@ export default {
 				});
 		},
 
-		async editAssistance({ id, name, dateDistribution, dateExpiration, round }) {
-			const formattedDateDistribution = this.$moment(dateDistribution).format("YYYY-MM-DD");
+		async editAssistance({ id, name, dateDistribution, dateExpiration, round, note, locationId }) {
+			const formattedDateDistribution = dateDistribution
+				? this.$moment(dateDistribution).format("YYYY-MM-DD")
+				: null;
+
 			const formattedDateExpiration = dateExpiration
 				? this.$moment(dateExpiration).format("YYYY-MM-DD")
 				: null;
 
 			await AssistancesService.updateAssistance({
-				id, name, formattedDateDistribution, formattedDateExpiration, round,
+				id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
 			})
 				.then((response) => {
 					if (response.status === 200) {
@@ -206,17 +211,9 @@ export default {
 			});
 		},
 
-		showDetail(assistance) {
-			this.assistanceModel = this.mapToFormModel(assistance);
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: false,
-				title: this.$t("Details of This Assistance"),
-			};
-		},
-
 		showEdit(assistance) {
 			this.assistanceModel = this.mapToFormModel(assistance);
+			this.assistance = assistance;
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
@@ -254,8 +251,11 @@ export default {
 				name,
 				projectId,
 				target,
+				sector,
+				subsector,
 				type,
 				round,
+				note,
 			},
 		) {
 			return {
@@ -268,12 +268,15 @@ export default {
 				allowedProductCategoryTypes,
 				cashbackLimit,
 				target,
+				sector,
+				subsector,
+				type,
 				id,
 				commodity,
 				commodityIds,
 				name,
 				projectId,
-				type,
+				note,
 				round: {
 					code: (round === "N/A" ? null : round),
 					value: round,
