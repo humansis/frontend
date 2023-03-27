@@ -98,7 +98,7 @@
 				<b-input
 					v-model.trim="formModel.note"
 					type="textarea"
-					:placeholder="$t('Type...')"
+					:placeholder="$t('Type…')"
 				/>
 			</b-field>
 
@@ -242,23 +242,19 @@ export default {
 	},
 
 	watch: {
-		// eslint-disable-next-line func-names
-		"formModel.name": function (value) {
+		"formModel.name": function assistanceName(value) {
 			this.influenceDistributionProtocol.assistanceName = this.assistance.name !== value
 				&& this.isAssistanceClosed;
 		},
-		// eslint-disable-next-line func-names
-		"formModel.adm3.name": function (value) {
+		"formModel.adm3.name": function subDistrictName(value) {
 			this.influenceDistributionProtocol.subDistrict = this.assistance.adm3?.name !== value
 				&& this.isAssistanceClosed;
 		},
-		// eslint-disable-next-line func-names
-		"formModel.adm4.name": function (value) {
+		"formModel.adm4.name": function villageName(value) {
 			this.influenceDistributionProtocol.village = this.assistance.adm4?.name !== value
 				&& this.isAssistanceClosed;
 		},
-		// eslint-disable-next-line func-names
-		"formModel.round.value": function (value) {
+		"formModel.round.value": function roundValue(value) {
 			this.influenceDistributionProtocol.round = this.assistance.round !== value
 				&& this.isAssistanceClosed;
 		},
@@ -327,11 +323,15 @@ export default {
 			const data = {
 				id: this.formModel.id,
 				note: this.formModel.note,
-				...(!this.isAssistanceValidated && { name: this.formModel.name }),
-				...(this.isAssistanceNew && { dateDistribution: this.formModel.dateDistribution }),
-				...(this.isAssistanceNew && { dateExpiration: this.formModel.dateExpiration }),
-				...(!this.isAssistanceValidated && { round: this.formModel.round?.code }),
-				...(!this.isAssistanceValidated && { locationId: this.formModel.locationId }),
+				...(!this.isAssistanceValidated && {
+					name: this.formModel.name,
+					round: this.formModel.round?.code,
+					locationId: this.formModel.locationId,
+				}),
+				...(this.isAssistanceNew && {
+					dateDistribution: this.formModel.dateDistribution,
+					dateExpiration: this.formModel.dateExpiration,
+				}),
 			};
 
 			if (isValid) {

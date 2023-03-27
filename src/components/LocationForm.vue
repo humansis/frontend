@@ -190,12 +190,12 @@ export default {
 			await this.mapLocations();
 		}
 
-		if (this.isAssistanceModal) {
-			if (this.formModel.adm2 && !this.formModel.adm3) {
-				await this.fetchCommunes(this.formModel.adm2?.id);
-			} else {
+		if (this.isAssistanceModal && this.formModel.adm2) {
+			if (this.formModel.adm3) {
 				await this.fetchCommunes(this.formModel.adm2?.id);
 				await this.fetchVillages(this.formModel.adm3?.id);
+			} else {
+				await this.fetchCommunes(this.formModel.adm2?.id);
 			}
 		}
 	},
