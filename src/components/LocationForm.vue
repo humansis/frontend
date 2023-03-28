@@ -191,11 +191,10 @@ export default {
 		}
 
 		if (this.isAssistanceModal && this.formModel.adm2) {
+			await this.fetchCommunes(this.formModel.adm2?.id);
+
 			if (this.formModel.adm3) {
-				await this.fetchCommunes(this.formModel.adm2?.id);
 				await this.fetchVillages(this.formModel.adm3?.id);
-			} else {
-				await this.fetchCommunes(this.formModel.adm2?.id);
 			}
 		}
 	},
