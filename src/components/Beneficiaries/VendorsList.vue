@@ -197,10 +197,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("vendors");
 		this.fetchData();

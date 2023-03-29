@@ -165,10 +165,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("purchases");
 		this.fetchData();

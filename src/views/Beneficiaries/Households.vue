@@ -305,10 +305,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("households");
 		this.fetchData();
@@ -321,7 +317,6 @@ export default {
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			this.setGridFiltersToUrl("households");
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.perPage,
@@ -339,6 +334,7 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Households")} ${e}`, "is-danger");
 			});
+			this.setGridFiltersToUrl("households");
 		},
 
 		async exportHouseholds(type, format) {
