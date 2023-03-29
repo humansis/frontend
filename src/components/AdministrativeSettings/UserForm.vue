@@ -28,6 +28,42 @@
 			</b-field>
 
 			<b-field
+				:label="$t('First name')"
+				:type="validateType('firstName')"
+				:message="validateMsg('firstName')"
+			>
+				<b-input
+					v-model="formModel.firstName"
+					:disabled="formDisabled"
+					@blur="validate('firstName')"
+				/>
+			</b-field>
+
+			<b-field
+				:label="$t('Surname')"
+				:type="validateType('lastName')"
+				:message="validateMsg('lastName')"
+			>
+				<b-input
+					v-model="formModel.lastName"
+					:disabled="formDisabled"
+					@blur="validate('lastName')"
+				/>
+			</b-field>
+
+			<b-field
+				:label="$t('Position')"
+				:type="validateType('position')"
+				:message="validateMsg('position')"
+			>
+				<b-input
+					v-model="formModel.position"
+					:disabled="formDisabled"
+					@blur="validate('position')"
+				/>
+			</b-field>
+
+			<b-field
 				:label="$t('Rights')"
 				:type="validateType('rights')"
 				:message="validateMsg('rights')"
@@ -207,6 +243,9 @@ export default {
 	validations: {
 		formModel: {
 			email: { required, email },
+			firstName: { required },
+			lastName: { required },
+			position: { required },
 			password: {
 				// eslint-disable-next-line func-names
 				required: requiredIf(function () {

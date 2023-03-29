@@ -196,7 +196,7 @@
 			</template>
 			<template #export>
 				<ExportControl
-					v-if="table.data.length"
+					v-if="table.data.length && userCan.exportBeneficiaries"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
 					:is-export-loading="exportControl.loading"
