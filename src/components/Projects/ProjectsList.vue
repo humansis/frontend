@@ -233,7 +233,9 @@ export default {
 		async exportProjects(type, format) {
 			if (type === EXPORT.PROJECTS) {
 				this.exportControl.loading = true;
-				await ProjectService.exportProjects(format)
+				const filters = { ...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }) };
+
+				await ProjectService.exportProjects(format, filters)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });

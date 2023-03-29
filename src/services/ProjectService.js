@@ -1,4 +1,4 @@
-import { download, fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfProjects(page, size, sort, search = null, ids) {
@@ -36,9 +36,10 @@ export default {
 		return { data, status };
 	},
 
-	async exportProjects(format) {
+	async exportProjects(format, filters) {
 		const formatText = format ? `type=${format}` : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
-		return download({ uri: `projects/exports?${formatText}` });
+		return download({ uri: `projects/exports?${formatText + filtersUri}` });
 	},
 };
