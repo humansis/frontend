@@ -307,7 +307,7 @@ export default {
 		},
 
 		scoringType() {
-			return this.assistance.scoringBlueprint || this.defaultScoringType.name;
+			return this.assistance.scoringBlueprint?.name || this.defaultScoringType.name;
 		},
 
 		minimumVulnerabilityScore() {
