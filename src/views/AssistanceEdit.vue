@@ -25,6 +25,8 @@
 					export-button
 					add-button
 					:assistance="assistance"
+					:commodities="commodities"
+					isFetchEnabled
 					@beneficiariesReloaded="reloadOtherTabs"
 					@assistanceUpdated="fetchUpdatedData"
 				/>
@@ -41,6 +43,7 @@
 					export-button
 					:add-button="false"
 					:assistance="assistance"
+					:commodities="commodities"
 					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
@@ -51,6 +54,7 @@
 					:add-button="false"
 					:export-button="false"
 					:assistance="assistance"
+					:commodities="commodities"
 					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
@@ -85,6 +89,7 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
+				:commodities="commodities"
 				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">

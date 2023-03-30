@@ -54,7 +54,7 @@
 		<BeneficiariesList
 			ref="beneficiariesList"
 			export-button
-			is-assistance-detail
+			assistance-detail
 			:add-button="isAddButtonVisible"
 			:assistance="assistance"
 			:project="project"

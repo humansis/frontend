@@ -99,7 +99,7 @@
 				close-button
 				adding-to-assistance
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeAddBeneficiariesByIdsModal"
 			/>
 		</Modal>
@@ -113,7 +113,7 @@
 				close-button
 				deduplication
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
@@ -284,13 +284,24 @@ export default {
 	props: {
 		assistance: Object,
 		project: Object,
-		isAssistanceDetail: Boolean,
 		addButton: Boolean,
 		changeButton: {
 			type: Boolean,
 			default: false,
 		},
 		exportButton: Boolean,
+		commodities: {
+			type: Array,
+			default: () => [],
+		},
+		isFetchEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	components: {
@@ -313,12 +324,12 @@ export default {
 		return {
 			isLoadingList: false,
 			advancedSearchVisible: false,
-			commodities: [],
 			exportControl: {
 				loading: false,
 				location: "assistance",
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			alreadyFetched: false,
 			table: {
 				data: [],
 				columns: [],
@@ -488,7 +499,6 @@ export default {
 	},
 
 	async created() {
-		await this.getAssistanceCommodities();
 		await this.reloadBeneficiariesList(false);
 	},
 
@@ -505,7 +515,11 @@ export default {
 			if (this.assistance) {
 				if (emit) this.$emit("beneficiariesReloaded", this);
 				this.prepareTableColumns();
-				await this.fetchData();
+
+				if ((this.isFetchEnabled && !this.alreadyFetched) || this.assistanceDetail) {
+					this.alreadyFetched = true;
+					await this.fetchData();
+				}
 			}
 		},
 
@@ -518,7 +532,13 @@ export default {
 		},
 
 		addedOrRemovedBeneficiary() {
+			this.alreadyFetched = false;
 			this.$emit("assistanceUpdated");
+			this.reloadBeneficiariesList();
+		},
+
+		fetchDataAfterBeneficiaryChange() {
+			this.alreadyFetched = false;
 			this.reloadBeneficiariesList();
 		},
 
@@ -620,14 +640,14 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					baseColumns = this.isAssistanceDetail
+					baseColumns = this.assistanceDetail
 						? this.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
 			const modality = this.commodities[0]?.modalityType;
 
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
+			if (this.assistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				if (modality === consts.COMMODITY.MOBILE_MONEY) {
 					additionalColumns = [
 						{ key: "phone" },
@@ -737,7 +757,7 @@ export default {
 					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
-			if (this.isAssistanceDetail) {
+			if (this.assistanceDetail) {
 				await this.setAssignedReliefPackages(distributionItems.reliefPackageIds);
 			} else {
 				this.table.progress = 100;

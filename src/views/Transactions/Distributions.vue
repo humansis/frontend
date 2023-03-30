@@ -162,10 +162,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("distributions");
 		this.fetchData();

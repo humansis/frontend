@@ -168,7 +168,7 @@ export default {
 		},
 
 		isExpirationDateLoaded() {
-			return this.isAssistanceLoading || this.isCommodityLoading;
+			return this.isAssistanceLoading;
 		},
 
 	},

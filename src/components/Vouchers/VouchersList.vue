@@ -200,10 +200,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.setGridFilters("vouchers", false);
 		this.fetchData();
