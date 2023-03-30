@@ -209,7 +209,7 @@ export default {
 
 	computed: {
 		cellData() {
-			return this.data.row[this.column.field] || {};
+			return this.data.row[this.column.field] ?? {};
 		},
 
 		simpleText() {
