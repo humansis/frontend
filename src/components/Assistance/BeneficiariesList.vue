@@ -284,7 +284,6 @@ export default {
 	props: {
 		assistance: Object,
 		project: Object,
-		isAssistanceDetail: Boolean,
 		addButton: Boolean,
 		changeButton: {
 			type: Boolean,
@@ -641,14 +640,14 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					baseColumns = this.isAssistanceDetail
+					baseColumns = this.assistanceDetail
 						? this.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
 			const modality = this.commodities[0]?.modalityType;
 
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
+			if (this.assistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				if (modality === consts.COMMODITY.MOBILE_MONEY) {
 					additionalColumns = [
 						{ key: "phone" },
@@ -758,7 +757,7 @@ export default {
 					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
-			if (this.isAssistanceDetail) {
+			if (this.assistanceDetail) {
 				await this.setAssignedReliefPackages(distributionItems.reliefPackageIds);
 			} else {
 				this.table.progress = 100;

@@ -13,16 +13,17 @@ export default {
 			const copiedObject = {};
 
 			Object.entries(data).forEach(([key, value]) => {
-				const canCopy = (typeof value === "object"
-						&& value && Object.keys(value).length !== 0)
-					|| ((typeof value === "number"
-							|| typeof value === "string"
-							|| typeof value === "boolean")
-						&& value);
-
-				if (canCopy) {
-					copiedObject[key] = value;
+				if (!value) {
+					return;
 				}
+
+				if (Object.keys(value).length === 0
+					&& typeof value !== "number"
+					&& typeof value !== "boolean") {
+					return;
+				}
+
+				copiedObject[key] = value;
 			});
 
 			return copiedObject;
@@ -33,14 +34,12 @@ export default {
 				({ country }) => country === this.country.iso3,
 			);
 
-			let query;
+			let query = {};
 
 			if (Object.keys(this.$route.query).length) {
 				query = this.$route.query;
 			} else if (storedFilter) {
 				query = storedFilter.query;
-			} else {
-				query = {};
 			}
 
 			const {
@@ -105,14 +104,14 @@ export default {
 				});
 			}
 
-			const nQuery = this.$route.query;
+			const routeQuery = this.$route.query;
 
 			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
-				updatedGridFilters[entity][filterEntityIndex].query = { ...nQuery };
+				updatedGridFilters[entity][filterEntityIndex].query = { ...routeQuery };
 			} else {
 				updatedGridFilters[entity].push({
 					country: this.country.iso3,
-					query: nQuery,
+					query: routeQuery,
 				});
 			}
 
