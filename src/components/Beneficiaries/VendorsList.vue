@@ -315,7 +315,12 @@ export default {
 		async exportVendors(type, format) {
 			if (type === EXPORT.VENDORS) {
 				this.exportControl.loading = true;
-				await VendorService.exportVendors(format)
+				const filters = {
+					...this.filters,
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+				};
+
+				await VendorService.exportVendors(format, filters)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });
