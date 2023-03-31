@@ -94,7 +94,6 @@ export default {
 			projects: [],
 			assistance: {},
 			projectLoaded: false,
-			assistance: {},
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,

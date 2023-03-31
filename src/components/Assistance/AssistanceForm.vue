@@ -81,7 +81,7 @@
 			</b-field>
 
 			<b-field :label="$t('Subsector')">
-				<b-input v-model="formModel.subsector" disabled />
+				<b-input v-model="subSectorName" disabled />
 			</b-field>
 
 			<b-field :label="$t('Assistance Type')">
@@ -191,6 +191,8 @@ import SvgIcon from "@/components/SvgIcon";
 import consts from "@/utils/assistanceConst";
 import calendarHelper from "@/mixins/calendarHelper";
 import AssistancesService from "@/services/AssistancesService";
+import SectorsService from "@/services/SectorsService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "AssistanceForm",
@@ -213,6 +215,7 @@ export default {
 			},
 			dataForAssistanceName: {},
 			defaultScoringType: AssistancesService.getDefaultScoringType(),
+			subSectorName: "",
 			influenceDistributionProtocol: {
 				assistanceName: false,
 				subDistrict: false,
@@ -262,6 +265,7 @@ export default {
 
 	created() {
 		this.valuesForAssistanceName();
+		this.fetchSubsectors();
 	},
 
 	computed: {
@@ -316,6 +320,20 @@ export default {
 	},
 
 	methods: {
+		async fetchSubsectors() {
+			await SectorsService.getListOfSubSectors(this.formModel.sector)
+				.then(({ data }) => {
+					this.findSubsectorName(data);
+				})
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+				});
+		},
+
+		findSubsectorName(data) {
+			this.subSectorName = data.find(({ code }) => code === this.formModel.subsector).value || "";
+		},
+
 		submitForm() {
 			this.$v.$touch();
 			const isValid = !this.$v.$invalid && this.$refs.assistanceName.isValid();
