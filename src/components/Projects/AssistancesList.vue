@@ -26,6 +26,7 @@
 			</div>
 		</b-notification>
 		<Table
+			ref="assistanceTable"
 			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
@@ -93,22 +94,43 @@
 						:tooltip="$t('Details')"
 						@click="showDetailWithId(props.row.id)"
 					/>
-					<SafeDelete
-						:disabled="!props.row.deletable || !userCan.deleteDistribution"
-						icon="trash"
-						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
-						:entity="$t('Assistance')"
-						:tooltip="$t('Delete')"
-						:id="props.row.id"
-						@submitted="$emit('onRemove', $event)"
-					/>
-					<ActionButton
-						v-if="userCan.editDistribution"
-						icon="copy"
-						type="is-dark"
-						:tooltip="$t('Duplicate')"
-						@click="duplicate(props.row.id)"
-					/>
+					<b-dropdown
+						class="is-pulled-right has-text-left"
+						:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"
+					>
+						<template #trigger>
+							<b-button
+								size="is-small"
+								icon-left="ellipsis-h"
+							/>
+						</template>
+						<b-dropdown-item
+							v-if="userCan.editDistribution"
+							@click="duplicate(props.row.id)"
+						>
+							<b-icon icon="copy" />
+
+							{{ $t("Duplicate") }}
+						</b-dropdown-item>
+						<b-dropdown-item
+							@click="assistanceMove(props.row.id)"
+							:disabled="isAssistanceMoveEnable(props.row)"
+						>
+							<b-icon icon="share" />
+
+							{{ $t("Move") }}
+						</b-dropdown-item>
+						<SafeDelete
+							:disabled="!props.row.deletable || !userCan.deleteDistribution"
+							componentType="DropDownItem"
+							:name="$t('Delete')"
+							icon="trash"
+							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
+							:entity="$t('Assistance')"
+							:id="props.row.id"
+							@submitted="$emit('onRemove', $event)"
+						/>
+					</b-dropdown>
 				</div>
 			</b-table-column>
 			<template v-if="!upcoming" #export>
@@ -203,7 +225,7 @@ export default {
 		},
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [permissions, grid, baseHelper, permissions],
 
 	data() {
 		return {
@@ -374,6 +396,9 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
+
+			const maxThreeRows = this.table.data.length <= 3;
+			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -498,6 +523,21 @@ export default {
 
 		duplicate(id) {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
+		},
+
+		isOneOfLastThreeRows(rowId) {
+			const countOfDisplayedRows = this.perPage <= this.table.total
+				? this.perPage
+				: this.table.total;
+
+			return (rowId === countOfDisplayedRows - 1
+				|| rowId === countOfDisplayedRows - 2
+				|| rowId === countOfDisplayedRows - 3
+			);
+		},
+
+		isAssistanceMoveEnable(assistance) {
+			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
 		async exportAssistances(type, format) {

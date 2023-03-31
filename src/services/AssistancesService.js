@@ -311,6 +311,18 @@ export default {
 		return { data, status };
 	},
 
+	async moveAssistance(assistanceId, originalProjectId, targetProjectId) {
+		const { status, message } = await fetcher({
+			uri: `assistances/${assistanceId}/move`,
+			method: "POST",
+			body: {
+				originalProjectId,
+				targetProjectId,
+			},
+		});
+		return { status, message };
+	},
+
 	async updateAssistance({ id, name, formattedDateDistribution, formattedDateExpiration, round }) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,

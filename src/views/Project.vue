@@ -36,6 +36,21 @@
 			/>
 		</Modal>
 
+		<Modal
+			can-cancel
+			:header="assistanceMoveModal.title"
+			:active="assistanceMoveModal.isOpened"
+			@close="closeAssistanceMoveModal"
+		>
+			<AssistanceMoveForm
+				close-button
+				class="modal-card"
+				:projects="projects"
+				@formClosed="closeAssistanceMoveModal"
+				@formSubmitted="moveAssistance"
+			/>
+		</Modal>
+
 		<AssistancesList
 			ref="assistancesList"
 			:beneficiaries-count="beneficiariesCount"
@@ -44,6 +59,7 @@
 			@onRemove="removeAssistance"
 			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
+			@onShowMove="showMove"
 		/>
 	</div>
 </template>
@@ -52,16 +68,19 @@
 import ProjectSummary from "@/components/Projects/ProjectSummary";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
+import AssistanceMoveForm from "@/components/Assistance/AssistanceMoveForm";
 import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "Project",
 
 	components: {
 		AssistanceForm,
+		AssistanceMoveForm,
 		AssistancesList,
 		ProjectSummary,
 		Modal,
@@ -72,10 +91,16 @@ export default {
 	data() {
 		return {
 			project: null,
+			projects: [],
+			assistance: {},
 			projectLoaded: false,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
+				title: "",
+			},
+			assistanceMoveModal: {
+				isOpened: false,
 				title: "",
 			},
 			assistanceModel: {
@@ -103,14 +128,52 @@ export default {
 		onProjectLoaded(project) {
 			this.projectLoaded = true;
 			this.project = project;
+			this.getListOfProjects();
 		},
 
 		closeAssistanceModal() {
 			this.assistanceModal.isOpened = false;
 		},
 
+		closeAssistanceMoveModal() {
+			this.assistanceMoveModal.isOpened = false;
+		},
+
 		goToAddAssistance() {
-			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
+			this.$router.push({
+				name: "AddAssistance",
+				params: { projectId: this.$route.params.projectId },
+			});
+		},
+
+		async getListOfProjects() {
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.filterProjects(data);
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Projectssfsafs")} ${e}`, "is-danger");
+				});
+		},
+
+		async moveAssistance({ id }) {
+			await AssistancesService.moveAssistance(
+				this.assistance.id,
+				this.project.id,
+				id,
+			)
+				.then((response) => {
+					if (response.status === 202) {
+						Toast(this.$t("Assistance Successfully Moved"), "is-success");
+						this.$refs.assistancesList.fetchData();
+					}
+
+					if (response.status === 400) {
+						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
+							|| `${this.$t("Error code 400")}`, "is-warning");
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				});
 		},
 
 		async editAssistance({ id, name, dateDistribution, dateExpiration, round }) {
@@ -159,6 +222,20 @@ export default {
 				isEditing: true,
 				title: this.$t("Edit Assistance"),
 			};
+		},
+
+		showMove(assistance) {
+			this.assistance = assistance;
+			this.assistanceMoveModal = {
+				isOpened: true,
+				title: this.$t(`Move the Assistance ${assistance.name}`),
+			};
+		},
+
+		filterProjects(data) {
+			this.projects = data.filter((obj) => obj.id !== this.project?.id
+				&& this.$moment(obj.endDate).format("YYYY-MM-DD")
+				>= this.$moment(new Date()).format("YYYY-MM-DD"));
 		},
 
 		mapToFormModel(

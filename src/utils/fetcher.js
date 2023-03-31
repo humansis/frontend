@@ -9,9 +9,7 @@ async function getErrorsFromResponse(data) {
 	let debugs = "";
 
 	if (data.errors && data.errors.length) {
-		data.errors.forEach((error) => {
-			errors += error.message;
-		});
+		errors = data.errors.map((error) => error.message).join(' ');
 	} else if (data.errors?.message) {
 		errors = data.errors.message;
 	} else {
