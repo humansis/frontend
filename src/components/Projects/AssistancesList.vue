@@ -79,20 +79,11 @@
 						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Details')"
 						@click="showEdit(props.row.id)"
-					/>
-					<ActionButton
-						v-if="props.row.validated
-							&& userCan.editDistribution"
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Details')"
-						@click="showDetailWithId(props.row.id)"
 					/>
 					<b-dropdown
 						class="is-pulled-right has-text-left"

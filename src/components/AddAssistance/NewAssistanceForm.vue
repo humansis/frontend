@@ -181,7 +181,7 @@
 				<b-input
 					v-model.trim="formModel.note"
 					type="textarea"
-					:placeholder="$t('Type...')"
+					:placeholder="$t('Type…')"
 				/>
 			</b-field>
 		</div>
