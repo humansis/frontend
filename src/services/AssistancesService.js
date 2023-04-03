@@ -2,7 +2,7 @@ import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	getDefaultScoringType() {
-		return { archived: false, name: "Default", id: null };
+		return { enabled: true, name: "Default", id: null, identifier: "Default" };
 	},
 
 	async getListOfAssistances(page, size, sort, upcoming, search = null, filter = null) {
@@ -97,11 +97,67 @@ export default {
 		return data;
 	},
 
-	async getScoringTypes() {
-		const { data } = await fetcher({
-			uri: "scoring-blueprints?filter[archived]=false",
+	async getScoringTypes(page, size, filter = null) {
+		const filtersUri = filter ? filtersToUri(filter) : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `scoring-blueprints?${pageText + sizeText + filtersUri}`,
 		});
-		return data;
+		return { data, totalCount };
+	},
+
+	async createScoring(body) {
+		return new Promise((resolve, reject) => {
+			const { name, note, dropFiles } = body;
+
+			const fileBlob = new Blob([dropFiles[0]], { type: dropFiles[0].type });
+			const reader = new FileReader();
+
+			reader.readAsDataURL(fileBlob);
+			reader.onload = () => {
+				const base64Format = reader.result?.match(/data:.*?base64,(.*)$/)?.[1];
+
+				fetcher({
+					uri: `scoring-blueprints`,
+					method: "POST",
+					body: {
+						name,
+						note,
+						content: base64Format,
+					},
+				}).then(({ status, message }) => {
+					resolve({ status, message });
+				}).catch((error) => {
+					reject(error);
+				});
+			};
+			reader.onerror = (error) => reject(error);
+		});
+	},
+
+	async updateScoring({ id, enabled }) {
+		const { data, status } = await fetcher({
+			uri: `scoring-blueprints/${id}`,
+			method: "PATCH",
+			body: {
+				enabled,
+			},
+		});
+		return { data, status };
+	},
+
+	async removeScoring(id) {
+		const { data, status } = await fetcher({
+			uri: `scoring-blueprints/${id}`,
+			method: "DELETE",
+		});
+		return { data, status };
+	},
+
+	async downloadScoring(scoringId) {
+		return download({ uri: `scoring-blueprints/${scoringId}/content` });
 	},
 
 	async createAssistance(body) {

@@ -99,7 +99,9 @@ export default {
 		},
 
 		assistanceScoringType() {
-			return this.assistance?.scoringBlueprint?.name;
+			return this.assistance?.scoringBlueprint?.name
+				? `${this.assistance?.scoringBlueprint?.name} (ID: ${this.assistance?.scoringBlueprint?.id})`
+				: null;
 		},
 
 		beneficiariesCount() {

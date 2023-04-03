@@ -1,19 +1,13 @@
 <template>
 	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Country Specific Options') }}</h1>
-			</div>
-
-			<div class="level-right">
-				<b-button
-					type="is-primary"
-					icon-left="plus"
-					@click="addNewCountrySpecificOption"
-				>
-					{{ $t('Add') }}
-				</b-button>
-			</div>
+		<div class="add-config-btn">
+			<b-button
+				type="is-primary"
+				icon-left="plus"
+				@click="addNewCountrySpecificOption"
+			>
+				{{ $t('Add') }}
+			</b-button>
 		</div>
 
 		<Modal
@@ -45,8 +39,8 @@
 
 <script>
 import { mapState } from "vuex";
-import CountrySpecificOptionForm from "@/components/CountrySettings/CountrySpecificOptionForm";
-import CountrySpecificOptionsList from "@/components/CountrySettings/CountrySpecificOptionsList";
+import CountrySpecificOptionForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
+import CountrySpecificOptionsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Modal";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Toast, Notification } from "@/utils/UI";

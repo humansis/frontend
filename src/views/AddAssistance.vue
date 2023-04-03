@@ -383,15 +383,23 @@ export default {
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
-				: this.scoringTypes.filter(({ archived }) => !archived)
+				: this.scoringTypes.filter(({ enabled }) => enabled)
 					.find(({ id }) => id === assistance.scoringBlueprint?.id);
 
 			if (assistance.scoringBlueprint && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
-			this.$refs.selectionCriteria.scoringType = scoringType || null;
-			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+			if (assistance.scoringBlueprint && scoringType) {
+				this.$refs.selectionCriteria.scoringType = {
+					...scoringType,
+					identifier: `${scoringType.name} (ID: ${scoringType.id})`,
+				};
+				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+			} else {
+				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.minimumSelectionScore = null;
+			}
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];

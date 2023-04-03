@@ -42,8 +42,8 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/CountrySettings/Products/ProductsList";
-import ProductForm from "@/components/CountrySettings/Products/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
+import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Notification, Toast } from "@/utils/UI";

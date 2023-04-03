@@ -76,6 +76,14 @@ export default {
 			this.$emit("onRemove", id);
 		},
 
+		download(scoring) {
+			this.$emit("onDownload", scoring);
+		},
+
+		statusChange(id, enabled) {
+			this.$emit("onStatusChange", { id, enabled });
+		},
+
 		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
