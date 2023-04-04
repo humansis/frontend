@@ -56,6 +56,7 @@
 			export-button
 			assistance-detail
 			:add-button="isAddButtonVisible"
+			:commodities="commodities"
 			:assistance="assistance"
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
