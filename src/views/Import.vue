@@ -339,6 +339,7 @@ export default {
 				title: this.$t("Cancel Import"),
 				message: this.$t("Are you sure you want to cancel this import?"),
 				confirmText: this.$t("Confirm"),
+				cancelText: this.$t("Cancel"),
 				type: "is-danger",
 				hasIcon: true,
 				onConfirm: () => {
@@ -358,6 +359,7 @@ export default {
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
 					confirmText: this.$t("Confirm"),
+					cancelText: this.$t("Cancel"),
 					type: "is-warning",
 					hasIcon: true,
 					onConfirm: () => {
@@ -412,6 +414,7 @@ export default {
 					title: this.$t("Continue"),
 					message: this.$t("Are you sure you want to ignore errors and proceed?"),
 					confirmText: this.$t("Confirm"),
+					cancelText: this.$t("Cancel"),
 					type: "is-warning",
 					hasIcon: true,
 					onConfirm: () => {

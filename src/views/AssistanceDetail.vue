@@ -435,6 +435,7 @@ export default {
 				title: this.$t("Unvalidate Assistance"),
 				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
 				confirmText: this.$t("Confirm"),
+				cancelText: this.$t("Cancel"),
 				type: "is-primary",
 				onConfirm: async () => {
 					const { assistanceId, projectId } = this.$route.params;

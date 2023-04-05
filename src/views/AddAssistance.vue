@@ -245,6 +245,7 @@ export default {
 						title: this.$t("Date of Assistance"),
 						message: this.$t("You picked date from the past. Is it ok?"),
 						confirmText: this.$t("Yes and Continue"),
+						cancelText: this.$t("Cancel"),
 						type: "is-warning",
 						hasIcon: true,
 						onConfirm: () => {

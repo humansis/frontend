@@ -9,7 +9,7 @@
 			class="modal-card-body overflow-visible"
 			:style="{ 'min-height': selectOpened ? `${options.length * 50}px` : '100px' }"
 		>
-			<b-field label="Project">
+			<b-field :label="$t('Project')">
 				<MultiSelect
 					v-model="selectedProject"
 					searchable

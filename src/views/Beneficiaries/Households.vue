@@ -679,6 +679,7 @@ export default {
 				title: this.$t("Deleting"),
 				message: this.$t("Are you sure you want to delete this Households?"),
 				confirmText: this.$t("Delete"),
+				cancelText: this.$t("Cancel"),
 				type: "is-danger",
 				hasIcon: true,
 				onConfirm: () => {
