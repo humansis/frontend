@@ -29,6 +29,7 @@
 					isFetchEnabled
 					@beneficiariesReloaded="reloadOtherTabs"
 					@assistanceUpdated="fetchUpdatedData"
+					@beneficiariesTableUpdated="updateBeneficiariesTable"
 				/>
 			</b-step-item>
 
@@ -42,6 +43,7 @@
 					changeButton
 					export-button
 					:add-button="false"
+					:beneficiaries-data="beneficiariesData"
 					:assistance="assistance"
 					:commodities="commodities"
 					@beneficiariesReloaded="reloadOtherTabs"
@@ -54,6 +56,7 @@
 					:add-button="false"
 					:export-button="false"
 					:assistance="assistance"
+					:beneficiaries-data="beneficiariesData"
 					:commodities="commodities"
 					@beneficiariesReloaded="reloadOtherTabs"
 				/>
@@ -134,6 +137,7 @@ export default {
 			statistics: null,
 			isStatisticsLoading: false,
 			isAssistanceLoading: false,
+			beneficiariesData: {},
 			isProjectLoading: false,
 			commodities: [],
 			activeStep: 0,
@@ -204,6 +208,10 @@ export default {
 			}).finally(() => {
 				this.isStatisticsLoading = false;
 			});
+		},
+
+		updateBeneficiariesTable(beneficiariesTable) {
+			this.beneficiariesData = beneficiariesTable;
 		},
 
 		async validateAssistance() {
