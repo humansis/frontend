@@ -185,11 +185,11 @@
 
 		<!-- Column for product category image/icon  -->
 		<template v-if="column.type === 'productCategoryImage'">
+			<SvgIcon v-if="cellData.primary === 'icon' && cellData.icon" :items="cellData.icon" />
 			<ImageColumn
-				v-if="cellData.image"
+				v-else
 				:image="cellData.image"
 			/>
-			<SvgIcon v-else :items="cellData.icon" />
 		</template>
 	</div>
 </template>

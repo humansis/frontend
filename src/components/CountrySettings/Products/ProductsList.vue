@@ -178,6 +178,7 @@ export default {
 				this.table.data[key].category = {
 					image: categoryImage,
 					icon: [{ code: categoryName, value: categoryName }],
+					primary: "icon",
 				};
 			});
 		},
