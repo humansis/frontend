@@ -87,9 +87,7 @@
 					{{ $t('Close and Approve') }}
 				</b-button>
 				<b-button
-					v-if="setAtDistributedButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.assignDistributionItems"
+					v-if="isDistributedButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -99,9 +97,7 @@
 					{{ $t(setAtDistributedButtonLabel) }}
 				</b-button>
 				<b-button
-					v-if="inputDistributedButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.assignDistributionItems"
+					v-if="isInputDistributedButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -110,10 +106,7 @@
 					{{ $t("Input Distributed") }}
 				</b-button>
 				<b-button
-					v-if="startTransactionButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer
-					"
+					v-if="isStartTransactionButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -196,12 +189,16 @@ export default {
 			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
 		},
 
+		isCommoditySmartcard() {
+			return this.commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD;
+		},
+
 		inputDistributedButtonVisible() {
 			const modality = this.commodities[0]?.modalityType;
 
-			return modality !== consts.COMMODITY.SMARTCARD
-			&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
-			&& modality !== consts.COMMODITY.MOBILE_MONEY;
+			return !this.isCommoditySmartcard
+				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== consts.COMMODITY.MOBILE_MONEY;
 		},
 
 		setAtDistributedButtonLabel() {
@@ -244,6 +241,25 @@ export default {
 
 		amountDistributed() {
 			return this.statistics?.amountDistributed || 0;
+		},
+
+		isDistributedButtonVisible() {
+			return this.setAtDistributedButtonVisible
+				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
+				&& this.userCan.assignDistributionItems
+				&& !this.isCommoditySmartcard;
+		},
+
+		isInputDistributedButtonVisible() {
+			return this.inputDistributedButtonVisible
+				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
+				&& this.userCan.assignDistributionItems;
+		},
+
+		isStartTransactionButtonVisible() {
+			return this.startTransactionButtonVisible
+				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
+				&& this.userCan.authoriseElectronicCashTransfer;
 		},
 	},
 
