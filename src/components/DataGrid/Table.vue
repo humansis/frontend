@@ -43,6 +43,8 @@
 			hoverable
 			scrollable
 			selectable
+			sticky-header
+			height="550"
 			pagination-position="bottom"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
