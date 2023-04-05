@@ -122,6 +122,7 @@ export default {
 
 		async onFiltersChange({ filters, locationsFilter }) {
 			this.locationsFilter = locationsFilter;
+			this.table.dataUpdated = false;
 
 			Object.keys(filters).forEach((key) => {
 				if (Array.isArray(filters[key])) {
