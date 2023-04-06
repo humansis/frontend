@@ -243,24 +243,27 @@ export default {
 			return this.statistics?.amountDistributed || 0;
 		},
 
-		isPossibleToDistribute() {
-			return this.setAtDistributedButtonVisible
-				&& (this.isAssistanceValidated && !this.isAssistanceCompleted);
+		isAssistanceStateValidated() {
+			return this.isAssistanceValidated && !this.isAssistanceCompleted;
 		},
 
 		isDistributedButtonVisible() {
-			return this.isPossibleToDistribute
+			return this.isAssistanceStateValidated
 				&& this.userCan.assignDistributionItems
-				&& !this.isCommoditySmartcard;
+				&& !this.isCommoditySmartcard
+				&& this.setAtDistributedButtonVisible;
 		},
 
 		isInputDistributedButtonVisible() {
-			return this.isPossibleToDistribute && this.userCan.assignDistributionItems;
+			return this.isAssistanceStateValidated
+				&& this.userCan.assignDistributionItems
+				&& this.inputDistributedButtonVisible;
 		},
 
 		isStartTransactionButtonVisible() {
-			return this.isPossibleToDistribute
-				&& this.userCan.authoriseElectronicCashTransfer;
+			return this.isAssistanceStateValidated
+				&& this.userCan.authoriseElectronicCashTransfer
+				&& this.startTransactionButtonVisible;
 		},
 	},
 
