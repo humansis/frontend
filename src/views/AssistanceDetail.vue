@@ -243,22 +243,23 @@ export default {
 			return this.statistics?.amountDistributed || 0;
 		},
 
-		isDistributedButtonVisible() {
+		isPossibleToDistribute() {
 			return this.setAtDistributedButtonVisible
-				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
+				&& (this.isAssistanceValidated && !this.isAssistanceCompleted);
+		},
+
+		isDistributedButtonVisible() {
+			return this.isPossibleToDistribute
 				&& this.userCan.assignDistributionItems
 				&& !this.isCommoditySmartcard;
 		},
 
 		isInputDistributedButtonVisible() {
-			return this.inputDistributedButtonVisible
-				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
-				&& this.userCan.assignDistributionItems;
+			return this.isPossibleToDistribute && this.userCan.assignDistributionItems;
 		},
 
 		isStartTransactionButtonVisible() {
-			return this.startTransactionButtonVisible
-				&& (this.isAssistanceValidated && !this.isAssistanceCompleted)
+			return this.isPossibleToDistribute
 				&& this.userCan.authoriseElectronicCashTransfer;
 		},
 	},
