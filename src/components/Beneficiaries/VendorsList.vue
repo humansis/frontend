@@ -88,7 +88,7 @@
 
 		<template #export>
 			<ExportControl
-				v-if="table.data.length"
+				:disabled="!table.dataUpdated || !table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
@@ -193,6 +193,7 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
+				dataUpdated: false,
 			},
 		};
 	},
@@ -220,6 +221,7 @@ export default {
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;
+				this.table.dataUpdated = true;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}

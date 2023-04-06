@@ -53,7 +53,7 @@
 		</b-table-column>
 		<template #export>
 			<ExportControl
-				v-if="table.data.length"
+				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
