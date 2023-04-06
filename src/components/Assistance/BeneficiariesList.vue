@@ -302,6 +302,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		beneficiariesData: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	components: {
@@ -508,6 +512,12 @@ export default {
 				await this.reloadBeneficiariesList();
 			}
 		},
+
+		beneficiariesData(value) {
+			if (!this.isFetchEnabled) {
+				this.table = value;
+			}
+		},
 	},
 
 	methods: {
@@ -623,6 +633,7 @@ export default {
 					});
 			}
 
+			this.$emit("beneficiariesTableUpdated", this.table);
 			this.isLoadingList = false;
 		},
 
