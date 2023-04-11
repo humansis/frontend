@@ -110,7 +110,7 @@
 		</template>
 		<template #export>
 			<ExportControl
-				:disabled="!userCan.exportPrintVouchers || !table.data.length"
+				:disabled="isExportDisabled"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
@@ -196,6 +196,7 @@ export default {
 				sortColumn: "",
 				sortDirection: "",
 				progress: null,
+				dataUpdated: false,
 			},
 		};
 	},
@@ -222,6 +223,7 @@ export default {
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
+				this.table.dataUpdated = true;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
@@ -315,6 +317,13 @@ export default {
 
 		resetTableSort() {
 			this.$refs.vouchersList.onResetSort();
+		},
+	},
+
+	computed: {
+		isExportDisabled() {
+			return !this.userCan.exportPrintVouchers || !this.table.data.length
+				|| !this.table.dataUpdated;
 		},
 	},
 };
