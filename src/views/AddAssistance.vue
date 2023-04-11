@@ -8,6 +8,7 @@
 					:project="project"
 					:new-assistance-form="componentsData.newAssistanceForm"
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
+					:date-expiration="assistanceBody.dateExpiration"
 					:duplicated-assistance="duplicate"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
@@ -502,7 +503,10 @@ export default {
 				targetType,
 				note,
 				round,
+				isDateOfAssistanceValid,
 			} = data;
+
+			this.createAssistanceButtonDisabled = !isDateOfAssistanceValid;
 
 			this.assistanceBody = {
 				...this.assistanceBody,

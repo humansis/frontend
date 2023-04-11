@@ -28,6 +28,9 @@
 					:placeholder="$t('Click to select')"
 					@input="valuesForAssistanceName"
 				/>
+				<p v-if="!formModel.isDateOfAssistanceValid" class="help is-danger">
+					{{ $t("Date is after Expiration date of the commodity") }}
+				</p>
 			</b-field>
 
 			<b-field
@@ -224,6 +227,10 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+		dateExpiration: {
+			type: String,
+			default: "",
+		},
 	},
 
 	data() {
@@ -243,6 +250,7 @@ export default {
 				assistanceType: null,
 				note: "",
 				round: null,
+				isDateOfAssistanceValid: true,
 			},
 			options: {
 				rounds: consts.ROUNDS_OPTIONS,
@@ -281,6 +289,13 @@ export default {
 				this.formModel = data;
 			}
 		},
+
+		assistanceDates() {
+			if (this.dateExpiration) {
+				this.formModel.isDateOfAssistanceValid = this.$moment(this.formModel.dateOfAssistance)
+					.format("YYYY-MM-DD") <= this.dateExpiration;
+			}
+		},
 	},
 
 	async mounted() {
@@ -301,6 +316,10 @@ export default {
 		minDateOfAssistance() {
 			const { startDate } = this.project;
 			return startDate ? new Date(startDate) : new Date();
+		},
+
+		assistanceDates() {
+			return `${this.formModel.dateOfAssistance} - ${this.dateExpiration}`;
 		},
 	},
 
