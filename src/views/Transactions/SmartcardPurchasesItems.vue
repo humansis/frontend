@@ -64,7 +64,7 @@
 			</template>
 			<template #export>
 				<ExportControl
-					:disabled="!table.data.length"
+					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
@@ -159,6 +159,7 @@ export default {
 				sortColumn: "datePurchase",
 				progress: null,
 				searchPhrase: "",
+				dataUpdated: false,
 			},
 			filters: {},
 			locationsFilter: {},
@@ -188,6 +189,7 @@ export default {
 				this.table.data = [];
 				this.table.progress = 10;
 				this.table.total = totalCount;
+				this.table.dataUpdated = true;
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
 				}
