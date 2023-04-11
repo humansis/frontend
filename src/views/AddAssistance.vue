@@ -193,7 +193,6 @@ export default {
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
-					this.$router.push({ name: "NotFound" });
 				});
 
 			await AssistancesService.getScoringTypes()

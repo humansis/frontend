@@ -344,7 +344,6 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			});
 		},
 

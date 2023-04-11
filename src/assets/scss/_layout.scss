@@ -18,6 +18,18 @@
 	}
 }
 
+.has-redirect-code {
+	font-size: 15rem;
+	color: #0e2640;
+}
+
+.has-redirect-message {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -80%);
+}
+
 .table-wrapper {
 	overflow-x: auto;
 }
