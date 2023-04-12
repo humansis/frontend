@@ -37,8 +37,8 @@ export default {
 
 					this.table.data[key].project = {
 						routeName: "Project",
-						name: project.name,
-						routeParams: { projectId: project.id },
+						name: project?.name,
+						routeParams: { projectId: project?.id || 1 },
 					};
 				} else {
 					this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");

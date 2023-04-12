@@ -110,7 +110,6 @@ export default {
 				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			});
 		},
 

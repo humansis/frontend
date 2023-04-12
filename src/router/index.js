@@ -48,22 +48,6 @@ const routes = [
 		path: "/:countryCode",
 		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
 		beforeEnter: (to, from, next) => {
-			const token = getCookie("token");
-
-			if (!token) {
-				return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
-			}
-
-			const storedPermissions = getters.getPermissionsFromVuexStorage();
-			const { permissions } = to.meta;
-			const canGoNext = permissions?.length
-				? permissions.some((permission) => storedPermissions?.[permission])
-				: true;
-
-			if (!canGoNext) {
-				return next({ name: "NotFound" });
-			}
-
 			if (!to.params.countryCode) {
 				let countryCode = getters.getCountryFromVuexStorage()?.iso3;
 
@@ -406,6 +390,15 @@ const routes = [
 		],
 	},
 	{
+		path: "/no-permission",
+		name: "NoPermission",
+		component: () => import(/* webpackChunkName: "Logs" */ "@/views/NoPermission"),
+		meta: {
+			permissions: [],
+			breadcrumb: () => i18n.t("No permission"),
+		},
+	},
+	{
 		path: "/not-found",
 		name: "NotFound",
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
@@ -429,10 +422,26 @@ router.beforeEach((to, from, next) => {
 	const token = getCookie("token");
 
 	if (to.name === "Login" && token) {
-		next({ name: "Home" });
-	} else {
-		next();
+		return next({ name: "Home" });
 	}
+
+	if (to.name !== "Login" && to.name !== "Logout") {
+		if (!token) {
+			return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
+		}
+
+		const storedPermissions = getters.getPermissionsFromVuexStorage();
+		const { permissions } = to.meta;
+		const canGoNext = permissions?.length
+			? permissions.some((permission) => storedPermissions?.[permission])
+			: true;
+
+		if (!canGoNext) {
+			return next({ name: "NoPermission" });
+		}
+	}
+
+	return next();
 });
 
 router.onError((error) => {

@@ -9,7 +9,7 @@ async function getErrorsFromResponse(data) {
 	let debugs = "";
 
 	if (data.errors && data.errors.length) {
-		errors = data.errors.map((error) => error.message).join(' ');
+		errors = data.errors.map((error) => error.message).join(" ");
 	} else if (data.errors?.message) {
 		errors = data.errors.message;
 	} else {
@@ -39,19 +39,34 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (forbidden) {
-		throw new Error("You don't have a access to continue");
+		if (router.currentRoute.name !== "NoPermission") {
+			router.push({ name: "NoPermission" }).catch((error) => {
+				console.error(error);
+			});
+		}
+
+		throw new Error("");
 	}
 
 	if (unauthorized) {
 		const redirect = router?.currentRoute?.query?.redirect
 			|| router?.currentRoute?.fullPath;
 
-		router.push({ name: "Logout", query: { redirect, notification: "login" } });
+		router.push({
+			name: "Logout",
+			query: { redirect, notification: "login" },
+		}).catch((error) => {
+			console.error(error);
+		});
 
 		throw new Error("");
 	}
 
 	if (notFound) {
+		router.push({ name: "NotFound" }).catch((error) => {
+			console.error(error);
+		});
+
 		throw new Error(response.statusText);
 	}
 
