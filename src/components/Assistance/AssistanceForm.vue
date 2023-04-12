@@ -33,6 +33,7 @@
 					locale="en-CA"
 					icon="calendar-day"
 					trap-focus
+					:min-date="minDateOfAssistance"
 					:max-date="maxDateOfAssistance"
 					:month-names="months()"
 					:placeholder="$t('Click to select')"
@@ -279,7 +280,12 @@ export default {
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
-			return new Date(endDate);
+			return new Date(this.$moment(endDate).format());
+		},
+
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return new Date(this.$moment(startDate).format());
 		},
 
 		isCommoditySmartCard() {
