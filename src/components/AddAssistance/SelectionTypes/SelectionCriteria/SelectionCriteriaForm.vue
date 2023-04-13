@@ -11,6 +11,9 @@
 					label="value"
 					track-by="code"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:loading="criteriaTargetLoading"
 					:options="options.criteriaTargets"
 					searchable
@@ -30,6 +33,9 @@
 				<MultiSelect
 					v-model="formModel.criteria"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:options="options.criteria"
 					:loading="criteriaLoading"
 					label="value"
@@ -51,6 +57,9 @@
 				<MultiSelect
 					v-model="formModel.condition"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					label="value"
 					track-by="code"
 					:options="options.conditions"
@@ -93,6 +102,9 @@
 					label="value"
 					track-by="code"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:loading="valueSelectLoading"
 					:options="valueSelectOptions"
 					searchable

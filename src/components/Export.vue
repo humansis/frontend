@@ -2,7 +2,7 @@
 	<div class="level-item" :class="fieldClass">
 		<b-field>
 			<b-select
-				placeholder="Select export"
+				:placeholder="$t('Select export')"
 				v-model="selectedExportType"
 				:disabled="disabled"
 				@input="inputChanged"
@@ -12,11 +12,11 @@
 					:value="value"
 					:key="key"
 				>
-					{{ value }}
+					{{ $t(value) }}
 				</option>
 			</b-select>
 			<b-select
-				placeholder="Select format"
+				:placeholder="$t('Select format')"
 				v-model="selectedExportFormat"
 				:disabled="disabled"
 				@input="inputChanged"
@@ -26,11 +26,11 @@
 					:value="value"
 					:key="key"
 				>
-					{{ value }}
+					{{ $t(value) }}
 				</option>
 			</b-select>
 			<div class="control">
-				<b-tooltip label="Export">
+				<b-tooltip :label="$t(`Export`)">
 					<b-button
 						type="is-primary"
 						icon-left="download"

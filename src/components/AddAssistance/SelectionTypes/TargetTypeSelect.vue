@@ -15,6 +15,9 @@
 					track-by="id"
 					multiple
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:options="options.communities"
 					:loading="loading.communities"
 					:class="validateMultiselect('communities')"
@@ -39,6 +42,9 @@
 					track-by="id"
 					multiple
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					group-values="data"
 					group-label="label"
 					group-select

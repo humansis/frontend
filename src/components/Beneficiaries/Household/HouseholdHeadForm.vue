@@ -76,6 +76,9 @@
 						v-model="formModel.personalInformation.gender"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.gender"
@@ -111,7 +114,7 @@
 					</span>
 				</h4>
 				<b-tabs>
-					<b-tab-item label="Primary">
+					<b-tab-item :label="$t('Primary')">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('primaryId.idType', true)"
@@ -120,6 +123,9 @@
 							<MultiSelect
 								v-model="formModel.primaryId.idType"
 								label="value"
+								:select-label="$t('Press enter to select')"
+								:selected-label="$t('Selected')"
+								:deselect-label="$t('Press enter to remove')"
 								track-by="code"
 								searchable
 								:placeholder="$t('Click to select')"
@@ -140,7 +146,7 @@
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Secondary" :disabled="isSecondaryIdTabDisabled">
+					<b-tab-item :label="$t('Secondary')" :disabled="isSecondaryIdTabDisabled">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('secondaryId.idType', true)"
@@ -149,6 +155,9 @@
 							<MultiSelect
 								v-model="formModel.secondaryId.idType"
 								label="value"
+								:select-label="$t('Press enter to select')"
+								:selected-label="$t('Selected')"
+								:deselect-label="$t('Press enter to remove')"
 								track-by="code"
 								searchable
 								:placeholder="$t('Click to select')"
@@ -169,7 +178,7 @@
 							/>
 						</b-field>
 					</b-tab-item>
-					<b-tab-item label="Tertiary" :disabled="isTertiaryIdTabDisabled">
+					<b-tab-item :label="$t('Tertiary')" :disabled="isTertiaryIdTabDisabled">
 						<b-field
 							:label="$t('ID Type')"
 							:type="validateType('tertiaryId.idType', true)"
@@ -178,6 +187,9 @@
 							<MultiSelect
 								v-model="formModel.tertiaryId.idType"
 								label="value"
+								:select-label="$t('Press enter to select')"
+								:selected-label="$t('Selected')"
+								:deselect-label="$t('Press enter to remove')"
 								track-by="code"
 								searchable
 								:placeholder="$t('Click to select')"
@@ -212,6 +224,9 @@
 						v-model="formModel.residencyStatus"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="residenceStatusesLoading"
@@ -251,6 +266,9 @@
 						v-model="formModel.referral.referralType"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="referralTypeLoading"
@@ -278,6 +296,7 @@
 						selectLabel=""
 						deselectLabel=""
 						label="value"
+						:selected-label="$t('Selected')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
@@ -294,6 +313,9 @@
 						v-model="formModel.phone1.ext"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"
@@ -322,6 +344,7 @@
 						selectLabel=""
 						deselectLabel=""
 						label="value"
+						:selected-label="$t('Selected')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="phoneTypesLoading"
@@ -338,6 +361,9 @@
 						v-model="formModel.phone2.ext"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.phonePrefixes"

@@ -15,6 +15,9 @@
 						searchable
 						track-by="id"
 						label="name"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						multiple
 						:placeholder="$t('Click to select')"
 						:options="options.projects"

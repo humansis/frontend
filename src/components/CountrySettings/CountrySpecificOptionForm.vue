@@ -23,6 +23,9 @@
 					searchable
 					is-relative
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
@@ -45,6 +48,9 @@
 					searchable
 					is-relative
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:disabled="formDisabled"
