@@ -35,6 +35,7 @@
 					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
+					:duplicated-assistance="duplicate"
 					:target-type="targetType"
 					:date-of-assistance="assistanceBody.dateDistribution"
 					@updatedData="fetchDistributedCommodity"

@@ -148,6 +148,11 @@ export default {
 			if (data.length) {
 				this.table.data = data;
 				this.dateExpiration = data[0]?.dateExpiration.toISOString();
+
+				if (this.duplicatedAssistance) {
+					this.table.columns[EXPIRATION_DATE_COLUMN_INDEX].visible = this.table
+						.data[0]?.modalityType === consts.COMMODITY.SMARTCARD;
+				}
 			}
 		},
 	},
@@ -200,6 +205,10 @@ export default {
 		dateOfAssistance: {
 			type: String,
 			required: true,
+		},
+		duplicatedAssistance: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
