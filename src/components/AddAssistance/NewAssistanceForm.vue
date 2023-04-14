@@ -323,12 +323,12 @@ export default {
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
-			return endDate ? new Date(endDate) : new Date();
+			return endDate ? new Date(this.$moment(endDate).format()) : new Date();
 		},
 
 		minDateOfAssistance() {
 			const { startDate } = this.project;
-			return startDate ? new Date(startDate) : new Date();
+			return startDate ? new Date(this.$moment(startDate).format()) : new Date();
 		},
 
 		assistanceDates() {
