@@ -280,12 +280,12 @@ export default {
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
-			return new Date(this.$moment(endDate).format());
+			return new Date(`${endDate} 00:00`);
 		},
 
 		minDateOfAssistance() {
 			const { startDate } = this.project;
-			return new Date(this.$moment(startDate).format());
+			return new Date(`${startDate} 00:00`);
 		},
 
 		isCommoditySmartCard() {
