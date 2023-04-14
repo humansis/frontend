@@ -218,6 +218,8 @@ export default {
 
 			await ImportService.getDuplicitiesInImport(
 				importId,
+				null,
+				1,
 			).then(({ data: { totalCount } }) => {
 				this.totalCountOfDuplicities = totalCount;
 			}).catch((e) => {
