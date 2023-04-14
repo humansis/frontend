@@ -149,7 +149,7 @@ export default {
 				this.table.data = data;
 				this.dateExpiration = data[0]?.dateExpiration.toISOString();
 
-				if (this.duplicatedAssistance) {
+				if (this.isAssistanceDuplicated) {
 					this.table.columns[EXPIRATION_DATE_COLUMN_INDEX].visible = this.table
 						.data[0]?.modalityType === consts.COMMODITY.SMARTCARD;
 				}
@@ -206,7 +206,7 @@ export default {
 			type: String,
 			required: true,
 		},
-		duplicatedAssistance: {
+		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
 		},
