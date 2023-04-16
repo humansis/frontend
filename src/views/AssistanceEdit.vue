@@ -26,10 +26,7 @@
 					add-button
 					:assistance="assistance"
 					:commodities="commodities"
-					isFetchEnabled
-					@beneficiariesReloaded="reloadOtherTabs"
 					@assistanceUpdated="fetchUpdatedData"
-					@beneficiariesTableUpdated="updateBeneficiariesTable"
 				/>
 			</b-step-item>
 
@@ -43,10 +40,8 @@
 					changeButton
 					export-button
 					:add-button="false"
-					:beneficiaries-data="beneficiariesData"
 					:assistance="assistance"
 					:commodities="commodities"
-					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
 
@@ -54,11 +49,9 @@
 				<BeneficiariesList
 					ref="validateAndLockGrid"
 					:add-button="false"
-					:export-button="false"
+					export-button
 					:assistance="assistance"
-					:beneficiaries-data="beneficiariesData"
 					:commodities="commodities"
-					@beneficiariesReloaded="reloadOtherTabs"
 				/>
 			</b-step-item>
 
@@ -137,7 +130,6 @@ export default {
 			statistics: null,
 			isStatisticsLoading: false,
 			isAssistanceLoading: false,
-			beneficiariesData: {},
 			isProjectLoading: false,
 			commodities: [],
 			activeStep: 0,
@@ -154,19 +146,6 @@ export default {
 	},
 
 	methods: {
-		reloadOtherTabs(component) {
-			const lists = [
-				this.$refs.assistanceListOfBeneficiariesGrid,
-				this.$refs.exportRandomSampleGrid,
-				this.$refs.validateAndLockGrid,
-			];
-			lists.forEach((list) => {
-				if (list !== component) {
-					list.reloadBeneficiariesList(false);
-				}
-			});
-		},
-
 		async fetchAssistance() {
 			this.isAssistanceLoading = true;
 

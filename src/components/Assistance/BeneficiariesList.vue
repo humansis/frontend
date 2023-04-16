@@ -196,7 +196,7 @@
 			</template>
 			<template #export>
 				<ExportControl
-					:disabled="!table.data.length || !userCan.exportBeneficiaries"
+					:disabled="isExportButtonDisabled"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
 					:is-export-loading="exportControl.loading"
@@ -294,17 +294,9 @@ export default {
 			type: Array,
 			default: () => [],
 		},
-		isFetchEnabled: {
-			type: Boolean,
-			default: false,
-		},
 		assistanceDetail: {
 			type: Boolean,
 			default: false,
-		},
-		beneficiariesData: {
-			type: Object,
-			default: () => {},
 		},
 	},
 
@@ -333,7 +325,6 @@ export default {
 				location: "assistance",
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
-			alreadyFetched: false,
 			table: {
 				data: [],
 				columns: [],
@@ -500,10 +491,15 @@ export default {
 		isCommoditySmartcard() {
 			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.SMARTCARD);
 		},
+
+		isExportButtonDisabled() {
+			return !this.table.data.length
+				|| !this.userCan.exportBeneficiaries || this.changeButton;
+		},
 	},
 
 	async created() {
-		await this.reloadBeneficiariesList(false);
+		await this.reloadBeneficiariesList();
 	},
 
 	watch: {
@@ -512,24 +508,13 @@ export default {
 				await this.reloadBeneficiariesList();
 			}
 		},
-
-		beneficiariesData(value) {
-			if (!this.isFetchEnabled) {
-				this.table = value;
-			}
-		},
 	},
 
 	methods: {
-		async reloadBeneficiariesList(emit = true) {
+		async reloadBeneficiariesList() {
 			if (this.assistance) {
-				if (emit) this.$emit("beneficiariesReloaded", this);
 				this.prepareTableColumns();
-
-				if ((this.isFetchEnabled && !this.alreadyFetched) || this.assistanceDetail) {
-					this.alreadyFetched = true;
-					await this.fetchData();
-				}
+				await this.fetchData();
 			}
 		},
 
@@ -542,13 +527,11 @@ export default {
 		},
 
 		addedOrRemovedBeneficiary() {
-			this.alreadyFetched = false;
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
 		},
 
 		fetchDataAfterBeneficiaryChange() {
-			this.alreadyFetched = false;
 			this.reloadBeneficiariesList();
 		},
 
@@ -632,8 +615,6 @@ export default {
 						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					});
 			}
-
-			this.$emit("beneficiariesTableUpdated", this.table);
 			this.isLoadingList = false;
 		},
 
