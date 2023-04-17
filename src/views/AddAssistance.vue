@@ -9,7 +9,6 @@
 					:new-assistance-form="componentsData.newAssistanceForm"
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
-					:duplicated-assistance="duplicate"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -35,6 +34,7 @@
 					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
+					:is-assistance-duplicated="isDuplicated"
 					:target-type="targetType"
 					:date-of-assistance="assistanceBody.dateDistribution"
 					@updatedData="fetchDistributedCommodity"
@@ -146,7 +146,7 @@ export default {
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
-			duplicate: false,
+			isDuplicated: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
@@ -174,8 +174,8 @@ export default {
 	async created() {
 		await this.fetchProject();
 
-		this.duplicate = !!this.$route.query.duplicateAssistance;
-		if (this.duplicate) {
+		this.isDuplicated = !!this.$route.query.duplicateAssistance;
+		if (this.isDuplicated) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
 				.then(({ data, message }) => {
 					if (!data) {
