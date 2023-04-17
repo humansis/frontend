@@ -11,7 +11,7 @@
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
+		@resetSort="resetSort('id', 'asc', true)"
 		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
@@ -108,8 +108,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "asc",
+				sortColumn: "id",
 				searchPhrase: "",
 			},
 		};

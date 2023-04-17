@@ -40,7 +40,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort('dateDistribution', 'desc')"
+			@resetSort="resetSort"
 			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">

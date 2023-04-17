@@ -274,8 +274,9 @@ export default {
 		},
 
 		onResetSort() {
-			this.$refs.table.resetMultiSorting();
 			this.$emit("resetSort");
+			this.$refs.table.resetMultiSorting();
+			this.$refs.table.initSort();
 		},
 
 		onSearch(event) {
