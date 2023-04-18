@@ -251,7 +251,9 @@ export default {
 		},
 
 		formattedDateTime() {
-			return this.cellData ? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}` : "";
+			return this.cellData && typeof this.cellData !== "object"
+				? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				: this.$t("N/A");
 		},
 
 		getTagType() {
