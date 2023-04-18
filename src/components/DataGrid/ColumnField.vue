@@ -87,7 +87,7 @@
 		</template>
 
 		<!-- Show image or logo -->
-		<ImageColumn v-if="column.type === 'image'" :image="cellData" />
+		<ImageColumn v-if="column.type === 'image' && typeof cellData === 'string'" :image="cellData" />
 
 		<!-- Text with different font -->
 		<p v-if="column.type === 'font'" :style="fontFamily">

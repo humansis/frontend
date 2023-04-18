@@ -76,11 +76,14 @@ export default {
 			this.$emit("onRemove", id);
 		},
 
-		resetSort(sortColumn = "", sortDirection = "") {
+		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;
-				this.fetchData();
+
+				if (forceFetch) {
+					this.fetchData();
+				}
 			}
 		},
 

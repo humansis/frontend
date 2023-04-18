@@ -4,6 +4,8 @@
 		has-reset-sort
 		has-search
 		checkable
+		default-sort-key="code"
+		default-sort-direction="desc"
 		:data="table.data"
 		:total="table.total"
 		:current-page="table.currentPage"
@@ -192,8 +194,8 @@ export default {
 				checkedRows: [],
 				total: 0,
 				currentPage: 1,
-				searchPhrase: "",
-				sortColumn: "",
+				searchPhrase: "desc",
+				sortColumn: "code",
 				sortDirection: "",
 				progress: null,
 				dataUpdated: false,

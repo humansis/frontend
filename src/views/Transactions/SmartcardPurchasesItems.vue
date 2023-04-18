@@ -18,8 +18,8 @@
 			ref="table"
 			has-reset-sort
 			has-search
-			:default-sort-key="table.sortColumn"
-			:default-sort-direction="table.sortDirection"
+			default-sort-key="datePurchase"
+			default-sort-direction="desc"
 			:data="table.data"
 			:total="table.total"
 			:current-page="table.currentPage"
