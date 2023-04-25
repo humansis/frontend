@@ -6,7 +6,7 @@
 					<table>
 						<tbody>
 							<tr>
-								<td>{{ $t("Number of Records") }}:</td>
+								<td>{{ $t("Number of Households") }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"
@@ -90,7 +90,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>{{ $t("Final Records to Import") }}:</td>
+								<td>{{ $t("Households to Import") }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"

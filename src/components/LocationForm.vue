@@ -11,8 +11,11 @@
 				label="name"
 				track-by="id"
 				:placeholder="$t('Click to select')"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				:loading="provincesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm1"
 				:options="options.provinces"
 				:class="validateMultiselect('adm1')"
 				@input="onProvinceSelect"
@@ -34,8 +37,11 @@
 				label="name"
 				track-by="id"
 				:placeholder="$t('Click to select')"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				:loading="districtsLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm2"
 				:options="options.districts"
 				@input="onDistrictSelect"
 			>
@@ -56,14 +62,24 @@
 				label="name"
 				track-by="id"
 				:placeholder="$t('Click to select')"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				:loading="communesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm3"
 				:options="options.communes"
 				@input="onCommuneSelect"
 			>
 				<span slot="noOptions">{{ $t("List is empty")}}</span>
 			</MultiSelect>
 		</b-field>
+
+		<p
+			v-if="influenceDistributionProtocol.subDistrict"
+			class="help is-danger"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
 
 		<b-field>
 			<template #label>
@@ -79,14 +95,24 @@
 				label="name"
 				track-by="id"
 				:placeholder="$t('Click to select')"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				:loading="villagesLoading"
-				:disabled="formDisabled"
+				:disabled="formDisabled || disabledAdm.adm4"
 				:options="options.villages"
 				@input="onVillageSelect"
 			>
 				<span slot="noOptions">{{ $t("List is empty")}}</span>
 			</MultiSelect>
 		</b-field>
+
+		<p
+			v-if="influenceDistributionProtocol.village"
+			class="help is-danger"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
 	</section>
 </template>
 
@@ -108,9 +134,29 @@ export default {
 	props: {
 		formModel: Object,
 		formDisabled: Boolean,
-		isEditing: {
+		disabledAdm: {
+			type: Object,
+			default: () => ({
+				adm1: false,
+				adm2: false,
+				adm3: false,
+				adm4: false,
+			}),
+		},
+		isAssistanceModal: {
 			type: Boolean,
 			default: false,
+		},
+		influenceDistributionProtocol: {
+			type: Object,
+			default: () => ({
+				subDistrict: false,
+				village: false,
+			}),
+		},
+		distributionProtocolMessage: {
+			type: String,
+			default: "",
 		},
 	},
 
@@ -151,8 +197,17 @@ export default {
 
 	async mounted() {
 		await Promise.all([this.fetchProvinces()]);
+
 		if (this.formModel) {
 			await this.mapLocations();
+		}
+
+		if (this.isAssistanceModal && this.formModel.adm2) {
+			await this.fetchCommunes(this.formModel.adm2?.id);
+
+			if (this.formModel.adm3) {
+				await this.fetchVillages(this.formModel.adm3?.id);
+			}
 		}
 	},
 

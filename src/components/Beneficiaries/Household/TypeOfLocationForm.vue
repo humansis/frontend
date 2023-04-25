@@ -8,6 +8,9 @@
 			<MultiSelect
 				v-model="formModel.typeOfLocation"
 				label="value"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				track-by="code"
 				:placeholder="$t('Click to select')"
 				:loading="locationTypesLoading"
@@ -39,6 +42,9 @@
 				<MultiSelect
 					v-model="formModel.camp"
 					label="name"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:options="options.camps"

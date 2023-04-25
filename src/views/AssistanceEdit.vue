@@ -25,7 +25,7 @@
 					export-button
 					add-button
 					:assistance="assistance"
-					@beneficiariesReloaded="reloadOtherTabs"
+					:commodities="commodities"
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</b-step-item>
@@ -41,7 +41,7 @@
 					export-button
 					:add-button="false"
 					:assistance="assistance"
-					@beneficiariesReloaded="reloadOtherTabs"
+					:commodities="commodities"
 				/>
 			</b-step-item>
 
@@ -49,9 +49,9 @@
 				<BeneficiariesList
 					ref="validateAndLockGrid"
 					:add-button="false"
-					:export-button="false"
+					export-button
 					:assistance="assistance"
-					@beneficiariesReloaded="reloadOtherTabs"
+					:commodities="commodities"
 				/>
 			</b-step-item>
 
@@ -85,6 +85,7 @@
 		<div v-if="!isTargetHouseholdOrIndividual">
 			<BeneficiariesList
 				:assistance="assistance"
+				:commodities="commodities"
 				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">
@@ -145,19 +146,6 @@ export default {
 	},
 
 	methods: {
-		reloadOtherTabs(component) {
-			const lists = [
-				this.$refs.assistanceListOfBeneficiariesGrid,
-				this.$refs.exportRandomSampleGrid,
-				this.$refs.validateAndLockGrid,
-			];
-			lists.forEach((list) => {
-				if (list !== component) {
-					list.reloadBeneficiariesList(false);
-				}
-			});
-		},
-
 		async fetchAssistance() {
 			this.isAssistanceLoading = true;
 
@@ -199,6 +187,10 @@ export default {
 			}).finally(() => {
 				this.isStatisticsLoading = false;
 			});
+		},
+
+		updateBeneficiariesTable(beneficiariesTable) {
+			this.beneficiariesData = beneficiariesTable;
 		},
 
 		async validateAssistance() {

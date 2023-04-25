@@ -9,11 +9,14 @@
 			class="modal-card-body overflow-visible"
 			:style="{ 'min-height': selectOpened ? `${options.length * 50}px` : '100px' }"
 		>
-			<b-field label="Projects">
+			<b-field :label="$t('Project')">
 				<MultiSelect
 					v-model="selectedProject"
 					searchable
 					label="name"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					class="is-relative"
 					:placeholder="$t('Click to select')"
@@ -71,6 +74,7 @@ export default {
 		},
 		addHouseholdsToProject() {
 			this.$emit("confirm", this.selectedProject);
+			this.selectedProject = null;
 		},
 	},
 };

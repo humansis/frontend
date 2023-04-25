@@ -99,7 +99,7 @@
 				close-button
 				adding-to-assistance
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeAddBeneficiariesByIdsModal"
 			/>
 		</Modal>
@@ -113,7 +113,7 @@
 				close-button
 				deduplication
 				class="modal-card"
-				@submit="reloadBeneficiariesList"
+				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
@@ -195,31 +195,14 @@
 				</b-table-column>
 			</template>
 			<template #export>
-				<ExportButton
-					v-if="exportButton && userCan.exportBeneficiaries"
-					type="is-primary"
-					:label="$t(export_types.EXP_RAW)"
-					:loading="exportRawLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@onExport="exportBeneficiariesRaw"
-				/>
-				<ExportButton
-					v-if="exportButton && userCan.exportBeneficiaries"
-					type="is-primary"
-					:label="$t(export_types.EXP_DEFAULT)"
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
-					@onExport="exportBeneficiaries"
-				/>
-				<ExportButton
-					v-if="exportButton
-						&& isDistributionExportVisible
-						&& userCan.exportBeneficiaries && isAssistanceValidated"
-					type="is-primary"
-					:label="$t(export_types.EXP_BANK)"
-					:loading="exportDistributionListLoading"
-					:formats="{ xlsx: true }"
-					@onExport="exportDistributionList"
+				<ExportControl
+					:disabled="isExportButtonDisabled"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="availableExportTypes"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
+					@inputUpdated="exportValuesUpdated"
+					@onExport="exportDistribution"
 				/>
 			</template>
 			<b-table-column
@@ -268,7 +251,6 @@
 import { mapState } from "vuex";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
-import ExportButton from "@/components/ExportButton";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
@@ -281,11 +263,12 @@ import { generateColumns } from "@/utils/datagrid";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
-import exportConsts from "@/utils/exportConst";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -301,13 +284,20 @@ export default {
 	props: {
 		assistance: Object,
 		project: Object,
-		isAssistanceDetail: Boolean,
 		addButton: Boolean,
 		changeButton: {
 			type: Boolean,
 			default: false,
 		},
 		exportButton: Boolean,
+		commodities: {
+			type: Array,
+			default: () => [],
+		},
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	components: {
@@ -319,7 +309,7 @@ export default {
 		Table,
 		ActionButton,
 		Modal,
-		ExportButton,
+		ExportControl,
 		ColumnField,
 		InputDistributed,
 	},
@@ -329,11 +319,12 @@ export default {
 	data() {
 		return {
 			isLoadingList: false,
-			exportLoading: false,
-			exportRawLoading: false,
-			exportDistributionListLoading: false,
 			advancedSearchVisible: false,
-			commodities: [],
+			exportControl: {
+				loading: false,
+				location: "assistance",
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -431,12 +422,31 @@ export default {
 				isWaiting: false,
 			},
 			assignVoucherToBeneficiaryId: null,
-			export_types: exportConsts.TYPE,
 		};
 	},
 
 	computed: {
 		...mapState(["perPage"]),
+
+		availableExportTypes() {
+			if (this.exportButton && this.isDistributionExportVisible
+				&& this.userCan.exportBeneficiaries && this.isAssistanceValidated) {
+				return [
+					EXPORT.LIST_OF_BENEFICIARIES,
+					EXPORT.DISTRIBUTION_LIST,
+					EXPORT.BANK_DISTRIBUTION_LIST,
+				];
+			}
+
+			if (this.exportButton && this.userCan.exportBeneficiaries) {
+				return [
+					EXPORT.LIST_OF_BENEFICIARIES,
+					EXPORT.DISTRIBUTION_LIST,
+				];
+			}
+
+			return [];
+		},
 
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
@@ -481,11 +491,15 @@ export default {
 		isCommoditySmartcard() {
 			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.SMARTCARD);
 		},
+
+		isExportButtonDisabled() {
+			return !this.table.data.length
+				|| !this.userCan.exportBeneficiaries || this.changeButton;
+		},
 	},
 
 	async created() {
-		await this.getAssistanceCommodities();
-		await this.reloadBeneficiariesList(false);
+		await this.reloadBeneficiariesList();
 	},
 
 	watch: {
@@ -497,16 +511,27 @@ export default {
 	},
 
 	methods: {
-		async reloadBeneficiariesList(emit = true) {
+		async reloadBeneficiariesList() {
 			if (this.assistance) {
-				if (emit) this.$emit("beneficiariesReloaded", this);
 				this.prepareTableColumns();
 				await this.fetchData();
 			}
 		},
 
+		exportValuesUpdated(type) {
+			if (type === EXPORT.BANK_DISTRIBUTION_LIST) {
+				this.exportControl.formats = [EXPORT.FORMAT_XLSX];
+			} else {
+				this.exportControl.formats = [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS];
+			}
+		},
+
 		addedOrRemovedBeneficiary() {
 			this.$emit("assistanceUpdated");
+			this.reloadBeneficiariesList();
+		},
+
+		fetchDataAfterBeneficiaryChange() {
 			this.reloadBeneficiariesList();
 		},
 
@@ -590,7 +615,6 @@ export default {
 						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
 					});
 			}
-
 			this.isLoadingList = false;
 		},
 
@@ -608,14 +632,14 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					baseColumns = this.isAssistanceDetail
+					baseColumns = this.assistanceDetail
 						? this.householdsAndIndividualDetailColumns
 						: this.table.householdsAndIndividualEditColumns;
 			}
 
 			const modality = this.commodities[0]?.modalityType;
 
-			if (this.isAssistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
+			if (this.assistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
 				if (modality === consts.COMMODITY.MOBILE_MONEY) {
 					additionalColumns = [
 						{ key: "phone" },
@@ -725,7 +749,7 @@ export default {
 					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
-			if (this.isAssistanceDetail) {
+			if (this.assistanceDetail) {
 				await this.setAssignedReliefPackages(distributionItems.reliefPackageIds);
 			} else {
 				this.table.progress = 100;
@@ -764,26 +788,37 @@ export default {
 				});
 		},
 
-		async exportBeneficiaries(format) {
-			this.exportLoading = true;
-			const filename = `Distribution protocol ${this.assistance.name}`;
-			await this.exportData(format, exportConsts.TYPE.EXP_DEFAULT, filename);
-			this.exportLoading = false;
+		async exportDistribution(type, format) {
+			this.exportControl.loading = true;
+
+			switch (type) {
+				case EXPORT.LIST_OF_BENEFICIARIES:
+					await this.exportData(
+						format,
+						EXPORT.LIST_OF_BENEFICIARIES,
+						`Beneficiaries ${this.assistance.name}`,
+					);
+					break;
+				case EXPORT.DISTRIBUTION_LIST:
+					await this.exportData(
+						format,
+						EXPORT.DISTRIBUTION_LIST,
+						`Distribution list ${this.assistance.name}`,
+					);
+					break;
+				case EXPORT.BANK_DISTRIBUTION_LIST:
+					await this.exportData(
+						format,
+						EXPORT.BANK_DISTRIBUTION_LIST,
+						`Bank distribution list ${this.assistance.name}`,
+					);
+					break;
+				default:
+			}
+			this.exportControl.loading = false;
 		},
 
-		async exportBeneficiariesRaw(format) {
-			this.exportRawLoading = true;
-			await this.exportData(format, exportConsts.TYPE.EXP_RAW, "beneficiaries-raw");
-			this.exportRawLoading = false;
-		},
-
-		async exportDistributionList(format) {
-			this.exportDistributionListLoading = true;
-			await this.exportData(format, exportConsts.TYPE.EXP_BANK, "distribution-list");
-			this.exportDistributionListLoading = false;
-		},
-
-		async exportData(format, exportType = exportConsts.TYPE.EXP_DEFAULT, filename) {
+		async exportData(format, exportType, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
 					format, this.$route.params.assistanceId,

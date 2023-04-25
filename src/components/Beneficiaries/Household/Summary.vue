@@ -15,6 +15,9 @@
 						searchable
 						track-by="id"
 						label="name"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						multiple
 						:placeholder="$t('Click to select')"
 						:options="options.projects"
@@ -119,7 +122,7 @@ export default {
 					{ field: "gender", label: this.$t("Gender"), type: "object" },
 					{ field: "dateBirth", label: this.$t("Date of Birth"), type: "date" },
 					{ field: "phone", label: this.$t("Phone") },
-					{ field: "nationalId", label: this.$t("National ID") },
+					{ field: "nationalId", label: this.$t("ID Number") },
 				],
 				total: 0,
 			},

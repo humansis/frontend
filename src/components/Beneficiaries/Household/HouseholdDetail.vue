@@ -19,6 +19,9 @@
 					multiple
 					disabled
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:options="options.vulnerabilities"
 				>
@@ -40,6 +43,9 @@
 					multiple
 					disabled
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:options="options.externalSupportReceivedType"
 				>
@@ -66,6 +72,9 @@
 					multiple
 					disabled
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:options="options.assets"
 				>
@@ -79,6 +88,9 @@
 					searchable
 					disabled
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:options="options.shelterStatuses"
 				>

@@ -19,6 +19,9 @@ export const normalizeFiltersOptions = (text = "") => text
 	.replace(/ /g, "_")
 	.toUpperCase();
 
+export const normalizeExportDate = (date = new Date()) => date
+	.toISOString().split("T")[0];
+
 export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
 	visibleColumns.forEach((column) => {
@@ -34,6 +37,7 @@ export const generateColumns = ((visibleColumns) => {
 			visible: column.visible,
 			customSort: column.customSort,
 			customTags: column.customTags,
+			boldText: column.bold,
 		});
 	});
 	return preparedColumns;

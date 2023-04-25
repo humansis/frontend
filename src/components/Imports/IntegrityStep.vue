@@ -35,7 +35,7 @@
 					<table>
 						<tbody>
 							<tr>
-								<td>{{ $t('Number of Records') }}:</td>
+								<td>{{ $t('Number of Households') }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"
@@ -47,7 +47,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>{{ $t('Correct Records') }}:</td>
+								<td>{{ $t('Correct Households') }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"
@@ -59,7 +59,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>{{ $t('Integrity Errors') }}:</td>
+								<td>{{ $t('Households with Integrity Errors') }}:</td>
 								<td class="has-text-right">
 									<b-tag
 										class="has-text-weight-bold"

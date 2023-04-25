@@ -26,6 +26,7 @@
 			</div>
 		</b-notification>
 		<Table
+			ref="assistanceTable"
 			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
@@ -39,7 +40,7 @@
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort('dateDistribution', 'desc')"
+			@resetSort="resetSort"
 			@onSearch="onSearch"
 		>
 			<template v-for="column in table.columns">
@@ -78,45 +79,58 @@
 						@click="goToDetail(props.row.id)"
 					/>
 					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
+						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('Details')"
 						@click="showEdit(props.row.id)"
 					/>
-					<ActionButton
-						v-if="props.row.validated
-							&& userCan.editDistribution"
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Details')"
-						@click="showDetailWithId(props.row.id)"
-					/>
-					<SafeDelete
-						:disabled="!props.row.deletable || !userCan.deleteDistribution"
-						icon="trash"
-						:message="$t('All distribution data will be deleted. Do you wish to continue?')"
-						:entity="$t('Assistance')"
-						:tooltip="$t('Delete')"
-						:id="props.row.id"
-						@submitted="$emit('onRemove', $event)"
-					/>
-					<ActionButton
-						v-if="userCan.editDistribution"
-						icon="copy"
-						type="is-dark"
-						:tooltip="$t('Duplicate')"
-						@click="duplicate(props.row.id)"
-					/>
+					<b-dropdown
+						class="is-pulled-right has-text-left"
+						:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"
+					>
+						<template #trigger>
+							<b-button
+								size="is-small"
+								icon-left="ellipsis-h"
+							/>
+						</template>
+						<b-dropdown-item
+							v-if="userCan.editDistribution"
+							@click="duplicate(props.row.id)"
+						>
+							<b-icon icon="copy" />
+
+							{{ $t("Duplicate") }}
+						</b-dropdown-item>
+						<b-dropdown-item
+							@click="assistanceMove(props.row.id)"
+							:disabled="isAssistanceMoveEnable(props.row)"
+						>
+							<b-icon icon="share" />
+
+							{{ $t("Move") }}
+						</b-dropdown-item>
+						<SafeDelete
+							:disabled="!props.row.deletable || !userCan.deleteDistribution"
+							componentType="DropDownItem"
+							:name="$t('Delete')"
+							icon="trash"
+							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
+							:entity="$t('Assistance')"
+							:id="props.row.id"
+							@submitted="$emit('onRemove', $event)"
+						/>
+					</b-dropdown>
 				</div>
 			</b-table-column>
 			<template v-if="!upcoming" #export>
-				<ExportButton
-					type="is-primary"
-					space-between
-					:loading="exportLoading"
-					:formats="{ xlsx: true, csv: true, ods: true}"
+				<ExportControl
+					:disabled="!table.data.length"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					@onExport="exportAssistances"
 				/>
 			</template>
@@ -157,11 +171,12 @@
 import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
@@ -181,7 +196,7 @@ export default {
 		ActionButton,
 		SafeDelete,
 		ColumnField,
-		ExportButton,
+		ExportControl,
 	},
 
 	props: {
@@ -201,10 +216,16 @@ export default {
 		},
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [permissions, grid, baseHelper, permissions],
 
 	data() {
 		return {
+			exportControl: {
+				loading: false,
+				location: "projectAssistances",
+				types: [EXPORT.ASSISTANCE_OVERVIEW],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			exportLoading: false,
 			selectedFilters: ["new", "validated"],
 			statusActive: {
@@ -226,7 +247,7 @@ export default {
 					{ key: "target", sortable: true },
 					{ key: "reached" },
 					{ key: "progress", sortable: true },
-					{ key: "dateDistribution", label: "Date of Assistance", type: "datetime", sortable: true },
+					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
 					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
 				],
@@ -323,7 +344,6 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			});
 		},
 
@@ -355,7 +375,7 @@ export default {
 				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
 				this.table.data[key].type = this.$t(normalizeText(item.type));
 				this.table.data[key].target = this.$t(normalizeText(item.target));
-				this.table.data[key].round = roundIsNaN ? "N/A" : item.round;
+				this.table.data[key].round = roundIsNaN ? this.$t("N/A") : item.round;
 				this.table.data[key].status = item.state.code;
 				this.table.data[key].reached = this.reachedTextFormat(item);
 				this.table.data[key].progress = this.assistanceProgress(item);
@@ -366,6 +386,9 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
+
+			const maxThreeRows = this.table.data.length <= 3;
+			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -386,14 +409,14 @@ export default {
 				let dateExpiration = "";
 
 				if (item.dateExpiration) {
-					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD hh:mm");
+					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
 				} else {
 					dateExpiration = "No Date";
 				}
 
 				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
-					? dateExpiration : "N/A";
+					? dateExpiration : this.$t("N/A");
 
 				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
@@ -410,13 +433,21 @@ export default {
 
 		prepareRowClickForTable() {
 			this.table.data.forEach((item, key) => {
+				const { id, projectId, name } = this.table.data[key];
+				const routeParams = {
+					assistanceId: id,
+					...(this.upcoming && { projectId }),
+				};
+
 				this.table.data[key].assistanceID = {
-					link: this.getUrlToAssistance(this.table.data[key]),
-					name: this.table.data[key].id,
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name: id,
+					routeParams,
 				};
 				this.table.data[key].assistanceName = {
-					link: this.getUrlToAssistance(this.table.data[key]),
-					name: this.table.data[key].name,
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name,
+					routeParams,
 				};
 			});
 		},
@@ -426,15 +457,15 @@ export default {
 				: `${data.reached} / ${data.total}`;
 		},
 
-		getUrlToAssistance(data) {
+		getRouteNameToAssistance(data) {
 			return data.state.value === "Closed"
 				|| data.state.value === "Validated"
-				? `/project/${data.projectId}/assistance/detail/${data.id}`
-				: `/project/${data.projectId}/assistance/${data.id}`;
+				? "AssistanceDetail"
+				: "AssistanceEdit";
 		},
 
 		assistanceProgress(data) {
-			return (data.state.value === "New" && "N/A")
+			return (data.state.value === "New" && this.$t("N/A"))
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
@@ -484,24 +515,41 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		async exportAssistances(format) {
-			this.exportLoading = true;
-			await AssistancesService.exportAssistances(format, this.$route.params.projectId)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `assistances.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		isOneOfLastThreeRows(rowId) {
+			const countOfDisplayedRows = this.perPage <= this.table.total
+				? this.perPage
+				: this.table.total;
+
+			return (rowId === countOfDisplayedRows - 1
+				|| rowId === countOfDisplayedRows - 2
+				|| rowId === countOfDisplayedRows - 3
+			);
+		},
+
+		isAssistanceMoveEnable(assistance) {
+			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
+		},
+
+		async exportAssistances(type, format) {
+			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
+				this.exportControl.loading = true;
+				await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

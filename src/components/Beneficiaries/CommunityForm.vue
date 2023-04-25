@@ -44,6 +44,9 @@
 							searchable
 							:placeholder="$t('Phone Ext')"
 							label="value"
+							:select-label="$t('Press enter to select')"
+							:selected-label="$t('Selected')"
+							:deselect-label="$t('Press enter to remove')"
 							track-by="code"
 							:disabled="formDisabled"
 							:options="options.phonePrefixes"
@@ -64,6 +67,9 @@
 							selectLabel=""
 							deselectLabel=""
 							label="value"
+							:select-label="$t('Press enter to select')"
+							:selected-label="$t('Selected')"
+							:deselect-label="$t('Press enter to remove')"
 							track-by="code"
 							:placeholder="$t('Phone Type')"
 							:disabled="formDisabled"
@@ -112,6 +118,9 @@
 					v-model="formModel.nationalCardType"
 					searchable
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:loading="nationalCardTypesLoading"
@@ -152,6 +161,9 @@
 					searchable
 					multiple
 					label="name"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					:placeholder="$t('Click to select')"
 					:loading="projectsLoading"

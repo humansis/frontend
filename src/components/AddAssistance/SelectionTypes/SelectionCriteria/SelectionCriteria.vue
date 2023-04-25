@@ -69,7 +69,33 @@
 
 		<div class="columns">
 			<div class="column is-4">
-				<form @submit.prevent="updateVulnerabilityScores">
+				<b-field
+					class="vulnerability-type-field"
+					:label="$t('Scoring')"
+					expanded
+				>
+					<MultiSelect
+						v-model="scoringType"
+						:placeholder="$t('Click to select')"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
+						label="name"
+						track-by="id"
+						:options="options.scoringTypes"
+						:loading="scoringTypesLoading"
+						:disabled="calculationLoading || !groups.length"
+						:searchable="false"
+						:allow-empty="false"
+						@select="scoringTypeChanged"
+					>
+						<span slot="noOptions">{{$t("List is empty")}}</span>
+					</MultiSelect>
+				</b-field>
+			</div>
+
+			<div class="column is-8 is-flex pl-0">
+				<form @submit.prevent="updateVulnerabilityScores"  class="is-flex-grow-1">
 					<b-field grouped>
 						<b-field
 							:label="vulnerabilityScoreLabel"
@@ -87,33 +113,10 @@
 						</b-field>
 					</b-field>
 				</form>
-			</div>
-
-			<div class="column is-8 is-flex">
-				<b-field
-					class="vulnerability-type-field is-flex-grow-1"
-					:label="$t('Scoring Type')"
-					expanded
-				>
-					<MultiSelect
-						v-model="scoringType"
-						:placeholder="$t('Click to select')"
-						label="name"
-						track-by="id"
-						:options="options.scoringTypes"
-						:loading="scoringTypesLoading"
-						:disabled="calculationLoading || !groups.length"
-						:searchable="false"
-						:allow-empty="false"
-						@select="scoringTypeChanged"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
 				<b-button
-					class="vulnerability-update-button is-align-self-center ml-1 mt-2"
+					class="vulnerability-update-button is-align-self-center ml-2"
 					type="is-primary"
-					:disabled="calculationLoading || !groups.length"
+					:disabled="isUpdateButtonEnabled"
 					@click="updateVulnerabilityScores"
 				>
 					{{ $t('Update') }}
@@ -132,12 +135,13 @@
 					{{ $t('Details') }}
 				</b-button>
 
-				<ExportButton
+				<ExportControl
 					type="is-primary"
-					class="ml-1"
-					:label="$t('Export Details')"
-					:loading="exportLoading"
-					:formats="{ xlsx: true }"
+					field-class="is-pulled-right ml-3"
+					:available-export-formats="exportControl.formats"
+					:available-export-types="exportControl.types"
+					:is-export-loading="exportControl.loading"
+					:location="exportControl.location"
 					:disabled="isExportButtonDisabled"
 					@onExport="exportSelectedBeneficiaries"
 				/>
@@ -154,7 +158,8 @@
 </template>
 
 <script>
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import Modal from "@/components/Modal";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaForm";
 import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaGroup";
@@ -162,6 +167,7 @@ import BeneficiariesModalList from "@/components/AddAssistance/SelectionTypes/Se
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
+import { normalizeExportDate } from "@/utils/datagrid";
 
 export default {
 	name: "SelectionCriteria",
@@ -171,7 +177,7 @@ export default {
 		SelectionCriteriaGroup,
 		Modal,
 		SelectionCriteriaForm,
-		ExportButton,
+		ExportControl,
 	},
 
 	props: {
@@ -186,6 +192,12 @@ export default {
 
 	data() {
 		return {
+			exportControl: {
+				loading: false,
+				location: "vulnerabilityScores",
+				types: [EXPORT.VULNERABILITY_SCORES],
+				formats: [EXPORT.FORMAT_XLSX],
+			},
 			criteriaModal: {
 				isOpened: false,
 			},
@@ -215,7 +227,6 @@ export default {
 			totalCount: 0,
 			calculationLoading: false,
 			vulnerabilityScoreTouched: false,
-			exportLoading: false,
 		};
 	},
 
@@ -241,8 +252,21 @@ export default {
 		},
 
 		isExportButtonDisabled() {
-			return this.vulnerabilityScoreTouched || this.calculationLoading
-				|| !this.groups.length || !this.totalCount;
+			return this.vulnerabilityScoreTouched
+				|| this.calculationLoading
+				|| !this.groups.length
+				|| !this.totalCount;
+		},
+
+		isMinVulnerabilityScoreFloat() {
+			return Number(this.minimumSelectionScore) === this.minimumSelectionScore
+				&& this.minimumSelectionScore % 1 !== 0;
+		},
+
+		isUpdateButtonEnabled() {
+			return this.calculationLoading
+				|| !this.groups.length
+				|| this.isMinVulnerabilityScoreFloat;
 		},
 	},
 
@@ -283,28 +307,30 @@ export default {
 			return !!this.groups.length;
 		},
 
-		async exportSelectedBeneficiaries(format) {
-			this.exportLoading = true;
+		async exportSelectedBeneficiaries(type, format) {
+			if (type === EXPORT.VULNERABILITY_SCORES) {
+				this.exportControl.loading = true;
 
-			await AssistancesService.exportVulnerabilityScores(
-				format, this.assistanceBody,
-			)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `vulnerability-scores.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-				});
+				await AssistancesService.exportVulnerabilityScores(
+					format, this.assistanceBody,
+				)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Vulnerability scores ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
+					});
 
-			this.exportLoading = false;
+				this.exportControl.loading = false;
+			}
 		},
 
 		async scoringTypeChanged() {
@@ -440,10 +466,13 @@ export default {
 			}
 
 			if (assistanceBody.selectionCriteria?.length) {
-				await this.calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount });
-				await this.calculationOfAssistanceBeneficiariesScores(
-					{ assistanceBody, totalCount },
-				);
+				await this.calculationOfAssistanceBeneficiaries({
+					assistanceBody,
+					totalCount,
+				});
+				await this.calculationOfAssistanceBeneficiariesScores({
+					assistanceBody,
+				});
 			} else {
 				this.totalCount = 0;
 				this.countOf = 0;
@@ -487,16 +516,16 @@ export default {
 			this.calculationLoading = false;
 		},
 
-		async calculationOfAssistanceBeneficiariesScores(
-			{ assistanceBody, totalCount },
-		) {
+		async calculationOfAssistanceBeneficiariesScores({
+			assistanceBody,
+		}) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
 
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
 				scoringBlueprintId: this.scoringType?.id || null,
-				threshold: totalCount ? null : this.minimumSelectionScore,
+				threshold: this.minimumSelectionScore,
 			};
 
 			if (beneficiaryIds.length) {
@@ -596,6 +625,10 @@ export default {
 
 .vulnerability-number-input input, .vulnerability-update-button {
 	height: 40px;
+}
+
+.vulnerability-update-button {
+	margin-top: 2rem;
 }
 
 .scoring-actions {

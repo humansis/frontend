@@ -5,7 +5,6 @@
 				<h4 class="title is-4">{{ $t('Current Location') }}</h4>
 				<LocationForm
 					ref="currentLocationForm"
-					is-editing
 					:form-model="formModel.currentLocation"
 					:form-disabled="false"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
@@ -35,6 +34,9 @@
 						v-model="formModel.livelihood.livelihood"
 						searchable
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="livelihoodLoading"
@@ -107,6 +109,9 @@
 						searchable
 						multiple
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:loading="assetsLoading"
@@ -162,6 +167,9 @@
 						searchable
 						multiple
 						label="value"
+						:select-label="$t('Press enter to select')"
+						:selected-label="$t('Selected')"
+						:deselect-label="$t('Press enter to remove')"
 						track-by="code"
 						:placeholder="$t('Click to select')"
 						:options="options.externalSupportReceivedType"
@@ -239,6 +247,9 @@
 				v-model="formModel.shelterStatus"
 				searchable
 				label="value"
+				:select-label="$t('Press enter to select')"
+				:selected-label="$t('Selected')"
+				:deselect-label="$t('Press enter to remove')"
 				track-by="code"
 				:placeholder="$t('Click to select')"
 				:loading="shelterStatusLoading"

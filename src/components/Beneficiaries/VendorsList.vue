@@ -87,13 +87,12 @@
 		</template>
 
 		<template #export>
-			<ExportButton
-				v-if="table.data.length"
-				space-between
-				class="ml-3"
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
+			<ExportControl
+				:disabled="!table.dataUpdated || !table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
 				@onExport="exportVendors"
 			/>
 		</template>
@@ -125,13 +124,14 @@ import SafeDelete from "@/components/SafeDelete";
 import ActionButton from "@/components/ActionButton";
 import VendorService from "@/services/VendorService";
 import LocationsService from "@/services/LocationsService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import UsersService from "@/services/UsersService";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
@@ -149,7 +149,7 @@ export default {
 	name: "VendorsList",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -162,25 +162,30 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			exportLoading: false,
 			filters: {},
 			locationsFilter: {},
+			exportControl: {
+				loading: false,
+				location: "vendors",
+				types: [EXPORT.VENDORS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "ID" },
-					{ key: "username" },
-					{ key: "name" },
+					{ key: "id", label: "ID", sortable: true },
+					{ key: "username", sortable: true },
+					{ key: "name", sortable: true },
 					{ key: "categoryType", width: "200", type: "svgIcon" },
 					{ key: "vendorNo", label: "Vendor No." },
 					{ key: "contractNo", label: "Contract No." },
 					// TODO Temporary hidden (not implemented yet)
 					// { key: "invoicing", width: "100", type: "tag", customTags: statusTags },
-					{ key: "addressNumber" },
-					{ key: "addressPostcode" },
-					{ key: "addressStreet" },
-					{ key: "location" },
+					{ key: "addressNumber", sortable: true },
+					{ key: "addressPostcode", sortable: true },
+					{ key: "addressStreet", sortable: true },
+					{ key: "location", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
@@ -188,12 +193,9 @@ export default {
 				sortColumn: "",
 				searchPhrase: "",
 				progress: null,
+				dataUpdated: false,
 			},
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -219,6 +221,7 @@ export default {
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;
+				this.table.dataUpdated = true;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
@@ -234,7 +237,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.vendorsFilter.resetFilters();
+			this.resetSearch({ tableRef: "table", filtersRef: "vendorsFilter" });
 		},
 
 		resetTableSort() {
@@ -307,24 +310,31 @@ export default {
 				});
 		},
 
-		async exportVendors(format) {
-			this.exportLoading = true;
-			await VendorService.exportVendors(format)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `vendors.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async exportVendors(type, format) {
+			if (type === EXPORT.VENDORS) {
+				this.exportControl.loading = true;
+				const filters = {
+					...this.filters,
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+				};
+
+				await VendorService.exportVendors(format, filters)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `BNF Vendors ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

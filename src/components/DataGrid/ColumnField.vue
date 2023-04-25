@@ -2,25 +2,64 @@
 	<div>
 		<!-- Simple Text -->
 		<template v-if="!column.type || (column.type === 'text')">
-			<span v-html="data.row[column.field]" />
+			<div v-html="simpleText" />
 		</template>
 
 		<template v-if="column.type === 'assistancesType'">
-			{{ normalizeText($t(data.row[column.field])) }}
+			{{ normalizeText($t(cellData)) }}
 		</template>
 
 		<!-- Simple Text -->
 		<template v-if="column.type === 'textOrNone'">
-			{{ data.row[column.field] || this.$t("None") }}
+			{{ cellData || this.$t("None") }}
 		</template>
 
 		<!-- Array Text Break -->
 		<template v-if="column.type === 'arrayTextBreak'">
 			<div
-				v-for="(item, index) in  data.row[column.field]"
+				v-for="(item, index) in  cellData"
 				:key="`array-text-break-${index}`"
 			>
 				{{ item }}
+			</div>
+		</template>
+
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicitiesRecords'">
+			<div
+				v-for="(item, index) in data.row[column.field]"
+				:key="`array-text-break-${index}`"
+				:class="{ 'mb-4': isMembersLastRecord(item) }"
+			>
+				<b-tag
+					v-if="item === 'hasNoDuplicityDifferences'"
+					type="is-light"
+				>
+					{{ $t('No Difference') }}
+				</b-tag>
+
+				<span
+					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
+					:class="{ 'has-text-weight-bold': column.boldText }"
+				>
+					{{ item }}
+				</span>
+			</div>
+		</template>
+
+		<!-- Array Text Break (especially for duplicates)-->
+		<template v-if="column.type === 'arrayTextBreakForDuplicities'">
+			<div
+				v-for="(item, index) in  data.row[column.field]"
+				:key="`array-text-break-${index}`"
+				:class="{
+					'has-text-weight-bold': column.boldText,
+					'mb-4': isMembersLastRecord(item),
+				}"
+			>
+				<span v-if="!isMembersLastRecord(item)">
+					{{ item }}
+				</span>
 			</div>
 		</template>
 
@@ -28,16 +67,19 @@
 		<template v-if="column.type === 'link'">
 			<router-link
 				class="table-link"
-				:to="getLink(data.row[column.field])" target="_blank"
+				:to="{
+					name: getRouteName(),
+					params: getParams(),
+				}"
 			>
-				{{ getLinkName(data.row[column.field]) }}
+				{{ getLinkName() }}
 			</router-link>
 		</template>
 
 		<!-- Count array items -->
 		<template v-if="column.type === 'count'">
-			<p v-if="data.row[column.field].length">
-				{{ data.row[column.field].length }}
+			<p v-if="cellData.length">
+				{{ cellData.length }}
 			</p>
 			<p v-else>
 				{{ $t('None') }}
@@ -45,17 +87,17 @@
 		</template>
 
 		<!-- Show image or logo -->
-		<ImageColumn v-if="column.type === 'image'" :image="data.row[column.field]" />
+		<ImageColumn v-if="column.type === 'image' && typeof cellData === 'string'" :image="cellData" />
 
 		<!-- Text with different font -->
 		<p v-if="column.type === 'font'" :style="fontFamily">
-			{{ data.row[column.field] }}
+			{{ cellData }}
 		</p>
 
 		<!-- Color -->
 		<VSwatches
 			v-if="column.type === 'color'"
-			v-model="data.row[column.field]"
+			v-model="cellData"
 			row-lenght="6"
 			popover-x="right"
 			popover-y="top"
@@ -65,25 +107,23 @@
 
 		<!-- For Boolean values -->
 		<template v-if="column.type === 'checkbox'">
-			<b-checkbox v-model="data.row[column.field]" disabled />
+			<b-checkbox v-model="cellData" disabled />
 		</template>
 
 		<!-- Show Country Flag -->
 		<CountryFlag
 			v-if="column.type === 'flag'"
-			:country="data.row[column.field]"
+			:country="cellData"
 			size="normal"
 			disabled
 		/>
 
 		<!-- Show Object Value -->
 		<template v-if="column.type === 'object'">
-			<p v-if="data.row[column.field].value">
-				{{ data.row[column.field].value }}
+			<p v-if="cellData.value">
+				{{ cellData.value }}
 			</p>
-			<p v-else>
-				{{ data.row[column.field] }}
-			</p>
+			<pre v-else>{{ cellData }}</pre>
 		</template>
 
 		<!-- Show Date -->
@@ -111,23 +151,23 @@
 		<!-- Show Custom Tags Array with background color -->
 		<template v-if="column.type === 'tagArray'">
 			<div
-				v-for="(item, index) in  data.row[column.field]"
+				v-for="(item, index) in  cellData"
 				:key="`tags-array-item-${index}`"
 			>
 				<b-tag :type="getTagTypeByItem(item)">
-					{{ $t(data.row[column.field][index]) }}
+					{{ $t(cellData[index]) }}
 				</b-tag>
 			</div>
 		</template>
 
 		<!-- Editable column -->
-		<b-input v-if="column.type === 'editable'" v-model="data.row[column.field]" />
+		<b-input v-if="column.type === 'editable'" v-model="cellData" />
 
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
-			<span v-if="data.row[column.field] && data.row[column.field].length > 0">
+			<span v-if="cellData.length">
 				<SvgIcon
-					:items="data.row[column.field]"
+					:items="cellData"
 				/>
 				<!-- Special case for assistances grid -->
 				<span v-if="isAssistanceRemote(data.row)" class="remote-disribution-flag">R</span>
@@ -145,11 +185,11 @@
 
 		<!-- Column for product category image/icon  -->
 		<template v-if="column.type === 'productCategoryImage'">
+			<SvgIcon v-if="cellData.primary === 'icon' && cellData.icon" :items="cellData.icon" />
 			<ImageColumn
-				v-if="data.row[column.field] && data.row[column.field].image"
-				:image="data.row[column.field].image"
+				v-else
+				:image="cellData.image"
 			/>
-			<SvgIcon v-else :items="data.row[column.field].icon" />
 		</template>
 	</div>
 </template>
@@ -168,41 +208,57 @@ export default {
 	},
 
 	computed: {
+		cellData() {
+			return this.data.row[this.column.field] ?? {};
+		},
+
+		simpleText() {
+			return this.isCellDataString || this.isCellDataNumber ? this.cellData : "";
+		},
+
+		isCellDataNumber() {
+			return typeof this.cellData === "number";
+		},
+
+		isCellDataString() {
+			return typeof this.cellData === "string" && this.cellData.length;
+		},
+
 		fontFamily() {
-			return `font-family: ${this.data.row[this.column.field]}, sans-serif`;
+			return this.isCellDataString
+				? `font-family: ${this.cellData}, sans-serif;`
+				: "";
 		},
 
 		customValue() {
-			const value = this.data.row[this.column.field];
-
-			if (!value) {
-				return value;
+			if (this.cellData.value) {
+				return this.cellData.value;
 			}
 
-			if (typeof value === "object") {
-				if (value.value) return value.value;
+			if (typeof this.cellData === "object") {
+				const newDate = this.$moment(this.cellData);
 
-				const newDate = this.$moment(this.data.row[this.column.field]);
-
-				if (newDate.isValid()) return newDate.format("YYYY-MM-DD hh:mm");
+				if (newDate.isValid()) {
+					return newDate.format("YYYY-MM-DD hh:mm");
+				}
 			}
 
-			return value;
+			return this.cellData;
 		},
 
 		formattedDate() {
-			return `${this.$moment(this.data.row[this.column.field]).format("YYYY-MM-DD")}`;
+			return `${this.$moment(this.cellData).format("YYYY-MM-DD")}`;
 		},
 
 		formattedDateTime() {
-			const date = this.data.row[this.column.field];
-
-			return date ? `${this.$moment(date).format("YYYY-MM-DD hh:mm")}` : "";
+			return this.cellData && typeof this.cellData !== "object"
+				? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				: this.$t("N/A");
 		},
 
 		getTagType() {
 			const tag = this.column.customTags
-				.find(({ code }) => code === this.data.row[this.column.field]);
+				.find(({ code }) => code === this.cellData);
 			return tag?.type || "is-light";
 		},
 	},
@@ -212,16 +268,24 @@ export default {
 			return !!data.remoteDistributionAllowed;
 		},
 
-		getLink(field) {
-			return field?.link || "";
+		getParams() {
+			return this.cellData.routeParams || {};
 		},
 
-		getLinkName(field) {
-			return field?.name || "";
+		getRouteName() {
+			return this.cellData.routeName || "Home";
+		},
+
+		getLinkName() {
+			return this.cellData.name || "";
 		},
 
 		getTagTypeByItem(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
+		},
+
+		isMembersLastRecord(item) {
+			return item === "memberDuplicitiesLastItem";
 		},
 
 		normalizeText,

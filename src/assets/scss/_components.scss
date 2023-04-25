@@ -168,7 +168,7 @@
 	padding: 7.25rem 2.5rem 5.25rem 1.5rem;
 
 	.media {
-		width: 110px;
+		width: 160px;
 		margin: 0 auto;
 	}
 }
@@ -177,4 +177,8 @@
 	&.is-bottom-right {
 		padding: 1rem 2.5rem 1rem 0.7rem;
 	}
+}
+
+.notices.is-top {
+	padding-right: 0;
 }

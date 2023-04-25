@@ -73,11 +73,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.countryModal.isDetail) {
-				result = "Detail of Country";
+				result = this.$t("Detail of Country");
 			} else if (this.countryModal.isEditing) {
-				result = "Edit Country";
+				result = this.$t("Edit Country");
 			} else {
-				result = "Create New Country";
+				result = this.$t("Create New Country");
 			}
 			return result;
 		},
@@ -173,12 +173,12 @@ export default {
 
 			await CountriesService.createCountry(countryBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Country Successfully Created", "is-success");
+					Toast(this.$t("Country Successfully Created"), "is-success");
 					this.$refs.countriesList.fetchData();
 					this.closeCountryModal();
 				}
 			}).catch((e) => {
-				Toast(`Country ${e}`, "is-danger");
+				Toast(`${this.$t("Country")} ${e}`, "is-danger");
 				this.countryModal.isWaiting = false;
 			});
 		},
@@ -188,12 +188,12 @@ export default {
 
 			await CountriesService.updateCountry(id, countryBody).then((response) => {
 				if (response.status === 200) {
-					Toast("Country Successfully Updated", "is-success");
+					Toast(this.$t("Country Successfully Updated"), "is-success");
 					this.$refs.countriesList.fetchData();
 					this.closeCountryModal();
 				}
 			}).catch((e) => {
-				Toast(`Country ${e}`, "is-danger");
+				Toast(`${this.$t("Country")} ${e}`, "is-danger");
 				this.countryModal.isWaiting = false;
 			});
 		},
@@ -201,11 +201,11 @@ export default {
 		async removeCountry(id) {
 			await CountriesService.deleteCountry(id).then((response) => {
 				if (response.status === 204) {
-					Toast("Country successfully removed", "is-success");
+					Toast(this.$t("Country successfully removed"), "is-success");
 					this.$refs.countriesList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`Country ${e}`, "is-danger");
+				Toast(`${this.$t("Country")} ${e}`, "is-danger");
 			});
 		},
 	},

@@ -68,4 +68,8 @@ export default {
 	storeAdmNames: ({ commit }, admNames) => {
 		commit(CONST.STORE_ADM_NAMES, admNames);
 	},
+
+	storeSelectedExportOptions: ({ commit }, selectedExportOptions) => {
+		commit(CONST.STORE_SELECTED_EXPORT_OPTIONS, selectedExportOptions);
+	},
 };

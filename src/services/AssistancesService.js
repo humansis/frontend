@@ -311,14 +311,37 @@ export default {
 		return { data, status };
 	},
 
-	async updateAssistanceDateOfDistribution(id, dateDistribution, dateExpiration, round) {
+	async moveAssistance(assistanceId, originalProjectId, targetProjectId) {
+		const { status, message } = await fetcher({
+			uri: `assistances/${assistanceId}/move`,
+			method: "POST",
+			body: {
+				originalProjectId,
+				targetProjectId,
+			},
+		});
+		return { status, message };
+	},
+
+	async updateAssistance({
+		id,
+		name,
+		formattedDateDistribution,
+		formattedDateExpiration,
+		round,
+		note,
+		locationId,
+	}) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
 			body: {
-				dateDistribution,
-				...(dateExpiration && { dateExpiration }), // include dateExpiration only when it's defined
+				name,
+				...(formattedDateDistribution && { dateDistribution: formattedDateDistribution }),
+				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
 				round,
+				note,
+				locationId,
 			},
 		});
 		return { data, status };

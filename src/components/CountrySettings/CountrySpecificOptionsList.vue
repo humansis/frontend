@@ -11,7 +11,7 @@
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
+		@resetSort="resetSort('id', 'asc', true)"
 		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
@@ -53,12 +53,12 @@
 			</div>
 		</b-table-column>
 		<template #export>
-			<ExportButton
-				v-if="table.data.length"
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
+			<ExportControl
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
 				@onExport="exportCountrySpecifics"
 			/>
 		</template>
@@ -69,11 +69,12 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
@@ -81,7 +82,7 @@ export default {
 
 	components: {
 		ColumnField,
-		ExportButton,
+		ExportControl,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -91,7 +92,12 @@ export default {
 
 	data() {
 		return {
-			exportLoading: false,
+			exportControl: {
+				loading: false,
+				location: "countrySpecificOptions",
+				types: [EXPORT.COUNTRY_SPECIFIC_OPTIONS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			table: {
 				data: [],
 				columns: [],
@@ -102,8 +108,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "asc",
+				sortColumn: "id",
 				searchPhrase: "",
 			},
 		};
@@ -137,24 +143,26 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async exportCountrySpecifics(format) {
-			this.exportLoading = true;
-			await CountrySpecificOptionsService.exportCountrySpecificOptions(format)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `country_specific_options.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async exportCountrySpecifics(type, format) {
+			if (type === EXPORT.COUNTRY_SPECIFIC_OPTIONS) {
+				this.exportControl.loading = true;
+				await CountrySpecificOptionsService.exportCountrySpecificOptions(format)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Country Specific Options ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

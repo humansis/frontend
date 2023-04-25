@@ -87,7 +87,7 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`Currency ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Currency")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;

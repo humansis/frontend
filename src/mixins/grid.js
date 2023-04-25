@@ -19,7 +19,7 @@ export default {
 		...mapActions(["storePerPage"]),
 
 		onPageChange(currentPage) {
-			this.table.currentPage = currentPage;
+			this.table.currentPage = currentPage || 1;
 			this.fetchData();
 		},
 
@@ -53,6 +53,11 @@ export default {
 			this.table.data.splice(index, 1);
 		},
 
+		assistanceMove(id) {
+			const entity = this.table.data.find((item) => item.id === id);
+			this.$emit("onShowMove", entity);
+		},
+
 		showDetailWithId(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			this.showDetail(entity);
@@ -71,10 +76,28 @@ export default {
 			this.$emit("onRemove", id);
 		},
 
-		resetSort(sortColumn = "", sortDirection = "") {
+		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;
+
+				if (forceFetch) {
+					this.fetchData();
+				}
+			}
+		},
+
+		resetSearch({ tableRef, filtersRef }) {
+			const searchValue = this.$refs[tableRef].searchValue();
+
+			if (Object.keys(this.filters).length) {
+				this.filters = {};
+				this.$refs[filtersRef].resetFilters();
+			}
+
+			if (searchValue) {
+				this.$refs[tableRef].onResetSearch();
+			} else {
 				this.fetchData();
 			}
 		},

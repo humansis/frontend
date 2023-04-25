@@ -6,7 +6,9 @@
 				<NewAssistanceForm
 					ref="newAssistanceForm"
 					:project="project"
-					:data="componentsData.newAssistanceForm"
+					:new-assistance-form="componentsData.newAssistanceForm"
+					:data-before-duplicated="componentsData.dataBeforeDuplicated"
+					:date-expiration="assistanceBody.dateExpiration"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -29,10 +31,12 @@
 					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
 					:project="project"
-					:data="componentsData.distributedCommodity"
+					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
 					:calculated-commodity-value="calculatedCommodityValue"
+					:is-assistance-duplicated="isDuplicated"
 					:target-type="targetType"
+					:date-of-assistance="assistanceBody.dateDistribution"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
@@ -94,6 +98,7 @@ export default {
 		return {
 			componentsData: {
 				newAssistanceForm: null,
+				dataBeforeDuplicated: {},
 				distributedCommodity: null,
 				activityDetails: null,
 				selectionCriteria: null,
@@ -120,6 +125,7 @@ export default {
 				target: "",
 				type: "",
 				sector: "",
+				name: "",
 				scoringBlueprintId: null,
 				subsector: "",
 				locationId: null,
@@ -140,7 +146,7 @@ export default {
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
-			duplicate: false,
+			isDuplicated: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
@@ -168,8 +174,8 @@ export default {
 	async created() {
 		await this.fetchProject();
 
-		this.duplicate = !!this.$route.query.duplicateAssistance;
-		if (this.duplicate) {
+		this.isDuplicated = !!this.$route.query.duplicateAssistance;
+		if (this.isDuplicated) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
 				.then(({ data, message }) => {
 					if (!data) {
@@ -188,7 +194,6 @@ export default {
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
-					this.$router.push({ name: "NotFound" });
 				});
 
 			await AssistancesService.getScoringTypes()
@@ -240,6 +245,7 @@ export default {
 						title: this.$t("Date of Assistance"),
 						message: this.$t("You picked date from the past. Is it ok?"),
 						confirmText: this.$t("Yes and Continue"),
+						cancelText: this.$t("Cancel"),
 						type: "is-warning",
 						hasIcon: true,
 						onConfirm: () => {
@@ -338,7 +344,13 @@ export default {
 				}
 			}
 
+			this.componentsData.dataBeforeDuplicated = {
+				dateDistribution: assistance.dateDistribution,
+				round: assistance.round,
+			};
+
 			this.componentsData.newAssistanceForm = {
+				name: assistance.name,
 				adm1: null,
 				adm2: null,
 				adm3: null,
@@ -348,7 +360,6 @@ export default {
 				adm3Id: assistance.adm3?.id,
 				adm4Id: assistance.adm4?.id,
 				dateOfAssistance: new Date(assistance.dateDistribution),
-				dateExpiration: assistance.dateExpiration ? new Date(assistance.dateExpiration) : null,
 				assistanceType: assistance.type,
 				sector: assistance.sector,
 				subsector: assistance.subsector,
@@ -379,6 +390,8 @@ export default {
 					value: item.value,
 					unit: item.unit,
 					description: item.description,
+					dateExpiration: assistance.dateExpiration
+						? new Date(assistance.dateExpiration) : null,
 					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
@@ -483,24 +496,25 @@ export default {
 
 		fetchNewAssistanceForm(data) {
 			const {
+				name,
 				assistanceType,
 				dateOfAssistance,
 				sector,
 				subsector,
 				targetType,
-				dateExpiration,
 				note,
 				round,
+				isDateOfAssistanceValid,
 			} = data;
+
+			this.createAssistanceButtonDisabled = !isDateOfAssistanceValid;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
+				name,
 				dateDistribution: this.isDateValid(dateOfAssistance)
-					? dateOfAssistance.toISOString()
-					: new Date(this.project.startDate),
-				dateExpiration: this.isDateValid(dateExpiration)
-					? dateExpiration.toISOString()
-					: new Date(this.project.endDate),
+					? this.$moment(dateOfAssistance).format("YYYY-MM-DD")
+					: this.project?.startDate,
 				target: targetType?.code,
 				type: assistanceType?.code,
 				sector: sector?.code,
@@ -525,9 +539,14 @@ export default {
 		},
 
 		fetchDistributedCommodity(commodities) {
+			const date = this.isDateValid(commodities?.[0]?.dateExpiration)
+				? commodities[0].dateExpiration
+				: new Date(this.project.endDate);
+
 			this.assistanceBody = {
 				...this.assistanceBody,
 				commodities,
+				dateExpiration: this.$moment(date).format("YYYY-MM-DD"),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
 				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,

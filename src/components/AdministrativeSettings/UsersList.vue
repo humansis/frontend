@@ -52,12 +52,12 @@
 			</div>
 		</b-table-column>
 		<template #export>
-			<ExportButton
-				v-if="table.data.length"
-				space-between
-				type="is-primary"
-				:loading="exportLoading"
-				:formats="{ xlsx: true, csv: true, ods: true}"
+			<ExportControl
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
 				@onExport="exportUsers"
 			/>
 		</template>
@@ -70,10 +70,11 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import UsersService from "@/services/UsersService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
+import ExportControl from "@/components/Export";
+import { EXPORT } from "@/consts";
 import permissions from "@/mixins/permissions";
 import SystemService from "@/services/SystemService";
 
@@ -81,7 +82,7 @@ export default {
 	name: "UsersList",
 
 	components: {
-		ExportButton,
+		ExportControl,
 		SafeDelete,
 		Table,
 		ActionButton,
@@ -91,7 +92,12 @@ export default {
 
 	data() {
 		return {
-			exportLoading: false,
+			exportControl: {
+				loading: false,
+				location: "users",
+				types: [EXPORT.USERS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
 			roles: [],
 			table: {
 				data: [],
@@ -175,24 +181,26 @@ export default {
 				});
 		},
 
-		async exportUsers(format) {
-			this.exportLoading = true;
-			await UsersService.exportUsers(format)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `users.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
-				});
-			this.exportLoading = false;
+		async exportUsers(type, format) {
+			if (type === EXPORT.USERS) {
+				this.exportControl.loading = true;
+				await UsersService.exportUsers(format)
+					.then(({ data, status, message }) => {
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `Users ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					})
+					.catch((e) => {
+						if (e.message) Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
+					});
+				this.exportControl.loading = false;
+			}
 		},
 	},
 };

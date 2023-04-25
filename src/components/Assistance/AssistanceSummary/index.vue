@@ -44,6 +44,7 @@
 					:project="project"
 					:is-project-loading="isProjectLoading"
 					:province="province"
+					:commodity="commodity"
 				/>
 			</b-tab-item>
 
@@ -92,6 +93,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		isCommoditiesLoading: {
+			type: Boolean,
+			default: false,
+		},
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
@@ -111,6 +116,7 @@ export default {
 			consts,
 			province: null,
 			commodity: [],
+			isCommodityLoading: false,
 		};
 	},
 
@@ -158,8 +164,8 @@ export default {
 			this.province = this.assistance?.adm1;
 		},
 
-		setCommodity() {
-			this.commodity = this.assistance?.commodities
+		async setCommodity() {
+			this.commodity = this.commodities
 				.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
 		},
 

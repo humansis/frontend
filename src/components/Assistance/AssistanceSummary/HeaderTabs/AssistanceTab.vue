@@ -79,15 +79,15 @@
 				<h2 class="heading">{{ $t('Expiration Date') }}</h2>
 
 				<div
-					v-if="dateExpiration"
+					v-if="dateExpiration && isCommoditySmartCard"
 					class="has-text-weight-bold is-size-5"
 				>
 					{{ dateExpiration }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else>
+				<div v-else-if="!isExpirationDateLoaded">
 					<small> {{ $t("N/A") }} </small>
 				</div>
+				<Loading v-else type="bubbles" is-normal />
 			</div>
 		</div>
 	</div>
@@ -96,6 +96,7 @@
 <script>
 import Loading from "@/components/Loading";
 import { mapState } from "vuex";
+import consts from "@/utils/assistanceConst";
 
 export default {
 	name: "AssistanceTab",
@@ -125,6 +126,14 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		isCommodityLoading: {
+			type: Boolean,
+			default: false,
+		},
+		commodity: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	computed: {
@@ -135,11 +144,11 @@ export default {
 		},
 
 		dateDistribution() {
-			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateDistribution).format("YYYY-MM-DD");
 		},
 
 		dateExpiration() {
-			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm");
+			return this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD");
 		},
 
 		provinceName() {
@@ -153,6 +162,15 @@ export default {
 		isRoundNaN() {
 			return Number.isNaN(parseInt(this.assistance?.round, 10));
 		},
+
+		isCommoditySmartCard() {
+			return this.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
+		},
+
+		isExpirationDateLoaded() {
+			return this.isAssistanceLoading;
+		},
+
 	},
 };
 </script>

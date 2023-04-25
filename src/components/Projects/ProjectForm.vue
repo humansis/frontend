@@ -39,6 +39,9 @@
 					track-by="value"
 					multiple
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:disabled="formDisabled"
 					:options="options.sectors"
 					:loading="sectorsLoading"
@@ -110,6 +113,9 @@
 					v-model="formModel.selectedDonors"
 					searchable
 					label="fullname"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="id"
 					multiple
 					:placeholder="$t('Click to select')"
@@ -134,6 +140,9 @@
 				<MultiSelect
 					v-model="formModel.selectedTargetType"
 					label="value"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					track-by="code"
 					:placeholder="$t('Click to select')"
 					:options="options.targetTypes"

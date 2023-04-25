@@ -9,12 +9,38 @@ export default {
 	methods: {
 		...mapActions(["storeGridFilters"]),
 
+		removeEmptyValues(data) {
+			const copiedObject = {};
+
+			Object.entries(data).forEach(([key, value]) => {
+				if (!value) {
+					return;
+				}
+
+				if (Object.keys(value).length === 0
+					&& typeof value !== "number"
+					&& typeof value !== "boolean") {
+					return;
+				}
+
+				copiedObject[key] = value;
+			});
+
+			return copiedObject;
+		},
+
 		setGridFilters(entity, hasLocationsFilter = true) {
 			const storedFilter = this.gridFilters[entity]?.find(
 				({ country }) => country === this.country.iso3,
 			);
 
-			const { query } = storedFilter || this.$route;
+			let query = {};
+
+			if (Object.keys(this.$route.query).length) {
+				query = this.$route.query;
+			} else if (storedFilter) {
+				query = storedFilter.query;
+			}
 
 			const {
 				page,
@@ -29,17 +55,17 @@ export default {
 				this.advancedSearchVisible = true;
 			}
 
-			if (!page) {
+			if (!Object.keys(query).length) {
 				this.setGridFiltersToUrl(entity, hasLocationsFilter);
 			} else {
-				this.table.currentPage = Number(page);
-				this.table.searchPhrase = search;
-				this.table.sortColumn = sortColumn;
-				this.table.sortDirection = sortDirection;
+				this.table.currentPage = Number(page) || 1;
+				this.table.searchPhrase = search || "";
+				this.table.sortColumn = sortColumn || "";
+				this.table.sortDirection = sortDirection || "desc";
 				this.filters = filters ? JSON.parse(filters) : {};
 
-				if (hasLocationsFilter) {
-					this.locationsFilter = JSON.parse(locationsFilter);
+				if (hasLocationsFilter && locationsFilter) {
+					this.locationsFilter = locationsFilter ? JSON.parse(locationsFilter) : {};
 				}
 			}
 		},
@@ -52,39 +78,51 @@ export default {
 				({ country }) => country === this.country.iso3,
 			);
 
-			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
-				updatedGridFilters[entity][filterEntityIndex].query = { ...query };
-			} else {
-				updatedGridFilters[entity].push({
-					country: this.country.iso3,
-					query,
-				});
-			}
+			const checkedFilter = this.removeEmptyValues(this.filters);
 
-			this.storeGridFilters({
-				...updatedGridFilters,
-			});
+			const checkedLocation = hasLocationsFilter
+				? this.removeEmptyValues(this.locationsFilter)
+				: {};
 
 			const newQuery = {
-				...query,
-				page: this.table.currentPage?.toString() || "1",
-				search: this.table.searchPhrase,
-				sortColumn: this.table.sortColumn,
-				sortDirection: this.table.sortDirection,
-				filters: JSON.stringify(this.filters),
-				...(hasLocationsFilter && { locationsFilter: JSON.stringify(this.locationsFilter) }),
+				...(this.table.currentPage > 1 && { page: this.table.currentPage.toString() }),
+				...(this.table.searchPhrase && { search: this.table.searchPhrase }),
+				...(this.table.sortColumn && { sortColumn: this.table.sortColumn }),
+				...(this.table.sortDirection && { sortDirection: this.table.sortDirection }),
+				...(Object.keys(checkedFilter).length && { filters: JSON.stringify(checkedFilter) }),
+				...(hasLocationsFilter && Object.keys(checkedLocation).length && {
+					locationsFilter: JSON.stringify(checkedLocation),
+				}),
 			};
 
 			if (!deepEqual(query, newQuery)) {
 				this.$router.replace({
 					name,
 					query: newQuery,
+				}).catch((error) => {
+					console.error(error);
 				});
 			}
+
+			const routeQuery = this.$route.query;
+
+			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
+				updatedGridFilters[entity][filterEntityIndex].query = { ...routeQuery };
+			} else {
+				updatedGridFilters[entity].push({
+					country: this.country.iso3,
+					query: routeQuery,
+				});
+			}
+
+			this.storeGridFilters({
+				...updatedGridFilters,
+			});
 		},
 
 		async onFiltersChange({ filters, locationsFilter }) {
 			this.locationsFilter = locationsFilter;
+			this.table.dataUpdated = false;
 
 			Object.keys(filters).forEach((key) => {
 				if (Array.isArray(filters[key])) {

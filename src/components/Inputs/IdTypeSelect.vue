@@ -7,6 +7,9 @@
 		<MultiSelect
 			v-model="idType"
 			label="value"
+			:select-label="$t('Press enter to select')"
+			:selected-label="$t('Selected')"
+			:deselect-label="$t('Press enter to remove')"
 			track-by="code"
 			searchable
 			:placeholder="$t('Click to select')"

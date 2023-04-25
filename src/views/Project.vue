@@ -30,9 +30,25 @@
 				class="modal-card"
 				:project="project"
 				:formModel="assistanceModel"
+				:assistance="assistance"
 				:editing="assistanceModal.isEditing"
 				@formClosed="closeAssistanceModal"
 				@formSubmitted="editAssistance"
+			/>
+		</Modal>
+
+		<Modal
+			can-cancel
+			:header="assistanceMoveModal.title"
+			:active="assistanceMoveModal.isOpened"
+			@close="closeAssistanceMoveModal"
+		>
+			<AssistanceMoveForm
+				close-button
+				class="modal-card"
+				:projects="projects"
+				@formClosed="closeAssistanceMoveModal"
+				@formSubmitted="moveAssistance"
 			/>
 		</Modal>
 
@@ -42,8 +58,8 @@
 			:project="project"
 			:project-loaded="projectLoaded"
 			@onRemove="removeAssistance"
-			@onShowDetail="showDetail"
 			@onShowEdit="showEdit"
+			@onShowMove="showMove"
 		/>
 	</div>
 </template>
@@ -52,16 +68,19 @@
 import ProjectSummary from "@/components/Projects/ProjectSummary";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
+import AssistanceMoveForm from "@/components/Assistance/AssistanceMoveForm";
 import Modal from "@/components/Modal";
 import AssistancesService from "@/services/AssistancesService";
 import { Toast, Notification } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import ProjectService from "@/services/ProjectService";
 
 export default {
 	name: "Project",
 
 	components: {
 		AssistanceForm,
+		AssistanceMoveForm,
 		AssistancesList,
 		ProjectSummary,
 		Modal,
@@ -72,10 +91,16 @@ export default {
 	data() {
 		return {
 			project: null,
+			projects: [],
+			assistance: {},
 			projectLoaded: false,
 			assistanceModal: {
 				isOpened: false,
 				isEditing: false,
+				title: "",
+			},
+			assistanceMoveModal: {
+				isOpened: false,
 				title: "",
 			},
 			assistanceModel: {
@@ -88,6 +113,7 @@ export default {
 				allowedProductCategoryTypes: [],
 				cashbackLimit: null,
 				target: "",
+				note: "",
 				round: null,
 			},
 		};
@@ -103,20 +129,66 @@ export default {
 		onProjectLoaded(project) {
 			this.projectLoaded = true;
 			this.project = project;
+			this.getListOfProjects();
 		},
 
 		closeAssistanceModal() {
 			this.assistanceModal.isOpened = false;
 		},
 
-		goToAddAssistance() {
-			this.$router.push({ name: "AddAssistance", params: { projectId: this.$route.params.projectId } });
+		closeAssistanceMoveModal() {
+			this.assistanceMoveModal.isOpened = false;
 		},
 
-		async editAssistance({ id, dateDistribution, dateExpiration, round }) {
-			await AssistancesService.updateAssistanceDateOfDistribution(
-				id, dateDistribution, dateExpiration, round,
+		goToAddAssistance() {
+			this.$router.push({
+				name: "AddAssistance",
+				params: { projectId: this.$route.params.projectId },
+			});
+		},
+
+		async getListOfProjects() {
+			await ProjectService.getListOfProjects()
+				.then(({ data }) => {
+					this.filterProjects(data);
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Projectssfsafs")} ${e}`, "is-danger");
+				});
+		},
+
+		async moveAssistance({ id }) {
+			await AssistancesService.moveAssistance(
+				this.assistance.id,
+				this.project.id,
+				id,
 			)
+				.then((response) => {
+					if (response.status === 202) {
+						Toast(this.$t("Assistance Successfully Moved"), "is-success");
+						this.$refs.assistancesList.fetchData();
+					}
+
+					if (response.status === 400) {
+						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
+							|| `${this.$t("Error code 400")}`, "is-warning");
+					}
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				});
+		},
+
+		async editAssistance({ id, name, dateDistribution, dateExpiration, round, note, locationId }) {
+			const formattedDateDistribution = dateDistribution
+				? this.$moment(dateDistribution).format("YYYY-MM-DD")
+				: null;
+
+			const formattedDateExpiration = dateExpiration
+				? this.$moment(dateExpiration).format("YYYY-MM-DD")
+				: null;
+
+			await AssistancesService.updateAssistance({
+				id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
+			})
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(this.$t("Assistance Successfully Updated"), "is-success");
@@ -138,22 +210,28 @@ export default {
 			});
 		},
 
-		showDetail(assistance) {
-			this.assistanceModel = this.mapToFormModel(assistance);
-			this.assistanceModal = {
-				isOpened: true,
-				isEditing: false,
-				title: this.$t("Details of This Assistance"),
-			};
-		},
-
 		showEdit(assistance) {
 			this.assistanceModel = this.mapToFormModel(assistance);
+			this.assistance = assistance;
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
 				title: this.$t("Edit Assistance"),
 			};
+		},
+
+		showMove(assistance) {
+			this.assistance = assistance;
+			this.assistanceMoveModal = {
+				isOpened: true,
+				title: this.$t(`Move the Assistance ${assistance.name}`),
+			};
+		},
+
+		filterProjects(data) {
+			this.projects = data.filter((obj) => obj.id !== this.project?.id
+				&& this.$moment(obj.endDate).format("YYYY-MM-DD")
+				>= this.$moment(new Date()).format("YYYY-MM-DD"));
 		},
 
 		mapToFormModel(
@@ -163,6 +241,7 @@ export default {
 				adm3,
 				adm4,
 				id,
+				commodity,
 				commodityIds,
 				dateDistribution,
 				dateExpiration,
@@ -171,8 +250,11 @@ export default {
 				name,
 				projectId,
 				target,
+				sector,
+				subsector,
 				type,
 				round,
+				note,
 			},
 		) {
 			return {
@@ -185,11 +267,15 @@ export default {
 				allowedProductCategoryTypes,
 				cashbackLimit,
 				target,
+				sector,
+				subsector,
+				type,
 				id,
+				commodity,
 				commodityIds,
 				name,
 				projectId,
-				type,
+				note,
 				round: {
 					code: (round === "N/A" ? null : round),
 					value: round,

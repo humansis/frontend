@@ -1,16 +1,15 @@
 <template>
 	<CardComponent class="has-table" :title="title">
-		<slot name="progress">
-			<b-progress	:value="100" format="percent" />
-		</slot>
+		<slot name="progress" />
 
-		<slot name="tableHeader">
+		<slot name="tableHeader" v-if="showTableHeader">
 			<div class="level p-3 has-border-bottom">
 				<div class="level-left">
 					<slot name="search">
 						<div class="level-item">
 							<Search
 								v-if="hasSearch"
+								ref="search"
 								:search-phrase="searchPhrase"
 								class="mr-3"
 								@search="onSearch"
@@ -82,7 +81,7 @@
 					icon="eye-slash"
 					:closable="false"
 				>
-					<p class="mt-3">{{ $t('No data') }}</p>
+					<span class="mt-3">{{ $t(noDataMessage) }}</span>
 				</b-notification>
 			</template>
 
@@ -202,6 +201,14 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		noDataMessage: {
+			type: String,
+			default: "No data",
+		},
+		showTableHeader: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -254,9 +261,22 @@ export default {
 			this.$emit("pageChanged");
 		},
 
+		onResetSearch() {
+			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
+		},
+
+		makeTableOverflow(value) {
+			this.$refs.table.tableWrapperClasses["overflow-visible"] = value;
+		},
+
 		onResetSort() {
-			this.$refs.table.resetMultiSorting();
 			this.$emit("resetSort");
+			this.$refs.table.resetMultiSorting();
+			this.$refs.table.initSort();
 		},
 
 		onSearch(event) {

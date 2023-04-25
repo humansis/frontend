@@ -34,7 +34,7 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>{{ $t('Number of Records')}}:</td>
+							<td>{{ $t('Number of Households')}}:</td>
 							<td class="has-text-right">
 								<b-tag
 									class="has-text-weight-bold"
@@ -85,8 +85,7 @@
 				<div>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="['is-link' , { 'is-outlined': this.resolversAllActive
-							? this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE : true }]"
+						:class="allFromFileClasses"
 						:disabled="allRecordsFormLoading"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
 					>
@@ -94,18 +93,16 @@
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="['is-info' , { 'is-outlined': this.resolversAllActive
-							? this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK : true }]"
-						:disabled="allRecordsFormLoading"
+						:class="allFromHumansisClasses"
 						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
 					>
 						{{ $t('All From Humansis') }}
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						type="is-primary"
+						:class="['is-link' , { 'is-outlined': !duplicitiesContentOpened }]"
 						icon-left="tasks"
-						icon-right="arrow-down"
+						:icon-right="!duplicitiesContentOpened ? 'arrow-down' : null"
 						:loading="resolveDuplicitiesLoading"
 						:disabled="duplicitiesContentOpened"
 						@click="resolveDuplicities"
@@ -123,11 +120,14 @@
 						{{ $t('Start Similarity Check') }}
 					</b-button>
 					-->
+				</div>
+				<div>
 					<b-button
 						v-if="canGoToFinalisation"
 						type="is-primary"
 						icon-left="play-circle"
 						:loading="changeStateButtonLoading"
+						:disabled="!canGoToFinalisation"
 						@click="goToFinalisation"
 					>
 						{{ $t('Go to Finalisation') }}
@@ -156,6 +156,7 @@ import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
 import Loading from "@/components/Loading";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "IdentityStep",
@@ -241,13 +242,17 @@ export default {
 		allRecordsFormLoading() {
 			if (this.resolversAllActive === consts.ITEM_STATUS.TO_UPDATE) {
 				return this.resolversAllLoading
-					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Ours")
+					|| (!this.duplicities.every(
+						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS,
+					)
 						&& !this.allFromSolved);
 			}
 
 			if (this.resolversAllActive === consts.ITEM_STATUS.TO_LINK) {
 				return this.resolversAllLoading
-					|| (!this.duplicities.every((duplicity) => duplicity.state === "Duplicity Keep Theirs")
+					|| (!this.duplicities.every(
+						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
+					)
 						&& !this.allFromSolved);
 			}
 
@@ -302,6 +307,29 @@ export default {
 		canGoToFinalisation() {
 			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
 		},
+
+		isAllFromFileUnselected() {
+			return this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE;
+		},
+
+		isAllFromHumansisUnselected() {
+			return this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK;
+		},
+
+		allFromFileClasses() {
+			return [
+				"is-info",
+				{ "is-outlined": this.isAllFromFileUnselected },
+			];
+		},
+
+		allFromHumansisClasses() {
+			return [
+				"is-info",
+				{ "is-outlined": this.isAllFromHumansisUnselected },
+			];
+		},
+
 	},
 
 	methods: {
@@ -318,7 +346,11 @@ export default {
 				.then((response) => {
 					if (response.status === 202) {
 						this.resolversAllActive = status;
-						this.$refs.duplicityResolver.fetchDuplicities();
+
+						if (this.duplicitiesContentOpened) {
+							this.$refs.duplicityResolver.fetchData();
+						}
+						Toast(this.$t("Duplicities were resolved"), "is-success");
 					}
 				}).finally(() => {
 					this.resolversAllLoading = false;

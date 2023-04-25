@@ -54,8 +54,9 @@
 		<BeneficiariesList
 			ref="beneficiariesList"
 			export-button
-			is-assistance-detail
+			assistance-detail
 			:add-button="isAddButtonVisible"
+			:commodities="commodities"
 			:assistance="assistance"
 			:project="project"
 			@beneficiariesCounted="beneficiariesCount = $event"
@@ -83,12 +84,10 @@
 					icon-right="check"
 					@click="closeAssistance"
 				>
-					{{ $t('Close Assistance') }}
+					{{ $t('Close and Approve') }}
 				</b-button>
 				<b-button
-					v-if="setAtDistributedButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.assignDistributionItems"
+					v-if="isDistributedButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -98,9 +97,7 @@
 					{{ $t(setAtDistributedButtonLabel) }}
 				</b-button>
 				<b-button
-					v-if="inputDistributedButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.assignDistributionItems"
+					v-if="isInputDistributedButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -109,10 +106,7 @@
 					{{ $t("Input Distributed") }}
 				</b-button>
 				<b-button
-					v-if="startTransactionButtonVisible
-						&& (isAssistanceValidated && !isAssistanceCompleted)
-						&& userCan.authoriseElectronicCashTransfer
-					"
+					v-if="isStartTransactionButtonVisible"
 					class="flex-end ml-3"
 					type="is-primary"
 					icon-right="parachute-box"
@@ -195,12 +189,16 @@ export default {
 			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
 		},
 
+		isCommoditySmartcard() {
+			return this.commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD;
+		},
+
 		inputDistributedButtonVisible() {
 			const modality = this.commodities[0]?.modalityType;
 
-			return modality !== consts.COMMODITY.SMARTCARD
-			&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
-			&& modality !== consts.COMMODITY.MOBILE_MONEY;
+			return !this.isCommoditySmartcard
+				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== consts.COMMODITY.MOBILE_MONEY;
 		},
 
 		setAtDistributedButtonLabel() {
@@ -244,6 +242,29 @@ export default {
 		amountDistributed() {
 			return this.statistics?.amountDistributed || 0;
 		},
+
+		isAssistanceStateValidated() {
+			return this.isAssistanceValidated && !this.isAssistanceCompleted;
+		},
+
+		isDistributedButtonVisible() {
+			return this.isAssistanceStateValidated
+				&& this.userCan.assignDistributionItems
+				&& !this.isCommoditySmartcard
+				&& this.setAtDistributedButtonVisible;
+		},
+
+		isInputDistributedButtonVisible() {
+			return this.isAssistanceStateValidated
+				&& this.userCan.assignDistributionItems
+				&& this.inputDistributedButtonVisible;
+		},
+
+		isStartTransactionButtonVisible() {
+			return this.isAssistanceStateValidated
+				&& this.userCan.authoriseElectronicCashTransfer
+				&& this.startTransactionButtonVisible;
+		},
 	},
 
 	mounted() {
@@ -276,7 +297,6 @@ export default {
 				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			}).finally(() => {
 				this.isAssistanceLoading = false;
 			});
@@ -305,7 +325,6 @@ export default {
 				this.project = data;
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			}).finally(() => {
 				this.isProjectLoading = false;
 			});
@@ -416,6 +435,7 @@ export default {
 				title: this.$t("Unvalidate Assistance"),
 				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
 				confirmText: this.$t("Confirm"),
+				cancelText: this.$t("Cancel"),
 				type: "is-primary",
 				onConfirm: async () => {
 					const { assistanceId, projectId } = this.$route.params;

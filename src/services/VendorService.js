@@ -63,9 +63,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportVendors(format) {
+	async exportVendors(format, filters) {
 		const formatText = format ? `type=${format}` : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
-		return download({ uri: `vendors/exports?${formatText}` });
+		return download({ uri: `vendors/exports?${formatText + filtersUri}` });
 	},
 };

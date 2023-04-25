@@ -9,11 +9,13 @@
 			@keyup.native.enter="search"
 		/>
 		<div class="control">
-			<b-button
-				icon-left="search"
-				class="button is-primary"
-				@click="search"
-			/>
+			<b-tooltip :label="$t('Search')">
+				<b-button
+					icon-left="search"
+					class="button is-primary"
+					@click="search"
+				/>
+			</b-tooltip>
 		</div>
 	</b-field>
 </template>

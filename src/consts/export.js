@@ -1,1 +1,21 @@
-export default {};
+export default {
+	LIST_OF_BENEFICIARIES: "List of Beneficiaries",
+	DISTRIBUTION_LIST: "Distribution list",
+	BANK_DISTRIBUTION_LIST: "Bank distribution list",
+	VULNERABILITY_SCORES: "Vulnerability scores",
+	HOUSEHOLDS: "Households",
+	VENDORS: "Vendors",
+	TRANSACTIONS: "Transactions",
+	PURCHASED_ITEMS: "Purchased items",
+	PROJECTS: "Projects",
+	ASSISTANCE_OVERVIEW: "Assistance overview",
+	PRODUCTS: "Products",
+	COUNTRY_SPECIFIC_OPTIONS: "Country Specific Options",
+	USERS: "Users",
+	DONORS: "Donors",
+	IMPORTS: "Import template",
+	VOUCHERS: "Vouchers",
+	FORMAT_XLSX: "xlsx",
+	FORMAT_CSV: "csv",
+	FORMAT_ODS: "ods",
+};

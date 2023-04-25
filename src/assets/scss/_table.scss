@@ -91,6 +91,10 @@ table.table {
   }
 }
 
+.table td, .table th {
+  border-color: #DBDBDB;
+}
+
 @include mobile {
   .card {
     &.has-table {

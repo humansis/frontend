@@ -28,6 +28,42 @@
 			</b-field>
 
 			<b-field
+				:label="$t('First name')"
+				:type="validateType('firstName')"
+				:message="validateMsg('firstName')"
+			>
+				<b-input
+					v-model="formModel.firstName"
+					:disabled="formDisabled"
+					@blur="validate('firstName')"
+				/>
+			</b-field>
+
+			<b-field
+				:label="$t('Surname')"
+				:type="validateType('lastName')"
+				:message="validateMsg('lastName')"
+			>
+				<b-input
+					v-model="formModel.lastName"
+					:disabled="formDisabled"
+					@blur="validate('lastName')"
+				/>
+			</b-field>
+
+			<b-field
+				:label="$t('Position')"
+				:type="validateType('position')"
+				:message="validateMsg('position')"
+			>
+				<b-input
+					v-model="formModel.position"
+					:disabled="formDisabled"
+					@blur="validate('position')"
+				/>
+			</b-field>
+
+			<b-field
 				:label="$t('Rights')"
 				:type="validateType('rights')"
 				:message="validateMsg('rights')"
@@ -38,6 +74,9 @@
 					label="name"
 					track-by="code"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:disabled="formDisabled"
 					:options="options.rights"
 					:loading="rolesLoading"
@@ -61,6 +100,9 @@
 					label="name"
 					track-by="id"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:disabled="formDisabled || formModel.disabledProject"
 					:loading="projectsLoading"
 					:options="options.projects"
@@ -83,6 +125,9 @@
 					label="name"
 					track-by="iso3"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:multiple="!onlyOneCountry"
 					:disabled="formDisabled || formModel.disabledCountry"
 					:options="options.countries"
@@ -110,6 +155,9 @@
 					label="name"
 					track-by="key"
 					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					:disabled="formDisabled"
 					:options="options.languages"
 				>
@@ -135,6 +183,9 @@
 					v-model="formModel.phonePrefix"
 					searchable
 					:placeholder="$t('Phone Ext')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
 					label="value"
 					track-by="code"
 					:disabled="formDisabled"
@@ -207,6 +258,9 @@ export default {
 	validations: {
 		formModel: {
 			email: { required, email },
+			firstName: { required },
+			lastName: { required },
+			position: { required },
 			password: {
 				// eslint-disable-next-line func-names
 				required: requiredIf(function () {

@@ -68,9 +68,13 @@ export default {
 		return { data, status };
 	},
 
-	async getDuplicitiesInImport(importId) {
+	async getDuplicitiesInImport(importId, page, size, filter) {
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const filtersUri = filter ? filtersToUri(filter) : "";
+
 		const { data, status } = await fetcher({
-			uri: `imports/${importId}/duplicities`,
+			uri: `imports/${importId}/duplicities?${pageText + sizeText + filtersUri}`,
 		});
 		return { data, status };
 	},

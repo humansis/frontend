@@ -24,7 +24,7 @@
 					<h2 class="heading">{{ $t('Start Date') }}</h2>
 
 					<div class="has-text-weight-bold is-size-5">
-						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD hh:mm") }}
+						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD") }}
 					</div>
 				</div>
 			</div>
@@ -34,7 +34,7 @@
 					<h2 class="heading">{{ $t('End Date') }}</h2>
 
 					<div class="has-text-weight-bold is-size-5">
-						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD hh:mm") }}
+						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD") }}
 					</div>
 				</div>
 			</div>
@@ -110,7 +110,6 @@ export default {
 				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
-				this.$router.push({ name: "NotFound" });
 			});
 		},
 

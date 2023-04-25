@@ -66,30 +66,6 @@ deploy dev1:
     - branches
   when: manual
 
-deploy dev2:
-  stage: deploy_dev
-  environment:
-    name: dev2
-    url: https://dev2.humansis.org
-  variables:
-    ENV: dev2
-  extends: .deploy
-  only:
-    - branches
-  when: manual
-
-deploy dev3:
-  stage: deploy_dev
-  environment:
-    name: dev3
-    url: https://dev3.humansis.org
-  variables:
-    ENV: dev3
-  extends: .deploy
-  only:
-    - branches
-  when: manual
-
 deploy test:
   stage: deploy_test
   environment:
@@ -97,6 +73,30 @@ deploy test:
     url: https://test.humansis.org
   variables:
     ENV: test
+  extends: .deploy
+  only:
+    - branches
+  when: manual
+
+deploy test2:
+  stage: deploy_test
+  environment:
+    name: test2
+    url: https://test2.humansis.org
+  variables:
+    ENV: test2
+  extends: .deploy
+  only:
+    - branches
+  when: manual
+
+deploy test3:
+  stage: deploy_test
+  environment:
+    name: test3
+    url: https://test3.humansis.org
+  variables:
+    ENV: test3
   extends: .deploy
   only:
     - branches

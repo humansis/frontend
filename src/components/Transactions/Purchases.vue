@@ -49,15 +49,17 @@
 					/>
 				</b-collapse>
 			</template>
-			<template #export>
-				<ExportButton
-					class="ml-2"
-					space-between
-					:formats="{ xlsx: true, csv: true}"
-					:loading="exportLoading"
-					@onExport="exportPurchases"
-				/>
-			</template>
+			<!-- TODO This component is not currently in use, so i decided to comment this export-->
+
+			<!--			<template #export>-->
+			<!--				<ExportButton-->
+			<!--					class="ml-2"-->
+			<!--					space-between-->
+			<!--					:formats="{ xlsx: true, csv: true}"-->
+			<!--					:loading="exportLoading"-->
+			<!--					@onExport="exportPurchases"-->
+			<!--				/>-->
+			<!--			</template>-->
 			<template slot="progress">
 				<b-progress :value="table.progress" format="percent" />
 			</template>
@@ -89,7 +91,6 @@ import TransactionService from "@/services/TransactionService";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
-import ExportButton from "@/components/ExportButton";
 import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
@@ -100,7 +101,6 @@ export default {
 	name: "Purchases",
 
 	components: {
-		ExportButton,
 		Table,
 		PurchasesFilter,
 		ColumnField,
@@ -224,7 +224,7 @@ export default {
 		},
 
 		resetFilters() {
-			this.$refs.purchasesFilter.resetFilters();
+			this.resetSearch({ tableRef: "table", filtersRef: "purchasesFilter" });
 		},
 
 		resetTableSort() {
