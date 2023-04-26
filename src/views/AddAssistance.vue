@@ -63,7 +63,7 @@
 			<b-button
 				type="is-primary"
 				:loading="loading"
-				:disabled="createAssistanceButtonDisabled || isMoreDistributedCommodity"
+				:disabled="createAssistanceButtonDisabled"
 				@click="validateNewAssistance"
 			>
 				{{ $t('Create') }}
@@ -169,10 +169,6 @@ export default {
 				institutions: this.visibleComponents.institutions,
 			};
 		},
-
-		isMoreDistributedCommodity() {
-			return this.assistanceBody.commodities.length > 1;
-		},
 	},
 
 	async created() {
@@ -277,12 +273,18 @@ export default {
 				if (!this.$refs.activityDetails.submit()) return;
 			}
 
-			if (this.visibleComponents.distributedCommodity) {
-				if (!this.$refs.distributedCommodity.submit()) return;
+			if (this.visibleComponents.selectionCriteria) {
+				if (!this.$refs.selectionCriteria.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no criteria.")}`, "is-warning");
+					return;
+				}
 			}
 
-			if (this.visibleComponents.selectionCriteria) {
-				if (!this.$refs.selectionCriteria.submit()) return;
+			if (this.visibleComponents.distributedCommodity) {
+				if (!this.$refs.distributedCommodity.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no commodity.")}`, "is-warning");
+					return;
+				}
 			}
 
 			if (!this.isRemoteAndValid()) return;
