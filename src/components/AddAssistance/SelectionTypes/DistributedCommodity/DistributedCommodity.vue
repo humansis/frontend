@@ -6,6 +6,7 @@
 				class="mb-5"
 				type="is-primary"
 				icon-left="plus"
+				:disabled="isAlreadyCreatedDistributedCommodity"
 				@click="addCriteria"
 			>
 				{{ $t('Add') }}
@@ -301,6 +302,10 @@ export default {
 		formattedDate() {
 			const date = this.table.data[0]?.dateExpiration;
 			return date ? this.$moment(date).format("YYYY-MM-DD") : "";
+		},
+
+		isAlreadyCreatedDistributedCommodity() {
+			return this.table.data.length > 0;
 		},
 	},
 

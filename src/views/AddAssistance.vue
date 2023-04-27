@@ -273,12 +273,18 @@ export default {
 				if (!this.$refs.activityDetails.submit()) return;
 			}
 
-			if (this.visibleComponents.distributedCommodity) {
-				if (!this.$refs.distributedCommodity.submit()) return;
+			if (this.visibleComponents.selectionCriteria) {
+				if (!this.$refs.selectionCriteria.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no criteria.")}`, "is-warning");
+					return;
+				}
 			}
 
-			if (this.visibleComponents.selectionCriteria) {
-				if (!this.$refs.selectionCriteria.submit()) return;
+			if (this.visibleComponents.distributedCommodity) {
+				if (!this.$refs.distributedCommodity.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no commodity.")}`, "is-warning");
+					return;
+				}
 			}
 
 			if (!this.isRemoteAndValid()) return;
@@ -286,8 +292,11 @@ export default {
 			this.loading = true;
 
 			await AssistancesService.createAssistance(this.assistanceBody)
-				.then(({ status, data: { id } }) => {
-					if (status === 200) {
+				.then(({ status, data: { id }, message }) => {
+					const success = status === 200;
+					const badRequest = status === 400;
+
+					if (success) {
 						Toast(this.$t("Assistance Successfully Created"), "is-success");
 						if (id) {
 							this.$router.push({
@@ -300,6 +309,10 @@ export default {
 								params: { projectId: this.$route.params.projectId },
 							});
 						}
+					}
+
+					if (badRequest) {
+						Notification(message || `${this.$t("Error code 400")}`, "is-warning");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
