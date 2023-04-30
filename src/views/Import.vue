@@ -1,27 +1,43 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered">
-			{{ importTitle }}
-		</h1>
+		<div class="import-name mb-3">
+			<h1 class="title">
+				{{ importTitle }}
+			</h1>
+			<span class="title dot">•</span>
+			<h2 class="subtitle has-text-weight-bold mt-3">
+				{{ importProject }}
+			</h2>
+		</div>
 		<p
 			v-if="importDescription"
-			class="has-text-centered mt-3"
+			class="has-text-centered mb-4"
 		>
 			{{ importDescription }}
 		</p>
-		<h2 class="subtitle is-5 has-text-centered has-text-weight-bold mt-3 mb-4">
-			{{ importProject }}
-		</h2>
-		<div class="has-text-centered mb-5">
+		<div class="has-text-centered mb-3">
 			<b-tag
 				v-if="importStatus"
 				class="has-text-weight-bold"
-				size="is-small"
+				size="is-medium"
 				:type="importStatusType"
 			>
-				{{ $t(importStatus) }}
+				<div class="import-status">
+					<p>{{ $t(importStatus) }}</p>
+					<Loading
+						v-if="isBusyIndicator"
+						type="bubbles"
+						is-small
+						class="subtitle"
+						color="#fff"
+					/>
+				</div>
 			</b-tag>
 		</div>
+		<b-field class="mb-5" grouped position="is-centered">
+			<b-icon v-if="stateTips" icon="info-circle" />
+			<p>{{ stateTips }}</p>
+		</b-field>
 
 		<b-steps
 			v-model="activeStep"
@@ -100,6 +116,7 @@ import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
 import consts from "@/utils/importConst";
+import Loading from "@/components/Loading";
 
 export default {
 	name: "Import",
@@ -109,6 +126,68 @@ export default {
 		IntegrityStep,
 		IdentityStep,
 		FinalisationStep,
+		Loading,
+	},
+
+	data() {
+		return {
+			importDetail: {},
+			statistics: {},
+			projects: [],
+			loadingChangeStateButton: false,
+			statisticsInterval: null,
+			importFiles: [],
+			activeStep: 0,
+			columnsError: 0,
+			steps: [
+				{ code: 0, slug: "start-import" },
+				{ code: 1, slug: "integrity-check" },
+				{ code: 2, slug: "identity-check" },
+				{ code: 3, slug: "finalisation" },
+			],
+			tips: [
+				{
+					status: consts.STATUS.UPLOADING,
+					message: "You can leave import page, Humansis will notify You by email once ready.",
+				},
+				{
+					status: consts.STATUS.INTEGRITY_CHECK,
+					message: "You can leave import page, Humansis will notify You by email once ready.",
+				},
+				{
+					status: consts.STATUS.INTEGRITY_CHECK_CORRECT,
+					message: "Please start identity check.",
+				},
+				{
+					status: consts.STATUS.INTEGRITY_CHECK_FAILED,
+					message: "Please download affected records and upload corrected records back.",
+				},
+				{
+					status: consts.STATUS.IDENTITY_CHECK,
+					message: "You can leave import page, Humansis will notify You by email once ready.",
+				},
+				{
+					status: consts.STATUS.IDENTITY_CHECK_CORRECT,
+					message: ["Please Go to finalization", "Please approve and start import"],
+				},
+				{
+					status: consts.STATUS.IDENTITY_CHECK_FAILED,
+					message: "Please manage duplicities, i.e. decide which data to use.",
+				},
+				{
+					status: consts.STATUS.IMPORTING,
+					message: "You can leave import page, Humansis will notify You by email once ready.",
+				},
+				{
+					status: consts.STATUS.FINISH,
+					message: "Import is finished.",
+				},
+				{
+					status: consts.STATUS.CANCEL,
+					message: "Import was canceled.",
+				},
+			],
+		};
 	},
 
 	computed: {
@@ -180,25 +259,24 @@ export default {
 
 			return false;
 		},
-	},
 
-	data() {
-		return {
-			importDetail: {},
-			statistics: {},
-			projects: [],
-			loadingChangeStateButton: false,
-			statisticsInterval: null,
-			importFiles: [],
-			activeStep: 0,
-			columnsError: 0,
-			steps: [
-				{ code: 0, slug: "start-import" },
-				{ code: 1, slug: "integrity-check" },
-				{ code: 2, slug: "identity-check" },
-				{ code: 3, slug: "finalisation" },
-			],
-		};
+		stateTips() {
+			console.log(this.importStatus);
+			const stateTip = this.tips.find((tip) => tip.status === this.importStatus);
+
+			if (stateTip && stateTip.status === consts.STATUS.IDENTITY_CHECK_CORRECT) {
+				return this.activeStep === 3 ? stateTip.message[1] : stateTip.message[0];
+			}
+
+			return stateTip ? this.$t(stateTip.message) : "";
+		},
+
+		isBusyIndicator() {
+			return this.importStatus === consts.STATUS.UPLOADING
+				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK
+				|| this.importStatus === consts.STATUS.IDENTITY_CHECK
+				|| this.importStatus === consts.STATUS.IMPORTING;
+		},
 	},
 
 	async created() {
@@ -439,12 +517,28 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .description-edit-button {
 	margin-top: -.2rem;
 }
 
 .description-edit-area textarea {
 	text-align: center;
+}
+
+.import-status {
+	display: flex;
+	align-items: center;
+}
+
+.import-name {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+
+	.dot {
+		display: flex;
+		align-items: center;
+	}
 }
 </style>
