@@ -533,7 +533,12 @@ export default {
 		async exportAssistances(type, format) {
 			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
 				this.exportControl.loading = true;
-				await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+				const filters = {
+					...this.filters,
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+				};
+
+				await AssistancesService.exportAssistances(format, this.$route.params.projectId, filters)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });

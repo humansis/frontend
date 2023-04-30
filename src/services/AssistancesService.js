@@ -387,10 +387,13 @@ export default {
 		return { data, totalCount, message };
 	},
 
-	async exportAssistances(format, projectId) {
+	async exportAssistances(format, projectId, filters) {
 		const formatText = format ? `type=${format}` : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
-		return download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
+		return download({
+			uri: `projects/${projectId}/assistances/exports?${formatText + filtersUri}`,
+		});
 	},
 
 	async exportVulnerabilityScores(format, body) {
