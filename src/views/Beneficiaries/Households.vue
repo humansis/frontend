@@ -230,6 +230,7 @@ import { EXPORT } from "@/consts";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
 	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
+import { getUniqueIds } from "@/utils/customValidators";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -542,7 +543,9 @@ export default {
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
-				await AddressService.getCampsByIds(camps, "campId")
+				const uniqueCampIds = getUniqueIds(camps, "campId");
+
+				await AddressService.getCampsByIds(uniqueCampIds)
 					.then(({ data }) => {
 						data.forEach((item) => {
 							const address = camps.find(({ campId }) => campId === item.id);

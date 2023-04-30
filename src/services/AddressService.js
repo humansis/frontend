@@ -66,7 +66,7 @@ export default {
 		return data;
 	},
 
-	async getCampsByIds(ids, param) {
+	async getCampsByIds(ids, param = null) {
 		const idsText = ids.length ? idsToUri(ids, param) : "";
 
 		const { data } = await fetcher({ uri: `camps?${idsText}` });
