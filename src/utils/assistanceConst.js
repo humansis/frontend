@@ -23,6 +23,12 @@ export default {
 		HOUSEHOLD_TARGETED: "householdsTargeted",
 		INDIVIDUALS_TARGETED: "individualsTargeted",
 	},
+	BENEFICIARY_TYPES: {
+		HOUSEHOLD: "Household",
+		BENEFICIARY: "Beneficiary",
+		COMMUNITY: "Community",
+		INSTITUTION: "Institution",
+	},
 	DIVISION_NWS_QUANTITIES: [
 		{
 			rangeFrom: 1,

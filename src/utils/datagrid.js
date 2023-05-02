@@ -24,11 +24,18 @@ export const normalizeExportDate = (date = new Date()) => date
 
 export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
+	let label;
+
 	visibleColumns.forEach((column) => {
+		if (column.withoutLabel) {
+			label = "";
+		} else {
+			label = column.label ? i18n.t(column.label) : i18n.t(normalizeText(column.key));
+		}
+
 		preparedColumns.push({
 			field: column.key,
-			label: column.label
-				? i18n.t(column.label) : i18n.t(normalizeText(column.key)),
+			label,
 			type: column.type,
 			width: column.width,
 			centered: false,

@@ -162,6 +162,14 @@
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="cellData" />
 
+		<!-- Column for icons with tooltip  -->
+		<b-tooltip :label="$t(cellData.tooltip)" v-if="column.type === 'IconWithTooltip'">
+			<b-icon
+				:icon="cellData.type"
+				:size="cellData.size || 'is-small'"
+			/>
+		</b-tooltip>
+
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
 			<span v-if="cellData.length">
