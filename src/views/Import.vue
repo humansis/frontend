@@ -145,48 +145,6 @@ export default {
 				{ code: 2, slug: "identity-check" },
 				{ code: 3, slug: "finalisation" },
 			],
-			tips: [
-				{
-					status: consts.STATUS.UPLOADING,
-					message: "You can leave import page, Humansis will notify You by email once ready.",
-				},
-				{
-					status: consts.STATUS.INTEGRITY_CHECK,
-					message: "You can leave import page, Humansis will notify You by email once ready.",
-				},
-				{
-					status: consts.STATUS.INTEGRITY_CHECK_CORRECT,
-					message: "Please start identity check.",
-				},
-				{
-					status: consts.STATUS.INTEGRITY_CHECK_FAILED,
-					message: "Please download affected records and upload corrected records back.",
-				},
-				{
-					status: consts.STATUS.IDENTITY_CHECK,
-					message: "You can leave import page, Humansis will notify You by email once ready.",
-				},
-				{
-					status: consts.STATUS.IDENTITY_CHECK_CORRECT,
-					message: ["Please Go to finalization", "Please approve and start import"],
-				},
-				{
-					status: consts.STATUS.IDENTITY_CHECK_FAILED,
-					message: "Please manage duplicities, i.e. decide which data to use.",
-				},
-				{
-					status: consts.STATUS.IMPORTING,
-					message: "You can leave import page, Humansis will notify You by email once ready.",
-				},
-				{
-					status: consts.STATUS.FINISH,
-					message: "Import is finished.",
-				},
-				{
-					status: consts.STATUS.CANCEL,
-					message: "Import was canceled.",
-				},
-			],
 		};
 	},
 
@@ -261,14 +219,29 @@ export default {
 		},
 
 		stateTips() {
-			console.log(this.importStatus);
-			const stateTip = this.tips.find((tip) => tip.status === this.importStatus);
-
-			if (stateTip && stateTip.status === consts.STATUS.IDENTITY_CHECK_CORRECT) {
-				return this.activeStep === 3 ? stateTip.message[1] : stateTip.message[0];
+			switch (this.importStatus) {
+				case consts.STATUS.UPLOADING:
+				case consts.STATUS.INTEGRITY_CHECK:
+				case consts.STATUS.IDENTITY_CHECK:
+				case consts.STATUS.IMPORTING:
+					return this.$t("You can leave import page, Humansis will notify You by email once ready.");
+				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+					return this.$t("Please start identity check.");
+				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+					return this.$t("Please download affected records and upload corrected records back.");
+				case consts.STATUS.IDENTITY_CHECK_FAILED:
+					return this.$t("Please manage duplicities, i.e. decide which data to use.");
+				case consts.STATUS.FINISH:
+					return this.$t("Import is finished.");
+				case consts.STATUS.CANCEL:
+					return this.$t("Import was canceled.");
+				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+					return this.activeStep === 3
+						? this.$t("Please approve and start import")
+						: this.$t("Please Go to finalization");
+				default:
+					return "";
 			}
-
-			return stateTip ? this.$t(stateTip.message) : "";
 		},
 
 		isBusyIndicator() {
