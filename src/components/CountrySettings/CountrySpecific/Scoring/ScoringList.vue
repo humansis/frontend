@@ -42,7 +42,7 @@
 					:entity="$t('Scoring')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
-					:disabled="!userCan.deleteScoring"
+					:disabled="!userCan.deleteScoring || !props.row.deletable"
 					@submitted="remove"
 				/>
 			</div>
