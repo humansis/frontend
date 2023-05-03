@@ -41,24 +41,6 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Number of Households') }}</h2>
-
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</div>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading"> {{ $t('Number of Beneficiaries') }}</h2>
-
-					<div class="has-text-weight-bold is-size-5">
-						{{ projectSummary.beneficiariesReached }}
-					</div>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
 					<h2 class="heading">{{ $t('Donors') }}</h2>
 
 					<div class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</div>
@@ -67,11 +49,30 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Total target beneficiaries') }}</h2>
+					<h2 class="heading">{{ $t('Target Households') }}</h2>
 
 					<div class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</div>
 				</div>
 			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<h2 class="heading">{{ $t('Registered Households') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</div>
+				</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<h2 class="heading"> {{ $t('Registered Individuals') }}</h2>
+
+					<div class="has-text-weight-bold is-size-5">
+						{{ projectSummary.beneficiariesReached }}
+					</div>
+				</div>
+			</div>
+
 		</nav>
 		<hr>
 	</div>
