@@ -44,7 +44,6 @@
 			scrollable
 			selectable
 			sticky-header
-			height="550"
 			pagination-position="bottom"
 			sort-icon="arrow-up"
 			sort-icon-size="is-small"
@@ -66,7 +65,8 @@
 			:current-page="currentPage"
 			:pagination-simple="false"
 			:loading="isLoading"
-			:class="{ 'has-clickable-rows' : hasClickableRows } "
+			class="table-sticky-header"
+			:class="{ 'has-clickable-rows' : hasClickableRows }"
 			:row-class="rowClass"
 			@check="checkboxChecked"
 			@cellclick="onClick"

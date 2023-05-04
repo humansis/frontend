@@ -93,7 +93,16 @@ table.table {
 
 .table td, .table th {
   border-color: #DBDBDB;
-  padding: 0.5em 1.5em 0.5em 0;
+}
+
+.table-sticky-header {
+  .table-container {
+    height: fit-content !important;
+    max-height: 550px;
+  }
+  .table td, .table th {
+    padding: 0.5em 1.5em 0.5em 0;
+  }
 }
 
 @include mobile {
