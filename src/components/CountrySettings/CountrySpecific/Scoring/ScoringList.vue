@@ -51,15 +51,15 @@
 </template>
 
 <script>
-import { Notification } from "@/utils/UI";
 import AssistancesService from "@/services/AssistancesService";
+import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
+import consts from "@/utils/scoringConst";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import grid from "@/mixins/grid";
-import consts from "@/utils/scoringConst";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 
 const statusTags = [

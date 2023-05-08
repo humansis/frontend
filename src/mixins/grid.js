@@ -73,15 +73,15 @@ export default {
 		},
 
 		remove(id) {
-			this.$emit("onRemove", id);
+			this.$emit("remove", id);
 		},
 
 		download(scoring) {
-			this.$emit("onDownload", scoring);
+			this.$emit("download", scoring);
 		},
 
 		statusChange(id, enabled) {
-			this.$emit("onStatusChange", { id, enabled });
+			this.$emit("statusChange", { id, enabled });
 		},
 
 		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {

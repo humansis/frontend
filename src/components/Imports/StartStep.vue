@@ -80,6 +80,7 @@
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
 import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts/index";
 
 export default {
 	name: "StartStep",
@@ -90,6 +91,7 @@ export default {
 			changeStateButtonLoading: false,
 			startLoading: false,
 			importStatus: "",
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
 		};
 	},
 
@@ -129,10 +131,6 @@ export default {
 		disabledStartImport() {
 			return this.importStatus === consts.STATUS.NEW
 				&& (this.dropFiles.length === 1 || this.importFiles.length);
-		},
-
-		allowedFileExtensions() {
-			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
 
 		isStatusNew() {

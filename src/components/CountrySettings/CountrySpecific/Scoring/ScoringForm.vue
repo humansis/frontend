@@ -90,6 +90,7 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
+import { IMPORT } from "@/consts/index";
 
 export default {
 	name: "ScoringForm",
@@ -111,10 +112,13 @@ export default {
 		},
 	},
 
+	data() {
+		return {
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
+		};
+	},
+
 	computed: {
-		allowedFileExtensions() {
-			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
-		},
 	},
 
 	methods: {

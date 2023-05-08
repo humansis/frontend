@@ -28,9 +28,9 @@
 
 		<ScoringList
 			ref="scoringList"
-			@onRemove="onRemoveScoring"
-			@onDownload="onDownloadScoring"
-			@onStatusChange="onStatusChange"
+			@remove="onRemoveScoring"
+			@download="onDownloadScoring"
+			@statusChange="onStatusChange"
 		/>
 	</div>
 </template>
@@ -74,9 +74,7 @@ export default {
 		},
 
 		addNewScoringOption() {
-			this.scoringModal = {
-				isOpened: true,
-			};
+			this.scoringModal.isOpened = true;
 
 			this.scoringModel = {
 				...this.scoringModel,
@@ -94,13 +92,11 @@ export default {
 				dropFiles,
 			} = scoringForm;
 
-			const scoringBody = {
+			this.createScoring({
 				name,
 				note,
 				dropFiles,
-			};
-
-			this.createScoring(scoringBody);
+			});
 		},
 
 		async createScoring(scoringBody) {
