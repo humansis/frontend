@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1 class="title has-text-centered">{{ $t('Products') }}</h1>
+		<h1 class="title has-text-centered">{{ $t('Country specifics') }}</h1>
 
 		<b-tabs v-model="selectedTab">
 			<b-tab-item icon="user-edit" :label="$t('Custom fields')">
