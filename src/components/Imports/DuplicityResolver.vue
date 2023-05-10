@@ -266,6 +266,11 @@ export default {
 		},
 
 		extractDataForTable(data, key) {
+			if (Object.hasOwn(data, "differences")) {
+				Object.entries(data.differences).forEach((difference) => {
+					this.setRecordFrom(difference, key);
+				});
+			}
 			if (Object.hasOwn(data, "memberDuplicities")) {
 				Object.values(data.memberDuplicities).forEach((memberDuplicity) => {
 					this.table.data[key].familyName.push(memberDuplicity.familyName);
@@ -287,23 +292,9 @@ export default {
 
 					if (Object.hasOwn(memberDuplicity, "differences")) {
 						Object.entries(memberDuplicity.differences).forEach((difference) => {
-							if (difference[1]) {
-								if (typeof difference === "number" || typeof difference === "string") {
-									this.table.data[key].recordFrom.push(`
-									${difference[0]}
-									-
-									${difference[1]}
-								`);
-								} else {
-									this.table.data[key].recordFrom.push(`
-									${this.transformProperty(difference[0])}
-									:
-									${this.getSlashedArray(difference[1])}
-								`);
-								}
-								this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
-							}
+							this.setRecordFrom(difference, key);
 						});
+						this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 					}
 
 					if (!this.hasDuplicityDifferences(memberDuplicity.differences)) {
@@ -360,7 +351,29 @@ export default {
 				result = `${imp} / ${database}`;
 			}
 
+			if (!items.database) {
+				result += "<b>No data</b>";
+			}
+
 			return result;
+		},
+
+		setRecordFrom(difference, key) {
+			if (difference[1]) {
+				if (typeof difference === "number" || typeof difference === "string") {
+					this.table.data[key].recordFrom.push(`
+						${difference[0]}
+						-
+						${difference[1]}
+						`);
+				} else {
+					this.table.data[key].recordFrom.push(`
+						${this.transformProperty(difference[0])}
+						:
+						${this.getSlashedArray(difference[1])}
+						`);
+				}
+			}
 		},
 
 		hasDuplicityDifferences(differences) {

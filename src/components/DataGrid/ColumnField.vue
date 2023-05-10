@@ -41,9 +41,8 @@
 				<span
 					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
 					:class="{ 'has-text-weight-bold': column.boldText }"
-				>
-					{{ item }}
-				</span>
+					v-html="item"
+				/>
 			</div>
 		</template>
 
