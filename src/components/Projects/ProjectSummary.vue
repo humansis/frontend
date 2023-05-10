@@ -41,9 +41,14 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Donors') }}</h2>
+					<b-tooltip :label="$t('Number of donors.')">
+						<h2 class="heading">{{ $t('Donors') }}</h2>
 
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</div>
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.donorIds.length }}
+						</div>
+					</b-tooltip>
+
 				</div>
 			</div>
 
@@ -57,19 +62,27 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Registered Households') }}</h2>
+					<b-tooltip :label="$t('Number of households imported to project.')">
+						<h2 class="heading">{{ $t('Registered Households') }}</h2>
 
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</div>
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.numberOfHouseholds }}
+						</div>
+					</b-tooltip>
+
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading"> {{ $t('Registered Individuals') }}</h2>
+					<b-tooltip :label="$t('Number of beneficiaries imported to project.')">
+						<h2 class="heading"> {{ $t('Registered Individuals') }}</h2>
 
-					<div class="has-text-weight-bold is-size-5">
-						{{ projectSummary.beneficiariesReached }}
-					</div>
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.beneficiariesReached }}
+						</div>
+					</b-tooltip>
+
 				</div>
 			</div>
 
