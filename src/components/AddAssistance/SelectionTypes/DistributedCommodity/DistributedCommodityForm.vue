@@ -658,9 +658,11 @@ export default {
 		},
 
 		setDefaultExpirationDate() {
-			this.formModel.dateExpiration = new Date(
-				this.dateExpiration || this.project?.endDate,
-			);
+			if (this.isModalityTypeSmartCard) {
+				this.formModel.dateExpiration = new Date(
+					this.dateExpiration || this.project?.endDate,
+				);
+			}
 		},
 
 		submitForm() {
@@ -670,7 +672,11 @@ export default {
 				return;
 			}
 
-			this.$emit("formSubmitted", this.formModel);
+			this.$emit("formSubmitted", {
+				...this.formModel,
+				...(this.isModalityTypeSmartCard && {
+					dateExpiration: this.$moment(this.formModel.dateExpiration).format("YYYY-MM-DD") }),
+			});
 			this.$v.$reset();
 		},
 

@@ -483,10 +483,11 @@ export default {
 		},
 
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
+			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
 			this.calculationLoading = true;
 
 			if (this.assistanceBodyIsValid(assistanceBody)) {
-				await AssistancesService.calculationOfBeneficiaries(assistanceBody)
+				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
 					.then(({ data, status }) => {
 						if (status === 200) {
 							if (groupKey === null) {

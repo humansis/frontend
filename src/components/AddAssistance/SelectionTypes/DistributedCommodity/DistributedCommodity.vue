@@ -148,7 +148,7 @@ export default {
 		commodity(data) {
 			if (data.length) {
 				this.table.data = data;
-				this.dateExpiration = data[0]?.dateExpiration.toISOString();
+				this.dateExpiration = data[0]?.dateExpiration;
 
 				if (this.isAssistanceDuplicated) {
 					this.table.columns[EXPIRATION_DATE_COLUMN_INDEX].visible = this.table
