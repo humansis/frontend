@@ -41,37 +41,51 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Number of Households') }}</h2>
+					<b-tooltip :label="$t('Number of donors.')">
+						<h2 class="heading">{{ $t('Donors') }}</h2>
 
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.numberOfHouseholds }}</div>
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.donorIds.length }}
+						</div>
+					</b-tooltip>
+
 				</div>
 			</div>
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading"> {{ $t('Number of Beneficiaries') }}</h2>
-
-					<div class="has-text-weight-bold is-size-5">
-						{{ projectSummary.beneficiariesReached }}
-					</div>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading">{{ $t('Donors') }}</h2>
-
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.donorIds.length }}</div>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading">{{ $t('Total target beneficiaries') }}</h2>
+					<h2 class="heading">{{ $t('Target Households') }}</h2>
 
 					<div class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</div>
 				</div>
 			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<b-tooltip :label="$t('Number of households imported to project.')">
+						<h2 class="heading">{{ $t('Registered Households') }}</h2>
+
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.numberOfHouseholds }}
+						</div>
+					</b-tooltip>
+
+				</div>
+			</div>
+
+			<div class="level-item has-text-centered">
+				<div class="box">
+					<b-tooltip :label="$t('Number of beneficiaries imported to project.')">
+						<h2 class="heading"> {{ $t('Registered Individuals') }}</h2>
+
+						<div class="has-text-weight-bold is-size-5">
+							{{ projectSummary.beneficiariesReached }}
+						</div>
+					</b-tooltip>
+
+				</div>
+			</div>
+
 		</nav>
 		<hr>
 	</div>

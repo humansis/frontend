@@ -165,7 +165,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Total Target')"
+				:label="$t('Target Households')"
 				class="total-target-field"
 				:type="validateType('totalTarget')"
 				:message="validateMsg('totalTarget', $t('Required. Min length is 1'))"
