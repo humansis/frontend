@@ -147,7 +147,7 @@
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
 						:disabled="!householdsSelects"
-						:id="props.row.id.name"
+						:id="props.row.id"
 						@submitted="removeHousehold"
 					/>
 				</div>
@@ -265,7 +265,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Household ID", type: "link", width: "30" },
+					{ key: "household", label: "Household ID", type: "link", width: "30" },
 					{ key: "familyName", label: "Family Name", type: "link", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", type: "link", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
@@ -439,7 +439,7 @@ export default {
 				beneficiaryIds.push(item.householdHeadId);
 
 				this.table.data[key] = item;
-				this.table.data[key].id = {
+				this.table.data[key].household = {
 					routeParams: { householdId: id },
 					routeName: "HouseholdInformationSummary",
 					name: id,
@@ -471,7 +471,7 @@ export default {
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
-				} = await this.prepareBeneficiaries(item.id.name, item.householdHeadId, beneficiaries, key);
+				} = await this.prepareBeneficiaries(item.id, item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
 					({ code }) => code === vulnerabilities.find(
@@ -757,6 +757,8 @@ export default {
 		mapHouseholdDetail(household) {
 			this.householdModel = {
 				...household,
+				familyName: household.familyName.name,
+				givenName: household.givenName.name,
 			};
 		},
 

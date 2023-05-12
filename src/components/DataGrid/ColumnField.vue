@@ -163,7 +163,7 @@
 		<b-input v-if="column.type === 'editable'" v-model="cellData" />
 
 		<!-- Column for icons with tooltip  -->
-		<b-tooltip :label="$t(cellData.tooltip)" v-if="column.type === 'IconWithTooltip'">
+		<b-tooltip v-if="column.type === 'IconWithTooltip'" :label="$t(cellData.tooltip)">
 			<b-icon
 				:icon="cellData.type"
 				:size="cellData.size || 'is-small'"
