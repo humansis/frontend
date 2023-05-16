@@ -98,12 +98,14 @@ export default {
 	},
 
 	async getScoringTypes(page, size, filter = null) {
-		const filtersUri = filter ? filtersToUri(filter) : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
+		const query = [];
+
+		if (page) { query.push(`page=${page}`); }
+		if (size) { query.push(`size=${size}`); }
+		if (filter) { query.push(filtersToUri(filter)); }
 
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `scoring-blueprints?${pageText + sizeText + filtersUri}`,
+			uri: `scoring-blueprints?${query.join("&")}`,
 		});
 		return { data, totalCount };
 	},
