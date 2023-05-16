@@ -124,7 +124,6 @@ const routes = [
 								name: "AssistanceEdit",
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
 								meta: {
-									permissions: ["editDistribution"],
 									breadcrumb: () => i18n.t("Edit Assistance"),
 									description: "",
 								},
@@ -134,7 +133,6 @@ const routes = [
 								name: "AssistanceDetail",
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								meta: {
-									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
 									breadcrumb: () => i18n.t("Assistance Detail"),
 									description: "",
 								},
