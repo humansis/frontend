@@ -37,9 +37,9 @@
 
 		<CommunitiesList
 			ref="communitiesList"
-			@onRemove="removeCommunity"
-			@onShowEdit="editCommunity"
-			@onShowDetail="showDetail"
+			@remove="removeCommunity"
+			@showEdit="editCommunity"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>

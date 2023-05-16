@@ -16,7 +16,7 @@
 				@formClosed="closeSyncModal"
 			/>
 		</Modal>
-		<SyncList @onShowDetail="showDetail" />
+		<SyncList @showDetail="showDetail" />
 	</div>
 </template>
 

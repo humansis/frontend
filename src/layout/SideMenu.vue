@@ -185,6 +185,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
+								v-if="userCan.countrySettings || userCan.viewScoring"
 								class="nested-item"
 								icon="map-marker-alt"
 								exact-active-class="is-active"

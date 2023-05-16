@@ -19,8 +19,8 @@
 		</Modal>
 		<MyOrganizationsList
 			ref="myOrganizationsList"
-			@onShowEdit="editMyOrganization"
-			@onShowDetail="showDetail"
+			@showEdit="editMyOrganization"
+			@showDetail="showDetail"
 			@onPrint="printMyOrganization"
 		/>
 	</div>

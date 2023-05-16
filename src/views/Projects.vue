@@ -37,8 +37,8 @@
 
 		<ProjectList
 			ref="projectList"
-			@onShowDetail="showDetail"
-			@onShowEdit="showEdit"
+			@showDetail="showDetail"
+			@showEdit="showEdit"
 			@onDelete="onProjectDelete"
 		/>
 	</div>

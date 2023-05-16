@@ -33,9 +33,9 @@
 		<ProductsList
 			ref="productsList"
 			:categories="categories"
-			@onRemove="onRemoveProduct"
-			@onShowEdit="editProduct"
-			@onShowDetail="showDetail"
+			@remove="removeProduct"
+			@showEdit="editProduct"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>
@@ -259,7 +259,7 @@ export default {
 			return null;
 		},
 
-		async onRemoveProduct(id) {
+		async removeProduct(id) {
 			await ProductService.removeProduct(id).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Product Successfully Removed"), "is-success");

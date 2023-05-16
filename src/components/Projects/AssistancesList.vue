@@ -119,7 +119,7 @@
 							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 							:entity="$t('Assistance')"
 							:id="props.row.id"
-							@submitted="$emit('onRemove', $event)"
+							@submitted="$emit('remove', $event)"
 						/>
 					</b-dropdown>
 				</div>

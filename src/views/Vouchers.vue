@@ -40,14 +40,14 @@
 		<BatchesList
 			v-if="false"
 			ref="batchesList"
-			@onRemove="onRemoveVoucher"
-			@onShowDetail="showDetail"
+			@remove="removeVoucher"
+			@showDetail="showDetail"
 		/>
 		<VouchersList
 			ref="vouchersList"
-			@onRemove="onRemoveVoucher"
-			@onShowDetail="showDetail"
-			@onShowEdit="showEdit"
+			@remove="removeVoucher"
+			@showDetail="showDetail"
+			@showEdit="showEdit"
 		/>
 	</div>
 </template>
@@ -266,7 +266,7 @@ export default {
 			this.voucherModal.isWaiting = false;
 		},
 
-		async onRemoveVoucher(id) {
+		async removeVoucher(id) {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Booklet successfully removed"), "is-success");

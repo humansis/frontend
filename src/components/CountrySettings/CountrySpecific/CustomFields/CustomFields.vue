@@ -30,9 +30,9 @@
 
 		<CountrySpecificOptionsList
 			ref="countrySpecificOptionsList"
-			@onRemove="onRemoveCountrySpecificOption"
-			@onShowDetail="showDetail"
-			@onShowEdit="editCountrySpecificOption"
+			@remove="removeCountrySpecificOption"
+			@showDetail="showDetail"
+			@showEdit="editCountrySpecificOption"
 		/>
 	</div>
 </template>
@@ -220,7 +220,7 @@ export default {
 				});
 		},
 
-		async onRemoveCountrySpecificOption(id) {
+		async removeCountrySpecificOption(id) {
 			await CountrySpecificOptionsService.deleteCountrySpecificOption(id)
 				.then((response) => {
 					if (response.status === 204) {

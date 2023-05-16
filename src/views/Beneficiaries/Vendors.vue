@@ -52,9 +52,9 @@
 
 		<VendorsList
 			ref="vendorsList"
-			@onRemove="onVendorRemove"
-			@onShowEdit="editVendor"
-			@onShowDetail="showDetail"
+			@remove="vendorRemove"
+			@showEdit="editVendor"
+			@showDetail="showDetail"
 			@onShowSummary="showVendorSummary"
 		/>
 	</div>
@@ -365,7 +365,7 @@ export default {
 				});
 		},
 
-		async onVendorRemove(id) {
+		async vendorRemove(id) {
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Toast(this.$t("Vendor Successfully Deleted"), "is-success");

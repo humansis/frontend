@@ -31,9 +31,9 @@
 		</div>
 		<CategoriesList
 			ref="categoriesList"
-			@onRemove="onRemoveCategory"
-			@onShowEdit="editCategory"
-			@onShowDetail="showDetail"
+			@remove="removeCategory"
+			@showEdit="editCategory"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>
@@ -216,7 +216,7 @@ export default {
 			return null;
 		},
 
-		async onRemoveCategory(id) {
+		async removeCategory(id) {
 			await ProductService.removeCategory(id).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Category Successfully Removed"), "is-success");

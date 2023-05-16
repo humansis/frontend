@@ -28,9 +28,9 @@
 
 		<ScoringList
 			ref="scoringList"
-			@remove="onRemoveScoring"
-			@download="onDownloadScoring"
-			@statusChange="onStatusChange"
+			@remove="removeScoring"
+			@download="downloadScoring"
+			@statusChange="statusChange"
 		/>
 	</div>
 </template>
@@ -114,7 +114,7 @@ export default {
 				});
 		},
 
-		async onRemoveScoring(id) {
+		async removeScoring(id) {
 			await AssistancesService.removeScoring(id)
 				.then((response) => {
 					if (response.status === 204) {
@@ -128,7 +128,7 @@ export default {
 				});
 		},
 
-		async onDownloadScoring(scoring) {
+		async downloadScoring(scoring) {
 			await AssistancesService.downloadScoring(scoring.id)
 				.then(({ data, status, message }) => {
 					if (status === 200) {
@@ -146,7 +146,7 @@ export default {
 				});
 		},
 
-		async onStatusChange({ id, enabled }) {
+		async statusChange({ id, enabled }) {
 			await AssistancesService.updateScoring({ id, enabled })
 				.then((response) => {
 					if (response.status === 200) {

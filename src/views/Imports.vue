@@ -55,8 +55,8 @@
 
 		<ImportsList
 			ref="importList"
-			@onShowDetail="showDetail"
-			@onShowEdit="showEdit"
+			@showDetail="showDetail"
+			@showEdit="showEdit"
 		/>
 	</div>
 </template>
