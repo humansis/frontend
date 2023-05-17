@@ -305,6 +305,16 @@ export default {
 		},
 	},
 
+	watch: {
+		"formModel.modalityType.code": function modalityType(value) {
+			if (value === consts.COMMODITY.SMARTCARD) {
+				this.formModel.dateExpiration = new Date(
+					this.dateExpiration || this.project?.endDate,
+				);
+			}
+		},
+	},
+
 	data() {
 		return {
 			displayedFields: DEFAULT_DISPLAYED_FIELDS,
@@ -481,7 +491,6 @@ export default {
 
 	created() {
 		this.fetchModalities();
-		this.setDefaultExpirationDate();
 	},
 
 	methods: {
@@ -655,14 +664,6 @@ export default {
 				});
 
 			this.loading.types = false;
-		},
-
-		setDefaultExpirationDate() {
-			if (this.isModalityTypeSmartCard) {
-				this.formModel.dateExpiration = new Date(
-					this.dateExpiration || this.project?.endDate,
-				);
-			}
 		},
 
 		submitForm() {
