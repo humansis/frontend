@@ -360,18 +360,18 @@ export default {
 
 		setRecordFrom(difference, key) {
 			if (difference[1]) {
-				if (typeof difference === "number" || typeof difference === "string") {
+				if (typeof difference[1] === "number" || typeof difference[1] === "string") {
 					this.table.data[key].recordFrom.push(`
 						${difference[0]}
 						-
 						${difference[1]}
-						`);
+					`);
 				} else {
 					this.table.data[key].recordFrom.push(`
 						${this.transformProperty(difference[0])}
 						:
 						${this.getSlashedArray(difference[1])}
-						`);
+					`);
 				}
 			}
 		},

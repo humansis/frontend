@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<!-- Simple Text -->
-		<template v-if="!column.type || (column.type === 'text')">
-			<div v-html="simpleText" />
+		<template v-if="(!column.type || (column.type === 'text')) && simpleText">
+			<div v-html-secure="simpleText" />
 		</template>
 
 		<template v-if="column.type === 'assistancesType'">
@@ -41,7 +41,7 @@
 				<span
 					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
 					:class="{ 'has-text-weight-bold': column.boldText }"
-					v-html="item"
+					v-html-secure="item"
 				/>
 			</div>
 		</template>
