@@ -266,8 +266,8 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "household", label: "Household ID", type: "link", width: "30" },
-					{ key: "familyName", label: "Family Name", type: "link", width: "30", sortKey: "localFamilyName" },
-					{ key: "givenName", label: "First Name", type: "link", width: "30", sortKey: "localFirstName" },
+					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
+					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
 					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
 					{ key: "idNumbers", label: "ID Numbers", width: "30", sortKey: "nationalId" },
@@ -619,20 +619,16 @@ export default {
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
 			const { nationalIds } = beneficiary;
-			const routeData = {
-				routeName: "HouseholdInformationSummary",
-				routeParams: { householdId: id },
-			};
 
 			if (beneficiary) {
-				this.table.data[tableIndex].givenName = {
-					...routeData,
-					name: this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName),
-				};
-				this.table.data[tableIndex].familyName = {
-					...routeData,
-					name: this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName),
-				};
+				this.table.data[tableIndex].givenName = this.prepareName(
+					beneficiary.localGivenName,
+					beneficiary.enGivenName,
+				);
+				this.table.data[tableIndex].familyName = this.prepareName(
+					beneficiary.localFamilyName,
+					beneficiary.enFamilyName,
+				);
 				result.nationalIds = nationalIds;
 			}
 
@@ -757,8 +753,6 @@ export default {
 		mapHouseholdDetail(household) {
 			this.householdModel = {
 				...household,
-				familyName: household.familyName.name,
-				givenName: household.givenName.name,
 			};
 		},
 

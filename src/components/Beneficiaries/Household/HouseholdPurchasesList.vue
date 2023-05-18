@@ -12,6 +12,7 @@
 		:is-loading="isLoadingList"
 		:search-phrase="table.searchPhrase"
 		:columns="table.visibleColumns"
+		:has-clickable-rows="false"
 		@pageChanged="onPageChange"
 		@changePerPage="onChangePerPage"
 		@sorted="onSort"
@@ -125,7 +126,7 @@ export default {
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};
 				this.table.data[key].icon = {
-					type: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "home" : "user",
+					type: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "user" : "home",
 					size: "is-medium",
 					tooltip: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "Individual" : "Household",
 				};
