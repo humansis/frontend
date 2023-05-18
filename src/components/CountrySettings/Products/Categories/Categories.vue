@@ -31,17 +31,17 @@
 		</div>
 		<CategoriesList
 			ref="categoriesList"
-			@onRemove="onRemoveCategory"
-			@onShowEdit="editCategory"
-			@onShowDetail="showDetail"
+			@remove="removeCategory"
+			@showEdit="editCategory"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import CategoriesList from "@/components/CountrySettings/Products/CategoriesList";
-import CategoryForm from "@/components/CountrySettings/Products/CategoryForm";
+import CategoriesList from "@/components/CountrySettings/Products/Categories/CategoriesList";
+import CategoryForm from "@/components/CountrySettings/Products/Categories/CategoryForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Toast } from "@/utils/UI";
@@ -216,7 +216,7 @@ export default {
 			return null;
 		},
 
-		async onRemoveCategory(id) {
+		async removeCategory(id) {
 			await ProductService.removeCategory(id).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Category Successfully Removed"), "is-success");

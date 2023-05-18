@@ -33,17 +33,17 @@
 		<ProductsList
 			ref="productsList"
 			:categories="categories"
-			@onRemove="onRemoveProduct"
-			@onShowEdit="editProduct"
-			@onShowDetail="showDetail"
+			@remove="removeProduct"
+			@showEdit="editProduct"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/CountrySettings/Products/ProductsList";
-import ProductForm from "@/components/CountrySettings/Products/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
+import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
 import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
 import { Notification, Toast } from "@/utils/UI";
@@ -259,7 +259,7 @@ export default {
 			return null;
 		},
 
-		async onRemoveProduct(id) {
+		async removeProduct(id) {
 			await ProductService.removeProduct(id).then(({ status }) => {
 				if (status === 204) {
 					Toast(this.$t("Product Successfully Removed"), "is-success");

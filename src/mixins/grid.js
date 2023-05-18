@@ -55,7 +55,7 @@ export default {
 
 		assistanceMove(id) {
 			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowMove", entity);
+			this.$emit("showMove", entity);
 		},
 
 		showDetailWithId(id) {
@@ -64,16 +64,24 @@ export default {
 		},
 
 		showDetail(entity) {
-			this.$emit("onShowDetail", entity);
+			this.$emit("showDetail", entity);
 		},
 
 		showEdit(id) {
 			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", entity);
+			this.$emit("showEdit", entity);
 		},
 
 		remove(id) {
-			this.$emit("onRemove", id);
+			this.$emit("remove", id);
+		},
+
+		download(scoring) {
+			this.$emit("download", scoring);
+		},
+
+		statusChange(id, enabled) {
+			this.$emit("statusChange", { id, enabled });
 		},
 
 		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {

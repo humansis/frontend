@@ -80,7 +80,7 @@
 						:select-label="$t('Press enter to select')"
 						:selected-label="$t('Selected')"
 						:deselect-label="$t('Press enter to remove')"
-						label="name"
+						label="identifier"
 						track-by="id"
 						:options="options.scoringTypes"
 						:loading="scoringTypesLoading"
@@ -216,6 +216,7 @@ export default {
 			options: {
 				scoringTypes: [AssistancesService.getDefaultScoringType()],
 			},
+			filters: { enabled: true },
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
 			scoringTypesLoading: false,
@@ -545,8 +546,19 @@ export default {
 		async fetchScoringTypes() {
 			this.scoringTypesLoading = true;
 
-			await AssistancesService.getScoringTypes()
-				.then(({ data }) => { this.options.scoringTypes.push(...data); })
+			await AssistancesService.getScoringTypes(
+				null,
+				null,
+				this.filters,
+			)
+				.then(({ data }) => {
+					data.forEach((item) => {
+						this.options.scoringTypes.push({
+							...item,
+							identifier: `${item.name} (ID: ${item.id})`,
+						});
+					});
+				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
 				}).finally(() => {

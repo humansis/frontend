@@ -316,7 +316,7 @@ export default {
 
 		showDetailWithId(id) {
 			const importItem = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowDetail", importItem);
+			this.$emit("showDetail", importItem);
 		},
 	},
 };

@@ -19,8 +19,8 @@
 		</Modal>
 		<OrganizationServicesList
 			ref="organizationServicesList"
-			@onShowEdit="editOrganizationService"
-			@onShowDetail="showDetail"
+			@showEdit="editOrganizationService"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>

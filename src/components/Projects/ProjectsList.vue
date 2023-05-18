@@ -227,7 +227,7 @@ export default {
 
 		showDetailWithId(id) {
 			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowDetail", project);
+			this.$emit("showDetail", project);
 		},
 
 		async exportProjects(type, format) {

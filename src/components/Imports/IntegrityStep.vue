@@ -297,11 +297,12 @@
 </template>
 
 <script>
-import graduallyIncrement from "@/mixins/graduallyIncrement";
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
-import Loading from "@/components/Loading";
 import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts/index";
+import Loading from "@/components/Loading";
+import graduallyIncrement from "@/mixins/graduallyIncrement";
 
 export default {
 	name: "IntegrityStep",
@@ -324,6 +325,7 @@ export default {
 			importStatus: "",
 			invalidFiles: [],
 			filesUpload: false,
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
 		};
 	},
 
@@ -394,10 +396,6 @@ export default {
 
 		isCheckingIntegrity() {
 			return this.status === consts.STATUS.INTEGRITY_CHECK;
-		},
-
-		allowedFileExtensions() {
-			return ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
 		},
 
 		totalEntries() {

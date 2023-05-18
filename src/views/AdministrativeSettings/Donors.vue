@@ -30,9 +30,9 @@
 		</div>
 		<DonorsList
 			ref="donorsList"
-			@onShowDetail="showDetail"
-			@onRemove="removeDonor"
-			@onShowEdit="editDonor"
+			@showDetail="showDetail"
+			@remove="removeDonor"
+			@showEdit="editDonor"
 		/>
 	</div>
 </template>

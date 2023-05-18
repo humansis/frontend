@@ -156,7 +156,7 @@ export default {
 		},
 
 		showDetail(entity) {
-			if (this.userCan.viewBeneficiary) this.$emit("onShowDetail", entity);
+			if (this.userCan.viewBeneficiary) this.$emit("showDetail", entity);
 		},
 	},
 };
