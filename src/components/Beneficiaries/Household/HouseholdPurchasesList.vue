@@ -36,7 +36,7 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
@@ -126,9 +126,9 @@ export default {
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};
 				this.table.data[key].icon = {
-					type: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "user" : "home",
+					type: item.type === consts.TARGET.INDIVIDUAL ? "user" : "home",
 					size: "is-medium",
-					tooltip: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "Individual" : "Household",
+					tooltip: normalizeText(item.type),
 				};
 			});
 		},

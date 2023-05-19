@@ -33,12 +33,20 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
+
+const statusTags = [
+	{ code: "To distribute", type: "is-light" },
+	{ code: "Distribution in progress", type: "is-info" },
+	{ code: "Distributed", type: "is-success" },
+	{ code: "Expired", type: "is-danger" },
+	{ code: "Canceled", type: "is-warning" },
+];
 
 export default {
 	name: "HouseholdAssistancesList",
@@ -60,6 +68,7 @@ export default {
 					{ key: "beneficiaryId", label: "Beneficiary Id" },
 					{ key: "beneficiaryLocalGivenName", label: "First Name" },
 					{ key: "beneficiaryLocalFamilyName", label: "Family Name" },
+					{ key: "state", label: "Status", type: "tag", customTags: statusTags },
 					{ key: "projectName", label: "Project", type: "link" },
 					{ key: "assistanceName", label: "Assistance", type: "link" },
 					{ key: "fullLocationNames", label: "Location" },
@@ -120,9 +129,9 @@ export default {
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};
 				this.table.data[key].icon = {
-					type: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "user" : "home",
+					type: item.type === consts.TARGET.INDIVIDUAL ? "user" : "home",
 					size: "is-medium",
-					tooltip: item.type === consts.BENEFICIARY_TYPES.BENEFICIARY ? "Individual" : "Household",
+					tooltip: normalizeText(item.type),
 				};
 			});
 		},
