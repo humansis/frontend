@@ -516,13 +516,20 @@ export default {
 		},
 
 		isOneOfLastThreeRows(rowId) {
-			const countOfDisplayedRows = this.perPage <= this.table.total
-				? this.perPage
-				: this.table.total;
+			let finalCountOfDisplayedRows = this.table.total;
 
-			return (rowId === countOfDisplayedRows - 1
-				|| rowId === countOfDisplayedRows - 2
-				|| rowId === countOfDisplayedRows - 3
+			if (this.perPage <= this.table.total) {
+				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
+						- this.table.total);
+
+				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
+					? this.perPage
+					: countOfDisplayedRows;
+			}
+
+			return (rowId === finalCountOfDisplayedRows - 1
+				|| rowId === finalCountOfDisplayedRows - 2
+				|| rowId === finalCountOfDisplayedRows - 3
 			);
 		},
 

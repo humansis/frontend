@@ -305,6 +305,16 @@ export default {
 		},
 	},
 
+	watch: {
+		"formModel.modalityType.code": function modalityType(value) {
+			if (value === consts.COMMODITY.SMARTCARD) {
+				this.formModel.dateExpiration = new Date(
+					this.dateExpiration || this.project?.endDate,
+				);
+			}
+		},
+	},
+
 	data() {
 		return {
 			displayedFields: DEFAULT_DISPLAYED_FIELDS,
@@ -481,7 +491,6 @@ export default {
 
 	created() {
 		this.fetchModalities();
-		this.setDefaultExpirationDate();
 	},
 
 	methods: {
@@ -657,12 +666,6 @@ export default {
 			this.loading.types = false;
 		},
 
-		setDefaultExpirationDate() {
-			this.formModel.dateExpiration = new Date(
-				this.dateExpiration || this.project?.endDate,
-			);
-		},
-
 		submitForm() {
 			this.$v.$touch();
 
@@ -670,7 +673,11 @@ export default {
 				return;
 			}
 
-			this.$emit("formSubmitted", this.formModel);
+			this.$emit("formSubmitted", {
+				...this.formModel,
+				...(this.isModalityTypeSmartCard && {
+					dateExpiration: this.$moment(this.formModel.dateExpiration).format("YYYY-MM-DD") }),
+			});
 			this.$v.$reset();
 		},
 

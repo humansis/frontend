@@ -227,7 +227,9 @@ export default {
 
 		async getDeliveredCommodityValue(updatedCommodities = null) {
 			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
-			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
+
+			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
+			const result = await AssistancesService.calculationCommodities(commoditiesBody);
 
 			if (result.status !== 200) return;
 
@@ -291,7 +293,9 @@ export default {
 
 			this.loading = true;
 
-			await AssistancesService.createAssistance(this.assistanceBody)
+			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
+
+			await AssistancesService.createAssistance(assistanceBody)
 				.then(({ status, data: { id }, message }) => {
 					const success = status === 200;
 					const badRequest = status === 400;
@@ -412,7 +416,7 @@ export default {
 					unit: item.unit,
 					description: item.description,
 					dateExpiration: assistance.dateExpiration
-						? new Date(assistance.dateExpiration) : null,
+						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,
 					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
@@ -560,8 +564,9 @@ export default {
 		},
 
 		fetchDistributedCommodity(commodities) {
-			const date = this.isDateValid(commodities?.[0]?.dateExpiration)
-				? commodities[0].dateExpiration
+			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
+			const date = this.isDateValid(dateExpiration)
+				? dateExpiration
 				: new Date(this.project.endDate);
 
 			this.assistanceBody = {
