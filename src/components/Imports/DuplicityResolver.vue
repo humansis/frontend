@@ -341,25 +341,28 @@ export default {
 
 		getSlashedArray(items) {
 			let result = "";
+			const noData = "<b>No data</b>";
 
-			if (typeof items.database === "string" || typeof items.import === "string") {
+			if (typeof items.database === "string" && typeof items.import === "string"
+				&& items.database?.length && items.import?.length) {
 				result = Object.values(items).reverse().join(" / ");
 			} else {
-				const database = items.database[0] || "-";
-				const imp = items.import[0] || "-";
+				let database = items.database?.length ? items.database : noData;
+				let imp = items.import?.length ? items.import : noData;
+
+				if (typeof items.database === "object" && typeof items.import === "object") {
+					database = items.database[0]?.length ? items.database[0] : noData;
+					imp = items.import[0]?.length ? items.import[0] : noData;
+				}
 
 				result = `${imp} / ${database}`;
-			}
-
-			if (!items.database) {
-				result += "<b>No data</b>";
 			}
 
 			return result;
 		},
 
 		setRecordFrom(difference, key) {
-			if (difference[1]) {
+			if (difference[1]?.database?.length || difference[1]?.import?.length) {
 				if (typeof difference[1] === "number" || typeof difference[1] === "string") {
 					this.table.data[key].recordFrom.push(`
 						${difference[0]}
