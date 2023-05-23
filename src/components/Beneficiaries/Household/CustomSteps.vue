@@ -11,8 +11,9 @@
 						'is-active': childItem.isActive,
 						'is-previous': activeItem.index > childItem.index
 					}]"
+					@click="childClick(childItem)"
 				>
-					<a class="step-link">
+					<a class="step-link is-clickable">
 						<div class="step-marker">
 							<b-icon
 								v-if="childItem.icon"
@@ -91,7 +92,8 @@ export default {
 		},
 
 		changeStep(child) {
-			this.activeId = child.value;
+			const stepItem = this.items.find(({ step }) => Number(step) === child);
+			this.activeId = stepItem.value;
 		},
 	},
 };

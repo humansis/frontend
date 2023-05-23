@@ -161,45 +161,49 @@ export default {
 
 	methods: {
 		stepsChanged(active, next) {
-			if (this.$refs.householdForm?.$parent === active) {
-				if (this.$refs.householdForm.submit()) {
+			let lastAvailableStep = 1;
+
+			if (active.step < next.step) {
+				if (this.$refs.householdForm.submit()
+				) {
 					this.household = this.$refs.householdForm.formModel;
 					this.livelihood = this.prepareLivelihoodForSummary();
 					this.address = this.prepareAddressForSummary();
 					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
+					lastAvailableStep = 2;
 				}
-			}
-			if (this.$refs.householdHeadForm?.$parent === active) {
-				if (this.$refs.householdHeadForm.submit()) {
+				if (this.$refs.householdHeadForm
+					&& this.$refs.householdHeadForm.submit()
+					&& this.$refs.householdForm.submit()
+				) {
 					this.householdHead = this.$refs.householdHeadForm.formModel;
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
+					lastAvailableStep = 3;
 				}
-			}
-			if (this.$refs.householdMembers?.$parent === active) {
-				if (this.$refs.householdMembers.submit()) {
+				if (this.$refs.householdMembers
+					&& this.$refs?.householdMembers?.submit()
+					&& this.$refs.householdHeadForm.submit()
+					&& this.$refs.householdForm.submit()
+				) {
 					this.householdMembers = this.$refs.householdMembers.members;
 					this.prepareSummaryMembers(
 						[this.householdHead, ...this.$refs.householdMembers.members],
 					);
 					this.address = this.prepareAddressForSummary();
 					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
+					lastAvailableStep = 4;
 				}
+
+				const step = Number(next.step) <= lastAvailableStep ? Number(next.step) : lastAvailableStep;
+				this.changeStep(step);
+			} else {
+				this.changeStep(next.step);
 			}
-			if (this.$refs.householdSummary?.$parent === active) {
-				if (this.$refs.householdSummary.submit()) {
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
+		},
+
+		changeStep(stepId) {
+			this.$refs.customSteps.changeStep(Number(stepId));
+			this.loading[stepId] = !this.steps[stepId];
+			this.steps[stepId] = true;
 		},
 
 		close() {
