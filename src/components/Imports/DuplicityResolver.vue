@@ -347,8 +347,12 @@ export default {
 				return Object.values(items).reverse().join(" / ");
 			}
 
-			let database = items.database?.length ? items.database : noData;
-			let imp = items.import?.length ? items.import : noData;
+			let database = typeof items.database === "number" || items.database?.length
+				? items.database
+				: noData;
+			let imp = typeof items.import === "number" || items.import?.length
+				? items.import
+				: noData;
 
 			if (Array.isArray(items.database)) {
 				database = items.database[0]?.length ? items.database[0] : noData;
