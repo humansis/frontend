@@ -1,140 +1,108 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 import { EXPORT } from "@/consts";
 
 export default {
-	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `households?${pageText + sizeText + sortText + fulltext + filtersUri + idsText}`,
+	getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
+		return fetcher({
+			uri: `households${queryBuilder({ page, size, sort, search, filters, ids })}`,
 		});
-
-		return { data, totalCount };
 	},
 
-	async createHousehold(body) {
-		const { data, status } = await fetcher({
+	createHousehold(body) {
+		return fetcher({
 			uri: "households",
 			method: "POST",
 			body,
 		});
-		return { data, status };
 	},
 
-	async getDetailOfHousehold(id) {
-		const { data } = await fetcher({
-			uri: `households/${id}`,
-		});
-		return data;
+	getDetailOfHousehold(id) {
+		return fetcher({ uri: `households/${id}` });
 	},
 
-	async updateHousehold(id, body) {
-		const { data, status } = await fetcher({
+	updateHousehold(id, body) {
+		return fetcher({
 			uri: `households/${id}`, method: "PUT", body,
 		});
-		return { data, status };
 	},
 
-	async removeHousehold(id) {
-		const { data, status } = await fetcher({
+	removeHousehold(id) {
+		return fetcher({
 			uri: `households/${id}`, method: "DELETE",
 		});
-		return { data, status };
 	},
 
-	async getListOfTypesOfNationalIds() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfTypesOfNationalIds() {
+		return fetcher({
 			uri: "beneficiaries/national-ids/types",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfVulnerabilities() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfVulnerabilities() {
+		return fetcher({
 			uri: "beneficiaries/vulnerability-criteria",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfResidenceStatuses() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfResidenceStatuses() {
+		return fetcher({
 			uri: "beneficiaries/residency-statuses",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfTypesOfPhones() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfTypesOfPhones() {
+		return fetcher({
 			uri: "beneficiaries/phones/types",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfLivelihoods() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfLivelihoods() {
+		return fetcher({
 			uri: "households/livelihoods",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfAssets() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfAssets() {
+		return fetcher({
 			uri: "households/assets",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfShelterStatuses() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfShelterStatuses() {
+		return fetcher({
 			uri: "households/shelter-statuses",
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfLocationsTypes() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfLocationsTypes() {
+		return fetcher({
 			uri: "households/locations/types",
 		});
-		return { data, totalCount };
 	},
 
-	async getBeneficiary(id) {
-		const { data } = await fetcher({
+	getBeneficiary(id) {
+		return fetcher({
 			uri: `beneficiaries/${id}`,
 		});
-		return data;
 	},
 
-	async getBeneficiaries(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({
-			uri: `beneficiaries?${idsText}`,
+	getBeneficiaries(ids) {
+		return fetcher({
+			uri: `beneficiaries${queryBuilder({ ids })}`,
 		});
-		return data;
 	},
 
-	async getCommunities(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({
-			uri: `communities?${idsText}`,
+	getCommunities(ids) {
+		return fetcher({
+			uri: `communities${queryBuilder({ ids })}`,
 		});
-		return data;
 	},
 
-	async getInstitutions(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({
-			uri: `institutions?${idsText}`,
+	getInstitutions(ids) {
+		return fetcher({
+			uri: `institutions${queryBuilder({ ids })}`,
 		});
-		return data;
 	},
 
 	async getPhone(id) {

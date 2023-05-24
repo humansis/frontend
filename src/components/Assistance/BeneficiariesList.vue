@@ -557,13 +557,15 @@ export default {
 			this.table.data = [];
 			switch (this.assistance.target) {
 				case consts.TARGET.COMMUNITY:
-					await AssistancesService.getListOfCommunities(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+					try {
+						const { data: { data, totalCount } } = await AssistancesService.getListOfCommunities(
+							this.$route.params.assistanceId,
+							page || this.table.currentPage,
+							size || this.perPage,
+							this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+							this.table.searchPhrase,
+						);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
@@ -571,18 +573,21 @@ export default {
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
+					} catch (e) {
 						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
-					});
+					}
+
 					break;
 				case consts.TARGET.INSTITUTION:
-					await AssistancesService.getListOfInstitutions(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+					try {
+						const { data: { data, totalCount } } = await AssistancesService.getListOfInstitutions(
+							this.$route.params.assistanceId,
+							page || this.table.currentPage,
+							size || this.perPage,
+							this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+							this.table.searchPhrase,
+						);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
@@ -590,20 +595,23 @@ export default {
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
+					} catch (e) {
 						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
-					});
+					}
+
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					await AssistancesService.getListOfBeneficiaries(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+					try {
+						const { data: { data, totalCount } } = await AssistancesService.getListOfBeneficiaries(
+							this.$route.params.assistanceId,
+							page || this.table.currentPage,
+							size || this.perPage,
+							this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+							this.table.searchPhrase,
+						);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
@@ -611,9 +619,9 @@ export default {
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
+					} catch (e) {
 						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-					});
+					}
 			}
 			this.isLoadingList = false;
 		},
@@ -673,7 +681,7 @@ export default {
 				case consts.TARGET.COMMUNITY:
 					beneficiaryIds = data.map((item) => item.communityId);
 					beneficiaries = await this.getCommunities(beneficiaryIds);
-
+					console.log(beneficiaries);
 					data.forEach((community, key) => {
 						const foundCommunity = beneficiaries.find(
 							(bnf) => bnf.id === community.communityId,
@@ -757,35 +765,51 @@ export default {
 		},
 
 		async getVulnerabilities() {
-			return BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfVulnerabilities();
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getCommunities(ids) {
-			return BeneficiariesService.getCommunities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getCommunities(ids);
+				console.log(data);
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getInstitutions(ids) {
-			return BeneficiariesService.getInstitutions(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getInstitutions(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getBeneficiaries(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async exportDistribution(type, format) {

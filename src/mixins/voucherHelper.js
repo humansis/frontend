@@ -67,22 +67,30 @@ export default {
 
 		async getBeneficiaries(ids) {
 			if (!ids.length) return [];
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-					return [];
-				});
+
+			try {
+				const { data } = await BeneficiariesService.getBeneficiaries(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getAssistances(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
-					return [];
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getAssistances(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getProjects(ids) {

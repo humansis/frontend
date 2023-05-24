@@ -115,47 +115,51 @@ export default {
 		},
 
 		async removeScoring(id) {
-			await AssistancesService.removeScoring(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Toast(this.$t("Scoring Successfully Removed"), "is-success");
-						this.$refs.scoringList.fetchData();
-					} else if (response.message) {
-						Notification(response.message, "is-danger");
-					}
-				}).catch((e) => {
-					Toast(`${this.$t("Scoring")} ${e}`, "is-danger");
-				});
+			try {
+				const { status, message } = await AssistancesService.removeScoring(id);
+
+				if (status === 204) {
+					Toast(this.$t("Scoring Successfully Removed"), "is-success");
+					await this.$refs.scoringList.fetchData();
+				} else if (message) {
+					Notification(message, "is-danger");
+				}
+			} catch (e) {
+				Toast(`${this.$t("Scoring")} ${e}`, "is-danger");
+			}
 		},
 
 		async downloadScoring(scoring) {
-			await AssistancesService.downloadScoring(scoring.id)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `${scoring.name}-ID-${scoring.id}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring download")} ${e}`, "is-danger");
-				});
+			try {
+				const { data, status, message } = await AssistancesService.downloadScoring(
+					scoring.id,
+				);
+
+				if (status === 200) {
+					const blob = new Blob([data], { type: data.type });
+					const link = document.createElement("a");
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `${scoring.name}-ID-${scoring.id}`;
+					link.click();
+				} else {
+					Notification(message, "is-warning");
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Scoring download")} ${e}`, "is-danger");
+			}
 		},
 
 		async statusChange({ id, enabled }) {
-			await AssistancesService.updateScoring({ id, enabled })
-				.then((response) => {
-					if (response.status === 200) {
-						Toast(this.$t("Scoring Successfully Updated"), "is-success");
-						this.$refs.scoringList.fetchData();
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring")} ${e}`, "is-danger");
-				});
+			try {
+				const { status } = await AssistancesService.updateScoring({ id, enabled });
+
+				if (status === 200) {
+					Toast(this.$t("Scoring Successfully Updated"), "is-success");
+					this.$refs.scoringList.fetchData();
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Scoring")} ${e}`, "is-danger");
+			}
 		},
 	},
 };

@@ -6,48 +6,68 @@ import AddressService from "@/services/AddressService";
 
 export default {
 	methods: {
-		getTransactions(transactionIds) {
-			return AssistancesService
-				.getTransactionsForAssistance(
+		async getTransactions(transactionIds) {
+			try {
+				const { data: { data } } = await AssistancesService.getTransactionsForAssistance(
 					transactionIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
-				});
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
-		getTransactionStatuses() {
-			return AssistancesService
-				.getTransactionStatuses().then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transaction Statuses")} ${e}`, "is-danger");
-				});
+		async getTransactionStatuses() {
+			try {
+				const { dat: { data } } = await AssistancesService.getTransactionStatuses();
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Transaction Statuses")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
-		getSmartCardDeposits(smartcardDepositIds) {
-			return AssistancesService
-				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
-				});
+		async getSmartCardDeposits(smartcardDepositIds) {
+			try {
+				const { data: { data } } = await AssistancesService.getSmartCardDepositsForAssistance(
+					smartcardDepositIds,
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
-		getBooklets(bookletIds) {
-			return AssistancesService
-				.getBookletsForAssistance(
-					bookletIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
-				});
+		async getBooklets(bookletIds) {
+			try {
+				const { data: { data } } = await AssistancesService.getBookletsForAssistance(bookletIds);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
-		getBookletStatuses() {
-			return AssistancesService
-				.getBookletStatuses().then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklet Statuses")} ${e}`, "is-danger");
-				});
+		async getBookletStatuses() {
+			try {
+				const { data: { data } } = await AssistancesService.getBookletStatuses();
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Booklet Statuses")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
 		async assignBookletToBeneficiary(booklet) {
@@ -67,12 +87,14 @@ export default {
 					target = "beneficiaries";
 			}
 
-			await AssistancesService.assignBookletInAssistance(
-				this.$route.params.assistanceId,
-				target,
-				booklet.beneficiaryId,
-				booklet.code,
-			).then(({ status }) => {
+			try {
+				const { status } = await AssistancesService.assignBookletInAssistance(
+					this.$route.params.assistanceId,
+					target,
+					booklet.beneficiaryId,
+					booklet.code,
+				);
+
 				if (status === 200) {
 					Toast(
 						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
@@ -80,15 +102,14 @@ export default {
 					);
 					this.closeAssignVoucherModal();
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) {
 					Notification(
 						`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
 						"is-danger",
 					);
 				}
-				this.closeAssignVoucherModal();
-			});
+			}
 
 			this.assignVoucherModal.isWaiting = false;
 		},
@@ -128,15 +149,20 @@ export default {
 			this.table.progress = 100;
 		},
 
-		getReliefPackages(reliefPackageIds) {
-			return AssistancesService
-				.getReliefPackagesForAssistance(
-					this.$route.params.assistanceId,
-					reliefPackageIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Relief Packages")} ${e}`, "is-danger");
-				});
+		async getReliefPackages(reliefPackageIds) {
+			try {
+				const { data: { data } } = await AssistancesService
+					.getReliefPackagesForAssistance(
+						this.$route.params.assistanceId,
+						reliefPackageIds,
+					);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Relief Packages")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
 		async preparePhoneForTable(phoneIds) {
@@ -195,11 +221,15 @@ export default {
 		},
 
 		async getAssistanceCommodities() {
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodities = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getAssistanceCommodities(
+					this.$route.params.assistanceId,
+				);
+
+				this.commodities = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+			}
 		},
 
 		openAssignVoucherModal(id, canAssignVoucher) {
@@ -446,9 +476,16 @@ export default {
 			}
 		},
 
-		getAddress(id) {
-			return AddressService.getAddress(id)
-				.then((response) => response);
+		async getAddress(id) {
+			try {
+				const { data } = await AddressService.getAddress(id);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Address")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 	},
 };

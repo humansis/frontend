@@ -10,13 +10,18 @@ export default {
 	mixins: [baseHelper],
 
 	methods: {
-		getAddresses(ids) {
+		async getAddresses(ids) {
 			if (!ids?.length) return null;
-			return AddressService.getAddresses(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${i18n.t("Addresses")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data } = await AddressService.getAddresses(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${i18n.t("Addresses")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
 		getLocations(addresses) {

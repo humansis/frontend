@@ -103,18 +103,19 @@ export default {
 				note: this.note,
 			};
 
-			await AssistancesService.updateAssistanceNote(
-				updateData,
-			)
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Note Successfully Updated"), "is-success");
-						this.edit = false;
-					}
-					this.assistance.note = this.note;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				});
+			try {
+				const { status } = await AssistancesService.updateAssistanceNote(
+					updateData,
+				);
+
+				if (status === 200) {
+					Notification(this.$t("Note Successfully Updated"), "is-success");
+					this.edit = false;
+				}
+				this.assistance.note = this.note;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			}
 		},
 
 		discardNoteChanges() {

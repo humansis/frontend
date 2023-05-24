@@ -287,33 +287,37 @@ export default {
 		async fetchAssistance() {
 			this.isAssistanceLoading = true;
 
-			AssistancesService.getDetailOfAssistance(
-				this.$route.params.assistanceId,
-			).then((data) => {
+			try {
+				const { data } = await AssistancesService.getDetailOfAssistance(
+					this.$route.params.assistanceId,
+				);
+
 				this.assistance = data;
 
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-			}).finally(() => {
+			} finally {
 				this.isAssistanceLoading = false;
-			});
+			}
 		},
 
 		async fetchAssistanceStatistics() {
 			this.isStatisticsLoading = true;
 
-			AssistancesService.getAssistanceStatistics(
-				this.$route.params.assistanceId,
-			).then((data) => {
+			try {
+				const { data } = await AssistancesService.getAssistanceStatistics(
+					this.$route.params.assistanceId,
+				);
+
 				this.statistics = data;
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
-			}).finally(() => {
+			} finally {
 				this.isStatisticsLoading = false;
-			});
+			}
 		},
 
 		async fetchProject() {
@@ -347,13 +351,15 @@ export default {
 						id, dateDistributed: new Date().toISOString(),
 					}));
 
-					await AssistancesService.updateReliefPackage(body).then(({ status }) => {
+					try {
+						const { status } = await AssistancesService.updateReliefPackage(body);
+
 						if (status === 200) {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
 						}
-					}).catch((e) => {
+					} catch (e) {
 						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e}. `;
-					});
+					}
 				}));
 
 				if (error) Toast(error, "is-danger");
@@ -387,21 +393,20 @@ export default {
 			if (isAfter) {
 				this.startTransactionButtonLoading = true;
 
-				await AssistancesService
-					.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
-					.then((response) => {
-						if (response.status === 204) this.transactionModal.isOpened = true;
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
-					});
+				try {
+					const { status } = await AssistancesService.sendVerificationEmailForTransactions(
+						this.$route.params.assistanceId,
+					);
 
+					if (status === 204) {
+						this.transactionModal.isOpened = true;
+					}
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Start Transaction")} ${e}`, "is-danger");
+				}
 				this.startTransactionButtonLoading = false;
 			} else {
-				Notification(
-					`${this.$t("Date of the assistance is in the future")}.`,
-					"is-danger",
-				);
+				Notification(`${this.$t("Date of the assistance is in the future")}.`, "is-danger");
 			}
 		},
 
@@ -412,19 +417,21 @@ export default {
 				code,
 			};
 
-			await AssistancesService.createTransactionsForBeneficiaries(
-				this.$route.params.assistanceId,
-				body,
-			).then(({ status }) => {
+			try {
+				const { status } = await AssistancesService.createTransactionsForBeneficiaries(
+					this.$route.params.assistanceId,
+					body,
+				);
+
 				if (status === 204) {
 					Toast(this.$t("Successful Transaction"), "is-success");
 
-					this.$refs.beneficiariesList.fetchData();
-					this.fetchAssistanceStatistics();
+					await this.$refs.beneficiariesList.fetchData();
+					await this.fetchAssistanceStatistics();
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
-			});
+			}
 
 			this.transactionModal.isWaiting = false;
 			this.closeTransactionModal();
@@ -440,20 +447,22 @@ export default {
 				onConfirm: async () => {
 					const { assistanceId, projectId } = this.$route.params;
 
-					await AssistancesService.updateAssistanceStatusValidated(
-						{ assistanceId, validated: false },
-					).then(({ status }) => {
+					try {
+						const { status } = await AssistancesService.updateAssistanceStatusValidated(
+							{ assistanceId, validated: false },
+						);
+
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Unvalidated"), "is-success");
 
-							this.$router.push({
+							await this.$router.push({
 								name: "AssistanceEdit",
 								params: { assistanceId, projectId },
 							});
 						}
-					}).catch((e) => {
-						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
-					});
+					} catch (e) {
+						if (e.message) Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
+					}
 				},
 			});
 		},
@@ -468,18 +477,21 @@ export default {
 				onConfirm: async () => {
 					const assistanceId = Number(this.$route.params.assistanceId);
 
-					await AssistancesService.updateAssistanceToStatusCompleted(
-						{ assistanceId, completed: true },
-					).then(({ status }) => {
+					try {
+						const { status } = await AssistancesService.updateAssistanceToStatusCompleted(
+							{ assistanceId, completed: true },
+						);
+
 						if (status === 200) {
 							Toast(this.$t("Assistance Successfully Closed"), "is-success");
-							this.$router.push({ name: "Project",
+							await this.$router.push({
+								name: "Project",
 								params: { projectId: this.$route.params.projectId },
 							});
 						}
-					}).catch((e) => {
-						Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
-					});
+					} catch (e) {
+						if (e.message) Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
+					}
 				},
 			});
 		},

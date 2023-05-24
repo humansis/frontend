@@ -86,6 +86,7 @@ import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
 import permissions from "@/mixins/permissions";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "SyncList",
@@ -220,19 +221,43 @@ export default {
 
 		async getUsers(ids) {
 			if (!ids?.length) return [];
-			return UsersService.getListOfUsers(null, null, null, null, ids, "userId")
-				.then(({ data }) => data).catch((e) => {
-					if (e.message) console.error(e.message);
-				});
+
+			try {
+				const { data: { data } } = await UsersService.getListOfUsers(
+					null,
+					null,
+					null,
+					null,
+					ids,
+					"userId",
+					{ showVendors: true },
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
-			return VendorService.getListOfVendors(null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) console.error(e.message);
-				});
+
+			try {
+				const { data: { data } } = await VendorService.getListOfVendors(
+					null,
+					null, null,
+					null,
+					ids,
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		filtersToggle() {

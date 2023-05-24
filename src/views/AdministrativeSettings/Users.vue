@@ -244,16 +244,19 @@ export default {
 		async createUser(userBody) {
 			this.userModal.isWaiting = true;
 
-			await UsersService.createUser(userBody).then((response) => {
-				if (response.status && response.status === 200) {
+			try {
+				const { status } = await UsersService.createUser(userBody);
+
+				if (status === 200) {
 					Toast(this.$t("User Successfully Created"), "is-success");
-					this.$refs.usersList.fetchData();
+					await this.$refs.usersList.fetchData();
 					this.closeUserModal();
 				}
-			}).catch((e) => {
-				Toast(`${this.$t("User")} ${e}`, "is-danger");
-				this.userModal.isWaiting = false;
-			});
+			} catch (e) {
+				if (e.message) Toast(`${this.$t("User")} ${e}`, "is-danger");
+			}
+
+			this.userModal.isWaiting = false;
 		},
 
 		async updateUser(id, userBody) {

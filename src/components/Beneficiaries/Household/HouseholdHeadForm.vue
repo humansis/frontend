@@ -586,9 +586,15 @@ export default {
 				if (this.beneficiary) {
 					await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
 				} else {
-					const data = await BeneficiariesService
-						.getBeneficiary(this.detailOfHousehold.householdHeadId);
-					await this.mapDetailOfHouseholdToFormModel(data);
+					try {
+						const { data } = await BeneficiariesService.getBeneficiary(
+							this.detailOfHousehold.householdHeadId,
+						);
+
+						await this.mapDetailOfHouseholdToFormModel(data);
+					} catch (e) {
+						Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
+					}
 				}
 				this.loadingComponent.close();
 			}
@@ -724,39 +730,47 @@ export default {
 		},
 
 		async fetchNationalCardTypes() {
-			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.idType = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				this.options.idType = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+			}
 
 			this.idTypeLoading = false;
 		},
 
 		async fetchPhoneTypes() {
-			await BeneficiariesService.getListOfTypesOfPhones()
-				.then(({ data }) => { this.options.phoneType = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfTypesOfPhones();
+
+				this.options.phoneType = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+			}
 
 			this.phoneTypesLoading = false;
 		},
 
 		async fetchVulnerabilities() {
-			await BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => { this.options.vulnerabilities = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfVulnerabilities();
+
+				this.options.vulnerabilities = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchResidenceStatus() {
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => { this.options.residencyStatus = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfResidenceStatuses();
+
+				this.options.residencyStatus = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+			}
 
 			this.residenceStatusesLoading = false;
 		},

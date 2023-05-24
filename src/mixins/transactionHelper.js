@@ -133,20 +133,36 @@ export default {
 
 		async getCommodities(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getCommodities(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
-			return VendorService.getListOfVendors(null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await VendorService.getListOfVendors(
+					null,
+					null,
+					null,
+					null,
+					ids,
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getAdm1s(ids) {
@@ -175,19 +191,28 @@ export default {
 
 		async getAssistances(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getAssistances(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getBeneficiaries(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getProjects(ids) {
@@ -206,34 +231,34 @@ export default {
 					this.filtersOptions.project.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
 
 		async fetchModalityTypes() {
-			await AssistancesService.getListOfAllModalityTypes()
-				.then(({ data }) => {
-					this.filtersOptions.commodity.data = data;
-					this.filtersOptions.commodity.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Modality")}${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getListOfAllModalityTypes();
+
+				this.filtersOptions.commodity.data = data;
+				this.filtersOptions.commodity.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Modality")}${e}`, "is-danger");
+			}
 		},
 
 		async fetchVendors() {
-			await VendorService.getListOfVendors()
-				.then(({ data }) => {
-					this.filtersOptions.vendor.data = data.map((item) => {
-						const vendor = { ...item };
-						vendor.vendorName = `${item.name} ${item.shop ? `(${item.shop})` : ""}`;
-						return vendor;
-					});
-					this.filtersOptions.vendor.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Vendor")}${e}`, "is-danger");
+			try {
+				const { data: { data } } = await VendorService.getListOfVendors();
+
+				this.filtersOptions.vendor.data = data.map((item) => {
+					const vendor = { ...item };
+					vendor.vendorName = `${item.name} ${item.shop ? `(${item.shop})` : ""}`;
+					return vendor;
 				});
+				this.filtersOptions.vendor.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vendor")}${e}`, "is-danger");
+			}
 		},
 
 		async fetchBeneficiaryTypes() {
@@ -249,15 +274,19 @@ export default {
 
 		async fetchAssistance() {
 			this.filtersOptions.distribution.loading = true;
-
 			this.selectedAssistanceForFilter = [];
-			await AssistancesService.getListOfProjectAssistancesByType("distribution", this.selectedFiltersOptions.project?.id)
-				.then(({ data }) => {
-					this.filtersOptions.distribution.data = data;
-					this.filtersOptions.distribution.loading = false;
-				}).catch((e) => {
-					Notification(`Project Assistances ${e}`, "is-danger");
+
+			try {
+				const { data: { data } } = await AssistancesService.getListOfProjectAssistancesByType({
+					projects: "distribution",
+					type: this.selectedFiltersOptions.project?.id,
 				});
+
+				this.filtersOptions.distribution.data = data;
+				this.filtersOptions.distribution.loading = false;
+			} catch (e) {
+				Notification(`Project Assistances ${e}`, "is-danger");
+			}
 		},
 	},
 };

@@ -157,24 +157,25 @@ export default {
 		},
 
 		async moveAssistance({ id }) {
-			await AssistancesService.moveAssistance(
-				this.assistance.id,
-				this.project.id,
-				id,
-			)
-				.then((response) => {
-					if (response.status === 202) {
-						Toast(this.$t("Assistance Successfully Moved"), "is-success");
-						this.$refs.assistancesList.fetchData();
-					}
+			try {
+				const { status, message } = await AssistancesService.moveAssistance(
+					this.assistance.id,
+					this.project.id,
+					id,
+				);
 
-					if (response.status === 400) {
-						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
-							|| `${this.$t("Error code 400")}`, "is-warning");
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-				});
+				if (status === 202) {
+					Toast(this.$t("Assistance Successfully Moved"), "is-success");
+					await this.$refs.assistancesList.fetchData();
+				}
+
+				if (status === 400) {
+					Notification(`${this.$t("Cannot move the assistance")}: ${message}`
+						|| `${this.$t("Error code 400")}`, "is-warning");
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			}
 		},
 
 		async editAssistance({ id, name, dateDistribution, dateExpiration, round, note, locationId }) {
@@ -186,28 +187,31 @@ export default {
 				? this.$moment(dateExpiration).format("YYYY-MM-DD")
 				: null;
 
-			await AssistancesService.updateAssistance({
-				id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
-			})
-				.then((response) => {
-					if (response.status === 200) {
-						Toast(this.$t("Assistance Successfully Updated"), "is-success");
-						this.$refs.assistancesList.fetchData();
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			try {
+				const { status } = await AssistancesService.updateAssistance({
+					id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
 				});
+
+				if (status === 200) {
+					Toast(this.$t("Assistance Successfully Updated"), "is-success");
+					await this.$refs.assistancesList.fetchData();
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			}
 		},
 
 		async removeAssistance(id) {
-			await AssistancesService.removeAssistance(id).then((response) => {
-				if (response.status === 204) {
+			try {
+				const { status } = await AssistancesService.removeAssistance(id);
+
+				if (status === 204) {
 					Toast(this.$t("Assistance Successfully Deleted"), "is-success");
-					this.$refs.assistancesList.fetchData();
+					await this.$refs.assistancesList.fetchData();
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-			});
+			}
 		},
 
 		showEdit(assistance) {

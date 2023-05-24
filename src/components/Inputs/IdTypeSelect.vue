@@ -80,11 +80,13 @@ export default {
 
 	methods: {
 		async fetchNationalCardTypes() {
-			return BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.idType = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				this.options.idType = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+			}
 		},
 
 		onSubmit() {

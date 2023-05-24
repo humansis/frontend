@@ -1,71 +1,62 @@
-import { download, fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 import { Toast } from "@/utils/UI";
 import CryptoJS from "crypto-js";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfUsers(
+	getListOfUsers(
 		page,
 		size,
 		sort,
 		search = null,
 		ids = null,
-		param = null,
-		showVendors = true,
+		idsParam = null,
+		filters,
 	) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const idsText = ids ? idsToUri(ids, param) : "";
-		const showVendorsText = `&filter[showVendors]=${showVendors}`;
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `users?${pageText + sizeText + sortText + fulltext + idsText + showVendorsText}`,
+		return fetcher({
+			uri: `users${queryBuilder({ page, size, sort, search, ids, idsParam, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfUsersProjects(userId) {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfUsersProjects(userId) {
+		return fetcher({
 			uri: `users/${userId}/projects`,
 		});
-		return { data, totalCount };
 	},
 
 	async createUser(body) {
-		return this.initializeUser(body.username)
-			.then(async ({ data: { salt, userId } }) => {
-				const userBody = body;
-				userBody.password = userBody.password
-					? this.saltPassword(salt, userBody.password)
-					: null;
+		try {
+			const { data: { salt, userId } } = await this.initializeUser(body.username);
 
-				const { data, status } = await fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
-				return { data, status };
-			})
-			.catch((e) => {
-				Toast(`Initialize User ${e}`, "is-danger");
-			});
+			const userBody = body;
+			userBody.password = userBody.password
+				? this.saltPassword(salt, userBody.password)
+				: null;
+
+			return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
+		} catch (e) {
+			if (e.message) Toast(`Initialize User ${e}`, "is-danger");
+		}
+
+		return null;
 	},
 
-	async changeUsersAttribute(userId, attribute, value) {
-		const { data, status } = await fetcher({
+	changeUsersAttribute(userId, attribute, value) {
+		return fetcher({
 			uri: `users/${userId}`,
 			method: "PATCH",
 			body: {
 				[attribute]: value,
 			},
 		});
-		return { data, status };
 	},
 
-	async initializeUser(username) {
+	initializeUser(username) {
 		return fetcher({ uri: "users/initialize", method: "POST", body: { username } });
 	},
 
-	async requestSalt(username) {
-		const { data, status } = await fetcher({ uri: `users/salt/${username}`, method: "GET" });
-		return { data, status };
+	requestSalt(username) {
+		return fetcher({ uri: `users/salt/${username}`, method: "GET" });
 	},
 
 	saltPassword(salt, password) {

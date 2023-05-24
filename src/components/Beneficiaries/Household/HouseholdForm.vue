@@ -404,20 +404,31 @@ export default {
 		async mapCurrentLocation() {
 			if (this.detailOfHousehold) {
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
-
 				switch (typeOfLocation) {
 					case CONST.LOCATION_TYPE.camp.type:
-						return AddressService.getCampAddress(addressId).catch((e) => {
+						try {
+							const { data } = await AddressService.getCampAddress(addressId);
+							return data;
+						} catch (e) {
 							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
-						});
+						}
+						break;
 					case CONST.LOCATION_TYPE.residence.type:
-						return AddressService.getResidenceAddress(addressId).catch((e) => {
+						try {
+							const { data } = await AddressService.getResidenceAddress(addressId);
+							return data;
+						} catch (e) {
 							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
-						});
+						}
+						break;
 					case CONST.LOCATION_TYPE.temporarySettlement.type:
-						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
+						try {
+							const { data } = await AddressService.getTemporarySettlementAddress(addressId);
+							return data;
+						} catch (e) {
 							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
-						});
+						}
+						break;
 					default:
 						return null;
 				}
@@ -492,29 +503,38 @@ export default {
 		},
 
 		async fetchLivelihoods() {
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => { this.options.livelihood = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfLivelihoods();
+
+				this.options.livelihood = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+			}
+
 			this.livelihoodLoading = false;
 		},
 
 		async fetchAssets() {
-			await BeneficiariesService.getListOfAssets()
-				.then(({ data }) => { this.options.assets = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfAssets();
+
+				this.options.assets = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+			}
+
 			this.assetsLoading = false;
 		},
 
 		async fetchShelterStatuses() {
-			await BeneficiariesService.getListOfShelterStatuses()
-				.then(({ data }) => { this.options.shelterStatuses = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfShelterStatuses();
+
+				this.options.shelterStatuses = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+			}
+
 			this.shelterStatusLoading = false;
 		},
 

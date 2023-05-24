@@ -328,43 +328,46 @@ export default {
 		},
 
 		async fetchProjectAssistances() {
-			await AssistancesService.getListOfProjectAssistances(
-				this.$route.params.projectId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(async ({ data, totalCount }) => {
+			try {
+				const { data: { data, totalCount } } = await AssistancesService.getListOfProjectAssistances(
+					this.$route.params.projectId,
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					this.filters,
+				);
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					await this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
-			});
+			}
 		},
 
 		async fetchUpcomingAssistances() {
-			await AssistancesService.getListOfAssistances(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				true,
-				null,
-				this.filters,
-			).then(({ data, totalCount }) => {
+			try {
+				const { data: { data, totalCount } } = await AssistancesService.getListOfAssistances(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					true,
+					null,
+					this.filters,
+				);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
-			});
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -545,21 +548,25 @@ export default {
 					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 				};
 
-				await AssistancesService.exportAssistances(format, this.$route.params.projectId, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
-					});
+				try {
+					const { data, status, message } = await AssistancesService.exportAssistances(
+						format,
+						this.$route.params.projectId,
+						filters,
+					);
+
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
+				}
 				this.exportControl.loading = false;
 			}
 		},

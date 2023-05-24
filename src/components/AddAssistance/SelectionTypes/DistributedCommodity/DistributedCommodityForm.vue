@@ -643,11 +643,13 @@ export default {
 		async fetchModalities() {
 			this.loading.modalities = true;
 
-			await AssistancesService.getListOfModalities()
-				.then(({ data }) => { this.options.modalities = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getListOfModalities();
+
+				this.options.modalities = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
+			}
 
 			this.loading.modalities = false;
 		},
@@ -655,13 +657,13 @@ export default {
 		async fetchModalityTypes(code) {
 			this.loading.types = true;
 
-			await AssistancesService.getListOfModalityTypes(code)
-				.then(({ data }) => {
-					this.options.types = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getListOfModalityTypes(code);
+
+				this.options.types = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
+			}
 
 			this.loading.types = false;
 		},

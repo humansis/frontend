@@ -315,21 +315,27 @@ export default {
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
-				await AssistancesService.updateReliefPackagesWithNumberIds(
-					this.$route.params.assistanceId, body,
-				).then(({ data, status, message }) => {
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await AssistancesService.updateReliefPackagesWithNumberIds(
+						this.$route.params.assistanceId, body,
+					);
+
 					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
 					} else {
 						Notification(message, "is-warning");
 					}
-				}).catch((error) => {
-					Notification(error, "is-danger");
-				}).finally(() => {
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Update relief packages")} ${e}`, "is-danger");
+				} finally {
 					this.distributedButtonLoading = false;
 					this.$emit("submit");
-				});
+				}
 
 				this.$v.$reset();
 			}

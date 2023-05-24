@@ -66,20 +66,27 @@ export default {
 		},
 
 		async fetchHousehold() {
-			await BeneficiariesService.getDetailOfHousehold(this.$route.params.householdId)
-				.then((data) => {
-					this.household = data;
-					this.prepareData(data);
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getDetailOfHousehold(
+					this.$route.params.householdId,
+				);
+
+				this.household = data;
+				await this.prepareData(data);
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+			}
 		},
 
 		async prepareData(household) {
-			BeneficiariesService.getBeneficiary(household.householdHeadId)
-				.then((data) => {
-					this.householdHead = data;
-				});
+			try {
+				const { data } = await BeneficiariesService.getBeneficiary(household.householdHeadId);
+
+				this.householdHead = data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
+			}
+
 			const { typeOfLocation, addressId } = this.getAddressTypeAndId(household);
 
 			this.address = await this.getAddresses(addressId, typeOfLocation);
@@ -88,39 +95,39 @@ export default {
 		async getAddresses(id, type) {
 			let address = null;
 			if (type === CONST.LOCATION_TYPE.camp.type) {
-				await AddressService.getCampAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+				try {
+					const { data } = AddressService.getCampAddresses([id]);
+
+					data.forEach((item) => {
+						address = item;
 					});
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+				}
 			}
 			if (type === CONST.LOCATION_TYPE.residence.type) {
-				await AddressService.getResidenceAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+				try {
+					const { data } = await AddressService.getResidenceAddresses([id]);
+
+					data.forEach((item) => {
+						address = item;
 					});
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+				}
 			}
 			if (type === CONST.LOCATION_TYPE.temporarySettlement.type) {
-				await AddressService.getTemporarySettlementAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Temporary Settlement Address")} ${e}`,
-								"is-danger",
-							);
-						}
+				try {
+					const { data } = await AddressService.getTemporarySettlementAddresses([id]);
+
+					data.forEach((item) => {
+						address = item;
 					});
+				} catch (e) {
+					if (e.message) {
+						Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+					}
+				}
 			}
 			return address;
 		},

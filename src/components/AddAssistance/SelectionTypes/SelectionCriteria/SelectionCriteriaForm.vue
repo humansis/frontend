@@ -277,11 +277,13 @@ export default {
 		async fetchCriteriaTargets() {
 			this.criteriaTargetLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaTargets()
-				.then(({ data }) => { this.options.criteriaTargets = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getAssistanceSelectionCriteriaTargets();
+
+				this.options.criteriaTargets = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
+			}
 
 			this.criteriaTargetLoading = false;
 		},
@@ -289,11 +291,15 @@ export default {
 		async fetchCriteriaFields(target) {
 			this.criteriaLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
-				.then(({ data }) => { this.options.criteria = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getAssistanceSelectionCriteriaFields(
+					target.code,
+				);
+
+				this.options.criteria = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
+			}
 
 			this.criteriaLoading = false;
 		},
@@ -301,17 +307,21 @@ export default {
 		async fetchCriteriaConditions(target, field) {
 			this.criteriaConditionsLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaConditions(target.code, field.code)
-				.then(({ data }) => {
-					this.options.conditions = data;
+			try {
+				const {
+					data: { data },
+				} = await AssistancesService.getAssistanceSelectionCriteriaConditions(
+					target.code, field.code,
+				);
 
-					if (data.length === 1 && data[0].code === "=") {
-						this.formModel.condition = { ...data[0] };
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
-				});
+				this.options.conditions = data;
+
+				if (data.length === 1 && data[0].code === "=") {
+					this.formModel.condition = { ...data[0] };
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
+			}
 
 			this.criteriaConditionsLoading = false;
 		},
@@ -319,13 +329,13 @@ export default {
 		async fetchResidenceStatuses() {
 			this.valueSelectLoading = true;
 
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfResidenceStatuses();
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+			}
 
 			this.valueSelectLoading = false;
 		},
@@ -333,13 +343,13 @@ export default {
 		async fetchLivelihoods() {
 			this.valueSelectLoading = true;
 
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfLivelihoods();
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+			}
 
 			this.valueSelectLoading = false;
 		},
@@ -347,11 +357,13 @@ export default {
 		async fetchLocationsTypes() {
 			this.valueSelectLoading = true;
 
-			await BeneficiariesService.getListOfLocationsTypes()
-				.then(({ data }) => { this.valueSelectOptions = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfLocationsTypes();
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+			}
 
 			this.valueSelectLoading = false;
 		},

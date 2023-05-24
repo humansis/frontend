@@ -137,13 +137,13 @@ export default {
 		},
 
 		async fetchAssistances() {
-			await AssistancesService.getListOfAssistances()
-				.then(({ data }) => {
-					this.filtersOptions.assistances.data = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await AssistancesService.getListOfAssistances();
+
+				this.filtersOptions.assistances.data = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+			}
 
 			this.filtersOptions.assistances.loading = false;
 		},
@@ -154,18 +154,19 @@ export default {
 				this.filtersOptions.beneficiaries.data = [];
 
 				const promise = ids.map(async (id) => {
-					await AssistancesService.getListOfBeneficiaries(id)
-						.then(({ data }) => {
-							data.forEach((item) => {
-								if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
-									this.filtersOptions.beneficiaries.data.push(item);
-								}
-							});
-						})
-						.catch((e) => {
-							if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					try {
+						const { data: { data } } = await AssistancesService.getListOfBeneficiaries(id);
+
+						data.forEach((item) => {
+							if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
+								this.filtersOptions.beneficiaries.data.push(item);
+							}
 						});
+					} catch (e) {
+						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					}
 				});
+
 				await Promise.all(promise);
 				this.selectedFiltersOptions
 					.beneficiaries = getArrayOfCodeListByParams(this.selectedFiltersOptions.beneficiaries, this.filtersOptions.beneficiaries.data, "id", "id");

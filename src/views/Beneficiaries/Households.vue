@@ -319,24 +319,30 @@ export default {
 			this.table.progress = null;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await BeneficiariesService.getListOfHouseholds(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(async ({ totalCount, data }) => {
+
+			try {
+				const { data: { data, totalCount } } = await BeneficiariesService.getListOfHouseholds(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					this.filters,
+				);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
+
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
 				}
+
 				this.isLoadingList = false;
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Households")} ${e}`, "is-danger");
-			});
+			}
+
 			this.setGridFiltersToUrl("households");
 		},
 
@@ -518,11 +524,15 @@ export default {
 		},
 
 		async getVulnerabilities() {
-			return BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfVulnerabilities();
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
 		async getNationalIds(ids) {
@@ -537,54 +547,58 @@ export default {
 			const addresses = [];
 			if (ids.camp.length) {
 				let camps = [];
-				await AddressService.getCampAddresses(ids.camp)
-					.then(({ data }) => {
-						camps = data;
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
-					});
+
+				try {
+					const { data } = AddressService.getCampAddresses(ids.camp);
+
+					camps = data;
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+				}
 				const uniqueCampIds = getUniqueIds(camps, "campId");
 
-				await AddressService.getCampsByIds(uniqueCampIds)
-					.then(({ data }) => {
-						data.forEach((item) => {
-							const address = camps.find(({ campId }) => campId === item.id);
-							if (address) {
-								addresses.push({
-									locationId: item.locationId,
-									id: address.id,
-									type: "camp",
-								});
-							}
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
-					});
-			}
-			if (ids.residence.length) {
-				await AddressService.getResidenceAddresses(ids.residence)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "residence" });
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
-					});
-			}
-			if (ids.temporary_settlement.length) {
-				await AddressService.getTemporarySettlementAddresses(ids.temporary_settlement)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "temporary_settlement" });
-						});
-					}).catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Temporary Settlement Address")} ${e}`,
-								"is-danger",
-							);
+				try {
+					const { data } = await AddressService.getCampsByIds(uniqueCampIds);
+
+					data.forEach((item) => {
+						const address = camps.find(({ campId }) => campId === item.id);
+						if (address) {
+							addresses.push({
+								locationId: item.locationId,
+								id: address.id,
+								type: "camp",
+							});
 						}
 					});
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+				}
+			}
+			if (ids.residence.length) {
+				try {
+					const { data: { data } } = await AddressService.getResidenceAddresses(ids.residence);
+
+					data.forEach(({ locationId, id }) => {
+						addresses.push({ locationId, id, type: "residence" });
+					});
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
+				}
+			}
+			if (ids.temporary_settlement.length) {
+				try {
+					const { data } = await AddressService.getTemporarySettlementAddresses(
+						ids.temporary_settlement,
+					);
+
+					data.forEach(({ locationId, id }) => {
+						addresses.push({ locationId, id, type: "temporary_settlement" });
+					});
+				} catch (e) {
+					if (e.message) {
+						Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+					}
+				}
 			}
 			return addresses;
 		},
@@ -598,11 +612,15 @@ export default {
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getBeneficiaries(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async prepareBeneficiaries(id, beneficiaries, tableIndex) {
@@ -699,27 +717,31 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.id).then((response) => {
-							if (response.status === 204) {
+						try {
+							const { status } = await BeneficiariesService.removeHousehold(household.id);
+
+							if (status === 204) {
 								success += `${this.$t("Success for Household")} ${household.id}. `;
 							}
-						}).catch((e) => {
+						} catch (e) {
 							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
-						});
+						}
 					}));
 
 					if (error) Toast(error, "is-danger");
 					if (success) Toast(success, "is-success");
 				}
 			} else {
-				await BeneficiariesService.removeHousehold(id).then((response) => {
-					if (response.status === 204) {
+				try {
+					const { status } = await BeneficiariesService.removeHousehold(id);
+
+					if (status === 204) {
 						Toast(this.$t("Household Successfully Deleted"), "is-success");
-						this.fetchData();
+						await this.fetchData();
 					}
-				}).catch((e) => {
-					Toast(`${this.$t("Household")} ${e}`, "is-danger");
-				});
+				} catch (e) {
+					if (e.message) Toast(`${this.$t("Household")} ${e}`, "is-danger");
+				}
 			}
 
 			this.table.checkedRows = [];

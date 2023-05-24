@@ -157,6 +157,7 @@ import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
 import AssistancesService from "@/services/AssistancesService";
 import consts from "@/utils/assistanceConst";
+import {Notification} from "@/utils/UI";
 
 export default {
 	name: "AssistanceSummary",
@@ -263,20 +264,26 @@ export default {
 		},
 
 		async fetchCommodity(assistanceId) {
-			await AssistancesService.getAssistanceCommodities(
-				assistanceId,
-			).then(({ data }) => {
+			try {
+				const { data } = await AssistancesService.getAssistanceCommodities(
+					assistanceId,
+				);
+
 				this.commodity = data
 					.map(({ modalityType }) => ({ code: modalityType, value: modalityType }));
-			});
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance commodities")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchStatistics(assistanceId) {
-			await AssistancesService.getAssistanceStatistics(
-				assistanceId,
-			).then((data) => {
+			try {
+				const { data } = await AssistancesService.getAssistanceStatistics(assistanceId);
+
 				this.statistics = data;
-			});
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
+			}
 		},
 	},
 };

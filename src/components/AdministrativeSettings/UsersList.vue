@@ -136,20 +136,23 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await UsersService.getListOfUsers(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				null,
-				null,
-				false,
-			).then(({ data, totalCount }) => {
+
+			try {
+				const { data: { data, totalCount } } = await UsersService.getListOfUsers(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					null,
+					null,
+					{ showVendors: false },
+				);
+
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
-			});
+			}
 
 			this.isLoadingList = false;
 		},

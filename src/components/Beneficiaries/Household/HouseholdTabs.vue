@@ -317,14 +317,16 @@ export default {
 		async updateHousehold(id, householdBody) {
 			this.saveButtonLoading = true;
 
-			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
-				if (response.status === 200) {
+			try {
+				const { status } = await BeneficiariesService.updateHousehold(id, householdBody);
+
+				if (status === 200) {
 					Toast(this.$t("Household Successfully Updated"), "is-success");
-					this.$router.push({ name: "Households" });
+					await this.$router.push({ name: "Households" });
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-			});
+			}
 
 			this.saveButtonLoading = false;
 		},
@@ -332,24 +334,28 @@ export default {
 		async createHousehold(householdBody) {
 			this.saveButtonLoading = true;
 
-			await BeneficiariesService.createHousehold(householdBody).then((response) => {
-				if (response.status === 200) {
+			try {
+				const { status } = await BeneficiariesService.createHousehold(householdBody);
+
+				if (status === 200) {
 					Toast(this.$t("Household Successfully Created"), "is-success");
-					this.$router.push({ name: "Households" });
+					await this.$router.push({ name: "Households" });
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-			});
+			}
 
 			this.saveButtonLoading = false;
 		},
 
 		async fetchHouseholdDetail(id) {
-			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
-				this.detailOfHousehold = response;
-			}).catch((e) => {
+			try {
+				const { data } = await BeneficiariesService.getDetailOfHousehold(id);
+
+				this.detailOfHousehold = data;
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-			});
+			}
 		},
 
 		prepareSummaryMembers(members) {

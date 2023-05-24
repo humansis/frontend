@@ -312,23 +312,23 @@ export default {
 			if (type === EXPORT.VULNERABILITY_SCORES) {
 				this.exportControl.loading = true;
 
-				await AssistancesService.exportVulnerabilityScores(
-					format, this.assistanceBody,
-				)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Vulnerability scores ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-					});
+				try {
+					const { data, status, message } = await AssistancesService.exportVulnerabilityScores(
+						format, this.assistanceBody,
+					);
+
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `Vulnerability scores ${normalizeExportDate()}.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
+				}
 
 				this.exportControl.loading = false;
 			}
@@ -482,40 +482,44 @@ export default {
 			this.$emit("onDeliveredCommodityValue");
 		},
 
-		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
+		async calculationOfAssistanceBeneficiaries({ assistanceBody, isTotalCount, groupKey = null }) {
 			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
 			this.calculationLoading = true;
 
-			if (this.assistanceBodyIsValid(assistanceBody)) {
-				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
-					.then(({ data, status }) => {
-						if (status === 200) {
-							if (groupKey === null) {
-								if (totalCount) {
-									this.totalCount = data.totalCount;
-								} else {
-									this.countOf = data.totalCount;
-								}
-							}
+			try {
+				const {
+					data: { data, totalCount },
+					status,
+				} = await AssistancesService.calculationOfBeneficiaries(
+					beneficiariesBody,
+				);
 
-							if (groupKey !== null) {
-								const newGroups = [...this.groups];
-
-								if (newGroups[groupKey]?.tableData) {
-									newGroups[groupKey].tableData = data.data;
-								}
-
-								this.groups = newGroups;
-							} else {
-								this.totalBeneficiariesData = data.data;
-							}
+				if (status === 200) {
+					if (groupKey === null) {
+						if (isTotalCount) {
+							this.totalCount = totalCount;
+						} else {
+							this.countOf = totalCount;
 						}
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-					});
-			}
+					}
 
-			this.calculationLoading = false;
+					if (groupKey !== null) {
+						const newGroups = [...this.groups];
+
+						if (newGroups[groupKey]?.tableData) {
+							newGroups[groupKey].tableData = data;
+						}
+
+						this.groups = newGroups;
+					} else {
+						this.totalBeneficiariesData = data;
+					}
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+			} finally {
+				this.calculationLoading = false;
+			}
 		},
 
 		async calculationOfAssistanceBeneficiariesScores({
@@ -531,41 +535,45 @@ export default {
 			};
 
 			if (beneficiaryIds.length) {
-				await AssistancesService.calculationOfBeneficiariesScores(body)
-					.then(({ data, status }) => {
-						if (status === 200) {
-							this.beneficiariesScores = data.data;
-						}
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
-					}).finally(() => {
-						this.minimumSelectionScoreValid = null;
-					});
+				try {
+					const {
+						data: { data },
+						status,
+					} = await AssistancesService.calculationOfBeneficiariesScores(body);
+
+					if (status === 200) {
+						this.beneficiariesScores = data;
+					}
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+				} finally {
+					this.minimumSelectionScoreValid = null;
+				}
 			}
 		},
 
 		async fetchScoringTypes() {
 			this.scoringTypesLoading = true;
 
-			await AssistancesService.getScoringTypes(
-				null,
-				null,
-				this.filters,
-			)
-				.then(({ data }) => {
-					data.forEach((item) => {
-						this.options.scoringTypes.push({
-							...item,
-							identifier: `${item.name} (ID: ${item.id})`,
-						});
+			try {
+				const { data: { data } } = await AssistancesService.getScoringTypes(
+					null,
+					null,
+					this.filters,
+				);
+
+				data.forEach((item) => {
+					this.options.scoringTypes.push({
+						...item,
+						identifier: `${item.name} (ID: ${item.id})`,
 					});
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-					this.scoringType = this.options.scoringTypes?.[0] || null;
 				});
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+			} finally {
+				this.scoringTypesLoading = false;
+				this.scoringType = this.options.scoringTypes?.[0] || null;
+			}
 		},
 
 		assistanceBodyIsValid({ sector, subsector, target, type }) {

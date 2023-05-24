@@ -109,7 +109,7 @@ import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
-import { Toast } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
 import consts from "@/utils/assistanceConst";
 
@@ -149,9 +149,11 @@ export default {
 		async fetchAssistance() {
 			this.isAssistanceLoading = true;
 
-			await AssistancesService.getDetailOfAssistance(
-				this.$route.params.assistanceId,
-			).then((data) => {
+			try {
+				const { data } = 	await AssistancesService.getDetailOfAssistance(
+					this.$route.params.assistanceId,
+				);
+
 				this.isTargetHouseholdOrIndividual = data.target === consts.TARGET.HOUSEHOLD
 					|| data.target === consts.TARGET.INDIVIDUAL;
 
@@ -160,9 +162,11 @@ export default {
 				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
-			}).finally(() => {
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			} finally {
 				this.isAssistanceLoading = false;
-			});
+			}
 		},
 
 		async fetchProject() {
@@ -180,13 +184,17 @@ export default {
 		async fetchAssistanceStatistics() {
 			this.isStatisticsLoading = true;
 
-			await AssistancesService.getAssistanceStatistics(
-				this.$route.params.assistanceId,
-			).then((data) => {
+			try {
+				const { data } = await AssistancesService.getAssistanceStatistics(
+					this.$route.params.assistanceId,
+				);
+
 				this.statistics = data;
-			}).finally(() => {
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "is-danger");
+			} finally {
 				this.isStatisticsLoading = false;
-			});
+			}
 		},
 
 		updateBeneficiariesTable(beneficiariesTable) {
@@ -197,23 +205,24 @@ export default {
 			const assistanceId = Number(this.$route.params.assistanceId);
 			this.validateAssistanceButtonLoading = true;
 
-			await AssistancesService.updateAssistanceStatusValidated(
-				{ assistanceId, validated: true },
-			).then(({ status }) => {
+			try {
+				const { status } = await AssistancesService.updateAssistanceStatusValidated(
+					{ assistanceId, validated: true },
+				);
+
 				if (status === 200) {
 					Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
 
-					this.$router.push({
+					await this.$router.push({
 						name: "AssistanceDetail",
 						params: {
 							assistanceId: this.$route.params.assistanceId,
 						},
 					});
 				}
-			}).catch((e) => {
-				Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
-			});
-
+			} catch (e) {
+				if (e.message) Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
+			}
 			this.validateAssistanceButtonLoading = false;
 		},
 

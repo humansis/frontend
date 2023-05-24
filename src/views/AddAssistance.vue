@@ -176,33 +176,39 @@ export default {
 
 		this.isDuplicated = !!this.$route.query.duplicateAssistance;
 		if (this.isDuplicated) {
-			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
-				.then(({ data, message }) => {
-					if (!data) {
-						throw new Error(message);
-					}
+			try {
+				const { data: { data }, message } = await AssistancesService.getSelectionCriteria(
+					this.$route.query.duplicateAssistance,
+				);
 
-					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
-				});
+				if (!data) {
+					Toast(this.$t(message), "is-danger");
+				}
 
-			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
-				.then(async (data) => {
-					this.duplicateAssistance = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
-				});
+				this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "is-danger");
+			}
 
-			await AssistancesService.getScoringTypes()
-				.then(({ data }) => { this.scoringTypes = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-				});
+			try {
+				const { data } = await AssistancesService.getDetailOfAssistance(
+					this.$route.query.duplicateAssistance,
+				);
+
+				this.duplicateAssistance = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "is-danger");
+			}
+
+			try {
+				const { data: { data } } = await AssistancesService.getScoringTypes();
+
+				this.scoringTypes = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+			} finally {
+				this.scoringTypesLoading = false;
+			}
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}
@@ -229,11 +235,18 @@ export default {
 			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 
 			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
-			const result = await AssistancesService.calculationCommodities(commoditiesBody);
 
-			if (result.status !== 200) return;
+			try {
+				const { data: { data }, status } = await AssistancesService.calculationCommodities(
+					commoditiesBody,
+				);
 
-			this.calculatedCommodityValue = result.data.data;
+				if (status === 200) {
+					this.calculatedCommodityValue = data;
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Calculation commodities")} ${e}`, "is-danger");
+			}
 		},
 
 		validateNewAssistance() {
@@ -295,34 +308,37 @@ export default {
 
 			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
 
-			await AssistancesService.createAssistance(assistanceBody)
-				.then(({ status, data: { id }, message }) => {
-					const success = status === 200;
-					const badRequest = status === 400;
+			try {
+				const { data: { id }, status, message } = await AssistancesService.createAssistance(
+					assistanceBody,
+				);
 
-					if (success) {
-						Toast(this.$t("Assistance Successfully Created"), "is-success");
-						if (id) {
-							this.$router.push({
-								name: "AssistanceEdit",
-								params: { assistanceId: id },
-							});
-						} else {
-							this.$router.push({
-								name: "Project",
-								params: { projectId: this.$route.params.projectId },
-							});
-						}
+				const success = status === 200;
+				const badRequest = status === 400;
+
+				if (success) {
+					Toast(this.$t("Assistance Successfully Created"), "is-success");
+					if (id) {
+						await this.$router.push({
+							name: "AssistanceEdit",
+							params: { assistanceId: id },
+						});
+					} else {
+						await this.$router.push({
+							name: "Project",
+							params: { projectId: this.$route.params.projectId },
+						});
 					}
+				}
 
-					if (badRequest) {
-						Notification(message || `${this.$t("Error code 400")}`, "is-warning");
-					}
-				}).catch((e) => {
-					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
-				});
-
-			this.loading = false;
+				if (badRequest) {
+					Notification(message || `${this.$t("Error code 400")}`, "is-warning");
+				}
+			} catch (e) {
+				Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
+			} finally {
+				this.loading = false;
+			}
 		},
 
 		isRemoteAndValid() {
@@ -511,12 +527,18 @@ export default {
 				&& inputDate <= new Date(this.project.endDate);
 		},
 
-		fetchAssistanceCommodities() {
-			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
+		async fetchAssistanceCommodities() {
+			try {
+				const { data: { data } } = await AssistancesService.getAssistanceCommodities(
+					this.$route.query.duplicateAssistance,
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+			}
+
+			return null;
 		},
 
 		fetchNewAssistanceForm(data) {

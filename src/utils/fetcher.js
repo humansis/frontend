@@ -27,15 +27,17 @@ async function getErrorsFromResponse(data) {
 }
 
 export const getResponseJSON = async (response, download = false) => {
-	const success = response.status < 400;
-	const badRequest = response.status === 400;
-	const unauthorized = response.status === 401;
-	const forbidden = response.status === 403;
-	const notFound = response.status === 404;
-	const noContent = response.status === 204;
+	const { status, statusText } = response;
+
+	const success = status < 400;
+	const badRequest = status === 400;
+	const unauthorized = status === 401;
+	const forbidden = status === 403;
+	const notFound = status === 404;
+	const noContent = status === 204;
 
 	if (noContent) {
-		return { data: null, status: response.status };
+		return { data: null, status };
 	}
 
 	if (forbidden) {
@@ -67,7 +69,7 @@ export const getResponseJSON = async (response, download = false) => {
 			console.error(error);
 		});
 
-		throw new Error(response.statusText);
+		throw new Error(statusText);
 	}
 
 	let data = null;
@@ -79,11 +81,11 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (badRequest) {
-		return { data, status: response.status, message: await getErrorsFromResponse(data) };
+		return { data, status, message: await getErrorsFromResponse(data) };
 	}
 
 	if (success) {
-		return { data, status: response.status, message: response.statusText };
+		return { data, status, statusText };
 	}
 
 	throw new Error(await getErrorsFromResponse(data));

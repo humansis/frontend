@@ -211,23 +211,27 @@ export default {
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			this.setGridFiltersToUrl("vendors");
-			await VendorService.getListOfVendors(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				null,
-				this.filters,
-			).then(({ data, totalCount }) => {
+
+			try {
+				const { data: { data, totalCount } } = await VendorService.getListOfVendors(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+					null,
+					this.filters,
+				);
+
 				this.table.data = [];
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
 				if (totalCount > 0) {
-					this.prepareDataForTable(data);
+					await this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
-			});
+			}
+
 			this.isLoadingList = false;
 			this.table.progress = 100;
 		},
@@ -304,10 +308,24 @@ export default {
 
 		async getUsers(userIds) {
 			if (!userIds?.length) return [];
-			return UsersService.getListOfUsers(null, null, null, null, userIds)
-				.then(({ data }) => data).catch((e) => {
-					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await UsersService.getListOfUsers(
+					null,
+					null,
+					null,
+					null,
+					userIds,
+					null,
+					{ showVendors: true },
+				);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async exportVendors(type, format) {
@@ -318,21 +336,22 @@ export default {
 					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 				};
 
-				await VendorService.exportVendors(format, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `BNF Vendors ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
-					});
+				try {
+					const { data, status, message } = await VendorService.exportVendors(format, filters);
+
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `BNF Vendors ${normalizeExportDate()}.${format}`;
+						link.click();
+					} else {
+						Notification(message, "is-warning");
+					}
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
+				}
+
 				this.exportControl.loading = false;
 			}
 		},

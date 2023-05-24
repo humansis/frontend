@@ -157,28 +157,42 @@ export default {
 
 		async getCommodities(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getCommodities(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getAssistances(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getAssistances(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await BeneficiariesService.getBeneficiaries(ids);
+
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 	},
 };

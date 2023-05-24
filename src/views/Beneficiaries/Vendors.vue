@@ -324,41 +324,45 @@ export default {
 		},
 
 		async createVendor(userBody, vendorBody) {
-			await UsersService.createUser(userBody)
-				.then(async (userResponse) => {
-					if (userResponse.status === 200) {
-						const body = vendorBody;
-						body.userId = userResponse.data.id;
-						await VendorService.createVendor(body)
-							.then((vendorResponse) => {
-								if (vendorResponse.status === 200) {
-									Toast(this.$t("Vendor Successfully Created"), "is-success");
-									this.$refs.vendorsList.fetchData();
-									this.closeVendorModal();
-								}
-							}).catch((e) => {
-								Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
-							});
+			try {
+				const { data, status } = await UsersService.createUser(userBody);
+
+				if (status === 200) {
+					const body = vendorBody;
+					body.userId = data.id;
+
+					try {
+						const vendorResponse = await VendorService.createVendor(body);
+
+						if (vendorResponse.status === 200) {
+							Toast(this.$t("Vendor Successfully Created"), "is-success");
+							await this.$refs.vendorsList.fetchData();
+							this.closeVendorModal();
+						}
+					} catch (e) {
+						if (e.message) Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
 					}
-				})
-				.catch((e) => {
-					Toast(`${this.$t("User")} ${e}`, "is-danger");
-				});
+				}
+			} catch (e) {
+				if (e.message) Toast(`${this.$t("User")} ${e}`, "is-danger");
+			}
 		},
 
 		async updateVendor(id, userBody, vendorBody) {
 			await UsersService.updateUser(userBody.id, userBody)
 				.then(async (userResponse) => {
 					if (userResponse.status === 200) {
-						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
-							if (vendorResponse.status === 200) {
+						try {
+							const { status } = await VendorService.updateVendor(id, vendorBody);
+
+							if (status === 200) {
 								Toast(this.$t("Vendor Successfully Updated"), "is-success");
-								this.$refs.vendorsList.fetchData();
+								await this.$refs.vendorsList.fetchData();
 								this.closeVendorModal();
 							}
-						}).catch((e) => {
-							Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
-						});
+						} catch (e) {
+							if (e.message) Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
+						}
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("User")} ${e}`, "is-danger");
@@ -366,14 +370,16 @@ export default {
 		},
 
 		async vendorRemove(id) {
-			await VendorService.deleteVendor(id).then((response) => {
-				if (response.status === 204) {
+			try {
+				const { status } = await VendorService.deleteVendor(id);
+
+				if (status === 204) {
 					Toast(this.$t("Vendor Successfully Deleted"), "is-success");
 					this.$refs.vendorsList.removeFromList(id);
 				}
-			}).catch((e) => {
-				Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
-			});
+			} catch (e) {
+				if (e.message) Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
+			}
 		},
 	},
 };

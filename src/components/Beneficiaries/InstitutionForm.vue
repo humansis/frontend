@@ -451,25 +451,25 @@ export default {
 		},
 
 		async fetchNationalCardTypes() {
-			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => {
-					this.options.nationalCardTypes = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				this.options.nationalCardTypes = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+			}
 
 			this.nationalCardTypesLoading = false;
 		},
 
 		async fetchPhoneTypes() {
-			await BeneficiariesService.getListOfTypesOfPhones()
-				.then(({ data }) => {
-					this.options.phoneTypes = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfTypesOfPhones();
+
+				this.options.phoneTypes = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+			}
 
 			this.phoneTypesLoading = false;
 		},

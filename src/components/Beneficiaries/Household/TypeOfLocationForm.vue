@@ -194,29 +194,32 @@ export default {
 
 		async fetchLocationsTypes() {
 			this.locationTypesLoading = true;
-			await BeneficiariesService.getListOfLocationsTypes()
-				.then((result) => {
-					this.options.typeOfLocation = result.data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfLocationsTypes();
+
+				this.options.typeOfLocation = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+			}
+
 			this.locationTypesLoading = false;
 		},
 
 		async fetchCamps() {
 			this.campsLoading = true;
 
-			await AddressService.getCampsByLocation(this.formModel.locationId)
-				.then(({ data }) => {
-					this.options.camps = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
-				})
-				.finally(() => {
-					this.campsLoading = false;
-				});
+			try {
+				const { data: { data } } = await AddressService.getCampsByLocation(
+					this.formModel.locationId,
+				);
+
+				this.options.camps = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+			} finally {
+				this.campsLoading = false;
+			}
 		},
 
 		async mapLocations() {

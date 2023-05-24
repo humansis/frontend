@@ -511,25 +511,31 @@ export default {
 
 		async fetchAssistanceTypes(code) {
 			this.loading.assistanceTypes = true;
-			await AssistancesService.getAssistanceTypes(code)
-				.then(({ data }) => {
-					this.options.assistanceTypes = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
+
+			try {
+				const { data: { data } } = await AssistancesService.getAssistanceTypes({
+					subsector: code,
 				});
+
+				this.options.assistanceTypes = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
+			}
+
 			this.loading.assistanceTypes = false;
 		},
 
 		async fetchTargetTypes(code) {
 			this.loading.targetTypes = true;
-			await AssistancesService.getTargetTypes(code)
-				.then(({ data }) => {
-					this.options.targetTypes = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
-				});
+
+			try {
+				const { data: { data } } = await AssistancesService.getTargetTypes({ type: code });
+
+				this.options.targetTypes = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+			}
+
 			this.loading.targetTypes = false;
 		},
 

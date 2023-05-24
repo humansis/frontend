@@ -190,12 +190,13 @@ export default {
 		},
 
 		async fetchVendorSummary() {
-			await VendorService.getSummaryOfVendor(this.vendor.id)
-				.then((data) => {
-					this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const { data } = await VendorService.getSummaryOfVendor(this.vendor.id);
+
+				this.totalNumberOfTransactions = data.redeemedSmartcardPurchasesTotalCount || 0;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchProjects() {

@@ -356,11 +356,13 @@ export default {
 				});
 
 			if (this.formModel.id) {
-				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
+				try {
+					const { data: { data } } = await UsersService.getListOfUsersProjects(this.formModel.id);
+
 					this.options.projects = [...this.options.projects, ...data];
-				}).catch((e) => {
+				} catch (e) {
 					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+				}
 			}
 
 			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");

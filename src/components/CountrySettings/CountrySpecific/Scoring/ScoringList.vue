@@ -105,21 +105,22 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			await AssistancesService.getScoringTypes(
-				this.table.currentPage,
-				this.perPage,
-			)
-				.then(({ data, totalCount }) => {
-					this.table.data = [];
-					this.table.total = totalCount;
-					if (totalCount > 0) {
-						this.prepareDataForTable(data);
-					}
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
-				});
-			this.isLoadingList = false;
+			try {
+				const { data: { data, totalCount } } = await AssistancesService.getScoringTypes(
+					this.table.currentPage,
+					this.perPage,
+				);
+
+				this.table.data = [];
+				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {

@@ -1,75 +1,53 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 
-	async getCampAddress(id) {
-		const { data } = await fetcher({ uri: `addresses/camps/${id}` });
-		return data;
+	getCampAddress(id) {
+		return fetcher({ uri: `addresses/camps/${id}` });
 	},
 
-	async getResidenceAddress(id) {
-		const { data } = await fetcher({ uri: `addresses/residencies/${id}` });
-		return data;
+	getResidenceAddress(id) {
+		return fetcher({ uri: `addresses/residencies/${id}` });
 	},
 
-	async getTemporarySettlementAddress(id) {
-		const { data } = await fetcher({ uri: `addresses/temporary-settlements/${id}` });
-		return data;
+	getTemporarySettlementAddress(id) {
+		return fetcher({ uri: `addresses/temporary-settlements/${id}` });
 	},
 
-	async getCampAddresses(ids) {
-		const idsText = ids.length ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({ uri: `addresses/camps?${idsText}` });
-		return data;
+	getCampAddresses(ids) {
+		return fetcher({ uri: `addresses/camps?${queryBuilder({ ids })}` });
 	},
 
-	async getResidenceAddresses(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({ uri: `addresses/residencies?${idsText}` });
-		return data;
+	getResidenceAddresses(ids) {
+		return fetcher({ uri: `addresses/residencies${queryBuilder({ ids })}` });
 	},
 
-	async getTemporarySettlementAddresses(ids) {
-		const idsText = ids.length ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({ uri: `addresses/temporary-settlements?${idsText}` });
-		return data;
+	getTemporarySettlementAddresses(ids) {
+		return fetcher({ uri: `addresses/temporary-settlements?${queryBuilder({ ids })}` });
 	},
 
-	async getAddress(id) {
-		if (!id) return null;
-		const { data } = await fetcher({ uri: `addresses/${id}` });
-		return data;
+	getAddress(id) {
+		return fetcher({ uri: `addresses/${queryBuilder({ id })}` });
 	},
 
-	async getAddresses(ids) {
-		const idsText = ids.length ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({ uri: `addresses?${idsText}` });
-		return data;
+	getAddresses(ids) {
+		return fetcher({ uri: `addresses?${queryBuilder({ ids })}` });
 	},
 
-	async getCamps() {
-		const { data: { data, totalCount } } = await fetcher({ uri: `camps` });
-		return { data, totalCount };
+	getCamps() {
+		return fetcher({ uri: `camps` });
 	},
 
-	async getCampsByLocation(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `locations/${id}/camps` });
-		return { data, totalCount };
+	getCampsByLocation(id) {
+		return fetcher({ uri: `locations/${id}/camps` });
 	},
 
-	async getCamp(id) {
-		const { data } = await fetcher({ uri: `camps/${id}` });
-		return data;
+	getCamp(id) {
+		return fetcher({ uri: `camps/${id}` });
 	},
 
-	async getCampsByIds(ids, param = null) {
-		const idsText = ids.length ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `camps?${idsText}` });
-		return data;
+	async getCampsByIds(ids) {
+		return fetcher({ uri: `camps${queryBuilder({ ids })}` });
 	},
 };

@@ -239,36 +239,36 @@ export default {
 		},
 
 		async fetchLivelihoods() {
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => {
-					this.filtersOptions.livelihoods.data = data;
-					this.filtersOptions.livelihoods.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfLivelihoods();
+
+				this.filtersOptions.livelihoods.data = data;
+				this.filtersOptions.livelihoods.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchVulnerabilities() {
-			await BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => {
-					this.filtersOptions.vulnerabilities.data = data;
-					this.filtersOptions.vulnerabilities.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfVulnerabilities();
+
+				this.filtersOptions.vulnerabilities.data = data;
+				this.filtersOptions.vulnerabilities.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchResidenceStatuses() {
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => {
-					this.filtersOptions.residencyStatuses.data = data;
-					this.filtersOptions.residencyStatuses.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await BeneficiariesService.getListOfResidenceStatuses();
+
+				this.filtersOptions.residencyStatuses.data = data;
+				this.filtersOptions.residencyStatuses.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchReferralTypes() {
