@@ -78,8 +78,8 @@
 			:is-loading="isLoadingList"
 			:checked-rows="table.checkedRows"
 			:search-phrase="table.searchPhrase"
+			:has-clickable-rows="false"
 			@checked="onRowsChecked"
-			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@onSearch="onSearch"
@@ -265,7 +265,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Household ID", width: "30" },
+					{ key: "household", label: "Household ID", type: "link", width: "30" },
 					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
@@ -432,19 +432,25 @@ export default {
 				temporary_settlement: [],
 			};
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
+				const { id } = item;
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
 
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+
+				this.table.data[key] = item;
+				this.table.data[key].household = {
+					routeParams: { householdId: id },
+					routeName: "HouseholdInformationSummary",
+					name: id,
+				};
+				this.table.data[key].addressId = addressId;
+				this.table.data[key].members = item.beneficiaryIds.length;
 
 				// TODO Fix bug with Informal Settlement (Location Type)
 				if (typeOfLocation && addressId) {
 					addressIds[typeOfLocation].push(addressId);
 				}
-
-				this.table.data[key].addressId = addressId;
-				this.table.data[key].members = item.beneficiaryIds.length;
 			});
 
 			this.prepareProjectForTable([...new Set(projectIds)]);
@@ -465,7 +471,7 @@ export default {
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
-				} = await this.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
+				} = await this.prepareBeneficiaries(item.id, item.householdHeadId, beneficiaries, key);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
 					({ code }) => code === vulnerabilities.find(
@@ -605,13 +611,15 @@ export default {
 				});
 		},
 
-		async prepareBeneficiaries(id, beneficiaries, tableIndex) {
+		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
 			this.table.data[tableIndex].loading = true;
 			const result = {
 				nationalIds: [],
 			};
-			const beneficiary = beneficiaries.find((item) => item.id === id);
+			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
+			const { nationalIds } = beneficiary;
+
 			if (beneficiary) {
 				this.table.data[tableIndex].givenName = this.prepareName(
 					beneficiary.localGivenName,
@@ -621,7 +629,6 @@ export default {
 					beneficiary.localFamilyName,
 					beneficiary.enFamilyName,
 				);
-				const { nationalIds } = beneficiary;
 				result.nationalIds = nationalIds;
 			}
 

@@ -2,29 +2,30 @@
 	<Table
 		v-show="show"
 		ref="purchaseList"
-		has-search
 		paginated
+		has-reset-sort
 		:data="table.data"
 		:total="table.total"
+		default-sort-key="datePurchase"
+		default-sort-direction="desc"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
 		:search-phrase="table.searchPhrase"
-		:backend-pagination="false"
-		:backend-sorting="false"
-		:backend-searching="false"
 		:columns="table.visibleColumns"
+		:has-clickable-rows="false"
+		@pageChanged="onPageChange"
+		@changePerPage="onChangePerPage"
+		@sorted="onSort"
 		@resetSort="resetSort"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
-				sortable
+				:sortable="column.sortable"
 				:key="column.id"
-				:custom-sort="column.customSort"
+				v-slot="props"
 			>
-				<template v-slot="props">
-					{{ props.row[column.field] }}
-				</template>
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
 		</template>
 
@@ -33,18 +34,22 @@
 </template>
 
 <script>
-import grid from "@/mixins/grid";
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
-import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import ProductService from "@/services/ProductService";
+import { Notification } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import consts from "@/utils/assistanceConst";
+import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
 
 export default {
 	name: "HouseholdPurchasesList",
 
-	components: { Table },
+	components: {
+		Table,
+		ColumnField,
+	},
 
 	mixins: [grid, baseHelper],
 
@@ -54,18 +59,27 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "dateTime", label: "Date", width: "60", searchable: true, customSort: this.sortDate },
-					{ key: "product", width: "60", searchable: true },
-					{ key: "amount", width: "100", searchable: true, customSort: this.sortAmount },
-					{ key: "price", width: "100", searchable: true, customSort: this.sortPrice },
-					{ key: "commodity", width: "100", searchable: true },
-					{ key: "beneficiary", width: "100", searchable: true },
+					{ key: "icon", type: "IconWithTooltip", withoutLabel: true },
+					{ key: "beneficiaryId", label: "Beneficiary" },
+					{ key: "beneficiaryLocalGivenName", label: "Local Given Name" },
+					{ key: "beneficiaryLocalFamilyName", label: "Local Family Name" },
+					{ key: "beneficiaryNationalId", label: "Id Number" },
+					{ key: "projectName", label: "Project", type: "link" },
+					{ key: "assistanceName", label: "Assistance", type: "link" },
+					{ key: "fullLocationNames", label: "Location" },
+					{ key: "datePurchase", label: "Purchased Date", type: "datetime", sortable: true },
+					{ key: "smartcardCode", label: "Card No." },
+					{ key: "productName", label: "Purchased Item" },
+					{ key: "value", label: "Total", sortable: true },
+					{ key: "currency" },
+					{ key: "vendorName", label: "Vendor" },
+					{ key: "vendorNo" },
+					{ key: "invoiceNumber", label: "Invoice No" },
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
-				searchPhrase: "",
+				sortDirection: "desc",
+				sortColumn: "datePurchase",
 			},
 		};
 	},
@@ -75,32 +89,16 @@ export default {
 	},
 
 	methods: {
-		sortAmount(a, b, c) {
-			if (!c) {
-				return a.quantity - b.quantity;
-			}
-			return b.quantity - a.quantity;
-		},
-
-		sortPrice(a, b, c) {
-			if (!c) {
-				return a.value - b.value;
-			}
-			return b.value - a.value;
-		},
-
-		sortDate(a, b, c) {
-			if (!c) {
-				return new Date(a.date) - new Date(b.date);
-			}
-			return new Date(b.date) - new Date(a.date);
-		},
-
 		async fetchData() {
 			this.isLoadingList = true;
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await BeneficiariesService.getListOfHouseholdPurchases(this.$route.params.householdId)
+
+			await BeneficiariesService.getListOfHouseholdPurchases(
+				this.$route.params.householdId,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+			)
 				.then(async ({ data, totalCount }) => {
 					this.table.total = totalCount;
 					this.table.data = [];
@@ -115,57 +113,24 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const beneficiaryIds = [];
-			const productIds = [];
-
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].dateTime = this.$moment(item.date).format("YYYY-MM-DD hh:mm");
-				this.table.data[key].amount = `${item.quantity} Unit`;
-				this.table.data[key].price = `${item.value} ${item.currency}`;
-				this.table.data[key].commodity = item.source;
-				beneficiaryIds.push(item.beneficiaryId);
-				productIds.push(item.productId);
+				this.table.data[key].projectName = {
+					routeName: "Project",
+					name: item.projectName,
+					routeParams: { projectId: item.projectId },
+				};
+				this.table.data[key].assistanceName = {
+					routeName: "AssistanceDetail",
+					name: item.assistanceId,
+					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
+				};
+				this.table.data[key].icon = {
+					type: item.type === consts.TARGET.INDIVIDUAL ? "user" : "home",
+					size: "is-medium",
+					tooltip: normalizeText(item.type),
+				};
 			});
-
-			this.prepareProductForTable([...new Set(productIds)]);
-
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-		},
-
-		async prepareProductForTable(productIds) {
-			const products = await this.getProducts(productIds);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].product = this.prepareEntityForTable(item.productId, products, "name");
-			});
-			this.reload();
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
-			this.table.data.forEach((item, key) => {
-				const beneficiary = beneficiaries.find(({ id }) => id === item.beneficiaryId);
-				this.table.data[key].beneficiary = this
-					.prepareName(beneficiary.localGivenName, beneficiary.localFamilyName);
-			});
-			this.reload();
-		},
-
-		async getProducts(ids) {
-			if (!ids.length) return [];
-			return ProductService.getProducts(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
-				});
-		},
-
-		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
 		},
 	},
 };

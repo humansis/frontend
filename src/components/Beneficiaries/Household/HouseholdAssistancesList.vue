@@ -2,49 +2,59 @@
 	<Table
 		v-show="show"
 		ref="assistanceList"
-		has-search
 		paginated
+		has-reset-sort
 		:data="table.data"
 		:total="table.total"
+		default-sort-key="dateDistribution"
+		default-sort-direction="desc"
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		:backend-pagination="false"
-		:backend-sorting="false"
-		:backend-searching="false"
 		:columns="table.visibleColumns"
+		:has-clickable-rows="false"
+		@pageChanged="onPageChange"
+		@changePerPage="onChangePerPage"
+		@sorted="onSort"
 		@resetSort="resetSort"
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
 				v-bind="column"
-				sortable
+				:sortable="column.sortable"
 				:key="column.id"
-				:custom-sort="column.customSort"
+				v-slot="props"
 			>
-				<template v-slot="props">
-					{{ props.row[column.field] }}
-				</template>
+				<ColumnField :data="props" :column="column" />
 			</b-table-column>
 		</template>
-
-		<template #progress><span /></template>
 	</Table>
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import AssistancesService from "@/services/AssistancesService";
+import { Notification } from "@/utils/UI";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import consts from "@/utils/assistanceConst";
+import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+
+const statusTags = [
+	{ code: "To distribute", type: "is-light" },
+	{ code: "Distribution in progress", type: "is-info" },
+	{ code: "Distributed", type: "is-success" },
+	{ code: "Expired", type: "is-danger" },
+	{ code: "Canceled", type: "is-warning" },
+];
 
 export default {
 	name: "HouseholdAssistancesList",
 
-	components: { Table },
+	components: {
+		Table,
+		ColumnField,
+	},
 
 	mixins: [grid, baseHelper],
 
@@ -54,17 +64,25 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "commodity", width: "60", searchable: true },
-					{ key: "amount", label: "Amount", width: "60", searchable: true, customSort: this.sortAmount },
-					{ key: "dateOfDistribution", label: "Date", width: "100", searchable: true, customSort: this.sortDate },
-					{ key: "assistance", width: "100", searchable: true },
-					{ key: "beneficiary", width: "100", searchable: true },
+					{ key: "icon", type: "IconWithTooltip", withoutLabel: true },
+					{ key: "beneficiaryId", label: "Beneficiary Id" },
+					{ key: "beneficiaryLocalGivenName", label: "First Name" },
+					{ key: "beneficiaryLocalFamilyName", label: "Family Name" },
+					{ key: "state", label: "Status", type: "tag", customTags: statusTags },
+					{ key: "projectName", label: "Project", type: "link" },
+					{ key: "assistanceName", label: "Assistance", type: "link" },
+					{ key: "fullLocationNames", label: "Location" },
+					{ key: "dateDistribution", label: "Assistance Date", type: "date", sortable: true },
+					{ key: "commodity" },
+					{ key: "carrierNumber" },
+					{ key: "amount", label: "Distributed" },
+					{ key: "spent" },
+					{ key: "unit" },
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
-				searchPhrase: "",
+				sortDirection: "desc",
+				sortColumn: "dateDistribution",
 			},
 		};
 	},
@@ -74,25 +92,16 @@ export default {
 	},
 
 	methods: {
-		sortAmount(a, b, c) {
-			if (!c) {
-				return a.commodityObject.value - b.commodityObject.value;
-			}
-			return b.commodityObject.value - a.commodityObject.value;
-		},
-
-		sortDate(a, b, c) {
-			if (!c) {
-				return new Date(a.dateOfDistribution) - new Date(b.dateOfDistribution);
-			}
-			return new Date(b.dateOfDistribution) - new Date(a.dateOfDistribution);
-		},
-
 		async fetchData() {
 			this.isLoadingList = true;
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await BeneficiariesService.getListOfDistributedItems(this.$route.params.householdId)
+
+			await BeneficiariesService.getListOfDistributedItems(
+				this.$route.params.householdId,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+			)
 				.then(async ({ data, totalCount }) => {
 					this.table.total = totalCount;
 					this.table.data = [];
@@ -107,78 +116,24 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const beneficiaryIds = [];
-			const assistanceIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].dateOfDistribution = this.$moment(item.dateOfDistribution).format("YYYY-MM-DD hh:mm:ss");
-				beneficiaryIds.push(item.beneficiaryId);
-				assistanceIds.push(item.assistanceId);
+				this.table.data[key].projectName = {
+					routeName: "Project",
+					name: item.projectName,
+					routeParams: { projectId: item.projectId },
+				};
+				this.table.data[key].assistanceName = {
+					routeName: "AssistanceDetail",
+					name: item.assistanceId,
+					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
+				};
+				this.table.data[key].icon = {
+					type: item.type === consts.TARGET.INDIVIDUAL ? "user" : "home",
+					size: "is-medium",
+					tooltip: normalizeText(item.type),
+				};
 			});
-
-			this.reload();
-
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-
-			this.prepareCommodityForTable([...new Set(assistanceIds)]);
-
-			this.prepareAssistanceForTable([...new Set(assistanceIds)]);
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
-			this.table.data.forEach((item, key) => {
-				const beneficiary = beneficiaries.find(({ id }) => id === item.beneficiaryId);
-				this.table.data[key].beneficiary = this
-					.prepareName(beneficiary.localGivenName, beneficiary.localFamilyName);
-			});
-			this.reload();
-		},
-
-		async prepareCommodityForTable(assistanceIds) {
-			const commodities = await this.getCommodities(assistanceIds);
-			this.table.data.forEach((item, key) => {
-				const commodity = this.prepareEntityForTable(item.commodityIds[0], commodities);
-				this.table.data[key].commodityObject = commodity;
-				this.table.data[key].commodity = commodity.modalityType;
-				this.table.data[key].amount = `${commodity.value} ${commodity.unit}`;
-			});
-			this.reload();
-		},
-
-		async prepareAssistanceForTable(assistanceIds) {
-			const assistances = await this.getAssistances(assistanceIds);
-			this.table.data.forEach((item, key) => {
-				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
-				this.table.data[key].assistance = assistance.name;
-			});
-			this.reload();
-		},
-
-		async getCommodities(ids) {
-			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
-				});
-		},
-
-		async getAssistances(ids) {
-			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
-				});
-		},
-
-		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
 		},
 	},
 };

@@ -223,16 +223,27 @@ export default {
 		return { data, status };
 	},
 
-	async getListOfHouseholdPurchases(id) {
+	async getListOfHouseholdPurchases(id, page, size, sort) {
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households/${id}/purchased-items`,
+			uri: `households/${id}/smartcard-purchased-items?${sortText + pageText + sizeText}`,
 		});
 		return { data, totalCount };
 	},
 
-	async getListOfDistributedItems(id) {
+	async getListOfDistributedItems(id, page, size, sort) {
+		const query = [];
+
+		if (sort) { query.push(`sort[]=${sort}`); }
+		if (page) { query.push(`page=${page}`); }
+		if (size) { query.push(`size=${size}`); }
+
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `households/${id}/distributed-items`,
+			uri: `households/${id}/distributed-items?${query.join("&")}`,
+			version: 2,
 		});
 		return { data, totalCount };
 	},

@@ -162,6 +162,14 @@
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="cellData" />
 
+		<!-- Column for icons with tooltip  -->
+		<b-tooltip v-if="column.type === 'IconWithTooltip'" :label="$t(cellData.tooltip)">
+			<b-icon
+				:icon="cellData.type"
+				:size="cellData.size || 'is-small'"
+			/>
+		</b-tooltip>
+
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
 			<span v-if="cellData.length">
@@ -246,7 +254,9 @@ export default {
 		},
 
 		formattedDate() {
-			return `${this.$moment(this.cellData).format("YYYY-MM-DD")}`;
+			return this.cellData && typeof this.cellData !== "object"
+				? `${this.$moment(this.cellData).format("YYYY-MM-DD")}`
+				: this.$t("N/A");
 		},
 
 		formattedDateTime() {
