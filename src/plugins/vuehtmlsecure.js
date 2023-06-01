@@ -12,6 +12,10 @@ const options = {
 };
 
 Vue.directive("html-secure", {
+	bind(el, binding) {
+		// eslint-disable-next-line no-param-reassign
+		el.innerHTML = sanitizeHtml(binding.value, options);
+	},
 	update(el, binding) {
 		// eslint-disable-next-line no-param-reassign
 		el.innerHTML = sanitizeHtml(binding.value, options);

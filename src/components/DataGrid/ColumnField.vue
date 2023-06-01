@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- Simple Text -->
-		<template v-if="(!column.type || (column.type === 'text')) && simpleText">
+		<template v-if="(!column.type || (column.type === 'text'))">
 			<div v-html-secure="simpleText" />
 		</template>
 
