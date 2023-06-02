@@ -64,7 +64,12 @@
 
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
+			<b-tooltip v-if="cellData.isArchived" :label="$t('Deleted member')" position="is-right">
+				<p>{{ cellData.name }}</p>
+			</b-tooltip>
+
 			<router-link
+				v-else
 				class="table-link"
 				:to="{
 					name: getRouteName(),
