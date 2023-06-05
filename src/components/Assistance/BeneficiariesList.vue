@@ -532,6 +532,7 @@ export default {
 		},
 
 		fetchDataAfterBeneficiaryChange() {
+			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
 		},
 
