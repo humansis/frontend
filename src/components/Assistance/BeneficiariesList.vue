@@ -733,10 +733,10 @@ export default {
 						this.table.data[key].gender = this.prepareGender(item.gender);
 						this.table.data[key].vulnerabilities = vulnerabilitiesList
 							?.filter(({ code }) => code === item.vulnerabilityCriteria
-								.find((vulnerability) => vulnerability === code));
+								?.find((vulnerability) => vulnerability === code));
 
-						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
-						if (item.phoneIds.length) phoneIds.push(...item.phoneIds);
+						if (item.nationalIds?.length) nationalIdIds.push(item.nationalIds);
+						if (item.phoneIds?.length) phoneIds.push(...item.phoneIds);
 
 						if (item.reliefPackageIds.length) {
 							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
