@@ -345,7 +345,7 @@ export default {
 				this.exportControl.loading = true;
 				let ids = null;
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.id);
+					ids = this.table.checkedRows.map((item) => item.householdId);
 				}
 				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
 					.then(({ data, status, message }) => {
