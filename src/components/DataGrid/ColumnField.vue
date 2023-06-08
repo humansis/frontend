@@ -259,7 +259,7 @@ export default {
 		},
 
 		formattedDate() {
-			return this.cellData && typeof this.cellData !== "object"
+			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
 				? `${this.$moment(this.cellData).format("YYYY-MM-DD")}`
 				: this.$t("N/A");
 		},
