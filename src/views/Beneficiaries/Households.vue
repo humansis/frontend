@@ -712,12 +712,12 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.id).then((response) => {
+						await BeneficiariesService.removeHousehold(household.householdId).then((response) => {
 							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${household.id}. `;
+								success += `${this.$t("Success for Household")} ${household.householdId}. `;
 							}
 						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
+							error += `${this.$t("Error for Household")} ${household.householdId} ${e}. `;
 						});
 					}));
 
