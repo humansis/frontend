@@ -257,6 +257,7 @@ export default {
 		selectTypeOfLocation(value) {
 			this.$v.$reset();
 			this.campSelected = value.code === CONST.LOCATION_TYPE.camp.code;
+			this.formModel.type = value.code.toLowerCase();
 			this.validate("typeOfLocation");
 		},
 
