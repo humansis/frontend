@@ -387,7 +387,7 @@ export default {
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
-				const householdsIds = this.table.checkedRows.map((household) => household.id);
+				const householdsIds = this.table.checkedRows.map((household) => household.householdId);
 
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
