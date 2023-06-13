@@ -717,7 +717,7 @@ export default {
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					beneficiaryIds = data.map((item) => item.beneficiaryId);
-					beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+					beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 
 					data.forEach((beneficiary, key) => {
 						const foundBeneficiary = beneficiaries.find(
@@ -781,8 +781,8 @@ export default {
 				});
 		},
 
-		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
+		async getBeneficiaries(ids, filters) {
+			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
