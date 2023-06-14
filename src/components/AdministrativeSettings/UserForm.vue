@@ -348,7 +348,7 @@ export default {
 		},
 
 		async fetchProjects() {
-			if (this.isEditing) {
+			if (!this.formDisabled) {
 				await ProjectService.getListOfProjects()
 					.then(({ data }) => {
 						this.options.projects = data;
