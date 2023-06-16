@@ -206,16 +206,6 @@ export default {
 		this.fetchData();
 	},
 
-	computed: {
-		sloupec() {
-			console.log(this.table.sortColumn === "id" ? "id" : this.table.sortColumn);
-			return this.table.sortColumn === "id" ? "id" : this.table.sortColumn;
-		},
-		smer() {
-			return this.table.sortColumn === "asc" ? "asc" : this.table.sortColumn;
-		},
-	},
-
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
