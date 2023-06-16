@@ -9,11 +9,13 @@
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
 		:search-phrase="table.searchPhrase"
+		:default-sort-direction="table.sortDirection"
+		:default-sort-key="table.sortColumn"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
+		@resetSort="resetSort('id', 'asc')"
 		@onSearch="onSearch"
 	>
 		<template #progress>
@@ -192,6 +194,7 @@ export default {
 				sortDirection: "",
 				sortColumn: "",
 				searchPhrase: "",
+				sortReset: false,
 				progress: null,
 				dataUpdated: false,
 			},
