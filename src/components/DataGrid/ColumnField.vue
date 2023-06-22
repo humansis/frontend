@@ -266,7 +266,7 @@ export default {
 
 		formattedDateTime() {
 			return this.cellData && typeof this.cellData !== "object"
-				? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD hh:mm")}`
 				: this.$t("N/A");
 		},
 
