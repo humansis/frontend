@@ -119,7 +119,7 @@ export default {
 					{ key: "donors", width: "150" },
 					{ key: "target", label: "Target Households", width: "90" },
 					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
-					{ key: "beneficiariesReached", label: "Beneficiaries Reached", width: "130", sortable: true },
+					{ key: "beneficiariesReached", label: "Registered Individuals", width: "130", sortable: true },
 				],
 				total: 0,
 				currentPage: 1,
@@ -227,7 +227,7 @@ export default {
 
 		showDetailWithId(id) {
 			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowDetail", project);
+			this.$emit("showDetail", project);
 		},
 
 		async exportProjects(type, format) {

@@ -2,7 +2,7 @@ import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	getDefaultScoringType() {
-		return { archived: false, name: "Default", id: null };
+		return { enabled: true, name: "Default", id: null, identifier: "Default" };
 	},
 
 	async getListOfAssistances(page, size, sort, upcoming, search = null, filter = null) {
@@ -97,16 +97,74 @@ export default {
 		return data;
 	},
 
-	async getScoringTypes() {
-		const { data } = await fetcher({
-			uri: "scoring-blueprints?filter[archived]=false",
+	async getScoringTypes(page, size, filter = null) {
+		const query = [];
+
+		if (page) { query.push(`page=${page}`); }
+		if (size) { query.push(`size=${size}`); }
+		if (filter) { query.push(filtersToUri(filter)); }
+
+		const { data: { data, totalCount } } = await fetcher({
+			uri: `scoring-blueprints?${query.join("&")}`,
 		});
-		return data;
+		return { data, totalCount };
+	},
+
+	async createScoring(body) {
+		return new Promise((resolve, reject) => {
+			const { name, note, dropFiles } = body;
+
+			const fileBlob = new Blob([dropFiles[0]], { type: dropFiles[0].type });
+			const reader = new FileReader();
+
+			reader.readAsDataURL(fileBlob);
+			reader.onload = () => {
+				const base64Format = reader.result?.match(/data:.*?base64,(.*)$/)?.[1];
+
+				fetcher({
+					uri: `scoring-blueprints`,
+					method: "POST",
+					body: {
+						name,
+						note,
+						content: base64Format,
+					},
+				}).then(({ status, message }) => {
+					resolve({ status, message });
+				}).catch((error) => {
+					reject(error);
+				});
+			};
+			reader.onerror = (error) => reject(error);
+		});
+	},
+
+	async updateScoring({ id, enabled }) {
+		const { data, status } = await fetcher({
+			uri: `scoring-blueprints/${id}`,
+			method: "PATCH",
+			body: {
+				enabled,
+			},
+		});
+		return { data, status };
+	},
+
+	async removeScoring(id) {
+		const { data, status } = await fetcher({
+			uri: `scoring-blueprints/${id}`,
+			method: "DELETE",
+		});
+		return { data, status };
+	},
+
+	async downloadScoring(scoringId) {
+		return download({ uri: `scoring-blueprints/${scoringId}/content` });
 	},
 
 	async createAssistance(body) {
-		const { data, status } = await fetcher({ uri: "assistances", method: "POST", body });
-		return { data, status };
+		const { data, status, message } = await fetcher({ uri: "assistances", method: "POST", body });
+		return { data, status, message };
 	},
 
 	async calculationCommodities(body) {
@@ -387,10 +445,13 @@ export default {
 		return { data, totalCount, message };
 	},
 
-	async exportAssistances(format, projectId) {
+	async exportAssistances(format, projectId, filters) {
 		const formatText = format ? `type=${format}` : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
-		return download({ uri: `projects/${projectId}/assistances/exports?${formatText}` });
+		return download({
+			uri: `projects/${projectId}/assistances/exports?${formatText + filtersUri}`,
+		});
 	},
 
 	async exportVulnerabilityScores(format, body) {

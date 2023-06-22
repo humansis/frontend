@@ -12,6 +12,7 @@ import "@/plugins/vueswatches";
 import "@/plugins/vuecountryflag";
 import "@/plugins/vuemoment";
 import "@/plugins/vueloading";
+import "@/plugins/vuehtmlsecure";
 
 Vue.config.productionTip = false;
 

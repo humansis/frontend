@@ -102,5 +102,9 @@ export default {
 		addEditUsers: false,
 		adminSettings: false,
 		moveAssistance: false,
+		createScoring: false,
+		editScoring: false,
+		deleteScoring: false,
+		viewScoring: false,
 	},
 };

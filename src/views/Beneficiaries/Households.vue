@@ -78,8 +78,8 @@
 			:is-loading="isLoadingList"
 			:checked-rows="table.checkedRows"
 			:search-phrase="table.searchPhrase"
+			:has-clickable-rows="false"
 			@checked="onRowsChecked"
-			@clicked="goToSummaryDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@onSearch="onSearch"
@@ -132,14 +132,14 @@
 						type="is-primary"
 						:disabled="!householdsSelects"
 						:tooltip="$t('Show Detail')"
-						@click="showDetail(props.row.id)"
+						@click="showDetail(props.row.householdId)"
 					/>
 					<ActionButton
 						v-if="userCan.viewBeneficiary"
 						icon="edit"
 						:disabled="!householdsSelects"
 						:tooltip="$t('Edit')"
-						@click="editHousehold(props.row.id)"
+						@click="editHousehold(props.row.householdId)"
 					/>
 					<SafeDelete
 						v-if="userCan.deleteBeneficiary"
@@ -147,7 +147,7 @@
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
 						:disabled="!householdsSelects"
-						:id="props.row.id"
+						:id="props.row.householdId"
 						@submitted="removeHousehold"
 					/>
 				</div>
@@ -230,6 +230,7 @@ import { EXPORT } from "@/consts";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import AddProjectToHouseholdModal
 	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
+import { getUniqueIds } from "@/utils/customValidators";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -264,7 +265,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "id", label: "Household ID", width: "30" },
+					{ key: "id", label: "Household ID", type: "link", width: "30" },
 					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
@@ -344,7 +345,7 @@ export default {
 				this.exportControl.loading = true;
 				let ids = null;
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.id);
+					ids = this.table.checkedRows.map((item) => item.householdId);
 				}
 				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
 					.then(({ data, status, message }) => {
@@ -386,7 +387,7 @@ export default {
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
-				const householdsIds = this.table.checkedRows.map((household) => household.id);
+				const householdsIds = this.table.checkedRows.map((household) => household.householdId);
 
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
@@ -431,19 +432,26 @@ export default {
 				temporary_settlement: [],
 			};
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
+				const { id } = item;
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
 
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+
+				this.table.data[key] = item;
+				this.table.data[key].householdId = id;
+				this.table.data[key].id = {
+					routeParams: { householdId: id },
+					routeName: "HouseholdInformationSummary",
+					name: id,
+				};
+				this.table.data[key].addressId = addressId;
+				this.table.data[key].members = item.beneficiaryIds.length;
 
 				// TODO Fix bug with Informal Settlement (Location Type)
 				if (typeOfLocation && addressId) {
 					addressIds[typeOfLocation].push(addressId);
 				}
-
-				this.table.data[key].addressId = addressId;
-				this.table.data[key].members = item.beneficiaryIds.length;
 			});
 
 			this.prepareProjectForTable([...new Set(projectIds)]);
@@ -464,7 +472,12 @@ export default {
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
-				} = await this.prepareBeneficiaries(item.householdHeadId, beneficiaries, key);
+				} = await this.prepareBeneficiaries(
+					item.householdId,
+					item.householdHeadId,
+					beneficiaries,
+					key,
+				);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
 					({ code }) => code === vulnerabilities.find(
@@ -542,7 +555,9 @@ export default {
 					}).catch((e) => {
 						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
-				await AddressService.getCampsByIds(camps, "campId")
+				const uniqueCampIds = getUniqueIds(camps, "campId");
+
+				await AddressService.getCampsByIds(uniqueCampIds)
 					.then(({ data }) => {
 						data.forEach((item) => {
 							const address = camps.find(({ campId }) => campId === item.id);
@@ -602,13 +617,15 @@ export default {
 				});
 		},
 
-		async prepareBeneficiaries(id, beneficiaries, tableIndex) {
+		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
 			this.table.data[tableIndex].loading = true;
 			const result = {
 				nationalIds: [],
 			};
-			const beneficiary = beneficiaries.find((item) => item.id === id);
+			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
+			const { nationalIds } = beneficiary;
+
 			if (beneficiary) {
 				this.table.data[tableIndex].givenName = this.prepareName(
 					beneficiary.localGivenName,
@@ -618,7 +635,6 @@ export default {
 					beneficiary.localFamilyName,
 					beneficiary.enFamilyName,
 				);
-				const { nationalIds } = beneficiary;
 				result.nationalIds = nationalIds;
 			}
 
@@ -696,12 +712,12 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.id).then((response) => {
+						await BeneficiariesService.removeHousehold(household.householdId).then((response) => {
 							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${household.id}. `;
+								success += `${this.$t("Success for Household")} ${household.householdId}. `;
 							}
 						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
+							error += `${this.$t("Error for Household")} ${household.householdId} ${e}. `;
 						});
 					}));
 
@@ -727,7 +743,7 @@ export default {
 		},
 
 		showDetail(id) {
-			this.mapHouseholdDetail(this.table.data.find((item) => item.id === id));
+			this.mapHouseholdDetail(this.table.data.find((item) => item.householdId === id));
 			this.householdDetailModal.isOpened = true;
 		},
 

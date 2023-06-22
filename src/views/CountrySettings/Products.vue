@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import Items from "@/views/CountrySettings/Products/Items";
-import Categories from "@/views/CountrySettings/Products/Categories";
+import Items from "@/components/CountrySettings/Products/Items/Items";
+import Categories from "@/components/CountrySettings/Products/Categories/Categories";
 
 export default {
 	name: "Products",

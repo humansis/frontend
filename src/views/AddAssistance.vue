@@ -227,7 +227,9 @@ export default {
 
 		async getDeliveredCommodityValue(updatedCommodities = null) {
 			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
-			const result = await AssistancesService.calculationCommodities(this.assistanceBody);
+
+			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
+			const result = await AssistancesService.calculationCommodities(commoditiesBody);
 
 			if (result.status !== 200) return;
 
@@ -273,21 +275,32 @@ export default {
 				if (!this.$refs.activityDetails.submit()) return;
 			}
 
-			if (this.visibleComponents.distributedCommodity) {
-				if (!this.$refs.distributedCommodity.submit()) return;
+			if (this.visibleComponents.selectionCriteria) {
+				if (!this.$refs.selectionCriteria.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no criteria.")}`, "is-warning");
+					return;
+				}
 			}
 
-			if (this.visibleComponents.selectionCriteria) {
-				if (!this.$refs.selectionCriteria.submit()) return;
+			if (this.visibleComponents.distributedCommodity) {
+				if (!this.$refs.distributedCommodity.submit()) {
+					Notification(`${this.$t("Assistance cannot be created with no commodity.")}`, "is-warning");
+					return;
+				}
 			}
 
 			if (!this.isRemoteAndValid()) return;
 
 			this.loading = true;
 
-			await AssistancesService.createAssistance(this.assistanceBody)
-				.then(({ status, data: { id } }) => {
-					if (status === 200) {
+			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
+
+			await AssistancesService.createAssistance(assistanceBody)
+				.then(({ status, data: { id }, message }) => {
+					const success = status === 200;
+					const badRequest = status === 400;
+
+					if (success) {
 						Toast(this.$t("Assistance Successfully Created"), "is-success");
 						if (id) {
 							this.$router.push({
@@ -300,6 +313,10 @@ export default {
 								params: { projectId: this.$route.params.projectId },
 							});
 						}
+					}
+
+					if (badRequest) {
+						Notification(message || `${this.$t("Error code 400")}`, "is-warning");
 					}
 				}).catch((e) => {
 					Toast(`${this.$t("New Assistance")} ${e}`, "is-danger");
@@ -370,15 +387,23 @@ export default {
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
-				: this.scoringTypes.filter(({ archived }) => !archived)
+				: this.scoringTypes.filter(({ enabled }) => enabled)
 					.find(({ id }) => id === assistance.scoringBlueprint?.id);
 
 			if (assistance.scoringBlueprint && !scoringType) {
 				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "is-warning");
 			}
 
-			this.$refs.selectionCriteria.scoringType = scoringType || null;
-			this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+			if (assistance.scoringBlueprint && scoringType) {
+				this.$refs.selectionCriteria.scoringType = {
+					...scoringType,
+					identifier: `${scoringType.name} (ID: ${scoringType.id})`,
+				};
+				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
+			} else {
+				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.minimumSelectionScore = null;
+			}
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
@@ -391,7 +416,7 @@ export default {
 					unit: item.unit,
 					description: item.description,
 					dateExpiration: assistance.dateExpiration
-						? new Date(assistance.dateExpiration) : null,
+						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,
 					division: item.division,
 					modality,
 					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
@@ -539,8 +564,9 @@ export default {
 		},
 
 		fetchDistributedCommodity(commodities) {
-			const date = this.isDateValid(commodities?.[0]?.dateExpiration)
-				? commodities[0].dateExpiration
+			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
+			const date = this.isDateValid(dateExpiration)
+				? dateExpiration
 				: new Date(this.project.endDate);
 
 			this.assistanceBody = {

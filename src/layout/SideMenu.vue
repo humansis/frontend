@@ -158,6 +158,7 @@
 							</template>
 						</b-menu-item>
 						<b-menu-item
+							v-if="isCountrySettingsVisible"
 							icon="globe-africa"
 							class="to-dropdown-item"
 							:active="countrySettingsActive"
@@ -185,7 +186,7 @@
 								</template>
 							</b-menu-item>
 							<b-menu-item
-								v-if="userCan.countrySettings"
+								v-if="userCan.countrySettings || userCan.viewScoring"
 								class="nested-item"
 								icon="map-marker-alt"
 								exact-active-class="is-active"
@@ -282,6 +283,12 @@ export default {
 
 		asideBackgroundClass() {
 			return `${process.env.VUE_APP_ENV}-aside-style`;
+		},
+
+		isCountrySettingsVisible() {
+			return this.userCan.viewProducts
+				|| this.userCan.countrySettings
+				|| this.userCan.viewScoring;
 		},
 	},
 

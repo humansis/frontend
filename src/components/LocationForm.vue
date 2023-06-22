@@ -323,7 +323,7 @@ export default {
 
 		async mapLocations() {
 			this.mapping = true;
-			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type) {
+			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type && this.formModel.campId) {
 				await this.fetchCamps(this.formModel.campId);
 			}
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;

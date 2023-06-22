@@ -27,13 +27,16 @@ export default {
 			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
 			const sortKey = currentColumn.sortKey || column;
 
-			if (this.table.sortColumn === sortKey) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = sortKey;
-				this.table.sortDirection = "desc";
+			if (!this.table.sortReset) {
+				if (this.table.sortColumn === sortKey) {
+					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+				} else {
+					this.table.sortColumn = sortKey;
+					this.table.sortDirection = "desc";
+				}
 			}
 
+			this.table.sortReset = false;
 			this.fetchData();
 		},
 
@@ -55,7 +58,7 @@ export default {
 
 		assistanceMove(id) {
 			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowMove", entity);
+			this.$emit("showMove", entity);
 		},
 
 		showDetailWithId(id) {
@@ -64,19 +67,28 @@ export default {
 		},
 
 		showDetail(entity) {
-			this.$emit("onShowDetail", entity);
+			this.$emit("showDetail", entity);
 		},
 
 		showEdit(id) {
 			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("onShowEdit", entity);
+			this.$emit("showEdit", entity);
 		},
 
 		remove(id) {
-			this.$emit("onRemove", id);
+			this.$emit("remove", id);
+		},
+
+		download(scoring) {
+			this.$emit("download", scoring);
+		},
+
+		statusChange(id, enabled) {
+			this.$emit("statusChange", { id, enabled });
 		},
 
 		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;

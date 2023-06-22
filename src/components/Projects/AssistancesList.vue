@@ -119,7 +119,7 @@
 							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
 							:entity="$t('Assistance')"
 							:id="props.row.id"
-							@submitted="$emit('onRemove', $event)"
+							@submitted="$emit('remove', $event)"
 						/>
 					</b-dropdown>
 				</div>
@@ -516,13 +516,20 @@ export default {
 		},
 
 		isOneOfLastThreeRows(rowId) {
-			const countOfDisplayedRows = this.perPage <= this.table.total
-				? this.perPage
-				: this.table.total;
+			let finalCountOfDisplayedRows = this.table.total;
 
-			return (rowId === countOfDisplayedRows - 1
-				|| rowId === countOfDisplayedRows - 2
-				|| rowId === countOfDisplayedRows - 3
+			if (this.perPage <= this.table.total) {
+				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
+						- this.table.total);
+
+				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
+					? this.perPage
+					: countOfDisplayedRows;
+			}
+
+			return (rowId === finalCountOfDisplayedRows - 1
+				|| rowId === finalCountOfDisplayedRows - 2
+				|| rowId === finalCountOfDisplayedRows - 3
 			);
 		},
 
@@ -533,7 +540,12 @@ export default {
 		async exportAssistances(type, format) {
 			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
 				this.exportControl.loading = true;
-				await AssistancesService.exportAssistances(format, this.$route.params.projectId)
+				const filters = {
+					...this.filters,
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+				};
+
+				await AssistancesService.exportAssistances(format, this.$route.params.projectId, filters)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });

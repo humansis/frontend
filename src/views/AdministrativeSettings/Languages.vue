@@ -28,7 +28,7 @@
 		</b-button>
 		<LanguagesList
 			ref="languagesList"
-			@onShowDetail="showDetail"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>

@@ -57,9 +57,9 @@
 			:beneficiaries-count="beneficiariesCount"
 			:project="project"
 			:project-loaded="projectLoaded"
-			@onRemove="removeAssistance"
-			@onShowEdit="showEdit"
-			@onShowMove="showMove"
+			@remove="removeAssistance"
+			@showEdit="showEdit"
+			@showMove="showMove"
 		/>
 	</div>
 </template>

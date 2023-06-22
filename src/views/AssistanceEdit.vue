@@ -42,6 +42,7 @@
 					:add-button="false"
 					:assistance="assistance"
 					:commodities="commodities"
+					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</b-step-item>
 
@@ -52,6 +53,7 @@
 					export-button
 					:assistance="assistance"
 					:commodities="commodities"
+					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</b-step-item>
 

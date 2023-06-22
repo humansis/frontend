@@ -124,7 +124,6 @@ const routes = [
 								name: "AssistanceEdit",
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
 								meta: {
-									permissions: ["editDistribution"],
 									breadcrumb: () => i18n.t("Edit Assistance"),
 									description: "",
 								},
@@ -134,7 +133,6 @@ const routes = [
 								name: "AssistanceDetail",
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
 								meta: {
-									permissions: ["viewDistribution", "authoriseElectronicCashTransfer"],
 									breadcrumb: () => i18n.t("Assistance Detail"),
 									description: "",
 								},
@@ -316,9 +314,8 @@ const routes = [
 					{
 						path: "country-specifics",
 						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/CountrySettings/CountrySpecificOptions"),
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/CountrySettings/CountrySpecific"),
 						meta: {
-							permissions: ["countrySettings"],
 							breadcrumb: () => i18n.t("Country specifics"),
 							description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),
 						},

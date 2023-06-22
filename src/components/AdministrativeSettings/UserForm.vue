@@ -348,12 +348,14 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.options.projects = data;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			if (!this.formDisabled) {
+				await ProjectService.getListOfProjects()
+					.then(({ data }) => {
+						this.options.projects = data;
+					}).catch((e) => {
+						if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					});
+			}
 
 			if (this.formModel.id) {
 				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {

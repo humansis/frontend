@@ -254,9 +254,10 @@ export default {
 			}
 		},
 
-		selectTypeOfLocation(value) {
+		selectTypeOfLocation(selectedType) {
 			this.$v.$reset();
-			this.campSelected = value.code === CONST.LOCATION_TYPE.camp.code;
+			this.campSelected = selectedType.code === CONST.LOCATION_TYPE.camp.code;
+			this.formModel.type = selectedType.value.toLowerCase();
 			this.validate("typeOfLocation");
 		},
 

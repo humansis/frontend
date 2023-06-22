@@ -37,9 +37,9 @@
 
 		<InstitutionsList
 			ref="institutionsList"
-			@onRemove="removeInstitution"
-			@onShowEdit="editInstitution"
-			@onShowDetail="showDetail"
+			@remove="removeInstitution"
+			@showEdit="editInstitution"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>

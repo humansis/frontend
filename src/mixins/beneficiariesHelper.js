@@ -142,7 +142,7 @@ export default {
 		async preparePhoneForTable(phoneIds) {
 			const phones = await this.getPhones(phoneIds);
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].phone = !item.phoneIds.length
+				this.table.data[key].phone = !item.phoneIds?.length
 					? this.$t("None")
 					: this.preparePhonesForTable(item.phoneIds, phones, "None");
 			});
@@ -152,7 +152,7 @@ export default {
 		async prepareNationalIdForTable(ids) {
 			const nationalIds = await this.getNationalIds(ids);
 			this.table.data.map(async (item, key) => {
-				this.table.data[key].nationalId = !item.nationalIds.length
+				this.table.data[key].nationalId = !item.nationalIds?.length
 					? this.$t("None")
 					: this.prepareNationalIdsValuesForTable(item.nationalIds, nationalIds);
 			});

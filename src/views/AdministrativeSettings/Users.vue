@@ -31,9 +31,9 @@
 		</div>
 		<UsersList
 			ref="usersList"
-			@onRemove="removeUser"
-			@onShowEdit="editUser"
-			@onShowDetail="showDetail"
+			@remove="removeUser"
+			@showEdit="editUser"
+			@showDetail="showDetail"
 		/>
 	</div>
 </template>

@@ -28,9 +28,9 @@
 		</b-button>
 		<CountriesList
 			ref="countriesList"
-			@onShowDetail="showDetail"
-			@onRemove="removeCountry"
-			@onShowEdit="editCountry"
+			@showDetail="showDetail"
+			@remove="removeCountry"
+			@showEdit="editCountry"
 		/>
 	</div>
 </template>

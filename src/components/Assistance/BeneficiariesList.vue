@@ -532,6 +532,7 @@ export default {
 		},
 
 		fetchDataAfterBeneficiaryChange() {
+			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
 		},
 
@@ -716,7 +717,7 @@ export default {
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					beneficiaryIds = data.map((item) => item.beneficiaryId);
-					beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+					beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 
 					data.forEach((beneficiary, key) => {
 						const foundBeneficiary = beneficiaries.find(
@@ -733,10 +734,10 @@ export default {
 						this.table.data[key].gender = this.prepareGender(item.gender);
 						this.table.data[key].vulnerabilities = vulnerabilitiesList
 							?.filter(({ code }) => code === item.vulnerabilityCriteria
-								.find((vulnerability) => vulnerability === code));
+								?.find((vulnerability) => vulnerability === code));
 
-						if (item.nationalIds.length) nationalIdIds.push(item.nationalIds);
-						if (item.phoneIds.length) phoneIds.push(...item.phoneIds);
+						if (item.nationalIds?.length) nationalIdIds.push(item.nationalIds);
+						if (item.phoneIds?.length) phoneIds.push(...item.phoneIds);
 
 						if (item.reliefPackageIds.length) {
 							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
@@ -780,8 +781,8 @@ export default {
 				});
 		},
 
-		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
+		async getBeneficiaries(ids, filters) {
+			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");

@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<!-- Simple Text -->
-		<template v-if="!column.type || (column.type === 'text')">
-			<div v-html="simpleText" />
+		<template v-if="(!column.type || (column.type === 'text'))">
+			<div v-html-secure="simpleText" />
 		</template>
 
 		<template v-if="column.type === 'assistancesType'">
@@ -41,9 +41,8 @@
 				<span
 					v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
 					:class="{ 'has-text-weight-bold': column.boldText }"
-				>
-					{{ item }}
-				</span>
+					v-html-secure="item"
+				/>
 			</div>
 		</template>
 
@@ -65,7 +64,12 @@
 
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
+			<b-tooltip v-if="cellData.isArchived" :label="$t('Deleted member')" position="is-right">
+				<p>{{ cellData.name }}</p>
+			</b-tooltip>
+
 			<router-link
+				v-else
 				class="table-link"
 				:to="{
 					name: getRouteName(),
@@ -163,6 +167,14 @@
 		<!-- Editable column -->
 		<b-input v-if="column.type === 'editable'" v-model="cellData" />
 
+		<!-- Column for icons with tooltip  -->
+		<b-tooltip v-if="column.type === 'IconWithTooltip'" :label="$t(cellData.tooltip)">
+			<b-icon
+				:icon="cellData.type"
+				:size="cellData.size || 'is-small'"
+			/>
+		</b-tooltip>
+
 		<!-- Column for svg icons  -->
 		<template v-if="column.type === 'svgIcon'">
 			<span v-if="cellData.length">
@@ -247,12 +259,14 @@ export default {
 		},
 
 		formattedDate() {
-			return `${this.$moment(this.cellData).format("YYYY-MM-DD")}`;
+			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
+				? `${this.$moment(this.cellData).format("YYYY-MM-DD")}`
+				: this.$t("N/A");
 		},
 
 		formattedDateTime() {
 			return this.cellData && typeof this.cellData !== "object"
-				? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD hh:mm")}`
 				: this.$t("N/A");
 		},
 

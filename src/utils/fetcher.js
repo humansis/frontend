@@ -204,7 +204,7 @@ export const filtersToUri = (filters) => {
 			filters[key].forEach((item) => {
 				query += `&filter[${key}][]=${item}`;
 			});
-		} else if (typeof filters[key] === "string") {
+		} else if (typeof filters[key] === "string" || typeof filters[key] === "boolean") {
 			query += `&filter[${key}]=${filters[key]}`;
 		}
 	});

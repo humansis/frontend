@@ -266,6 +266,11 @@ export default {
 		},
 
 		extractDataForTable(data, key) {
+			if (Object.hasOwn(data, "differences")) {
+				Object.entries(data.differences).forEach((difference) => {
+					this.setRecordFrom(difference, key);
+				});
+			}
 			if (Object.hasOwn(data, "memberDuplicities")) {
 				Object.values(data.memberDuplicities).forEach((memberDuplicity) => {
 					this.table.data[key].familyName.push(memberDuplicity.familyName);
@@ -287,23 +292,9 @@ export default {
 
 					if (Object.hasOwn(memberDuplicity, "differences")) {
 						Object.entries(memberDuplicity.differences).forEach((difference) => {
-							if (difference[1]) {
-								if (typeof difference === "number" || typeof difference === "string") {
-									this.table.data[key].recordFrom.push(`
-									${difference[0]}
-									-
-									${difference[1]}
-								`);
-								} else {
-									this.table.data[key].recordFrom.push(`
-									${this.transformProperty(difference[0])}
-									:
-									${this.getSlashedArray(difference[1])}
-								`);
-								}
-								this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
-							}
+							this.setRecordFrom(difference, key);
 						});
+						this.table.data[key].recordFrom.push("memberDuplicitiesLastItem");
 					}
 
 					if (!this.hasDuplicityDifferences(memberDuplicity.differences)) {
@@ -349,18 +340,47 @@ export default {
 		},
 
 		getSlashedArray(items) {
-			let result = "";
+			const noData = "<b>No data</b>";
 
-			if (typeof items.database === "string" || typeof items.import === "string") {
-				result = Object.values(items).reverse().join(" / ");
-			} else {
-				const database = items.database[0] || "-";
-				const imp = items.import[0] || "-";
-
-				result = `${imp} / ${database}`;
+			if (typeof items.database === "string" && typeof items.import === "string"
+				&& items.database?.length && items.import?.length) {
+				return Object.values(items).reverse().join(" / ");
 			}
 
-			return result;
+			let database = typeof items.database === "number" || items.database?.length
+				? items.database
+				: noData;
+			let imp = typeof items.import === "number" || items.import?.length
+				? items.import
+				: noData;
+
+			if (Array.isArray(items.database)) {
+				database = items.database[0]?.length ? items.database[0] : noData;
+			}
+
+			if (Array.isArray(items.import)) {
+				imp = items.import[0]?.length ? items.import[0] : noData;
+			}
+
+			return `${imp} / ${database}`;
+		},
+
+		setRecordFrom(difference, key) {
+			if (difference[1]?.database?.length || difference[1]?.import?.length) {
+				if (typeof difference[1] === "number" || typeof difference[1] === "string") {
+					this.table.data[key].recordFrom.push(`
+						${difference[0]}
+						-
+						${difference[1]}
+					`);
+				} else {
+					this.table.data[key].recordFrom.push(`
+						${this.transformProperty(difference[0])}
+						:
+						${this.getSlashedArray(difference[1])}
+					`);
+				}
+			}
 		},
 
 		hasDuplicityDifferences(differences) {

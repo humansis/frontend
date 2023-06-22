@@ -4,6 +4,7 @@ import LocationsService from "@/services/LocationsService";
 import baseHelper from "@/mixins/baseHelper";
 import i18n from "@/plugins/i18n";
 import CONST from "@/const";
+import { getUniqueIds } from "@/utils/customValidators";
 
 export default {
 	mixins: [baseHelper],
@@ -20,7 +21,7 @@ export default {
 
 		getLocations(addresses) {
 			if (!addresses?.length) return null;
-			return LocationsService.getLocations(addresses, "locationId")
+			return LocationsService.getLocations(addresses)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${i18n.t("Locations")} ${e}`, "is-danger");
@@ -72,7 +73,9 @@ export default {
 
 		async getPreparedLocations(addressesIds) {
 			const addresses = await this.getAddresses(addressesIds);
-			const locations = await this.getLocations(addresses);
+			const uniqueLocationIds = getUniqueIds(addresses, "locationId");
+			const locations = await this.getLocations(uniqueLocationIds);
+
 			return this.mapLocationOnAddress(locations, addresses);
 		},
 	},
