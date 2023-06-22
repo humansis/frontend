@@ -61,7 +61,7 @@ export default {
 		},
 
 		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
+			const beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 			this.table.data.forEach((item, key) => {
 				const beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries);
 
@@ -71,6 +71,7 @@ export default {
 							routeName: "HouseholdInformationSummary",
 							name: item.beneficiaryId,
 							routeParams: { householdId: beneficiary.householdId },
+							isArchived: beneficiary.isArchived,
 						};
 					}
 
@@ -182,8 +183,8 @@ export default {
 				});
 		},
 
-		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
+		async getBeneficiaries(ids, filters) {
+			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");

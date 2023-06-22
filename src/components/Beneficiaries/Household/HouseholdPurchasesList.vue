@@ -122,7 +122,7 @@ export default {
 				};
 				this.table.data[key].assistanceName = {
 					routeName: "AssistanceDetail",
-					name: item.assistanceId,
+					name: item.assistanceName,
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};
 				this.table.data[key].icon = {

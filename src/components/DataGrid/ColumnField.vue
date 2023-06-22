@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- Simple Text -->
-		<template v-if="(!column.type || (column.type === 'text')) && simpleText">
+		<template v-if="(!column.type || (column.type === 'text'))">
 			<div v-html-secure="simpleText" />
 		</template>
 
@@ -64,7 +64,12 @@
 
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
+			<b-tooltip v-if="cellData.isArchived" :label="$t('Deleted member')" position="is-right">
+				<p>{{ cellData.name }}</p>
+			</b-tooltip>
+
 			<router-link
+				v-else
 				class="table-link"
 				:to="{
 					name: getRouteName(),
@@ -254,14 +259,14 @@ export default {
 		},
 
 		formattedDate() {
-			return this.cellData && typeof this.cellData !== "object"
+			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
 				? `${this.$moment(this.cellData).format("YYYY-MM-DD")}`
 				: this.$t("N/A");
 		},
 
 		formattedDateTime() {
 			return this.cellData && typeof this.cellData !== "object"
-				? `${this.$moment(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD hh:mm")}`
 				: this.$t("N/A");
 		},
 

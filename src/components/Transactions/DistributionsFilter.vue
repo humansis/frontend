@@ -212,8 +212,12 @@ export default {
 			this.$emit("filtersChanged", {
 				filters: {
 					projects: preparedFilters.project || consts.DEFAULT_FILTERS.PROJECTS,
-					dateFrom: preparedFilters.dateFrom || consts.DEFAULT_FILTERS.DATE_FROM,
-					dateTo: preparedFilters.dateTo || consts.DEFAULT_FILTERS.DATE_TO,
+					dateFrom: preparedFilters.dateFrom
+						? this.$moment(preparedFilters.dateFrom).format("YYYY-MM-DD")
+						: consts.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: preparedFilters.dateTo
+						? this.$moment(preparedFilters.dateTo).format("YYYY-MM-DD")
+						: consts.DEFAULT_FILTERS.DATE_TO,
 					beneficiaryTypes: preparedFilters.beneficiaryType
 						|| consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
 					modalityTypes: preparedFilters.commodity || consts.DEFAULT_FILTERS.MODALITY_TYPES,

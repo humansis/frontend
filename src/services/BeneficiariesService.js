@@ -110,11 +110,12 @@ export default {
 		return data;
 	},
 
-	async getBeneficiaries(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
+	async getBeneficiaries(ids, filters) {
+		const idsText = ids ? idsToUri(ids) : "";
+		const filtersUri = filters ? filtersToUri(filters) : "";
 
 		const { data } = await fetcher({
-			uri: `beneficiaries?${idsText}`,
+			uri: `beneficiaries?${idsText + filtersUri}`,
 		});
 		return data;
 	},

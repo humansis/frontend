@@ -27,13 +27,16 @@ export default {
 			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
 			const sortKey = currentColumn.sortKey || column;
 
-			if (this.table.sortColumn === sortKey) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = sortKey;
-				this.table.sortDirection = "desc";
+			if (!this.table.sortReset) {
+				if (this.table.sortColumn === sortKey) {
+					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+				} else {
+					this.table.sortColumn = sortKey;
+					this.table.sortDirection = "desc";
+				}
 			}
 
+			this.table.sortReset = false;
 			this.fetchData();
 		},
 
@@ -85,6 +88,7 @@ export default {
 		},
 
 		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;

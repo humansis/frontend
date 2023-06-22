@@ -132,14 +132,14 @@
 						type="is-primary"
 						:disabled="!householdsSelects"
 						:tooltip="$t('Show Detail')"
-						@click="showDetail(props.row.id)"
+						@click="showDetail(props.row.householdId)"
 					/>
 					<ActionButton
 						v-if="userCan.viewBeneficiary"
 						icon="edit"
 						:disabled="!householdsSelects"
 						:tooltip="$t('Edit')"
-						@click="editHousehold(props.row.id)"
+						@click="editHousehold(props.row.householdId)"
 					/>
 					<SafeDelete
 						v-if="userCan.deleteBeneficiary"
@@ -147,7 +147,7 @@
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
 						:disabled="!householdsSelects"
-						:id="props.row.id"
+						:id="props.row.householdId"
 						@submitted="removeHousehold"
 					/>
 				</div>
@@ -265,7 +265,7 @@ export default {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "household", label: "Household ID", type: "link", width: "30" },
+					{ key: "id", label: "Household ID", type: "link", width: "30" },
 					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
@@ -345,7 +345,7 @@ export default {
 				this.exportControl.loading = true;
 				let ids = null;
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.id);
+					ids = this.table.checkedRows.map((item) => item.householdId);
 				}
 				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
 					.then(({ data, status, message }) => {
@@ -387,7 +387,7 @@ export default {
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
-				const householdsIds = this.table.checkedRows.map((household) => household.id);
+				const householdsIds = this.table.checkedRows.map((household) => household.householdId);
 
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
@@ -439,7 +439,8 @@ export default {
 				beneficiaryIds.push(item.householdHeadId);
 
 				this.table.data[key] = item;
-				this.table.data[key].household = {
+				this.table.data[key].householdId = id;
+				this.table.data[key].id = {
 					routeParams: { householdId: id },
 					routeName: "HouseholdInformationSummary",
 					name: id,
@@ -471,7 +472,12 @@ export default {
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
-				} = await this.prepareBeneficiaries(item.id, item.householdHeadId, beneficiaries, key);
+				} = await this.prepareBeneficiaries(
+					item.householdId,
+					item.householdHeadId,
+					beneficiaries,
+					key,
+				);
 				const vulnerabilities = this.table.data[key].vulnerabilities || [];
 				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
 					({ code }) => code === vulnerabilities.find(
@@ -706,12 +712,12 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.id).then((response) => {
+						await BeneficiariesService.removeHousehold(household.householdId).then((response) => {
 							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${household.id}. `;
+								success += `${this.$t("Success for Household")} ${household.householdId}. `;
 							}
 						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${household.id} ${e}. `;
+							error += `${this.$t("Error for Household")} ${household.householdId} ${e}. `;
 						});
 					}));
 
@@ -737,7 +743,7 @@ export default {
 		},
 
 		showDetail(id) {
-			this.mapHouseholdDetail(this.table.data.find((item) => item.id === id));
+			this.mapHouseholdDetail(this.table.data.find((item) => item.householdId === id));
 			this.householdDetailModal.isOpened = true;
 		},
 
