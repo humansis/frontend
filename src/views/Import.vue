@@ -148,6 +148,16 @@ export default {
 		};
 	},
 
+	watch: {
+		importStatus(value) {
+			this.isImportAutomaticallyCanceled(value);
+		},
+	},
+
+	mounted() {
+		this.isImportAutomaticallyCanceled(this.importStatus);
+	},
+
 	computed: {
 		importTitle() {
 			return this.importDetail?.title || "";
@@ -165,12 +175,17 @@ export default {
 			return this.importDetail.projects?.map(({ name }) => name).join(", ") || [];
 		},
 
+		importFailReason() {
+			return this.statistics?.failReason || "";
+		},
+
 		importStatusType() {
 			let result = "";
 
 			switch (this.importStatus) {
 				case consts.STATUS.CANCEL:
 				case consts.STATUS.IMPORTING:
+				case consts.STATUS.AUTOMATICALLY_CANCELED:
 					result = "is-warning";
 					break;
 				case consts.STATUS.FINISH:
@@ -239,6 +254,8 @@ export default {
 					return this.activeStep === 3
 						? this.$t("Please approve and start import")
 						: this.$t("Please Go to finalization");
+				case consts.STATUS.AUTOMATICALLY_CANCELED:
+					return `${this.$t("Import failed:")} ${this.importFailReason}`;
 				default:
 					return "";
 			}
@@ -356,6 +373,7 @@ export default {
 		stepsRedirect(status) {
 			switch (status) {
 				case consts.STATUS.CANCEL:
+				case consts.STATUS.AUTOMATICALLY_CANCELED:
 				case consts.STATUS.IMPORTING:
 				case consts.STATUS.FINISH:
 					this.changeTab(3);
@@ -485,6 +503,12 @@ export default {
 			);
 
 			await this.fetchData();
+		},
+
+		isImportAutomaticallyCanceled(importStatus) {
+			if (importStatus === consts.STATUS.AUTOMATICALLY_CANCELED) {
+				this.stepsRedirect(importStatus);
+			}
 		},
 	},
 };

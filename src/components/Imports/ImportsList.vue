@@ -146,6 +146,7 @@ const statusTags = [
 	{ code: consts.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
 	{ code: consts.STATUS.FINISH, type: "is-success" },
 	{ code: consts.STATUS.CANCEL, type: "is-warning" },
+	{ code: consts.STATUS.AUTOMATICALLY_CANCELED, type: "is-warning" },
 	{ code: consts.STATUS.IMPORTING, type: "is-warning" },
 ];
 

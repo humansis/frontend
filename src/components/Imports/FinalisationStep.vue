@@ -327,13 +327,15 @@ export default {
 
 			return this.importStatus === consts.STATUS.FINISH
 				|| this.importStatus === consts.STATUS.IMPORTING
-				|| this.importStatus === consts.STATUS.CANCEL;
+				|| this.importStatus === consts.STATUS.CANCEL
+				|| this.importStatus === consts.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
 		canCancelImport() {
 			return this.importStatus
 				&& this.importStatus !== consts.STATUS.FINISH
 				&& this.importStatus !== consts.STATUS.CANCEL
+				&& this.importStatus !== consts.STATUS.AUTOMATICALLY_CANCELED
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 	},
