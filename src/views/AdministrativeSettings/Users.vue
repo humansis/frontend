@@ -245,7 +245,7 @@ export default {
 			this.userModal.isWaiting = true;
 
 			await UsersService.createUser(userBody).then((response) => {
-				if (response.status && response.status === 200) {
+				if (response && response.status === 200) {
 					Toast(this.$t("User Successfully Created"), "is-success");
 					this.$refs.usersList.fetchData();
 					this.closeUserModal();
@@ -254,6 +254,7 @@ export default {
 				Toast(`${this.$t("User")} ${e}`, "is-danger");
 				this.userModal.isWaiting = false;
 			});
+			this.userModal.isWaiting = false;
 		},
 
 		async updateUser(id, userBody) {

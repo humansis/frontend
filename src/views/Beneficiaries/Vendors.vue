@@ -326,7 +326,7 @@ export default {
 		async createVendor(userBody, vendorBody) {
 			await UsersService.createUser(userBody)
 				.then(async (userResponse) => {
-					if (userResponse.status === 200) {
+					if (userResponse && userResponse.status === 200) {
 						const body = vendorBody;
 						body.userId = userResponse.data.id;
 						await VendorService.createVendor(body)
