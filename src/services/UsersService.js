@@ -41,8 +41,7 @@ export default {
 					: null;
 
 				if (status === 400) {
-					Toast(message, "is-danger");
-					return null;
+					throw new Error(message);
 				}
 
 				return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
