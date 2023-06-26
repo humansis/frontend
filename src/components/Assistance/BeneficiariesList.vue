@@ -442,6 +442,7 @@ export default {
 				return [
 					EXPORT.LIST_OF_BENEFICIARIES,
 					EXPORT.DISTRIBUTION_LIST,
+					EXPORT.HOUSEHOLDS,
 				];
 			}
 
@@ -814,6 +815,13 @@ export default {
 						`Bank distribution list ${this.assistance.name}`,
 					);
 					break;
+				case EXPORT.HOUSEHOLDS:
+					await this.exportData(
+						format,
+						EXPORT.HOUSEHOLDS,
+						`BNF Households ${this.assistance.name}`,
+					);
+					break;
 				default:
 			}
 			this.exportControl.loading = false;
@@ -822,7 +830,9 @@ export default {
 		async exportData(format, exportType, filename) {
 			if (!this.changeButton) {
 				await BeneficiariesService.exportAssistanceBeneficiaries(
-					format, this.$route.params.assistanceId,
+					format,
+					this.$route.params.assistanceId,
+					this.table.searchPhrase,
 					{ exportType },
 				)
 					.then(({ data, status, message }) => {
