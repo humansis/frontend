@@ -263,7 +263,7 @@ export default {
 		search,
 		{ exportType },
 	) {
-		const formatText = format ? `type=${format}` : "";
+		const formatText = `type=${format}`;
 		const fulltext = search ? `&fulltext=${search}` : "";
 		let uri;
 
