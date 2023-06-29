@@ -290,7 +290,7 @@ export default {
 				incomeSpentOnFood,
 				houseIncome: 0,
 				countrySpecificAnswers:
-					this.prepareCountrySpecificsForHousehold(this.household.countrySpecificOptions),
+					this.prepareCountrySpecificsForHousehold(this.household.customFields),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 

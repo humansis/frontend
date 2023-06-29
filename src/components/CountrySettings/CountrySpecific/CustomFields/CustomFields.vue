@@ -4,7 +4,7 @@
 			<b-button
 				type="is-primary"
 				icon-left="plus"
-				@click="addNewCountrySpecificOption"
+				@click="addNewCustomField"
 			>
 				{{ $t('Add') }}
 			</b-button>
@@ -12,57 +12,57 @@
 
 		<Modal
 			can-cancel
-			:active="countrySpecificOptionModal.isOpened"
+			:active="customFieldModal.isOpened"
 			:header="modalHeader"
-			:is-waiting="countrySpecificOptionModal.isWaiting"
-			@close="closeCountrySpecificOptionModal"
+			:is-waiting="customFieldModal.isWaiting"
+			@close="closeCustomFieldModal"
 		>
-			<CountrySpecificOptionForm
+			<CustomFieldForm
 				close-button
 				class="modal-card"
-				:formModel="countrySpecificOptionModel"
+				:formModel="customFieldModel"
 				:submit-button-label="submitButtonLabel"
-				:form-disabled="countrySpecificOptionModal.isDetail"
-				@formSubmitted="submitCountrySpecificOptionForm"
-				@formClosed="closeCountrySpecificOptionModal"
+				:form-disabled="customFieldModal.isDetail"
+				@formSubmitted="submitCustomFieldForm"
+				@formClosed="closeCustomFieldModal"
 			/>
 		</Modal>
 
-		<CountrySpecificOptionsList
-			ref="countrySpecificOptionsList"
-			@remove="removeCountrySpecificOption"
+		<CustomFieldsList
+			ref="customFieldsList"
+			@remove="removeCustomField"
 			@showDetail="showDetail"
-			@showEdit="editCountrySpecificOption"
+			@showEdit="editCustomField"
 		/>
 	</div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import CountrySpecificOptionForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
-import CountrySpecificOptionsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
+import CustomFieldForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
+import CustomFieldsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Modal";
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import { Toast, Notification } from "@/utils/UI";
 
 export default {
-	name: "CountrySpecificOptionPage",
+	name: "CustomFieldPage",
 
 	components: {
-		CountrySpecificOptionsList,
+		CustomFieldsList,
 		Modal,
-		CountrySpecificOptionForm,
+		CustomFieldForm,
 	},
 
 	data() {
 		return {
-			countrySpecificOptionModal: {
+			customFieldModal: {
 				isOpened: false,
 				isDetail: false,
 				isEditing: false,
 				isWaiting: false,
 			},
-			countrySpecificOptionModel: {
+			customFieldModel: {
 				id: null,
 				iso3: "",
 				field: "",
@@ -77,27 +77,27 @@ export default {
 
 		modalHeader() {
 			let result = "";
-			if (this.countrySpecificOptionModal.isDetail) {
-				result = this.$t("Detail of Country Specific Option");
-			} else if (this.countrySpecificOptionModal.isEditing) {
-				result = this.$t("Edit Specific Option");
+			if (this.customFieldModal.isDetail) {
+				result = this.$t("Detail of Custom Field");
+			} else if (this.customFieldModal.isEditing) {
+				result = this.$t("Edit Custom Field");
 			} else {
-				result = this.$t("Create New Country Specific Option");
+				result = this.$t("Create New Custom Field");
 			}
 			return result;
 		},
 
 		submitButtonLabel() {
-			return this.countrySpecificOptionModal.isEditing
+			return this.customFieldModal.isEditing
 				? this.$t("Update")
 				: this.$t("Create");
 		},
 	},
 
 	methods: {
-		showDetail(countrySpecificOption) {
-			this.mapToFormModel(countrySpecificOption);
-			this.countrySpecificOptionModal = {
+		showDetail(customField) {
+			this.mapToFormModel(customField);
+			this.customFieldModal = {
 				isOpened: true,
 				isDetail: true,
 				isEditing: false,
@@ -105,9 +105,9 @@ export default {
 			};
 		},
 
-		editCountrySpecificOption(countrySpecificOption) {
-			this.mapToFormModel(countrySpecificOption);
-			this.countrySpecificOptionModal = {
+		editCustomField(customField) {
+			this.mapToFormModel(customField);
+			this.customFieldModal = {
 				isOpened: true,
 				isDetail: false,
 				isEditing: true,
@@ -124,8 +124,8 @@ export default {
 				target,
 			},
 		) {
-			this.countrySpecificOptionModel = {
-				...this.countrySpecificOptionModel,
+			this.customFieldModel = {
+				...this.customFieldModel,
 				id,
 				iso3,
 				field,
@@ -134,20 +134,20 @@ export default {
 			};
 		},
 
-		closeCountrySpecificOptionModal() {
-			this.countrySpecificOptionModal.isOpened = false;
+		closeCustomFieldModal() {
+			this.customFieldModal.isOpened = false;
 		},
 
-		addNewCountrySpecificOption() {
-			this.countrySpecificOptionModal = {
+		addNewCustomField() {
+			this.customFieldModal = {
 				isOpened: true,
 				isDetail: false,
 				isEditing: false,
 				isWaiting: false,
 			};
 
-			this.countrySpecificOptionModel = {
-				...this.countrySpecificOptionModel,
+			this.customFieldModel = {
+				...this.customFieldModel,
 				id: null,
 				iso3: "",
 				field: "",
@@ -155,84 +155,84 @@ export default {
 			};
 		},
 
-		submitCountrySpecificOptionForm(countrySpecificOptionForm) {
+		submitCustomFieldForm(customFieldForm) {
 			const {
 				id,
 				field,
 				type,
 				target,
 				iso3,
-			} = countrySpecificOptionForm;
+			} = customFieldForm;
 
-			const countrySpecificOptionBody = {
+			const customFieldBody = {
 				field,
 				type: type.code,
 				target: target?.code,
 				iso3: iso3 || this.country.iso3,
 			};
 
-			if (this.countrySpecificOptionModal.isEditing && id) {
-				this.updateCountrySpecificOption(id, countrySpecificOptionBody);
+			if (this.customFieldModal.isEditing && id) {
+				this.updateCustomField(id, customFieldBody);
 			} else {
-				this.createCountrySpecificOption(countrySpecificOptionBody);
+				this.createCustomField(customFieldBody);
 			}
 		},
 
-		async createCountrySpecificOption(countrySpecificOptionBody) {
-			this.countrySpecificOptionModal.isWaiting = true;
+		async createCustomField(customFieldBody) {
+			this.customFieldModal.isWaiting = true;
 
-			await CountrySpecificOptionsService.createCountrySpecificOption(countrySpecificOptionBody)
+			await CustomFieldsService.createCustomField(customFieldBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(
-							this.$t("Country Specific Option Successfully Created"), "is-success",
+							this.$t("Custom Field Successfully Created"), "is-success",
 						);
-						this.$refs.countrySpecificOptionsList.fetchData();
-						this.closeCountrySpecificOptionModal();
+						this.$refs.customFieldsList.fetchData();
+						this.closeCustomFieldModal();
 					} else if (response.message) {
 						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+					Toast(`${this.$t("Custom Fields")} ${e}`, "is-danger");
 				}).finally(() => {
-					this.countrySpecificOptionModal.isWaiting = false;
+					this.customFieldModal.isWaiting = false;
 				});
 		},
 
-		async updateCountrySpecificOption(id, countrySpecificOptionBody) {
-			this.countrySpecificOptionModal.isWaiting = true;
+		async updateCustomField(id, customFieldBody) {
+			this.customFieldModal.isWaiting = true;
 
-			await CountrySpecificOptionsService.updateCountrySpecificOption(id, countrySpecificOptionBody)
+			await CustomFieldsService.updateCustomField(id, customFieldBody)
 				.then((response) => {
 					if (response.status === 200) {
 						Toast(
-							this.$t("Country Specific Option Successfully Updated"), "is-success",
+							this.$t("Custom Field Successfully Updated"), "is-success",
 						);
-						this.$refs.countrySpecificOptionsList.fetchData();
-						this.closeCountrySpecificOptionModal();
+						this.$refs.customFieldsList.fetchData();
+						this.closeCustomFieldModal();
 					} else if (response.message) {
 						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+					Toast(`${this.$t("Custom Fields")} ${e}`, "is-danger");
 				}).finally(() => {
-					this.countrySpecificOptionModal.isWaiting = false;
+					this.customFieldModal.isWaiting = false;
 				});
 		},
 
-		async removeCountrySpecificOption(id) {
-			await CountrySpecificOptionsService.deleteCountrySpecificOption(id)
+		async removeCustomField(id) {
+			await CustomFieldsService.deleteCustomField(id)
 				.then((response) => {
 					if (response.status === 204) {
 						Toast(
-							this.$t("Country Specific Option Successfully Removed"), "is-success",
+							this.$t("Custom Field Successfully Removed"), "is-success",
 						);
-						this.$refs.countrySpecificOptionsList.removeFromList(id);
+						this.$refs.customFieldsList.removeFromList(id);
 					} else if (response.message) {
 						Notification(response.message, "is-danger");
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+					Toast(`${this.$t("Custom Fields")} ${e}`, "is-danger");
 				});
 		},
 	},

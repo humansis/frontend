@@ -54,7 +54,7 @@ export default {
 		products: [],
 		imports: [],
 		vouchers: [],
-		countrySpecificOptions: [],
+		customFields: [],
 		donors: [],
 		users: [],
 	},
