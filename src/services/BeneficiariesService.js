@@ -260,9 +260,11 @@ export default {
 	async exportAssistanceBeneficiaries(
 		format,
 		assistanceId,
+		search,
 		{ exportType },
 	) {
-		const formatText = format ? `type=${format}` : "";
+		const formatText = `type=${format}`;
+		const fulltext = search ? `&fulltext=${search}` : "";
 		let uri;
 
 		if (exportType === EXPORT.DISTRIBUTION_LIST) {
@@ -275,6 +277,11 @@ export default {
 
 		if (exportType === EXPORT.BANK_DISTRIBUTION_LIST) {
 			uri = `assistances/${assistanceId}/bank-report/exports?${formatText}`;
+		}
+
+		if (exportType === EXPORT.HOUSEHOLDS) {
+			uri = `assistances/${assistanceId}/households/exports
+				?${formatText + fulltext}`;
 		}
 
 		return download({ uri });
