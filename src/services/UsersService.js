@@ -34,14 +34,17 @@ export default {
 
 	async createUser(body) {
 		return this.initializeUser(body.username)
-			.then(async ({ data: { salt, userId } }) => {
+			.then(({ data: { salt, userId }, status, message }) => {
 				const userBody = body;
 				userBody.password = userBody.password
 					? this.saltPassword(salt, userBody.password)
 					: null;
 
-				const { data, status } = await fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
-				return { data, status };
+				if (status === 400) {
+					throw new Error(message);
+				}
+
+				return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
 			})
 			.catch((e) => {
 				Toast(`Initialize User ${e}`, "is-danger");
