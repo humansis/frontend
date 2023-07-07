@@ -1,4 +1,21 @@
 import i18n from "@/plugins/i18n";
+import { filtersToUri, idsToUri } from "@/utils/fetcher";
+
+export const queryBuilder = (param) => {
+	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
+	const query = [];
+
+	if (page) { query.push(`page=${page}`); }
+	if (size) { query.push(`size=${size}`); }
+	if (sort) { query.push(`sort[]=${sort}`); }
+	if (search) { query.push(`filter[fulltext]=${search}`); }
+	if (filters) { query.push(filtersToUri(filters)); }
+	if (upcoming) { query.push(`upcoming=${upcoming}`); }
+	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }
+	if (format) { query.push(`type=${format}`); }
+
+	return query.length ? `?${query.join("&")}` : "";
+};
 
 export const BookletStatusArray = [
 	{ code: "0", value: i18n.t("Unassigned") },

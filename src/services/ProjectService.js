@@ -1,4 +1,5 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	async getListOfProjects(page, size, sort, search = null, ids) {
@@ -12,6 +13,12 @@ export default {
 			uri: `projects?${pageText + sizeText + sortText + fulltext + idsText}`,
 		});
 		return { data, totalCount };
+	},
+
+	getShortListOfProjects(ids) {
+		return fetcher({
+			uri: `catalogs/projects${queryBuilder({ ids })}`,
+		});
 	},
 
 	async createProject(body) {

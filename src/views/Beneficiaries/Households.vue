@@ -411,15 +411,14 @@ export default {
 		async fetchProjects() {
 			this.loading.projects = true;
 
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.options.projects = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await ProjectService.getShortListOfProjects();
 
-			this.loading.projects = false;
+				this.options.projects = data;
+				this.loading.projects = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -602,11 +601,14 @@ export default {
 		},
 
 		async getProjects(ids) {
-			return ProjectService.getListOfProjects(null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await ProjectService.getShortListOfProjects(ids);
+				return data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids) {

@@ -228,14 +228,14 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filtersOptions.projects.data = data;
-					this.filtersOptions.projects.loading = false;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const { data: { data } } = await ProjectService.getShortListOfProjects();
+
+				this.filtersOptions.projects.data = data;
+				this.filtersOptions.projects.loading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchLivelihoods() {
