@@ -171,6 +171,8 @@ export default {
 				this.table.data[key] = item;
 				this.table.data[key].sectors = item.sectors
 					.map((sector) => ({ code: sector, value: sector }));
+				this.table.data[key].subSectors = item.subSectors
+					.map((sector) => ({ code: sector, value: sector }));
 
 				donorIds.push(...item.donorIds);
 			});

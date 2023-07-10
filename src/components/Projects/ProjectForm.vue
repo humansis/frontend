@@ -46,7 +46,7 @@
 					:options="options.sectors"
 					:loading="sectorsLoading"
 					:class="validateMultiselect('selectedSectors')"
-					@select="validate('selectedSectors')"
+					@input="selectorsSelect"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -58,7 +58,45 @@
 						<MultiSelectTag
 							:props="props"
 							:items="formModel.selectedSectors"
-							@optionRemoved="formModel.selectedSectors = $event"
+							@optionRemoved="selectorsSelect"
+						/>
+					</template>
+				</MultiSelect>
+			</b-field>
+
+			<b-field>
+				<template #label>
+					{{ $t('Subsectors') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+
+				<MultiSelect
+					v-model="formModel.selectedSubsectors"
+					searchable
+					label="code"
+					track-by="value"
+					multiple
+					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
+					:disabled="formDisabled"
+					:options="options.subsectors"
+					:loading="subsectorsLoading"
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #tag="props">
+						<MultiSelectTag
+							:props="props"
+							:items="formModel.selectedSubsectors"
+							@optionRemoved="formModel.selectedSubsectors = $event"
 						/>
 					</template>
 				</MultiSelect>
@@ -293,12 +331,14 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
 	},
 
 	data() {
 		return {
 			options: {
 				sectors: [],
+				subsectors: [],
 				donors: [],
 				targetTypes: [],
 				allowedProductCategoryTypes: [
@@ -306,6 +346,7 @@ export default {
 				],
 			},
 			sectorsLoading: true,
+			subsectorsLoading: false,
 			donorsLoading: true,
 			targetTypesLoading: true,
 		};
@@ -334,6 +375,10 @@ export default {
 		this.fetchSectors();
 		this.fetchDonors();
 		this.fetchTargetTypes();
+
+		if (this.isEditing) {
+			this.fetchSubsectors();
+		}
 	},
 
 	methods: {
@@ -351,6 +396,19 @@ export default {
 			this.$v.$reset();
 		},
 
+		selectorsSelect($event) {
+			this.$nextTick(async () => {
+				this.formModel.selectedSectors = $event;
+				this.formModel.selectedSubsectors = [];
+				this.validate("selectedSectors");
+				await this.fetchSubsectors();
+
+				if (!this.formModel.selectedSectors.length) {
+					this.options.subsectors = [];
+				}
+			});
+		},
+
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
@@ -362,8 +420,21 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
-			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true, "code");
 			this.sectorsLoading = false;
+		},
+
+		async fetchSubsectors() {
+			this.subsectorsLoading = true;
+
+			try {
+				const filters = { sectors: this.formModel.selectedSectors.map((item) => item.code) };
+				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors(filters);
+
+				this.options.subsectors = data;
+				this.subsectorsLoading = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+			}
 		},
 
 		async fetchDonors() {

@@ -30,6 +30,7 @@
 				:formModel="projectModel"
 				:submit-button-label="projectModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="projectModal.isDetail"
+				:is-editing="projectModal.isEditing"
 				@formSubmitted="submitProjectForm"
 				@formClosed="closeProjectModal"
 			/>
@@ -80,6 +81,7 @@ export default {
 				internalId: "",
 				sectors: [],
 				selectedSectors: [],
+				selectedSubsectors: [],
 				startDate: new Date(),
 				endDate: new Date(),
 				donors: [],
@@ -139,6 +141,7 @@ export default {
 				sectors: [],
 				targetTypes: [],
 				selectedSectors: [],
+				selectedSubsectors: [],
 				startDate: new Date(),
 				endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
 				selectedDonors: [],
@@ -171,6 +174,7 @@ export default {
 				internalId,
 				name,
 				sectors,
+				subSectors,
 				donorIds,
 				target: totalTarget,
 				notes,
@@ -192,7 +196,8 @@ export default {
 				startDate: new Date(startDate),
 				endDate: new Date(endDate),
 				targetType: [],
-				selectedSectors: [],
+				selectedSectors: sectors,
+				selectedSubsectors: subSectors,
 				selectedDonors: [],
 				selectedTargetType: [],
 				totalTarget,
@@ -210,6 +215,7 @@ export default {
 				name,
 				internalId,
 				selectedSectors,
+				selectedSubsectors,
 				startDate,
 				endDate,
 				selectedDonors,
@@ -233,6 +239,7 @@ export default {
 				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
 				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
 				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
+				subSectors: getArrayOfIdsByParam(selectedSubsectors, "code"),
 				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
 			};
 

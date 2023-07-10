@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { fetcher, filtersToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfSectors() {
@@ -14,5 +14,13 @@ export default {
 	async getListOfSubSectors(code) {
 		const { data: { data, totalCount } } = await fetcher({ uri: `sectors/${code}/subsectors` });
 		return { data, totalCount };
+	},
+
+	getFilteredListOfSubSectors(filter) {
+		const filtersUri = filter ? filtersToUri(filter) : "";
+
+		return fetcher({
+			uri: `subsectors?${filtersUri}`,
+		});
 	},
 };
