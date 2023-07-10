@@ -1,4 +1,4 @@
-[*.{js,jsx,ts,tsx,vue}]
+[*.{html,js,jsx,ts,tsx,vue}]
 ij_any_keep_indents_on_empty_lines = false
 indent_style = tab
 indent_size = 4
