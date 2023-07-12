@@ -427,8 +427,8 @@ export default {
 			this.subsectorsLoading = true;
 
 			try {
-				const filters = { sectors: this.formModel.selectedSectors.map((item) => item.code) };
-				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors(filters);
+				const sectors = this.formModel.selectedSectors.map((item) => item.code);
+				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors({ sectors });
 
 				this.options.subsectors = data;
 				this.subsectorsLoading = false;

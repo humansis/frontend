@@ -17,10 +17,10 @@ export default {
 	},
 
 	getFilteredListOfSubSectors(filter) {
-		const filtersUri = filter ? filtersToUri(filter) : "";
+		const filtersUri = filter ? `?${filtersToUri(filter)}` : "";
 
 		return fetcher({
-			uri: `subsectors?${filtersUri}`,
+			uri: `subsectors${filtersUri}`,
 		});
 	},
 };
