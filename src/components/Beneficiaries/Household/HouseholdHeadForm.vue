@@ -1,10 +1,14 @@
 <template>
 	<form ref="householdHeadForm">
+		<div v-if="isHouseholdHead && isEditing" class="household-type">
+			<b-tag type="is-primary" size="is-medium">H</b-tag>
+			<span v-if="isHouseholdHeadNameLoaded" class="detail">{{ householdHeadTitle }}</span>
+		</div>
 		<div class="columns is-multiline">
 			<div class="column is-one-quarter">
 				<h4 class="title is-5">{{ $t('Name') }}</h4>
 				<b-field
-					:label="$t('Family Name')"
+					:label="$t('Local family name')"
 					:type="validateType('nameLocal.familyName')"
 					:message="validateMsg('nameLocal.familyName')"
 				>
@@ -14,7 +18,7 @@
 					/>
 				</b-field>
 				<b-field
-					:label="$t('First Name')"
+					:label="$t('Local given name')"
 					:type="validateType('nameLocal.firstName')"
 					:message="validateMsg('nameLocal.firstName')"
 				>
@@ -25,7 +29,7 @@
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>{{ $t('Parents Name') }}</span>
+						<span>{{ $t("Local parent's name") }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -38,7 +42,7 @@
 				<h4 class="title is-5">{{ $t('Name (English)') }}</h4>
 				<b-field>
 					<template #label>
-						<span>{{ $t('Family Name') }}</span>
+						<span>{{ $t('English family name') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -47,7 +51,7 @@
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>{{ $t('First Name') }}</span>
+						<span>{{ $t('English given name') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -56,7 +60,7 @@
 				</b-field>
 				<b-field>
 					<template #label>
-						<span>{{ $t('Parents Name') }}</span>
+						<span>{{ $t("English parent's name") }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -89,7 +93,7 @@
 					</MultiSelect>
 				</b-field>
 				<b-field
-					:label="$t('Date of Birth')"
+					:label="$t('Date of birth')"
 					:type="validateType('personalInformation.dateOfBirth')"
 					:message="validateMsg('personalInformation.dateOfBirth')"
 				>
@@ -216,7 +220,7 @@
 			<div class="column is-one-quarter">
 				<h4 class="title is-5">{{ $t('Residency') }}</h4>
 				<b-field
-					:label="$t('Residency Status')"
+					:label="$t('Residency status')"
 					:type="validateType('residencyStatus')"
 					:message="validateMsg('residencyStatus')"
 				>
@@ -246,6 +250,17 @@
 							</div>
 						</template>
 					</MultiSelect>
+				</b-field>
+
+				<b-field v-if="isEditing" :label="$t('Smartcard number')" grouped>
+					<ul v-if="smartCardNumbersList.length">
+						<li
+							v-for="smartCardNumber in smartCardNumbersList"
+							:key="smartCardNumber.serialNumber"
+						>
+							{{ smartCardNumber.serialNumber }} ({{ smartCardNumber.state }})
+						</li>
+					</ul>
 				</b-field>
 			</div>
 
@@ -289,7 +304,7 @@
 						- {{ $t('Optional') }}
 					</span>
 				</div>
-				<b-field :label="$t('Type')" grouped>
+				<b-field :label="$t('Type phone') + ' 1'" grouped>
 					<MultiSelect
 						v-model="formModel.phone1.type"
 						searchable
@@ -308,7 +323,7 @@
 						{{ $t('Proxy') }}
 					</b-checkbox>
 				</b-field>
-				<b-field :label="$t('Ext')" grouped>
+				<b-field :label="$t('Prefix phone') + ' 1'" grouped>
 					<MultiSelect
 						v-model="formModel.phone1.ext"
 						searchable
@@ -337,7 +352,7 @@
 						</span>
 					</span>
 				</div>
-				<b-field :label="$t('Type')" grouped>
+				<b-field :label="$t('Type phone') + ' 2'" grouped>
 					<MultiSelect
 						v-model="formModel.phone2.type"
 						searchable
@@ -356,7 +371,7 @@
 						{{ $t('Proxy') }}
 					</b-checkbox>
 				</b-field>
-				<b-field :label="$t('Ext')" grouped>
+				<b-field :label="$t('Prefix phone') + ' 2'" grouped>
 					<MultiSelect
 						v-model="formModel.phone2.ext"
 						searchable
@@ -377,6 +392,7 @@
 			</div>
 		</div>
 		<div class="field">
+			<h6 class="title is-6">{{ $t('Vulnerability criteria') }}</h6>
 			<b-checkbox
 				v-for="vulnerability of options.vulnerabilities"
 				v-model="formModel.vulnerabilities[vulnerability.code]"
@@ -415,6 +431,10 @@ export default {
 		isHouseholdHead: {
 			type: Boolean,
 			default: false,
+		},
+		membersSmartCardNumbers: {
+			type: Array,
+			default: () => [],
 		},
 	},
 
@@ -477,6 +497,8 @@ export default {
 			primaryIdValidationMessage: null,
 			secondaryIdValidationMessage: null,
 			tertiaryIdValidationMessage: null,
+			detailOfHouseholdHead: {},
+			householdHeadSmartCardNumbers: [],
 			formModel: {
 				beneficiaryId: null,
 				nameLocal: {
@@ -555,6 +577,10 @@ export default {
 
 	async mounted() {
 		if (this.isEditing) {
+			if (this.isHouseholdHead) {
+				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
+			}
+
 			this.loadingComponent = this.$buefy.loading.open({
 				container: this.$refs.householdHeadForm,
 			});
@@ -578,6 +604,22 @@ export default {
 			return this.isSecondaryIdTabDisabled
 				|| (!this.formModel.secondaryId.idNumber || !this.formModel.secondaryId.idType);
 		},
+
+		isHouseholdHeadNameLoaded() {
+			return this.detailOfHouseholdHead.localFamilyName
+				&& this.detailOfHouseholdHead.localGivenName;
+		},
+
+		householdHeadTitle() {
+			return `${this.$t("ID")} ${this.detailOfHousehold.householdHeadId}:
+				${this.detailOfHouseholdHead.localFamilyName} ${this.detailOfHouseholdHead.localGivenName}`;
+		},
+
+		smartCardNumbersList() {
+			return this.isHouseholdHead
+				? this.householdHeadSmartCardNumbers
+				: this.membersSmartCardNumbers;
+		},
 	},
 
 	methods: {
@@ -588,9 +630,14 @@ export default {
 				} else {
 					const data = await BeneficiariesService
 						.getBeneficiary(this.detailOfHousehold.householdHeadId);
+
+					this.detailOfHouseholdHead = data;
 					await this.mapDetailOfHouseholdToFormModel(data);
 				}
-				this.loadingComponent.close();
+
+				if (this.loadingComponent) {
+					this.loadingComponent.close();
+				}
 			}
 			this.$emit("loaded");
 		},
@@ -705,6 +752,16 @@ export default {
 			return phones;
 		},
 
+		async fetchSmartCard(beneficiaryId) {
+			try {
+				const { data } = await BeneficiariesService.getSmartCard(beneficiaryId);
+
+				this.householdHeadSmartCardNumbers = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Smartcard")} ${e}`, "is-danger");
+			}
+		},
+
 		async getNationalIdCard(id) {
 			const nationalIdCard = {
 				idType: this.formModel.primaryId.idType,
@@ -803,3 +860,17 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+.household-type {
+	display: flex;
+	margin-bottom: 1rem;
+	font-weight: bold;
+
+	.detail {
+		display: flex;
+		align-items: center;
+		padding-left: 0.5rem;
+	}
+ }
+</style>

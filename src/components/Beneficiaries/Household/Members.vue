@@ -16,7 +16,7 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
-					<span class="ml-3">{{ $t('Member') }}</span>
+					<span class="ml-3">{{ memberTitle(index) }}</span>
 				</p>
 				<a class="card-header-icon">
 					<b-button
@@ -35,7 +35,9 @@
 						ref="member"
 						:show-type-of-beneficiary="false"
 						:is-editing="!!preparedMembers[index]"
+						:detailOfHousehold="detailOfHousehold"
 						:beneficiary="preparedMembers[index]"
+						:members-smart-card-numbers="smartCardNumbers[index]"
 					/>
 				</div>
 			</div>
@@ -71,6 +73,16 @@ export default {
 		},
 	},
 
+	data() {
+		return {
+			isOpen: 0,
+			collapses: [],
+			members: [],
+			preparedMembers: [],
+			smartCardNumbers: [],
+		};
+	},
+
 	watch: {
 		detailOfHousehold(household) {
 			this.mapDetailOfHouseholdToFormModel(household);
@@ -84,25 +96,21 @@ export default {
 		this.$emit("loaded");
 	},
 
-	data() {
-		return {
-			isOpen: 0,
-			collapses: [],
-			members: [],
-			preparedMembers: [],
-		};
-	},
-
 	methods: {
 		async mapDetailOfHouseholdToFormModel() {
 			const promises = [];
 			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
 				if (this.detailOfHousehold.householdHeadId !== id) {
-					const promise = BeneficiariesService.getBeneficiary(id).then((data) => {
+					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then((data) => {
 						this.preparedMembers[this.collapses.length] = data;
 						this.collapses.push(this.collapses.length);
 					});
-					promises.push(promise);
+					promises.push(beneficiaryPromise);
+
+					const smartCardPromise = BeneficiariesService.getSmartCard(id).then(({ data }) => {
+						this.smartCardNumbers.push(data);
+					});
+					promises.push(smartCardPromise);
 				}
 			});
 			await Promise.all(promises);
@@ -128,6 +136,13 @@ export default {
 			} else {
 				this.collapses.push(this.collapses.length);
 			}
+		},
+
+		memberTitle(index) {
+			return this.preparedMembers[index] && this.isEditing
+				? `${this.$t("ID")} ${this.preparedMembers[index].id}: ${this.preparedMembers[index].localFamilyName}
+				   ${this.preparedMembers[index].localGivenName}`
+				: this.$t("Member");
 		},
 
 		removeMember(index) {

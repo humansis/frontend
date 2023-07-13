@@ -27,6 +27,10 @@
 						<span slot="noOptions">{{ $t("List is empty")}}</span>
 					</MultiSelect>
 				</b-field>
+
+				<b-field :label="$t('Enumerator')">
+					<b-input v-model="formModel.enumerator" />
+				</b-field>
 			</div>
 		</div>
 		<h4 class="title is-4 has-text-centered">{{ $t('Household Information Summary') }}</h4>
@@ -111,6 +115,7 @@ export default {
 			loadingComponent: null,
 			formModel: {
 				selectedProjects: [],
+				enumerator: "",
 			},
 			options: {
 				projects: [],
@@ -159,6 +164,7 @@ export default {
 
 			if (this.isEditing) {
 				this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+				this.formModel.enumerator = this.detailOfHousehold.enumeratorName;
 			}
 		},
 
