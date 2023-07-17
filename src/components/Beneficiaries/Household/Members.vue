@@ -16,7 +16,7 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
-					<span class="ml-3">{{ memberTitle(index) }}</span>
+					<span class="ml-3">{{ memberTitle(preparedMembers[index]) }}</span>
 				</p>
 				<a class="card-header-icon">
 					<b-button
@@ -57,6 +57,7 @@
 <script>
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Members",
@@ -113,8 +114,13 @@ export default {
 					promises.push(smartCardPromise);
 				}
 			});
-			await Promise.all(promises);
-			this.reloadMemberForm();
+
+			try {
+				await Promise.all(promises);
+				this.reloadMemberForm();
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Members")} ${e}`, "is-danger");
+			}
 		},
 
 		reloadMemberForm() {
@@ -138,10 +144,9 @@ export default {
 			}
 		},
 
-		memberTitle(index) {
-			return this.preparedMembers[index] && this.isEditing
-				? `${this.$t("ID")} ${this.preparedMembers[index].id}: ${this.preparedMembers[index].localFamilyName}
-				   ${this.preparedMembers[index].localGivenName}`
+		memberTitle(member) {
+			return member && this.isEditing
+				? `${this.$t("ID")} ${member.id}: ${member.localFamilyName} ${member.localGivenName}`
 				: this.$t("Member");
 		},
 

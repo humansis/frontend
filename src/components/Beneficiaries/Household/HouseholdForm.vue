@@ -130,7 +130,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Food Consumption Score') }}</span>
+						<span>{{ $t('Food consumption score') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -146,7 +146,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Coping Strategies Index') }}</span>
+						<span>{{ $t('Coping strategies index') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>

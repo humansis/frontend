@@ -34,12 +34,13 @@ export default {
 
 	methods: {
 		async fetchHouseholdDetail(id) {
-			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
-				this.detailOfHousehold = response;
-			}).catch((e) => {
+			try {
+				this.detailOfHousehold = await BeneficiariesService.getDetailOfHousehold(id);
+			} catch (e) {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-			});
-			this.detailOfHouseholdLoaded = true;
+			} finally {
+				this.detailOfHouseholdLoaded = true;
+			}
 		},
 	},
 
