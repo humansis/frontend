@@ -75,8 +75,8 @@
 				<MultiSelect
 					v-model="formModel.selectedSubsectors"
 					searchable
-					label="code"
-					track-by="value"
+					label="value"
+					track-by="code"
 					multiple
 					:placeholder="$t('Click to select')"
 					:select-label="$t('Press enter to select')"
@@ -399,9 +399,13 @@ export default {
 		selectorsSelect($event) {
 			this.$nextTick(async () => {
 				this.formModel.selectedSectors = $event;
-				this.formModel.selectedSubsectors = [];
 				this.validate("selectedSectors");
 				await this.fetchSubsectors();
+
+				this.formModel.selectedSubsectors = this.formModel.selectedSectors.length
+					? this.formModel.selectedSubsectors.filter((selectedSubSector) => this.options.subsectors
+						.find((subSector) => subSector.code === selectedSubSector.code))
+					: [];
 
 				if (!this.formModel.selectedSectors.length) {
 					this.options.subsectors = [];
