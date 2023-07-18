@@ -64,7 +64,7 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field>
+			<b-field type="is-danger" :message="missingSubsectors">
 				<template #label>
 					{{ $t('Subsectors') }}
 					<span class="optional-text has-text-weight-normal is-italic">
@@ -85,6 +85,7 @@
 					:disabled="formDisabled"
 					:options="options.subsectors"
 					:loading="subsectorsLoading"
+					@input="subsectorSelect"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -96,7 +97,7 @@
 						<MultiSelectTag
 							:props="props"
 							:items="formModel.selectedSubsectors"
-							@optionRemoved="formModel.selectedSubsectors = $event"
+							@optionRemoved="subsectorSelect"
 						/>
 					</template>
 				</MultiSelect>
@@ -338,6 +339,7 @@ export default {
 		return {
 			options: {
 				sectors: [],
+				allSubsectors: [],
 				subsectors: [],
 				donors: [],
 				targetTypes: [],
@@ -345,6 +347,7 @@ export default {
 					"Food", "Non-Food", "Cashback",
 				],
 			},
+			sectorsWithoutSelectedSubsectors: [],
 			sectorsLoading: true,
 			subsectorsLoading: false,
 			donorsLoading: true,
@@ -375,10 +378,16 @@ export default {
 		this.fetchSectors();
 		this.fetchDonors();
 		this.fetchTargetTypes();
+		this.fetchSubsectors();
+	},
 
-		if (this.isEditing) {
-			this.fetchSubsectors();
-		}
+	computed: {
+		missingSubsectors() {
+			return this.sectorsWithoutSelectedSubsectors.length
+				? `${this.$t("Some sectors have NO selected sub-sector")}
+					: ${this.sectorsWithoutSelectedSubsectors.join(", ")}`
+				: "";
+		},
 	},
 
 	methods: {
@@ -397,10 +406,11 @@ export default {
 		},
 
 		selectorsSelect($event) {
-			this.$nextTick(async () => {
+			this.$nextTick(() => {
 				this.formModel.selectedSectors = $event;
 				this.validate("selectedSectors");
-				await this.fetchSubsectors();
+				this.filterSubsectors();
+				this.getSectorsWithoutSelectedSubsector();
 
 				this.formModel.selectedSubsectors = this.formModel.selectedSectors.length
 					? this.formModel.selectedSubsectors.filter((selectedSubSector) => this.options.subsectors
@@ -411,6 +421,11 @@ export default {
 					this.options.subsectors = [];
 				}
 			});
+		},
+
+		subsectorSelect($event) {
+			this.formModel.selectedSubsectors = $event;
+			this.getSectorsWithoutSelectedSubsector();
 		},
 
 		closeForm() {
@@ -428,16 +443,17 @@ export default {
 		},
 
 		async fetchSubsectors() {
-			this.subsectorsLoading = true;
-
 			try {
-				const sectors = this.formModel.selectedSectors.map((item) => item.code);
-				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors({ sectors });
+				this.subsectorsLoading = true;
+				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors();
 
-				this.options.subsectors = data;
-				this.subsectorsLoading = false;
+				this.options.allSubsectors = data;
+				this.filterSubsectors();
+				this.getSectorsWithoutSelectedSubsector();
 			} catch (e) {
 				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+			} finally {
+				this.subsectorsLoading = false;
 			}
 		},
 
@@ -461,6 +477,36 @@ export default {
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");
 			this.targetTypesLoading = false;
+		},
+
+		filterSubsectors() {
+			this.options.subsectors = [];
+
+			this.formModel.selectedSectors.forEach(({ code }) => {
+				const subsector = this.options.allSubsectors[code];
+
+				if (subsector) {
+					this.options.subsectors.push(...subsector);
+				}
+			});
+		},
+
+		getSectorsWithoutSelectedSubsector() {
+			this.sectorsWithoutSelectedSubsectors = [];
+
+			this.formModel.selectedSectors.forEach((selectedSector) => {
+				const { value } = selectedSector;
+
+				if (value in this.options.allSubsectors) {
+					const containSelectedSubsector = this.options.allSubsectors[value]
+						.some((selectedSubsector) => this.formModel.selectedSubsectors
+							.some(({ code }) => code === selectedSubsector.code));
+
+					if (!containSelectedSubsector) {
+						this.sectorsWithoutSelectedSubsectors.push(value);
+					}
+				}
+			});
 		},
 	},
 };

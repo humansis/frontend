@@ -498,15 +498,18 @@ export default {
 		},
 
 		async fetchSubsectors(code) {
-			this.loading.subsectors = true;
-			await SectorsService.getListOfSubSectors(code)
-				.then(({ data }) => {
-					this.options.subsectors = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
-				});
-			this.loading.subsectors = false;
+			const { projectId } = this.$route.params;
+
+			try {
+				this.loading.subsectors = true;
+				const { data: { data } } = await SectorsService.getListOfProjectSubSectors(projectId, code);
+
+				this.options.subsectors = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+			} finally {
+				this.loading.subsectors = false;
+			}
 		},
 
 		async fetchAssistanceTypes(code) {

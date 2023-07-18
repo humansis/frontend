@@ -1,4 +1,4 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { fetcher } from "@/utils/fetcher";
 
 export default {
 	async getListOfSectors() {
@@ -16,11 +16,11 @@ export default {
 		return { data, totalCount };
 	},
 
-	getFilteredListOfSubSectors(filter) {
-		const filtersUri = filter ? `?${filtersToUri(filter)}` : "";
+	getListOfProjectSubSectors(projectId, code) {
+		return fetcher({ uri: `projects/${projectId}/sectors/${code}/subsectors` });
+	},
 
-		return fetcher({
-			uri: `subsectors${filtersUri}`,
-		});
+	getFilteredListOfSubSectors() {
+		return fetcher({ uri: `subsectors` });
 	},
 };
