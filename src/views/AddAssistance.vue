@@ -183,8 +183,9 @@ export default {
 		},
 
 		householdWithoutHead() {
-			return this.project.householdIntegrityIssues
-				?.find((issue) => issue === consts.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD);
+			return this.project.householdIntegrityIssues?.find(
+				(issue) => issue === consts.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
+			);
 		},
 	},
 
