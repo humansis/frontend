@@ -384,6 +384,7 @@ export default {
 	computed: {
 		missingSubsectors() {
 			return this.sectorsWithoutSelectedSubsectors.length
+				&& this.formModel.selectedSubsectors.length
 				? `${this.$t("Some sectors have NO selected sub-sector")}
 					: ${this.sectorsWithoutSelectedSubsectors.join(", ")}`
 				: "";
