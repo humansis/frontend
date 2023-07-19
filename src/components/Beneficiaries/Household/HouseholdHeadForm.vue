@@ -252,8 +252,12 @@
 					</MultiSelect>
 				</b-field>
 
-				<b-field v-if="isEditing" :label="$t('Smartcard number')" grouped>
-					<ul v-if="smartCardNumbersList.length">
+				<b-field
+					v-if="isEditing && smartCardNumbersList.length"
+					:label="$t('Smartcard number')"
+					grouped
+				>
+					<ul>
 						<li
 							v-for="smartCardNumber in smartCardNumbersList"
 							:key="smartCardNumber.serialNumber"

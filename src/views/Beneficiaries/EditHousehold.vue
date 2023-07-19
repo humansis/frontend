@@ -3,7 +3,7 @@
 		<h2 class="title">{{ householdTitle }}</h2>
 		<HouseholdTabs
 			:detail-of-household="detailOfHousehold"
-			:loaded="detailOfHouseholdLoaded"
+			:is-loaded="isDetailOfHouseholdLoaded"
 			is-editing
 		/>
 	</div>
@@ -20,7 +20,7 @@ export default {
 	data() {
 		return {
 			detailOfHousehold: {},
-			detailOfHouseholdLoaded: false,
+			isDetailOfHouseholdLoaded: false,
 		};
 	},
 
@@ -39,7 +39,7 @@ export default {
 			} catch (e) {
 				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
 			} finally {
-				this.detailOfHouseholdLoaded = true;
+				this.isDetailOfHouseholdLoaded = true;
 			}
 		},
 	},
