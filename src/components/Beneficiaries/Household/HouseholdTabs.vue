@@ -107,7 +107,7 @@ export default {
 			type: Object,
 			default: () => {},
 		},
-		loaded: {
+		isLoaded: {
 			type: Boolean,
 			default: false,
 		},
@@ -160,7 +160,7 @@ export default {
 	},
 
 	watch: {
-		loaded(value) {
+		isLoaded(value) {
 			if (value) {
 				this.steps[1] = true;
 			}
