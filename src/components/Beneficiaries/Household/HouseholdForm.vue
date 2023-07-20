@@ -332,8 +332,8 @@ export default {
 			customFields: [],
 			formModel: {
 				id: null,
-				latitude: "",
-				longitude: "",
+				latitude: null,
+				longitude: null,
 				currentLocation: {
 					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
 				},
