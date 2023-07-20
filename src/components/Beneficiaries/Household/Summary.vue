@@ -28,7 +28,13 @@
 					</MultiSelect>
 				</b-field>
 
-				<b-field :label="$t('Enumerator')">
+				<b-field>
+					<template #label>
+						{{ $t('Enumerator') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-input v-model="formModel.enumerator" />
 				</b-field>
 			</div>

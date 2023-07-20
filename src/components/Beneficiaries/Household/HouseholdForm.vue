@@ -11,10 +11,23 @@
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
 
-				<b-field :label="$t('Latitude')" class="mt-3">
+				<b-field class="mt-3">
+					<template #label>
+						{{ $t('Latitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-numberinput v-model="formModel.latitude" step="any" :controls="false" />
 				</b-field>
-				<b-field :label="$t('Longitude')">
+
+				<b-field>
+					<template #label>
+						{{ $t('Longitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
 					<b-numberinput v-model="formModel.longitude" step="any" :controls="false" />
 				</b-field>
 			</div>

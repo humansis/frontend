@@ -396,7 +396,11 @@
 			</div>
 		</div>
 		<div class="field">
-			<h6 class="title is-6">{{ $t('Vulnerability criteria') }}</h6>
+			<h6 class="title is-6">{{ $t('Vulnerability criteria') }}
+				<span class="optional-text has-text-weight-normal is-italic">
+					- {{ $t('Optional') }}
+				</span>
+			</h6>
 			<b-checkbox
 				v-for="vulnerability of options.vulnerabilities"
 				v-model="formModel.vulnerabilities[vulnerability.code]"
