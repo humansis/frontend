@@ -363,7 +363,10 @@ export default {
 			if (members.length) {
 				members.forEach((member) => {
 					if (member) {
-						const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
+						const phone = member.phone1.phoneNo.length
+							? `${member.phone1.ext?.code} ${member.phone1.phoneNo}`
+							: this.$t("None");
+
 						membersData.push({
 							firstName: member.nameLocal.firstName,
 							familyName: member.nameLocal.familyName,

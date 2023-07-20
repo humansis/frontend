@@ -12,10 +12,10 @@
 				/>
 
 				<b-field :label="$t('Latitude')" class="mt-3">
-					<b-input v-model="formModel.latitude" maxlength="45" />
+					<b-numberinput v-model="formModel.latitude" step="any" :controls="false" />
 				</b-field>
-				<b-field :label="$t('longitude')">
-					<b-input v-model="formModel.longitude" maxlength="45" />
+				<b-field :label="$t('Longitude')">
+					<b-numberinput v-model="formModel.longitude" step="any" :controls="false" />
 				</b-field>
 			</div>
 			<div class="column is-half">
