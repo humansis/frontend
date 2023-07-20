@@ -117,4 +117,7 @@ export default {
 			justification: "",
 		},
 	},
+	INTEGRITY_ISSUES: {
+		HOUSEHOLD_WITHOUT_HEAD: "Household without head",
+	},
 };
