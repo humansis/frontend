@@ -5,6 +5,7 @@
 			icon-right-clickable
 			icon-right="times"
 			:placeholder="$t('Search')"
+			:disabled="isDisabled"
 			@icon-right-click="clearSearch"
 			@keyup.native.enter="search"
 		/>
@@ -12,6 +13,7 @@
 			<b-tooltip :label="$t('Search')">
 				<b-button
 					icon-left="search"
+					:disabled="isDisabled"
 					class="button is-primary"
 					@click="search"
 				/>
@@ -32,6 +34,10 @@ export default {
 		searchPhrase: {
 			type: String,
 			default: "",
+		},
+		isDisabled: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

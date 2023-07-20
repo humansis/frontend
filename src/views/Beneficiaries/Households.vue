@@ -79,6 +79,7 @@
 			:checked-rows="table.checkedRows"
 			:search-phrase="table.searchPhrase"
 			:has-clickable-rows="false"
+			:is-search-visible="!bulkSearchVisible"
 			@checked="onRowsChecked"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -157,9 +158,20 @@
 				<b-button
 					slot="trigger"
 					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					@click="filtersToggle"
+					@click="advancedSearchToggle"
 				>
 					{{ $t('Advanced Search') }}
+				</b-button>
+			</template>
+
+			<template #bulkSearchButton>
+				<b-button
+					slot="trigger"
+					:icon-right="bulkSearchVisible ? 'arrow-up' : 'arrow-down'"
+					class="ml-4"
+					@click="bulkSearchToggle"
+				>
+					{{ $t('Bulk search') }}
 				</b-button>
 			</template>
 
@@ -191,7 +203,15 @@
 						ref="householdsFilter"
 						:defaultFilters="{ ...filters, ...locationsFilter }"
 						@filtersChanged="onFiltersChange"
-						@onSearch="onSearch(table.searchPhrase)"
+						@onSearch="clickedSearch()"
+					/>
+				</b-collapse>
+
+				<b-collapse v-model="bulkSearchVisible">
+					<BulkSearch
+						ref="bulkSearch"
+						@clickedBulkSearch="clickedBulkSearch"
+						@bulkSearchChanged="bulkSearchChanged"
 					/>
 				</b-collapse>
 			</template>
@@ -214,6 +234,7 @@
 import ColumnField from "@/components/DataGrid/ColumnField";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import BulkSearch from "@/components/Beneficiaries/Household/BulkSearch";
 import Modal from "@/components/Modal";
 import Table from "@/components/DataGrid/Table";
 import BeneficiariesService from "@/services/BeneficiariesService";
@@ -228,8 +249,8 @@ import permissions from "@/mixins/permissions";
 import ExportControl from "@/components/Export";
 import { EXPORT } from "@/consts";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import AddProjectToHouseholdModal
-	from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
+import AddProjectToHouseholdModal from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
+import validation from "@/mixins/validation";
 import { getUniqueIds } from "@/utils/customValidators";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
@@ -247,13 +268,15 @@ export default {
 		ColumnField,
 		Modal,
 		ExportControl,
+		BulkSearch,
 	},
 
-	mixins: [grid, addressHelper, permissions, urlFiltersHelper],
+	mixins: [grid, addressHelper, permissions, urlFiltersHelper, validation],
 
 	data() {
 		return {
 			advancedSearchVisible: false,
+			bulkSearchVisible: false,
 			householdsSelects: true,
 			exportControl: {
 				loading: false,
@@ -284,6 +307,7 @@ export default {
 				dataUpdated: false,
 			},
 			filters: {},
+			bulkSearch: {},
 			locationsFilter: {},
 			householdDetailModal: {
 				isOpened: false,
@@ -312,13 +336,28 @@ export default {
 		this.fetchData();
 	},
 
+	computed: {
+		arrayIds() {
+			return this.bulkSearch.ids.split(/\s+/);
+		},
+	},
+
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-
 			this.table.progress = null;
-
 			this.table.columns = generateColumns(this.table.visibleColumns);
+
+			if (this.bulkSearch.isBulkSearchUsed) {
+				await this.fetchBulkSearchData();
+			} else {
+				await this.fetchStandardData();
+			}
+
+			this.setGridFiltersToUrl("households");
+		},
+
+		async fetchStandardData() {
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.perPage,
@@ -337,18 +376,59 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Households")} ${e}`, "is-danger");
 			});
-			this.setGridFiltersToUrl("households");
+		},
+
+		async fetchBulkSearchData() {
+			try {
+				const { data: { result: { data, totalCount }, notFoundIds } } = await BeneficiariesService
+					.getListOfHouseholdByBulkSearch(
+						this.table.currentPage,
+						this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						{
+							searchBy: this.bulkSearch.searchBy,
+							searchIds: this.arrayIds,
+						},
+					);
+
+				this.table.data = [];
+				this.table.progress = 0;
+				this.table.total = totalCount;
+				this.table.dataUpdated = true;
+				this.bulkSearch.notFoundIds = notFoundIds.join(" ");
+				this.bulkSearch.isBulkSearchUsed = true;
+
+				if (data.length > 0) {
+					await this.prepareDataForTable(data);
+				}
+				this.isLoadingList = false;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Bulk Search")} ${e}`, "is-danger");
+			}
 		},
 
 		async exportHouseholds(type, format) {
 			if (type === EXPORT.HOUSEHOLDS) {
 				this.exportControl.loading = true;
-				let ids = null;
+				let ids = [];
+
 				if (!this.householdsSelects) {
 					ids = this.table.checkedRows.map((item) => item.householdId);
 				}
-				await BeneficiariesService.exportHouseholds(format, ids, this.filters)
-					.then(({ data, status, message }) => {
+
+				if (this.bulkSearch?.isBulkSearchUsed) {
+					try {
+						const body = {
+							searchBy: this.bulkSearch.searchBy,
+							searchIds: this.bulkSearch.ids.split(" "),
+						};
+
+						const { data, status, message } = await BeneficiariesService.exportBulkSearchHouseholds(
+							format,
+							ids,
+							body,
+						);
+
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });
 							const link = document.createElement("a");
@@ -358,21 +438,38 @@ export default {
 						} else {
 							Notification(message, "is-warning");
 						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
-
-						/*
-					if (this.table.total > 10000 && (e.name !== "Error"
-					|| e.name !== "Something went wrong")) {
-						Notification(
-							this.$t(`Too much beneficiaries in households
-							(${this.table.total}). Limit is 10000`), "is-warning",
+					} catch (e) {
+						if (e.message) {
+							Notification(
+								`${this.$t("Export Households (bulk search)")} ${e}`,
+								"is-danger",
+							);
+						}
+					} finally {
+						this.exportControl.loading = false;
+					}
+				} else {
+					try {
+						const { data, status, message } = await BeneficiariesService.exportHouseholds(
+							format,
+							this.filters,
 						);
-					} else
-					 */
-					});
-				this.exportControl.loading = false;
+
+						if (status === 200) {
+							const blob = new Blob([data], { type: data.type });
+							const link = document.createElement("a");
+							link.href = window.URL.createObjectURL(blob);
+							link.download = `BNF Households ${normalizeExportDate()}.${format}`;
+							link.click();
+						} else {
+							Notification(message, "is-warning");
+						}
+					} catch (e) {
+						if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+					} finally {
+						this.exportControl.loading = false;
+					}
+				}
 			}
 		},
 
@@ -380,6 +477,20 @@ export default {
 			this.table.checkedRows = rows;
 			this.actionsButtonVisible = !!rows?.length;
 			this.householdsSelects = !rows?.length;
+		},
+
+		clickedBulkSearch(bulkSearchData) {
+			this.bulkSearch = bulkSearchData;
+			this.fetchData();
+		},
+
+		bulkSearchChanged() {
+			this.table.dataUpdated = false;
+		},
+
+		clickedSearch() {
+			this.bulkSearch.isBulkSearchUsed = false;
+			this.onSearch(this.table.searchPhrase);
 		},
 
 		async addHouseholdsToProject(project) {
@@ -673,8 +784,14 @@ export default {
 			return normalizeText(text);
 		},
 
-		filtersToggle() {
+		advancedSearchToggle() {
+			this.bulkSearchVisible = false;
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		bulkSearchToggle() {
+			this.advancedSearchVisible = false;
+			this.bulkSearchVisible = !this.bulkSearchVisible;
 		},
 
 		goToSummaryDetail({ id }) {
@@ -765,7 +882,11 @@ export default {
 		},
 
 		resetFilters() {
-			this.resetSearch({ tableRef: "householdList", filtersRef: "householdsFilter" });
+			this.resetSearch({
+				tableRef: "householdList",
+				filtersRef: "householdsFilter",
+				bulkSearchRef: "bulkSearch",
+			});
 		},
 
 		resetTableSort() {

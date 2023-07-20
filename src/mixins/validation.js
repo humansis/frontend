@@ -2,17 +2,17 @@ import i18n from "@/plugins/i18n";
 
 export default {
 	methods: {
-		getValidation(field) {
-			return typeof field === "string" ? this.validationPropertyLevel(field) : field;
+		getValidation(field, object = "formModel") {
+			return typeof field === "string" ? this.validationPropertyLevel(field, object) : field;
 		},
 
-		validate(field) {
-			const validation = this.getValidation(field);
+		validate(field, object) {
+			const validation = this.getValidation(field, object);
 			validation.$touch();
 		},
 
-		validateMsg(field, message = i18n.t("Required")) {
-			const validation = this.getValidation(field);
+		validateMsg(field, message = i18n.t("Required"), object) {
+			const validation = this.getValidation(field, object);
 
 			if (Object.keys(validation).includes("maxLength")
 				&& validation.$error && !validation.maxLength) {
@@ -21,8 +21,8 @@ export default {
 			return validation.$error ? i18n.t(message) : "";
 		},
 
-		validateType(field, errorOrNothing = false) {
-			const validation = this.getValidation(field);
+		validateType(field, errorOrNothing = false, object) {
+			const validation = this.getValidation(field, object);
 
 			let result = "";
 			if (validation.$dirty) {
@@ -36,8 +36,8 @@ export default {
 			return result;
 		},
 
-		validateMultiselect(field, errorOrNothing = false) {
-			const validation = this.getValidation(field);
+		validateMultiselect(field, errorOrNothing = false, object) {
+			const validation = this.getValidation(field, object);
 
 			let result = "";
 			if (validation.$dirty) {
@@ -50,23 +50,22 @@ export default {
 			return result;
 		},
 
-		validationPropertyLevel(fields) {
+		validationPropertyLevel(fields, object) {
 			let result;
 			const fieldsLevel = fields.split(".");
-
-			if (!this.$v.formModel) {
+			if (!this.$v[object]) {
 				return this.$v[fieldsLevel[0]];
 			}
 
 			switch (fieldsLevel.length) {
 				case 1:
-					result = this.$v.formModel[fieldsLevel[0]];
+					result = this.$v[object][fieldsLevel[0]];
 					break;
 				case 2:
-					result = this.$v.formModel[fieldsLevel[0]][fieldsLevel[1]];
+					result = this.$v[object][fieldsLevel[0]][fieldsLevel[1]];
 					break;
 				case 3:
-					result = this.$v.formModel[fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
+					result = this.$v[object][fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
 					break;
 				default:
 			}
