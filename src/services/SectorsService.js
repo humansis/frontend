@@ -15,4 +15,12 @@ export default {
 		const { data: { data, totalCount } } = await fetcher({ uri: `sectors/${code}/subsectors` });
 		return { data, totalCount };
 	},
+
+	getListOfProjectSubSectors(projectId, code) {
+		return fetcher({ uri: `projects/${projectId}/sectors/${code}/subsectors` });
+	},
+
+	getFilteredListOfSubSectors() {
+		return fetcher({ uri: `subsectors` });
+	},
 };

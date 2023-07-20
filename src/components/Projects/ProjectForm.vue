@@ -46,7 +46,7 @@
 					:options="options.sectors"
 					:loading="sectorsLoading"
 					:class="validateMultiselect('selectedSectors')"
-					@select="validate('selectedSectors')"
+					@input="selectorsSelect"
 				>
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
@@ -58,7 +58,46 @@
 						<MultiSelectTag
 							:props="props"
 							:items="formModel.selectedSectors"
-							@optionRemoved="formModel.selectedSectors = $event"
+							@optionRemoved="selectorsSelect"
+						/>
+					</template>
+				</MultiSelect>
+			</b-field>
+
+			<b-field type="is-danger" :message="missingSubsectors">
+				<template #label>
+					{{ $t('Subsectors') }}
+					<span class="optional-text has-text-weight-normal is-italic">
+						- {{ $t('Optional') }}
+					</span>
+				</template>
+
+				<MultiSelect
+					v-model="formModel.selectedSubsectors"
+					searchable
+					label="value"
+					track-by="code"
+					multiple
+					:placeholder="$t('Click to select')"
+					:select-label="$t('Press enter to select')"
+					:selected-label="$t('Selected')"
+					:deselect-label="$t('Press enter to remove')"
+					:disabled="formDisabled"
+					:options="options.subsectors"
+					:loading="subsectorsLoading"
+					@input="subsectorSelect"
+				>
+					<span slot="noOptions">{{ $t("List is empty")}}</span>
+					<template #option="props">
+						<div class="option__desc">
+							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+						</div>
+					</template>
+					<template #tag="props">
+						<MultiSelectTag
+							:props="props"
+							:items="formModel.selectedSubsectors"
+							@optionRemoved="subsectorSelect"
 						/>
 					</template>
 				</MultiSelect>
@@ -293,19 +332,24 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		isEditing: Boolean,
 	},
 
 	data() {
 		return {
 			options: {
 				sectors: [],
+				allSubsectors: [],
+				subsectors: [],
 				donors: [],
 				targetTypes: [],
 				allowedProductCategoryTypes: [
 					"Food", "Non-Food", "Cashback",
 				],
 			},
+			sectorsWithoutSelectedSubsectors: [],
 			sectorsLoading: true,
+			subsectorsLoading: false,
 			donorsLoading: true,
 			targetTypesLoading: true,
 		};
@@ -334,6 +378,17 @@ export default {
 		this.fetchSectors();
 		this.fetchDonors();
 		this.fetchTargetTypes();
+		this.fetchSubsectors();
+	},
+
+	computed: {
+		missingSubsectors() {
+			return this.sectorsWithoutSelectedSubsectors.length
+				&& this.formModel.selectedSubsectors.length
+				? `${this.$t("Some sectors have NO selected sub-sector")}
+					: ${this.sectorsWithoutSelectedSubsectors.join(", ")}`
+				: "";
+		},
 	},
 
 	methods: {
@@ -351,6 +406,29 @@ export default {
 			this.$v.$reset();
 		},
 
+		selectorsSelect($event) {
+			this.$nextTick(() => {
+				this.formModel.selectedSectors = $event;
+				this.validate("selectedSectors");
+				this.filterSubsectors();
+				this.getSectorsWithoutSelectedSubsector();
+
+				this.formModel.selectedSubsectors = this.formModel.selectedSectors.length
+					? this.formModel.selectedSubsectors.filter((selectedSubSector) => this.options.subsectors
+						.find((subSector) => subSector.code === selectedSubSector.code))
+					: [];
+
+				if (!this.formModel.selectedSectors.length) {
+					this.options.subsectors = [];
+				}
+			});
+		},
+
+		subsectorSelect($event) {
+			this.formModel.selectedSubsectors = $event;
+			this.getSectorsWithoutSelectedSubsector();
+		},
+
 		closeForm() {
 			this.$emit("formClosed");
 			this.$v.$reset();
@@ -362,8 +440,22 @@ export default {
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
 			});
-			this.formModel.selectedSectors = getArrayOfCodeListByKey(this.formModel.sectors, this.options.sectors, "code", true, "code");
 			this.sectorsLoading = false;
+		},
+
+		async fetchSubsectors() {
+			try {
+				this.subsectorsLoading = true;
+				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors();
+
+				this.options.allSubsectors = data;
+				this.filterSubsectors();
+				this.getSectorsWithoutSelectedSubsector();
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+			} finally {
+				this.subsectorsLoading = false;
+			}
 		},
 
 		async fetchDonors() {
@@ -386,6 +478,36 @@ export default {
 
 			this.formModel.selectedTargetType = getArrayOfCodeListByKey(this.formModel.targetTypes, this.options.targetTypes, "code");
 			this.targetTypesLoading = false;
+		},
+
+		filterSubsectors() {
+			this.options.subsectors = [];
+
+			this.formModel.selectedSectors.forEach(({ code }) => {
+				const subsector = this.options.allSubsectors[code];
+
+				if (subsector) {
+					this.options.subsectors.push(...subsector);
+				}
+			});
+		},
+
+		getSectorsWithoutSelectedSubsector() {
+			this.sectorsWithoutSelectedSubsectors = [];
+
+			this.formModel.selectedSectors.forEach((selectedSector) => {
+				const { value } = selectedSector;
+
+				if (value in this.options.allSubsectors) {
+					const containSelectedSubsector = this.options.allSubsectors[value]
+						.some((selectedSubsector) => this.formModel.selectedSubsectors
+							.some(({ code }) => code === selectedSubsector.code));
+
+					if (!containSelectedSubsector) {
+						this.sectorsWithoutSelectedSubsectors.push(value);
+					}
+				}
+			});
 		},
 	},
 };
