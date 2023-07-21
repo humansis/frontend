@@ -35,7 +35,7 @@
 		<div v-if="campSelected || this.formModel.type === 'camp'" :key="campKey">
 			<b-field
 				v-if="!createCamp"
-				:label="$t('Camp')"
+				:label="$t('Camp name')"
 				:type="validateType('camp')"
 				:message="validateMsg('camp')"
 			>
@@ -71,7 +71,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Tent Number')"
+				:label="$t('Tent number')"
 				:type="validateType('tentNumber')"
 				:message="validateMsg('tentNumber')"
 			>
@@ -83,7 +83,7 @@
 		</div>
 		<div v-else>
 			<b-field
-				:label="$t('Address Number')"
+				:label="$t('Address number')"
 				:type="validateType('number')"
 				:message="validateMsg('number')"
 			>
@@ -94,7 +94,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Address Street')"
+				:label="$t('Address street')"
 				:type="validateType('street')"
 				:message="validateMsg('street')"
 			>
@@ -105,7 +105,7 @@
 			</b-field>
 
 			<b-field
-				:label="$t('Address Postcode')"
+				:label="$t('Address postcode')"
 				:type="validateType('postcode')"
 				:message="validateMsg('postcode')"
 			>

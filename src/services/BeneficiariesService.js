@@ -300,4 +300,8 @@ export default {
 		});
 		return data;
 	},
+
+	getSmartCard(id) {
+		return fetcher({ uri: `beneficiaries/${id}/smartcards` });
+	},
 };

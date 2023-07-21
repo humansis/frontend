@@ -27,6 +27,16 @@
 						<span slot="noOptions">{{ $t("List is empty")}}</span>
 					</MultiSelect>
 				</b-field>
+
+				<b-field>
+					<template #label>
+						{{ $t('Enumerator') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-input v-model="formModel.enumerator" />
+				</b-field>
 			</div>
 		</div>
 		<h4 class="title is-4 has-text-centered">{{ $t('Household Information Summary') }}</h4>
@@ -60,6 +70,7 @@
 				<b-table-column
 					v-bind="column"
 					:key="column.id"
+					header-class="household-summary-table"
 					v-slot="props"
 				>
 					<ColumnField :data="props" :column="column" />
@@ -111,16 +122,17 @@ export default {
 			loadingComponent: null,
 			formModel: {
 				selectedProjects: [],
+				enumerator: "",
 			},
 			options: {
 				projects: [],
 			},
 			table: {
 				columns: [
-					{ field: "firstName", label: this.$t("First Name") },
-					{ field: "familyName", label: this.$t("Family Name") },
+					{ field: "firstName", label: this.$t("Local family name") },
+					{ field: "familyName", label: this.$t("Local given name") },
 					{ field: "gender", label: this.$t("Gender"), type: "object" },
-					{ field: "dateBirth", label: this.$t("Date of Birth"), type: "date" },
+					{ field: "dateBirth", label: this.$t("Date of birth"), type: "date" },
 					{ field: "phone", label: this.$t("Phone") },
 					{ field: "nationalId", label: this.$t("ID Number") },
 				],
@@ -159,6 +171,7 @@ export default {
 
 			if (this.isEditing) {
 				this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");
+				this.formModel.enumerator = this.detailOfHousehold.enumeratorName;
 			}
 		},
 
@@ -169,3 +182,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.household-summary-table {
+	div {
+		justify-content: flex-start !important;
+	}
+}
+</style>

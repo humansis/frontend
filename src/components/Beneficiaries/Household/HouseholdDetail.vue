@@ -37,7 +37,7 @@
 				<b-input v-model="formModel.incomeLevel" disabled />
 			</b-field>
 
-			<b-field :label="$t('External Support Received Type')">
+			<b-field :label="$t('Support received types')">
 				<MultiSelect
 					v-model="formModel.supportReceivedTypes"
 					multiple
@@ -53,7 +53,7 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field :label="$t('Support Date Received')">
+			<b-field :label="$t('Support date receive')">
 				<b-datepicker
 					v-model="formModel.supportDateReceived"
 					show-week-number
@@ -82,7 +82,7 @@
 				</MultiSelect>
 			</b-field>
 
-			<b-field :label="$t('Shelter Type')">
+			<b-field :label="$t('Shelter status')">
 				<MultiSelect
 					v-model="formModel.shelterStatus"
 					searchable
@@ -191,7 +191,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},

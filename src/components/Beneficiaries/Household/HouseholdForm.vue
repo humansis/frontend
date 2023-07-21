@@ -10,6 +10,26 @@
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
+
+				<b-field class="mt-3">
+					<template #label>
+						{{ $t('Latitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-numberinput v-model="formModel.latitude" step="any" :controls="false" />
+				</b-field>
+
+				<b-field>
+					<template #label>
+						{{ $t('Longitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-numberinput v-model="formModel.longitude" step="any" :controls="false" />
+				</b-field>
 			</div>
 			<div class="column is-half">
 				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
@@ -65,7 +85,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Income Spent On Food') }}</span>
+						<span>{{ $t('Income spent on food') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -82,7 +102,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Debt Level') }}</span>
+						<span>{{ $t('Debt level') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -123,7 +143,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Food Consumption Score') }}</span>
+						<span>{{ $t('Food consumption score') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -139,7 +159,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Coping Strategies Index') }}</span>
+						<span>{{ $t('Coping strategies index') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -157,7 +177,7 @@
 				<h4 class="title is-4">{{ $t('External Support') }}</h4>
 				<b-field>
 					<template #label>
-						<span>{{ $t('External Support Received Type') }}</span>
+						<span>{{ $t('Support received types') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -180,7 +200,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Support Date Received') }}</span>
+						<span>{{ $t('Support date received') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -198,7 +218,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Support Organization') }}</span>
+						<span>{{ $t('Support organisation') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -238,7 +258,7 @@
 		<h4 class="title is-4">{{ $t('Household Status') }}</h4>
 		<b-field>
 			<template #label>
-				<span>{{ $t('Shelter Type') }}</span>
+				<span>{{ $t('Shelter status') }}</span>
 				<span class="optional-text has-text-weight-normal is-italic">
 					- {{ $t('Optional') }}
 				</span>
@@ -312,6 +332,8 @@ export default {
 			customFields: [],
 			formModel: {
 				id: null,
+				latitude: null,
+				longitude: null,
 				currentLocation: {
 					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
 				},
@@ -431,6 +453,8 @@ export default {
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
+				latitude: this.detailOfHousehold.latitude,
+				longitude: this.detailOfHousehold.longitude,
 				currentLocation: {
 					typeOfLocation: null,
 					adm1: null,
@@ -513,7 +537,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
