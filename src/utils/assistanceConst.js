@@ -120,4 +120,9 @@ export default {
 	INTEGRITY_ISSUES: {
 		HOUSEHOLD_WITHOUT_HEAD: "Household without head",
 	},
+	SEARCH_FIELDS: [
+		{ code: "beneficiaryId", value: "BNF ID" },
+		{ code: "familyName", value: "Family name" },
+		{ code: "nationalId", value: "Document number" },
+	],
 };

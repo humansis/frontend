@@ -233,6 +233,28 @@ export default {
 		return { data, totalCount };
 	},
 
+	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filter = null) {
+		const sortText = sort ? `&sort[]=${sort}` : "";
+		const pageText = page ? `&page=${page}` : "";
+		const sizeText = size ? `&size=${size}` : "";
+		const filtersUri = filter ? filtersToUri(filter) : "";
+
+		let fulltext = "";
+
+		if (search.field.length && search.phrase.length) {
+			fulltext = `&filter[${search.field}]=${search.phrase}`;
+		} else if (search.length) {
+			fulltext = `&filter[fulltext}]=${search}`;
+		}
+
+		return fetcher({
+			uri: `assistances/${id}/assistances-beneficiaries?${
+				pageText + sizeText + sortText + fulltext + filtersUri
+			}`,
+			version: 2,
+		});
+	},
+
 	async getListOfCommunities(id, page, size, sort, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";

@@ -163,7 +163,7 @@
 			</b-field>
 		</div>
 		<Table
-			has-reset-sort
+			ref="beneficiariesList"
 			has-search
 			disable-prechecked-rows
 			:paginated="!table.customPerPage"
@@ -176,6 +176,10 @@
 			:checkable="table.settings.checkableTable"
 			:checked-rows="table.checkedRows"
 			:row-class="(row) => row.removed && 'removed-row'"
+			:search-fields="searchFields"
+			:default-search-field="defaultSearchField"
+			:default-sort-direction="table.sortDirection"
+			:default-sort-key="table.sortColumn"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -193,6 +197,25 @@
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
+			</template>
+			<template #resetSort>
+				<div class="level-right">
+					<b-button
+						v-if="assistanceDetail"
+						icon-left="eraser"
+						class="reset-sort-button is-small mr-2"
+						@click="resetFilters"
+					>
+						{{ $t('Reset Filters') }}
+					</b-button>
+					<b-button
+						icon-left="eraser"
+						class="reset-sort-button is-small"
+						@click="resetTableSort"
+					>
+						{{ $t('Reset Table Sort') }}
+					</b-button>
+				</div>
 			</template>
 			<template #export>
 				<ExportControl
@@ -243,6 +266,47 @@
 			<template #progress>
 				<b-progress :value="table.progress" format="percent" />
 			</template>
+			<template #filterButton>
+				<section v-if="assistanceDetail">
+					<b-button
+						:class="toDistributeButtonClass"
+						type="button"
+						slot="trigger"
+						icon-left="sticky-note"
+						@click="statusFilter('toDistribute', 'To distribute')"
+						@keydown.enter.prevent
+					>
+						{{ $t('To distribute') }}
+					</b-button>
+					<b-button
+						:class="distributedButtonClass"
+						slot="trigger"
+						icon-left="sticky-note"
+						@click="statusFilter('distributed')"
+						@keydown.enter.prevent
+					>
+						{{ $t('Distributed') }}
+					</b-button>
+					<b-button
+						:class="expiredButtonClass"
+						slot="trigger"
+						icon-left="sticky-note"
+						@click="statusFilter('expired')"
+						@keydown.enter.prevent
+					>
+						{{ $t('Expired') }}
+					</b-button>
+					<b-button
+						:class="canceledButtonClass"
+						slot="trigger"
+						icon-left="sticky-note"
+						@click="statusFilter('canceled')"
+						@keydown.enter.prevent
+					>
+						{{ $t('Canceled') }}
+					</b-button>
+				</section>
+			</template>
 		</Table>
 	</div>
 </template>
@@ -257,17 +321,18 @@ import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditB
 import EditInstitutionForm from "@/components/Assistance/BeneficiariesList/EditInstitutionForm";
 import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
+import ExportControl from "@/components/Export";
 import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns } from "@/utils/datagrid";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import baseHelper from "@/mixins/baseHelper";
 import consts from "@/utils/assistanceConst";
-import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
+import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
-import InputDistributed from "@/components/Assistance/InputDistributed/index";
-import ExportControl from "@/components/Export";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { EXPORT } from "@/consts";
 
 const statusTags = [
@@ -314,7 +379,7 @@ export default {
 		InputDistributed,
 	},
 
-	mixins: [permissions, baseHelper, beneficiariesHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper],
 
 	data() {
 		return {
@@ -325,14 +390,24 @@ export default {
 				location: "assistance",
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			defaultSearchField: consts.SEARCH_FIELDS[2],
+			selectedFilters: [],
+			filters: { reliefPackageStates: [] },
+			statusActive: {
+				toDistribute: false,
+				distributed: false,
+				expired: false,
+				canceled: false,
+			},
 			table: {
 				data: [],
 				columns: [],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "desc",
+				sortColumn: "localFamilyName",
 				searchPhrase: "",
+				searchField: "",
 				progress: null,
 				customPerPage: null,
 				checkedRows: [],
@@ -425,6 +500,21 @@ export default {
 		};
 	},
 
+	async created() {
+		if (this.assistanceDetail) {
+			this.setGridFilters("assistanceDetail", false);
+		}
+		await this.reloadBeneficiariesList();
+	},
+
+	watch: {
+		async assistance(newAssistance) {
+			if (newAssistance) {
+				await this.reloadBeneficiariesList();
+			}
+		},
+	},
+
 	computed: {
 		...mapState(["perPage"]),
 
@@ -457,10 +547,10 @@ export default {
 				{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
 				{ key: "nationalId", label: "ID Number", sortable: true },
 				{ key: "status", type: "tagArray", customTags: statusTags },
-				{ key: "toDistribute", type: "arrayTextBreak" },
-				{ key: "distributed", type: "arrayTextBreak" },
-				{ key: "spent", type: "arrayTextBreak" },
-				{ key: "lastModified", type: "arrayTextBreak" },
+				{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
+				{ key: "distributed", type: "arrayTextBreak", sortable: true },
+				{ key: "spent", type: "arrayTextBreak", sortable: true },
+				{ key: "lastModified", type: "arrayTextBreak", sortable: true },
 			];
 
 			if (!this.isCommoditySmartcard) {
@@ -498,17 +588,37 @@ export default {
 			return !this.table.data.length
 				|| !this.userCan.exportBeneficiaries || this.changeButton;
 		},
-	},
 
-	async created() {
-		await this.reloadBeneficiariesList();
-	},
+		searchFields() {
+			return this.assistanceDetail ? consts.SEARCH_FIELDS : [];
+		},
 
-	watch: {
-		async assistance(newAssistance) {
-			if (newAssistance) {
-				await this.reloadBeneficiariesList();
-			}
+		toDistributeButtonClass() {
+			return [
+				"btn ml-3 is-light",
+				{ "is-selected has-border-black": this.statusActive.toDistribute },
+			];
+		},
+
+		distributedButtonClass() {
+			return [
+				"btn ml-3 is-success",
+				{ "is-selected has-border-black": this.statusActive.distributed },
+			];
+		},
+
+		expiredButtonClass() {
+			return [
+				"btn ml-3 is-danger",
+				{ "is-selected has-border-black": this.statusActive.expired },
+			];
+		},
+
+		canceledButtonClass() {
+			return [
+				"btn ml-3 is-warning",
+				{ "is-selected has-border-black": this.statusActive.canceled },
+			];
 		},
 	},
 
@@ -552,6 +662,40 @@ export default {
 
 		closeAddBeneficiariesByIdsModal() {
 			this.addBeneficiariesByIdsModal.isOpened = false;
+		},
+
+		statusFilter(filter, queryValue = "") {
+			const filterValue = queryValue.length ? queryValue : filter;
+			this.statusActive[filter] = !this.statusActive[filter];
+
+			if (this.selectedFilters.includes(filterValue)) {
+				this.selectedFilters = this.selectedFilters.filter((item) => item !== filterValue);
+			} else {
+				this.selectedFilters.push(filterValue);
+			}
+
+			this.onFiltersChange({ reliefPackageStates: this.selectedFilters });
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			this.table.currentPage = 1;
+			await this.fetchData();
+		},
+
+		resetTableSort() {
+			this.$refs.beneficiariesList.onResetSort();
+		},
+
+		resetFilters() {
+			this.statusActive = {
+				toDistribute: false,
+				distributed: false,
+				expired: false,
+				canceled: false,
+			};
+			this.$refs.beneficiariesList.onResetSearch();
+			this.onFiltersChange({ reliefPackageStates: [] });
 		},
 
 		async fetchData(page, size) {
@@ -600,24 +744,37 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					await AssistancesService.getListOfBeneficiaries(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+					try {
+						const { data: { data, totalCount } } = await AssistancesService
+							.getOptimizedListOfBeneficiaries(
+								this.$route.params.assistanceId,
+								page || this.table.currentPage,
+								size || this.perPage,
+								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+								{ phrase: this.table.searchPhrase, field: this.table.searchField },
+								this.filters,
+							);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
 						this.table.total = totalCount;
+
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
+					} catch (e) {
 						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-					});
+					} finally {
+						if (this.assistanceDetail) {
+							this.setGridFiltersToUrl("assistanceDetail", false, {
+								sortColumn: true,
+								sortDirection: true,
+							});
+						}
+					}
 			}
+
 			this.isLoadingList = false;
 		},
 
@@ -663,13 +820,9 @@ export default {
 			this.table.progress += 25;
 			let beneficiaryIds = [];
 			let beneficiaries = [];
-			const vulnerabilitiesList = await this.getVulnerabilities();
-
-			const phoneIds = [];
-			const nationalIdIds = [];
 
 			const distributionItems = {
-				reliefPackageIds: [],
+				reliefPackages: [],
 			};
 
 			switch (this.assistance.target) {
@@ -685,8 +838,8 @@ export default {
 						const item = { ...community, ...foundCommunity };
 						this.table.data[key] = item;
 
-						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
+						if (item.reliefPackages?.length) {
+							distributionItems.reliefPackages.push(...item.reliefPackages);
 						}
 					});
 
@@ -706,8 +859,8 @@ export default {
 						const item = { ...institution, ...foundInstitution };
 						this.table.data[key] = item;
 
-						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
+						if (item.reliefPackages?.length) {
+							distributionItems.reliefPackages.push(...item.reliefPackages);
 						}
 					});
 
@@ -718,53 +871,51 @@ export default {
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
 				default:
-					beneficiaryIds = data.map((item) => item.beneficiaryId);
-					beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
-
-					data.forEach((beneficiary, key) => {
-						const foundBeneficiary = beneficiaries.find(
-							(bnf) => bnf.id === beneficiary.beneficiaryId,
-						);
-
-						const item = { ...beneficiary, ...foundBeneficiary };
+					data.forEach((item, key) => {
+						const { beneficiary, reliefPackages } = item;
 
 						this.table.data[key] = item;
+						this.table.data[key].id = beneficiary.id;
 						this.table.data[key].givenName = this
-							.prepareName(item.localGivenName, item.enGivenName);
+							.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 						this.table.data[key].familyName = this
-							.prepareName(item.localFamilyName, item.enFamilyName);
-						this.table.data[key].gender = this.prepareGender(item.gender);
-						this.table.data[key].vulnerabilities = vulnerabilitiesList
-							?.filter(({ code }) => code === item.vulnerabilityCriteria
-								?.find((vulnerability) => vulnerability === code));
+							.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
+						this.table.data[key].gender = this.prepareGender(beneficiary.gender);
+						this.table.data[key].vulnerabilities = beneficiary.vulnerabilityCriteria;
+						this.table.data[key].residencyStatus = beneficiary.residencyStatus;
+						this.table.data[key].dateOfBirth = beneficiary.birthDate;
+						this.table.data[key].nationalId = beneficiary.nationalIds.length
+							? this.prepareNationalIdsValuesForTable(beneficiary.nationalIds)
+							: this.$t("None");
 
-						if (item.nationalIds?.length) nationalIdIds.push(item.nationalIds);
-						if (item.phoneIds?.length) phoneIds.push(...item.phoneIds);
-
-						if (item.reliefPackageIds.length) {
-							distributionItems.reliefPackageIds.push(...item.reliefPackageIds);
-						}
+						this.table.data[key].status = reliefPackages.map(
+							(reliefPackage) => reliefPackage.state,
+						);
+						this.table.data[key].toDistribute = reliefPackages.map(
+							(reliefPackage) => `${reliefPackage.toDistribute} ${reliefPackage.unit}`,
+						);
+						this.table.data[key].distributed = reliefPackages.map(
+							(reliefPackage) => (`${reliefPackage.distributed} ${reliefPackage.unit}`),
+						);
+						this.table.data[key].spent = reliefPackages.map(
+							(reliefPackage) => (`${reliefPackage.spent ?? 0} ${reliefPackage.unit}`),
+						);
+						this.table.data[key].lastModified = reliefPackages.map(
+							(reliefPackage) => (
+								this.$moment(reliefPackage.lastModified || reliefPackage.lastModified)
+									.format("YYYY-MM-DD hh:mm")),
+						);
+						this.table.data[key].phone = beneficiary.phones.length
+							? this.preparePhoneForTable(beneficiary.phones)
+							: this.$t("None");
 					});
-
-					this.table.data = [...this.table.data];
-
-					await this.preparePhoneForTable(phoneIds);
-					await this.prepareNationalIdForTable(nationalIdIds);
 			}
 
 			if (this.assistanceDetail) {
-				await this.setAssignedReliefPackages(distributionItems.reliefPackageIds);
+				this.setAssignedReliefPackages();
 			} else {
 				this.table.progress = 100;
 			}
-		},
-
-		async getVulnerabilities() {
-			return BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
-				});
 		},
 
 		async getCommunities(ids) {
@@ -880,4 +1031,8 @@ export default {
 .removed-row {
 	background-color: #f3f3f3 !important;
 }
+</style>
+
+<style lang="scss" scoped>
+@import 'src/assets/scss/button';
 </style>
