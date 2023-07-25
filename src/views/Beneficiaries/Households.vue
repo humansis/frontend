@@ -79,7 +79,7 @@
 			:checked-rows="table.checkedRows"
 			:search-phrase="table.searchPhrase"
 			:has-clickable-rows="false"
-			:is-search-visible="!bulkSearchVisible"
+			:is-search-visible="!bulkSearchIsVisible"
 			@checked="onRowsChecked"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -167,7 +167,7 @@
 			<template #bulkSearchButton>
 				<b-button
 					slot="trigger"
-					:icon-right="bulkSearchVisible ? 'arrow-up' : 'arrow-down'"
+					:icon-right="bulkSearchIsVisible ? 'arrow-up' : 'arrow-down'"
 					class="ml-4"
 					@click="bulkSearchToggle"
 				>
@@ -207,7 +207,7 @@
 					/>
 				</b-collapse>
 
-				<b-collapse v-model="bulkSearchVisible">
+				<b-collapse v-model="bulkSearchIsVisible">
 					<BulkSearch
 						ref="bulkSearch"
 						@clickedBulkSearch="clickedBulkSearch"
@@ -276,7 +276,7 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			bulkSearchVisible: false,
+			bulkSearchIsVisible: false,
 			householdsSelects: true,
 			exportControl: {
 				loading: false,
@@ -338,7 +338,7 @@ export default {
 
 	computed: {
 		arrayIds() {
-			return this.bulkSearch.ids.split(/\s+/);
+			return this.bulkSearch.ids?.split(/\s+/);
 		},
 	},
 
@@ -416,7 +416,7 @@ export default {
 					ids = this.table.checkedRows.map((item) => item.householdId);
 				}
 
-				if (this.bulkSearch?.isBulkSearchUsed) {
+				if (this.bulkSearch.isBulkSearchUsed) {
 					try {
 						const body = {
 							searchBy: this.bulkSearch.searchBy,
@@ -785,13 +785,13 @@ export default {
 		},
 
 		advancedSearchToggle() {
-			this.bulkSearchVisible = false;
+			this.bulkSearchIsVisible = false;
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
 		bulkSearchToggle() {
 			this.advancedSearchVisible = false;
-			this.bulkSearchVisible = !this.bulkSearchVisible;
+			this.bulkSearchIsVisible = !this.bulkSearchIsVisible;
 		},
 
 		goToSummaryDetail({ id }) {

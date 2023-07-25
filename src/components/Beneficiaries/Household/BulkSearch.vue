@@ -4,7 +4,7 @@
 			<div class="column">
 				<b-field
 					:label="$t('Search by')"
-					:type="validateType('searchBy', false,'bulkSearch')"
+					:type="validateType('searchBy', false, 'bulkSearch')"
 					:message="validateMsg('searchBy', 'Required', 'bulkSearch')"
 					class="bulk-search-field"
 				>
@@ -35,7 +35,7 @@
 				</b-field>
 				<b-field
 					:label="$t('ID Numbers')"
-					:type="validateType('ids', false,'bulkSearch')"
+					:type="validateType('ids', false, 'bulkSearch')"
 					:message="validateMsg('ids', 'Required', 'bulkSearch')"
 					class="mb-5"
 				>
@@ -67,9 +67,9 @@
 					<b-field :label="$t('Following ID were not found:')">
 						<b-input
 							v-model="bulkSearch.notFoundIds"
-							disabled
 							type="textarea"
 							class="not-found-ids"
+							disabled
 						/>
 						<div class="control">
 							<b-tooltip :label="$t(`Copy`)">

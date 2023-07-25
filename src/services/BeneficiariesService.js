@@ -267,7 +267,7 @@ export default {
 	},
 
 	exportBulkSearchHouseholds(format, body) {
-		const formatText = format ? `type=${format}` : "";
+		const formatText = `type=${format}`;
 
 		return download({
 			uri: `households/exports?${formatText}`,

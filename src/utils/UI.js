@@ -1,6 +1,6 @@
 import { NotificationProgrammatic, ToastProgrammatic } from "buefy";
 
-export const Toast = (message, type, duration = 500) => {
+export const Toast = (message, type, duration = 5000) => {
 	ToastProgrammatic.open({
 		duration,
 		message,
