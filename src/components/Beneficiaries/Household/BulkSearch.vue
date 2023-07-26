@@ -183,32 +183,27 @@ export default {
 <style lang="scss">
 .search-by  {
 	align-self: baseline;
+
+	@media only screen and (min-width: 1440px) {
+		width: 50%;
+	}
 }
 
 .bulk-search-field > .field-body > .field.has-addons {
 	flex-direction: column;
+
+	@media only screen and (min-width: 1200px) {
+		flex-direction: row;
+	}
 }
 
 .bulk-search-info {
 	margin-top: 1rem;
-}
 
-@media only screen and (min-width: 1200px) {
-	.bulk-search-field > .field-body > .field.has-addons {
-		flex-direction: row;
-	}
-
-	.bulk-search-info {
+	@media only screen and (min-width: 1200px) {
 		margin-top: 0;
 		margin-left: 1rem;
 	}
-}
-
-@media only screen and (min-width: 1440px) {
-	.search-by {
-		width: 50%;
-	}
-
 }
 
 .not-found-ids {
