@@ -79,7 +79,7 @@
 			:checked-rows="table.checkedRows"
 			:search-phrase="table.searchPhrase"
 			:has-clickable-rows="false"
-			:is-search-visible="!bulkSearchIsVisible"
+			:is-search-visible="!isBulkSearchVisible"
 			@checked="onRowsChecked"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
@@ -167,7 +167,7 @@
 			<template #bulkSearchButton>
 				<b-button
 					slot="trigger"
-					:icon-right="bulkSearchIsVisible ? 'arrow-up' : 'arrow-down'"
+					:icon-right="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
 					class="ml-4"
 					@click="bulkSearchToggle"
 				>
@@ -207,7 +207,7 @@
 					/>
 				</b-collapse>
 
-				<b-collapse v-model="bulkSearchIsVisible">
+				<b-collapse v-model="isBulkSearchVisible">
 					<BulkSearch
 						ref="bulkSearch"
 						@clickedBulkSearch="clickedBulkSearch"
@@ -276,7 +276,7 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			bulkSearchIsVisible: false,
+			isBulkSearchVisible: false,
 			householdsSelects: true,
 			exportControl: {
 				loading: false,
@@ -299,8 +299,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortColumn: "",
-				sortDirection: "desc",
+				sortColumn: "id",
+				sortDirection: "asc",
 				progress: null,
 				searchPhrase: "",
 				checkedRows: [],
@@ -348,7 +348,11 @@ export default {
 			this.table.progress = null;
 			this.table.columns = generateColumns(this.table.visibleColumns);
 
-			if (this.bulkSearch.isBulkSearchUsed) {
+			if (
+				this.bulkSearch.isBulkSearchUsed
+				&& this.bulkSearch.searchBy?.length
+				&& this.arrayIds.length
+			) {
 				await this.fetchBulkSearchData();
 			} else {
 				await this.fetchStandardData();
@@ -452,6 +456,7 @@ export default {
 					try {
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
+							ids,
 							this.filters,
 						);
 
@@ -785,13 +790,13 @@ export default {
 		},
 
 		advancedSearchToggle() {
-			this.bulkSearchIsVisible = false;
+			this.isBulkSearchVisible = false;
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
 		bulkSearchToggle() {
 			this.advancedSearchVisible = false;
-			this.bulkSearchIsVisible = !this.bulkSearchIsVisible;
+			this.isBulkSearchVisible = !this.isBulkSearchVisible;
 		},
 
 		goToSummaryDetail({ id }) {

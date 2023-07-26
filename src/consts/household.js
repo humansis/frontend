@@ -4,7 +4,7 @@ export default {
 		HOUSEHOLD_ID: "Household ID",
 		PASSPORT: "Passport",
 		NATIONAL_ID: "National ID",
-		DRIVERS_LICENSE: "Driver´s License",
+		DRIVERS_LICENSE: "Driver’s License",
 		FAMILY_REGISTRATION: "Family Registration",
 		BIRTH_CERTIFICATE: "Birth Certificate",
 		CAMP_ID: "Camp ID",

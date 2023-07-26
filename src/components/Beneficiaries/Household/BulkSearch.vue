@@ -16,8 +16,9 @@
 						:placeholder="$t('Click to select')"
 						:loading="false"
 						:options="options.idType"
-						searchable
+						:class="validateMultiselect('searchBy', false, 'bulkSearch')"
 						class="search-by"
+						searchable
 						@input="bulkSearchChanged"
 					>
 						<span slot="noOptions">{{ $t("List is empty")}}</span>
@@ -27,9 +28,9 @@
 							</div>
 						</template>
 					</MultiSelect>
-					<b-message type="is-info" class="ml-5">
-						{{ $t('Split ID numbers with white space') }}.
-						{{ $t('Maximum 500 IDs allowed') }}.
+					<b-message type="is-info" class="bulk-search-info">
+						{{ $t('Split ID Numbers with white space') }}.
+						{{ $t('Maximum 500 ID Numbers allowed') }}.
 					</b-message>
 
 				</b-field>
@@ -57,14 +58,14 @@
 						v-if="isDuplicityIds"
 						class="has-text-danger"
 					>
-						{{ $t('Info: there are duplicitous Ids')}}
+						{{ $t('Info: there are duplicate ID Numbers')}}
 					</p>
 				</div>
 			</div>
 
 			<div class="column ml-5">
 				<div v-if="bulkSearch.notFoundIds.length">
-					<b-field :label="$t('Following ID were not found:')">
+					<b-field :label="$t('Following ID Numbers were not found:')">
 						<b-input
 							v-model="bulkSearch.notFoundIds"
 							type="textarea"
@@ -180,11 +181,41 @@ export default {
 </script>
 
 <style lang="scss">
+.search-by  {
+	align-self: baseline;
+}
+
+.bulk-search-field > .field-body > .field.has-addons {
+	flex-direction: column;
+}
+
+.bulk-search-info {
+	margin-top: 1rem;
+}
+
+@media only screen and (min-width: 1200px) {
+	.bulk-search-field > .field-body > .field.has-addons {
+		flex-direction: row;
+	}
+
+	.bulk-search-info {
+		margin-top: 0;
+		margin-left: 1rem;
+	}
+}
+
+@media only screen and (min-width: 1440px) {
+	.search-by {
+		width: 50%;
+	}
+
+}
+
 .not-found-ids {
 	width: 45vw;
 
 	textarea {
-		min-height: 70px !important;
+		min-height: 5.5rem !important;
 	}
 }
 </style>
