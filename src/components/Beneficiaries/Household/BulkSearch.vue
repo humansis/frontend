@@ -52,13 +52,13 @@
 						v-if="isMaximumIds"
 						class="has-text-danger"
 					>
-						{{ $t('There are more than 500 Ids')}}
+						{{ $t('There are more than 500 ID Numbers')}}
 					</p>
 					<p
 						v-if="isDuplicityIds"
 						class="has-text-danger"
 					>
-						{{ $t('Info: there are duplicate ID Numbers')}}
+						{{ $t('Info: There are duplicate ID Numbers')}}
 					</p>
 				</div>
 			</div>
