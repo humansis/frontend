@@ -99,12 +99,17 @@ export default {
 			}
 		},
 
-		resetSearch({ tableRef, filtersRef }) {
+		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
 			const searchValue = this.$refs[tableRef].searchValue();
 
 			if (Object.keys(this.filters).length) {
 				this.filters = {};
 				this.$refs[filtersRef].resetFilters();
+			}
+
+			if (bulkSearchRef) {
+				this.bulkSearch = {};
+				this.$refs[bulkSearchRef].resetFilters();
 			}
 
 			if (searchValue) {

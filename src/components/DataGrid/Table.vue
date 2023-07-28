@@ -11,6 +11,7 @@
 								v-if="hasSearch"
 								ref="search"
 								:search-phrase="searchPhrase"
+								:is-disabled="!isSearchVisible"
 								class="mr-3"
 								@search="onSearch"
 							/>
@@ -19,6 +20,7 @@
 					<slot name="title" />
 					<slot name="export" />
 					<slot name="filterButton" />
+					<slot name="bulkSearchButton" />
 					<slot name="actions" />
 				</div>
 				<slot name="resetSort">
@@ -206,6 +208,10 @@ export default {
 			default: "No data",
 		},
 		showTableHeader: {
+			type: Boolean,
+			default: true,
+		},
+		isSearchVisible: {
 			type: Boolean,
 			default: true,
 		},

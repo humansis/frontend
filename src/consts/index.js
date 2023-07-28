@@ -4,6 +4,7 @@ import FILTER from "./filter.js";
 import IMPORT from "./import.js";
 import ROLE from "./role.js";
 import GENERAL from "./general.js";
+import HOUSEHOLD from "./household.js";
 
 export {
 	ASSISTANCE,
@@ -12,4 +13,5 @@ export {
 	IMPORT,
 	ROLE,
 	GENERAL,
+	HOUSEHOLD,
 };

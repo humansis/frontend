@@ -1,5 +1,6 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { EXPORT } from "@/consts";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
@@ -15,6 +16,14 @@ export default {
 		});
 
 		return { data, totalCount };
+	},
+
+	getListOfHouseholdByBulkSearch(page, size, sort, body) {
+		return fetcher({
+			uri: `households/search${queryBuilder({ page, size, sort })}`,
+			method: "POST",
+			body,
+		});
 	},
 
 	async createHousehold(body) {
@@ -249,12 +258,22 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportHouseholds(format, ids, filters) {
+	exportHouseholds(format, ids, filters) {
 		const idsText = ids ? idsToUri(ids) : "";
 		const formatText = format ? `type=${format}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
 
 		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
+	},
+
+	exportBulkSearchHouseholds(format, body) {
+		const formatText = `type=${format}`;
+
+		return download({
+			uri: `households/exports?${formatText}`,
+			method: "POST",
+			body,
+		});
 	},
 
 	async exportAssistanceBeneficiaries(
