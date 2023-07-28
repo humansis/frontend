@@ -429,7 +429,6 @@ export default {
 
 						const { data, status, message } = await BeneficiariesService.exportBulkSearchHouseholds(
 							format,
-							ids,
 							body,
 						);
 
