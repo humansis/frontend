@@ -105,6 +105,7 @@
 						</b-button>
 						<b-button
 							v-if="canStartIdentityCheck"
+							:disabled="!isImportLoaded"
 							type="is-primary"
 							icon-right="play-circle"
 							:loading="changeStateButtonLoading"
@@ -158,9 +159,13 @@
 		<div class="card" v-if="importFiles.length">
 			<div>
 				<div class="card-content">
-					<b-message v-if="canUploadAndDownloadAffectedRecords" type="is-info">
+					<b-message v-if="canUploadAndDownloadAffectedRecords && isImportLoaded" type="is-info">
 						{{ $t('Do not repair your original file.') }}
 						{{ $t('Repair only the file with Affected Records.') }}
+					</b-message>
+					<b-message v-else type="is-info">
+						{{ $t('Please, check Violation for missing columns and ' +
+							'upload a new file compatible with import template.') }}
 					</b-message>
 				</div>
 				<div v-for="({
@@ -195,6 +200,7 @@
 										class="has-text-right"
 									>
 										<b-button
+											:disabled="!isImportLoaded"
 											type="is-info"
 											icon-right="file-download"
 											@click="downloadAffectedFile(id, invalidFileName)"
@@ -349,6 +355,11 @@ export default {
 		importFiles: {
 			type: Array,
 			default: () => [],
+		},
+
+		isImportLoaded: {
+			type: Boolean,
+			default: true,
 		},
 	},
 
