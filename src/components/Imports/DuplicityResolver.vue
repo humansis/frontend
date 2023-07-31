@@ -140,8 +140,8 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "familyName", type: "arrayTextBreakForDuplicities", bold: true },
-					{ key: "firstName", type: "arrayTextBreakForDuplicities", bold: true },
+					{ key: "familyName", label: "Local family name", type: "arrayTextBreakForDuplicities", bold: true },
+					{ key: "firstName", label: "Local given name", type: "arrayTextBreakForDuplicities", bold: true },
 					{ key: "idType", type: "arrayTextBreakForDuplicities", label: "ID Type" },
 					{ key: "idNumber", type: "arrayTextBreakForDuplicities", label: "ID Number" },
 					{

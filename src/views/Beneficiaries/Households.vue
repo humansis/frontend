@@ -289,8 +289,8 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", label: "Household ID", type: "link", width: "30" },
-					{ key: "familyName", label: "Family Name", width: "30", sortKey: "localFamilyName" },
-					{ key: "givenName", label: "First Name", width: "30", sortKey: "localFirstName" },
+					{ key: "familyName", label: "Local family name", width: "30", sortKey: "localFamilyName" },
+					{ key: "givenName", label: "Local given name", width: "30", sortKey: "localFirstName" },
 					{ key: "members", width: "30", sortKey: "dependents" },
 					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
 					{ key: "idNumbers", label: "ID Numbers", width: "30", sortKey: "nationalId" },
