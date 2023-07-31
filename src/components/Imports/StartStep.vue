@@ -117,7 +117,8 @@ export default {
 		status(value) {
 			this.importStatus = value;
 
-			if (value === consts.STATUS.INTEGRITY_CHECK) {
+			if (value === consts.STATUS.INTEGRITY_CHECK
+				|| value === consts.STATUS.INTEGRITY_CHECK_FAILED) {
 				this.$emit("moveStepForward");
 			}
 		},
