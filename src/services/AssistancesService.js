@@ -1,4 +1,5 @@
 import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	getDefaultScoringType() {
@@ -233,12 +234,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filter = null) {
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const filtersUri = filter ? filtersToUri(filter) : "";
-
+	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filters = null) {
 		let fulltext = "";
 
 		if (search.field.length && search.phrase.length) {
@@ -248,8 +244,8 @@ export default {
 		}
 
 		return fetcher({
-			uri: `assistances/${id}/assistances-beneficiaries?${
-				pageText + sizeText + sortText + fulltext + filtersUri
+			uri: `assistances/${id}/assistances-beneficiaries${
+				queryBuilder({ page, sort, size, filters }) + fulltext
 			}`,
 			version: 2,
 		});
