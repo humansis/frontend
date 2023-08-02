@@ -332,7 +332,7 @@ export default {
 				this.setAtDistributedButtonLoading = true;
 
 				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
-					const body = beneficiary.reliefPackageIds?.map((id) => ({
+					const body = beneficiary.reliefPackages?.map(({ id }) => ({
 						id, dateDistributed: new Date().toISOString(),
 					}));
 

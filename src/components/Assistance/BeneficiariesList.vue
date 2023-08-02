@@ -178,13 +178,13 @@
 			:row-class="(row) => row.removed && 'removed-row'"
 			:search-fields="searchFields"
 			:default-search-field="defaultSearchField"
-			:default-sort-direction="table.sortDirection"
-			:default-sort-key="table.sortColumn"
+			default-sort-direction="asc"
+			default-sort-key="familyName"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
+			@resetSort="resetSort('localFamilyName', 'asc')"
 			@onSearch="onSearch"
 			@checked="onRowsCheck"
 		>
@@ -404,8 +404,8 @@ export default {
 				columns: [],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "localFamilyName",
+				sortDirection: "asc",
+				sortColumn: "familyName",
 				searchPhrase: "",
 				searchField: "",
 				progress: null,
@@ -418,8 +418,8 @@ export default {
 				visibleColumns: [],
 				householdsAndIndividualEditColumns: [
 					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", sortable: true, sortKey: "localFamilyName" },
+					{ key: "givenName", label: "Local given name", sortable: true },
+					{ key: "familyName", label: "Local family name", sortable: true },
 					{ key: "gender" },
 					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
 					{ key: "residencyStatus" },
@@ -543,8 +543,8 @@ export default {
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
 				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "First Name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Family Name", sortable: true, width: "190px", sortKey: "localFamilyName" },
+				{ key: "givenName", label: "Family given name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: "Family family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
 				{ key: "nationalId", label: "ID Number", sortable: true },
 				{ key: "status", type: "tagArray", customTags: statusTags },
 				{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
@@ -596,28 +596,28 @@ export default {
 		toDistributeButtonClass() {
 			return [
 				"btn ml-3 is-light",
-				{ "is-selected has-border-black": this.statusActive.toDistribute },
+				{ "is-selected": this.statusActive.toDistribute },
 			];
 		},
 
 		distributedButtonClass() {
 			return [
-				"btn ml-3 is-success",
-				{ "is-selected has-border-black": this.statusActive.distributed },
+				"btn ml-3 is-success is-light",
+				{ "is-selected": this.statusActive.distributed },
 			];
 		},
 
 		expiredButtonClass() {
 			return [
-				"btn ml-3 is-danger",
-				{ "is-selected has-border-black": this.statusActive.expired },
+				"btn ml-3 is-danger is-light",
+				{ "is-selected": this.statusActive.expired },
 			];
 		},
 
 		canceledButtonClass() {
 			return [
-				"btn ml-3 is-warning",
-				{ "is-selected has-border-black": this.statusActive.canceled },
+				"btn ml-3 is-warning is-light",
+				{ "is-selected": this.statusActive.canceled },
 			];
 		},
 	},
@@ -695,6 +695,7 @@ export default {
 				canceled: false,
 			};
 			this.$refs.beneficiariesList.onResetSearch();
+			this.selectedFilters = [];
 			this.onFiltersChange({ reliefPackageStates: [] });
 		},
 

@@ -10,7 +10,10 @@ export const queryBuilder = (param) => {
 	if (sort) { query.push(`sort[]=${sort}`); }
 	if (search) { query.push(`filter[fulltext]=${search}`); }
 	if (filters && Object.keys(filters).length) {
-		query.push(filtersToUri(filters).replace(/^&/, ""));
+		const filterQuery = filtersToUri(filters).replace(/^&/, "");
+		if (filterQuery.length) {
+			query.push(filterQuery);
+		}
 	}
 	if (upcoming) { query.push(`upcoming=${upcoming}`); }
 	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }

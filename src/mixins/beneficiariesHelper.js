@@ -377,12 +377,16 @@ export default {
 			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
 			const sortKey = currentColumn.sortKey || column;
 
-			if (this.table.sortColumn === sortKey) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = sortKey;
-				this.table.sortDirection = "desc";
+			if (!this.table.sortReset) {
+				if (this.table.sortColumn === sortKey) {
+					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+				} else {
+					this.table.sortColumn = sortKey;
+					this.table.sortDirection = "desc";
+				}
 			}
+
+			this.table.sortReset = false;
 			await this.reloadBeneficiariesList();
 		},
 
@@ -401,11 +405,15 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async resetSort() {
+		async resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
-				this.table.sortColumn = "";
-				this.table.sortDirection = "";
-				await this.reloadBeneficiariesList();
+				this.table.sortColumn = sortColumn;
+				this.table.sortDirection = sortDirection;
+
+				if (forceFetch) {
+					await this.reloadBeneficiariesList();
+				}
 			}
 		},
 

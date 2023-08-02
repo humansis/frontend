@@ -122,7 +122,7 @@ export default {
 	},
 	SEARCH_FIELDS: [
 		{ code: "beneficiaryId", value: "BNF ID" },
-		{ code: "familyName", value: "Family name" },
-		{ code: "nationalId", value: "Document number" },
+		{ code: "familyName", value: "Local family name" },
+		{ code: "nationalId", value: "ID Number" },
 	],
 };
