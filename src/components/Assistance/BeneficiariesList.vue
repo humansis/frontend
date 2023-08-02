@@ -543,8 +543,8 @@ export default {
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
 				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "Family given name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Family family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
+				{ key: "givenName", label: "Local given name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: "Local family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
 				{ key: "nationalId", label: "ID Number", sortable: true },
 				{ key: "status", type: "tagArray", customTags: statusTags },
 				{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
