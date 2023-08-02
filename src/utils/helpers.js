@@ -9,7 +9,12 @@ export const queryBuilder = (param) => {
 	if (size) { query.push(`size=${size}`); }
 	if (sort) { query.push(`sort[]=${sort}`); }
 	if (search) { query.push(`filter[fulltext]=${search}`); }
-	if (filters) { query.push(filtersToUri(filters)); }
+	if (filters && Object.keys(filters).length) {
+		const filterQuery = filtersToUri(filters).replace(/^&/, "");
+		if (filterQuery.length) {
+			query.push(filterQuery);
+		}
+	}
 	if (upcoming) { query.push(`upcoming=${upcoming}`); }
 	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }
 	if (format) { query.push(`type=${format}`); }

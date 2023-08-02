@@ -1,4 +1,5 @@
 import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	getDefaultScoringType() {
@@ -231,6 +232,23 @@ export default {
 			uri: `assistances/${id}/assistances-beneficiaries?${pageText + sizeText + sortText + fulltext}`,
 		});
 		return { data, totalCount };
+	},
+
+	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filters = null) {
+		let fulltext = "";
+
+		if (search.field.length && search.phrase.length) {
+			fulltext = `&filter[${search.field}]=${search.phrase}`;
+		} else if (search.length) {
+			fulltext = `&filter[fulltext}]=${search}`;
+		}
+
+		return fetcher({
+			uri: `assistances/${id}/assistances-beneficiaries${
+				queryBuilder({ page, sort, size, filters }) + fulltext
+			}`,
+			version: 2,
+		});
 	},
 
 	async getListOfCommunities(id, page, size, sort, search = null) {

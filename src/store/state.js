@@ -37,6 +37,7 @@ export default {
 	admNames: {},
 	gridFilters: {
 		households: [],
+		assistanceDetail: [],
 		vouchers: [],
 		distributions: [],
 		purchases: [],

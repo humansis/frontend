@@ -70,7 +70,19 @@ export default {
 			}
 		},
 
-		setGridFiltersToUrl(entity, hasLocationsFilter = true) {
+		setGridFiltersToUrl(entity, hasLocationsFilter = true, selectedTypeOfDataStored = {}) {
+			const defaultTypeOfDataStored = {
+				page: true,
+				searchPhrase: true,
+				sortColumn: true,
+				sortDirection: true,
+				filters: true,
+			};
+
+			const typeOfDataStored = Object.keys(selectedTypeOfDataStored).length
+				? selectedTypeOfDataStored
+				: defaultTypeOfDataStored;
+
 			const { name, query } = this.$route;
 
 			const updatedGridFilters = { ...this.gridFilters };
@@ -84,12 +96,19 @@ export default {
 				? this.removeEmptyValues(this.locationsFilter)
 				: {};
 
+			const { page, searchPhrase, sortColumn, sortDirection, filters } = typeOfDataStored;
+
 			const newQuery = {
-				...(this.table.currentPage > 1 && { page: this.table.currentPage.toString() }),
-				...(this.table.searchPhrase && { search: this.table.searchPhrase }),
-				...(this.table.sortColumn && { sortColumn: this.table.sortColumn }),
-				...(this.table.sortDirection && { sortDirection: this.table.sortDirection }),
-				...(Object.keys(checkedFilter).length && { filters: JSON.stringify(checkedFilter) }),
+				...(this.table.currentPage > 1 && page && { page: this.table.currentPage.toString() }),
+				...(this.table.searchPhrase && searchPhrase && { search: this.table.searchPhrase }),
+				...(this.table.sortColumn && sortColumn && { sortColumn: this.table.sortColumn }),
+				...(this.table.sortDirection
+					&& sortDirection
+					&& { sortDirection: this.table.sortDirection }
+				),
+				...(Object.keys(checkedFilter).length
+					&& filters
+					&& { filters: JSON.stringify(checkedFilter) }),
 				...(hasLocationsFilter && Object.keys(checkedLocation).length && {
 					locationsFilter: JSON.stringify(checkedLocation),
 				}),
