@@ -266,11 +266,9 @@ export default {
 		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
 	},
 
-	exportBulkSearchHouseholds(format, body) {
-		const formatText = `type=${format}`;
-
+	exportBulkSearchHouseholds(format, ids, body) {
 		return download({
-			uri: `households/exports?${formatText}`,
+			uri: `households/exports${queryBuilder({ format, ids })}`,
 			method: "POST",
 			body,
 		});
