@@ -105,10 +105,10 @@
 						</b-button>
 						<b-button
 							v-if="canStartIdentityCheck"
-							:disabled="!isImportLoaded"
 							type="is-primary"
 							icon-right="play-circle"
 							:loading="changeStateButtonLoading"
+							:disabled="!isImportLoaded"
 							@click="startIdentityCheck"
 						>
 							{{ $t('Start Identity Check') }}
@@ -200,9 +200,9 @@
 										class="has-text-right"
 									>
 										<b-button
-											:disabled="!isImportLoaded"
 											type="is-info"
 											icon-right="file-download"
+											:disabled="!isImportLoaded"
 											@click="downloadAffectedFile(id, invalidFileName)"
 										>
 											{{ $t('Get Affected Records') }}
