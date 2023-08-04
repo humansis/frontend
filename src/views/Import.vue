@@ -65,6 +65,7 @@
 					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
 					:is-import-loaded="isImportLoaded"
+					:is-bad-file-version="isBadVersionOfExportFile"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -118,6 +119,7 @@ import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
 import consts from "@/utils/importConst";
 import Loading from "@/components/Loading";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "Import",
@@ -236,6 +238,9 @@ export default {
 
 		stateTips() {
 			if (!this.isImportLoaded && this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED) {
+				if (this.isBadVersionOfExportFile) {
+					return this.$t("Please, upload a new file compatible with import template.");
+				}
 				return this.$t("Please, check Violation for missing columns and upload a new file compatible with import template.");
 			}
 
@@ -275,6 +280,10 @@ export default {
 
 		isImportLoaded() {
 			return this.importFiles[0]?.isLoaded;
+		},
+
+		isBadVersionOfExportFile() {
+			return this.importFiles[0]?.failReason === EXPORT.FAIL_REASON.BAD_VERSION;
 		},
 	},
 
