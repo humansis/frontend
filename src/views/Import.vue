@@ -64,6 +64,7 @@
 					:status="importStatus"
 					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
+					:is-import-loaded="isImportLoaded"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -234,6 +235,10 @@ export default {
 		},
 
 		stateTips() {
+			if (!this.isImportLoaded && this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED) {
+				return this.$t("Please, check Violation for missing columns and upload a new file compatible with import template.");
+			}
+
 			switch (this.importStatus) {
 				case consts.STATUS.UPLOADING:
 				case consts.STATUS.INTEGRITY_CHECK:
@@ -266,6 +271,10 @@ export default {
 				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK
 				|| this.importStatus === consts.STATUS.IDENTITY_CHECK
 				|| this.importStatus === consts.STATUS.IMPORTING;
+		},
+
+		isImportLoaded() {
+			return this.importFiles[0]?.isLoaded;
 		},
 	},
 
