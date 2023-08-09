@@ -74,7 +74,7 @@ export default {
 					{ key: "fullLocationNames", label: "Location" },
 					{ key: "dateDistribution", label: "Assistance Date", type: "date", sortable: true },
 					{ key: "commodity" },
-					{ key: "carrierNumber" },
+					{ key: "carrierNumber", label: "Card No." },
 					{ key: "amount", label: "Distributed" },
 					{ key: "spent" },
 					{ key: "unit" },
