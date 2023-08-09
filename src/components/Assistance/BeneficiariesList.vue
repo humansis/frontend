@@ -909,6 +909,12 @@ export default {
 						this.table.data[key].phone = beneficiary.phones.length
 							? this.preparePhoneForTable(beneficiary.phones)
 							: this.$t("None");
+
+						const isDistributed = reliefPackages.length && reliefPackages.every(
+							(reliefPackage) => reliefPackage.state === "Distributed",
+						);
+
+						if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
 					});
 			}
 
