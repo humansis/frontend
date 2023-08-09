@@ -166,7 +166,7 @@
 					<b-message v-else-if="isBadFileVersion" type="is-info">
 						{{ $t('Please, upload a new file compatible with import template.') }}
 					</b-message>
-					<b-message v-else type="is-info">
+					<b-message v-else-if="!isIntegrityCheckCorrect" type="is-info">
 						{{ $t('Please, check Violation for missing columns and ' +
 							'upload a new file compatible with import template.') }}
 					</b-message>
@@ -199,7 +199,7 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0 && itegrityCheckFailed"
+									<td v-if="index === 0 && isIntegrityCheckFailed"
 										class="has-text-right"
 									>
 										<b-button
@@ -457,8 +457,12 @@ export default {
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 
-		itegrityCheckFailed() {
+		isIntegrityCheckFailed() {
 			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		isIntegrityCheckCorrect() {
+			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_CORRECT;
 		},
 	},
 
