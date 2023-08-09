@@ -45,7 +45,7 @@
 				<SafeDelete
 					v-if="userCan.addEditProducts"
 					icon="trash"
-					:entity="$t('Product')"
+					:entity="$t('Product Category')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
