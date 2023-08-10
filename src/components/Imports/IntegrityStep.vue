@@ -163,7 +163,10 @@
 						{{ $t('Do not repair your original file.') }}
 						{{ $t('Repair only the file with Affected Records.') }}
 					</b-message>
-					<b-message v-else type="is-info">
+					<b-message v-else-if="isBadFileVersion" type="is-info">
+						{{ $t('Please, upload a new file compatible with import template.') }}
+					</b-message>
+					<b-message v-else-if="!isViolationMessageHide" type="is-info">
 						{{ $t('Please, check Violation for missing columns and ' +
 							'upload a new file compatible with import template.') }}
 					</b-message>
@@ -196,7 +199,7 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0 && itegrityCheckFailed"
+									<td v-if="index === 0 && isIntegrityCheckFailed"
 										class="has-text-right"
 									>
 										<b-button
@@ -361,6 +364,11 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+
+		isBadFileVersion: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	watch: {
@@ -449,8 +457,13 @@ export default {
 				&& this.importStatus !== consts.STATUS.IMPORTING;
 		},
 
-		itegrityCheckFailed() {
+		isIntegrityCheckFailed() {
 			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		isViolationMessageHide() {
+			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.statistics.status === consts.STATUS.INTEGRITY_CHECK;
 		},
 	},
 

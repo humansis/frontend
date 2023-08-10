@@ -18,4 +18,7 @@ export default {
 	FORMAT_XLSX: "xlsx",
 	FORMAT_CSV: "csv",
 	FORMAT_ODS: "ods",
+	FAIL_REASON: {
+		BAD_VERSION: "Bad version",
+	},
 };
