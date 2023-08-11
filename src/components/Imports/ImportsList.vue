@@ -60,7 +60,7 @@
 				class="ml-3 is-light"
 				slot="trigger"
 				icon-right="sticky-note"
-				@click="statusFilter('New')"
+				@click="statusFilter(consts.FILTERS.NEW)"
 			>
 				{{ $t('New') }}
 			</b-button>
@@ -68,7 +68,7 @@
 				class="ml-3 is-info is-light"
 				slot="trigger"
 				icon-right="spinner"
-				@click="statusFilter('In Progress')"
+				@click="statusFilter(consts.FILTERS.IN_PROGRESS)"
 			>
 				{{ $t('In Progress') }}
 			</b-button>
@@ -76,7 +76,7 @@
 				class="ml-3 is-success is-light"
 				slot="trigger"
 				icon-right="check"
-				@click="statusFilter('Finished')"
+				@click="statusFilter(consts.FILTERS.FINISHED)"
 			>
 				{{ $t('Finished') }}
 			</b-button>
@@ -84,7 +84,7 @@
 				class="ml-3 is-warning is-light"
 				slot="trigger"
 				icon-right="ban"
-				@click="statusFilter('Canceled')"
+				@click="statusFilter(consts.FILTERS.CANCELED)"
 			>
 				{{ $t('Canceled') }}
 			</b-button>
@@ -164,6 +164,7 @@ export default {
 
 	data() {
 		return {
+			consts,
 			advancedSearchVisible: false,
 			filters: [],
 			table: {
@@ -189,6 +190,10 @@ export default {
 					consts.STATUS.SIMILARITY_CHECK, consts.STATUS.SIMILARITY_CHECK_CORRECT,
 					consts.STATUS.SIMILARITY_CHECK_FAILED,
 					consts.STATUS.IMPORTING,
+				],
+				filtersCanceled: [
+					consts.STATUS.CANCEL,
+					consts.STATUS.AUTOMATICALLY_CANCELED,
 				],
 			},
 		};
@@ -229,7 +234,18 @@ export default {
 		},
 
 		statusFilter(filter) {
-			const newStatusFilter = filter === "In Progress" ? this.table.filtersInProgress : [filter];
+			let newStatusFilter = [];
+
+			switch (filter) {
+				case consts.FILTERS.IN_PROGRESS:
+					newStatusFilter = this.table.filtersInProgress;
+					break;
+				case consts.FILTERS.CANCELED:
+					newStatusFilter = this.table.filtersCanceled;
+					break;
+				default:
+					newStatusFilter = [filter];
+			}
 			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 

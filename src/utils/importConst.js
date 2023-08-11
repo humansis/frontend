@@ -36,4 +36,10 @@ export default {
 		DUPLICITY_KEEP_OURS: "Duplicity Keep Ours",
 		DUPLICITY_CANDIDATE: "Duplicity Candidate",
 	},
+	FILTERS: {
+		NEW: "New",
+		IN_PROGRESS: "In Progress",
+		FINISHED: "Finished",
+		CANCELED: "Canceled",
+	},
 };
