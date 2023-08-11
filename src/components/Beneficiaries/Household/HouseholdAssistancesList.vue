@@ -66,8 +66,8 @@ export default {
 				visibleColumns: [
 					{ key: "icon", type: "IconWithTooltip", withoutLabel: true },
 					{ key: "beneficiaryId", label: "Beneficiary Id" },
-					{ key: "beneficiaryLocalGivenName", label: "First Name" },
-					{ key: "beneficiaryLocalFamilyName", label: "Family Name" },
+					{ key: "beneficiaryLocalGivenName", label: "Local Given Name" },
+					{ key: "beneficiaryLocalFamilyName", label: "Local Family Name" },
 					{ key: "state", label: "Status", type: "tag", customTags: statusTags },
 					{ key: "projectName", label: "Project", type: "link" },
 					{ key: "assistanceName", label: "Assistance", type: "link" },
