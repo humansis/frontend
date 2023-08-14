@@ -881,7 +881,7 @@ export default {
 							.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 						this.table.data[key].familyName = this
 							.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-						this.table.data[key].gender = normalizeText(beneficiary.gender);
+						this.table.data[key].gender = this.$t(normalizeText(beneficiary.gender));
 						this.table.data[key].vulnerabilities = beneficiary.vulnerabilityCriteria;
 						this.table.data[key].residencyStatus = beneficiary.residencyStatus;
 						this.table.data[key].dateOfBirth = beneficiary.birthDate;
