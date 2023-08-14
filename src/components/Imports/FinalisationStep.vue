@@ -343,7 +343,7 @@ export default {
 	methods: {
 		approveAndSave() {
 			this.$emit("changeImportState", {
-				state: IMPORT.STATE.IMPORTING,
+				state: IMPORT.STATUS.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});

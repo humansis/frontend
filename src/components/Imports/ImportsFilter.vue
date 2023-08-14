@@ -52,45 +52,7 @@ export default {
 					name: "Status",
 					placeholder: this.$t("Select Status"),
 					multiple: false,
-					data: [
-						{ code: IMPORT.STATUS.NEW, value: this.$t(IMPORT.STATUS.NEW) },
-						{ code: IMPORT.STATUS.INTEGRITY_CHECK, value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK) },
-						{
-							code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT,
-							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_CORRECT),
-						},
-						{
-							code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED,
-							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_FAILED),
-						},
-						{ code: IMPORT.STATUS.IDENTITY_CHECK, value: this.$t(IMPORT.STATUS.IDENTITY_CHECK) },
-						{
-							code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT,
-							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_CORRECT),
-						},
-						{
-							code: IMPORT.STATUS.IDENTITY_CHECK_FAILED,
-							value: this.$t(IMPORT.STATUS.IDENTITY_CHECK_FAILED),
-						},
-						{
-							code: IMPORT.STATUS.SIMILARITY_CHECK,
-							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK),
-						},
-						{
-							code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT,
-							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK_CORRECT),
-						},
-						{
-							code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED,
-							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK_FAILED),
-						},
-						{ code: IMPORT.STATUS.FINISH, value: this.$t(IMPORT.STATUS.FINISH) },
-						{ code: IMPORT.STATUS.CANCEL, value: this.$t(IMPORT.STATUS.CANCEL) },
-						{
-							code: IMPORT.STATUS.AUTOMATICALLY_CANCELED,
-							value: this.$t(IMPORT.STATUS.AUTOMATICALLY_CANCELED),
-						},
-					],
+					data: this.getImportStatusSelectData(),
 				},
 			},
 		};
@@ -115,6 +77,15 @@ export default {
 					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
+
+		getImportStatusSelectData() {
+			const forbiddenStatusFilters = [IMPORT.STATUS.UPLOADING, IMPORT.STATUS.IMPORTING];
+
+			return Object.values(IMPORT.STATUS)
+				.filter((status) => !forbiddenStatusFilters.includes(status))
+				.map((status) => ({ code: status, value: this.$t(status) }));
+		},
+
 	},
 };
 </script>

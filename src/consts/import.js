@@ -1,15 +1,6 @@
 export default {
-	STATE: {
-		INTEGRITY_CHECKING: "Integrity Checking",
-		IDENTITY_CHECKING: "Identity Checking",
-		SIMILARITY_CHECKING: "Similarity Checking",
-		FINISHED: "Finished",
-		CANCELED: "Canceled",
-		IMPORTING: "Importing",
-	},
 	STATUS: {
 		NEW: "New",
-		UPDATING: "UPDATING",
 		UPLOADING: "Uploading",
 		INTEGRITY_CHECK: "Integrity Checking",
 		INTEGRITY_CHECK_CORRECT: "Integrity Check Correct",

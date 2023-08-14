@@ -465,7 +465,7 @@ export default {
 			ImportService.changeImportState(importId, { status: state })
 				.then(({ status, message }) => {
 					if (status === 202) {
-						if (state === IMPORT.STATE.CANCELED) {
+						if (state === IMPORT.STATUS.CANCELED) {
 							Toast(this.$t("Import Canceled"), "is-success");
 							this.changeTab(3);
 						}
@@ -473,9 +473,9 @@ export default {
 						if (this.$route.name === "Import") {
 							Toast(this.$t(successMessage), "is-success");
 
-							if (state !== IMPORT.STATE.FINISHED
-							&& state !== IMPORT.STATE.IMPORTING
-							&& state !== IMPORT.STATE.CANCELED) {
+							if (state !== IMPORT.STATUS.FINISHED
+							&& state !== IMPORT.STATUS.IMPORTING
+							&& state !== IMPORT.STATUS.CANCELED) {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
@@ -484,7 +484,7 @@ export default {
 					}
 				}).catch((e) => {
 					if (e.message) {
-						const type = state === IMPORT.STATE.IMPORTING ? "is-warning" : "is-danger";
+						const type = state === IMPORT.STATUS.IMPORTING ? "is-warning" : "is-danger";
 						Notification(`${this.$t("Import")} ${e}`, type);
 					}
 				}).finally(() => {
@@ -514,7 +514,7 @@ export default {
 
 		async cancelImport() {
 			await this.changeImportState(
-				IMPORT.STATE.CANCELED,
+				IMPORT.STATUS.CANCELED,
 				"Canceled Successfully",
 				true,
 			);

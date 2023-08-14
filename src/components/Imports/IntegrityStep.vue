@@ -512,7 +512,7 @@ export default {
 
 		startIdentityCheck() {
 			this.$emit("changeImportState", {
-				state: IMPORT.STATE.IDENTITY_CHECKING,
+				state: IMPORT.STATUS.IDENTITY_CHECK,
 				successMessage: "Identity Check Started Successfully",
 				goNext: true,
 			});

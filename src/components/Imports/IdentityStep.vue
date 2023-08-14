@@ -369,7 +369,7 @@ export default {
 
 		startSimilarityCheck() {
 			this.$emit("changeImportState", {
-				state: IMPORT.STATE.SIMILARITY_CHECKING,
+				state: IMPORT.STATUS.SIMILARITY_CHECK,
 				successMessage: "Similarity Check Started Successfully",
 				goNext: true,
 			});

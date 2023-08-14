@@ -184,7 +184,7 @@ export default {
 					});
 			} else if (this.importFiles.length) {
 				this.$emit("changeImportState", {
-					state: IMPORT.STATE.INTEGRITY_CHECKING,
+					state: IMPORT.STATUS.INTEGRITY_CHECK,
 					successMessage: "Integrity Check Started Successfully",
 					goNext: true,
 				});
