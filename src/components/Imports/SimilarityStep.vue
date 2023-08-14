@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 
 export default {
@@ -162,9 +162,9 @@ export default {
 
 	computed: {
 		similarityStepActive() {
-			return this.status === consts.STATUS.SIMILARITY_CHECK
-				|| this.status === consts.STATUS.SIMILARITY_CHECK_CORRECT
-				|| this.status === consts.STATUS.SIMILARITY_CHECK_FAILED;
+			return this.status === IMPORT.STATUS.SIMILARITY_CHECK
+				|| this.status === IMPORT.STATUS.SIMILARITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.SIMILARITY_CHECK_FAILED;
 		},
 
 		totalEntries() {
@@ -180,13 +180,13 @@ export default {
 		},
 
 		canGoToFinalisation() {
-			return this.importStatus === consts.STATUS.SIMILARITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.SIMILARITY_CHECK_CORRECT;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 	},
 

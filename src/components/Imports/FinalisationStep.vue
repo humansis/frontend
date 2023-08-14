@@ -233,7 +233,7 @@
 </template>
 
 <script>
-import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts";
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
 
@@ -287,7 +287,7 @@ export default {
 
 	computed: {
 		finalisationStepActive() {
-			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		totalEntries() {
@@ -325,25 +325,25 @@ export default {
 		finishedImport() {
 			if (!this.importStatus) return false;
 
-			return this.importStatus === consts.STATUS.FINISH
-				|| this.importStatus === consts.STATUS.IMPORTING
-				|| this.importStatus === consts.STATUS.CANCEL
-				|| this.importStatus === consts.STATUS.AUTOMATICALLY_CANCELED;
+			return this.importStatus === IMPORT.STATUS.FINISH
+				|| this.importStatus === IMPORT.STATUS.IMPORTING
+				|| this.importStatus === IMPORT.STATUS.CANCEL
+				|| this.importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
 		canCancelImport() {
 			return this.importStatus
-				&& this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.AUTOMATICALLY_CANCELED
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+				&& this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 	},
 
 	methods: {
 		approveAndSave() {
 			this.$emit("changeImportState", {
-				state: consts.STATE.IMPORTING,
+				state: IMPORT.STATE.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});

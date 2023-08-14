@@ -308,8 +308,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
-import consts from "@/utils/importConst";
-import { IMPORT } from "@/consts/index";
+import { IMPORT } from "@/consts";
 import Loading from "@/components/Loading";
 import graduallyIncrement from "@/mixins/graduallyIncrement";
 
@@ -408,13 +407,13 @@ export default {
 
 	computed: {
 		integrityStepActive() {
-			return this.status === consts.STATUS.INTEGRITY_CHECK
-				|| this.status === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isCheckingIntegrity() {
-			return this.status === consts.STATUS.INTEGRITY_CHECK;
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		totalEntries() {
@@ -438,32 +437,32 @@ export default {
 		},
 
 		canStartIntegrityCheckAgain() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
 				&& this.dropFiles.length === 1;
 		},
 
 		canStartIdentityCheck() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canUploadAndDownloadAffectedRecords() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
 		isIntegrityCheckFailed() {
-			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isViolationMessageHide() {
-			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.statistics.status === consts.STATUS.INTEGRITY_CHECK;
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 	},
 
@@ -513,7 +512,7 @@ export default {
 
 		startIdentityCheck() {
 			this.$emit("changeImportState", {
-				state: consts.STATE.IDENTITY_CHECKING,
+				state: IMPORT.STATE.IDENTITY_CHECKING,
 				successMessage: "Identity Check Started Successfully",
 				goNext: true,
 			});

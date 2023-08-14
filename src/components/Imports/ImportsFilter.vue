@@ -15,6 +15,7 @@ import ProjectService from "@/services/ProjectService";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
 import consts from "@/utils/filterConst";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "ImportsFilter",
@@ -52,18 +53,43 @@ export default {
 					placeholder: this.$t("Select Status"),
 					multiple: false,
 					data: [
-						{ code: "New", value: this.$t("New") },
-						{ code: "Integrity Checking", value: this.$t("Integrity Checking") },
-						{ code: "Integrity Check Correct", value: this.$t("Integrity Check Correct") },
-						{ code: "Integrity Check Failed", value: this.$t("Integrity Check Failed") },
-						{ code: "Identity Checking", value: this.$t("Identity Checking") },
-						{ code: "Identity Check Correct", value: this.$t("Identity Check Correct") },
-						{ code: "Identity Check Failed", value: this.$t("Identity Check Failed") },
-						{ code: "Similarity Checking", value: this.$t("Similarity Checking") },
-						{ code: "Similarity Check Correct", value: this.$t("Similarity Check Correct") },
-						{ code: "Similarity Check Failed", value: this.$t("Similarity Check Failed") },
-						{ code: "Finished", value: this.$t("Finished") },
-						{ code: "Canceled", value: this.$t("Canceled") },
+						{ code: IMPORT.STATUS.NEW, value: this.$t(IMPORT.STATUS.NEW) },
+						{ code: IMPORT.STATUS.INTEGRITY_CHECK, value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK) },
+						{
+							code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT,
+							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_CORRECT),
+						},
+						{
+							code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED,
+							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_FAILED),
+						},
+						{ code: IMPORT.STATUS.IDENTITY_CHECK, value: this.$t(IMPORT.STATUS.IDENTITY_CHECK) },
+						{
+							code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT,
+							value: this.$t(IMPORT.STATUS.INTEGRITY_CHECK_CORRECT),
+						},
+						{
+							code: IMPORT.STATUS.IDENTITY_CHECK_FAILED,
+							value: this.$t(IMPORT.STATUS.IDENTITY_CHECK_FAILED),
+						},
+						{
+							code: IMPORT.STATUS.SIMILARITY_CHECK,
+							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK),
+						},
+						{
+							code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT,
+							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK_CORRECT),
+						},
+						{
+							code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED,
+							value: this.$t(IMPORT.STATUS.SIMILARITY_CHECK_FAILED),
+						},
+						{ code: IMPORT.STATUS.FINISH, value: this.$t(IMPORT.STATUS.FINISH) },
+						{ code: IMPORT.STATUS.CANCEL, value: this.$t(IMPORT.STATUS.CANCEL) },
+						{
+							code: IMPORT.STATUS.AUTOMATICALLY_CANCELED,
+							value: this.$t(IMPORT.STATUS.AUTOMATICALLY_CANCELED),
+						},
 					],
 				},
 			},

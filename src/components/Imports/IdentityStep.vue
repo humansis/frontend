@@ -87,14 +87,14 @@
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:class="allFromFileClasses"
 						:disabled="allRecordsFormLoading"
-						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_UPDATE)"
+						@click="changeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_UPDATE)"
 					>
 						{{ $t('All From File') }}
 					</b-button>
 					<b-button
 						v-if="amountIdentityDuplicities && canResolveDuplicities"
 						:class="allFromHumansisClasses"
-						@click="changeBulkDuplicitiesStatus(consts.ITEM_STATUS.TO_LINK)"
+						@click="changeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
 					>
 						{{ $t('All From Humansis') }}
 					</b-button>
@@ -152,11 +152,11 @@
 
 <script>
 import graduallyIncrement from "@/mixins/graduallyIncrement";
-import consts from "@/utils/importConst";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
 import Loading from "@/components/Loading";
 import { Toast } from "@/utils/UI";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "IdentityStep",
@@ -170,7 +170,7 @@ export default {
 
 	data() {
 		return {
-			consts,
+			IMPORT,
 			importStatistics: {},
 			duplicitiesContentOpened: false,
 			file: {},
@@ -240,18 +240,18 @@ export default {
 
 	computed: {
 		allRecordsFormLoading() {
-			if (this.resolversAllActive === consts.ITEM_STATUS.TO_UPDATE) {
+			if (this.resolversAllActive === IMPORT.ITEM_STATUS.TO_UPDATE) {
 				return this.resolversAllLoading
 					|| (!this.duplicities.every(
-						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS,
+						(duplicity) => duplicity.state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS,
 					)
 						&& !this.allFromSolved);
 			}
 
-			if (this.resolversAllActive === consts.ITEM_STATUS.TO_LINK) {
+			if (this.resolversAllActive === IMPORT.ITEM_STATUS.TO_LINK) {
 				return this.resolversAllLoading
 					|| (!this.duplicities.every(
-						(duplicity) => duplicity.state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
+						(duplicity) => duplicity.state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
 					)
 						&& !this.allFromSolved);
 			}
@@ -260,18 +260,18 @@ export default {
 		},
 
 		identityStepActive() {
-			return this.status === consts.STATUS.IDENTITY_CHECK
-				|| this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+			return this.status === IMPORT.STATUS.IDENTITY_CHECK
+				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		isCheckingIdentity() {
-			return this.status === consts.STATUS.IDENTITY_CHECK;
+			return this.status === IMPORT.STATUS.IDENTITY_CHECK;
 		},
 
 		canResolveDuplicities() {
-			return this.status === consts.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === consts.STATUS.IDENTITY_CHECK_FAILED;
+			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		totalEntries() {
@@ -295,25 +295,25 @@ export default {
 		},
 
 		canStartSimilarityCheck() {
-			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
 		canGoToFinalisation() {
-			return this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		isAllFromFileUnselected() {
-			return this.resolversAllActive !== consts.ITEM_STATUS.TO_UPDATE;
+			return this.resolversAllActive !== IMPORT.ITEM_STATUS.TO_UPDATE;
 		},
 
 		isAllFromHumansisUnselected() {
-			return this.resolversAllActive !== consts.ITEM_STATUS.TO_LINK;
+			return this.resolversAllActive !== IMPORT.ITEM_STATUS.TO_LINK;
 		},
 
 		allFromFileClasses() {
@@ -369,7 +369,7 @@ export default {
 
 		startSimilarityCheck() {
 			this.$emit("changeImportState", {
-				state: consts.STATE.SIMILARITY_CHECKING,
+				state: IMPORT.STATE.SIMILARITY_CHECKING,
 				successMessage: "Similarity Check Started Successfully",
 				goNext: true,
 			});
