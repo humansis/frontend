@@ -327,7 +327,7 @@ import ExportControl from "@/components/Export";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
@@ -881,7 +881,7 @@ export default {
 							.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 						this.table.data[key].familyName = this
 							.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-						this.table.data[key].gender = this.prepareGender(beneficiary.gender);
+						this.table.data[key].gender = normalizeText(beneficiary.gender);
 						this.table.data[key].vulnerabilities = beneficiary.vulnerabilityCriteria;
 						this.table.data[key].residencyStatus = beneficiary.residencyStatus;
 						this.table.data[key].dateOfBirth = beneficiary.birthDate;
