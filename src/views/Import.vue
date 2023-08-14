@@ -117,9 +117,8 @@ import IdentityStep from "@/components/Imports/IdentityStep";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
-import consts from "@/utils/importConst";
 import Loading from "@/components/Loading";
-import { EXPORT } from "@/consts";
+import { EXPORT, IMPORT } from "@/consts";
 
 export default {
 	name: "Import",
@@ -186,26 +185,26 @@ export default {
 			let result = "";
 
 			switch (this.importStatus) {
-				case consts.STATUS.CANCEL:
-				case consts.STATUS.IMPORTING:
-				case consts.STATUS.AUTOMATICALLY_CANCELED:
+				case IMPORT.STATUS.CANCEL:
+				case IMPORT.STATUS.IMPORTING:
+				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
 					result = "is-warning";
 					break;
-				case consts.STATUS.FINISH:
-				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
-				case consts.STATUS.IDENTITY_CHECK_CORRECT:
-				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+				case IMPORT.STATUS.FINISH:
+				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
+				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
+				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
 					result = "is-success";
 					break;
-				case consts.STATUS.INTEGRITY_CHECK_FAILED:
-				case consts.STATUS.IDENTITY_CHECK_FAILED:
-				case consts.STATUS.SIMILARITY_CHECK_FAILED:
+				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
+				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
 					result = "is-danger";
 					break;
-				case consts.STATUS.NEW:
-				case consts.STATUS.INTEGRITY_CHECK:
-				case consts.STATUS.IDENTITY_CHECK:
-				case consts.STATUS.SIMILARITY_CHECK:
+				case IMPORT.STATUS.NEW:
+				case IMPORT.STATUS.INTEGRITY_CHECK:
+				case IMPORT.STATUS.IDENTITY_CHECK:
+				case IMPORT.STATUS.SIMILARITY_CHECK:
 				default:
 					result = "is-info";
 			}
@@ -214,9 +213,9 @@ export default {
 		},
 
 		integrityStepHasError() {
-			if (this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				&& this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
-				&& this.importStatus === consts.STATUS.INTEGRITY_CHECK) {
+			if (this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				&& this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
+				&& this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK) {
 				return this.statistics.amountIntegrityFailed;
 			}
 
@@ -224,12 +223,12 @@ export default {
 		},
 
 		identityStepHasError() {
-			if (this.importStatus === consts.STATUS.IDENTITY_CHECK_CORRECT
-				&& this.importStatus === consts.STATUS.IDENTITY_CHECK_FAILED
-				&& this.importStatus === consts.STATUS.IDENTITY_CHECK
-				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK_CORRECT
-				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK_FAILED
-				&& this.importStatus === consts.STATUS.SIMILARITY_CHECK) {
+			if (this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				&& this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_FAILED
+				&& this.importStatus === IMPORT.STATUS.IDENTITY_CHECK
+				&& this.importStatus === IMPORT.STATUS.SIMILARITY_CHECK_CORRECT
+				&& this.importStatus === IMPORT.STATUS.SIMILARITY_CHECK_FAILED
+				&& this.importStatus === IMPORT.STATUS.SIMILARITY_CHECK) {
 				return this.statistics.amountDuplicities || this.columnsError;
 			}
 
@@ -237,7 +236,7 @@ export default {
 		},
 
 		stateTips() {
-			if (!this.isImportLoaded && this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED) {
+			if (!this.isImportLoaded && this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
 				if (this.isBadVersionOfExportFile) {
 					return this.$t("Please, upload a new file compatible with import template.");
 				}
@@ -245,26 +244,26 @@ export default {
 			}
 
 			switch (this.importStatus) {
-				case consts.STATUS.UPLOADING:
-				case consts.STATUS.INTEGRITY_CHECK:
-				case consts.STATUS.IDENTITY_CHECK:
-				case consts.STATUS.IMPORTING:
+				case IMPORT.STATUS.UPLOADING:
+				case IMPORT.STATUS.INTEGRITY_CHECK:
+				case IMPORT.STATUS.IDENTITY_CHECK:
+				case IMPORT.STATUS.IMPORTING:
 					return this.$t("You can leave import page, Humansis will notify You by email once ready.");
-				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
+				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 					return this.$t("Please start identity check.");
-				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 					return this.$t("Please download affected records and upload corrected records back.");
-				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 					return this.$t("Please manage duplicities, i.e. decide which data to use.");
-				case consts.STATUS.FINISH:
+				case IMPORT.STATUS.FINISH:
 					return this.$t("Import is finished.");
-				case consts.STATUS.CANCEL:
+				case IMPORT.STATUS.CANCEL:
 					return this.$t("Import was canceled.");
-				case consts.STATUS.IDENTITY_CHECK_CORRECT:
+				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 					return this.activeStep === 3
 						? this.$t("Please approve and start import")
 						: this.$t("Please Go to finalization");
-				case consts.STATUS.AUTOMATICALLY_CANCELED:
+				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
 					return `${this.$t("Import failed:")} ${this.importFailReason}`;
 				default:
 					return "";
@@ -272,10 +271,10 @@ export default {
 		},
 
 		isBusyIndicator() {
-			return this.importStatus === consts.STATUS.UPLOADING
-				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK
-				|| this.importStatus === consts.STATUS.IDENTITY_CHECK
-				|| this.importStatus === consts.STATUS.IMPORTING;
+			return this.importStatus === IMPORT.STATUS.UPLOADING
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.IMPORTING;
 		},
 
 		isImportLoaded() {
@@ -327,9 +326,9 @@ export default {
 
 		setCheckingInterval() {
 			if (
-				this.importDetail?.status !== consts.STATUS.NEW
-				&& this.importDetail?.status !== consts.STATUS.CANCEL
-				&& this.importDetail?.status !== consts.STATUS.FINISH
+				this.importDetail?.status !== IMPORT.STATUS.NEW
+				&& this.importDetail?.status !== IMPORT.STATUS.CANCEL
+				&& this.importDetail?.status !== IMPORT.STATUS.FINISH
 			) {
 				this.statisticsInterval = setInterval(() => {
 					this.fetchImportStatistics();
@@ -390,32 +389,32 @@ export default {
 
 		stepsRedirect(status) {
 			switch (status) {
-				case consts.STATUS.CANCEL:
-				case consts.STATUS.AUTOMATICALLY_CANCELED:
-				case consts.STATUS.IMPORTING:
-				case consts.STATUS.FINISH:
+				case IMPORT.STATUS.CANCEL:
+				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
+				case IMPORT.STATUS.IMPORTING:
+				case IMPORT.STATUS.FINISH:
 					this.changeTab(3);
 					break;
 
-				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
-				case consts.STATUS.SIMILARITY_CHECK_FAILED:
-				case consts.STATUS.SIMILARITY_CHECK:
+				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
+				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
+				case IMPORT.STATUS.SIMILARITY_CHECK:
 					this.changeTab(3);
 					break;
 
-				case consts.STATUS.IDENTITY_CHECK_FAILED:
-				case consts.STATUS.IDENTITY_CHECK_CORRECT:
-				case consts.STATUS.IDENTITY_CHECK:
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
+				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
+				case IMPORT.STATUS.IDENTITY_CHECK:
 					this.changeTab(2);
 					break;
 
-				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
-				case consts.STATUS.INTEGRITY_CHECK_FAILED:
-				case consts.STATUS.INTEGRITY_CHECK:
+				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
+				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
+				case IMPORT.STATUS.INTEGRITY_CHECK:
 					this.changeTab(1);
 					break;
 
-				case consts.STATUS.NEW:
+				case IMPORT.STATUS.NEW:
 				default:
 					this.changeTab(0);
 			}
@@ -466,7 +465,7 @@ export default {
 			ImportService.changeImportState(importId, { status: state })
 				.then(({ status, message }) => {
 					if (status === 202) {
-						if (state === consts.STATE.CANCELED) {
+						if (state === IMPORT.STATUS.CANCELED) {
 							Toast(this.$t("Import Canceled"), "is-success");
 							this.changeTab(3);
 						}
@@ -474,9 +473,9 @@ export default {
 						if (this.$route.name === "Import") {
 							Toast(this.$t(successMessage), "is-success");
 
-							if (state !== consts.STATE.FINISHED
-							&& state !== consts.STATE.IMPORTING
-							&& state !== consts.STATE.CANCELED) {
+							if (state !== IMPORT.STATUS.FINISHED
+							&& state !== IMPORT.STATUS.IMPORTING
+							&& state !== IMPORT.STATUS.CANCELED) {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
@@ -485,7 +484,7 @@ export default {
 					}
 				}).catch((e) => {
 					if (e.message) {
-						const type = state === consts.STATE.IMPORTING ? "is-warning" : "is-danger";
+						const type = state === IMPORT.STATUS.IMPORTING ? "is-warning" : "is-danger";
 						Notification(`${this.$t("Import")} ${e}`, type);
 					}
 				}).finally(() => {
@@ -515,7 +514,7 @@ export default {
 
 		async cancelImport() {
 			await this.changeImportState(
-				consts.STATE.CANCELED,
+				IMPORT.STATUS.CANCELED,
 				"Canceled Successfully",
 				true,
 			);
@@ -524,7 +523,7 @@ export default {
 		},
 
 		isImportAutomaticallyCanceled(importStatus) {
-			if (importStatus === consts.STATUS.AUTOMATICALLY_CANCELED) {
+			if (importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED) {
 				this.stepsRedirect(importStatus);
 			}
 		},

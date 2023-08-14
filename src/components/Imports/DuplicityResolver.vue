@@ -103,7 +103,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
-import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
@@ -121,16 +121,16 @@ export default {
 
 	data() {
 		return {
-			consts,
+			IMPORT,
 			isExportLoading: false,
 			isTotalCountLoading: false,
-			selectedFilters: [consts.ITEM_STATE.DUPLICITY_CANDIDATE],
+			selectedFilters: [IMPORT.ITEM_STATE.DUPLICITY_CANDIDATE],
 			statusFilterConvention: {
-				notSolved: consts.ITEM_STATE.DUPLICITY_CANDIDATE,
-				fromFile: consts.ITEM_STATE.DUPLICITY_KEEP_OURS,
-				fromHumansis: consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
+				notSolved: IMPORT.ITEM_STATE.DUPLICITY_CANDIDATE,
+				fromFile: IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS,
+				fromHumansis: IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS,
 			},
-			filters: { status: [consts.ITEM_STATE.DUPLICITY_CANDIDATE] },
+			filters: { status: [IMPORT.ITEM_STATE.DUPLICITY_CANDIDATE] },
 			statusActive: {
 				notSolved: true,
 				fromFile: false,
@@ -390,7 +390,7 @@ export default {
 		async resolveToUpdate(queueId, acceptedDuplicityId, duplicityKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
-				consts.ITEM_STATUS.TO_UPDATE,
+				IMPORT.ITEM_STATUS.TO_UPDATE,
 				acceptedDuplicityId,
 				duplicityKey,
 				"toUpdateLoading",
@@ -400,7 +400,7 @@ export default {
 		async resolveToLink(queueId, acceptedDuplicityId, duplicityKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
-				consts.ITEM_STATUS.TO_LINK,
+				IMPORT.ITEM_STATUS.TO_LINK,
 				acceptedDuplicityId,
 				duplicityKey,
 				"toLinkLoading",
@@ -419,12 +419,12 @@ export default {
 			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
 				.then(({ status }) => {
 					if (status === 202) {
-						if (state === consts.ITEM_STATUS.TO_LINK) {
-							this.table.data[duplicityKey].state = consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+						if (state === IMPORT.ITEM_STATUS.TO_LINK) {
+							this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
 						}
 
-						if (state === consts.ITEM_STATUS.TO_UPDATE) {
-							this.table.data[duplicityKey].state = consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
+						if (state === IMPORT.ITEM_STATUS.TO_UPDATE) {
+							this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 						}
 
 						Toast(this.$t("Solved"), "is-success");
@@ -452,7 +452,7 @@ export default {
 		},
 
 		fromFileClasses(item) {
-			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_OURS;
+			const isOutlined = this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 
 			return [
 				"is-info",
@@ -462,7 +462,7 @@ export default {
 		},
 
 		fromHumansisClasses(item) {
-			const isOutlined = this.table.data[item].state === consts.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+			const isOutlined = this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
 
 			return [
 				"is-info",
