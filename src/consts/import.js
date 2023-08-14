@@ -11,9 +11,9 @@ export default {
 		SIMILARITY_CHECK: "Similarity Checking",
 		SIMILARITY_CHECK_CORRECT: "Similarity Check Correct",
 		SIMILARITY_CHECK_FAILED: "Similarity Check Failed",
-		AUTOMATICALLY_CANCELED: "Automatically Canceled",
 		FINISH: "Finished",
 		CANCEL: "Canceled",
+		AUTOMATICALLY_CANCELED: "Automatically Canceled",
 		IMPORTING: "Importing",
 	},
 	ITEM_STATUS: {
