@@ -65,7 +65,7 @@
 					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
 					:is-import-loaded="isImportLoaded"
-					:is-bad-file-version="isBadVersionOfExportFile"
+					:is-bad-file-version="isBadVersionOfImportFile"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -118,7 +118,7 @@ import FinalisationStep from "@/components/Imports/FinalisationStep";
 import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
 import Loading from "@/components/Loading";
-import { EXPORT, IMPORT } from "@/consts";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "Import",
@@ -237,7 +237,7 @@ export default {
 
 		stateTips() {
 			if (!this.isImportLoaded && this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
-				if (this.isBadVersionOfExportFile) {
+				if (this.isBadVersionOfImportFile) {
 					return this.$t("Please, upload a new file compatible with import template.");
 				}
 				return this.$t("Please, check Violation for missing columns and upload a new file compatible with import template.");
@@ -281,8 +281,8 @@ export default {
 			return this.importFiles[0]?.isLoaded;
 		},
 
-		isBadVersionOfExportFile() {
-			return this.importFiles[0]?.failReason === EXPORT.FAIL_REASON.BAD_VERSION;
+		isBadVersionOfImportFile() {
+			return this.importFiles[0]?.failReason === IMPORT.FAIL_REASON.BAD_VERSION;
 		},
 	},
 
@@ -465,7 +465,7 @@ export default {
 			ImportService.changeImportState(importId, { status: state })
 				.then(({ status, message }) => {
 					if (status === 202) {
-						if (state === IMPORT.STATUS.CANCELED) {
+						if (state === IMPORT.STATUS.CANCEL) {
 							Toast(this.$t("Import Canceled"), "is-success");
 							this.changeTab(3);
 						}
@@ -473,9 +473,9 @@ export default {
 						if (this.$route.name === "Import") {
 							Toast(this.$t(successMessage), "is-success");
 
-							if (state !== IMPORT.STATUS.FINISHED
+							if (state !== IMPORT.STATUS.FINISH
 							&& state !== IMPORT.STATUS.IMPORTING
-							&& state !== IMPORT.STATUS.CANCELED) {
+							&& state !== IMPORT.STATUS.CANCEL) {
 								if (goNext) this.changeTab(this.activeStep + 1);
 							}
 						}
@@ -514,7 +514,7 @@ export default {
 
 		async cancelImport() {
 			await this.changeImportState(
-				IMPORT.STATUS.CANCELED,
+				IMPORT.STATUS.CANCEL,
 				"Canceled Successfully",
 				true,
 			);
