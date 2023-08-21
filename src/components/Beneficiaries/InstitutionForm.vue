@@ -334,6 +334,10 @@ export default {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+		institutionModal: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	validations: {
@@ -416,7 +420,7 @@ export default {
 				this.formModel.phoneType = this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
-			if (projectIds) {
+			if (projectIds && (this.institutionModal.isEditing || this.institutionModal.isDetail)) {
 				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
 			}
 			this.mapping = this.$refs.locationForm.mapping;

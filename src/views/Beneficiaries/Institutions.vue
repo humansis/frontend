@@ -30,6 +30,7 @@
 				:formModel="institutionModel"
 				:submit-button-label="institutionModal.isEditing ? $t('Update') : $t('Create')"
 				:form-disabled="institutionModal.isDetail"
+				:institution-modal="institutionModal"
 				@formSubmitted="submitInstitutionForm"
 				@formClosed="closeInstitutionModal"
 			/>
