@@ -97,6 +97,7 @@
 						<MultiSelectTag
 							:props="props"
 							:items="formModel.selectedSubsectors"
+							:is-data-with-underscore="false"
 							@optionRemoved="subsectorSelect"
 						/>
 					</template>
