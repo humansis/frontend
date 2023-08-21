@@ -1,15 +1,10 @@
-import { fetcher, filtersToUri } from "@/utils/fetcher";
+import { fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	async getListOfInstitutions(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = page ? `&size=${size}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `institutions?${pageText + sizeText + sortText + fulltext + filtersText}`,
+			uri: `institutions${queryBuilder({ page, size, sort, search, filters })}`,
 		});
 		return { data, totalCount };
 	},

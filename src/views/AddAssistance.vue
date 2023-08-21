@@ -64,6 +64,7 @@
 				<TargetTypeSelect
 					ref="targetTypeSelect"
 					v-show="visibleComponents.communities || visibleComponents.institutions"
+					:project-id="assistanceBody.projectId"
 					:visible="targetTypeSelectVisible"
 					@updatedData="fetchTargetType"
 				/>

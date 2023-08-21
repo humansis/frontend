@@ -79,6 +79,10 @@ export default {
 
 	props: {
 		visible: Object,
+		projectId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {
@@ -152,7 +156,13 @@ export default {
 		},
 
 		async fetchInstitutions() {
-			await InstitutionService.getListOfInstitutions()
+			await InstitutionService.getListOfInstitutions(
+				null,
+				null,
+				null,
+				null,
+				{ projects: [this.projectId] },
+			)
 				.then(({ data }) => {
 					this.options.institutions = this.prepareInstitutionsForSelect(data);
 				})
