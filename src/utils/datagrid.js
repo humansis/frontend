@@ -5,7 +5,7 @@ export const normalizeText = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
-export const normalizeTags = (text = "") => text
+export const normalizeSelectorValue = (text = "") => text
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
 export const normalizeCustomFields = (text = "") => text
@@ -55,7 +55,7 @@ export const generateColumns = ((visibleColumns) => {
 
 export default {
 	normalizeText,
-	normalizeTags,
+	normalizeSelectorValue,
 	normalizeProjectName,
 	generateColumns,
 };

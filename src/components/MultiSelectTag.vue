@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { normalizeTags, normalizeText } from "@/utils/datagrid";
+import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "MultiSelectTag",
@@ -26,10 +26,6 @@ export default {
 	},
 
 	methods: {
-		normalizeText(value) {
-			return normalizeText(value);
-		},
-
 		removeElement(option) {
 			const slicedItems = this.items.filter((item) => item.code !== option.code);
 			this.$emit("optionRemoved", slicedItems);
@@ -40,7 +36,7 @@ export default {
 		elementValue() {
 			return this.isDataWithUnderscore
 				? normalizeText(this.props.option.value)
-				: normalizeTags(this.props.option.value);
+				: normalizeSelectorValue(this.props.option.value);
 		},
 	},
 };

@@ -51,13 +51,14 @@
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 					<template #tag="props">
 						<MultiSelectTag
 							:props="props"
 							:items="formModel.selectedSectors"
+							:is-data-with-underscore="false"
 							@optionRemoved="selectorsSelect"
 						/>
 					</template>
@@ -90,7 +91,7 @@
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 					<template #tag="props">
@@ -311,7 +312,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import Validation from "@/mixins/validation";
-import { normalizeText } from "@/utils/datagrid";
+import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
 import MultiSelectTag from "@/components/MultiSelectTag";
 import SvgIcon from "@/components/SvgIcon";
 import calendarHelper from "@/mixins/calendarHelper";
@@ -395,6 +396,10 @@ export default {
 	methods: {
 		normalizeText(value) {
 			return normalizeText(value);
+		},
+
+		normalizeSelectorValue(value) {
+			return normalizeSelectorValue(value);
 		},
 
 		submitForm() {
