@@ -79,8 +79,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
-import consts from "@/utils/importConst";
-import { IMPORT } from "@/consts/index";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "StartStep",
@@ -117,8 +116,8 @@ export default {
 		status(value) {
 			this.importStatus = value;
 
-			if (value === consts.STATUS.INTEGRITY_CHECK
-				|| value === consts.STATUS.INTEGRITY_CHECK_FAILED) {
+			if (value === IMPORT.STATUS.INTEGRITY_CHECK
+				|| value === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
 				this.$emit("moveStepForward");
 			}
 		},
@@ -130,32 +129,32 @@ export default {
 
 	computed: {
 		disabledStartImport() {
-			return this.importStatus === consts.STATUS.NEW
+			return this.importStatus === IMPORT.STATUS.NEW
 				&& (this.dropFiles.length === 1 || this.importFiles.length);
 		},
 
 		isStatusNew() {
-			return this.importStatus === consts.STATUS.NEW;
+			return this.importStatus === IMPORT.STATUS.NEW;
 		},
 
 		canStartImport() {
-			return this.importStatus === consts.STATUS.NEW || this.importFiles.length;
+			return this.importStatus === IMPORT.STATUS.NEW || this.importFiles.length;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
 		isUploadStarted() {
 			return this.startLoading
-				|| this.importStatus === consts.STATUS.UPLOADING;
+				|| this.importStatus === IMPORT.STATUS.UPLOADING;
 		},
 
 		isUploadBoxVisible() {
-			return this.importStatus === consts.STATUS.NEW
-				|| this.importStatus === consts.STATUS.UPLOADING;
+			return this.importStatus === IMPORT.STATUS.NEW
+				|| this.importStatus === IMPORT.STATUS.UPLOADING;
 		},
 	},
 
@@ -185,7 +184,7 @@ export default {
 					});
 			} else if (this.importFiles.length) {
 				this.$emit("changeImportState", {
-					state: consts.STATE.INTEGRITY_CHECKING,
+					state: IMPORT.STATUS.INTEGRITY_CHECK,
 					successMessage: "Integrity Check Started Successfully",
 					goNext: true,
 				});

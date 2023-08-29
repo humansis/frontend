@@ -15,6 +15,7 @@ import ProjectService from "@/services/ProjectService";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
 import consts from "@/utils/filterConst";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "ImportsFilter",
@@ -51,20 +52,7 @@ export default {
 					name: "Status",
 					placeholder: this.$t("Select Status"),
 					multiple: false,
-					data: [
-						{ code: "New", value: this.$t("New") },
-						{ code: "Integrity Checking", value: this.$t("Integrity Checking") },
-						{ code: "Integrity Check Correct", value: this.$t("Integrity Check Correct") },
-						{ code: "Integrity Check Failed", value: this.$t("Integrity Check Failed") },
-						{ code: "Identity Checking", value: this.$t("Identity Checking") },
-						{ code: "Identity Check Correct", value: this.$t("Identity Check Correct") },
-						{ code: "Identity Check Failed", value: this.$t("Identity Check Failed") },
-						{ code: "Similarity Checking", value: this.$t("Similarity Checking") },
-						{ code: "Similarity Check Correct", value: this.$t("Similarity Check Correct") },
-						{ code: "Similarity Check Failed", value: this.$t("Similarity Check Failed") },
-						{ code: "Finished", value: this.$t("Finished") },
-						{ code: "Canceled", value: this.$t("Canceled") },
-					],
+					data: this.getImportStatusSelectData(),
 				},
 			},
 		};
@@ -89,6 +77,15 @@ export default {
 					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
 				});
 		},
+
+		getImportStatusSelectData() {
+			const forbiddenStatusFilters = [IMPORT.STATUS.UPLOADING, IMPORT.STATUS.IMPORTING];
+
+			return Object.values(IMPORT.STATUS)
+				.filter((status) => !forbiddenStatusFilters.includes(status))
+				.map((status) => ({ code: status, value: this.$t(status) }));
+		},
+
 	},
 };
 </script>

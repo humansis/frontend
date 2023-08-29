@@ -90,7 +90,7 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import Validation from "@/mixins/validation";
-import { IMPORT } from "@/consts/index";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "ScoringForm",

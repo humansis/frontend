@@ -127,7 +127,7 @@ export default {
 				columns: [
 					{ field: "criteriaTarget", label: this.$t("Criteria Target") },
 					{ field: "criteria", label: this.$t("Criteria") },
-					{ field: "condition", label: this.$t("Condition") },
+					{ field: "condition", label: this.$t("Condition"), type: "textOrNone" },
 					{ field: "value", label: this.$t("Value"), type: "customValue" },
 					{ field: "scoreWeight", label: this.$t("Score Weight") },
 				],

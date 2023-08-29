@@ -327,7 +327,7 @@ import ExportControl from "@/components/Export";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
@@ -881,7 +881,7 @@ export default {
 							.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
 						this.table.data[key].familyName = this
 							.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-						this.table.data[key].gender = this.prepareGender(beneficiary.gender);
+						this.table.data[key].gender = this.$t(normalizeText(beneficiary.gender));
 						this.table.data[key].vulnerabilities = beneficiary.vulnerabilityCriteria;
 						this.table.data[key].residencyStatus = beneficiary.residencyStatus;
 						this.table.data[key].dateOfBirth = beneficiary.birthDate;
@@ -909,6 +909,12 @@ export default {
 						this.table.data[key].phone = beneficiary.phones.length
 							? this.preparePhoneForTable(beneficiary.phones)
 							: this.$t("None");
+
+						const isDistributed = reliefPackages.length && reliefPackages.every(
+							(reliefPackage) => reliefPackage.state === "Distributed",
+						);
+
+						if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
 					});
 			}
 

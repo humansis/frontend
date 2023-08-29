@@ -464,7 +464,6 @@ export default {
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
-			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		mapSelectionCriteria() {
@@ -538,7 +537,7 @@ export default {
 				});
 		},
 
-		fetchNewAssistanceForm(data) {
+		async fetchNewAssistanceForm(data) {
 			const {
 				name,
 				assistanceType,
@@ -567,6 +566,10 @@ export default {
 				note,
 				round: round?.code,
 			};
+
+			if (this.assistanceBody.target) {
+				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
+			}
 		},
 
 		fetchSelectionCriteria(

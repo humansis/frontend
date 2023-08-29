@@ -138,10 +138,6 @@ export default {
 			return idNumbers;
 		},
 
-		prepareGender(gender) {
-			return gender === "F" ? this.$t("Female") : this.$t("Male");
-		},
-
 		async getNationalIds(ids) {
 			if (!ids.length) return [];
 			return BeneficiariesService.getNationalIds(ids)
