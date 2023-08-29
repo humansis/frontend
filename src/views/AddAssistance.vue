@@ -1,6 +1,18 @@
 <template>
 	<div>
-		<h1 class="title">{{ $t('New Assistance') }}</h1>
+		<div class="new-assistance-title">
+			<h1 class="title">{{ $t('New Assistance') }}</h1>
+			<span v-if="householdWithoutHead" class="integrity-issues">
+				<b-icon icon="exclamation-triangle" size="is-medium" class="pr-2" />
+				{{ $t('Some of households in project have integrity issues') }}:
+				<span class="pl-2">
+					<b-tooltip :label="$t('No household head')">
+						<b-icon icon="users" size="is-medium" />
+					</b-tooltip>
+				</span>
+			</span>
+		</div>
+
 		<div class="columns">
 			<div v-if="isProjectReady" class="column">
 				<NewAssistanceForm
@@ -168,6 +180,12 @@ export default {
 				communities: this.visibleComponents.communities,
 				institutions: this.visibleComponents.institutions,
 			};
+		},
+
+		householdWithoutHead() {
+			return this.project.householdIntegrityIssues?.find(
+				(issue) => issue === consts.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
+			);
 		},
 	},
 
@@ -445,7 +463,6 @@ export default {
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
 
 			await this.getDeliveredCommodityValue(preparedCommodities);
-			await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 		},
 
 		mapSelectionCriteria() {
@@ -519,7 +536,7 @@ export default {
 				});
 		},
 
-		fetchNewAssistanceForm(data) {
+		async fetchNewAssistanceForm(data) {
 			const {
 				name,
 				assistanceType,
@@ -548,6 +565,10 @@ export default {
 				note,
 				round: round?.code,
 			};
+
+			if (this.assistanceBody.target) {
+				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
+			}
 		},
 
 		fetchSelectionCriteria(
@@ -659,3 +680,18 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+.new-assistance-title {
+	display: flex;
+
+	.title {
+		margin-bottom: 1.5rem;
+	}
+
+	.integrity-issues {
+		font-weight: bold;
+		margin: 0 auto;
+	}
+}
+</style>

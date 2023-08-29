@@ -8,11 +8,13 @@
 		:current-page="table.currentPage"
 		:is-loading="isLoadingList"
 		:search-phrase="table.searchPhrase"
+		default-sort-key="fullname"
+		default-sort-direction="asc"
 		@clicked="showDetail"
 		@pageChanged="onPageChange"
 		@sorted="onSort"
 		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
+		@resetSort="resetSort('fullname', 'asc')"
 		@onSearch="onSearch"
 	>
 		<template v-for="column in table.columns">
@@ -112,8 +114,8 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: "asc",
+				sortColumn: "fullname",
 				searchPhrase: "",
 			},
 		};

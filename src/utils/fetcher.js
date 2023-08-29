@@ -202,10 +202,10 @@ export const filtersToUri = (filters) => {
 	Object.keys(filters).forEach((key) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
-				query += `&filter[${key}][]=${item}`;
+				query += `&filter[${key}][]=${encodeURIComponent(item)}`;
 			});
 		} else if (typeof filters[key] === "string" || typeof filters[key] === "boolean") {
-			query += `&filter[${key}]=${filters[key]}`;
+			query += `&filter[${key}]=${encodeURIComponent(filters[key])}`;
 		}
 	});
 

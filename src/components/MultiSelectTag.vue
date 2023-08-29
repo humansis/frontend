@@ -1,6 +1,6 @@
 <template>
 	<span class="multiselect__tag">
-		<span v-text="normalizeText(props.option.value)" />
+		<span v-text="elementValue" />
 		<i
 			tabindex="1"
 			@keypress.enter.prevent="removeElement(props.option)"
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
+import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "MultiSelectTag",
@@ -19,16 +19,24 @@ export default {
 	props: {
 		props: Object,
 		items: Array,
+		isDataWithUnderscore: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	methods: {
-		normalizeText(value) {
-			return normalizeText(value);
-		},
-
 		removeElement(option) {
 			const slicedItems = this.items.filter((item) => item.code !== option.code);
 			this.$emit("optionRemoved", slicedItems);
+		},
+	},
+
+	computed: {
+		elementValue() {
+			return this.isDataWithUnderscore
+				? normalizeText(this.props.option.value)
+				: normalizeSelectorValue(this.props.option.value);
 		},
 	},
 };

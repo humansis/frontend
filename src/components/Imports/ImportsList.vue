@@ -60,7 +60,7 @@
 				class="ml-3 is-light"
 				slot="trigger"
 				icon-right="sticky-note"
-				@click="statusFilter('New')"
+				@click="statusFilter(IMPORT.FILTERS.NEW)"
 			>
 				{{ $t('New') }}
 			</b-button>
@@ -68,7 +68,7 @@
 				class="ml-3 is-info is-light"
 				slot="trigger"
 				icon-right="spinner"
-				@click="statusFilter('In Progress')"
+				@click="statusFilter(IMPORT.FILTERS.IN_PROGRESS)"
 			>
 				{{ $t('In Progress') }}
 			</b-button>
@@ -76,7 +76,7 @@
 				class="ml-3 is-success is-light"
 				slot="trigger"
 				icon-right="check"
-				@click="statusFilter('Finished')"
+				@click="statusFilter(IMPORT.FILTERS.FINISHED)"
 			>
 				{{ $t('Finished') }}
 			</b-button>
@@ -84,7 +84,7 @@
 				class="ml-3 is-warning is-light"
 				slot="trigger"
 				icon-right="ban"
-				@click="statusFilter('Canceled')"
+				@click="statusFilter(IMPORT.FILTERS.CANCELED)"
 			>
 				{{ $t('Canceled') }}
 			</b-button>
@@ -131,22 +131,23 @@ import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import ImportService from "@/services/ImportService";
-import consts from "@/utils/importConst";
+import { IMPORT } from "@/consts";
 
 const statusTags = [
-	{ code: consts.STATUS.NEW, type: "is-light" },
-	{ code: consts.STATUS.INTEGRITY_CHECK, type: "is-info" },
-	{ code: consts.STATUS.INTEGRITY_CHECK_CORRECT, type: "is-success" },
-	{ code: consts.STATUS.INTEGRITY_CHECK_FAILED, type: "is-danger" },
-	{ code: consts.STATUS.IDENTITY_CHECK, type: "is-info" },
-	{ code: consts.STATUS.IDENTITY_CHECK_CORRECT, type: "is-success" },
-	{ code: consts.STATUS.IDENTITY_CHECK_FAILED, type: "is-danger" },
-	{ code: consts.STATUS.SIMILARITY_CHECK, type: "is-info" },
-	{ code: consts.STATUS.SIMILARITY_CHECK_CORRECT, type: "is-success" },
-	{ code: consts.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
-	{ code: consts.STATUS.FINISH, type: "is-success" },
-	{ code: consts.STATUS.CANCEL, type: "is-warning" },
-	{ code: consts.STATUS.IMPORTING, type: "is-warning" },
+	{ code: IMPORT.STATUS.NEW, type: "is-light" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK, type: "is-info" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, type: "is-success" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, type: "is-danger" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK, type: "is-info" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, type: "is-success" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, type: "is-danger" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK, type: "is-info" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, type: "is-success" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
+	{ code: IMPORT.STATUS.FINISH, type: "is-success" },
+	{ code: IMPORT.STATUS.CANCEL, type: "is-warning" },
+	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, type: "is-warning" },
+	{ code: IMPORT.STATUS.IMPORTING, type: "is-warning" },
 ];
 
 export default {
@@ -163,6 +164,7 @@ export default {
 
 	data() {
 		return {
+			IMPORT,
 			advancedSearchVisible: false,
 			filters: [],
 			table: {
@@ -182,12 +184,16 @@ export default {
 				sortColumn: "createdAt",
 				searchPhrase: "",
 				filtersInProgress: [
-					consts.STATUS.INTEGRITY_CHECK, consts.STATUS.INTEGRITY_CHECK_CORRECT,
-					consts.STATUS.INTEGRITY_CHECK_FAILED, consts.STATUS.IDENTITY_CHECK,
-					consts.STATUS.IDENTITY_CHECK_CORRECT, consts.STATUS.IDENTITY_CHECK_FAILED,
-					consts.STATUS.SIMILARITY_CHECK, consts.STATUS.SIMILARITY_CHECK_CORRECT,
-					consts.STATUS.SIMILARITY_CHECK_FAILED,
-					consts.STATUS.IMPORTING,
+					IMPORT.STATUS.INTEGRITY_CHECK, IMPORT.STATUS.INTEGRITY_CHECK_CORRECT,
+					IMPORT.STATUS.INTEGRITY_CHECK_FAILED, IMPORT.STATUS.IDENTITY_CHECK,
+					IMPORT.STATUS.IDENTITY_CHECK_CORRECT, IMPORT.STATUS.IDENTITY_CHECK_FAILED,
+					IMPORT.STATUS.SIMILARITY_CHECK, IMPORT.STATUS.SIMILARITY_CHECK_CORRECT,
+					IMPORT.STATUS.SIMILARITY_CHECK_FAILED,
+					IMPORT.STATUS.IMPORTING,
+				],
+				filtersCanceled: [
+					IMPORT.STATUS.CANCEL,
+					IMPORT.STATUS.AUTOMATICALLY_CANCELED,
 				],
 			},
 		};
@@ -228,7 +234,18 @@ export default {
 		},
 
 		statusFilter(filter) {
-			const newStatusFilter = filter === "In Progress" ? this.table.filtersInProgress : [filter];
+			let newStatusFilter = [];
+
+			switch (filter) {
+				case IMPORT.FILTERS.IN_PROGRESS:
+					newStatusFilter = this.table.filtersInProgress;
+					break;
+				case IMPORT.FILTERS.CANCELED:
+					newStatusFilter = this.table.filtersCanceled;
+					break;
+				default:
+					newStatusFilter = [filter];
+			}
 			this.onFiltersChange({ projects: [], status: newStatusFilter });
 		},
 
@@ -282,27 +299,27 @@ export default {
 			let slug = "";
 
 			switch (importItem.status) {
-				case consts.STATUS.INTEGRITY_CHECK:
-				case consts.STATUS.INTEGRITY_CHECK_CORRECT:
-				case consts.STATUS.INTEGRITY_CHECK_FAILED:
+				case IMPORT.STATUS.INTEGRITY_CHECK:
+				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
+				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 					slug = "integrity-check";
 					break;
-				case consts.STATUS.IDENTITY_CHECK:
-				case consts.STATUS.IDENTITY_CHECK_CORRECT:
-				case consts.STATUS.IDENTITY_CHECK_FAILED:
+				case IMPORT.STATUS.IDENTITY_CHECK:
+				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 					slug = "identity-check";
 					break;
-				case consts.STATUS.SIMILARITY_CHECK:
-				case consts.STATUS.SIMILARITY_CHECK_FAILED:
-				case consts.STATUS.SIMILARITY_CHECK_CORRECT:
+				case IMPORT.STATUS.SIMILARITY_CHECK:
+				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
+				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
 					slug = "similarity-check";
 					break;
-				case consts.STATUS.FINISH:
-				case consts.STATUS.IMPORTING:
+				case IMPORT.STATUS.FINISH:
+				case IMPORT.STATUS.IMPORTING:
 					slug = "finalisation";
 					break;
-				case consts.STATUS.NEW:
-				case consts.STATUS.CANCEL:
+				case IMPORT.STATUS.NEW:
+				case IMPORT.STATUS.CANCEL:
 				default:
 					slug = "start-import";
 			}

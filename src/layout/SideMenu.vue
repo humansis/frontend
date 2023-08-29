@@ -191,7 +191,7 @@
 								icon="map-marker-alt"
 								exact-active-class="is-active"
 								tag="router-link"
-								:to="{ name: 'CountrySpecificOptions' }"
+								:to="{ name: 'CountrySpecific' }"
 								:class="{ 'small-menu-item': isSmallerMenuItem }"
 							>
 								<template #label>

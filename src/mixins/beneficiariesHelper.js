@@ -93,27 +93,7 @@ export default {
 			this.assignVoucherModal.isWaiting = false;
 		},
 
-		async setAssignedReliefPackages(reliefPackageIds) {
-			const reliefPackages = reliefPackageIds.length
-				? await this.getReliefPackages(reliefPackageIds) : [];
-
-			this.table.data.map(async (item, key) => {
-				const reliefPackageItems = reliefPackages
-					?.filter(({ id }) => item.reliefPackageIds.includes(id));
-
-				this.table.data[key].status = reliefPackageItems.map((i) => (i.state));
-				this.table.data[key].toDistribute = reliefPackageItems.map((i) => (`${i.amountToDistribute} ${i.unit}`));
-				this.table.data[key].distributed = reliefPackageItems.map((i) => (`${i.amountDistributed} ${i.unit}`));
-				this.table.data[key].lastModified = reliefPackageItems
-					.map((i) => (this.$moment(i.distributedAt || i.lastModifiedAt)
-						.format("YYYY-MM-DD hh:mm")));
-				this.table.data[key].spent = reliefPackageItems.map((i) => (`${i.amountSpent ?? 0} ${i.unit}`));
-
-				const isDistributed = reliefPackageItems.length
-					&& reliefPackageItems.every((i) => i.state === "Distributed");
-				if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
-			});
-
+		setAssignedReliefPackages() {
 			const modality = this.commodities[0]?.modalityType;
 
 			const isTableCheckable = modality !== consts.COMMODITY.SMARTCARD
@@ -139,41 +119,23 @@ export default {
 				});
 		},
 
-		async preparePhoneForTable(phoneIds) {
-			const phones = await this.getPhones(phoneIds);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].phone = !item.phoneIds?.length
-					? this.$t("None")
-					: this.preparePhonesForTable(item.phoneIds, phones, "None");
-			});
-			this.table.progress += 15;
-		},
-
-		async prepareNationalIdForTable(ids) {
-			const nationalIds = await this.getNationalIds(ids);
-			this.table.data.map(async (item, key) => {
-				this.table.data[key].nationalId = !item.nationalIds?.length
-					? this.$t("None")
-					: this.prepareNationalIdsValuesForTable(item.nationalIds, nationalIds);
-			});
-			this.table.progress += 15;
+		preparePhoneForTable(phones) {
+			return phones.map((phone) => phone.number).join(", ");
 		},
 
 		prepareColumnFormatForNationalIds(nationalIds, nationalType) {
 			return nationalIds ? `${this.$t(nationalType)} : <b>${nationalIds}</b><br>` : "";
 		},
 
-		prepareNationalIdsValuesForTable(ids, entities) {
-			const nationalIds = this.prepareEntityForTable(ids, entities, "number", "None");
-			const nationalType = this.prepareEntityForTable(ids, entities, "type", "None");
+		prepareNationalIdsValuesForTable(nationalIds) {
+			let idNumbers = "";
 
-			return `${this.prepareColumnFormatForNationalIds(nationalIds[0], nationalType[0])}
-					${this.prepareColumnFormatForNationalIds(nationalIds[1], nationalType[1])}
-					${this.prepareColumnFormatForNationalIds(nationalIds[2], nationalType[2])}`;
-		},
-
-		prepareGender(gender) {
-			return gender === "F" ? this.$t("Female") : this.$t("Male");
+			if (nationalIds.length) {
+				nationalIds.forEach((item) => {
+					idNumbers += this.prepareColumnFormatForNationalIds(item.idNumber, item.idType);
+				});
+			}
+			return idNumbers;
 		},
 
 		async getNationalIds(ids) {
@@ -182,15 +144,6 @@ export default {
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
-		},
-
-		async getPhones(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getPhones(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Phones")} ${e}`, "is-danger");
 				});
 		},
 
@@ -420,17 +373,27 @@ export default {
 			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
 			const sortKey = currentColumn.sortKey || column;
 
-			if (this.table.sortColumn === sortKey) {
-				this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-			} else {
-				this.table.sortColumn = sortKey;
-				this.table.sortDirection = "desc";
+			if (!this.table.sortReset) {
+				if (this.table.sortColumn === sortKey) {
+					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
+				} else {
+					this.table.sortColumn = sortKey;
+					this.table.sortDirection = "desc";
+				}
 			}
+
+			this.table.sortReset = false;
 			await this.reloadBeneficiariesList();
 		},
 
-		async onSearch(value) {
-			this.table.searchPhrase = value;
+		async onSearch(search) {
+			this.table.searchPhrase = this.assistanceDetail
+				? search.phrase
+				: search;
+			this.table.searchField = this.assistanceDetail
+				? search.field.code
+				: "";
+
 			await this.reloadBeneficiariesList();
 		},
 
@@ -438,11 +401,15 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async resetSort() {
+		async resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
-				this.table.sortColumn = "";
-				this.table.sortDirection = "";
-				await this.reloadBeneficiariesList();
+				this.table.sortColumn = sortColumn;
+				this.table.sortDirection = sortDirection;
+
+				if (forceFetch) {
+					await this.reloadBeneficiariesList();
+				}
 			}
 		},
 

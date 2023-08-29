@@ -53,8 +53,8 @@ export default {
 				columns: [],
 				visibleColumns: [
 					{ key: "id", sortable: true, searchable: true },
-					{ key: "localFamilyName", label: "Family Name", sortable: true, searchable: true },
-					{ key: "localGivenName", label: "First Name", sortable: true, searchable: true },
+					{ key: "localFamilyName", label: "Local family name", sortable: true, searchable: true },
+					{ key: "localGivenName", label: "Local given name", sortable: true, searchable: true },
 					{ key: "vulnerability", sortable: true, searchable: true },
 				],
 				total: 0,

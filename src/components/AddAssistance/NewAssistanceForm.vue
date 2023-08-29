@@ -84,12 +84,12 @@
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 					<template #singleLabel="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 				</MultiSelect>
@@ -116,12 +116,12 @@
 					<span slot="noOptions">{{ $t("List is empty")}}</span>
 					<template #option="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 					<template #singleLabel="props">
 						<div class="option__desc">
-							<span class="option__title">{{ normalizeText(props.option.value) }}</span>
+							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
 						</div>
 					</template>
 				</MultiSelect>
@@ -211,7 +211,7 @@ import AssistancesService from "@/services/AssistancesService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
-import { normalizeText } from "@/utils/datagrid";
+import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import calendarHelper from "@/mixins/calendarHelper";
@@ -377,6 +377,10 @@ export default {
 			return normalizeText(String(text));
 		},
 
+		normalizeSelectorValue(text) {
+			return normalizeSelectorValue(text);
+		},
+
 		getLocationId() {
 			return this.formModel.locationId;
 		},
@@ -498,15 +502,18 @@ export default {
 		},
 
 		async fetchSubsectors(code) {
-			this.loading.subsectors = true;
-			await SectorsService.getListOfSubSectors(code)
-				.then(({ data }) => {
-					this.options.subsectors = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
-				});
-			this.loading.subsectors = false;
+			const { projectId } = this.$route.params;
+
+			try {
+				this.loading.subsectors = true;
+				const { data: { data } } = await SectorsService.getListOfProjectSubSectors(projectId, code);
+
+				this.options.subsectors = data;
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+			} finally {
+				this.loading.subsectors = false;
+			}
 		},
 
 		async fetchAssistanceTypes(code) {

@@ -103,6 +103,14 @@ export default {
 
 	props: {
 		isEditing: Boolean,
+		detailOfHousehold: {
+			type: Object,
+			default: () => {},
+		},
+		isLoaded: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	components: {
@@ -119,7 +127,6 @@ export default {
 	data() {
 		return {
 			activeStep: 0,
-			detailOfHousehold: null,
 			household: null,
 			householdHead: null,
 			householdMembers: [],
@@ -152,11 +159,18 @@ export default {
 		},
 	},
 
-	async created() {
-		if (this.isEditing) {
-			await this.fetchHouseholdDetail(this.$route.params.householdId);
+	watch: {
+		isLoaded(value) {
+			if (value) {
+				this.steps[1] = true;
+			}
+		},
+	},
+
+	created() {
+		if (!this.isEditing) {
+			this.steps[1] = true;
 		}
-		this.steps[1] = true;
 	},
 
 	methods: {
@@ -274,9 +288,9 @@ export default {
 				shelterStatus: shelterStatus?.code,
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
-				// TODO Resolve longitude and latitude
-				longitude: "",
-				latitude: "",
+				enumeratorName: this.$refs.householdSummary.formModel.enumerator,
+				longitude: this.household.longitude,
+				latitude: this.household.latitude,
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
@@ -290,7 +304,7 @@ export default {
 				incomeSpentOnFood,
 				houseIncome: 0,
 				countrySpecificAnswers:
-					this.prepareCountrySpecificsForHousehold(this.household.countrySpecificOptions),
+					this.prepareCountrySpecificsForHousehold(this.household.customFields),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -344,20 +358,15 @@ export default {
 			this.saveButtonLoading = false;
 		},
 
-		async fetchHouseholdDetail(id) {
-			await BeneficiariesService.getDetailOfHousehold(id).then((response) => {
-				this.detailOfHousehold = response;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
-			});
-		},
-
 		prepareSummaryMembers(members) {
 			const membersData = [];
 			if (members.length) {
 				members.forEach((member) => {
 					if (member) {
-						const phone = member.phone ? `${member.phone1.ext.code} ${member.phone1.phoneNo}` : this.$t("None");
+						const phone = member.phone1.phoneNo.length
+							? `${member.phone1.ext?.code} ${member.phone1.phoneNo}`
+							: this.$t("None");
+
 						membersData.push({
 							firstName: member.nameLocal.firstName,
 							familyName: member.nameLocal.familyName,

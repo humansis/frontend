@@ -108,6 +108,7 @@
 							type="is-primary"
 							icon-right="play-circle"
 							:loading="changeStateButtonLoading"
+							:disabled="!isImportLoaded"
 							@click="startIdentityCheck"
 						>
 							{{ $t('Start Identity Check') }}
@@ -158,9 +159,16 @@
 		<div class="card" v-if="importFiles.length">
 			<div>
 				<div class="card-content">
-					<b-message v-if="canUploadAndDownloadAffectedRecords" type="is-info">
+					<b-message v-if="canUploadAndDownloadAffectedRecords && isImportLoaded" type="is-info">
 						{{ $t('Do not repair your original file.') }}
 						{{ $t('Repair only the file with Affected Records.') }}
+					</b-message>
+					<b-message v-else-if="isBadFileVersion" type="is-info">
+						{{ $t('Please, upload a new file compatible with import template.') }}
+					</b-message>
+					<b-message v-else-if="!isViolationMessageHide" type="is-info">
+						{{ $t('Please, check Violation for missing columns and ' +
+							'upload a new file compatible with import template.') }}
 					</b-message>
 				</div>
 				<div v-for="({
@@ -191,12 +199,13 @@
 											</small>
 										</div>
 									</td>
-									<td v-if="index === 0 && itegrityCheckFailed"
+									<td v-if="index === 0 && isIntegrityCheckFailed"
 										class="has-text-right"
 									>
 										<b-button
 											type="is-info"
 											icon-right="file-download"
+											:disabled="!isImportLoaded"
 											@click="downloadAffectedFile(id, invalidFileName)"
 										>
 											{{ $t('Get Affected Records') }}
@@ -299,8 +308,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { Notification, Toast } from "@/utils/UI";
-import consts from "@/utils/importConst";
-import { IMPORT } from "@/consts/index";
+import { IMPORT } from "@/consts";
 import Loading from "@/components/Loading";
 import graduallyIncrement from "@/mixins/graduallyIncrement";
 
@@ -350,6 +358,16 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+
+		isImportLoaded: {
+			type: Boolean,
+			default: true,
+		},
+
+		isBadFileVersion: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	watch: {
@@ -389,13 +407,13 @@ export default {
 
 	computed: {
 		integrityStepActive() {
-			return this.status === consts.STATUS.INTEGRITY_CHECK
-				|| this.status === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isCheckingIntegrity() {
-			return this.status === consts.STATUS.INTEGRITY_CHECK;
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		totalEntries() {
@@ -419,27 +437,32 @@ export default {
 		},
 
 		canStartIntegrityCheckAgain() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
 				&& this.dropFiles.length === 1;
 		},
 
 		canStartIdentityCheck() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canUploadAndDownloadAffectedRecords() {
-			return this.importStatus === consts.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		canCancelImport() {
-			return this.importStatus !== consts.STATUS.FINISH
-				&& this.importStatus !== consts.STATUS.CANCEL
-				&& this.importStatus !== consts.STATUS.IMPORTING;
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
-		itegrityCheckFailed() {
-			return this.statistics.status === consts.STATUS.INTEGRITY_CHECK_FAILED;
+		isIntegrityCheckFailed() {
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		isViolationMessageHide() {
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 	},
 
@@ -489,7 +512,7 @@ export default {
 
 		startIdentityCheck() {
 			this.$emit("changeImportState", {
-				state: consts.STATE.IDENTITY_CHECKING,
+				state: IMPORT.STATUS.IDENTITY_CHECK,
 				successMessage: "Identity Check Started Successfully",
 				goNext: true,
 			});

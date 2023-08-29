@@ -10,6 +10,26 @@
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
+
+				<b-field class="mt-3">
+					<template #label>
+						{{ $t('Latitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-numberinput v-model="formModel.latitude" step="any" :controls="false" />
+				</b-field>
+
+				<b-field>
+					<template #label>
+						{{ $t('Longitude') }}
+						<span class="optional-text has-text-weight-normal is-italic">
+							- {{ $t('Optional') }}
+						</span>
+					</template>
+					<b-numberinput v-model="formModel.longitude" step="any" :controls="false" />
+				</b-field>
 			</div>
 			<div class="column is-half">
 				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
@@ -65,7 +85,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Income Spent On Food') }}</span>
+						<span>{{ $t('Income spent on food') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -82,7 +102,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Debt Level') }}</span>
+						<span>{{ $t('Debt level') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -123,7 +143,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Food Consumption Score') }}</span>
+						<span>{{ $t('Food consumption score') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -139,7 +159,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Coping Strategies Index') }}</span>
+						<span>{{ $t('Coping strategies index') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -157,7 +177,7 @@
 				<h4 class="title is-4">{{ $t('External Support') }}</h4>
 				<b-field>
 					<template #label>
-						<span>{{ $t('External Support Received Type') }}</span>
+						<span>{{ $t('Support received types') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -180,7 +200,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Support Date Received') }}</span>
+						<span>{{ $t('Support date received') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -198,7 +218,7 @@
 
 				<b-field>
 					<template #label>
-						<span>{{ $t('Support Organization') }}</span>
+						<span>{{ $t('Support organisation') }}</span>
 						<span class="optional-text has-text-weight-normal is-italic">
 							- {{ $t('Optional') }}
 						</span>
@@ -207,9 +227,9 @@
 				</b-field>
 			</div>
 			<div class="column is-one-third">
-				<h4 class="title is-4">{{ $t('Country Specific Options') }}</h4>
+				<h4 class="title is-4">{{ $t('Custom Fields') }}</h4>
 				<b-field
-					v-for="option in countrySpecificOptions"
+					v-for="option in customFields"
 					:key="option.id"
 				>
 					<template #label>
@@ -220,13 +240,13 @@
 					</template>
 					<b-input
 						v-if="option.type === 'text'"
-						v-model="formModel.countrySpecificOptions[option.id]"
+						v-model="formModel.customFields[option.id]"
 					/>
 
 					<div v-if="option.type === 'number'" class="b-numberinput field is-grouped is-expanded">
 						<div class="control is-expanded is-clearfix">
 							<input
-								v-model.number="formModel.countrySpecificOptions[option.id]"
+								v-model.number="formModel.customFields[option.id]"
 								type="number"
 								class="input"
 							>
@@ -238,7 +258,7 @@
 		<h4 class="title is-4">{{ $t('Household Status') }}</h4>
 		<b-field>
 			<template #label>
-				<span>{{ $t('Shelter Type') }}</span>
+				<span>{{ $t('Shelter status') }}</span>
 				<span class="optional-text has-text-weight-normal is-italic">
 					- {{ $t('Optional') }}
 				</span>
@@ -277,10 +297,10 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { normalizeCountrySpecifics } from "@/utils/datagrid";
+import { normalizeCustomFields } from "@/utils/datagrid";
 import Validation from "@/mixins/validation";
 import getters from "@/store/getters";
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import addressHelper from "@/mixins/addressHelper";
 import CONST from "@/const";
 import calendarHelper from "@/mixins/calendarHelper";
@@ -309,9 +329,11 @@ export default {
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
-			countrySpecificOptions: [],
+			customFields: [],
 			formModel: {
 				id: null,
+				latitude: null,
+				longitude: null,
 				currentLocation: {
 					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
 				},
@@ -330,7 +352,7 @@ export default {
 					supportDateReceived: null,
 					supportOrganization: "",
 				},
-				countrySpecificOptions: {},
+				customFields: {},
 				shelterStatus: [],
 				notes: "",
 			},
@@ -359,7 +381,7 @@ export default {
 				supportDateReceived: {},
 				supportOrganization: {},
 			},
-			countrySpecificOptions: {},
+			customFields: {},
 			shelterStatus: {},
 		},
 	},
@@ -381,7 +403,7 @@ export default {
 			this.fetchAssets(),
 			this.fetchShelterStatuses(),
 			this.fetchSupportReceivedTypes(),
-			this.fetchCountrySpecificOptions(),
+			this.fetchCustomFields(),
 		]);
 
 		if (this.isEditing) {
@@ -398,7 +420,7 @@ export default {
 
 	methods: {
 		normalizeText(text) {
-			return normalizeCountrySpecifics(text);
+			return normalizeCustomFields(text);
 		},
 
 		async mapCurrentLocation() {
@@ -427,10 +449,12 @@ export default {
 
 		async mapDetailOfHouseholdToFormModel() {
 			const countryAnswers = await this
-				.prepareCountrySpecifics(this.detailOfHousehold.countrySpecificAnswerIds);
+				.prepareCustomFields(this.detailOfHousehold.countrySpecificAnswerIds);
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
+				latitude: this.detailOfHousehold.latitude,
+				longitude: this.detailOfHousehold.longitude,
 				currentLocation: {
 					typeOfLocation: null,
 					adm1: null,
@@ -455,8 +479,8 @@ export default {
 						.supportDateReceived ? new Date(this.detailOfHousehold.supportDateReceived) : null,
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
-				countrySpecificOptions: {
-					...this.formModel.countrySpecificOptions,
+				customFields: {
+					...this.formModel.customFields,
 					...countryAnswers,
 				},
 				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
@@ -464,13 +488,13 @@ export default {
 			};
 		},
 
-		async prepareCountrySpecifics(answers) {
+		async prepareCustomFields(answers) {
 			const preparedAnswer = {};
 			if (!answers) return preparedAnswer;
 			const promise = answers.map(async (item) => {
-				await CountrySpecificOptionsService.getCountrySpecificAnswer(item)
+				await CustomFieldsService.getCustomFieldAnswer(item)
 					.then(({ data: { answer, countrySpecificOptionId } }) => {
-						const temp = this.countrySpecificOptions
+						const temp = this.customFields
 							.find((option) => option.id === countrySpecificOptionId);
 						if (temp.type === "number") {
 							preparedAnswer[temp.id] = Number(answer);
@@ -513,16 +537,16 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Types")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
 				});
 			this.shelterStatusLoading = false;
 		},
 
-		async fetchCountrySpecificOptions() {
-			await CountrySpecificOptionsService.getListOfCountrySpecificOptions()
-				.then(({ data }) => { this.countrySpecificOptions = data; })
+		async fetchCustomFields() {
+			await CustomFieldsService.getListOfCustomFields()
+				.then(({ data }) => { this.customFields = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
 				});
 		},
 

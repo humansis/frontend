@@ -88,7 +88,7 @@ import { Notification } from "@/utils/UI";
 import Validation from "@/mixins/validation";
 
 export default {
-	name: "CountrySpecificOptionForm",
+	name: "CustomFieldForm",
 
 	mixins: [Validation],
 

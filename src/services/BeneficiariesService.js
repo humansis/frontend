@@ -1,5 +1,6 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { EXPORT } from "@/consts";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
@@ -15,6 +16,14 @@ export default {
 		});
 
 		return { data, totalCount };
+	},
+
+	getListOfHouseholdByBulkSearch(page, size, sort, body) {
+		return fetcher({
+			uri: `households/search${queryBuilder({ page, size, sort })}`,
+			method: "POST",
+			body,
+		});
 	},
 
 	async createHousehold(body) {
@@ -249,7 +258,7 @@ export default {
 		return { data, totalCount };
 	},
 
-	async exportHouseholds(format, ids, filters) {
+	exportHouseholds(format, ids, filters) {
 		const idsText = ids ? idsToUri(ids) : "";
 		const formatText = format ? `type=${format}` : "";
 		const filtersUri = filters ? filtersToUri(filters) : "";
@@ -257,12 +266,22 @@ export default {
 		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
 	},
 
+	exportBulkSearchHouseholds(format, ids, body) {
+		return download({
+			uri: `households/exports${queryBuilder({ format, ids })}`,
+			method: "POST",
+			body,
+		});
+	},
+
 	async exportAssistanceBeneficiaries(
 		format,
 		assistanceId,
+		search,
 		{ exportType },
 	) {
-		const formatText = format ? `type=${format}` : "";
+		const formatText = `type=${format}`;
+		const fulltext = search ? `&fulltext=${search}` : "";
 		let uri;
 
 		if (exportType === EXPORT.DISTRIBUTION_LIST) {
@@ -275,6 +294,11 @@ export default {
 
 		if (exportType === EXPORT.BANK_DISTRIBUTION_LIST) {
 			uri = `assistances/${assistanceId}/bank-report/exports?${formatText}`;
+		}
+
+		if (exportType === EXPORT.HOUSEHOLDS) {
+			uri = `assistances/${assistanceId}/households/exports
+				?${formatText + fulltext}`;
 		}
 
 		return download({ uri });
@@ -292,5 +316,9 @@ export default {
 			uri: "beneficiaries/types",
 		});
 		return data;
+	},
+
+	getSmartCard(id) {
+		return fetcher({ uri: `beneficiaries/${id}/smartcards` });
 	},
 };

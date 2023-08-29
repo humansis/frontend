@@ -45,7 +45,7 @@
 				/>
 				<SafeDelete
 					icon="trash"
-					:entity="$t('Country Specific Option')"
+					:entity="$t('Custom Field')"
 					:tooltip="$t('Delete')"
 					:id="props.row.id"
 					@submitted="remove"
@@ -59,7 +59,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportCountrySpecifics"
+				@onExport="exportCustomFields"
 			/>
 		</template>
 	</Table>
@@ -72,13 +72,13 @@ import SafeDelete from "@/components/SafeDelete";
 import ExportControl from "@/components/Export";
 import { EXPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import CountrySpecificOptionsService from "@/services/CountrySpecificOptionsService";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import grid from "@/mixins/grid";
 
 export default {
-	name: "CountrySpecificOptionsList",
+	name: "CustomFieldsList",
 
 	components: {
 		ColumnField,
@@ -94,8 +94,8 @@ export default {
 		return {
 			exportControl: {
 				loading: false,
-				location: "countrySpecificOptions",
-				types: [EXPORT.COUNTRY_SPECIFIC_OPTIONS],
+				location: "customFields",
+				types: [EXPORT.CUSTOM_FIELDS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
 			table: {
@@ -128,7 +128,7 @@ export default {
 			this.isLoadingList = true;
 
 			this.table.columns = generateColumns(this.table.visibleColumns);
-			await CountrySpecificOptionsService.getListOfCountrySpecificOptions(
+			await CustomFieldsService.getListOfCustomFields(
 				this.table.currentPage,
 				this.perPage,
 				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
@@ -137,29 +137,29 @@ export default {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Country Specific Options")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		async exportCountrySpecifics(type, format) {
-			if (type === EXPORT.COUNTRY_SPECIFIC_OPTIONS) {
+		async exportCustomFields(type, format) {
+			if (type === EXPORT.CUSTOM_FIELDS) {
 				this.exportControl.loading = true;
-				await CountrySpecificOptionsService.exportCountrySpecificOptions(format)
+				await CustomFieldsService.exportCustomFields(format)
 					.then(({ data, status, message }) => {
 						if (status === 200) {
 							const blob = new Blob([data], { type: data.type });
 							const link = document.createElement("a");
 							link.href = window.URL.createObjectURL(blob);
-							link.download = `Country Specific Options ${normalizeExportDate()}.${format}`;
+							link.download = `Custom Fields ${normalizeExportDate()}.${format}`;
 							link.click();
 						} else {
 							Notification(message, "is-warning");
 						}
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
+						if (e.message) Notification(`${this.$t("Export Custom Fields")} ${e}`, "is-danger");
 					});
 				this.exportControl.loading = false;
 			}

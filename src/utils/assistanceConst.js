@@ -117,4 +117,12 @@ export default {
 			justification: "",
 		},
 	},
+	INTEGRITY_ISSUES: {
+		HOUSEHOLD_WITHOUT_HEAD: "Household without head",
+	},
+	SEARCH_FIELDS: [
+		{ code: "beneficiaryId", value: "BNF ID" },
+		{ code: "familyName", value: "Local family name" },
+		{ code: "nationalId", value: "ID Number" },
+	],
 };

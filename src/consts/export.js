@@ -10,7 +10,7 @@ export default {
 	PROJECTS: "Projects",
 	ASSISTANCE_OVERVIEW: "Assistance overview",
 	PRODUCTS: "Products",
-	COUNTRY_SPECIFIC_OPTIONS: "Country Specific Options",
+	CUSTOM_FIELDS: "Custom Fields",
 	USERS: "Users",
 	DONORS: "Donors",
 	IMPORTS: "Import template",

@@ -4,7 +4,7 @@
 
 		<b-tabs v-model="selectedTab">
 			<b-tab-item v-if="userCan.countrySettings" icon="user-edit" :label="$t('Custom fields')">
-				<CountrySpecificOption />
+				<CustomField />
 			</b-tab-item>
 
 			<b-tab-item v-if="userCan.viewScoring" icon="sort-amount-down" :label="$t('Scoring')">
@@ -15,15 +15,15 @@
 </template>
 
 <script>
-import CountrySpecificOption from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFields";
+import CustomField from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFields";
 import Scoring from "@/components/CountrySettings/CountrySpecific/Scoring/Scoring";
 import permissions from "@/mixins/permissions";
 
 export default {
-	name: "CountrySpecificOptionPage",
+	name: "CountrySpecificPage",
 
 	components: {
-		CountrySpecificOption,
+		CustomField,
 		Scoring,
 	},
 

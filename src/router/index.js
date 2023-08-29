@@ -313,8 +313,8 @@ const routes = [
 					},
 					{
 						path: "country-specifics",
-						name: "CountrySpecificOptions",
-						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/CountrySettings/CountrySpecific"),
+						name: "CountrySpecific",
+						component: () => import(/* webpackChunkName: "CountrySpecific" */ "@/views/CountrySettings/CountrySpecific"),
 						meta: {
 							breadcrumb: () => i18n.t("Country specifics"),
 							description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),

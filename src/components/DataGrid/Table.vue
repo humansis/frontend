@@ -11,6 +11,9 @@
 								v-if="hasSearch"
 								ref="search"
 								:search-phrase="searchPhrase"
+								:search-fields="searchFields"
+								:default-search-field="defaultSearchField"
+								:is-disabled="!isSearchVisible"
 								class="mr-3"
 								@search="onSearch"
 							/>
@@ -19,6 +22,7 @@
 					<slot name="title" />
 					<slot name="export" />
 					<slot name="filterButton" />
+					<slot name="bulkSearchButton" />
 					<slot name="actions" />
 				</div>
 				<slot name="resetSort">
@@ -209,6 +213,18 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		isSearchVisible: {
+			type: Boolean,
+			default: true,
+		},
+		searchFields: {
+			type: Array,
+			default: () => [],
+		},
+		defaultSearchField: {
+			type: Object,
+			default: () => ({}),
+		},
 	},
 
 	data() {
@@ -301,3 +317,16 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.level-left {
+	display: flex;
+	flex-wrap: wrap;
+	flex-shrink: unset;
+	gap: 0.75rem;
+
+	& > .level-item {
+		margin-bottom: 0;
+	}
+}
+</style>

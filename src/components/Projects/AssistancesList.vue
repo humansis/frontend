@@ -568,15 +568,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn {
-	outline: none !important;
-	box-shadow: none !important;
-
-		&.is-selected,
-		&.is-selected:hover,
-		&.is-selected:focus {
-			border-color: inherit;
-			border-width: 2px;
-		}
-	}
+@import 'src/assets/scss/button';
 </style>
