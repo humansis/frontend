@@ -77,8 +77,8 @@ export default {
 			},
 			institutionModel: {
 				id: null,
-				longitude: "",
-				latitude: "",
+				longitude: null,
+				latitude: null,
 				projects: [],
 				projectIds: [],
 				name: "",
@@ -94,10 +94,10 @@ export default {
 				phoneNumber: "",
 				phoneType: "",
 				phoneProxy: false,
-				adm1Id: "",
-				adm2Id: "",
-				adm3Id: "",
-				adm4Id: "",
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
 			},
 		};
 	},
@@ -131,8 +131,8 @@ export default {
 			this.institutionModel = {
 				...this.institutionModel,
 				id: null,
-				longitude: "",
-				latitude: "",
+				longitude: null,
+				latitude: null,
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
@@ -148,10 +148,10 @@ export default {
 				phoneProxy: false,
 				projects: [],
 				projectIds: [],
-				adm1Id: "",
-				adm2Id: "",
-				adm3Id: "",
-				adm4Id: "",
+				adm1: null,
+				adm2: null,
+				adm3: null,
+				adm4: null,
 			};
 		},
 
@@ -231,8 +231,8 @@ export default {
 				nationalCardType: nationalIdCard?.type || "",
 				phonePrefix: phone?.prefix || "",
 				phoneNumber: phone?.number || "",
-				phoneType: phone?.type || "",
-				phoneProxy: phone?.proxy || "",
+				phoneType: phone?.type ? { code: phone?.type, value: phone?.type } : "",
+				phoneProxy: phone?.proxy || false,
 				adm1Id: address?.adm1Id || "",
 				adm2Id: address?.adm2Id || "",
 				adm3Id: address?.adm3Id || "",
@@ -285,7 +285,7 @@ export default {
 				};
 			}
 			if (phonePrefix || phoneNumber || phoneType) {
-				institutionBody.nationalIdCard = {
+				institutionBody.phone = {
 					prefix: phonePrefix?.code,
 					number: phoneNumber,
 					type: phoneType?.code,
@@ -319,7 +319,7 @@ export default {
 
 			await InstitutionService.updateInstitution(id, institutionBody).then((response) => {
 				if (response.status === 200) {
-					Toast(this.$t("Institution Successfully Updated", "is-success"));
+					Toast(this.$t("Institution Successfully Updated"), "is-success");
 					this.$refs.institutionsList.fetchData();
 					this.closeInstitutionModal();
 				}

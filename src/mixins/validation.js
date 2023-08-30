@@ -16,7 +16,7 @@ export default {
 
 			if (Object.keys(validation).includes("maxLength")
 				&& validation.$error && !validation.maxLength) {
-				return i18n.t("Too long! (max. 255 characters)");
+				return `${i18n.t("Too long! Max characters:")} ${validation.$params.maxLength.max}`;
 			}
 			return validation.$error ? i18n.t(message) : "";
 		},

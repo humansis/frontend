@@ -139,6 +139,7 @@
 							v-model="formModel.phoneNumber"
 							:placeholder="$t('Phone No.')"
 							:disabled="formDisabled"
+							class="phone-number-input"
 							@blur="validate('phoneNumber')"
 						/>
 					</b-field>
@@ -276,8 +277,10 @@
 							- {{ $t('Optional') }}
 						</span>
 					</template>
-					<b-input
+					<b-numberinput
 						v-model="formModel.latitude"
+						step="any"
+						:controls="false"
 						:disabled="formDisabled"
 					/>
 				</b-field>
@@ -288,8 +291,10 @@
 							- {{ $t('Optional') }}
 						</span>
 					</template>
-					<b-input
+					<b-numberinput
 						v-model="formModel.longitude"
+						step="any"
+						:controls="false"
 						:disabled="formDisabled"
 					/>
 				</b-field>
@@ -311,7 +316,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import InstitutionService from "@/services/InstitutionService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
@@ -350,13 +355,19 @@ export default {
 			contactGivenName: {},
 			contactFamilyName: {},
 			phonePrefix: { required: requiredIf((form) => form.phoneType || form.phoneNumber) },
-			phoneNumber: { required: requiredIf((form) => form.phoneType || form.phonePrefix) },
+			phoneNumber: {
+				maxLength: maxLength(45),
+				required: requiredIf((form) => form.phoneType || form.phonePrefix),
+			},
 			phoneType: { required: requiredIf((form) => form.phonePrefix || form.phoneNumber) },
 			phoneProxy: {},
 			addressStreet: {},
 			addressNumber: {},
 			addressPostCode: {},
-			nationalCardNumber: { required: requiredIf((form) => form.nationalCardType) },
+			nationalCardNumber: {
+				maxLength: maxLength(255),
+				required: requiredIf((form) => form.nationalCardType),
+			},
 			nationalCardType: { required: requiredIf((form) => form.nationalCardNumber) },
 			adm1: { required },
 			adm2: {},
@@ -390,10 +401,6 @@ export default {
 			this.fetchProjects(),
 		]);
 		this.mapSelects();
-	},
-
-	watch: {
-		formModel: "mapSelects",
 	},
 
 	methods: {
@@ -492,3 +499,14 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+.phone-number-input {
+	max-height: 43px;
+	height: 100%;
+
+	& ::v-deep input {
+		height: 100%;
+	}
+}
+</style>
