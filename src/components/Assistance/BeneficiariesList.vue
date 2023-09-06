@@ -55,19 +55,18 @@
 		</Modal>
 		<Modal
 			can-cancel
-			:header="institutionModal.isEditing ? $t('Edit This Institution')
-				: $t('Detail of Institution')"
 			:active="institutionModal.isOpened"
+			:header="$t('Detail of Institution')"
 			:is-waiting="institutionModal.isWaiting"
 			@close="closeInstitutionModal"
 		>
-			<EditInstitutionForm
+			<InstitutionForm
 				close-button
-				:submit-button-label="$t('Save')"
 				class="modal-card"
-				:disabled="!institutionModal.isEditing"
 				:formModel="institutionModel"
-				@formSubmitted="submitEditInstitutionForm"
+				:submit-button-label="institutionModal.isEditing ? $t('Update') : $t('Create')"
+				:form-disabled="!institutionModal.isEditing"
+				:institution-modal="institutionModal"
 				@formClosed="closeInstitutionModal"
 			/>
 		</Modal>
@@ -119,7 +118,7 @@
 		</Modal>
 		<div class="buttons space-between align-end">
 			<b-button
-				v-if="isAddOrRemoveBeneficiaryAllowed"
+				v-if="isAddBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
@@ -128,7 +127,7 @@
 				{{ $t('Add') }}
 			</b-button>
 			<b-button
-				v-if="isAddOrRemoveBeneficiaryAllowed"
+				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="plus"
@@ -137,7 +136,7 @@
 				{{ $t('Bulk add') }}
 			</b-button>
 			<b-button
-				v-if="isAddOrRemoveBeneficiaryAllowed"
+				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
 				class="mb-4"
 				type="is-primary"
 				icon-left="minus"
@@ -164,7 +163,7 @@
 		</div>
 		<Table
 			ref="beneficiariesList"
-			has-search
+			:has-search="!isAssistanceTargetInstitution"
 			disable-prechecked-rows
 			:paginated="!table.customPerPage"
 			:data="table.data"
@@ -178,13 +177,11 @@
 			:row-class="(row) => row.removed && 'removed-row'"
 			:search-fields="searchFields"
 			:default-search-field="defaultSearchField"
-			default-sort-direction="asc"
-			default-sort-key="familyName"
 			@clicked="showDetail"
 			@pageChanged="onPageChange"
 			@sorted="onSort"
 			@changePerPage="onChangePerPage"
-			@resetSort="resetSort('localFamilyName', 'asc')"
+			@resetSort="resetSort(defaultSortKey, defaultSortDirection)"
 			@onSearch="onSearch"
 			@checked="onRowsCheck"
 		>
@@ -219,6 +216,7 @@
 			</template>
 			<template #export>
 				<ExportControl
+					v-if="!isAssistanceTargetInstitution"
 					:disabled="isExportButtonDisabled"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
@@ -241,7 +239,7 @@
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
-						@click="showEdit(props.row)"
+						@click="openViewModal(props.row)"
 					/>
 					<ActionButton
 						v-if="userCan.editDistribution && !isAssistanceValidated"
@@ -249,7 +247,7 @@
 						type="is-danger"
 						:disabled="props.row.removed || isAssistanceCompleted"
 						:tooltip="$t('Delete')"
-						@click.native="openAddBeneficiaryModal(props.row.id, !(props.row.removed
+						@click.native="openAddBeneficiaryModal(props.row.institution.id, !(props.row.removed
 							|| isAssistanceCompleted))"
 					/>
 					<ActionButton
@@ -318,8 +316,8 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-import EditInstitutionForm from "@/components/Assistance/BeneficiariesList/EditInstitutionForm";
 import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
+import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
@@ -363,13 +361,20 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		defaultSortDirection: {
+			type: String,
+			default: "asc",
+		},
+		defaultSortColumn: {
+			type: String,
+			default: "familyName",
+		},
 	},
 
 	components: {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
-		EditInstitutionForm,
 		EditCommunityForm,
 		Table,
 		ActionButton,
@@ -377,6 +382,7 @@ export default {
 		ExportControl,
 		ColumnField,
 		InputDistributed,
+		InstitutionForm,
 	},
 
 	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper],
@@ -404,8 +410,8 @@ export default {
 				columns: [],
 				total: 0,
 				currentPage: 1,
-				sortDirection: "asc",
-				sortColumn: "localFamilyName",
+				sortDirection: "",
+				sortColumn: "",
 				searchPhrase: "",
 				searchField: "",
 				progress: null,
@@ -431,12 +437,13 @@ export default {
 					{ key: "contactGivenName", label: "Contact Name", sortable: true },
 					{ key: "contactFamilyName", sortable: true },
 				],
-				institutionColumns: [
+				institutionEditColumns: [
 					{ key: "id", label: "ID", sortable: true },
 					{ key: "name", sortable: true },
 					{ key: "type", sortable: true },
 					{ key: "contactGivenName", label: "Contact Name", sortable: true },
 					{ key: "contactFamilyName", sortable: true },
+					{ key: "phone", label: "Phone Number" },
 				],
 			},
 			addBeneficiaryModal: {
@@ -482,9 +489,26 @@ export default {
 				justification: null,
 			},
 			institutionModel: {
-				addressStreet: null,
-				addressNumber: null,
-				addressPostCode: null,
+				longitude: null,
+				latitude: null,
+				name: "",
+				contactGivenName: "",
+				contactFamilyName: "",
+				type: "",
+				addressStreet: "",
+				addressNumber: "",
+				addressPostCode: "",
+				nationalCardNumber: "",
+				nationalCardType: "",
+				phonePrefix: "",
+				phoneNumber: "",
+				phoneType: "",
+				phoneProxy: false,
+				projects: [],
+				adm1: {},
+				adm2: {},
+				adm3: {},
+				adm4: {},
 			},
 			communityModel: {
 				addressStreet: null,
@@ -510,6 +534,11 @@ export default {
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
+				if (newAssistance.target === consts.TARGET.INSTITUTION) {
+					this.table.sortColumn = "";
+					this.table.sortDirection = "";
+				}
+
 				await this.reloadBeneficiariesList();
 			}
 		},
@@ -561,6 +590,25 @@ export default {
 			return baseColumns;
 		},
 
+		institutionDetailColumns() {
+			return [
+				{ key: "id", label: "ID", sortable: true },
+				{ key: "name", sortable: true },
+				{ key: "type", sortable: true },
+				{ key: "contactGivenName", label: "Contact Name", sortable: true },
+				{ key: "contactFamilyName", sortable: true },
+				{ key: "phone", label: "Phone Number" },
+				{ key: "status", type: "tagArray", customTags: statusTags },
+				{ key: "toDistribute", type: "arrayTextBreak" },
+				{ key: "distributed", type: "arrayTextBreak" },
+				{ key: "lastModified", type: "arrayTextBreak" },
+			];
+		},
+
+		defaultSortKey() {
+			return this.isAssistanceTargetInstitution ? "name" : "localFamilyName";
+		},
+
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
 		},
@@ -569,7 +617,12 @@ export default {
 			return this.assistance?.validated;
 		},
 
-		isAddOrRemoveBeneficiaryAllowed() {
+		isAddBeneficiaryAllowed() {
+			return (this.addButton || this.isAssistanceTargetInstitution) && this.userCan.editDistribution
+				&& !this.isAssistanceValidated;
+		},
+
+		isBulkAddOrRemoveBeneficiaryAllowed() {
 			return this.addButton && this.userCan.editDistribution
 				&& !this.isAssistanceValidated;
 		},
@@ -586,7 +639,12 @@ export default {
 
 		isExportButtonDisabled() {
 			return !this.table.data.length
-				|| !this.userCan.exportBeneficiaries || this.changeButton;
+				|| !this.userCan.exportBeneficiaries
+				|| this.changeButton;
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.assistance?.target === consts.TARGET.INSTITUTION;
 		},
 
 		searchFields() {
@@ -699,6 +757,14 @@ export default {
 			this.onFiltersChange({ reliefPackageStates: [] });
 		},
 
+		openViewModal(row) {
+			if (this.assistance.target === consts.TARGET.INSTITUTION) {
+				this.showDetail(row);
+			} else {
+				this.showEdit(row);
+			}
+		},
+
 		async fetchData(page, size) {
 			this.isLoadingList = true;
 			this.table.progress = null;
@@ -724,23 +790,27 @@ export default {
 					});
 					break;
 				case consts.TARGET.INSTITUTION:
-					await AssistancesService.getListOfInstitutions(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+					try {
+						const { data: { data, totalCount } } = await AssistancesService
+							.getListOfInstitutions(
+								this.$route.params.assistanceId,
+								page || this.table.currentPage,
+								size || this.perPage,
+								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+								this.filters,
+							);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
 						this.table.total = totalCount;
+
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
+					} catch (e) {
 						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
-					});
+					}
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
@@ -788,7 +858,9 @@ export default {
 					baseColumns = this.table.communityColumns;
 					break;
 				case consts.TARGET.INSTITUTION:
-					baseColumns = this.table.institutionColumns;
+					baseColumns = this.assistanceDetail
+						? this.institutionDetailColumns
+						: this.table.institutionEditColumns;
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
@@ -849,23 +921,43 @@ export default {
 					this.table.progress += 55;
 					break;
 				case consts.TARGET.INSTITUTION:
-					beneficiaryIds = data.map((item) => item.institutionId);
-					beneficiaries = await this.getInstitutions(beneficiaryIds);
+					data.forEach((item, key) => {
+						const { institution, reliefPackages } = item;
+						const { contactGivenName, contactFamilyName, name } = institution;
+						const type = normalizeText(institution.type);
+						const phone = institution.phone?.number;
 
-					data.forEach((institution, key) => {
-						const foundInstitution = beneficiaries.find(
-							(bnf) => bnf.id === institution.institutionId,
-						);
+						this.table.data[key] = {
+							...item,
+							name,
+							type,
+							contactGivenName,
+							contactFamilyName,
+							phone,
+						};
 
-						const item = { ...institution, ...foundInstitution };
-						this.table.data[key] = item;
+						if (this.assistanceDetail) {
+							const status = reliefPackages.map((rp) => rp.state);
+							const toDistribute = reliefPackages.map((rp) => `${rp.toDistribute} ${rp.unit}`);
+							const distributed = reliefPackages.map((rp) => `${rp.distributed} ${rp.unit}`);
+							const lastModified = reliefPackages.map((rp) => this.$moment(
+								rp.lastModified || rp.lastModified,
+							).format("YYYY-MM-DD hh:mm"));
+							const isDistributed = reliefPackages.length && reliefPackages.every(
+								(rp) => rp.state === "Distributed",
+							);
 
-						if (item.reliefPackages?.length) {
-							distributionItems.reliefPackages.push(...item.reliefPackages);
+							this.table.data[key] = {
+								...this.table.data[key],
+								status,
+								toDistribute,
+								distributed,
+								lastModified,
+							};
+
+							if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
 						}
 					});
-
-					this.table.data = [...this.table.data];
 
 					this.table.progress += 55;
 					break;
@@ -874,45 +966,61 @@ export default {
 				default:
 					data.forEach((item, key) => {
 						const { beneficiary, reliefPackages } = item;
-
-						this.table.data[key] = item;
-						this.table.data[key].id = beneficiary.id;
-						this.table.data[key].givenName = this
-							.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
-						this.table.data[key].familyName = this
-							.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
-						this.table.data[key].gender = this.$t(normalizeText(beneficiary.gender));
-						this.table.data[key].vulnerabilities = beneficiary.vulnerabilityCriteria;
-						this.table.data[key].residencyStatus = beneficiary.residencyStatus;
-						this.table.data[key].dateOfBirth = beneficiary.birthDate;
-						this.table.data[key].nationalId = beneficiary.nationalIds.length
+						const { id, residencyStatus } = beneficiary;
+						const givenName = this.prepareName(
+							beneficiary.localGivenName, beneficiary.enGivenName,
+						);
+						const familyName = this.prepareName(
+							beneficiary.localFamilyName, beneficiary.enFamilyName,
+						);
+						const dateOfBirth = beneficiary.birthDate;
+						const gender = this.$t(normalizeText(beneficiary.gender));
+						const vulnerabilities = beneficiary.vulnerabilityCriteria;
+						const nationalId = beneficiary.nationalIds.length
 							? this.prepareNationalIdsValuesForTable(beneficiary.nationalIds)
 							: this.$t("None");
 
-						this.table.data[key].status = reliefPackages.map(
-							(reliefPackage) => reliefPackage.state,
+						const status = reliefPackages.map(
+							(rp) => rp.state,
 						);
-						this.table.data[key].toDistribute = reliefPackages.map(
-							(reliefPackage) => `${reliefPackage.toDistribute} ${reliefPackage.unit}`,
+						const toDistribute = reliefPackages.map(
+							(rp) => `${rp.toDistribute} ${rp.unit}`,
 						);
-						this.table.data[key].distributed = reliefPackages.map(
-							(reliefPackage) => (`${reliefPackage.distributed} ${reliefPackage.unit}`),
+						const distributed = reliefPackages.map(
+							(rp) => `${rp.distributed} ${rp.unit}`,
 						);
-						this.table.data[key].spent = reliefPackages.map(
-							(reliefPackage) => (`${reliefPackage.spent ?? 0} ${reliefPackage.unit}`),
+						const spent = reliefPackages.map(
+							(rp) => `${rp.spent ?? 0} ${rp.unit}`,
 						);
-						this.table.data[key].lastModified = reliefPackages.map(
-							(reliefPackage) => (
-								this.$moment(reliefPackage.lastModified || reliefPackage.lastModified)
-									.format("YYYY-MM-DD hh:mm")),
+						const lastModified = reliefPackages.map(
+							(rp) => (this.$moment(
+								rp.lastModified || rp.lastModified,
+							).format("YYYY-MM-DD hh:mm")),
 						);
-						this.table.data[key].phone = beneficiary.phones.length
+						const phone = beneficiary.phones.length
 							? this.preparePhoneForTable(beneficiary.phones)
 							: this.$t("None");
-
 						const isDistributed = reliefPackages.length && reliefPackages.every(
-							(reliefPackage) => reliefPackage.state === "Distributed",
+							(rp) => rp.state === "Distributed",
 						);
+
+						this.table.data[key] = {
+							...item,
+							id,
+							residencyStatus,
+							givenName,
+							familyName,
+							gender,
+							vulnerabilities,
+							dateOfBirth,
+							nationalId,
+							status,
+							toDistribute,
+							distributed,
+							spent,
+							lastModified,
+							phone,
+						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
 					});
@@ -930,14 +1038,6 @@ export default {
 				.then(({ data }) => data)
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
-				});
-		},
-
-		async getInstitutions(ids) {
-			return BeneficiariesService.getInstitutions(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 				});
 		},
 

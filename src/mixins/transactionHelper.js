@@ -60,23 +60,34 @@ export default {
 			this.reload();
 		},
 
-		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false, isInstitution = false) {
+			const beneficiaries = isInstitution
+				? await BeneficiariesService.getInstitutions(beneficiaryIds)
+				: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 			this.table.data.forEach((item, key) => {
-				const beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries);
+				const { beneficiaryId } = item;
+				const beneficiary = item.type === "Institution"
+					? this.prepareEntityForTable(beneficiaryId, beneficiaries.data)
+					: this.prepareEntityForTable(beneficiaryId, beneficiaries);
 
 				if (beneficiary) {
 					if (hasLink) {
 						this.table.data[key].beneficiaryId = {
 							routeName: "HouseholdInformationSummary",
-							name: item.beneficiaryId,
+							name: beneficiaryId,
 							routeParams: { householdId: beneficiary.householdId },
 							isArchived: beneficiary.isArchived,
 						};
+					} else {
+						this.table.data[key].beneficiaryId = beneficiaryId;
 					}
 
-					this.table.data[key].localGivenName = beneficiary.localGivenName;
-					this.table.data[key].localFamilyName = beneficiary.localFamilyName;
+					this.table.data[key].localGivenName = isInstitution
+						? beneficiary.contactGivenName
+						: beneficiary.localGivenName;
+					this.table.data[key].localFamilyName = isInstitution
+						? beneficiary.contactFamilyName
+						: beneficiary.localFamilyName;
 				}
 			});
 			this.table.progress += 10;

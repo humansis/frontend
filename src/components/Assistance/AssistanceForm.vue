@@ -325,11 +325,19 @@ export default {
 		},
 
 		scoringType() {
-			return this.assistance.scoringBlueprint?.name || this.defaultScoringType.name;
+			if (!this.isAssistanceTargetInstitution) {
+				return this.assistance.scoringBlueprint?.name || this.defaultScoringType.name;
+			}
+
+			return this.$t("N/A");
 		},
 
 		minimumVulnerabilityScore() {
 			return this.assistance.threshold || "";
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.assistance.target.toLowerCase() === consts.TARGET.INSTITUTION;
 		},
 	},
 

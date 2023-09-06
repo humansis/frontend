@@ -88,6 +88,8 @@
 			<BeneficiariesList
 				:assistance="assistance"
 				:commodities="commodities"
+				default-sort-direction="asc"
+				default-sort-column="name"
 				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">

@@ -263,16 +263,11 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfInstitutions(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/assistances-institutions?${pageText + sizeText + sortText + fulltext}`,
+	getListOfInstitutions(id, page, size, sort, filters) {
+		return fetcher({
+			uri: `assistances/${id}/assistances-institutions${queryBuilder({ page, sort, size, filters })}`,
+			version: 2,
 		});
-		return { data, totalCount };
 	},
 
 	async getReliefPackagesForAssistance(assistanceId, reliefPackageIds) {

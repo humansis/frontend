@@ -209,13 +209,19 @@ export default {
 			const locationIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
+			const beneficiaryInstitutionIds = [];
 			const commodityIds = [];
 			const projectIds = [];
 
 			data.forEach((item, key) => {
+				if (item.type === "Institution") {
+					beneficiaryInstitutionIds.push(item.beneficiaryId);
+				} else {
+					beneficiaryIds.push(item.beneficiaryId);
+				}
+
 				this.table.data[key] = item;
 				projectIds.push(item.projectId);
-				beneficiaryIds.push(item.beneficiaryId);
 				assistanceIds.push(item.assistanceId);
 				commodityIds.push(item.commodityId);
 				locationIds.push(item.locationId);
@@ -224,6 +230,7 @@ export default {
 
 			this.prepareProjectForTable([...new Set(projectIds)], true);
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryInstitutionIds)], false, true);
 			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.table.progress = 100;

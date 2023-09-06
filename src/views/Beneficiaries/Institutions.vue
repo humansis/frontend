@@ -48,8 +48,6 @@
 <script>
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
-import AddressService from "@/services/AddressService";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import Modal from "@/components/Modal";
 import InstitutionService from "@/services/InstitutionService";
 import { Toast } from "@/utils/UI";
@@ -80,7 +78,6 @@ export default {
 				longitude: null,
 				latitude: null,
 				projects: [],
-				projectIds: [],
 				name: "",
 				contactGivenName: "",
 				contactFamilyName: "",
@@ -94,10 +91,10 @@ export default {
 				phoneNumber: "",
 				phoneType: "",
 				phoneProxy: false,
-				adm1: null,
-				adm2: null,
-				adm3: null,
-				adm4: null,
+				adm1: {},
+				adm2: {},
+				adm3: {},
+				adm4: {},
 			},
 		};
 	},
@@ -147,11 +144,10 @@ export default {
 				phoneType: "",
 				phoneProxy: false,
 				projects: [],
-				projectIds: [],
-				adm1: null,
-				adm2: null,
-				adm3: null,
-				adm4: null,
+				adm1: {},
+				adm2: {},
+				adm3: {},
+				adm4: {},
 			};
 		},
 
@@ -189,31 +185,16 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				phoneId,
-				addressId,
+				address,
+				projects,
 				nationalId,
-				projectIds,
+				phone,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
 			},
 		) {
-			let phone = null;
-			let address = null;
-			let nationalIdCard = null;
-
-			await Promise.all([
-				BeneficiariesService.getPhone(phoneId)
-					.then((response) => {
-						phone = response;
-					}),
-				AddressService.getAddress(addressId)
-					.then((response) => {
-						address = response;
-					}),
-				BeneficiariesService.getNationalId(nationalId)
-					.then((response) => {
-						nationalIdCard = response;
-					}),
-			]);
-
 			this.institutionModel = {
 				...this.institutionModel,
 				id,
@@ -223,20 +204,21 @@ export default {
 				contactGivenName,
 				contactFamilyName,
 				type,
-				projectIds,
-				addressStreet: address?.street || "",
-				addressNumber: address?.number || "",
-				addressPostCode: address?.postcode || "",
-				nationalCardNumber: nationalIdCard?.number || "",
-				nationalCardType: nationalIdCard?.type || "",
+				projects,
+				addressStreet: address.street || "",
+				addressNumber: address.number || "",
+				addressPostCode: address.postcode || "",
+				nationalCardNumber: nationalId?.number || "",
+				nationalCardType: nationalId?.type || "",
 				phonePrefix: phone?.prefix || "",
 				phoneNumber: phone?.number || "",
 				phoneType: phone?.type ? { code: phone?.type, value: phone?.type } : "",
 				phoneProxy: phone?.proxy || false,
-				adm1Id: address?.adm1Id || "",
-				adm2Id: address?.adm2Id || "",
-				adm3Id: address?.adm3Id || "",
-				adm4Id: address?.adm4Id || "",
+				locationId: address.locationId || "",
+				adm1Id: adm1?.id,
+				adm2Id: adm2?.id,
+				adm3Id: adm3?.id,
+				adm4Id: adm4?.id,
 			};
 		},
 

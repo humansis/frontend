@@ -138,11 +138,16 @@ export default {
 		return data;
 	},
 
-	async getInstitutions(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
+	async getInstitutions(ids) {
 		const { data } = await fetcher({
-			uri: `institutions?${idsText}`,
+			uri: `institutions${queryBuilder({ ids })}`,
+		});
+		return data;
+	},
+
+	async getInstitution(id, filters) {
+		const { data } = await fetcher({
+			uri: `institutions/${id}${queryBuilder({ filters })}`,
 		});
 		return data;
 	},
@@ -215,20 +220,22 @@ export default {
 		return data;
 	},
 
-	async addBeneficiaryToAssistance(assistanceId, target, body) {
+	async addBeneficiaryToAssistance(assistanceId, target, body, endpointVersion = 1) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "PUT",
 			body,
+			version: endpointVersion,
 		});
 		return { data, status };
 	},
 
-	async removeBeneficiaryFromAssistance(assistanceId, target, body) {
+	async removeBeneficiaryFromAssistance(assistanceId, target, body, endpointVersion = 1) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "DELETE",
 			body,
+			version: endpointVersion,
 		});
 		return { data, status };
 	},

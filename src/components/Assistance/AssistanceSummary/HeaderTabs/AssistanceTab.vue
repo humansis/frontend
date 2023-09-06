@@ -50,7 +50,7 @@
 				</div>
 				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
 				<div v-else>
-					<small> {{ $t("N/A") }} </small>
+					<small>{{ $t("N/A") }}</small>
 				</div>
 			</div>
 		</div>
@@ -85,7 +85,7 @@
 					{{ dateExpiration }}
 				</div>
 				<div v-else-if="!isExpirationDateLoaded">
-					<small> {{ $t("N/A") }} </small>
+					<small>{{ $t("N/A") }}</small>
 				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>

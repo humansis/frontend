@@ -218,22 +218,65 @@ export default {
 			};
 		},
 
-		async showInstitutionDetail(institution) {
+		async showInstitutionDetail(detailedInstitution) {
 			this.institutionModal = {
 				isOpened: true,
 				isEditing: false,
 				isWaiting: true,
 			};
 
-			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+			try {
+				const institution = await BeneficiariesService.getInstitution(
+					detailedInstitution.institution.id,
+					{ includeArchived: true },
+				);
 
-			this.institutionModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
+				const {
+					id,
+					name,
+					longitude,
+					latitude,
+					contactGivenName,
+					contactFamilyName,
+					type,
+					address,
+					projects,
+					nationalId,
+					phone,
+					adm1,
+					adm2,
+					adm3,
+					adm4,
+				} = institution;
 
-			this.institutionModal.isWaiting = false;
+				this.institutionModel = {
+					id,
+					longitude,
+					latitude,
+					name,
+					contactGivenName,
+					contactFamilyName,
+					type,
+					projects,
+					addressStreet: address.street || "",
+					addressNumber: address.number || "",
+					addressPostCode: address.postcode || "",
+					nationalCardNumber: nationalId?.number || "",
+					nationalCardType: nationalId?.type || "",
+					phonePrefix: phone?.prefix || "",
+					phoneNumber: phone?.number || "",
+					phoneType: phone?.type || "",
+					phoneProxy: phone?.proxy || "",
+					adm1,
+					adm2,
+					adm3,
+					adm4,
+				};
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Institution detail")} ${e}`, "is-danger");
+			} finally {
+				this.institutionModal.isWaiting = false;
+			}
 		},
 
 		async showCommunityDetail(community) {

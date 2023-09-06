@@ -6,9 +6,8 @@
 			<div class="level p-3 has-border-bottom">
 				<div class="level-left">
 					<slot name="search">
-						<div class="level-item">
+						<div v-if="hasSearch" class="level-item">
 							<Search
-								v-if="hasSearch"
 								ref="search"
 								:search-phrase="searchPhrase"
 								:search-fields="searchFields"
@@ -21,7 +20,9 @@
 					</slot>
 					<slot name="title" />
 					<slot name="export" />
-					<slot name="filterButton" />
+					<div class="filter-button">
+						<slot name="filterButton" />
+					</div>
 					<slot name="bulkSearchButton" />
 					<slot name="actions" />
 				</div>

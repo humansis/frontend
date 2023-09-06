@@ -68,6 +68,8 @@
 				<p>{{ cellData.name }}</p>
 			</b-tooltip>
 
+			<p v-else-if="!cellData.routeName">{{ cellData }}</p>
+
 			<router-link
 				v-else
 				class="table-link"
@@ -155,7 +157,7 @@
 		<!-- Show Custom Tags Array with background color -->
 		<template v-if="column.type === 'tagArray'">
 			<div
-				v-for="(item, index) in  cellData"
+				v-for="(item, index) in cellData"
 				:key="`tags-array-item-${index}`"
 			>
 				<b-tag :type="getTagTypeByItem(item)">

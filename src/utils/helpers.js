@@ -19,7 +19,7 @@ export const queryBuilder = (param) => {
 	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }
 	if (format) { query.push(`type=${format}`); }
 
-	return query.length ? `?${query.join("&")}` : "";
+	return query.length ? `?${query.join("&").replace(/&+/g, "&")}` : "";
 };
 
 export const BookletStatusArray = [

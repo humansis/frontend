@@ -1,5 +1,5 @@
 <template>
-	<div class="mt-5">
+	<div class="mb-6">
 		<h3 class="title is-4">{{ title }}</h3>
 		<form class="box">
 			<b-field
@@ -45,9 +45,6 @@
 					:select-label="$t('Press enter to select')"
 					:selected-label="$t('Selected')"
 					:deselect-label="$t('Press enter to remove')"
-					group-values="data"
-					group-label="label"
-					group-select
 					:options="options.institutions"
 					:loading="loading.institutions"
 					:class="validateMultiselect('institutions')"
@@ -70,7 +67,7 @@ import { Notification } from "@/utils/UI";
 import CommunityService from "@/services/CommunityService";
 import { requiredIf } from "vuelidate/lib/validators";
 import addressHelper from "@/mixins/addressHelper";
-import { normalizeText } from "@/utils/datagrid";
+import AssistancesService from "@/services/AssistancesService";
 
 export default {
 	name: "TargetTypeSelect",
@@ -82,6 +79,10 @@ export default {
 		projectId: {
 			type: Number,
 			required: true,
+		},
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
@@ -104,6 +105,13 @@ export default {
 
 	watch: {
 		visible: "fetchData",
+		isAssistanceDuplicated(value) {
+			if (value) {
+				const assistanceId = this.$route.query.duplicateAssistance;
+
+				this.fetchUsedInstitutions(assistanceId);
+			}
+		},
 	},
 
 	computed: {
@@ -164,7 +172,7 @@ export default {
 				{ projects: [this.projectId] },
 			)
 				.then(({ data }) => {
-					this.options.institutions = this.prepareInstitutionsForSelect(data);
+					this.options.institutions = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
@@ -181,6 +189,18 @@ export default {
 					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 				});
 			this.loading.communities = false;
+		},
+
+		async fetchUsedInstitutions(assistanceId) {
+			try {
+				const { data: { data } } = await AssistancesService.getListOfInstitutions(
+					assistanceId,
+				);
+
+				this.prepareDuplicatedInstitutions(data);
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+			}
 		},
 
 		async prepareCommunitiesForSelect(data) {
@@ -201,25 +221,18 @@ export default {
 			return filledData;
 		},
 
-		prepareInstitutionsForSelect(data) {
-			const groups = [];
+		prepareDuplicatedInstitutions(data) {
+			const notArchivedInstitutions = data.filter((institution) => !institution.archived);
 
-			data.forEach((item) => {
-				const group = groups.find((g) => g.name === item.type);
+			notArchivedInstitutions.forEach((assistanceInstitution, key) => {
+				const { institution } = assistanceInstitution;
+				const { name, id } = institution;
 
-				if (!group) {
-					groups.push({
-						name: item.type,
-						label: normalizeText(item.type),
-						data: [item],
-					});
-				} else {
-					const index = groups.indexOf(group);
-					groups[index].data.push(item);
-				}
+				this.formModel.institutions[key] = {
+					name,
+					id,
+				};
 			});
-
-			return groups;
 		},
 	},
 };

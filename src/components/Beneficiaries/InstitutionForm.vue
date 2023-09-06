@@ -323,7 +323,6 @@ import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import Validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import ProjectService from "@/services/ProjectService";
 import LocationForm from "@/components/LocationForm";
 
@@ -410,7 +409,7 @@ export default {
 
 		mapSelects() {
 			if (!this.formModel) return;
-			const { phonePrefix, type, nationalCardType, phoneType, projectIds } = this.formModel;
+			const { phonePrefix, type, nationalCardType, phoneType, projects } = this.formModel;
 			if (phonePrefix && typeof phonePrefix !== "object") {
 				this.formModel.phonePrefix = PhoneCodes
 					.find((item) => item.code === phonePrefix);
@@ -427,8 +426,8 @@ export default {
 				this.formModel.phoneType = this.options.phoneTypes
 					.find((item) => item.code === phoneType);
 			}
-			if (projectIds && (this.institutionModal.isEditing || this.institutionModal.isDetail)) {
-				this.formModel.projects = getArrayOfCodeListByKey(projectIds, this.options.projects, "id");
+			if (projects && (this.institutionModal.isEditing || this.institutionModal.isDetail)) {
+				this.formModel.projects = projects;
 			}
 			this.mapping = this.$refs.locationForm.mapping;
 		},

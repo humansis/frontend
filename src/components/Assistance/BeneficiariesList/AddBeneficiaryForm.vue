@@ -127,6 +127,14 @@ export default {
 				fullName: this.getOptionTitle(beneficiary),
 			}));
 		},
+
+		isAssistanceTargetInstitution() {
+			return this.target === consts.TARGET.INSTITUTION;
+		},
+
+		beneficiaryEndpointVersion() {
+			return this.isAssistanceTargetInstitution ? 2 : 1;
+		},
 	},
 
 	mounted() {
@@ -184,7 +192,7 @@ export default {
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
 			const body = {
-				removed: true,
+				...(!this.isAssistanceTargetInstitution && { removed: true }),
 				justification,
 			};
 
@@ -251,11 +259,12 @@ export default {
 					assistanceTarget = "beneficiaries";
 			}
 
-			if (body.removed) {
+			if (body.removed || !body.added) {
 				await BeneficiariesService.removeBeneficiaryFromAssistance(
 					this.$route.params.assistanceId,
 					assistanceTarget,
 					body,
+					this.beneficiaryEndpointVersion,
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {
@@ -279,6 +288,7 @@ export default {
 					this.$route.params.assistanceId,
 					assistanceTarget,
 					body,
+					this.beneficiaryEndpointVersion,
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {

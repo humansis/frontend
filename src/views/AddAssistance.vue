@@ -38,6 +38,14 @@
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
+				<TargetTypeSelect
+					ref="targetTypeSelect"
+					v-show="visibleComponents.communities || visibleComponents.institutions"
+					:project-id="assistanceBody.projectId"
+					:visible="targetTypeSelectVisible"
+					:is-assistance-duplicated="isDuplicated"
+					@updatedData="fetchTargetType"
+				/>
 				<DistributedCommodity
 					v-if="isProjectReady"
 					ref="distributedCommodity"
@@ -60,13 +68,6 @@
 					:visible="visibleActivityDetails"
 					:data="componentsData.activityDetails"
 					@updatedData="fetchActivityDetails"
-				/>
-				<TargetTypeSelect
-					ref="targetTypeSelect"
-					v-show="visibleComponents.communities || visibleComponents.institutions"
-					:project-id="assistanceBody.projectId"
-					:visible="targetTypeSelectVisible"
-					@updatedData="fetchTargetType"
 				/>
 			</div>
 		</div>

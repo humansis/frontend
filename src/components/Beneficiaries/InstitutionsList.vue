@@ -76,7 +76,7 @@ import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
 import InstitutionService from "@/services/InstitutionService";
-import { generateColumns } from "@/utils/datagrid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
@@ -137,7 +137,10 @@ export default {
 				this.filters,
 			).then(({ data, totalCount }) => {
 				this.table.total = totalCount;
-				this.table.data = data;
+
+				if (totalCount) {
+					this.prepareDataForTable(data);
+				}
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 			});
@@ -147,6 +150,13 @@ export default {
 
 		filtersToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
+		},
+
+		prepareDataForTable(data) {
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+				this.table.data[key].type = normalizeText(item.type);
+			});
 		},
 
 		async onFiltersChange({ filters }) {

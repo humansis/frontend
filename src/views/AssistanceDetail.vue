@@ -220,6 +220,10 @@ export default {
 			return this.assistance?.completed;
 		},
 
+		isAssistanceTargetInstitution() {
+			return this.assistance.target === consts.TARGET.INSTITUTION;
+		},
+
 		modalityType() {
 			return this.commodities?.[0]?.modalityType;
 		},
@@ -246,7 +250,8 @@ export default {
 		isInputDistributedButtonVisible() {
 			return this.isAssistanceStateValidated
 				&& this.userCan.assignDistributionItems
-				&& this.inputDistributedButtonVisible;
+				&& this.inputDistributedButtonVisible
+				&& !this.isAssistanceTargetInstitution;
 		},
 
 		isStartTransactionButtonVisible() {
