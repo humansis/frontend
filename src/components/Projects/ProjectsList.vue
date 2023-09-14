@@ -117,7 +117,6 @@ export default {
 					{ key: "startDate", type: "date", width: "120", sortable: true },
 					{ key: "endDate", type: "date", width: "120", sortable: true },
 					{ key: "donors", width: "150" },
-					{ key: "target", label: "Target Households", width: "90" },
 					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
 					{ key: "beneficiariesReached", label: "Registered Individuals", width: "130", sortable: true },
 				],

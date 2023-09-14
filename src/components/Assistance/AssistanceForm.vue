@@ -18,7 +18,7 @@
 
 			<LocationForm
 				ref="locationForm"
-				is-assistance-modal
+				is-editing
 				:form-model="formModel"
 				:disabled-adm="disabledAdmInput"
 				:influence-distribution-protocol="influenceDistributionProtocol"

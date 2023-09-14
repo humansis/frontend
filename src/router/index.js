@@ -104,6 +104,36 @@ const routes = [
 						},
 					},
 					{
+						path: "add-project",
+						name: "AddProject",
+						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Add Project"),
+							description: i18n.t("This page is a form to add a new project to a humansis."),
+						},
+					},
+					{
+						path: "project-detail/:projectId",
+						name: "ProjectDetail",
+						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Project detail"),
+							description: i18n.t("This page is a form to show detail of a project in humansis."),
+						},
+					},
+					{
+						path: "project-edit/:projectId",
+						name: "ProjectEdit",
+						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Project detail"),
+							description: i18n.t("This page is a form to edit a project in humansis."),
+						},
+					},
+					{
 						path: "/:countryCode/project/:projectId",
 						component: { render(c) { return c("router-view"); } },
 						meta: {

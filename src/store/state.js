@@ -107,5 +107,6 @@ export default {
 		editScoring: false,
 		deleteScoring: false,
 		viewScoring: false,
+		projectTargets: false,
 	},
 };

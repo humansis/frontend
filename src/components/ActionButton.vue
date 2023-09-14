@@ -1,6 +1,6 @@
 <template>
 	<b-tooltip :label="tooltip" :active="isActive" :type="type">
-		<b-button size="is-small" :class="type" :disabled="disabled" @click="$emit('click')">
+		<b-button :size="iconSize" :class="type" :disabled="disabled" @click="$emit('click')">
 			<b-icon :icon="icon" />
 		</b-button>
 	</b-tooltip>
@@ -14,6 +14,10 @@ export default {
 		icon: {
 			type: String,
 			required: true,
+		},
+		iconSize: {
+			type: String,
+			default: "is-small",
 		},
 		disabled: {
 			type: Boolean,

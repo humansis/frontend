@@ -45,6 +45,12 @@
 	}
 }
 
+.b-numberinput {
+	input {
+		text-align: left !important;
+	}
+}
+
 .table-action {
 	&.button.is-light {
 		background-color: transparent;

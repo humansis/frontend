@@ -18,6 +18,17 @@ export default {
 				&& validation.$error && !validation.maxLength) {
 				return `${i18n.t("Too long! Max characters:")} ${validation.$params.maxLength.max}`;
 			}
+
+			if (Object.keys(validation).includes("minValue")
+				&& validation.$error && !validation.minValue) {
+				return `${i18n.t("Min value:")} ${validation.$params.minValue.min}`;
+			}
+
+			if (Object.keys(validation).includes("maxValue")
+				&& validation.$error && !validation.maxValue) {
+				return `${i18n.t("Max value:")} ${validation.$params.maxValue.max}`;
+			}
+
 			return validation.$error ? i18n.t(message) : "";
 		},
 
@@ -26,7 +37,8 @@ export default {
 
 			let result = "";
 			if (validation.$dirty) {
-				if (errorOrNothing) {
+				if (errorOrNothing
+					|| (validation?.minValue && !Object.keys(validation).includes("required"))) {
 					result = validation.$error ? "is-danger" : "";
 				} else {
 					result = validation.$error ? "is-danger" : "is-success";
