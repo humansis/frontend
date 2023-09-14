@@ -576,8 +576,12 @@ export default {
 				{ key: "familyName", label: "Local family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
 				{ key: "nationalId", label: "ID Number", sortable: true },
 				{ key: "status", type: "tagArray", customTags: statusTags },
-				{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
-				{ key: "distributed", type: "arrayTextBreak", sortable: true },
+				...!this.isAssistanceTypeActivity
+					? [
+						{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
+						{ key: "distributed", type: "arrayTextBreak", sortable: true },
+					]
+					: [],
 				{ key: "spent", type: "arrayTextBreak", sortable: true },
 				{ key: "lastModified", type: "arrayTextBreak", sortable: true },
 			];
@@ -645,6 +649,10 @@ export default {
 
 		isAssistanceTargetInstitution() {
 			return this.assistance?.target === consts.TARGET.INSTITUTION;
+		},
+
+		isAssistanceTypeActivity() {
+			return this.assistance?.type === consts.TYPE.ACTIVITY;
 		},
 
 		searchFields() {

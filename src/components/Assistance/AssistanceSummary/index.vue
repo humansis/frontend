@@ -18,15 +18,21 @@
 			/>
 		</h2>
 
-		<p v-if="assistanceDescription" class="has-text-centered mb-6">
+		<p v-if="assistanceDescription" class="has-text-centered has-text-weight-bold is-size-4 pb-3">
 			{{ assistanceDescription }}
 		</p>
 
 		<b-tabs
+			v-model="activeTab"
 			position="is-centered"
 			class="ml-3"
 		>
-			<b-tab-item :label="$t('To Distribute')" icon="user" class="relative-position">
+			<b-tab-item
+				v-if="!isAssistanceTypeActivity"
+				icon="user"
+				class="relative-position"
+				:label="$t('To Distribute')"
+			>
 				<DistributionTab
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
@@ -115,6 +121,7 @@ export default {
 		return {
 			consts,
 			province: null,
+			activeTab: 0,
 			commodity: [],
 			isCommodityLoading: false,
 		};
@@ -125,6 +132,10 @@ export default {
 			if (newAssistance) {
 				this.setLocation();
 				this.setCommodity();
+
+				if (this.isAssistanceTypeActivity) {
+					this.activeTab = 1;
+				}
 			}
 		},
 	},
@@ -156,6 +167,10 @@ export default {
 
 		modalityType() {
 			return this.commodities?.[0]?.modalityType;
+		},
+
+		isAssistanceTypeActivity() {
+			return this.assistance?.type === consts.TYPE.ACTIVITY;
 		},
 	},
 
