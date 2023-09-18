@@ -824,13 +824,17 @@ export default {
 				case consts.TARGET.INDIVIDUAL:
 				default:
 					try {
+						const search = this.assistanceDetail
+							? { phrase: this.table.searchPhrase, field: this.table.searchField }
+							: this.table.searchPhrase;
+
 						const { data: { data, totalCount } } = await AssistancesService
 							.getOptimizedListOfBeneficiaries(
 								this.$route.params.assistanceId,
 								page || this.table.currentPage,
 								size || this.perPage,
 								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-								{ phrase: this.table.searchPhrase, field: this.table.searchField },
+								search,
 								this.filters,
 							);
 
