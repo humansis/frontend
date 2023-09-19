@@ -163,8 +163,8 @@
 		</div>
 		<Table
 			ref="beneficiariesList"
+			is-disabled-prechecked-rows
 			:has-search="!isAssistanceTargetInstitution"
-			disable-prechecked-rows
 			:paginated="!table.customPerPage"
 			:data="table.data"
 			:total="table.total"
@@ -173,6 +173,7 @@
 			:is-loading="isLoadingList"
 			:search-phrase="table.searchPhrase"
 			:checkable="table.settings.checkableTable"
+			:is-disabled-unprechecked-rows="isAssistanceClosed"
 			:checked-rows="table.checkedRows"
 			:row-class="(row) => row.removed && 'removed-row'"
 			:search-fields="searchFields"
@@ -653,6 +654,10 @@ export default {
 
 		isAssistanceTypeActivity() {
 			return this.assistance?.type === consts.TYPE.ACTIVITY;
+		},
+
+		isAssistanceClosed() {
+			return this.assistance?.state.code === consts.STATUS.CLOSED;
 		},
 
 		searchFields() {

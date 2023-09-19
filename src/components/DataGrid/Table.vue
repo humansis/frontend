@@ -174,7 +174,11 @@ export default {
 			type: Array,
 			default: () => [],
 		},
-		disablePrecheckedRows: {
+		isDisabledPrecheckedRows: {
+			type: Boolean,
+			default: false,
+		},
+		isDisabledUnprecheckedRows: {
 			type: Boolean,
 			default: false,
 		},
@@ -251,7 +255,7 @@ export default {
 		},
 
 		checkboxChecked(rows) {
-			if (this.disablePrecheckedRows) {
+			if (this.isDisabledPrecheckedRows) {
 				const immediatelyCheckedRows = this.checkedRows.map((row) => row.id);
 				const checkedNewRows = rows.filter((row) => !immediatelyCheckedRows.includes(row.id));
 
@@ -265,12 +269,12 @@ export default {
 
 		isRowCheckable(row) {
 			if (row.removed) return false;
-			if (this.disablePrecheckedRows) {
-				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
-				return !immediatelyCheckedRows.includes(row.id);
-			}
 
-			return true;
+			const precheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
+			const isRowPrechecked = precheckedRows.includes(row.id);
+
+			return !(this.isDisabledUnprecheckedRows
+				|| (isRowPrechecked && this.isDisabledPrecheckedRows));
 		},
 
 		onChangePerPage(value) {
