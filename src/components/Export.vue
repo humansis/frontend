@@ -124,7 +124,8 @@ export default {
 
 			this.$emit("inputUpdated", this.selectedExportType, this.selectedExportFormat);
 
-			if (this.selectedExportType === EXPORT.BANK_DISTRIBUTION_LIST) {
+			if (this.selectedExportType === EXPORT.BANK_DISTRIBUTION_LIST
+				|| this.selectedExportType === EXPORT.BNF_FILE_3.OPTION_NAME) {
 				this.selectedExportFormat = EXPORT.FORMAT_XLSX;
 			}
 		},

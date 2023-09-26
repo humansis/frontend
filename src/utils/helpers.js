@@ -1,5 +1,6 @@
 import i18n from "@/plugins/i18n";
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
+import { Notification } from "@/utils/UI";
 
 export const queryBuilder = (param) => {
 	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
@@ -46,10 +47,24 @@ export const getBookletStatus = (code) => BookletStatusArray
 
 export const splitBySpace = (str) => str.split(/\s+/);
 
+// TODO Start using this function for exporting files everywhere (refactor / techDebt)
+export const downloadFile = (data, filename, status, format, responseMessage) => {
+	if (status === 200) {
+		const blob = new Blob([data], { type: data.type });
+		const link = document.createElement("a");
+		link.href = window.URL.createObjectURL(blob);
+		link.download = `${filename}.${format}`;
+		link.click();
+	} else {
+		Notification(responseMessage, "is-warning");
+	}
+};
+
 export default {
 	BookletStatusArray,
 	copyObject,
 	deepEqual,
 	getBookletStatus,
 	splitBySpace,
+	downloadFile,
 };

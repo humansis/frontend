@@ -318,6 +318,16 @@ export default {
 		return download({ uri: `beneficiaries/exports?${formatText + idsText}` });
 	},
 
+	getBnfFile3ExportStatistics(bnfFile3Id) {
+		return fetcher({ uri: `exports/${bnfFile3Id}` });
+	},
+
+	exportBnf3File(format, bnfFile3Id) {
+		return download({
+			uri: `exports/${bnfFile3Id}/content${queryBuilder({ format })}`,
+		});
+	},
+
 	async getBeneficiaryTypes() {
 		const { data } = await fetcher({
 			uri: "beneficiaries/types",

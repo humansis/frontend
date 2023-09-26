@@ -20,6 +20,7 @@
 					</slot>
 					<slot name="title" />
 					<slot name="export" />
+					<slot name="exportMessage" />
 					<div class="filter-button">
 						<slot name="filterButton" />
 					</div>

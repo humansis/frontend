@@ -221,11 +221,22 @@
 					:disabled="isExportButtonDisabled"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
-					:is-export-loading="exportControl.loading"
+					:is-export-loading="isExportLoading"
 					:location="exportControl.location"
 					@inputUpdated="exportValuesUpdated"
 					@onExport="exportDistribution"
 				/>
+			</template>
+			<template #exportMessage>
+				<b-field
+					v-if="exportControl.isBnfFileTypeSelected && !isBnfFile3Exported"
+					class="mb-0"
+				>
+					<b-icon icon="exclamation" type="is-danger" class="pr-1" />
+					<p class="has-text-danger">
+						{{ $t("BNF File 3 is generated, please wait several minutes.") }}
+					</p>
+				</b-field>
 			</template>
 			<b-table-column
 				v-slot="props"
@@ -248,7 +259,7 @@
 						type="is-danger"
 						:disabled="props.row.removed || isAssistanceCompleted"
 						:tooltip="$t('Delete')"
-						@click.native="openAddBeneficiaryModal(props.row.institution.id, !(props.row.removed
+						@click.native="openAddBeneficiaryModal(getIdForDelete(props.row), !(props.row.removed
 							|| isAssistanceCompleted))"
 					/>
 					<ActionButton
@@ -327,6 +338,7 @@ import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
 import consts from "@/utils/assistanceConst";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
@@ -396,6 +408,7 @@ export default {
 				loading: false,
 				location: "assistance",
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+				isBnfFileTypeSelected: false,
 			},
 			defaultSearchField: consts.SEARCH_FIELDS[2],
 			selectedFilters: [],
@@ -522,6 +535,7 @@ export default {
 				isWaiting: false,
 			},
 			assignVoucherToBeneficiaryId: null,
+			bnfFile3Statistics: {},
 		};
 	},
 
@@ -549,25 +563,24 @@ export default {
 		...mapState(["perPage"]),
 
 		availableExportTypes() {
-			if (this.exportButton && this.isDistributionExportVisible
-				&& this.userCan.exportBeneficiaries && this.isAssistanceValidated) {
-				return [
-					EXPORT.LIST_OF_BENEFICIARIES,
-					EXPORT.DISTRIBUTION_LIST,
-					EXPORT.BANK_DISTRIBUTION_LIST,
-					EXPORT.HOUSEHOLDS,
-				];
-			}
+			const availableTypes = [];
 
 			if (this.exportButton && this.userCan.exportBeneficiaries) {
-				return [
+				availableTypes.push(
 					EXPORT.LIST_OF_BENEFICIARIES,
 					EXPORT.DISTRIBUTION_LIST,
 					EXPORT.HOUSEHOLDS,
-				];
+				);
+
+				if (this.isAssistanceValidated) {
+					if (this.isDistributionExportVisible) {
+						availableTypes.push(EXPORT.BANK_DISTRIBUTION_LIST);
+					}
+					availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+				}
 			}
 
-			return [];
+			return availableTypes;
 		},
 
 		householdsAndIndividualDetailColumns() {
@@ -691,6 +704,15 @@ export default {
 				{ "is-selected": this.statusActive.canceled },
 			];
 		},
+
+		isBnfFile3Exported() {
+			return this.bnfFile3Statistics.state === EXPORT.BNF_FILE_3.STATE.EXPORTED;
+		},
+
+		isExportLoading() {
+			return this.exportControl.loading
+				|| (!this.isBnfFile3Exported && this.exportControl.isBnfFileTypeSelected);
+		},
 	},
 
 	methods: {
@@ -701,8 +723,19 @@ export default {
 			}
 		},
 
-		exportValuesUpdated(type) {
-			if (type === EXPORT.BANK_DISTRIBUTION_LIST) {
+		async exportValuesUpdated(type) {
+			this.exportControl.isBnfFileTypeSelected = (type === EXPORT.BNF_FILE_3.OPTION_NAME);
+
+			if (this.exportControl.isBnfFileTypeSelected) {
+				const { bnfFile3ExportId } = this.assistance;
+
+				this.exportControl.formats = [EXPORT.FORMAT_XLSX];
+
+				if (this.isBnfFile3Exported) return;
+
+				await this.fetchBnfFile3Statistics(bnfFile3ExportId);
+				await this.fetchBnfFile3StatisticsInterval(bnfFile3ExportId);
+			} else if (type === EXPORT.BANK_DISTRIBUTION_LIST) {
 				this.exportControl.formats = [EXPORT.FORMAT_XLSX];
 			} else {
 				this.exportControl.formats = [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS];
@@ -770,8 +803,12 @@ export default {
 			this.onFiltersChange({ reliefPackageStates: [] });
 		},
 
+		getIdForDelete(row) {
+			return this.isAssistanceTargetInstitution ? row.institution.id : row.id;
+		},
+
 		openViewModal(row) {
-			if (this.assistance.target === consts.TARGET.INSTITUTION) {
+			if (this.isAssistanceTargetInstitution) {
 				this.showDetail(row);
 			} else {
 				this.showEdit(row);
@@ -1066,6 +1103,28 @@ export default {
 				});
 		},
 
+		async fetchBnfFile3Statistics(bnfFile3ExportId) {
+			try {
+				const { data } = await BeneficiariesService.getBnfFile3ExportStatistics(
+					bnfFile3ExportId,
+				);
+
+				this.bnfFile3Statistics = data;
+			} catch (e) {
+				Notification(`${this.$t("BNF File 3 Statistics")} ${e.message || e}`, "is-danger");
+			}
+		},
+
+		async fetchBnfFile3StatisticsInterval(bnfFile3ExportId) {
+			const bnfFileStatisticsInterval = setInterval(async () => {
+				if (this.bnfFile3Statistics.state === EXPORT.BNF_FILE_3.STATE.EXPORTED) {
+					clearInterval(bnfFileStatisticsInterval);
+				} else {
+					await this.fetchBnfFile3Statistics(bnfFile3ExportId);
+				}
+			}, 5000);
+		},
+
 		async exportDistribution(type, format) {
 			this.exportControl.loading = true;
 
@@ -1098,6 +1157,13 @@ export default {
 						`BNF Households ${this.assistance.name}`,
 					);
 					break;
+				case EXPORT.BNF_FILE_3.OPTION_NAME:
+					await this.exportData(
+						format,
+						EXPORT.BNF_FILE_3.OPTION_NAME,
+						`BNF File 3 ${this.assistance.name}`,
+					);
+					break;
 				default:
 			}
 			this.exportControl.loading = false;
@@ -1105,42 +1171,44 @@ export default {
 
 		async exportData(format, exportType, filename) {
 			if (!this.changeButton) {
-				await BeneficiariesService.exportAssistanceBeneficiaries(
-					format,
-					this.$route.params.assistanceId,
-					this.table.searchPhrase,
-					{ exportType },
-				)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `${filename}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
-					});
+				if (exportType === EXPORT.BNF_FILE_3.OPTION_NAME) {
+					try {
+						const { data, status, message } = await BeneficiariesService.exportBnf3File(
+							format,
+							this.assistance.bnfFile3ExportId,
+						);
+
+						downloadFile(data, filename, status, format, message);
+					} catch (e) {
+						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "is-danger");
+					}
+				} else {
+					try {
+						const { data, status, message } = await BeneficiariesService
+							.exportAssistanceBeneficiaries(
+								format,
+								this.$route.params.assistanceId,
+								this.table.searchPhrase,
+								{ exportType },
+							);
+
+						downloadFile(data, filename, status, format, message);
+					} catch (e) {
+						Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
+					}
+				}
 			} else {
-				await BeneficiariesService.exportBeneficiaries(format, this.table.data, "id")
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `beneficiaries.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export")} ${e}`, "is-danger");
-					});
+				try {
+					const { data, status, message } = BeneficiariesService.exportBeneficiaries(
+						format,
+						this.table.data,
+						"id",
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
+				}
 			}
 		},
 	},
