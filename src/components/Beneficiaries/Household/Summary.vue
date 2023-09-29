@@ -87,7 +87,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "Summary",
@@ -97,7 +97,7 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		members: Array,

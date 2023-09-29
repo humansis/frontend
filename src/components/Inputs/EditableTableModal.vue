@@ -198,7 +198,7 @@
 <script>
 import { minValue, maxValue, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { GENERAL } from "@/consts";
 
 export default {
@@ -225,7 +225,7 @@ export default {
 		LocationForm,
 	},
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	created() {
 		if (this.modalState.isDetail || this.modalState.isEditing) {

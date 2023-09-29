@@ -298,7 +298,7 @@ import AddressService from "@/services/AddressService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeCustomFields } from "@/utils/datagrid";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import getters from "@/store/getters";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import addressHelper from "@/mixins/addressHelper";
@@ -308,7 +308,7 @@ import calendarHelper from "@/mixins/calendarHelper";
 export default {
 	name: "HouseholdForm",
 
-	mixins: [Validation, addressHelper, calendarHelper],
+	mixins: [validation, addressHelper, calendarHelper],
 
 	props: {
 		detailOfHousehold: Object,

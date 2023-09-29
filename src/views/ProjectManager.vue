@@ -311,7 +311,7 @@ import EditableTable from "@/components/Inputs/EditableTable";
 import MultiSelectTag from "@/components/MultiSelectTag";
 import SvgIcon from "@/components/SvgIcon";
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import permissions from "@/mixins/permissions";
 import calendarHelper from "@/mixins/calendarHelper";
 import AssistancesService from "@/services/AssistancesService";
@@ -348,7 +348,7 @@ export default {
 		SvgIcon,
 	},
 
-	mixins: [Validation, calendarHelper, permissions],
+	mixins: [validation, calendarHelper, permissions],
 
 	async mounted() {
 		this.isProjectDataLoading = true;

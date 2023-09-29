@@ -269,7 +269,7 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import PhoneCodes from "@/utils/phoneCodes";
@@ -278,7 +278,7 @@ import ProjectService from "@/services/ProjectService";
 export default {
 	name: "CommunityForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	components: { LocationForm },
 

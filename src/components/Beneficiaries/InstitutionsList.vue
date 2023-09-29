@@ -104,7 +104,7 @@ export default {
 				visibleColumns: [
 					{ key: "name" },
 					{ key: "type" },
-					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactGivenName" },
 					{ key: "contactFamilyName" },
 				],
 				total: 0,
@@ -136,6 +136,7 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.total = totalCount;
 
 				if (totalCount) {

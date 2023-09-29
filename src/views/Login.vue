@@ -68,7 +68,7 @@ import { mapActions, mapState } from "vuex";
 import JWTDecode from "jwt-decode";
 import { setCookie } from "@/utils/cookie";
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import LoginService from "@/services/LoginService";
 import { Notification } from "@/utils/UI";
 import gitInfo from "@/gitInfo";
@@ -91,7 +91,7 @@ export default {
 		};
 	},
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	validations: {
 		formModel: {

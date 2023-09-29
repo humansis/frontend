@@ -420,13 +420,14 @@ import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeLis
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
+import idHelper from "@/mixins/idHelper";
 import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdHeadForm",
 
-	mixins: [Validation, calendarHelper],
+	mixins: [validation, calendarHelper, idHelper],
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
@@ -502,9 +503,9 @@ export default {
 			isPrimaryIdValid: true,
 			isSecondaryIdValid: true,
 			isTertiaryIdValid: true,
-			primaryIdValidationMessage: null,
-			secondaryIdValidationMessage: null,
-			tertiaryIdValidationMessage: null,
+			primaryIdValidationMessage: "",
+			secondaryIdValidationMessage: "",
+			tertiaryIdValidationMessage: "",
 			detailOfHouseholdHead: {},
 			householdHeadSmartCardNumbers: [],
 			formModel: {
@@ -834,31 +835,6 @@ export default {
 				});
 
 			this.referralTypeLoading = false;
-		},
-
-		onIdChange() {
-			const primaryIdCode = this.formModel.primaryId.idType?.code;
-			const secondaryIdCode = this.formModel.secondaryId.idType?.code;
-			const tertiaryIdCode = this.formModel.tertiaryId.idType?.code;
-
-			const isPrimaryEqualsSecondary = primaryIdCode === secondaryIdCode;
-			const isSecondaryEqualsTertiary = secondaryIdCode === tertiaryIdCode;
-			const isPrimaryEqualsTertiary = primaryIdCode === tertiaryIdCode;
-
-			this.isPrimaryIdValid = (this.isSecondaryIdTabDisabled || !isPrimaryEqualsSecondary)
-				&& (this.isTertiaryIdTabDisabled || !isPrimaryEqualsTertiary);
-			this.primaryIdValidationMessage = this.isPrimaryIdValid ? null : this.$t("Primary ID cannot be the same as the secondary or tertiary ID");
-
-			if (!this.isSecondaryIdTabDisabled) {
-				this.isSecondaryIdValid = !isPrimaryEqualsSecondary
-					&& (this.isTertiaryIdTabDisabled || !isSecondaryEqualsTertiary);
-				this.secondaryIdValidationMessage = this.isSecondaryIdValid ? null : this.$t("Secondary ID cannot be the same as the primary or tertiary ID");
-			}
-
-			if (!this.isTertiaryIdTabDisabled) {
-				this.isTertiaryIdValid = !isPrimaryEqualsTertiary && !isSecondaryEqualsTertiary;
-				this.tertiaryIdValidationMessage = this.isTertiaryIdValid ? null : this.$t("Tertiary ID cannot be the same as the primary or secondary ID");
-			}
 		},
 
 		submit() {

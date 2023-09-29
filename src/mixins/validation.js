@@ -11,7 +11,7 @@ export default {
 			validation.$touch();
 		},
 
-		validateMsg(field, message = i18n.t("Required"), object) {
+		validateMsg(field, message = "Required", object) {
 			const validation = this.getValidation(field, object);
 
 			if (Object.keys(validation).includes("maxLength")
@@ -82,6 +82,44 @@ export default {
 				default:
 			}
 			return result;
+		},
+
+		prepareValidationRules() {
+			if (this.validation && this.validatedFieldName) {
+				this.$v = this.validation;
+			}
+		},
+
+		validateRequiredType() {
+			return this.validation && this.validatedFieldName
+				? this.validateType(
+					this.validatedFieldName,
+					this.isErrorOrNothing,
+					this.validatedObjectName,
+				)
+				: "";
+		},
+
+		validateRequiredMsg() {
+			return this.validation && this.validatedFieldName
+				? this.validateMsg(this.validatedFieldName, "Required", this.validatedObjectName)
+				: "";
+		},
+
+		validateRequired() {
+			return this.validation && this.validatedFieldName
+				? this.validate(this.validatedFieldName, this.validatedObjectName)
+				: "";
+		},
+
+		validateRequiredMultiselect() {
+			return this.validation && this.validatedFieldName
+				? this.validateMultiselect(
+					this.validatedFieldName,
+					this.isErrorOrNothing,
+					this.validatedObjectName,
+				)
+				: "";
 		},
 	},
 };

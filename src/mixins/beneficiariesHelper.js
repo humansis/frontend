@@ -1,10 +1,13 @@
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import consts from "@/utils/assistanceConst";
 import AddressService from "@/services/AddressService";
+import { Notification, Toast } from "@/utils/UI";
+import consts from "@/utils/assistanceConst";
+import institutionHelper from "@/mixins/institutionHelper";
 
 export default {
+	mixins: [institutionHelper],
+
 	methods: {
 		getTransactions(transactionIds) {
 			return AssistancesService
@@ -198,7 +201,6 @@ export default {
 					this.showCommunityEdit(id);
 					break;
 				case consts.TARGET.INSTITUTION:
-					this.showInstitutionEdit(id);
 					break;
 				case consts.TARGET.HOUSEHOLD:
 				case consts.TARGET.INDIVIDUAL:
@@ -226,54 +228,22 @@ export default {
 			};
 
 			try {
+				await Promise.all([
+					this.fetchSupportReceivedTypes(),
+					this.fetchNationalCardTypes(),
+					this.fetchPhoneTypes(),
+					this.fetchProjects(),
+					this.fetchInstitutionTypes(),
+				]);
+
 				const institution = await BeneficiariesService.getInstitution(
 					detailedInstitution.institution.id,
 					{ includeArchived: true },
 				);
 
-				const {
-					id,
-					name,
-					longitude,
-					latitude,
-					contactGivenName,
-					contactFamilyName,
-					type,
-					address,
-					projects,
-					nationalId,
-					phone,
-					adm1,
-					adm2,
-					adm3,
-					adm4,
-				} = institution;
-
-				this.institutionModel = {
-					id,
-					longitude,
-					latitude,
-					name,
-					contactGivenName,
-					contactFamilyName,
-					type,
-					projects,
-					addressStreet: address.street || "",
-					addressNumber: address.number || "",
-					addressPostCode: address.postcode || "",
-					nationalCardNumber: nationalId?.number || "",
-					nationalCardType: nationalId?.type || "",
-					phonePrefix: phone?.prefix || "",
-					phoneNumber: phone?.number || "",
-					phoneType: phone?.type || "",
-					phoneProxy: phone?.proxy || "",
-					adm1,
-					adm2,
-					adm3,
-					adm4,
-				};
+				this.institutionModel = this.mapToModel(institution);
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Institution detail")} ${e}`, "is-danger");
+				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "is-danger");
 			} finally {
 				this.institutionModal.isWaiting = false;
 			}
@@ -357,7 +327,6 @@ export default {
 		closeInstitutionModal() {
 			this.institutionModal = {
 				isOpened: false,
-				isEditing: false,
 			};
 		},
 

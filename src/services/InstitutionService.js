@@ -9,9 +9,8 @@ export default {
 		return { data, totalCount };
 	},
 
-	async createInstitution(body) {
-		const { data, status } = await fetcher({ uri: "institutions", method: "POST", body });
-		return { data, status };
+	createInstitution(body) {
+		return fetcher({ uri: "institutions", method: "POST", body });
 	},
 
 	async getDetailOfInstitution(id) {
@@ -21,18 +20,16 @@ export default {
 		return { data, totalCount };
 	},
 
-	async updateInstitution(id, body) {
-		const { data, status } = await fetcher({
+	updateInstitution(id, body) {
+		return fetcher({
 			uri: `institutions/${id}`, method: "PUT", body,
 		});
-		return { data, status };
 	},
 
-	async deleteInstitution(id) {
-		const { data, status } = await fetcher({
+	deleteInstitution(id) {
+		return fetcher({
 			uri: `institutions/${id}`, method: "DELETE",
 		});
-		return { data, status };
 	},
 
 	async getListOfInstitutionTypes() {

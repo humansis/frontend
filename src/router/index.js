@@ -286,13 +286,53 @@ const routes = [
 					},
 					{
 						path: "institutions",
-						name: "Institutions",
-						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+						component: { render(c) { return c("router-view"); } },
 						meta: {
-							permissions: [],
 							breadcrumb: () => i18n.t("Institutions"),
-							description: "",
+							parent: "Beneficiaries",
 						},
+						children: [
+							{
+								path: "",
+								name: "Institutions",
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institutions"),
+									description: "",
+								},
+							},
+							{
+								path: "add-institution",
+								name: "AddInstitution",
+								component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Add Institution"),
+									description: i18n.t("This page is a form to add a new institution to a humansis."),
+								},
+							},
+							{
+								path: "institution-detail/:institutionId",
+								name: "InstitutionDetail",
+								component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institution Detail"),
+									description: i18n.t("This page is a form to show detail of a institution in humansis."),
+								},
+							},
+							{
+								path: "institution-edit/:institutionId",
+								name: "InstitutionEdit",
+								component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institution edit"),
+									description: i18n.t("This page is a form to edit a institution in humansis."),
+								},
+							},
+						],
 					},
 					{
 						path: "vendors",

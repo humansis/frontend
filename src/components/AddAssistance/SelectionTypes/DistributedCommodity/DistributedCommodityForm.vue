@@ -256,7 +256,7 @@ import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
 import consts from "@/utils/assistanceConst";
 import currencies from "@/utils/currencies";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
 import calendarHelper from "@/mixins/calendarHelper";
 
@@ -278,7 +278,7 @@ export default {
 
 	components: { SvgIcon },
 
-	mixins: [Validation, calendarHelper],
+	mixins: [validation, calendarHelper],
 
 	props: {
 		formModel: Object,

@@ -64,8 +64,6 @@
 				close-button
 				class="modal-card"
 				:formModel="institutionModel"
-				:submit-button-label="institutionModal.isEditing ? $t('Update') : $t('Create')"
-				:form-disabled="!institutionModal.isEditing"
 				:institution-modal="institutionModal"
 				@formClosed="closeInstitutionModal"
 			/>
@@ -344,7 +342,7 @@ import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import { EXPORT } from "@/consts";
+import { EXPORT, INSTITUTION } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -455,7 +453,7 @@ export default {
 					{ key: "id", label: "ID", sortable: true },
 					{ key: "name", sortable: true },
 					{ key: "type", sortable: true },
-					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactGivenName", sortable: true },
 					{ key: "contactFamilyName", sortable: true },
 					{ key: "phone", label: "Phone Number" },
 				],
@@ -475,7 +473,6 @@ export default {
 			},
 			institutionModal: {
 				isOpened: false,
-				isEditing: false,
 				isWaiting: false,
 			},
 			communityModal: {
@@ -502,28 +499,7 @@ export default {
 				comment: null,
 				justification: null,
 			},
-			institutionModel: {
-				longitude: null,
-				latitude: null,
-				name: "",
-				contactGivenName: "",
-				contactFamilyName: "",
-				type: "",
-				addressStreet: "",
-				addressNumber: "",
-				addressPostCode: "",
-				nationalCardNumber: "",
-				nationalCardType: "",
-				phonePrefix: "",
-				phoneNumber: "",
-				phoneType: "",
-				phoneProxy: false,
-				projects: [],
-				adm1: {},
-				adm2: {},
-				adm3: {},
-				adm4: {},
-			},
+			institutionModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
 			communityModel: {
 				addressStreet: null,
 				addressNumber: null,

@@ -122,7 +122,7 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import AddressService from "@/services/AddressService";
 import CONST from "@/const";
@@ -130,7 +130,7 @@ import CONST from "@/const";
 export default {
 	name: "TypeOfLocationForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,

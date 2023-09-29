@@ -128,14 +128,14 @@ import { requiredIf } from "vuelidate/lib/validators";
 import LocationsService from "@/services/LocationsService";
 import { Notification } from "@/utils/UI";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import AddressService from "@/services/AddressService";
 import CONST from "@/const";
 
 export default {
 	name: "LocationForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,
@@ -206,8 +206,9 @@ export default {
 
 	validations: {
 		formModel: {
+			// eslint-disable-next-line func-names
 			adm1: { required: requiredIf(function () {
-				return this.isAdm1Optional;
+				return !this.isAdm1Optional;
 			}) },
 			adm2: {},
 			adm3: {},

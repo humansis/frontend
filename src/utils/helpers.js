@@ -23,6 +23,43 @@ export const queryBuilder = (param) => {
 	return query.length ? `?${query.join("&").replace(/&+/g, "&")}` : "";
 };
 
+export const filterEmptyValues = (param) => {
+	const originalObject = param;
+
+	if (typeof originalObject === "object") {
+		Object.keys(originalObject).forEach((key) => {
+			if ((originalObject[key] === null)
+				|| (originalObject[key] === undefined)
+				|| (typeof originalObject[key] === "string" && !originalObject[key].length)
+				|| (typeof originalObject[key] === "object" && !Object.keys(originalObject[key]).length)
+			) {
+				delete originalObject[key];
+			}
+		});
+	}
+
+	return originalObject;
+};
+
+export const replaceEmptyValuesWithNull = (param) => {
+	const originalObject = param;
+
+	if (typeof originalObject === "object") {
+		Object.keys(originalObject).forEach((key) => {
+			if (originalObject[key] === null || originalObject[key] instanceof Date) return;
+
+			if ((originalObject[key] === undefined)
+				|| Array.isArray(originalObject[key] && !originalObject[key].length)
+				|| (typeof originalObject[key] === "object" && !Object.keys(originalObject[key]).length)
+			) {
+				originalObject[key] = null;
+			}
+		});
+	}
+
+	return originalObject;
+};
+
 export const BookletStatusArray = [
 	{ code: "0", value: i18n.t("Unassigned") },
 	{ code: "1", value: i18n.t("Distributed") },
@@ -64,6 +101,8 @@ export default {
 	BookletStatusArray,
 	copyObject,
 	deepEqual,
+	filterEmptyValues,
+	replaceEmptyValuesWithNull,
 	getBookletStatus,
 	splitBySpace,
 	downloadFile,

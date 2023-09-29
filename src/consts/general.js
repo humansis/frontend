@@ -10,4 +10,7 @@ export default {
 			LOCATION: "Location",
 		},
 	},
+	INPUT_TYPE: {
+		TEXT: "Text",
+	},
 };

@@ -89,13 +89,13 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
 
 export default {
 	name: "ScoringForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: {

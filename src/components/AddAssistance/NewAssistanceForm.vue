@@ -210,7 +210,7 @@ import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
 import consts from "@/utils/assistanceConst";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
@@ -224,7 +224,7 @@ export default {
 		AssistanceName,
 	},
 
-	mixins: [Validation, calendarHelper],
+	mixins: [validation, calendarHelper],
 
 	props: {
 		project: {

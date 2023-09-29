@@ -173,7 +173,7 @@
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
 
 export default {
@@ -184,7 +184,7 @@ export default {
 		SvgIcon,
 	},
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,

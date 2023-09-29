@@ -68,12 +68,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "importForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,

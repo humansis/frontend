@@ -233,7 +233,7 @@ import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
 import PhoneCodes from "@/utils/phoneCodes";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import roles from "@/utils/roleConst";
 import SystemService from "@/services/SystemService";
 import UsersService from "@/services/UsersService";
@@ -245,7 +245,7 @@ const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true
 export default {
 	name: "userForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,

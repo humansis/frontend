@@ -160,7 +160,7 @@
 import { required, requiredIf } from "vuelidate/lib/validators";
 import ProjectService from "@/services/ProjectService";
 import { Notification } from "@/utils/UI";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import currencies from "@/utils/currencies";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { BookletStatusArray } from "@/utils/helpers";
@@ -168,7 +168,7 @@ import { BookletStatusArray } from "@/utils/helpers";
 export default {
 	name: "VoucherForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,
