@@ -107,6 +107,10 @@ export default {
 		state.admNames = admNames;
 	},
 
+	[CONST.STORE_INSTITUTION_ID_NAMES]: (state, institutionIdNames) => {
+		state.institutionIdNames = institutionIdNames;
+	},
+
 	[CONST.STORE_SELECTED_EXPORT_OPTIONS]: (state, selectedExportOptions) => {
 		state.selectedExportsOptions = selectedExportOptions;
 	},

@@ -1,3 +1,4 @@
+import { mapState, mapActions } from "vuex";
 import InstitutionService from "@/services/InstitutionService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
@@ -19,12 +20,33 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["institutionIdNames"]),
+
+		firstInstitutionIdName() {
+			return this.institutionIdNames.idNumber1 || `${this.$t("ID number")} 1`;
+		},
+
+		secondInstitutionIdName() {
+			return this.institutionIdNames.idNumber2 || `${this.$t("ID number")} 2`;
+		},
+
+		thirdInstitutionIdName() {
+			return this.institutionIdNames.idNumber3 || `${this.$t("ID number")} 3`;
+		},
+	},
+
 	methods: {
+		...mapActions(["storeInstitutionIdNames"]),
+
 		mapToModel(
 			{
 				id,
 				name,
 				type,
+				idNumber1,
+				idNumber2,
+				idNumber3,
 				projects,
 				address,
 				adm1,
@@ -95,6 +117,9 @@ export default {
 				id,
 				institutionName: name,
 				institutionType,
+				firstInstitutionId: idNumber1,
+				secondInstitutionId: idNumber2,
+				thirdInstitutionId: idNumber3,
 				projectName: projects,
 				addressStreet: street,
 				addressNumber: number,
@@ -235,6 +260,18 @@ export default {
 				Notification(`${this.$t("Institution Types")} ${e.message || e}`, "is-danger");
 			} finally {
 				this.institutionTypesLoading = false;
+			}
+		},
+
+		async fetchInstitutionIdNames() {
+			try {
+				if (!this.institutionIdNames?.idNumber1) {
+					const { data } = await InstitutionService.getInstitutionIdNames();
+
+					this.storeInstitutionIdNames(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Institution Id Names")} ${e.message || e}`, "is-danger");
 			}
 		},
 	},

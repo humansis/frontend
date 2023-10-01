@@ -26,46 +26,28 @@
 				:options="options.projects"
 			/>
 
-			<h4 class="title is-5 mb-3">
-				{{ $t('Institution 1') }}
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h4>
-
 			<InputWithLabel
-				v-model="formModel.primaryId.idNumber"
-				name="primary-id-number"
-				label="ID Number"
+				v-model="formModel.firstInstitutionId"
+				name="first-institution-id"
+				optional
 				disabled
+				:label="firstInstitutionIdName"
 			/>
 
-			<h4 class="title is-5 mb-3">
-				{{ $t('Institution 2') }}
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h4>
-
 			<InputWithLabel
-				v-model="formModel.secondaryId.idNumber"
-				name="primary-id-number"
-				label="ID Number"
+				v-model="formModel.secondInstitutionId"
+				name="second-institution-id"
+				optional
 				disabled
+				:label="secondInstitutionIdName"
 			/>
 
-			<h4 class="title is-5 mb-3">
-				{{ $t('Institution 3') }}
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h4>
-
 			<InputWithLabel
-				v-model="formModel.tertiaryId.idNumber"
-				name="primary-id-number"
-				label="ID Number"
+				v-model="formModel.thirdInstitutionId"
+				name="third-institution-id"
+				optional
 				disabled
+				:label="thirdInstitutionIdName"
 			/>
 
 			<InputWithLabel

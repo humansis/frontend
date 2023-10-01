@@ -41,52 +41,36 @@
 					/>
 
 					<div class="mt-4">
-						<h4 class="title is-5 mb-3">
+						<h4 class="title is-5 mb-5">
 							{{ $t('ID') }}
 							<span class="optional-text has-text-weight-normal is-italic">
 								- {{ $t('Optional') }}
 							</span>
 						</h4>
-						<b-tabs class="pl-0">
-							<b-tab-item
-								:label="$t('Institution 1')"
-								disabled
-							>
-								<InputWithLabel
-									v-model="formModel.primaryId.idNumber"
-									name="primary-id-number"
-									label="ID Number"
-									disabled
-								/>
-							</b-tab-item>
 
-							<b-tab-item
-								:label="$t('Institution 2')"
-								disabled
-							>
-								<InputWithLabel
-									v-model="formModel.secondaryId.idNumber"
-									name="secondary-id-number"
-									label="ID Number"
-									disabled
-								/>
-							</b-tab-item>
+						<InputWithLabel
+							v-model="formModel.firstInstitutionId"
+							name="first-institution-id"
+							:label="firstInstitutionIdName"
+							:disabled="formDisabled"
+						/>
 
-							<b-tab-item
-								:label="$t('Institution 3')"
-								disabled
-							>
-								<InputWithLabel
-									v-model="formModel.tertiaryId.idNumber"
-									name="tertiary-id-number"
-									label="ID Number"
-									disabled
-								/>
-							</b-tab-item>
-						</b-tabs>
+						<InputWithLabel
+							v-model="formModel.secondInstitutionId"
+							name="second-institution-id"
+							:label="secondInstitutionIdName"
+							:disabled="formDisabled"
+						/>
+
+						<InputWithLabel
+							v-model="formModel.thirdInstitutionId"
+							name="third-institution-id"
+							:label="thirdInstitutionIdName"
+							:disabled="formDisabled"
+						/>
 					</div>
 
-					<h2 class="title is-4 mt-1">{{ $t('Location') }}</h2>
+					<h2 class="title is-4 mt-3">{{ $t('Location') }}</h2>
 
 					<InputWithLabel
 						v-model="formModel.addressStreet"
@@ -419,6 +403,7 @@ export default {
 		this.getInstitutionAction();
 
 		await Promise.all([
+			this.fetchInstitutionIdNames(),
 			this.fetchPhoneTypes(),
 			this.fetchSupportReceivedTypes(),
 			this.fetchNationalCardTypes(),
@@ -514,6 +499,9 @@ export default {
 				institutionName,
 				institutionType,
 				projectName,
+				firstInstitutionId,
+				secondInstitutionId,
+				thirdInstitutionId,
 				addressStreet,
 				addressNumber,
 				addressPostCode,
@@ -572,6 +560,9 @@ export default {
 				name: institutionName,
 				projectIds: getArrayOfIdsByParam(projectName, "id"),
 				type: institutionType.code,
+				idNumber1: firstInstitutionId,
+				idNumber2: secondInstitutionId,
+				idNumber3: thirdInstitutionId,
 				address,
 				latitude,
 				longitude,

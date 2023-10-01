@@ -229,6 +229,7 @@ export default {
 
 			try {
 				await Promise.all([
+					this.fetchInstitutionIdNames(),
 					this.fetchSupportReceivedTypes(),
 					this.fetchNationalCardTypes(),
 					this.fetchPhoneTypes(),

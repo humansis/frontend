@@ -36,4 +36,8 @@ export default {
 		const { data: { data, totalCount } } = await fetcher({ uri: "institutions/types" });
 		return { data, totalCount };
 	},
+
+	getInstitutionIdNames() {
+		return fetcher({ uri: "institution-id-numbers" });
+	},
 };

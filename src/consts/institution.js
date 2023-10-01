@@ -36,14 +36,8 @@ export default {
 			ext: "",
 			phoneNo: "",
 		},
-		primaryId: {
-			idNumber: "",
-		},
-		secondaryId: {
-			idNumber: "",
-		},
-		tertiaryId: {
-			idNumber: "",
-		},
+		firstInstitutionId: "",
+		secondInstitutionId: "",
+		thirdInstitutionId: "",
 	},
 };

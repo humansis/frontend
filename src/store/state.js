@@ -35,6 +35,7 @@ export default {
 	icons: null,
 	translations: null,
 	admNames: {},
+	institutionIdNames: {},
 	gridFilters: {
 		households: [],
 		assistanceDetail: [],

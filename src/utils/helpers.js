@@ -49,8 +49,10 @@ export const replaceEmptyValuesWithNull = (param) => {
 			if (originalObject[key] === null || originalObject[key] instanceof Date) return;
 
 			if ((originalObject[key] === undefined)
-				|| Array.isArray(originalObject[key] && !originalObject[key].length)
 				|| (typeof originalObject[key] === "object" && !Object.keys(originalObject[key]).length)
+				|| ((typeof originalObject[key] === "string"
+					|| Array.isArray(originalObject[key]))
+					&& !originalObject[key].length)
 			) {
 				originalObject[key] = null;
 			}
