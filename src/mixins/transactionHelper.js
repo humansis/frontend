@@ -72,10 +72,17 @@ export default {
 
 				if (beneficiary) {
 					if (hasLink) {
+						const routeName = isInstitution
+							? "InstitutionDetail"
+							: "HouseholdInformationSummary";
+						const routeParams = isInstitution
+							? { institutionId: beneficiaryId }
+							: { householdId: beneficiary.householdId };
+
 						this.table.data[key].beneficiaryId = {
-							routeName: "HouseholdInformationSummary",
+							routeName,
 							name: beneficiaryId,
-							routeParams: { householdId: beneficiary.householdId },
+							routeParams,
 							isArchived: beneficiary.isArchived,
 						};
 					} else {
@@ -83,10 +90,10 @@ export default {
 					}
 
 					this.table.data[key].localGivenName = isInstitution
-						? beneficiary.contactGivenName
+						? beneficiary.name
 						: beneficiary.localGivenName;
 					this.table.data[key].localFamilyName = isInstitution
-						? beneficiary.contactFamilyName
+						? ""
 						: beneficiary.localFamilyName;
 				}
 			});

@@ -230,7 +230,7 @@ export default {
 
 			this.prepareProjectForTable([...new Set(projectIds)], true);
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryInstitutionIds)], false, true);
+			this.prepareBeneficiaryForTable([...new Set(beneficiaryInstitutionIds)], true, true);
 			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
 			this.prepareCommodityForTable([...new Set(commodityIds)]);
 			this.table.progress = 100;
