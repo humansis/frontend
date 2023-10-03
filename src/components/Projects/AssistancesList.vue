@@ -180,7 +180,7 @@ import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/dat
 import grid from "@/mixins/grid";
 import baseHelper from "@/mixins/baseHelper";
 import permissions from "@/mixins/permissions";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 const statusTags = [
 	{ code: consts.STATUS.NEW, type: "is-light" },

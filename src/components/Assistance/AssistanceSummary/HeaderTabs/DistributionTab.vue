@@ -123,7 +123,7 @@
 <script>
 import SvgIcon from "@/components/SvgIcon";
 import Loading from "@/components/Loading";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "DistributionTab",

@@ -212,7 +212,7 @@ import AssistanceName from "@/components/Assistance/AssistanceName";
 import { Notification } from "@/utils/UI";
 import validation from "@/mixins/validation";
 import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import calendarHelper from "@/mixins/calendarHelper";
 

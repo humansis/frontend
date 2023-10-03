@@ -68,7 +68,7 @@ import { Notification, Toast } from "@/utils/UI";
 import validation from "@/mixins/validation";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "AddBeneficiaryForm",

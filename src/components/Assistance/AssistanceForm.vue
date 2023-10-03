@@ -192,7 +192,7 @@ import { required } from "vuelidate/lib/validators";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import calendarHelper from "@/mixins/calendarHelper";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";

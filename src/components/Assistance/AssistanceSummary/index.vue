@@ -71,7 +71,7 @@ import { normalizeText } from "@/utils/datagrid";
 import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "AssistanceSummary",

@@ -187,7 +187,7 @@ import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseD
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
 import { isIdsListLengthValid } from "@/utils/customValidators";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "StartTransactionsForm",

@@ -1,8 +1,8 @@
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import consts from "@/consts/assistance";
 import AddressService from "@/services/AddressService";
 import { Notification, Toast } from "@/utils/UI";
-import consts from "@/utils/assistanceConst";
 import institutionHelper from "@/mixins/institutionHelper";
 
 export default {

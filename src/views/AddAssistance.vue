@@ -88,13 +88,13 @@
 
 <script>
 import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
-import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
+import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification, Toast } from "@/utils/UI";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
 import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import ProjectService from "@/services/ProjectService";
 
 export default {
@@ -430,10 +430,23 @@ export default {
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
 
+				const {
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
+				} = item.fields;
+
 				preparedCommodities.push({
 					modalityType: item.modalityType,
-					value: item.value,
-					unit: item.unit,
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
 					description: item.description,
 					dateExpiration: assistance.dateExpiration
 						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,

@@ -1,4 +1,4 @@
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import { splitBySpace } from "@/utils/helpers";
 
 /**

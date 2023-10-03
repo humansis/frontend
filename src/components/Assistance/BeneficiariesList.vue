@@ -337,12 +337,12 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
-import consts from "@/utils/assistanceConst";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { EXPORT, INSTITUTION } from "@/consts";
+import consts from "@/consts/assistance";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },

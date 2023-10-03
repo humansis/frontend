@@ -159,7 +159,7 @@
 import LocationForm from "@/components/LocationForm";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import validation from "@/mixins/validation";

@@ -34,7 +34,7 @@
 import BeneficiariesService from "@/services/BeneficiariesService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
 import baseHelper from "@/mixins/baseHelper";

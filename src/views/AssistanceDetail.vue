@@ -116,7 +116,7 @@ import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
 import { Notification, Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import permissions from "@/mixins/permissions";
 import Modal from "@/components/Modal";
 import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";

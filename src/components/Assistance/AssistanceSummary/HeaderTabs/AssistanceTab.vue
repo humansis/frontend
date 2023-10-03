@@ -96,7 +96,7 @@
 <script>
 import Loading from "@/components/Loading";
 import { mapState } from "vuex";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "AssistanceTab",

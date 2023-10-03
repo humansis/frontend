@@ -166,7 +166,7 @@ import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/Se
 import BeneficiariesModalList from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/BeneficiariesModalList";
 import AssistancesService from "@/services/AssistancesService";
 import { Notification } from "@/utils/UI";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 import { normalizeExportDate } from "@/utils/datagrid";
 
 export default {

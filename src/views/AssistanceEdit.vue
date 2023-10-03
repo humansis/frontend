@@ -115,7 +115,7 @@ import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
 import { Toast } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "AssistanceEdit",

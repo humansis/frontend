@@ -156,7 +156,7 @@ import LocationsService from "@/services/LocationsService";
 import { normalizeText } from "@/utils/datagrid";
 import SvgIcon from "@/components/SvgIcon";
 import AssistancesService from "@/services/AssistancesService";
-import consts from "@/utils/assistanceConst";
+import consts from "@/consts/assistance";
 
 export default {
 	name: "AssistanceSummary",
