@@ -5,11 +5,10 @@
 				v-model="formModel.modality"
 				name="modality"
 				label="Modality"
+				validated-field-name="modality"
 				:options="options.modalities"
 				:loading="loading.modalities"
-				:type="validateType('modality')"
-				:message="validateMsg('modality')"
-				:input-class="validateMultiselect('modality')"
+				:validation="getValidations"
 				@select="onModalitySelect"
 			/>
 
@@ -17,11 +16,10 @@
 				v-model="formModel.modalityType"
 				name="modality-type"
 				label="Modality Type"
+				validated-field-name="modalityType"
 				:options="options.types"
 				:loading="loading.types"
-				:type="validateType('modalityType')"
-				:message="validateMsg('modalityType')"
-				:input-class="validateMultiselect('modalityType')"
+				:validation="getValidations"
 				@select="onModalityTypeSelect"
 			/>
 
@@ -29,11 +27,10 @@
 				v-if="displayedFields.division"
 				name="division"
 				label="Distribute"
+				validated-field-name="division"
 				v-model="formModel.division"
 				:options="options.division"
-				:type="validateType('division')"
-				:message="validateMsg('division')"
-				:input-class="validateMultiselect('division')"
+				:validation="getValidations"
 				@select="onDivisionSelect"
 			/>
 
@@ -126,11 +123,10 @@
 				v-model="formModel.currency"
 				name="currency"
 				label="Currency"
+				validated-field-name="currency"
 				:options="options.currencies"
 				:is-optional="isModalityInKind"
-				:type="validateType('currency')"
-				:message="validateMsg('currency')"
-				:input-class="validateMultiselect('currency')"
+				:validation="getValidations"
 			/>
 
 			<b-field
@@ -283,7 +279,7 @@ import currencies from "@/utils/currencies";
 import validation from "@/mixins/validation";
 import calendarHelper from "@/mixins/calendarHelper";
 import SvgIcon from "@/components/SvgIcon";
-import MultiSelectWithLabel from "./MultiSelectWithLabel.vue";
+import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
 
 export default {
 	name: "DistributedCommodityForm",
@@ -456,6 +452,10 @@ export default {
 
 		valueOrQuantityLabel() {
 			return this.isModalityCash ? "Value" : "Quantity 1";
+		},
+
+		getValidations() {
+			return this.$v;
 		},
 	},
 

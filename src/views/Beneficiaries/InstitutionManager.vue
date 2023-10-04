@@ -33,7 +33,7 @@
 						validated-field-name="projectName"
 						variable-to-show="name"
 						track-by="id"
-						is-multiple-select-available
+						multiple
 						:validation="getValidations"
 						:disabled="formDisabled"
 						:loading="projectsLoading"

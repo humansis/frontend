@@ -19,12 +19,14 @@
 			:id="$attrs.name"
 			:label="variableToShow"
 			:track-by="trackBy"
+			:options="options"
+			:group-select="addSelectAll"
+			:group-label="addSelectAll ? variableToShow : null"
+			:group-values="addSelectAll ? 'options' : null"
 			:placeholder="$t('Click to select')"
 			:select-label="$t('Press enter to select')"
 			:selected-label="$t('Selected')"
 			:deselect-label="$t('Press enter to remove')"
-			:searchable="isSearchable"
-			:multiple="isMultipleSelectAvailable"
 			:class="validateRequiredMultiselect()"
 			@select="validateRequired()"
 		>
@@ -81,11 +83,6 @@ export default {
 			default: "code",
 		},
 
-		isSearchable: {
-			type: Boolean,
-			default: true,
-		},
-
 		isErrorOrNothing: {
 			type: Boolean,
 			default: false,
@@ -96,14 +93,34 @@ export default {
 			default: false,
 		},
 
-		isMultipleSelectAvailable: {
+		addSelectAll: {
 			type: Boolean,
 			default: false,
+		},
+
+		selectAllLabel: {
+			type: String,
+			default: "All",
 		},
 	},
 
 	created() {
 		this.prepareValidationRules();
+	},
+
+	computed: {
+		options() {
+			if (this.addSelectAll) {
+				return [
+					{
+						[this.variableToShow]: this.$t(this.selectAllLabel),
+						options: this.$attrs.options,
+					},
+				];
+			}
+
+			return this.$attrs.options;
+		},
 	},
 };
 </script>
