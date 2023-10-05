@@ -90,6 +90,7 @@
 				:commodities="commodities"
 				default-sort-direction="asc"
 				default-sort-column="name"
+				export-button
 				@assistanceUpdated="fetchUpdatedData"
 			/>
 			<div class="buttons mt-3 flex-end">

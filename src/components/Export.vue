@@ -84,6 +84,12 @@ export default {
 		};
 	},
 
+	watch: {
+		availableExportTypes() {
+			this.setDefaultSelectedValue();
+		},
+	},
+
 	mounted() {
 		this.setDefaultSelectedValue();
 		this.setExportInputs(this.location);

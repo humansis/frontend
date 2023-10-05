@@ -138,9 +138,9 @@ export default {
 		return data;
 	},
 
-	async getInstitutions(ids) {
+	async getInstitutions(ids, filters) {
 		const { data } = await fetcher({
-			uri: `institutions${queryBuilder({ ids })}`,
+			uri: `institutions${queryBuilder({ ids, filters })}`,
 		});
 		return data;
 	},

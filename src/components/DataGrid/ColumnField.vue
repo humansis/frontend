@@ -64,7 +64,7 @@
 
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
-			<b-tooltip v-if="cellData.isArchived" :label="$t('Deleted member')" position="is-right">
+			<b-tooltip v-if="cellData.isArchived" :label="$t(cellData.tooltip)" position="is-right">
 				<p>{{ cellData.name }}</p>
 			</b-tooltip>
 

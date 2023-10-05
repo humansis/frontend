@@ -62,7 +62,7 @@ export default {
 
 		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false, isInstitution = false) {
 			const beneficiaries = isInstitution
-				? await BeneficiariesService.getInstitutions(beneficiaryIds)
+				? await BeneficiariesService.getInstitutions(beneficiaryIds, { isArchived: true })
 				: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 			this.table.data.forEach((item, key) => {
 				const { beneficiaryId } = item;
@@ -78,12 +78,16 @@ export default {
 						const routeParams = isInstitution
 							? { institutionId: beneficiaryId }
 							: { householdId: beneficiary.householdId };
+						const tooltip = isInstitution
+							? "Deleted institution"
+							: "Deleted member";
 
 						this.table.data[key].beneficiaryId = {
 							routeName,
 							name: beneficiaryId,
 							routeParams,
 							isArchived: beneficiary.isArchived,
+							tooltip,
 						};
 					} else {
 						this.table.data[key].beneficiaryId = beneficiaryId;

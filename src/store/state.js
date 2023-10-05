@@ -52,6 +52,7 @@ export default {
 		transactionsAssistances: [],
 		transactionsPurchased: [],
 		projects: [],
+		institutions: [],
 		projectAssistances: [],
 		products: [],
 		imports: [],

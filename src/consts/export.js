@@ -8,6 +8,7 @@ export default {
 	TRANSACTIONS: "Transactions",
 	PURCHASED_ITEMS: "Purchased items",
 	PROJECTS: "Projects",
+	INSTITUTIONS: "Institutions",
 	ASSISTANCE_OVERVIEW: "Assistance overview",
 	PRODUCTS: "Products",
 	CUSTOM_FIELDS: "Custom Fields",

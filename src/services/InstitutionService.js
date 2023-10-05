@@ -1,4 +1,4 @@
-import { fetcher } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
@@ -39,5 +39,9 @@ export default {
 
 	getInstitutionIdNames() {
 		return fetcher({ uri: "institution-id-numbers" });
+	},
+
+	exportInstitutions(format, filters = {}) {
+		return download({ uri: `institutions/exports${queryBuilder({ format, filters })}` });
 	},
 };

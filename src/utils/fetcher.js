@@ -204,11 +204,13 @@ export const filtersToUri = (filters) => {
 			filters[key].forEach((item) => {
 				query += `&filter[${key}][]=${encodeURIComponent(item)}`;
 			});
-		} else if (typeof filters[key] === "string" || typeof filters[key] === "boolean") {
+		} else if (typeof filters[key] === "string"
+			|| typeof filters[key] === "boolean"
+			|| typeof filters[key] === "number"
+		) {
 			query += `&filter[${key}]=${encodeURIComponent(filters[key])}`;
 		}
 	});
-
 	return query;
 };
 

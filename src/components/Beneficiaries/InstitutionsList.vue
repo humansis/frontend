@@ -51,6 +51,18 @@
 				/>
 			</div>
 		</b-table-column>
+
+		<template #export>
+			<ExportControl
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@onExport="exportInstitutions"
+			/>
+		</template>
+
 		<template #filterButton>
 			<b-button
 				slot="trigger"
@@ -60,6 +72,7 @@
 				{{ $t('Advanced Search') }}
 			</b-button>
 		</template>
+
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
 				<InstitutionsFilter
@@ -75,12 +88,15 @@
 import Table from "@/components/DataGrid/Table";
 import ActionButton from "@/components/ActionButton";
 import SafeDelete from "@/components/SafeDelete";
+import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
+import ExportControl from "@/components/Export";
 import InstitutionService from "@/services/InstitutionService";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
+import { downloadFile } from "@/utils/helpers";
 import grid from "@/mixins/grid";
-import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
 import permissions from "@/mixins/permissions";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "InstitutionsList",
@@ -90,6 +106,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ExportControl,
 	},
 
 	mixins: [grid, permissions],
@@ -97,11 +114,18 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			filter: [],
+			exportControl: {
+				loading: false,
+				location: "institutions",
+				types: [EXPORT.INSTITUTIONS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
+			filters: [],
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "id" },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },
@@ -139,9 +163,7 @@ export default {
 				this.table.data = [];
 				this.table.total = totalCount;
 
-				if (totalCount) {
-					this.prepareDataForTable(data);
-				}
+				this.prepareDataForTable(data);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 			});
@@ -160,14 +182,36 @@ export default {
 			});
 		},
 
-		async onFiltersChange({ filters }) {
+		onFiltersChange({ filters }) {
 			this.filters = filters;
-			this.table.currentPage = 1;
-			await this.fetchData();
 		},
 
 		showDetail(entity) {
 			if (this.userCan.viewBeneficiary) this.$emit("showDetail", entity);
+		},
+
+		async exportInstitutions(type, format) {
+			if (type === EXPORT.INSTITUTIONS) {
+				const filters = {
+					...(this.filters.projects?.length
+						&& { projects: this.filters.projects }),
+				};
+
+				try {
+					this.exportControl.loading = true;
+
+					const { data, status, message } = await InstitutionService.exportInstitutions(
+						format,
+						filters,
+					);
+
+					downloadFile(data, this.$t("Institutions"), status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Institutions Export")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
+			}
 		},
 	},
 };

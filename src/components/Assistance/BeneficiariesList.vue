@@ -215,7 +215,6 @@
 			</template>
 			<template #export>
 				<ExportControl
-					v-if="!isAssistanceTargetInstitution"
 					:disabled="isExportButtonDisabled"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="availableExportTypes"
@@ -334,6 +333,7 @@ import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignV
 import ExportControl from "@/components/Export";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import InstitutionService from "@/services/InstitutionService";
 import { Notification } from "@/utils/UI";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
@@ -542,11 +542,15 @@ export default {
 			const availableTypes = [];
 
 			if (this.exportButton && this.userCan.exportBeneficiaries) {
-				availableTypes.push(
-					EXPORT.LIST_OF_BENEFICIARIES,
-					EXPORT.DISTRIBUTION_LIST,
-					EXPORT.HOUSEHOLDS,
-				);
+				if (!this.isAssistanceTargetInstitution) {
+					availableTypes.push(
+						EXPORT.LIST_OF_BENEFICIARIES,
+						EXPORT.DISTRIBUTION_LIST,
+						EXPORT.HOUSEHOLDS,
+					);
+				} else {
+					availableTypes.push(EXPORT.INSTITUTIONS);
+				}
 
 				if (this.isAssistanceValidated) {
 					if (this.isDistributionExportVisible) {
@@ -953,12 +957,13 @@ export default {
 				case consts.TARGET.INSTITUTION:
 					data.forEach((item, key) => {
 						const { institution, reliefPackages } = item;
-						const { contactGivenName, contactFamilyName, name } = institution;
+						const { id, contactGivenName, contactFamilyName, name } = institution;
 						const type = normalizeText(institution.type);
 						const phone = institution.phone?.number;
 
 						this.table.data[key] = {
 							...item,
+							id,
 							name,
 							type,
 							contactGivenName,
@@ -1111,6 +1116,7 @@ export default {
 						EXPORT.LIST_OF_BENEFICIARIES,
 						`Beneficiaries ${this.assistance.name}`,
 					);
+
 					break;
 				case EXPORT.DISTRIBUTION_LIST:
 					await this.exportData(
@@ -1118,6 +1124,7 @@ export default {
 						EXPORT.DISTRIBUTION_LIST,
 						`Distribution list ${this.assistance.name}`,
 					);
+
 					break;
 				case EXPORT.BANK_DISTRIBUTION_LIST:
 					await this.exportData(
@@ -1125,6 +1132,7 @@ export default {
 						EXPORT.BANK_DISTRIBUTION_LIST,
 						`Bank distribution list ${this.assistance.name}`,
 					);
+
 					break;
 				case EXPORT.HOUSEHOLDS:
 					await this.exportData(
@@ -1132,6 +1140,7 @@ export default {
 						EXPORT.HOUSEHOLDS,
 						`BNF Households ${this.assistance.name}`,
 					);
+
 					break;
 				case EXPORT.BNF_FILE_3.OPTION_NAME:
 					await this.exportData(
@@ -1139,8 +1148,18 @@ export default {
 						EXPORT.BNF_FILE_3.OPTION_NAME,
 						`BNF File 3 ${this.assistance.name}`,
 					);
+
+					break;
+				case EXPORT.INSTITUTIONS:
+					await this.exportData(
+						format,
+						EXPORT.INSTITUTIONS,
+						`Institution ${this.assistance.name}`,
+					);
+
 					break;
 				default:
+					break;
 			}
 			this.exportControl.loading = false;
 		},
@@ -1157,6 +1176,18 @@ export default {
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
 						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "is-danger");
+					}
+				} else if (exportType === EXPORT.INSTITUTIONS) {
+					try {
+						const filters = { assistanceId: this.assistance.id };
+						const { data, status, message } = await InstitutionService.exportInstitutions(
+							format,
+							filters,
+						);
+
+						downloadFile(data, filename, status, format, message);
+					} catch (e) {
+						Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
 					}
 				} else {
 					try {
