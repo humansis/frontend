@@ -132,14 +132,20 @@
 						</b-menu-item>
 						<b-menu-item
 							icon="chart-line"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Reports' }"
+							tag="a"
+							href="https://app.powerbi.com/reportEmbed?reportId=d5a81245-560f-4114-bd05-525ddf55ceea&appId=92536ae3-49e4-4156-92a1-ba70dee78455&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9"
+							target="_blank"
 							:class="{ 'small-menu-item': isSmallerMenuItem }"
 						>
 							<template #label>
-								<b-tooltip :label="$t('Reports')" position="is-right" always>
+								<b-tooltip position="is-right" always>
 									{{ $t('Reports') }}
+									<b-icon icon="external-link-alt" size="is-small" />
+
+									<template #content>
+										{{ $t('Reports') }}
+										<b-icon icon="external-link-alt" size="is-small" />
+									</template>
 								</b-tooltip>
 							</template>
 						</b-menu-item>

@@ -347,16 +347,6 @@ const routes = [
 				],
 			},
 			{
-				path: "reports",
-				name: "Reports",
-				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
-				meta: {
-					permissions: [],
-					breadcrumb: () => i18n.t("Reports"),
-					description: i18n.t("This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances"),
-				},
-			},
-			{
 				path: "vouchers",
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
