@@ -11,6 +11,7 @@
 						'is-active': childItem.isActive,
 						'is-previous': activeItem.index > childItem.index
 					}]"
+					@click="childClick(childItem)"
 				>
 					<a class="step-link">
 						<div class="step-marker">
@@ -91,8 +92,15 @@ export default {
 		},
 
 		changeStep(child) {
-			this.activeId = child.value;
+			const stepItem = this.items.find(({ step }) => Number(step) === child);
+			this.activeId = stepItem.value;
 		},
 	},
 };
 </script>
+
+<style scoped>
+	.step-link {
+		cursor: pointer !important;
+	}
+</style>

@@ -9,7 +9,7 @@
 			has-navigation
 			@stepsChanged="stepsChanged"
 		>
-			<b-step-item step="1" :label="$t('Household')" :clickable="!formLoading">
+			<b-step-item step="1" :label="$t('Household')">
 				<HouseholdForm
 					v-if="steps[1]"
 					ref="householdForm"
@@ -19,7 +19,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="2" :label="$t('Household Head')" :clickable="!formLoading">
+			<b-step-item step="2" :label="$t('Household Head')">
 				<HouseholdHeadForm
 					v-if="steps[2]"
 					ref="householdHeadForm"
@@ -31,7 +31,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" :label="$t('Members')" :clickable="!formLoading">
+			<b-step-item step="3" :label="$t('Members')">
 				<Members
 					v-if="steps[3]"
 					ref="householdMembers"
@@ -41,7 +41,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="4" :label="$t('Summary')" :clickable="!formLoading">
+			<b-step-item step="4" :label="$t('Summary')">
 				<Summary
 					v-if="steps[4]"
 					ref="householdSummary"
@@ -162,7 +162,9 @@ export default {
 	watch: {
 		isLoaded(value) {
 			if (value) {
-				this.steps[1] = true;
+				Object.keys(this.steps).forEach((key) => {
+					this.steps[key] = true;
+				});
 			}
 		},
 	},
@@ -175,45 +177,46 @@ export default {
 
 	methods: {
 		stepsChanged(active, next) {
-			if (this.$refs.householdForm?.$parent === active) {
+			let lastAvailableStep = 1;
+
+			if (active.step < next.step) {
 				if (this.$refs.householdForm.submit()) {
 					this.household = this.$refs.householdForm.formModel;
 					this.livelihood = this.prepareLivelihoodForSummary();
 					this.address = this.prepareAddressForSummary();
 					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
+					lastAvailableStep = 2;
+
+					if (this.$refs.householdHeadForm?.submit()
+					) {
+						this.householdHead = this.$refs.householdHeadForm.formModel;
+						lastAvailableStep = 3;
+
+						if (this.$refs.householdMembers?.submit()) {
+							this.householdMembers = this.$refs.householdMembers.members;
+							this.prepareSummaryMembers(
+								[this.householdHead, ...this.$refs.householdMembers.members],
+							);
+							this.address = this.prepareAddressForSummary();
+							this.location = this.prepareLocationForSummary();
+							lastAvailableStep = 4;
+						}
+					}
 				}
+
+				const step = (Number(next.step) <= lastAvailableStep)
+					? Number(next.step)
+					: lastAvailableStep;
+				this.changeStep(step);
+			} else {
+				this.changeStep(next.step);
 			}
-			if (this.$refs.householdHeadForm?.$parent === active) {
-				if (this.$refs.householdHeadForm.submit()) {
-					this.householdHead = this.$refs.householdHeadForm.formModel;
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
-			if (this.$refs.householdMembers?.$parent === active) {
-				if (this.$refs.householdMembers.submit()) {
-					this.householdMembers = this.$refs.householdMembers.members;
-					this.prepareSummaryMembers(
-						[this.householdHead, ...this.$refs.householdMembers.members],
-					);
-					this.address = this.prepareAddressForSummary();
-					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
-			if (this.$refs.householdSummary?.$parent === active) {
-				if (this.$refs.householdSummary.submit()) {
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
+		},
+
+		changeStep(stepId) {
+			this.$refs.customSteps.changeStep(Number(stepId));
+			this.loading[stepId] = !this.steps[stepId];
+			this.steps[stepId] = true;
 		},
 
 		close() {
