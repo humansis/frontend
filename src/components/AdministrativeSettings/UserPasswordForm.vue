@@ -35,17 +35,17 @@ export default {
 
 	mixins: [validation],
 
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-	},
-
 	validations: {
 		formModel: {
 			password: {
 				passwordValidation,
 			},
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
 	},
 
 	methods: {

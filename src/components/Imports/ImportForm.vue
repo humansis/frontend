@@ -61,8 +61,8 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import validation from "@/mixins/validation";
 import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "importForm",
@@ -73,12 +73,21 @@ export default {
 
 	mixins: [validation],
 
+	validations: {
+		formModel: {
+			title: { required },
+			projects: { required },
+			description: {},
+		},
+	},
+
 	props: {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		isEditing: Boolean,
+
 		options: {
 			type: Object,
 			default: () => {},
@@ -89,14 +98,6 @@ export default {
 		return {
 			projectsLoading: false,
 		};
-	},
-
-	validations: {
-		formModel: {
-			title: { required },
-			projects: { required },
-			description: {},
-		},
 	},
 
 	computed: {

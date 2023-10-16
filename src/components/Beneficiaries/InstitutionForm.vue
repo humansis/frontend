@@ -297,12 +297,12 @@
 </template>
 
 <script>
-import LocationForm from "@/components/LocationForm";
+import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
 import InputWithLabel from "@/components/Inputs/InputWithLabel";
 import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
-import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
-import validation from "@/mixins/validation";
+import LocationForm from "@/components/LocationForm";
 import institutionHelper from "@/mixins/institutionHelper";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "InstitutionForm",

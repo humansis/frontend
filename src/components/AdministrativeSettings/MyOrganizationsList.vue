@@ -49,13 +49,13 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import MyOrganizationsService from "@/services/MyOrganizationsService";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import MyOrganizationsService from "@/services/MyOrganizationsService";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 export default {
 	name: "MyOrganizationsList",

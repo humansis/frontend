@@ -93,9 +93,9 @@
 </template>
 
 <script>
+import ActionButton from "@/components/ActionButton";
 import EditableTableModal from "@/components/Inputs/EditableTableModal";
 import Modal from "@/components/Modal";
-import ActionButton from "@/components/ActionButton";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification, Toast } from "@/utils/UI";
 import { GENERAL } from "@/consts";
@@ -114,34 +114,42 @@ export default {
 			type: Array,
 			required: true,
 		},
+
 		newRowButtonIcon: {
 			type: String,
 			default: "plus",
 		},
+
 		newRowButtonName: {
 			type: String,
 			default: "Add new row",
 		},
+
 		isModalOpenable: {
 			type: Boolean,
 			default: true,
 		},
+
 		tableAction: {
 			type: Object,
 			required: true,
 		},
+
 		contentName: {
 			type: String,
 			default: "",
 		},
+
 		tableData: {
 			type: Array,
 			required: true,
 		},
+
 		isUserAllowedUseTableAction: {
 			type: Boolean,
 			default: true,
 		},
+
 		noOpenableModalMessage: {
 			type: String,
 			default: "",
@@ -167,10 +175,6 @@ export default {
 		};
 	},
 
-	created() {
-		this.prepareColumns();
-	},
-
 	watch: {
 		columns: {
 			deep: true,
@@ -183,6 +187,10 @@ export default {
 		tableData(value) {
 			this.table.data = value;
 		},
+	},
+
+	created() {
+		this.prepareColumns();
 	},
 
 	methods: {

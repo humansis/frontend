@@ -1,6 +1,6 @@
-import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
 import { normalizeFiltersOptions } from "@/utils/datagrid";
+import { copyObject } from "@/utils/helpers";
+import { FILTER } from "@/consts";
 
 export default {
 	methods: {
@@ -8,7 +8,7 @@ export default {
 			const filters = {};
 			Object.keys(this.filtersOptions).forEach((key) => {
 				const filterKey = this.filtersOptions[key]?.filterKey || key;
-				filters[filterKey] = consts.DEFAULT_FILTERS[normalizeFiltersOptions(filterKey)]
+				filters[filterKey] = FILTER.DEFAULT_FILTERS[normalizeFiltersOptions(filterKey)]
 						=== null ? null : [];
 			});
 

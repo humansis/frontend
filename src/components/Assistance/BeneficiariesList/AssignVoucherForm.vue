@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader";
+import { QrcodeCapture, QrcodeDropZone, QrcodeStream } from "vue-qrcode-reader";
 
 export default {
 	name: "AssignVoucherForm",
@@ -73,20 +73,20 @@ export default {
 		QrcodeCapture,
 	},
 
-	data() {
-		return {
-			scannedResult: "",
-			noStreamApiSupport: false,
-			cameraMissingError: false,
-		};
-	},
-
 	props: {
 		beneficiary: Object,
 		assistance: Object,
 		project: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
+	},
+
+	data() {
+		return {
+			scannedResult: "",
+			noStreamApiSupport: false,
+			cameraMissingError: false,
+		};
 	},
 
 	computed: {

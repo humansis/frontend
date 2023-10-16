@@ -78,11 +78,13 @@
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
 import calendarHelper from "@/mixins/calendarHelper";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "EditBeneficiaryForm",
+
+	mixins: [calendarHelper],
 
 	props: {
 		formModel: Object,
@@ -90,8 +92,6 @@ export default {
 		closeButton: Boolean,
 		disabled: Boolean,
 	},
-
-	mixins: [calendarHelper],
 
 	data() {
 		return {

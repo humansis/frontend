@@ -1,4 +1,4 @@
-import { fetcher, idsToUri, upload, download } from "@/utils/fetcher";
+import { download, fetcher, idsToUri, upload } from "@/utils/fetcher";
 
 export default {
 	async getListOfDonors(page, size, sort, search = null, ids = null) {

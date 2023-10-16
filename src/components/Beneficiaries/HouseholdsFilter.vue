@@ -11,15 +11,15 @@
 </template>
 
 <script>
-import AdvancedFilter from "@/components/AdvancedFilter";
-import ProjectService from "@/services/ProjectService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
+import ProjectService from "@/services/ProjectService";
+import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
-import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import locationHelper from "@/mixins/locationHelper";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
+import { Notification } from "@/utils/UI";
+import { FILTER } from "@/consts";
 
 // TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
@@ -35,17 +35,17 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: consts.DEFAULT_FILTERS.PROJECTS,
-				vulnerabilities: consts.DEFAULT_FILTERS.VULNERABILITIES,
-				gender: consts.DEFAULT_FILTERS.GENDER,
-				residencyStatuses: consts.DEFAULT_FILTERS.RESIDENCY_STATUSES,
-				referralTypes: consts.DEFAULT_FILTERS.PROJECTS.REFERRAL_TYPES,
-				livelihoods: consts.DEFAULT_FILTERS.LIVELIHOODS,
-				adm1: consts.DEFAULT_FILTERS.ADM1,
-				adm2: consts.DEFAULT_FILTERS.ADM2,
-				adm3: consts.DEFAULT_FILTERS.ADM3,
-				adm4: consts.DEFAULT_FILTERS.ADM4,
-				locations: consts.DEFAULT_FILTERS.LOCATIONS,
+				projects: FILTER.DEFAULT_FILTERS.PROJECTS,
+				vulnerabilities: FILTER.DEFAULT_FILTERS.VULNERABILITIES,
+				gender: FILTER.DEFAULT_FILTERS.GENDER,
+				residencyStatuses: FILTER.DEFAULT_FILTERS.RESIDENCY_STATUSES,
+				referralTypes: FILTER.DEFAULT_FILTERS.PROJECTS.REFERRAL_TYPES,
+				livelihoods: FILTER.DEFAULT_FILTERS.LIVELIHOODS,
+				adm1: FILTER.DEFAULT_FILTERS.ADM1,
+				adm2: FILTER.DEFAULT_FILTERS.ADM2,
+				adm3: FILTER.DEFAULT_FILTERS.ADM3,
+				adm4: FILTER.DEFAULT_FILTERS.ADM4,
+				locations: FILTER.DEFAULT_FILTERS.LOCATIONS,
 			}),
 		},
 	},
@@ -216,13 +216,13 @@ export default {
 					residencyStatuses: filters.residencyStatuses,
 					referralTypes: filters.referralTypes,
 					livelihoods: filters.livelihoods,
-					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
+					locations: location ? [location] : FILTER.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
-					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
-					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
-					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
+					adm1: filtersCopy.adm1 || FILTER.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || FILTER.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || FILTER.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || FILTER.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},

@@ -135,21 +135,21 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
+import BookletsService from "@/services/BookletsService";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import BookletsService from "@/services/BookletsService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { getBookletStatus } from "@/utils/helpers";
-import grid from "@/mixins/grid";
-import VouchersFilter from "@/components/Vouchers/VouchersFilter";
-import voucherHelper from "@/mixins/voucherHelper";
-import { Notification } from "@/utils/UI";
+import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
+import SafeDelete from "@/components/SafeDelete";
+import VouchersFilter from "@/components/Vouchers/VouchersFilter";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import voucherHelper from "@/mixins/voucherHelper";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile, getBookletStatus } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "VouchersList",
@@ -203,6 +203,13 @@ export default {
 		};
 	},
 
+	computed: {
+		isExportDisabled() {
+			return !this.userCan.exportPrintVouchers || !this.table.data.length
+				|| !this.table.dataUpdated;
+		},
+	},
+
 	created() {
 		this.setGridFilters("vouchers", false);
 		this.fetchData();
@@ -242,29 +249,29 @@ export default {
 			return getBookletStatus(code).value;
 		},
 
-		async exportBooklets(type, format) {
-			if (type === EXPORT.VOUCHERS) {
-				this.exportControl.loading = true;
-				let ids = null;
-				if (!this.bookletsSelects) {
-					ids = this.table.checkedRows.map((item) => item.id);
+		async exportBooklets(exportType, format) {
+			if (exportType === EXPORT.VOUCHERS) {
+				try {
+					this.exportControl.loading = true;
+
+					let ids = null;
+
+					if (!this.bookletsSelects) {
+						ids = this.table.checkedRows.map((item) => item.id);
+					}
+
+					const filename = `Vouchers ${normalizeExportDate()}`;
+					const { data, status, message } = await BookletsService.exportBooklets(
+						format,
+						ids,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Booklets")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
 				}
-				await BookletsService.exportBooklets(format, ids)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Vouchers ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Booklets")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
 			}
 		},
 
@@ -319,13 +326,6 @@ export default {
 
 		resetTableSort() {
 			this.$refs.vouchersList.onResetSort();
-		},
-	},
-
-	computed: {
-		isExportDisabled() {
-			return !this.userCan.exportPrintVouchers || !this.table.data.length
-				|| !this.table.dataUpdated;
 		},
 	},
 };

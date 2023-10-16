@@ -104,10 +104,10 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { Notification } from "@/utils/UI";
-import TranslationService from "@/services/TranslationService";
 import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
+import TranslationService from "@/services/TranslationService";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "NavBar",
@@ -119,16 +119,6 @@ export default {
 				active: false,
 			},
 		};
-	},
-
-	watch: {
-		$route: "setTooltip",
-	},
-
-	async created() {
-		if (!this.icons) await this.fetchIcons();
-		if (!this.admNames?.adm1) await this.fetchAdmNames();
-		this.setTooltip();
 	},
 
 	computed: {
@@ -150,6 +140,16 @@ export default {
 		toggleTooltip() {
 			return this.isAsideExpanded ? this.$t("Collapse") : this.$t("Expand");
 		},
+	},
+
+	watch: {
+		$route: "setTooltip",
+	},
+
+	async created() {
+		if (!this.icons) await this.fetchIcons();
+		if (!this.admNames?.adm1) await this.fetchAdmNames();
+		this.setTooltip();
 	},
 
 	methods: {

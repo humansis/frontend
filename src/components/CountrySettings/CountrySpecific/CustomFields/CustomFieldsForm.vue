@@ -84,13 +84,21 @@
 <script>
 import { required } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
 import validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "CustomFieldForm",
 
 	mixins: [validation],
+
+	validations: {
+		formModel: {
+			field: { required },
+			type: { required },
+			target: {},
+		},
+	},
 
 	props: {
 		formModel: Object,
@@ -116,14 +124,6 @@ export default {
 			},
 			loadingTargets: true,
 		};
-	},
-
-	validations: {
-		formModel: {
-			field: { required },
-			type: { required },
-			target: {},
-		},
 	},
 
 	mounted() {

@@ -74,7 +74,6 @@
 
 <script>
 import Icon from "buefy/src/components/icon/Icon";
-
 import BSteps from "buefy/src/components/steps/Steps";
 
 export default {

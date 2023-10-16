@@ -227,16 +227,15 @@
 
 <script>
 import { mapState } from "vuex";
-import { required, requiredIf, email } from "vuelidate/lib/validators";
+import { email, required, requiredIf } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
-import PhoneCodes from "@/utils/phoneCodes";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import validation from "@/mixins/validation";
-import roles from "@/utils/roleConst";
 import SystemService from "@/services/SystemService";
 import UsersService from "@/services/UsersService";
+import validation from "@/mixins/validation";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { Notification } from "@/utils/UI";
+import { PHONE, ROLE } from "@/consts";
 
 const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
 
@@ -246,14 +245,6 @@ export default {
 	name: "userForm",
 
 	mixins: [validation],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-		isEditing: Boolean,
-	},
 
 	validations: {
 		formModel: {
@@ -278,13 +269,21 @@ export default {
 		},
 	},
 
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		isEditing: Boolean,
+	},
+
 	data() {
 		return {
 			options: {
 				rights: [],
 				projects: [],
 				countries: [],
-				phonePrefixes: PhoneCodes,
+				phonePrefixes: PHONE.CODES,
 				languages: [],
 			},
 			mapping: true,
@@ -327,14 +326,14 @@ export default {
 		},
 
 		mapRights({ code }) {
-			if (code === roles.FIELD_OFFICER
-				|| code === roles.PROJECT_OFFICER
-				|| code === roles.PROJECT_MANAGER
-				|| code === roles.ENUMERATOR) {
+			if (code === ROLE.FIELD_OFFICER
+				|| code === ROLE.PROJECT_OFFICER
+				|| code === ROLE.PROJECT_MANAGER
+				|| code === ROLE.ENUMERATOR) {
 				this.formModel.disabledProject = false;
 				this.formModel.disabledCountry = true;
-			} else if (code === roles.COUNTRY_MANAGER || code === roles.REGIONAL_MANAGER) {
-				this.onlyOneCountry = (code === roles.COUNTRY_MANAGER);
+			} else if (code === ROLE.COUNTRY_MANAGER || code === ROLE.REGIONAL_MANAGER) {
+				this.onlyOneCountry = (code === ROLE.COUNTRY_MANAGER);
 				this.formModel.disabledProject = true;
 				this.formModel.disabledCountry = false;
 			} else {

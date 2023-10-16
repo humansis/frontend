@@ -1,10 +1,10 @@
-import { mapState, mapActions } from "vuex";
-import InstitutionService from "@/services/InstitutionService";
+import { mapActions, mapState } from "vuex";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import InstitutionService from "@/services/InstitutionService";
 import ProjectService from "@/services/ProjectService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification, Toast } from "@/utils/UI";
-import PhoneCodes from "@/utils/phoneCodes";
+import { PHONE } from "@/consts";
 
 export default {
 	data() {
@@ -12,7 +12,7 @@ export default {
 			options: {
 				nationalCardTypes: [],
 				institutionTypes: [],
-				phonePrefixes: PhoneCodes,
+				phonePrefixes: PHONE.CODES,
 				phoneTypes: [],
 				projects: [],
 				externalReceivedTypes: [],

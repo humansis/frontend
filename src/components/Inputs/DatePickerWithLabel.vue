@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import validation from "@/mixins/validation";
 import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "InputWithLabel",

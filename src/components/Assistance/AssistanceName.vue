@@ -36,6 +36,42 @@ export default {
 
 	mixins: [validation],
 
+	validations: {
+		assistanceName: { required },
+	},
+
+	props: {
+		value: {
+			type: String,
+			required: true,
+		},
+
+		duplicateAssistance: {
+			type: Boolean,
+			default: false,
+		},
+
+		isSwitchDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
+
+		dataForAssistanceName: {
+			type: Object,
+			default: () => {},
+		},
+
+		dataBeforeDuplicated: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
 	data() {
 		return {
 			isCustom: false,
@@ -45,42 +81,26 @@ export default {
 		};
 	},
 
-	validations: {
-		assistanceName: { required },
-	},
+	computed: {
+		assistanceName: {
+			get() {
+				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+					if (this.isCustomNameLoaded) {
+						return this.setCopyIntoAssistanceName();
+					}
+					return this.value;
+				}
+				return this.value;
+			},
 
-	mounted() {
-		if (this.assistanceDetail) {
-			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
-				this.setDefaultValuesForCustomName();
-			}
-		}
-	},
+			set(value) {
+				this.$emit("input", value);
+			},
+		},
 
-	props: {
-		value: {
-			type: String,
-			required: true,
-		},
-		duplicateAssistance: {
-			type: Boolean,
-			default: false,
-		},
-		isSwitchDisabled: {
-			type: Boolean,
-			default: false,
-		},
-		assistanceDetail: {
-			type: Boolean,
-			default: false,
-		},
-		dataForAssistanceName: {
-			type: Object,
-			default: () => {},
-		},
-		dataBeforeDuplicated: {
-			type: Object,
-			default: () => {},
+		isCustomNameLoaded() {
+			return this.duplicateAssistance && this.isCustom
+				&& !this.firstLoad && !this.isCopyAdded;
 		},
 	},
 
@@ -130,27 +150,12 @@ export default {
 		},
 	},
 
-	computed: {
-		assistanceName: {
-			get() {
-				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
-					if (this.isCustomNameLoaded) {
-						return this.setCopyIntoAssistanceName();
-					}
-					return this.value;
-				}
-				return this.value;
-			},
-
-			set(value) {
-				this.$emit("input", value);
-			},
-		},
-
-		isCustomNameLoaded() {
-			return this.duplicateAssistance && this.isCustom
-				&& !this.firstLoad && !this.isCopyAdded;
-		},
+	mounted() {
+		if (this.assistanceDetail) {
+			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+				this.setDefaultValuesForCustomName();
+			}
+		}
 	},
 
 	methods: {

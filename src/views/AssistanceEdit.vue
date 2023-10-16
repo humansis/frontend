@@ -109,14 +109,14 @@
 </template>
 
 <script>
+import AssistancesService from "@/services/AssistancesService";
+import ProjectService from "@/services/ProjectService";
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
-import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
-import AssistancesService from "@/services/AssistancesService";
 import EditNote from "@/components/Assistance/EditNote";
+import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import { Toast } from "@/utils/UI";
-import ProjectService from "@/services/ProjectService";
-import consts from "@/consts/assistance";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceEdit",
@@ -157,12 +157,12 @@ export default {
 			await AssistancesService.getDetailOfAssistance(
 				this.$route.params.assistanceId,
 			).then((data) => {
-				this.isTargetHouseholdOrIndividual = data.target === consts.TARGET.HOUSEHOLD
-					|| data.target === consts.TARGET.INDIVIDUAL;
+				this.isTargetHouseholdOrIndividual = data.target === ASSISTANCE.TARGET.HOUSEHOLD
+					|| data.target === ASSISTANCE.TARGET.INDIVIDUAL;
 
 				this.assistance = data;
 
-				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+				if (this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
 			}).finally(() => {

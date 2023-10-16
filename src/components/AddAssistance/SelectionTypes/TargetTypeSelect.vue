@@ -61,25 +61,40 @@
 </template>
 
 <script>
-import validation from "@/mixins/validation";
-import InstitutionService from "@/services/InstitutionService";
-import { Notification } from "@/utils/UI";
-import CommunityService from "@/services/CommunityService";
 import { requiredIf } from "vuelidate/lib/validators";
-import addressHelper from "@/mixins/addressHelper";
 import AssistancesService from "@/services/AssistancesService";
+import CommunityService from "@/services/CommunityService";
+import InstitutionService from "@/services/InstitutionService";
+import addressHelper from "@/mixins/addressHelper";
+import validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "TargetTypeSelect",
 
 	mixins: [validation, addressHelper],
 
+	/* eslint-disable func-names */
+	validations: {
+		formModel: {
+			communities: { required: requiredIf(function () {
+				return this.visible?.communities;
+			}) },
+			institutions: { required: requiredIf(function () {
+				return this.visible?.institutions;
+			}) },
+		},
+	},
+	/* eslint-enable func-names */
+
 	props: {
 		visible: Object,
+
 		projectId: {
 			type: Number,
 			required: true,
 		},
+
 		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
@@ -103,6 +118,12 @@ export default {
 		};
 	},
 
+	computed: {
+		title() {
+			return this.visible?.communities ? this.$t("Communities") : this.$t("Institutions");
+		},
+	},
+
 	watch: {
 		visible: "fetchData",
 		isAssistanceDuplicated(value) {
@@ -114,23 +135,8 @@ export default {
 		},
 	},
 
-	computed: {
-		title() {
-			return this.visible?.communities ? this.$t("Communities") : this.$t("Institutions");
-		},
-	},
-
-	validations: {
-		formModel: {
-			// eslint-disable-next-line func-names
-			communities: { required: requiredIf(function () {
-				return this.visible?.communities;
-			}) },
-			// eslint-disable-next-line func-names
-			institutions: { required: requiredIf(function () {
-				return this.visible?.institutions;
-			}) },
-		},
+	mounted() {
+		this.fetchData();
 	},
 
 	updated() {
@@ -146,10 +152,6 @@ export default {
 		}
 
 		this.$emit("updatedData", { communities, institutions });
-	},
-
-	mounted() {
-		this.fetchData();
 	},
 
 	methods: {

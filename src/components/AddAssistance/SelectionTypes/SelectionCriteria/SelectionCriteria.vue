@@ -158,16 +158,16 @@
 </template>
 
 <script>
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import Modal from "@/components/Modal";
+import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesModalList from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/BeneficiariesModalList";
 import SelectionCriteriaForm from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaForm";
 import SelectionCriteriaGroup from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteriaGroup";
-import BeneficiariesModalList from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/BeneficiariesModalList";
-import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import consts from "@/consts/assistance";
+import ExportControl from "@/components/Export";
+import Modal from "@/components/Modal";
 import { normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT } from "@/consts";
 
 export default {
 	name: "SelectionCriteria",
@@ -271,22 +271,6 @@ export default {
 		},
 	},
 
-	created() {
-		this.fetchScoringTypes();
-	},
-
-	updated() {
-		this.$emit(
-			"updatedData",
-			this.prepareCriteria(),
-			this.minimumSelectionScore,
-			this.vulnerabilityScoreTouched || this.calculationLoading,
-			this.scoringType,
-		);
-
-		this.$emit("beneficiariesCounted", this.countOf);
-	},
-
 	watch: {
 		groups(groups) {
 			if (!groups.length) {
@@ -303,34 +287,43 @@ export default {
 		},
 	},
 
+	created() {
+		this.fetchScoringTypes();
+	},
+
+	updated() {
+		this.$emit(
+			"updatedData",
+			this.prepareCriteria(),
+			this.minimumSelectionScore,
+			this.vulnerabilityScoreTouched || this.calculationLoading,
+			this.scoringType,
+		);
+
+		this.$emit("beneficiariesCounted", this.countOf);
+	},
+
 	methods: {
 		submit() {
 			return !!this.groups.length;
 		},
 
-		async exportSelectedBeneficiaries(type, format) {
-			if (type === EXPORT.VULNERABILITY_SCORES) {
-				this.exportControl.loading = true;
+		async exportSelectedBeneficiaries(exportType, format) {
+			if (exportType === EXPORT.VULNERABILITY_SCORES) {
+				try {
+					this.exportControl.loading = true;
 
-				await AssistancesService.exportVulnerabilityScores(
-					format, this.assistanceBody,
-				)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Vulnerability scores ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-					});
+					const filename = `Vulnerability scores ${normalizeExportDate()}`;
+					const { data, status, message } = await AssistancesService.exportVulnerabilityScores(
+						format, this.assistanceBody,
+					);
 
-				this.exportControl.loading = false;
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 
@@ -365,15 +358,15 @@ export default {
 			let newValue = value.code || value;
 			let result = null;
 
-			if (value.code === false && dataType === consts.FIELD_TYPE.BOOLEAN) {
+			if (value.code === false && dataType === ASSISTANCE.FIELD_TYPE.BOOLEAN) {
 				newValue = false;
 			}
 
 			switch (dataType) {
-				case consts.FIELD_TYPE.DATE:
+				case ASSISTANCE.FIELD_TYPE.DATE:
 					result = this.$moment(newValue).format("YYYY-MM-DD");
 					break;
-				case consts.FIELD_TYPE.LOCATION:
+				case ASSISTANCE.FIELD_TYPE.LOCATION:
 					result = Number(newValue.replace("locationId-", ""));
 					break;
 				default:

@@ -416,36 +416,18 @@
 <script>
 import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import calendarHelper from "@/mixins/calendarHelper";
+import idHelper from "@/mixins/idHelper";
+import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import PhoneCodes from "@/utils/phoneCodes";
-import validation from "@/mixins/validation";
-import idHelper from "@/mixins/idHelper";
-import calendarHelper from "@/mixins/calendarHelper";
+import { PHONE } from "@/consts";
 
 export default {
 	name: "HouseholdHeadForm",
 
 	mixins: [validation, calendarHelper, idHelper],
-
-	props: {
-		showTypeOfBeneficiary: Boolean,
-		detailOfHousehold: Object,
-		isEditing: {
-			type: Boolean,
-			default: false,
-		},
-		beneficiary: Object,
-		isHouseholdHead: {
-			type: Boolean,
-			default: false,
-		},
-		membersSmartCardNumbers: {
-			type: Array,
-			default: () => [],
-		},
-	},
 
 	validations: {
 		formModel: {
@@ -494,6 +476,27 @@ export default {
 				},
 			},
 			residencyStatus: { required },
+		},
+	},
+
+	props: {
+		showTypeOfBeneficiary: Boolean,
+		detailOfHousehold: Object,
+		beneficiary: Object,
+
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
+
+		isHouseholdHead: {
+			type: Boolean,
+			default: false,
+		},
+
+		membersSmartCardNumbers: {
+			type: Array,
+			default: () => [],
 		},
 	},
 
@@ -569,7 +572,7 @@ export default {
 				residencyStatus: [],
 				referralType: [],
 				phoneType: [],
-				phonePrefixes: PhoneCodes,
+				phonePrefixes: PHONE.CODES,
 				vulnerabilities: [],
 			},
 			idTypeLoading: true,
@@ -577,31 +580,6 @@ export default {
 			phoneTypesLoading: true,
 			referralTypeLoading: true,
 		};
-	},
-
-	watch: {
-		detailOfHousehold: "map",
-		beneficiary: "map",
-	},
-
-	async mounted() {
-		if (this.isEditing) {
-			if (this.isHouseholdHead) {
-				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
-			}
-
-			this.loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.householdHeadForm,
-			});
-		}
-		await Promise.all([
-			this.fetchNationalCardTypes(),
-			this.fetchPhoneTypes(),
-			this.fetchVulnerabilities(),
-			this.fetchResidenceStatus(),
-			this.fetchReferralTypes(),
-		]);
-		await this.map();
 	},
 
 	computed: {
@@ -629,6 +607,31 @@ export default {
 				? this.householdHeadSmartCardNumbers
 				: this.membersSmartCardNumbers;
 		},
+	},
+
+	watch: {
+		detailOfHousehold: "map",
+		beneficiary: "map",
+	},
+
+	async mounted() {
+		if (this.isEditing) {
+			if (this.isHouseholdHead) {
+				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
+			}
+
+			this.loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.householdHeadForm,
+			});
+		}
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchPhoneTypes(),
+			this.fetchVulnerabilities(),
+			this.fetchResidenceStatus(),
+			this.fetchReferralTypes(),
+		]);
+		await this.map();
 	},
 
 	methods: {

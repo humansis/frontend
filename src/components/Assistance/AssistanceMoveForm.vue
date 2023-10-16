@@ -41,10 +41,8 @@ export default {
 
 	mixins: [validation],
 
-	data() {
-		return {
-			newProject: null,
-		};
+	validations: {
+		newProject: { required },
 	},
 
 	props: {
@@ -54,8 +52,10 @@ export default {
 		},
 	},
 
-	validations: {
-		newProject: { required },
+	data() {
+		return {
+			newProject: null,
+		};
 	},
 
 	methods: {

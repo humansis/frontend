@@ -307,35 +307,19 @@
 
 <script>
 import ImportService from "@/services/ImportService";
-import { Notification, Toast } from "@/utils/UI";
-import { IMPORT } from "@/consts";
 import Loading from "@/components/Loading";
 import graduallyIncrement from "@/mixins/graduallyIncrement";
+import { Notification, Toast } from "@/utils/UI";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "IntegrityStep",
-
-	mixins: [graduallyIncrement],
 
 	components: {
 		Loading,
 	},
 
-	data() {
-		return {
-			amountIntegrityCorrectIncrement: 0,
-			amountIntegrityFailedIncrement: 0,
-			importStatistics: {},
-			dropFiles: [],
-			startIntegrityCheckAgainLoading: false,
-			downloadAffectedRecordsLoading: false,
-			changeStateButtonLoading: false,
-			importStatus: "",
-			invalidFiles: [],
-			filesUpload: false,
-			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
-		};
-	},
+	mixins: [graduallyIncrement],
 
 	props: {
 		statistics: {
@@ -370,39 +354,20 @@ export default {
 		},
 	},
 
-	watch: {
-		statistics(value) {
-			this.importStatistics = value;
-		},
-
-		loadingChangeStateButton(value) {
-			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.getAffectedRecords();
-			this.importStatus = value;
-		},
-
-		amountIntegrityCorrect(newValue) {
-			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, this.totalEntries, 60);
-			} else {
-				this.amountIntegrityCorrectIncrement = newValue;
-			}
-		},
-
-		amountIntegrityFailed(newValue) {
-			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, this.totalEntries, 120);
-			} else {
-				this.amountIntegrityFailedIncrement = newValue;
-			}
-		},
-	},
-
-	mounted() {
-		this.getAffectedRecords();
+	data() {
+		return {
+			amountIntegrityCorrectIncrement: 0,
+			amountIntegrityFailedIncrement: 0,
+			importStatistics: {},
+			dropFiles: [],
+			startIntegrityCheckAgainLoading: false,
+			downloadAffectedRecordsLoading: false,
+			changeStateButtonLoading: false,
+			importStatus: "",
+			invalidFiles: [],
+			filesUpload: false,
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
+		};
 	},
 
 	computed: {
@@ -464,6 +429,41 @@ export default {
 			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
 				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
+	},
+
+	watch: {
+		statistics(value) {
+			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
+
+		status(value) {
+			this.getAffectedRecords();
+			this.importStatus = value;
+		},
+
+		amountIntegrityCorrect(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, this.totalEntries, 60);
+			} else {
+				this.amountIntegrityCorrectIncrement = newValue;
+			}
+		},
+
+		amountIntegrityFailed(newValue) {
+			if (this.isCheckingIntegrity) {
+				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, this.totalEntries, 120);
+			} else {
+				this.amountIntegrityFailedIncrement = newValue;
+			}
+		},
+	},
+
+	mounted() {
+		this.getAffectedRecords();
 	},
 
 	methods: {

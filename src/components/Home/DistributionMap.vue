@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { LMap, LTileLayer } from "vue2-leaflet";
+import { mapState } from "vuex";
 import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
@@ -20,24 +20,6 @@ export default {
 	components: {
 		LMap,
 		LTileLayer,
-	},
-
-	computed: {
-		...mapState(["country"]),
-
-		getCenter() {
-			const { lat, lng } = this.positions.find(
-				({ country }) => country === this.country.iso3,
-			) || {};
-			return L.latLng(lat, lng);
-		},
-
-		getZoom() {
-			const { zoom } = this.positions.find(
-				({ country }) => country === this.country.iso3,
-			) || {};
-			return zoom ?? 7;
-		},
 	},
 
 	data() {
@@ -86,6 +68,24 @@ export default {
 			],
 
 		};
+	},
+
+	computed: {
+		...mapState(["country"]),
+
+		getCenter() {
+			const { lat, lng } = this.positions.find(
+				({ country }) => country === this.country.iso3,
+			) || {};
+			return L.latLng(lat, lng);
+		},
+
+		getZoom() {
+			const { zoom } = this.positions.find(
+				({ country }) => country === this.country.iso3,
+			) || {};
+			return zoom ?? 7;
+		},
 	},
 };
 </script>

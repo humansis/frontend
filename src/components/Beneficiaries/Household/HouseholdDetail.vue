@@ -112,18 +112,18 @@
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import calendarHelper from "@/mixins/calendarHelper";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "HouseholdDetail",
 
+	mixins: [calendarHelper],
+
 	props: {
 		formModel: Object,
 	},
-
-	mixins: [calendarHelper],
 
 	data() {
 		return {

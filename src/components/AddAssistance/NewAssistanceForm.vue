@@ -205,16 +205,16 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import LocationForm from "@/components/LocationForm";
-import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
+import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
-import { Notification } from "@/utils/UI";
-import validation from "@/mixins/validation";
-import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
-import consts from "@/consts/assistance";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import LocationForm from "@/components/LocationForm";
 import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "NewAssistanceForm",
@@ -226,19 +226,33 @@ export default {
 
 	mixins: [validation, calendarHelper],
 
+	validations: {
+		formModel: {
+			name: { required },
+			dateOfAssistance: { required },
+			sector: { required },
+			subsector: { required },
+			targetType: { required },
+			assistanceType: { required },
+		},
+	},
+
 	props: {
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		newAssistanceForm: {
 			type: Object,
 			default: null,
 		},
+
 		dataBeforeDuplicated: {
 			type: Object,
 			default: () => {},
 		},
+
 		dateExpiration: {
 			type: String,
 			default: "",
@@ -265,7 +279,7 @@ export default {
 				round: null,
 			},
 			options: {
-				rounds: consts.ROUNDS_OPTIONS,
+				rounds: ASSISTANCE.ROUNDS_OPTIONS,
 				sectors: [],
 				subsectors: [],
 				assistanceTypes: [],
@@ -280,14 +294,19 @@ export default {
 		};
 	},
 
-	validations: {
-		formModel: {
-			name: { required },
-			dateOfAssistance: { required },
-			sector: { required },
-			subsector: { required },
-			targetType: { required },
-			assistanceType: { required },
+	computed: {
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return endDate ? new Date(`${endDate} 00:00`) : new Date();
+		},
+
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return startDate ? new Date(`${startDate} 00:00`) : new Date();
+		},
+
+		assistanceDates() {
+			return `${this.formModel.dateOfAssistance} - ${this.dateExpiration}`;
 		},
 	},
 
@@ -311,29 +330,13 @@ export default {
 		},
 	},
 
-	async mounted() {
-		await this.fetchSectors();
+	mounted() {
+		this.fetchSectors();
 		this.defaultDateOfAssistance();
 	},
 
 	updated() {
 		this.$emit("updatedData", this.formModel);
-	},
-
-	computed: {
-		maxDateOfAssistance() {
-			const { endDate } = this.project;
-			return endDate ? new Date(`${endDate} 00:00`) : new Date();
-		},
-
-		minDateOfAssistance() {
-			const { startDate } = this.project;
-			return startDate ? new Date(`${startDate} 00:00`) : new Date();
-		},
-
-		assistanceDates() {
-			return `${this.formModel.dateOfAssistance} - ${this.dateExpiration}`;
-		},
 	},
 
 	methods: {
@@ -430,56 +433,56 @@ export default {
 				targetType: { code: targetType },
 			} = this.formModel;
 
-			if (assistanceType === consts.TYPE.DISTRIBUTION) {
+			if (assistanceType === ASSISTANCE.TYPE.DISTRIBUTION) {
 				switch (targetType) {
-					case consts.TARGET.INDIVIDUAL:
+					case ASSISTANCE.TARGET.INDIVIDUAL:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
 						];
-					case consts.TARGET.HOUSEHOLD:
+					case ASSISTANCE.TARGET.HOUSEHOLD:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
 						];
-					case consts.TARGET.COMMUNITY:
+					case ASSISTANCE.TARGET.COMMUNITY:
 						return [
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
-							consts.COMPONENT.COMMUNITIES,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
-					case consts.TARGET.INSTITUTION:
+					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
-							consts.COMPONENT.INSTITUTIONS,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.INSTITUTIONS,
 						];
 					default:
 						return [];
 				}
-			} else if (assistanceType === consts.TYPE.ACTIVITY) {
+			} else if (assistanceType === ASSISTANCE.TYPE.ACTIVITY) {
 				switch (targetType) {
-					case consts.TARGET.INDIVIDUAL:
+					case ASSISTANCE.TARGET.INDIVIDUAL:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
 						];
-					case consts.TARGET.HOUSEHOLD:
+					case ASSISTANCE.TARGET.HOUSEHOLD:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
 						];
-					case consts.TARGET.COMMUNITY:
+					case ASSISTANCE.TARGET.COMMUNITY:
 						return [
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
-							consts.COMPONENT.HOUSEHOLD_TARGETED,
-							consts.COMPONENT.INDIVIDUALS_TARGETED,
-							consts.COMPONENT.COMMUNITIES,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.HOUSEHOLD_TARGETED,
+							ASSISTANCE.COMPONENT.INDIVIDUALS_TARGETED,
+							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
-					case consts.TARGET.INSTITUTION:
+					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
-							consts.COMPONENT.HOUSEHOLD_TARGETED,
-							consts.COMPONENT.INDIVIDUALS_TARGETED,
-							consts.COMPONENT.INSTITUTIONS,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.HOUSEHOLD_TARGETED,
+							ASSISTANCE.COMPONENT.INDIVIDUALS_TARGETED,
+							ASSISTANCE.COMPONENT.INSTITUTIONS,
 						];
 					default:
 						return [];

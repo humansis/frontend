@@ -143,90 +143,112 @@ export default {
 		columns: Array,
 		total: Number,
 		currentPage: Number,
+
 		paginated: {
 			type: Boolean,
 			default: true,
 		},
+
 		defaultSortDirection: {
 			type: String,
 			default: "desc",
 		},
+
 		defaultSortKey: {
 			type: String,
 			default: "id",
 		},
+
 		backendSorting: {
 			type: Boolean,
 			default: true,
 		},
+
 		backendSearching: {
 			type: Boolean,
 			default: true,
 		},
+
 		backendPagination: {
 			type: Boolean,
 			default: true,
 		},
+
 		checkable: {
 			type: Boolean,
 			default: false,
 		},
+
 		checkedRows: {
 			type: Array,
 			default: () => [],
 		},
+
 		isDisabledPrecheckedRows: {
 			type: Boolean,
 			default: false,
 		},
+
 		isDisabledUnprecheckedRows: {
 			type: Boolean,
 			default: false,
 		},
+
 		rowClass: {
 			type: Function,
 			default: () => "",
 		},
+
 		isLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		hasResetSort: {
 			type: Boolean,
 			default: false,
 		},
+
 		hasSearch: {
 			type: Boolean,
 			default: false,
 		},
+
 		searchPhrase: {
 			type: String,
 			default: "",
 		},
+
 		customPerPage: {
 			type: Number,
 			default: null,
 		},
+
 		hasClickableRows: {
 			type: Boolean,
 			default: true,
 		},
+
 		noDataMessage: {
 			type: String,
 			default: "No data",
 		},
+
 		showTableHeader: {
 			type: Boolean,
 			default: true,
 		},
+
 		isSearchVisible: {
 			type: Boolean,
 			default: true,
 		},
+
 		searchFields: {
 			type: Array,
 			default: () => [],
 		},
+
 		defaultSearchField: {
 			type: Object,
 			default: () => ({}),

@@ -121,31 +121,24 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
-import ActionButton from "@/components/ActionButton";
-import VendorService from "@/services/VendorService";
 import LocationsService from "@/services/LocationsService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 import UsersService from "@/services/UsersService";
-import baseHelper from "@/mixins/baseHelper";
-import permissions from "@/mixins/permissions";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import VendorService from "@/services/VendorService";
+import ActionButton from "@/components/ActionButton";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
+import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { getUniqueIds } from "@/utils/customValidators";
-
-/*
-const statusTags = [
-	{ code: "toRedeem", type: "is-light" },
-	{ code: "syncRequired", type: "is-warning" },
-	{ code: "invoiced", type: "is-success" },
-];
-*/
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "VendorsList",
@@ -182,8 +175,6 @@ export default {
 					{ key: "categoryType", width: "200", type: "svgIcon" },
 					{ key: "vendorNo", label: "Vendor No." },
 					{ key: "contractNo", label: "Contract No." },
-					// TODO Temporary hidden (not implemented yet)
-					// { key: "invoicing", width: "100", type: "tag", customTags: statusTags },
 					{ key: "addressNumber", sortable: true },
 					{ key: "addressPostcode", sortable: true },
 					{ key: "addressStreet", sortable: true },
@@ -313,30 +304,24 @@ export default {
 				});
 		},
 
-		async exportVendors(type, format) {
-			if (type === EXPORT.VENDORS) {
-				this.exportControl.loading = true;
-				const filters = {
-					...this.filters,
-					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
-				};
+		async exportVendors(exportType, format) {
+			if (exportType === EXPORT.VENDORS) {
+				try {
+					this.exportControl.loading = true;
 
-				await VendorService.exportVendors(format, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `BNF Vendors ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Vendors")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+					const filters = {
+						...this.filters,
+						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+					};
+					const filename = `BNF Vendors ${normalizeExportDate()}`;
+					const { data, status, message } = await VendorService.exportVendors(format, filters);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Vendors")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

@@ -159,34 +159,16 @@
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
 import validation from "@/mixins/validation";
-import currencies from "@/utils/currencies";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { BookletStatusArray } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { CURRENCIES } from "@/consts";
 
 export default {
 	name: "VoucherForm",
 
 	mixins: [validation],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-		isEditing: Boolean,
-	},
-
-	data() {
-		return {
-			options: {
-				projects: [],
-				currencies,
-				statuses: BookletStatusArray,
-			},
-		};
-	},
 
 	validations: {
 		formModel: {
@@ -203,6 +185,24 @@ export default {
 		},
 	},
 
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		isEditing: Boolean,
+	},
+
+	data() {
+		return {
+			options: {
+				projects: [],
+				currencies: CURRENCIES,
+				statuses: BookletStatusArray,
+			},
+		};
+	},
+
 	async mounted() {
 		await this.fetchProjects();
 		this.mapToFormModel();
@@ -211,7 +211,7 @@ export default {
 	methods: {
 		mapToFormModel() {
 			if (this.formModel.currency) {
-				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], currencies, "value");
+				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], CURRENCIES, "value");
 			}
 			if (this.formModel.projectId) {
 				this.formModel.projectId = getArrayOfCodeListByKey([this.formModel.projectId], this.options.projects, "id");

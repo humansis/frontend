@@ -15,10 +15,10 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					sortable
-					v-bind="column"
 					v-slot="props"
 					:key="column.id"
+					sortable
+					v-bind="column"
 				>
 					<ColumnField :column="column" :data="props" />
 				</b-table-column>
@@ -29,10 +29,10 @@
 			>
 				<div class="buttons is-right">
 					<SafeDelete
+						:id="props.index"
 						tabindex="-1"
 						icon="trash"
 						entity="Translation"
-						:id="props.index"
 						@submitted="remove"
 					/>
 				</div>
@@ -61,13 +61,13 @@
 </template>
 
 <script>
-import ColumnField from "@/components/DataGrid/ColumnField";
-import SafeDelete from "@/components/SafeDelete";
-import Table from "@/components/DataGrid/Table";
 import TranslationService from "@/services/TranslationService";
-import { generateColumns } from "@/utils/datagrid";
-import { Toast, Notification } from "@/utils/UI";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
 import grid from "@/mixins/grid";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "TranslationsList",

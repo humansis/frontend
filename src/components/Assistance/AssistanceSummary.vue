@@ -118,7 +118,7 @@
 			</div>
 
 			<div
-				v-if="assistanceType === consts.TYPE.DISTRIBUTION"
+				v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION"
 				class="level-item has-text-centered"
 			>
 				<div class="box commodity-item">
@@ -151,12 +151,12 @@
 
 <script>
 import { mapState } from "vuex";
-import Loading from "@/components/Loading";
-import LocationsService from "@/services/LocationsService";
-import { normalizeText } from "@/utils/datagrid";
-import SvgIcon from "@/components/SvgIcon";
 import AssistancesService from "@/services/AssistancesService";
-import consts from "@/consts/assistance";
+import LocationsService from "@/services/LocationsService";
+import Loading from "@/components/Loading";
+import SvgIcon from "@/components/SvgIcon";
+import { normalizeText } from "@/utils/datagrid";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceSummary",
@@ -173,21 +173,11 @@ export default {
 
 	data() {
 		return {
-			consts,
+			ASSISTANCE,
 			province: null,
 			commodity: null,
 			statistics: null,
 		};
-	},
-
-	watch: {
-		assistance(newAssistance) {
-			if (newAssistance) {
-				this.fetchLocation(newAssistance.adm1Id);
-				this.fetchCommodity(newAssistance.id);
-				this.fetchStatistics(newAssistance.id);
-			}
-		},
 	},
 
 	computed: {
@@ -243,13 +233,23 @@ export default {
 		},
 
 		dateExpiration() {
-			return this.commodity?.[0].code === consts.COMMODITY.SMARTCARD
+			return this.commodity?.[0].code === ASSISTANCE.COMMODITY.SMARTCARD
 				? this.$moment(this.assistance?.dateExpiration).format("YYYY-MM-DD hh:mm") || ""
 				: "N/A";
 		},
 
 		beneficiariesCount() {
 			return this.statistics?.numberOfBeneficiaries || 0;
+		},
+	},
+
+	watch: {
+		assistance(newAssistance) {
+			if (newAssistance) {
+				this.fetchLocation(newAssistance.adm1Id);
+				this.fetchCommodity(newAssistance.id);
+				this.fetchStatistics(newAssistance.id);
+			}
 		},
 	},
 

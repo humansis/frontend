@@ -151,40 +151,22 @@
 </template>
 
 <script>
-import graduallyIncrement from "@/mixins/graduallyIncrement";
-import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import ImportService from "@/services/ImportService";
+import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
+import graduallyIncrement from "@/mixins/graduallyIncrement";
 import { Toast } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
 	name: "IdentityStep",
 
-	mixins: [graduallyIncrement],
-
 	components: {
 		DuplicityResolver,
 		Loading,
 	},
 
-	data() {
-		return {
-			IMPORT,
-			importStatistics: {},
-			duplicitiesContentOpened: false,
-			file: {},
-			changeStateButtonLoading: false,
-			resolveDuplicitiesLoading: false,
-			importStatus: "",
-			duplicities: [],
-			resolversAllLoading: false,
-			resolversAllActive: "",
-			allFromSolved: true,
-			amountIdentityDuplicitiesIncrement: 0,
-			amountIdentityDuplicitiesResolvedIncrement: 0,
-		};
-	},
+	mixins: [graduallyIncrement],
 
 	props: {
 		statistics: {
@@ -204,38 +186,22 @@ export default {
 		},
 	},
 
-	watch: {
-		statistics(value) {
-			this.importStatistics = value;
-		},
-
-		loadingChangeStateButton(value) {
-			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.importStatus = value;
-		},
-
-		duplicities() {
-			this.allFromSolved = true;
-		},
-
-		amountIdentityDuplicities(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
-			} else {
-				this.amountIdentityDuplicitiesIncrement = newValue;
-			}
-		},
-
-		amountIdentityDuplicitiesResolved(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
-			} else {
-				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
-			}
-		},
+	data() {
+		return {
+			IMPORT,
+			importStatistics: {},
+			duplicitiesContentOpened: false,
+			file: {},
+			changeStateButtonLoading: false,
+			resolveDuplicitiesLoading: false,
+			importStatus: "",
+			duplicities: [],
+			resolversAllLoading: false,
+			resolversAllActive: "",
+			allFromSolved: true,
+			amountIdentityDuplicitiesIncrement: 0,
+			amountIdentityDuplicitiesResolvedIncrement: 0,
+		};
 	},
 
 	computed: {
@@ -330,6 +296,40 @@ export default {
 			];
 		},
 
+	},
+
+	watch: {
+		statistics(value) {
+			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
+
+		status(value) {
+			this.importStatus = value;
+		},
+
+		duplicities() {
+			this.allFromSolved = true;
+		},
+
+		amountIdentityDuplicities(newValue) {
+			if (this.isCheckingIdentity) {
+				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
+			} else {
+				this.amountIdentityDuplicitiesIncrement = newValue;
+			}
+		},
+
+		amountIdentityDuplicitiesResolved(newValue) {
+			if (this.isCheckingIdentity) {
+				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
+			} else {
+				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
+			}
+		},
 	},
 
 	methods: {

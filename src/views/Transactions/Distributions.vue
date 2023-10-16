@@ -32,10 +32,10 @@
 		>
 			<template v-for="column in table.columns">
 				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
 					:key="column.id"
 					v-slot="props"
+					v-bind="column"
+					:sortable="column.sortable"
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
@@ -98,16 +98,17 @@
 </template>
 
 <script>
+import TransactionService from "@/services/TransactionService";
+import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import TransactionService from "@/services/TransactionService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
 
@@ -248,30 +249,27 @@ export default {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportDistributions(type, format) {
-			if (type === EXPORT.TRANSACTIONS) {
-				this.exportControl.loading = true;
-				await TransactionService.exportDistributions(
-					format,
-					this.table.currentPage,
-					this.perPage,
-					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-					this.table.searchPhrase,
-					this.filters,
-				).then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Transactions ${normalizeExportDate()}.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Distributions")} ${e}`, "is-danger");
-				});
-				this.exportControl.loading = false;
+		async exportDistributions(exportType, format) {
+			if (exportType === EXPORT.TRANSACTIONS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Transactions ${normalizeExportDate()}`;
+					const { data, status, message } = await TransactionService.exportDistributions(
+						format,
+						this.table.currentPage,
+						this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+						this.filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Distributions")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

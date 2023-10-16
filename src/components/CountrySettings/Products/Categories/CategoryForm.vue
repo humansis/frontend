@@ -88,8 +88,8 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
-import validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "CategoryForm",
@@ -99,6 +99,22 @@ export default {
 	},
 
 	mixins: [validation],
+
+	validations: {
+		formModel: {
+			name: { required },
+			type: { required },
+			uploadedImage: { required: requiredIf((form) => !form.image) },
+		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		editing: Boolean,
+	},
 
 	data() {
 		return {
@@ -120,22 +136,6 @@ export default {
 				],
 			},
 		};
-	},
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-		editing: Boolean,
-	},
-
-	validations: {
-		formModel: {
-			name: { required },
-			type: { required },
-			uploadedImage: { required: requiredIf((form) => !form.image) },
-		},
 	},
 
 	methods: {

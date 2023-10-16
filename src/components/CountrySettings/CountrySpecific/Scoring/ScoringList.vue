@@ -52,19 +52,19 @@
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import { generateColumns } from "@/utils/datagrid";
-import consts from "@/utils/scoringConst";
-import Table from "@/components/DataGrid/Table";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import { SCORING } from "@/consts";
 
 const statusTags = [
-	{ code: consts.STATUS.INACTIVE, type: "is-light" },
-	{ code: consts.STATUS.ACTIVE, type: "is-success" },
+	{ code: SCORING.STATUS.INACTIVE, type: "is-light" },
+	{ code: SCORING.STATUS.ACTIVE, type: "is-success" },
 ];
 
 export default {
@@ -125,7 +125,9 @@ export default {
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].status = item.enabled ? consts.STATUS.ACTIVE : consts.STATUS.INACTIVE;
+				this.table.data[key].status = item.enabled
+					? SCORING.STATUS.ACTIVE
+					: SCORING.STATUS.INACTIVE;
 				this.table.data[key].uploaded = item.createdAt;
 			});
 		},

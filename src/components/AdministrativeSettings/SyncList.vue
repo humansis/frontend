@@ -76,16 +76,16 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import SyncService from "@/services/SyncService";
-import { generateColumns } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
-import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
-import permissions from "@/mixins/permissions";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
+import ActionButton from "@/components/ActionButton";
+import SyncFilter from "@/components/AdministrativeSettings/SyncFilter";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "SyncList",

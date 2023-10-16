@@ -73,14 +73,17 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		isStatisticsLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		statistics: {
 			type: Object,
 			default: () => {},

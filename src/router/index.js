@@ -1,11 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import getters from "@/store/getters";
-import store from "@/store/index";
+import { getCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
-import { getCookie } from "@/utils/cookie";
 import CONST from "@/store/const";
+import getters from "@/store/getters";
+import store from "@/store/index";
 
 Vue.use(VueRouter);
 

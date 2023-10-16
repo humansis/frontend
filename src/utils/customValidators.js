@@ -1,5 +1,5 @@
-import consts from "@/consts/assistance";
 import { splitBySpace } from "@/utils/helpers";
+import { ASSISTANCE } from "@/consts";
 
 /**
  * Check whether IDs list has certain length
@@ -7,7 +7,7 @@ import { splitBySpace } from "@/utils/helpers";
  * @returns {Boolean}
  */
 export const isIdsListLengthValid = (idsList) => (
-	splitBySpace(idsList).length <= consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH
+	splitBySpace(idsList).length <= ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH
 );
 
 export const getUniqueIds = (data, param) => {

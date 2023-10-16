@@ -27,9 +27,9 @@
 </template>
 
 <script>
+import InstitutionService from "@/services/InstitutionService";
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
 import permissions from "@/mixins/permissions";
-import InstitutionService from "@/services/InstitutionService";
 import { Toast } from "@/utils/UI";
 
 export default {

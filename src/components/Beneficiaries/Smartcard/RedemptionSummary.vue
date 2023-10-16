@@ -25,13 +25,13 @@
 </template>
 
 <script>
-import grid from "@/mixins/grid";
-import Table from "@/components/DataGrid/Table";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import SmartcardService from "@/services/SmartcardService";
+import Table from "@/components/DataGrid/Table";
+import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import baseHelper from "@/mixins/baseHelper";
 
 export default {
 	name: "RedemptionSummary",

@@ -84,14 +84,14 @@ export default {
 		},
 	},
 
-	created() {
-		this.prepareValidationRules();
-	},
-
 	computed: {
 		isInputTypeText() {
 			return this.inputType === GENERAL.INPUT_TYPE.TEXT;
 		},
+	},
+
+	created() {
+		this.prepareValidationRules();
 	},
 };
 </script>

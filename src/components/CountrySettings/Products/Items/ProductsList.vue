@@ -66,17 +66,18 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import ProductService from "@/services/ProductService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
+import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "ProductsList",
@@ -89,14 +90,14 @@ export default {
 		ActionButton,
 	},
 
+	mixins: [grid, permissions],
+
 	props: {
 		categories: {
 			type: Array,
 			default: () => [],
 		},
 	},
-
-	mixins: [grid, permissions],
 
 	data() {
 		return {
@@ -124,12 +125,6 @@ export default {
 		};
 	},
 
-	watch: {
-		categories() {
-			this.fetchData();
-		},
-	},
-
 	computed: {
 		modalHeader() {
 			let result = "";
@@ -141,6 +136,12 @@ export default {
 				result = this.$t("Create New Product");
 			}
 			return result;
+		},
+	},
+
+	watch: {
+		categories() {
+			this.fetchData();
 		},
 	},
 
@@ -183,25 +184,20 @@ export default {
 			});
 		},
 
-		async exportProducts(type, format) {
-			if (type === EXPORT.PRODUCTS) {
-				this.exportControl.loading = true;
-				await ProductService.exportProducts(format)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Products ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Products")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+		async exportProducts(exportType, format) {
+			if (exportType === EXPORT.PRODUCTS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Products ${normalizeExportDate()}`;
+					const { data, status, message } = await ProductService.exportProducts(format);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Products")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

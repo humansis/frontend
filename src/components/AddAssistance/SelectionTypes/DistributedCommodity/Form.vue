@@ -271,15 +271,14 @@
 </template>
 
 <script>
-import { minValue, maxValue, required, requiredIf } from "vuelidate/lib/validators";
+import { maxValue, minValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import consts from "@/consts/assistance";
-import currencies from "@/utils/currencies";
-import validation from "@/mixins/validation";
-import calendarHelper from "@/mixins/calendarHelper";
-import SvgIcon from "@/components/SvgIcon";
 import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
+import SvgIcon from "@/components/SvgIcon";
+import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, CURRENCIES } from "@/consts";
 
 export default {
 	name: "DistributedCommodityForm",
@@ -290,174 +289,6 @@ export default {
 	},
 
 	mixins: [validation, calendarHelper],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		project: {
-			type: Object,
-			default: () => {},
-		},
-		targetType: {
-			type: String,
-			default: "",
-		},
-		dateOfAssistance: {
-			type: String,
-			required: true,
-		},
-		commodity: {
-			type: Array,
-			default: () => [],
-		},
-		dateExpiration: {
-			type: String,
-		},
-	},
-
-	watch: {
-		"formModel.modalityType.code": function modalityType(value) {
-			if (value === consts.COMMODITY.SMARTCARD) {
-				this.formModel.dateExpiration = new Date(
-					this.dateExpiration || this.project?.endDate,
-				);
-			}
-		},
-	},
-
-	data() {
-		return {
-			displayedFields: consts.DEFAULT_DISPLAYED_FIELDS,
-			CASHBACK: consts.COMMODITY.CASHBACK,
-			options: {
-				modalities: [],
-				types: [],
-				currencies,
-				division: [
-					{
-						code: consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
-						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
-					},
-					{
-						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE,
-						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBER_LABEL),
-					},
-					{
-						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
-						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
-					},
-					{
-						code: consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
-						value: this.$t(consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
-					},
-				],
-			},
-			loading: {
-				modalities: false,
-				types: false,
-			},
-		};
-	},
-
-	computed: {
-		cashbackLimitDisabled() {
-			return this.formModel[this.valueOrQuantity] >= 1
-				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
-				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
-		},
-
-		cashbackLimitErrorMessage() {
-			return `Required minimum is 1, maximum is ${this.maxCashback}`;
-		},
-
-		maxCashback() {
-			let max = this.formModel[this.valueOrQuantity];
-
-			if (this.formModel.divisionNesFields) {
-				max = Math.max(...this.formModel.divisionNesFields.map((item) => item.value), max);
-			}
-
-			if (this.formModel.divisionNwsFields) {
-				max = Math.max(...this.formModel.divisionNwsFields.map((item) => item.value), max);
-			}
-
-			return max;
-		},
-
-		showDivisionFields() {
-			return this.displayedFields.householdMembersNwsFields
-				|| this.displayedFields.householdMembersNesFields;
-		},
-
-		divisionFieldsValidationString() {
-			return this.displayedFields.householdMembersNwsFields
-				? "divisionNwsFields"
-				: "divisionNesFields";
-		},
-
-		divisionFields() {
-			return {
-				divisionNwsFields: this.divisionNwsFields,
-				divisionNesFields: this.divisionNesFields,
-			};
-		},
-
-		maxDateOfAssistance() {
-			const { endDate } = this.project;
-			return endDate ? new Date(endDate) : new Date();
-		},
-
-		minDateOfDistribution() {
-			return this.dateOfAssistance ? new Date(this.dateOfAssistance) : null;
-		},
-
-		isModalityCash() {
-			return this.formModel?.modality?.code === consts.MODALITY.CASH;
-		},
-
-		isModalityVoucher() {
-			return this.formModel?.modality?.code === consts.MODALITY.VOUCHER;
-		},
-
-		isModalityInKind() {
-			return this.formModel?.modality?.code === consts.MODALITY.IN_KIND;
-		},
-
-		isModalityTypeSmartCard() {
-			return this.formModel?.modalityType?.code === consts.COMMODITY.SMARTCARD;
-		},
-
-		divisionNwsFields() {
-			return [
-				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNwsField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 5 members)`), fieldName: "quantityNwsField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (6 - 8 members)`), fieldName: "quantityNwsField3" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNwsField4" },
-			];
-		},
-
-		divisionNesFields() {
-			return [
-				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNesField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 8 members)`), fieldName: "quantityNesField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNesField3" },
-			];
-		},
-
-		valueOrQuantity() {
-			return this.isModalityCash ? "value" : "quantity";
-		},
-
-		valueOrQuantityLabel() {
-			return this.isModalityCash ? "Value" : "Quantity 1";
-		},
-
-		getValidations() {
-			return this.$v;
-		},
-	},
 
 	validations() {
 		/* eslint-disable func-names */
@@ -537,6 +368,179 @@ export default {
 		/* eslint-enable func-names */
 	},
 
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+
+		project: {
+			type: Object,
+			default: () => {},
+		},
+
+		targetType: {
+			type: String,
+			default: "",
+		},
+
+		dateOfAssistance: {
+			type: String,
+			required: true,
+		},
+
+		commodity: {
+			type: Array,
+			default: () => [],
+		},
+
+		dateExpiration: {
+			type: String,
+		},
+	},
+
+	data() {
+		return {
+			displayedFields: ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
+			CASHBACK: ASSISTANCE.COMMODITY.CASHBACK,
+			options: {
+				currencies: CURRENCIES,
+				modalities: [],
+				types: [],
+				division: [
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
+					},
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_LABEL),
+					},
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
+					},
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
+					},
+				],
+			},
+			loading: {
+				modalities: false,
+				types: false,
+			},
+		};
+	},
+
+	computed: {
+		cashbackLimitDisabled() {
+			return this.formModel[this.valueOrQuantity] >= 1
+				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
+				&& this.formModel.allowedProductCategoryTypes.length === 1
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
+		},
+
+		cashbackLimitErrorMessage() {
+			return `Required minimum is 1, maximum is ${this.maxCashback}`;
+		},
+
+		maxCashback() {
+			let max = this.formModel[this.valueOrQuantity];
+
+			if (this.formModel.divisionNesFields) {
+				max = Math.max(...this.formModel.divisionNesFields.map((item) => item.value), max);
+			}
+
+			if (this.formModel.divisionNwsFields) {
+				max = Math.max(...this.formModel.divisionNwsFields.map((item) => item.value), max);
+			}
+
+			return max;
+		},
+
+		showDivisionFields() {
+			return this.displayedFields.householdMembersNwsFields
+				|| this.displayedFields.householdMembersNesFields;
+		},
+
+		divisionFieldsValidationString() {
+			return this.displayedFields.householdMembersNwsFields
+				? "divisionNwsFields"
+				: "divisionNesFields";
+		},
+
+		divisionFields() {
+			return {
+				divisionNwsFields: this.divisionNwsFields,
+				divisionNesFields: this.divisionNesFields,
+			};
+		},
+
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return endDate ? new Date(endDate) : new Date();
+		},
+
+		minDateOfDistribution() {
+			return this.dateOfAssistance ? new Date(this.dateOfAssistance) : null;
+		},
+
+		isModalityCash() {
+			return this.formModel?.modality?.code === ASSISTANCE.MODALITY.CASH;
+		},
+
+		isModalityVoucher() {
+			return this.formModel?.modality?.code === ASSISTANCE.MODALITY.VOUCHER;
+		},
+
+		isModalityInKind() {
+			return this.formModel?.modality?.code === ASSISTANCE.MODALITY.IN_KIND;
+		},
+
+		isModalityTypeSmartCard() {
+			return this.formModel?.modalityType?.code === ASSISTANCE.COMMODITY.SMARTCARD;
+		},
+
+		divisionNwsFields() {
+			return [
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNwsField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 5 members)`), fieldName: "quantityNwsField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (6 - 8 members)`), fieldName: "quantityNwsField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNwsField4" },
+			];
+		},
+
+		divisionNesFields() {
+			return [
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNesField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 8 members)`), fieldName: "quantityNesField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNesField3" },
+			];
+		},
+
+		valueOrQuantity() {
+			return this.isModalityCash ? "value" : "quantity";
+		},
+
+		valueOrQuantityLabel() {
+			return this.isModalityCash ? "Value" : "Quantity 1";
+		},
+
+		getValidations() {
+			return this.$v;
+		},
+	},
+
+	watch: {
+		"formModel.modalityType.code": function modalityType(value) {
+			if (value === ASSISTANCE.COMMODITY.SMARTCARD) {
+				this.formModel.dateExpiration = new Date(
+					this.dateExpiration || this.project?.endDate,
+				);
+			}
+		},
+	},
+
 	created() {
 		this.fetchModalities();
 	},
@@ -574,7 +578,7 @@ export default {
 
 		async onModalitySelect({ code }) {
 			this.formModel.modalityType = null;
-			this.displayedFields = consts.DEFAULT_DISPLAYED_FIELDS;
+			this.displayedFields = ASSISTANCE.DEFAULT_DISPLAYED_FIELDS;
 			await this.fetchModalityTypes(code);
 		},
 
@@ -582,20 +586,20 @@ export default {
 			this.formModel.division = null;
 
 			switch (code) {
-				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.MOBILE_MONEY:
+				case ASSISTANCE.COMMODITY.CASH:
+				case ASSISTANCE.COMMODITY.MOBILE_MONEY:
 					this.displayedFields = {
-						...consts.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === consts.TARGET.HOUSEHOLD,
+						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
+						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
 						currency: true,
 						value: true,
 					};
 
 					break;
-				case consts.COMMODITY.SMARTCARD:
+				case ASSISTANCE.COMMODITY.SMARTCARD:
 					this.displayedFields = {
-						...consts.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === consts.TARGET.HOUSEHOLD,
+						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
+						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
 						currency: true,
 						value: true,
 						remoteDistributionAllowed: true,
@@ -604,20 +608,20 @@ export default {
 					};
 
 					break;
-				case consts.COMMODITY.FOOD_RATIONS:
-				case consts.COMMODITY.READY_TO_EAT_RATIONS:
-				case consts.COMMODITY.BREAD:
-				case consts.COMMODITY.AGRICULTURAL_KIT:
-				case consts.COMMODITY.WASH_KIT:
-				case consts.COMMODITY.SHELTER_TOOL_KIT:
-				case consts.COMMODITY.HYGIENE_KIT:
-				case consts.COMMODITY.DIGNITY_KIT:
-				case consts.COMMODITY.NFI_KIT:
-				case consts.COMMODITY.WINTERIZATION_KIT:
-				case consts.COMMODITY.ACTIVITY_ITEM:
+				case ASSISTANCE.COMMODITY.FOOD_RATIONS:
+				case ASSISTANCE.COMMODITY.READY_TO_EAT_RATIONS:
+				case ASSISTANCE.COMMODITY.BREAD:
+				case ASSISTANCE.COMMODITY.AGRICULTURAL_KIT:
+				case ASSISTANCE.COMMODITY.WASH_KIT:
+				case ASSISTANCE.COMMODITY.SHELTER_TOOL_KIT:
+				case ASSISTANCE.COMMODITY.HYGIENE_KIT:
+				case ASSISTANCE.COMMODITY.DIGNITY_KIT:
+				case ASSISTANCE.COMMODITY.NFI_KIT:
+				case ASSISTANCE.COMMODITY.WINTERIZATION_KIT:
+				case ASSISTANCE.COMMODITY.ACTIVITY_ITEM:
 					this.displayedFields = {
-						...consts.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === consts.TARGET.HOUSEHOLD,
+						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
+						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
 						unit: true,
 						quantity: true,
 						value: true,
@@ -628,12 +632,12 @@ export default {
 					};
 
 					break;
-				case consts.COMMODITY.QR_CODE_VOUCHER:
-				case consts.COMMODITY.PAPER_VOUCHER:
-				case consts.COMMODITY.LOAN:
-				case consts.COMMODITY.BUSINESS_GRANT:
+				case ASSISTANCE.COMMODITY.QR_CODE_VOUCHER:
+				case ASSISTANCE.COMMODITY.PAPER_VOUCHER:
+				case ASSISTANCE.COMMODITY.LOAN:
+				case ASSISTANCE.COMMODITY.BUSINESS_GRANT:
 					this.displayedFields = {
-						...consts.DEFAULT_DISPLAYED_FIELDS,
+						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
 						currency: true,
 						value: true,
 					};
@@ -653,19 +657,19 @@ export default {
 			this.displayedFields.householdMembersNesFields = false;
 
 			switch (code) {
-				case consts.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
 					this.displayedFields.currency = true;
 					this.displayedFields.value = true;
 					this.displayedFields.quantity = this.isModalityInKind;
 
 					break;
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
 					this.displayedFields.currency = true;
 					this.displayedFields.householdMembersNwsFields = true;
 
 					break;
-				case consts.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
 					this.displayedFields.currency = true;
 					this.displayedFields.householdMembersNesFields = true;
 

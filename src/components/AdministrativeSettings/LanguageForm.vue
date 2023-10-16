@@ -51,18 +51,18 @@ export default {
 
 	mixins: [validation],
 
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-	},
-
 	validations: {
 		formModel: {
 			name: { required },
 			published: { required },
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
 	},
 
 	methods: {

@@ -56,15 +56,15 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import ProductService from "@/services/ProductService";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import ProductService from "@/services/ProductService";
-import { generateColumns } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
+import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
-import SafeDelete from "@/components/SafeDelete";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "CategoriesList",
@@ -98,10 +98,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	computed: {
 		modalHeader() {
 			let result = "";
@@ -114,6 +110,10 @@ export default {
 			}
 			return result;
 		},
+	},
+
+	watch: {
+		$route: "fetchData",
 	},
 
 	created() {

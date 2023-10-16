@@ -96,15 +96,24 @@
 </template>
 
 <script>
-import validation from "@/mixins/validation";
-import { HOUSEHOLD } from "@/consts";
-import { Toast } from "@/utils/UI";
 import { required } from "vuelidate/lib/validators";
+import validation from "@/mixins/validation";
+import { Toast } from "@/utils/UI";
+import { HOUSEHOLD } from "@/consts";
 
 export default {
 	name: "BulkSearch",
 
 	mixins: [validation],
+
+	validations() {
+		return {
+			bulkSearch: {
+				searchBy: { required },
+				ids: { required },
+			},
+		};
+	},
 
 	data() {
 		return {
@@ -116,15 +125,6 @@ export default {
 				searchBy: "",
 				ids: "",
 				notFoundIds: "",
-			},
-		};
-	},
-
-	validations() {
-		return {
-			bulkSearch: {
-				searchBy: { required },
-				ids: { required },
 			},
 		};
 	},

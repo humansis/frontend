@@ -29,8 +29,8 @@
 
 			<div class="column is-three-fifths">
 				<SelectionCriteria
-					ref="selectionCriteria"
 					v-show="visibleComponents.selectionCriteria"
+					ref="selectionCriteria"
 					:target-type="targetType"
 					:data="componentsData.selectionCriteria"
 					:assistance-body="assistanceBody"
@@ -39,8 +39,8 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<TargetTypeSelect
-					ref="targetTypeSelect"
 					v-show="visibleComponents.communities || visibleComponents.institutions"
+					ref="targetTypeSelect"
 					:project-id="assistanceBody.projectId"
 					:visible="targetTypeSelectVisible"
 					:is-assistance-duplicated="isDuplicated"
@@ -48,8 +48,8 @@
 				/>
 				<DistributedCommodity
 					v-if="isProjectReady"
-					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
+					ref="distributedCommodity"
 					:project="project"
 					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
@@ -61,10 +61,10 @@
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<ActivityDetails
-					ref="activityDetails"
 					v-show="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
+					ref="activityDetails"
 					:visible="visibleActivityDetails"
 					:data="componentsData.activityDetails"
 					@updatedData="fetchActivityDetails"
@@ -87,15 +87,15 @@
 </template>
 
 <script>
-import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
-import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity";
-import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
-import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
-import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
-import consts from "@/consts/assistance";
 import ProjectService from "@/services/ProjectService";
+import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
+import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
+import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity";
+import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
+import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AddAssistance",
@@ -186,7 +186,7 @@ export default {
 
 		householdWithoutHead() {
 			return this.project.householdIntegrityIssues?.find(
-				(issue) => issue === consts.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
+				(issue) => issue === ASSISTANCE.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
 			);
 		},
 	},
@@ -618,7 +618,7 @@ export default {
 		remoteAllowed(commodity) {
 			let result = null;
 
-			if (commodity?.modalityType === consts.COMMODITY.SMARTCARD) {
+			if (commodity?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD) {
 				result = !!commodity?.remoteDistributionAllowed;
 			} else {
 				result = null;
@@ -667,26 +667,26 @@ export default {
 
 		getModalityByType(code) {
 			switch (code) {
-				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARTCARD:
-				case consts.COMMODITY.MOBILE_MONEY:
+				case ASSISTANCE.COMMODITY.CASH:
+				case ASSISTANCE.COMMODITY.SMARTCARD:
+				case ASSISTANCE.COMMODITY.MOBILE_MONEY:
 					return "Cash";
-				case consts.COMMODITY.FOOD_RATIONS:
-				case consts.COMMODITY.READY_TO_EAT_RATIONS:
-				case consts.COMMODITY.BREAD:
-				case consts.COMMODITY.AGRICULTURAL_KIT:
-				case consts.COMMODITY.WASH_KIT:
-				case consts.COMMODITY.SHELTER_TOOL_KIT:
-				case consts.COMMODITY.HYGIENE_KIT:
-				case consts.COMMODITY.DIGNITY_KIT:
-				case consts.COMMODITY.NFI_KIT:
-				case consts.COMMODITY.WINTERIZATION_KIT:
+				case ASSISTANCE.COMMODITY.FOOD_RATIONS:
+				case ASSISTANCE.COMMODITY.READY_TO_EAT_RATIONS:
+				case ASSISTANCE.COMMODITY.BREAD:
+				case ASSISTANCE.COMMODITY.AGRICULTURAL_KIT:
+				case ASSISTANCE.COMMODITY.WASH_KIT:
+				case ASSISTANCE.COMMODITY.SHELTER_TOOL_KIT:
+				case ASSISTANCE.COMMODITY.HYGIENE_KIT:
+				case ASSISTANCE.COMMODITY.DIGNITY_KIT:
+				case ASSISTANCE.COMMODITY.NFI_KIT:
+				case ASSISTANCE.COMMODITY.WINTERIZATION_KIT:
 					return "In Kind";
-				case consts.COMMODITY.LOAN:
-				case consts.COMMODITY.BUSINESS_GRANT:
+				case ASSISTANCE.COMMODITY.LOAN:
+				case ASSISTANCE.COMMODITY.BUSINESS_GRANT:
 					return "Other";
-				case consts.COMMODITY.QR_CODE_VOUCHER:
-				case consts.COMMODITY.PAPER_VOUCHER:
+				case ASSISTANCE.COMMODITY.QR_CODE_VOUCHER:
+				case ASSISTANCE.COMMODITY.PAPER_VOUCHER:
 					return "Other";
 				default:
 					return "";

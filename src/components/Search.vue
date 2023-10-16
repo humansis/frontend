@@ -44,14 +44,17 @@ export default {
 			type: String,
 			default: "",
 		},
+
 		searchFields: {
 			type: Array,
 			required: true,
 		},
+
 		defaultSearchField: {
 			type: Object,
 			required: () => {},
 		},
+
 		isDisabled: {
 			type: Boolean,
 			default: false,
@@ -65,16 +68,16 @@ export default {
 		};
 	},
 
-	mounted() {
-		if (this.searchPhrase) {
-			this.value = this.searchPhrase;
-		}
-	},
-
 	computed: {
 		isSearchDisabled() {
 			return !!(this.searchFields.length && !this.selectedSearchField) || this.isDisabled;
 		},
+	},
+
+	mounted() {
+		if (this.searchPhrase) {
+			this.value = this.searchPhrase;
+		}
 	},
 
 	methods: {

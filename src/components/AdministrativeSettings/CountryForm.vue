@@ -111,6 +111,22 @@ export default {
 
 	mixins: [validation],
 
+	validations: {
+		formModel: {
+			name: { required },
+			iso3: { required },
+			availableCurrencies: { required },
+			countryFlag: { required },
+		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+	},
+
 	data() {
 		return {
 			uploadedImage: null,
@@ -126,22 +142,6 @@ export default {
 				{ code: "gpd", value: "GPD" },
 			],
 		};
-	},
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-	},
-
-	validations: {
-		formModel: {
-			name: { required },
-			iso3: { required },
-			availableCurrencies: { required },
-			countryFlag: { required },
-		},
 	},
 
 	mounted() {

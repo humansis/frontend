@@ -10,6 +10,7 @@ module.exports = {
 	parserOptions: {
 		parser: "babel-eslint",
 	},
+	plugins: ["simple-import-sort"],
 	rules: {
 		"import/extensions": ["warn", "ignorePackages"],
 		indent: ["error", "tab", { SwitchCase: 1 }],
@@ -24,5 +25,45 @@ module.exports = {
 		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
 		"vue/html-self-closing": "warn",
+		"simple-import-sort/imports": [
+			"error",
+			{
+				groups: [
+					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
+					["^.+\\.css$"],
+				],
+			},
+		],
+		"vue/order-in-components": ["error", {
+			order: [
+				"el",
+				"name",
+				"parent",
+				"functional",
+				["delimiters", "comments"],
+				["components", "directives", "filters"],
+				"extends",
+				"mixins",
+				"validations",
+				"inheritAttrs",
+				["props", "propsData"],
+				"data",
+				"computed",
+				"watch",
+				"beforeCreate",
+				"created",
+				"beforeMount",
+				"mounted",
+				"beforeUpdate",
+				"updated",
+				"activated",
+				"deactivated",
+				"beforeDestroy",
+				"destroyed",
+				"methods",
+				["template", "render"],
+				"renderError",
+			],
+		}],
 	},
 };

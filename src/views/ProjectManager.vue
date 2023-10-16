@@ -307,20 +307,20 @@
 
 <script>
 import { mapState } from "vuex";
+import { required } from "vuelidate/lib/validators";
+import AssistancesService from "@/services/AssistancesService";
+import DonorService from "@/services/DonorService";
+import ProjectService from "@/services/ProjectService";
+import SectorsService from "@/services/SectorsService";
 import EditableTable from "@/components/Inputs/EditableTable";
 import MultiSelectTag from "@/components/MultiSelectTag";
 import SvgIcon from "@/components/SvgIcon";
-import { required } from "vuelidate/lib/validators";
-import validation from "@/mixins/validation";
-import permissions from "@/mixins/permissions";
 import calendarHelper from "@/mixins/calendarHelper";
-import AssistancesService from "@/services/AssistancesService";
-import ProjectService from "@/services/ProjectService";
-import SectorsService from "@/services/SectorsService";
-import DonorService from "@/services/DonorService";
+import permissions from "@/mixins/permissions";
+import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } from "@/utils/codeList";
+import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
 import { Notification, Toast } from "@/utils/UI";
-import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
 import { GENERAL } from "@/consts";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
@@ -350,32 +350,17 @@ export default {
 
 	mixins: [validation, calendarHelper, permissions],
 
-	async mounted() {
-		this.isProjectDataLoading = true;
-		this.getProjectAction();
-		this.setAdmsLabel();
-
-		await Promise.all([
-			this.fetchSectors(),
-			this.fetchSubSectors(),
-			this.fetchDonors(),
-			this.fetchTargets(),
-		]);
-
-		if (this.projectAction.isDetail || this.projectAction.isEdit) {
-			await this.fetchProject();
-		}
-
-		if (this.projectAction.isEdit) {
-			if (this.formModel.targets.length) {
-				await this.fetchModalityTypes();
-			}
-			this.filterSubSectors();
-			this.getSectorsWithoutSelectedSubSector();
-		}
-
-		this.addDataForEditableTable();
-		this.isProjectDataLoading = false;
+	validations: {
+		formModel: {
+			name: { required },
+			selectedSectors: { required },
+			startDate: { required },
+			endDate: {
+				required,
+				minValue: minDate,
+			},
+			allowedProductCategoryTypes: { required },
+		},
 	},
 
 	data() {
@@ -533,23 +518,10 @@ export default {
 		};
 	},
 
-	validations: {
-		formModel: {
-			name: { required },
-			selectedSectors: { required },
-			startDate: { required },
-			endDate: {
-				required,
-				minValue: minDate,
-			},
-			allowedProductCategoryTypes: { required },
-		},
-	},
-
 	computed: {
 		missingSubSectors() {
 			return this.sectorsWithoutSelectedSubSectors.length
-				&& this.formModel.selectedSubSectors.length
+			&& this.formModel.selectedSubSectors.length
 				? `${this.$t("Some sectors have NO selected sub-sector")}
 						: ${this.sectorsWithoutSelectedSubSectors.join(", ")}`
 				: "";
@@ -564,6 +536,34 @@ export default {
 		},
 
 		...mapState(["country", "admNames"]),
+	},
+
+	async mounted() {
+		this.isProjectDataLoading = true;
+		this.getProjectAction();
+		this.setAdmsLabel();
+
+		await Promise.all([
+			this.fetchSectors(),
+			this.fetchSubSectors(),
+			this.fetchDonors(),
+			this.fetchTargets(),
+		]);
+
+		if (this.projectAction.isDetail || this.projectAction.isEdit) {
+			await this.fetchProject();
+		}
+
+		if (this.projectAction.isEdit) {
+			if (this.formModel.targets.length) {
+				await this.fetchModalityTypes();
+			}
+			this.filterSubSectors();
+			this.getSectorsWithoutSelectedSubSector();
+		}
+
+		this.addDataForEditableTable();
+		this.isProjectDataLoading = false;
 	},
 
 	methods: {

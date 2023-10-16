@@ -233,22 +233,12 @@
 </template>
 
 <script>
-import { IMPORT } from "@/consts";
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "FinalisationStep",
-
-	data() {
-		return {
-			importStatistics: {},
-			importStatus: "",
-			changeStateButtonLoading: false,
-			notImportedRows: [],
-			notImportedRowsVisible: false,
-		};
-	},
 
 	props: {
 		statistics: {
@@ -261,28 +251,21 @@ export default {
 			required: false,
 			default: "",
 		},
+
 		loadingChangeStateButton: {
 			type: Boolean,
 			required: true,
 		},
 	},
 
-	mounted() {
-		this.fetchImportNotImportedRows();
-	},
-
-	watch: {
-		statistics(value) {
-			this.importStatistics = value;
-		},
-
-		loadingChangeStateButton(value) {
-			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.importStatus = value;
-		},
+	data() {
+		return {
+			importStatistics: {},
+			importStatus: "",
+			changeStateButtonLoading: false,
+			notImportedRows: [],
+			notImportedRowsVisible: false,
+		};
 	},
 
 	computed: {
@@ -338,6 +321,24 @@ export default {
 				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
+	},
+
+	watch: {
+		statistics(value) {
+			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
+
+		status(value) {
+			this.importStatus = value;
+		},
+	},
+
+	mounted() {
+		this.fetchImportNotImportedRows();
 	},
 
 	methods: {

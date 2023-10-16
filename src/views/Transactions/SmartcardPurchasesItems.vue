@@ -98,16 +98,17 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import TransactionService from "@/services/TransactionService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import transactionHelper from "@/mixins/transactionHelper";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import grid from "@/mixins/grid";
+import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 const SmartcardPurchasesItemsFilter = () => import("@/components/Transactions/SmartcardPurchasesItemsFilter");
 
@@ -246,30 +247,27 @@ export default {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportPurchases(type, format) {
-			if (type === EXPORT.PURCHASED_ITEMS) {
-				this.exportControl.loading = true;
-				await TransactionService.exportSmartcardPurchasesItems(
-					format,
-					this.table.currentPage,
-					this.perPage,
-					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-					this.table.searchPhrase,
-					this.filters,
-				).then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Purchased items ${normalizeExportDate()}.${format}`;
-						link.click();
-					} else {
-						Notification(message, "is-warning");
-					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Export Smartcard Purchases")} ${e}`, "is-danger");
-				});
-				this.exportControl.loading = false;
+		async exportPurchases(exportType, format) {
+			if (exportType === EXPORT.PURCHASED_ITEMS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Purchased items ${normalizeExportDate()}`;
+					const { data, status, message } = await TransactionService.exportSmartcardPurchasesItems(
+						format,
+						this.table.currentPage,
+						this.perPage,
+						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.searchPhrase,
+						this.filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Smartcard Purchases")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

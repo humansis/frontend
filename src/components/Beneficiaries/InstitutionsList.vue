@@ -85,17 +85,17 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
-import ExportControl from "@/components/Export";
 import InstitutionService from "@/services/InstitutionService";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import { downloadFile } from "@/utils/helpers";
+import ActionButton from "@/components/ActionButton";
+import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 import { EXPORT } from "@/consts";
 
 export default {

@@ -54,13 +54,13 @@
 
 <script>
 import { mapState } from "vuex";
-import VouchersList from "@/components/Vouchers/VouchersList";
-import VoucherForm from "@/components/Vouchers/VoucherForm";
-import BatchesList from "@/components/Vouchers/BatchesList";
-import Modal from "@/components/Modal";
 import BookletsService from "@/services/BookletsService";
-import { Toast, Notification } from "@/utils/UI";
+import Modal from "@/components/Modal";
+import BatchesList from "@/components/Vouchers/BatchesList";
+import VoucherForm from "@/components/Vouchers/VoucherForm";
+import VouchersList from "@/components/Vouchers/VouchersList";
 import permissions from "@/mixins/permissions";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "VouchersPage",

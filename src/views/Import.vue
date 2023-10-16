@@ -111,13 +111,13 @@
 </template>
 
 <script>
-import StartStep from "@/components/Imports/StartStep";
-import IntegrityStep from "@/components/Imports/IntegrityStep";
-import IdentityStep from "@/components/Imports/IdentityStep";
-import FinalisationStep from "@/components/Imports/FinalisationStep";
-import { Notification, Toast } from "@/utils/UI";
 import ImportService from "@/services/ImportService";
+import FinalisationStep from "@/components/Imports/FinalisationStep";
+import IdentityStep from "@/components/Imports/IdentityStep";
+import IntegrityStep from "@/components/Imports/IntegrityStep";
+import StartStep from "@/components/Imports/StartStep";
 import Loading from "@/components/Loading";
+import { Notification, Toast } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
@@ -148,16 +148,6 @@ export default {
 				{ code: 3, slug: "finalisation" },
 			],
 		};
-	},
-
-	watch: {
-		importStatus(value) {
-			this.isImportAutomaticallyCanceled(value);
-		},
-	},
-
-	mounted() {
-		this.isImportAutomaticallyCanceled(this.importStatus);
 	},
 
 	computed: {
@@ -286,10 +276,20 @@ export default {
 		},
 	},
 
+	watch: {
+		importStatus(value) {
+			this.isImportAutomaticallyCanceled(value);
+		},
+	},
+
 	async created() {
 		this.fetchData();
 		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
 		this.activeStep = currentStep?.code || 0;
+	},
+
+	mounted() {
+		this.isImportAutomaticallyCanceled(this.importStatus);
 	},
 
 	beforeDestroy() {

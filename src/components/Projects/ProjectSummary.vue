@@ -85,9 +85,9 @@
 
 <script>
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "ProjectSummary",

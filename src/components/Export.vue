@@ -55,22 +55,27 @@ export default {
 			type: Array,
 			required: true,
 		},
+
 		availableExportFormats: {
 			type: Array,
 			required: true,
 		},
+
 		isExportLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		location: {
 			type: String,
 			required: true,
 		},
+
 		fieldClass: {
 			type: String,
 			default: "",
 		},
+
 		disabled: {
 			type: Boolean,
 			default: false,
@@ -84,6 +89,16 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["country", "selectedExportsOptions"]),
+
+		isExportButtonEnabled() {
+			return this.selectedExportType
+				&& this.selectedExportFormat
+				&& !this.disabled;
+		},
+	},
+
 	watch: {
 		availableExportTypes() {
 			this.setDefaultSelectedValue();
@@ -93,16 +108,6 @@ export default {
 	mounted() {
 		this.setDefaultSelectedValue();
 		this.setExportInputs(this.location);
-	},
-
-	computed: {
-		...mapState(["country", "selectedExportsOptions"]),
-
-		isExportButtonEnabled() {
-			return this.selectedExportType
-				&& this.selectedExportFormat
-				&& !this.disabled;
-		},
 	},
 
 	methods: {

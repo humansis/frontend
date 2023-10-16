@@ -221,6 +221,11 @@ export default {
 		ImageColumn,
 	},
 
+	props: {
+		column: Object,
+		data: Object,
+	},
+
 	computed: {
 		cellData() {
 			return this.data.row[this.column.field] ?? {};
@@ -305,11 +310,6 @@ export default {
 		},
 
 		normalizeText,
-	},
-
-	props: {
-		column: Object,
-		data: Object,
 	},
 };
 </script>

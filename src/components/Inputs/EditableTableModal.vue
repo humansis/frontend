@@ -196,30 +196,12 @@
 </template>
 
 <script>
-import { minValue, maxValue, requiredIf } from "vuelidate/lib/validators";
+import { maxValue, minValue, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
 import validation from "@/mixins/validation";
 import { GENERAL } from "@/consts";
 
 export default {
-	props: {
-		formInputs: {
-			type: Array,
-			required: true,
-		},
-		createButtonLabel: {
-			type: String,
-			default: "Create",
-		},
-		modalState: {
-			type: Object,
-			required: true,
-		},
-		formData: {
-			type: Object,
-			default: () => {},
-		},
-	},
 
 	components: {
 		LocationForm,
@@ -227,22 +209,38 @@ export default {
 
 	mixins: [validation],
 
-	created() {
-		if (this.modalState.isDetail || this.modalState.isEditing) {
-			this.data = { ...this.formData };
-		}
+	validations() {
+		return {
+			data: this.prepareValidations(),
+		};
+	},
+
+	props: {
+		formInputs: {
+			type: Array,
+			required: true,
+		},
+
+		createButtonLabel: {
+			type: String,
+			default: "Create",
+		},
+
+		modalState: {
+			type: Object,
+			required: true,
+		},
+
+		formData: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
 		return {
 			GENERAL,
 			data: this.createNewObject(),
-		};
-	},
-
-	validations() {
-		return {
-			data: this.prepareValidations(),
 		};
 	},
 
@@ -256,6 +254,12 @@ export default {
 		isFormDisabled() {
 			return this.modalState.isDetail;
 		},
+	},
+
+	created() {
+		if (this.modalState.isDetail || this.modalState.isEditing) {
+			this.data = { ...this.formData };
+		}
 	},
 
 	methods: {

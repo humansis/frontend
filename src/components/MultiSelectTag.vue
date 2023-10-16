@@ -19,16 +19,10 @@ export default {
 	props: {
 		props: Object,
 		items: Array,
+
 		isDataWithUnderscore: {
 			type: Boolean,
 			default: true,
-		},
-	},
-
-	methods: {
-		removeElement(option) {
-			const slicedItems = this.items.filter((item) => item.code !== option.code);
-			this.$emit("optionRemoved", slicedItems);
 		},
 	},
 
@@ -37,6 +31,13 @@ export default {
 			return this.isDataWithUnderscore
 				? normalizeText(this.props.option.value)
 				: normalizeSelectorValue(this.props.option.value);
+		},
+	},
+
+	methods: {
+		removeElement(option) {
+			const slicedItems = this.items.filter((item) => item.code !== option.code);
+			this.$emit("optionRemoved", slicedItems);
 		},
 	},
 };

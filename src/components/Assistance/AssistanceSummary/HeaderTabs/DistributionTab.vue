@@ -1,7 +1,7 @@
 <template>
 	<nav class="level level-center">
 		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION && !assistance.validated"
+			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
 			class="level-item has-text-centered"
 		>
 			<div class="box">
@@ -23,7 +23,7 @@
 		</div>
 
 		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION && !assistance.validated"
+			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
 			class="level-item has-text-centered"
 		>
 			<div class="box">
@@ -58,7 +58,7 @@
 		</div>
 
 		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
+			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
 			class="level-item has-text-centered"
 		>
 			<div class="box">
@@ -82,7 +82,7 @@
 		</div>
 
 		<div
-			v-if="assistanceType === consts.TYPE.DISTRIBUTION && assistance.validated"
+			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
 			class="level-item has-text-centered"
 		>
 			<div class="box">
@@ -121,9 +121,9 @@
 </template>
 
 <script>
-import SvgIcon from "@/components/SvgIcon";
 import Loading from "@/components/Loading";
-import consts from "@/consts/assistance";
+import SvgIcon from "@/components/SvgIcon";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "DistributionTab",
@@ -138,18 +138,22 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		statistics: {
 			type: Object,
 			default: () => {},
 		},
+
 		isStatisticsLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		commodity: {
 			type: Array,
 			default: () => [],
 		},
+
 		commodities: {
 			type: Array,
 			default: () => [],
@@ -158,7 +162,7 @@ export default {
 
 	data() {
 		return {
-			consts,
+			ASSISTANCE,
 		};
 	},
 
@@ -180,11 +184,11 @@ export default {
 		},
 
 		assistanceUnit() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+			if (this.assistance?.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 				return this.commodities?.[0]?.unit || "";
 			}
 
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return this.$t("Activity");
+			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return this.$t("Activity");
 
 			return "";
 		},

@@ -94,9 +94,9 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading";
 import { mapState } from "vuex";
-import consts from "@/consts/assistance";
+import Loading from "@/components/Loading";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceTab",
@@ -110,26 +110,32 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		province: {
 			type: Object,
 			default: () => {},
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isCommodityLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		commodity: {
 			type: Array,
 			default: () => [],
@@ -164,7 +170,7 @@ export default {
 		},
 
 		isCommoditySmartCard() {
-			return this.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
+			return this.commodity[0]?.code === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		isExpirationDateLoaded() {

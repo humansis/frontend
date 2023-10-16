@@ -1,5 +1,5 @@
-import CONST from "@/store/const";
 import { removeCookie } from "@/utils/cookie";
+import CONST from "@/store/const";
 
 export default {
 	basic(state, payload) {

@@ -9,13 +9,12 @@
 </template>
 
 <script>
-import AdvancedFilter from "@/components/AdvancedFilter";
-import { Notification } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
-import { IMPORT } from "@/consts";
+import { Notification } from "@/utils/UI";
+import { FILTER, IMPORT } from "@/consts";
 
 export default {
 	name: "ImportsFilter",
@@ -30,8 +29,8 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: consts.DEFAULT_FILTERS.PROJECTS,
-				status: consts.DEFAULT_FILTERS.STATUS,
+				projects: FILTER.DEFAULT_FILTERS.PROJECTS,
+				status: FILTER.DEFAULT_FILTERS.STATUS,
 			}),
 		},
 	},

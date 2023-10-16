@@ -55,8 +55,8 @@
 </template>
 
 <script>
-import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -68,6 +68,7 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
+
 		isEditing: {
 			type: Boolean,
 			default: false,

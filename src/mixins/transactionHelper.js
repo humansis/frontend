@@ -1,12 +1,12 @@
 import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import ProjectService from "@/services/ProjectService";
-import baseHelper from "@/mixins/baseHelper";
-import VendorService from "@/services/VendorService";
+import LocationsService from "@/services/LocationsService";
 import ProductService from "@/services/ProductService";
+import ProjectService from "@/services/ProjectService";
+import VendorService from "@/services/VendorService";
+import baseHelper from "@/mixins/baseHelper";
+import { Notification } from "@/utils/UI";
 
 export default {
 	mixins: [baseHelper],

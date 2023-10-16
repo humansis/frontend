@@ -373,17 +373,17 @@
 
 <script>
 import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
-import LocationForm from "@/components/LocationForm";
+import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
 import InputWithLabel from "@/components/Inputs/InputWithLabel";
 import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
-import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
-import validation from "@/mixins/validation";
+import LocationForm from "@/components/LocationForm";
 import calendarHelper from "@/mixins/calendarHelper";
-import institutionHelper from "@/mixins/institutionHelper";
 import idHelper from "@/mixins/idHelper";
+import institutionHelper from "@/mixins/institutionHelper";
+import validation from "@/mixins/validation";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { filterEmptyValues, replaceEmptyValuesWithNull } from "@/utils/helpers";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { INSTITUTION } from "@/consts";
 
 export default {
@@ -397,41 +397,6 @@ export default {
 	},
 
 	mixins: [validation, calendarHelper, idHelper, institutionHelper],
-
-	async mounted() {
-		this.institutionLoading = true;
-		this.getInstitutionAction();
-
-		await Promise.all([
-			this.fetchInstitutionIdNames(),
-			this.fetchPhoneTypes(),
-			this.fetchSupportReceivedTypes(),
-			this.fetchNationalCardTypes(),
-			this.fetchProjects(),
-			this.fetchInstitutionTypes(),
-		]);
-
-		if (!this.institutionAction.isCreate) {
-			await this.fetchInstitution();
-		}
-
-		this.institutionLoading = false;
-	},
-
-	data() {
-		return {
-			formModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
-			projectsLoading: false,
-			phoneTypesLoading: false,
-			externalSupportReceivedLoading: false,
-			nationalCardTypesLoading: false,
-			institutionTypesLoading: false,
-			institutionLoading: false,
-			institutionAction: {},
-			pageTitle: "",
-			formDisabled: false,
-		};
-	},
 
 	validations: {
 		formModel: {
@@ -457,6 +422,21 @@ export default {
 		},
 	},
 
+	data() {
+		return {
+			formModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
+			projectsLoading: false,
+			phoneTypesLoading: false,
+			externalSupportReceivedLoading: false,
+			nationalCardTypesLoading: false,
+			institutionTypesLoading: false,
+			institutionLoading: false,
+			institutionAction: {},
+			pageTitle: "",
+			formDisabled: false,
+		};
+	},
+
 	computed: {
 		validateButtonName() {
 			return this.$t(this.institutionAction.isCreate ? "Create" : "Update");
@@ -473,6 +453,26 @@ export default {
 		getValidations() {
 			return this.$v;
 		},
+	},
+
+	async mounted() {
+		this.institutionLoading = true;
+		this.getInstitutionAction();
+
+		await Promise.all([
+			this.fetchInstitutionIdNames(),
+			this.fetchPhoneTypes(),
+			this.fetchSupportReceivedTypes(),
+			this.fetchNationalCardTypes(),
+			this.fetchProjects(),
+			this.fetchInstitutionTypes(),
+		]);
+
+		if (!this.institutionAction.isCreate) {
+			await this.fetchInstitution();
+		}
+
+		this.institutionLoading = false;
 	},
 
 	methods: {

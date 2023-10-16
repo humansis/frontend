@@ -1,4 +1,4 @@
-import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {

@@ -42,13 +42,13 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
-import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
-import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
-import { Notification, Toast } from "@/utils/UI";
+import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
+import Modal from "@/components/Modal";
 import permissions from "@/mixins/permissions";
-import currencies from "@/utils/currencies";
+import { Notification, Toast } from "@/utils/UI";
+import { CURRENCIES } from "@/consts";
 
 export default {
 	name: "Items",
@@ -81,7 +81,7 @@ export default {
 				uploadedImage: null,
 			},
 			categories: [],
-			currencies,
+			currencies: CURRENCIES,
 		};
 	},
 

@@ -31,18 +31,20 @@ export default {
 	name: "Modal",
 
 	props: {
+		active: Boolean,
+		header: String,
+		isWaiting: Boolean,
+
 		customHeader: {
 			type: Boolean,
 			default: false,
 		},
+
 		canCancel: {
 			type: Boolean,
 			required: false,
 			default: true,
 		},
-		active: Boolean,
-		header: String,
-		isWaiting: Boolean,
 	},
 };
 </script>

@@ -1,9 +1,9 @@
+import AddressService from "@/services/AddressService";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import consts from "@/consts/assistance";
-import AddressService from "@/services/AddressService";
-import { Notification, Toast } from "@/utils/UI";
 import institutionHelper from "@/mixins/institutionHelper";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	mixins: [institutionHelper],
@@ -58,14 +58,14 @@ export default {
 			let target = "";
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					target = "communities";
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					target = "institutions";
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					target = "beneficiaries";
 			}
@@ -99,12 +99,12 @@ export default {
 		setAssignedReliefPackages() {
 			const modality = this.commodities[0]?.modalityType;
 
-			const isTableCheckable = modality !== consts.COMMODITY.SMARTCARD
-				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
-				&& modality !== consts.COMMODITY.MOBILE_MONEY;
+			const isTableCheckable = modality !== ASSISTANCE.COMMODITY.SMARTCARD
+				&& modality !== ASSISTANCE.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== ASSISTANCE.COMMODITY.MOBILE_MONEY;
 
 			this.table.settings = {
-				assignVoucherAction: modality === consts.COMMODITY.QR_CODE_VOUCHER,
+				assignVoucherAction: modality === ASSISTANCE.COMMODITY.QR_CODE_VOUCHER,
 				checkableTable: isTableCheckable,
 			};
 
@@ -182,14 +182,14 @@ export default {
 
 		showDetail(beneficiary) {
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityDetail(beneficiary);
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryDetail(beneficiary);
 			}
@@ -197,13 +197,13 @@ export default {
 
 		showEdit({ id }) {
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityEdit(id);
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryEdit(id);
 			}

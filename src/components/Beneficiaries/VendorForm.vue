@@ -173,8 +173,8 @@
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
 import LocationForm from "@/components/LocationForm";
-import validation from "@/mixins/validation";
 import SvgIcon from "@/components/SvgIcon";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "VendorForm",
@@ -185,15 +185,6 @@ export default {
 	},
 
 	mixins: [validation],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-		formLoading: Boolean,
-		isEditing: Boolean,
-	},
 
 	validations: {
 		formModel: {
@@ -215,6 +206,15 @@ export default {
 			vendorNo: {},
 			contractNo: {},
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		formLoading: Boolean,
+		isEditing: Boolean,
 	},
 
 	data() {

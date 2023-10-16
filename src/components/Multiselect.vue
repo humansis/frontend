@@ -25,14 +25,17 @@ export default {
 		options: Array,
 		disabled: Boolean,
 		placeholder: String,
+
 		multiple: {
 			type: Boolean,
 			default: false,
 		},
+
 		loading: {
 			type: Boolean,
 			default: false,
 		},
+
 		expanded: {
 			type: Boolean,
 			default: true,

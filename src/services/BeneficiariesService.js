@@ -1,6 +1,6 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
-import { EXPORT } from "@/consts";
 import { queryBuilder } from "@/utils/helpers";
+import { EXPORT } from "@/consts";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {

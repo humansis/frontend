@@ -97,18 +97,19 @@ export default {
 
 	mixins: [validation],
 
-	props: {
-		formModel: {
-			type: Object,
-			default: () => {},
-		},
-		closeButton: Boolean,
-	},
-
 	validations: {
 		formModel: {
 			name: { required },
 			dropFiles: { required },
+		},
+	},
+
+	props: {
+		closeButton: Boolean,
+
+		formModel: {
+			type: Object,
+			default: () => {},
 		},
 	},
 

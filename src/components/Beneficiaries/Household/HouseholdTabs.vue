@@ -86,32 +86,20 @@
 
 <script>
 import { mapState } from "vuex";
-import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
-import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import CardComponent from "@/components/CardComponent";
-import { Toast, Notification } from "@/utils/UI";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
 import permissions from "@/mixins/permissions";
-import CONST from "@/const";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { Notification, Toast } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdTabs",
-
-	props: {
-		isEditing: Boolean,
-		detailOfHousehold: {
-			type: Object,
-			default: () => {},
-		},
-		isLoaded: {
-			type: Boolean,
-			default: false,
-		},
-	},
 
 	components: {
 		CardComponent,
@@ -123,6 +111,20 @@ export default {
 	},
 
 	mixins: [permissions],
+
+	props: {
+		isEditing: Boolean,
+
+		detailOfHousehold: {
+			type: Object,
+			default: () => {},
+		},
+
+		isLoaded: {
+			type: Boolean,
+			default: false,
+		},
+	},
 
 	data() {
 		return {
@@ -399,7 +401,7 @@ export default {
 				street,
 				postcode,
 			} = this.household.currentLocation;
-			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
+			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
 				return `${campName}, ${tentNumber}`;
 			}
 			return `${number}, ${street}, ${postcode}`;
@@ -434,7 +436,7 @@ export default {
 			},
 		) {
 			const address = {};
-			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
+			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
 				address.campAddress = {
 					tentNumber,
 					camp: {
@@ -442,14 +444,14 @@ export default {
 						locationId: locationId || camp?.locationId,
 					},
 				};
-			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.residence.code) {
+			} else if (typeOfLocation.code === GENERAL.LOCATION_TYPE.residence.code) {
 				address.residenceAddress = {
 					number: number || null,
 					street: street || null,
 					postcode: postcode || null,
 					locationId,
 				};
-			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.temporarySettlement.code) {
+			} else if (typeOfLocation.code === GENERAL.LOCATION_TYPE.temporarySettlement.code) {
 				address.temporarySettlementAddress = {
 					number: number || null,
 					street: street || null,

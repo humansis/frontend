@@ -73,13 +73,13 @@
 			</b-field>
 
 			<b-field
-				v-if="fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION"
+				v-if="fieldTypeToDisplay !== ASSISTANCE.FIELD_TYPE.LOCATION"
 				:label="$t('Value')"
 				:type="validateType('value')"
 				:message="validateMsg('value')"
 			>
 				<b-datepicker
-					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.DATE"
+					v-if="fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DATE"
 					v-model="formModel.value"
 					show-week-number
 					locale="en-CA"
@@ -92,11 +92,11 @@
 
 				<MultiSelect
 					v-if="
-						fieldTypeToDisplay === consts.FIELD_TYPE.GENDER
-							|| fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION_TYPE
-							|| fieldTypeToDisplay === consts.FIELD_TYPE.BOOLEAN
-							|| fieldTypeToDisplay === consts.FIELD_TYPE.RESIDENCY_STATUS
-							|| fieldTypeToDisplay === consts.FIELD_TYPE.LIVELIHOOD
+						fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.GENDER
+							|| fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION_TYPE
+							|| fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.BOOLEAN
+							|| fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS
+							|| fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LIVELIHOOD
 					"
 					v-model="formModel.value"
 					label="value"
@@ -116,18 +116,18 @@
 				</MultiSelect>
 
 				<b-input
-					v-if="fieldTypeToDisplay === consts.FIELD_TYPE.STRING"
+					v-if="fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.STRING"
 					v-model="formModel.value"
 					@blur="validate('value')"
 				/>
 
 				<b-numberinput
 					v-if="
-						fieldTypeToDisplay === consts.FIELD_TYPE.INTEGER
-							|| fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE
+						fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.INTEGER
+							|| fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DOUBLE
 					"
 					v-model="formModel.value"
-					:step="(fieldTypeToDisplay === consts.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
+					:step="(fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
 					expanded
 					:controls="false"
 					@blur="validate('value')"
@@ -135,7 +135,7 @@
 			</b-field>
 
 			<LocationForm
-				v-if="fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION"
+				v-if="fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION"
 				ref="locationForm"
 				:form-model="admModel"
 			/>
@@ -156,31 +156,51 @@
 </template>
 
 <script>
-import LocationForm from "@/components/LocationForm";
-import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import consts from "@/consts/assistance";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import { required, requiredIf } from "vuelidate/lib/validators";
-import validation from "@/mixins/validation";
+import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import LocationForm from "@/components/LocationForm";
 import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "SelectionCriteriaForm",
 
 	components: { LocationForm },
 
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
+	mixins: [validation, calendarHelper],
+
+	validations: {
+		formModel: {
+			criteriaTarget: { required },
+			criteria: { required },
+			condition: { required },
+			// eslint-disable-next-line func-names
+			value: { required: requiredIf(function () {
+				return this.fieldTypeToDisplay !== ASSISTANCE.FIELD_TYPE.LOCATION;
+			}) },
+		},
 	},
 
-	mixins: [validation, calendarHelper],
+	props: {
+		formModel: Object,
+
+		submitButtonLabel: {
+			type: String,
+			default: "",
+		},
+
+		closeButton: {
+			type: Boolean,
+			default: false,
+		},
+	},
 
 	data() {
 		return {
-			consts,
+			ASSISTANCE,
 			admModel: {
 				adm1: null,
 				adm2: null,
@@ -211,18 +231,6 @@ export default {
 		};
 	},
 
-	validations: {
-		formModel: {
-			criteriaTarget: { required },
-			criteria: { required },
-			condition: { required },
-			// eslint-disable-next-line func-names
-			value: { required: requiredIf(function () {
-				return this.fieldTypeToDisplay !== consts.FIELD_TYPE.LOCATION;
-			}) },
-		},
-	},
-
 	computed: {
 		criteria() {
 			return this.options.criteria;
@@ -250,19 +258,19 @@ export default {
 			this.fieldTypeToDisplay = criteria.type;
 
 			switch (criteria.type) {
-				case consts.FIELD_TYPE.GENDER:
+				case ASSISTANCE.FIELD_TYPE.GENDER:
 					this.valueSelectOptions = this.options.gender;
 					break;
-				case consts.FIELD_TYPE.LOCATION_TYPE:
+				case ASSISTANCE.FIELD_TYPE.LOCATION_TYPE:
 					this.fetchLocationsTypes();
 					break;
-				case consts.FIELD_TYPE.BOOLEAN:
+				case ASSISTANCE.FIELD_TYPE.BOOLEAN:
 					this.valueSelectOptions = this.options.boolean;
 					break;
-				case consts.FIELD_TYPE.RESIDENCY_STATUS:
+				case ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS:
 					this.fetchResidenceStatuses();
 					break;
-				case consts.FIELD_TYPE.LIVELIHOOD:
+				case ASSISTANCE.FIELD_TYPE.LIVELIHOOD:
 					this.fetchLivelihoods();
 					break;
 				default:
@@ -373,12 +381,12 @@ export default {
 				return;
 			}
 
-			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION
+			if (this.fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION
 				&& this.$refs.locationForm.submitLocationForm()) {
 				return;
 			}
 
-			if (this.fieldTypeToDisplay === consts.FIELD_TYPE.LOCATION) {
+			if (this.fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION) {
 				const { adm1, adm2, adm3, adm4 } = this.admModel;
 				const prefix = "locationId-";
 

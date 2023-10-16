@@ -62,14 +62,15 @@
 </template>
 
 <script>
-import ImportForm from "@/components/Imports/ImportForm";
-import Modal from "@/components/Modal";
 import ImportService from "@/services/ImportService";
-import { Toast, Notification } from "@/utils/UI.js";
-import ImportsList from "@/components/Imports/ImportsList";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
 import ProjectService from "@/services/ProjectService";
+import ExportControl from "@/components/Export";
+import ImportForm from "@/components/Imports/ImportForm";
+import ImportsList from "@/components/Imports/ImportsList";
+import Modal from "@/components/Modal";
+import { downloadFile } from "@/utils/helpers";
+import { Notification, Toast } from "@/utils/UI.js";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "Imports",
@@ -260,27 +261,19 @@ export default {
 				});
 		},
 
-		async downloadTemplate(type, format) {
-			if (type === EXPORT.IMPORTS) {
-				this.exportControl.loading = true;
-				await ImportService.exportTemplate(format)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `import-template.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) {
-							Notification(`${this.$t("Downloading Template")} ${e}`, "is-danger");
-						}
-					});
-				this.exportControl.loading = false;
+		async downloadTemplate(exportType, format) {
+			if (exportType === EXPORT.IMPORTS) {
+				try {
+					this.exportControl.loading = true;
+
+					const { data, status, message } = await ImportService.exportTemplate(format);
+
+					downloadFile(data, "import-template", status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Downloading Template")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

@@ -320,29 +320,28 @@
 
 <script>
 import { mapState } from "vuex";
-import Modal from "@/components/Modal";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
-import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
-import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import InputDistributed from "@/components/Assistance/InputDistributed/index";
-import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
-import ExportControl from "@/components/Export";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
-import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
-import { downloadFile } from "@/utils/helpers";
+import ActionButton from "@/components/ActionButton";
+import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
+import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
+import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
+import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import Modal from "@/components/Modal";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import { EXPORT, INSTITUTION } from "@/consts";
-import consts from "@/consts/assistance";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT, INSTITUTION } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -354,33 +353,6 @@ const statusTags = [
 
 export default {
 	name: "BeneficiariesList",
-
-	props: {
-		assistance: Object,
-		project: Object,
-		addButton: Boolean,
-		changeButton: {
-			type: Boolean,
-			default: false,
-		},
-		exportButton: Boolean,
-		commodities: {
-			type: Array,
-			default: () => [],
-		},
-		assistanceDetail: {
-			type: Boolean,
-			default: false,
-		},
-		defaultSortDirection: {
-			type: String,
-			default: "asc",
-		},
-		defaultSortColumn: {
-			type: String,
-			default: "familyName",
-		},
-	},
 
 	components: {
 		AssignVoucherForm,
@@ -398,6 +370,38 @@ export default {
 
 	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper],
 
+	props: {
+		assistance: Object,
+		project: Object,
+		addButton: Boolean,
+		exportButton: Boolean,
+
+		changeButton: {
+			type: Boolean,
+			default: false,
+		},
+
+		commodities: {
+			type: Array,
+			default: () => [],
+		},
+
+		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
+
+		defaultSortDirection: {
+			type: String,
+			default: "asc",
+		},
+
+		defaultSortColumn: {
+			type: String,
+			default: "familyName",
+		},
+	},
+
 	data() {
 		return {
 			isLoadingList: false,
@@ -408,7 +412,7 @@ export default {
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 				isBnfFileTypeSelected: false,
 			},
-			defaultSearchField: consts.SEARCH_FIELDS[2],
+			defaultSearchField: ASSISTANCE.SEARCH_FIELDS[2],
 			selectedFilters: [],
 			filters: { reliefPackageStates: [] },
 			statusActive: {
@@ -515,26 +519,6 @@ export default {
 		};
 	},
 
-	async created() {
-		if (this.assistanceDetail) {
-			this.setGridFilters("assistanceDetail", false);
-		}
-		await this.reloadBeneficiariesList();
-	},
-
-	watch: {
-		async assistance(newAssistance) {
-			if (newAssistance) {
-				if (newAssistance.target === consts.TARGET.INSTITUTION) {
-					this.table.sortColumn = "";
-					this.table.sortDirection = "";
-				}
-
-				await this.reloadBeneficiariesList();
-			}
-		},
-	},
-
 	computed: {
 		...mapState(["perPage"]),
 
@@ -626,13 +610,13 @@ export default {
 		},
 
 		isDistributionExportVisible() {
-			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.CASH)
+			return this.commodities.find((item) => item.modalityType === ASSISTANCE.COMMODITY.CASH)
 				&& this.assistance?.type === "distribution"
 				&& this.assistance?.subsector === "multi_purpose_cash_assistance";
 		},
 
 		isCommoditySmartcard() {
-			return this.commodities.find((item) => item.modalityType === consts.COMMODITY.SMARTCARD);
+			return this.commodities.find((item) => item.modalityType === ASSISTANCE.COMMODITY.SMARTCARD);
 		},
 
 		isExportButtonDisabled() {
@@ -642,19 +626,19 @@ export default {
 		},
 
 		isAssistanceTargetInstitution() {
-			return this.assistance?.target === consts.TARGET.INSTITUTION;
+			return this.assistance?.target === ASSISTANCE.TARGET.INSTITUTION;
 		},
 
 		isAssistanceTypeActivity() {
-			return this.assistance?.type === consts.TYPE.ACTIVITY;
+			return this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY;
 		},
 
 		isAssistanceClosed() {
-			return this.assistance?.state.code === consts.STATUS.CLOSED;
+			return this.assistance?.state.code === ASSISTANCE.STATUS.CLOSED;
 		},
 
 		searchFields() {
-			return this.assistanceDetail ? consts.SEARCH_FIELDS : [];
+			return this.assistanceDetail ? ASSISTANCE.SEARCH_FIELDS : [];
 		},
 
 		toDistributeButtonClass() {
@@ -693,6 +677,26 @@ export default {
 			return this.exportControl.loading
 				|| (!this.isBnfFile3Exported && this.exportControl.isBnfFileTypeSelected);
 		},
+	},
+
+	watch: {
+		async assistance(newAssistance) {
+			if (newAssistance) {
+				if (newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
+					this.table.sortColumn = "";
+					this.table.sortDirection = "";
+				}
+
+				await this.reloadBeneficiariesList();
+			}
+		},
+	},
+
+	async created() {
+		if (this.assistanceDetail) {
+			this.setGridFilters("assistanceDetail", false);
+		}
+		await this.reloadBeneficiariesList();
 	},
 
 	methods: {
@@ -800,7 +804,7 @@ export default {
 			this.table.progress = null;
 			this.table.data = [];
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					await AssistancesService.getListOfCommunities(
 						this.$route.params.assistanceId,
 						page || this.table.currentPage,
@@ -819,7 +823,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 					});
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					try {
 						const { data: { data, totalCount } } = await AssistancesService
 							.getListOfInstitutions(
@@ -842,8 +846,8 @@ export default {
 						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 					}
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					try {
 						const search = this.assistanceDetail
@@ -888,16 +892,16 @@ export default {
 			let additionalColumns = [];
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					baseColumns = this.table.communityColumns;
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					baseColumns = this.assistanceDetail
 						? this.institutionDetailColumns
 						: this.table.institutionEditColumns;
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					baseColumns = this.assistanceDetail
 						? this.householdsAndIndividualDetailColumns
@@ -906,12 +910,12 @@ export default {
 
 			const modality = this.commodities[0]?.modalityType;
 
-			if (this.assistanceDetail && this.assistance.type === consts.TYPE.DISTRIBUTION) {
-				if (modality === consts.COMMODITY.MOBILE_MONEY) {
+			if (this.assistanceDetail && this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
+				if (modality === ASSISTANCE.COMMODITY.MOBILE_MONEY) {
 					additionalColumns = [
 						{ key: "phone" },
 					];
-				} else if (modality === consts.COMMODITY.QR_CODE_VOUCHER) {
+				} else if (modality === ASSISTANCE.COMMODITY.QR_CODE_VOUCHER) {
 					additionalColumns = [
 						// Temporary hidden
 						// { key: "booklet", type: "arrayTextBreak" },
@@ -933,7 +937,7 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					beneficiaryIds = data.map((item) => item.communityId);
 					beneficiaries = await this.getCommunities(beneficiaryIds);
 
@@ -954,7 +958,7 @@ export default {
 
 					this.table.progress += 55;
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					data.forEach((item, key) => {
 						const { institution, reliefPackages } = item;
 						const { id, contactGivenName, contactFamilyName, name } = institution;
@@ -996,8 +1000,8 @@ export default {
 
 					this.table.progress += 55;
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					data.forEach((item, key) => {
 						const { beneficiary, reliefPackages } = item;

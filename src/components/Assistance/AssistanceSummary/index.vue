@@ -67,11 +67,11 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
-import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
+import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
-import consts from "@/consts/assistance";
+import { normalizeText } from "@/utils/datagrid";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceSummary",
@@ -87,30 +87,37 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		statistics: {
 			type: Object,
 			default: () => {},
 		},
+
 		isStatisticsLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isCommoditiesLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		commodities: {
 			type: Array,
 			default: () => [],
@@ -119,25 +126,11 @@ export default {
 
 	data() {
 		return {
-			consts,
 			province: null,
 			activeTab: 0,
 			commodity: [],
 			isCommodityLoading: false,
 		};
-	},
-
-	watch: {
-		assistance(newAssistance) {
-			if (newAssistance) {
-				this.setLocation();
-				this.setCommodity();
-
-				if (this.isAssistanceTypeActivity) {
-					this.activeTab = 1;
-				}
-			}
-		},
 	},
 
 	computed: {
@@ -170,7 +163,20 @@ export default {
 		},
 
 		isAssistanceTypeActivity() {
-			return this.assistance?.type === consts.TYPE.ACTIVITY;
+			return this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY;
+		},
+	},
+
+	watch: {
+		assistance(newAssistance) {
+			if (newAssistance) {
+				this.setLocation();
+				this.setCommodity();
+
+				if (this.isAssistanceTypeActivity) {
+					this.activeTab = 1;
+				}
+			}
 		},
 	},
 

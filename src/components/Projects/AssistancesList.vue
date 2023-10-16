@@ -168,24 +168,24 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
-import ActionButton from "@/components/ActionButton";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
 import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
-import consts from "@/consts/assistance";
+import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT } from "@/consts";
 
 const statusTags = [
-	{ code: consts.STATUS.NEW, type: "is-light" },
-	{ code: consts.STATUS.VALIDATED, type: "is-success" },
-	{ code: consts.STATUS.CLOSED, type: "is-info" },
+	{ code: ASSISTANCE.STATUS.NEW, type: "is-light" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "is-success" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "is-info" },
 ];
 
 export default {
@@ -199,24 +199,27 @@ export default {
 		ExportControl,
 	},
 
+	mixins: [permissions, grid, baseHelper, permissions],
+
 	props: {
 		upcoming: Boolean,
+
 		beneficiariesCount: {
 			type: Number,
 			required: false,
 			default: 0,
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		projectLoaded: {
 			type: Boolean,
 			default: false,
 		},
 	},
-
-	mixins: [permissions, grid, baseHelper, permissions],
 
 	data() {
 		return {
@@ -263,14 +266,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
-	created() {
-		this.fetchData();
-	},
-
 	computed: {
 		filterButtonNew() {
 			return [
@@ -311,6 +306,14 @@ export default {
 				&& !this.isLoadingList
 				&& !this.upcoming;
 		},
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	created() {
+		this.fetchData();
 	},
 
 	methods: {
@@ -537,30 +540,28 @@ export default {
 			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
-		async exportAssistances(type, format) {
-			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
-				this.exportControl.loading = true;
-				const filters = {
-					...this.filters,
-					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
-				};
+		async exportAssistances(exportType, format) {
+			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
+				try {
+					this.exportControl.loading = true;
 
-				await AssistancesService.exportAssistances(format, this.$route.params.projectId, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+					const filters = {
+						...this.filters,
+						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+					};
+					const filename = `Assistance overview ${normalizeExportDate()}`;
+					const { data, status, message } = await AssistancesService.exportAssistances(
+						format,
+						this.$route.params.projectId,
+						filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

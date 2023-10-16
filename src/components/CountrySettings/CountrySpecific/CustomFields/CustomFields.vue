@@ -39,11 +39,11 @@
 
 <script>
 import { mapState } from "vuex";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import CustomFieldForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
 import CustomFieldsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Modal";
-import CustomFieldsService from "@/services/CustomFieldsService";
-import { Toast, Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "CustomFieldPage",

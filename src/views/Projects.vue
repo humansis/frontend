@@ -29,9 +29,9 @@
 <script>
 import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
-import { Toast, Notification } from "@/utils/UI.js";
 import ProjectList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
+import { Notification, Toast } from "@/utils/UI.js";
 
 export default {
 	name: "ProjectPage",

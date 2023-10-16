@@ -189,19 +189,17 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import AssistancesService from "@/services/AssistancesService";
+import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
-import consts from "@/consts/assistance";
 import calendarHelper from "@/mixins/calendarHelper";
-import AssistancesService from "@/services/AssistancesService";
-import SectorsService from "@/services/SectorsService";
 import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceForm",
-
-	mixins: [calendarHelper],
 
 	components: {
 		AssistanceName,
@@ -209,10 +207,33 @@ export default {
 		SvgIcon,
 	},
 
+	mixins: [calendarHelper],
+
+	validations: {
+		formModel: {
+			name: { required },
+		},
+	},
+
+	props: {
+		formModel: Object,
+		editing: Boolean,
+
+		assistance: {
+			type: Object,
+			default: () => {},
+		},
+
+		project: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
 	data() {
 		return {
 			options: {
-				rounds: consts.ROUNDS_OPTIONS,
+				rounds: ASSISTANCE.ROUNDS_OPTIONS,
 				allowedProductCategoryTypes: [
 					"Food", "Non-Food", "Cashback",
 				],
@@ -229,54 +250,6 @@ export default {
 		};
 	},
 
-	props: {
-		formModel: Object,
-		assistance: {
-			type: Object,
-			default: () => {},
-		},
-		editing: Boolean,
-		project: {
-			type: Object,
-			default: () => {},
-		},
-	},
-
-	validations: {
-		formModel: {
-			name: { required },
-		},
-	},
-
-	watch: {
-		"formModel.name": function assistanceName(value) {
-			this.influenceDistributionProtocol.assistanceName = this.assistance.name !== value
-				&& this.isAssistanceClosed;
-		},
-		"formModel.adm3.name": function subDistrictName(value) {
-			this.influenceDistributionProtocol.subDistrict = this.assistance.adm3?.name !== value
-				&& this.isAssistanceClosed;
-		},
-		"formModel.adm4.name": function villageName(value) {
-			this.influenceDistributionProtocol.village = this.assistance.adm4?.name !== value
-				&& this.isAssistanceClosed;
-		},
-		"formModel.round.value": function roundValue(value) {
-			this.influenceDistributionProtocol.round = this.assistance.round !== value
-				&& this.isAssistanceClosed;
-		},
-		"formModel.dateDistribution": function dateDistribution(value) {
-			if (this.isCommoditySmartCard && this.formModel.dateExpiration < value) {
-				this.formModel.dateExpiration = value;
-			}
-		},
-	},
-
-	created() {
-		this.valuesForAssistanceName();
-		this.fetchSubsectors();
-	},
-
 	computed: {
 		maxDateOfAssistance() {
 			const { endDate } = this.project;
@@ -289,19 +262,19 @@ export default {
 		},
 
 		isCommoditySmartCard() {
-			return this.formModel?.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
+			return this.formModel?.commodity[0]?.code === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		isAssistanceNew() {
-			return this.assistance.state.code === consts.STATUS.NEW;
+			return this.assistance.state.code === ASSISTANCE.STATUS.NEW;
 		},
 
 		isAssistanceValidated() {
-			return this.assistance.state.code === consts.STATUS.VALIDATED;
+			return this.assistance.state.code === ASSISTANCE.STATUS.VALIDATED;
 		},
 
 		isAssistanceClosed() {
-			return this.assistance.state.code === consts.STATUS.CLOSED;
+			return this.assistance.state.code === ASSISTANCE.STATUS.CLOSED;
 		},
 
 		disabledAdmInput() {
@@ -337,8 +310,37 @@ export default {
 		},
 
 		isAssistanceTargetInstitution() {
-			return this.assistance.target.toLowerCase() === consts.TARGET.INSTITUTION;
+			return this.assistance.target.toLowerCase() === ASSISTANCE.TARGET.INSTITUTION;
 		},
+	},
+
+	watch: {
+		"formModel.name": function assistanceName(value) {
+			this.influenceDistributionProtocol.assistanceName = this.assistance.name !== value
+				&& this.isAssistanceClosed;
+		},
+		"formModel.adm3.name": function subDistrictName(value) {
+			this.influenceDistributionProtocol.subDistrict = this.assistance.adm3?.name !== value
+				&& this.isAssistanceClosed;
+		},
+		"formModel.adm4.name": function villageName(value) {
+			this.influenceDistributionProtocol.village = this.assistance.adm4?.name !== value
+				&& this.isAssistanceClosed;
+		},
+		"formModel.round.value": function roundValue(value) {
+			this.influenceDistributionProtocol.round = this.assistance.round !== value
+				&& this.isAssistanceClosed;
+		},
+		"formModel.dateDistribution": function dateDistribution(value) {
+			if (this.isCommoditySmartCard && this.formModel.dateExpiration < value) {
+				this.formModel.dateExpiration = value;
+			}
+		},
+	},
+
+	created() {
+		this.valuesForAssistanceName();
+		this.fetchSubsectors();
 	},
 
 	methods: {

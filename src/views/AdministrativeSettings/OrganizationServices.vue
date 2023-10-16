@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServicesList";
-import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
 import OrganizationServiceService from "@/services/OrganizationServiceService";
+import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServiceForm";
+import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServicesList";
 import Modal from "@/components/Modal";
 import { Toast } from "@/utils/UI";
 

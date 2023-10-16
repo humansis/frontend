@@ -36,12 +36,12 @@
 </template>
 
 <script>
+import AssistancesService from "@/services/AssistancesService";
 import ScoringForm from "@/components/CountrySettings/CountrySpecific/Scoring/ScoringForm";
 import ScoringList from "@/components/CountrySettings/CountrySpecific/Scoring/ScoringList";
-import AssistancesService from "@/services/AssistancesService";
 import Modal from "@/components/Modal";
-import { Toast, Notification } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "Scoring",

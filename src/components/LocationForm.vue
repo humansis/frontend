@@ -125,21 +125,34 @@
 <script>
 import { mapState } from "vuex";
 import { requiredIf } from "vuelidate/lib/validators";
-import LocationsService from "@/services/LocationsService";
-import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import validation from "@/mixins/validation";
 import AddressService from "@/services/AddressService";
-import CONST from "@/const";
+import LocationsService from "@/services/LocationsService";
+import validation from "@/mixins/validation";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 
 export default {
 	name: "LocationForm",
 
 	mixins: [validation],
 
+	validations: {
+		formModel: {
+			// eslint-disable-next-line func-names
+			adm1: { required: requiredIf(function () {
+				return !this.isAdm1Optional;
+			}) },
+			adm2: {},
+			adm3: {},
+			adm4: {},
+		},
+	},
+
 	props: {
 		formModel: Object,
 		formDisabled: Boolean,
+
 		disabledAdm: {
 			type: Object,
 			default: () => ({
@@ -149,10 +162,12 @@ export default {
 				adm4: false,
 			}),
 		},
+
 		isEditing: {
 			type: Boolean,
 			default: false,
 		},
+
 		influenceDistributionProtocol: {
 			type: Object,
 			default: () => ({
@@ -160,29 +175,15 @@ export default {
 				village: false,
 			}),
 		},
+
 		distributionProtocolMessage: {
 			type: String,
 			default: "",
 		},
+
 		isAdm1Optional: {
 			type: Boolean,
 			default: false,
-		},
-	},
-
-	computed: {
-		...mapState(["admNames"]),
-
-		validateTypeForAdm1() {
-			return this.isAdm1Optional ? "" : this.validateType("adm1");
-		},
-
-		validateMsgForAdm1() {
-			return this.isAdm1Optional ? "" : this.validateMsg("adm1", "Required");
-		},
-
-		validateClassForAdm1() {
-			return this.isAdm1Optional ? "" : this.validateMultiselect("adm1");
 		},
 	},
 
@@ -204,15 +205,19 @@ export default {
 		};
 	},
 
-	validations: {
-		formModel: {
-			// eslint-disable-next-line func-names
-			adm1: { required: requiredIf(function () {
-				return !this.isAdm1Optional;
-			}) },
-			adm2: {},
-			adm3: {},
-			adm4: {},
+	computed: {
+		...mapState(["admNames"]),
+
+		validateTypeForAdm1() {
+			return this.isAdm1Optional ? "" : this.validateType("adm1");
+		},
+
+		validateMsgForAdm1() {
+			return this.isAdm1Optional ? "" : this.validateMsg("adm1", "Required");
+		},
+
+		validateClassForAdm1() {
+			return this.isAdm1Optional ? "" : this.validateMultiselect("adm1");
 		},
 	},
 
@@ -352,7 +357,7 @@ export default {
 
 		async mapLocations() {
 			this.mapping = true;
-			if (this.formModel.type === CONST.LOCATION_TYPE.camp.type && this.formModel.campId) {
+			if (this.formModel.type === GENERAL.LOCATION_TYPE.camp.type && this.formModel.campId) {
 				await this.fetchCamps(this.formModel.campId);
 			}
 			const { adm1Id, adm2Id, adm3Id, adm4Id } = this.formModel;

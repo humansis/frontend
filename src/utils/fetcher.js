@@ -1,8 +1,8 @@
-import router from "@/router";
-import CONST from "@/const";
-import store from "@/store/index";
-import getters from "@/store/getters";
 import { getCookie } from "@/utils/cookie";
+import { CONFIG } from "@/consts";
+import router from "@/router";
+import getters from "@/store/getters";
+import store from "@/store/index";
 
 async function getErrorsFromResponse(data) {
 	let errors = "";
@@ -99,7 +99,7 @@ export const fetcher = async (
 		contentType,
 		tryRequest = false,
 	}) => {
-	const url = `${CONST.API}/v${version}/${uri}`;
+	const url = `${CONFIG.API}/v${version}/${uri}`;
 
 	let headers = {};
 
@@ -140,7 +140,7 @@ export const fetcher = async (
 };
 
 export const upload = async ({ uri, version = 1, auth = true, method, body }) => {
-	const url = `${CONST.API}/v${version}/${uri}`;
+	const url = `${CONFIG.API}/v${version}/${uri}`;
 
 	const headers = {
 		"Access-Control-Allow-Credentials": true,
@@ -167,7 +167,7 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 };
 
 export const download = async ({ uri, method = "GET", body = null, version = 1 }) => {
-	const url = `${CONST.API}/v${version}/${uri}`;
+	const url = `${CONFIG.API}/v${version}/${uri}`;
 
 	const headers = {
 		"Content-Type": "application/json;charset=utf-8",

@@ -10,12 +10,16 @@
 </template>
 
 <script>
-import HouseholdTabs from "@/components/Beneficiaries/Household/HouseholdTabs";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import HouseholdTabs from "@/components/Beneficiaries/Household/HouseholdTabs";
 import { Notification } from "@/utils/UI";
 
 export default {
 	name: "EditHousehold",
+
+	components: {
+		HouseholdTabs,
+	},
 
 	data() {
 		return {
@@ -24,8 +28,11 @@ export default {
 		};
 	},
 
-	components: {
-		HouseholdTabs,
+	computed: {
+		householdTitle() {
+			const id = this.detailOfHousehold.id ? `(ID: ${this.detailOfHousehold.id})` : "";
+			return `${this.$t("Edit Household")} ${id}`;
+		},
 	},
 
 	async mounted() {
@@ -41,13 +48,6 @@ export default {
 			} finally {
 				this.isDetailOfHouseholdLoaded = true;
 			}
-		},
-	},
-
-	computed: {
-		householdTitle() {
-			const id = this.detailOfHousehold.id ? `(ID: ${this.detailOfHousehold.id})` : "";
-			return `${this.$t("Edit Household")} ${id}`;
 		},
 	},
 

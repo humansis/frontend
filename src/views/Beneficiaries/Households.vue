@@ -9,9 +9,9 @@
 				<b-dropdown position="is-bottom-left">
 					<b-button
 						v-if="userCan.addBeneficiary"
+						slot="trigger"
 						type="is-primary"
 						icon-left="plus"
-						slot="trigger"
 					>
 						{{ $t('Create') }}
 					</b-button>
@@ -112,10 +112,10 @@
 
 			<template v-for="column in table.columns">
 				<b-table-column
-					v-bind="column"
-					sortable
 					:key="column.id"
 					v-slot="props"
+					v-bind="column"
+					sortable
 				>
 					<ColumnField :data="props" :column="column" />
 				</b-table-column>
@@ -144,11 +144,11 @@
 					/>
 					<SafeDelete
 						v-if="userCan.deleteBeneficiary"
+						:id="props.row.householdId"
 						icon="trash"
 						:entity="$t('Household')"
 						:tooltip="$t('Delete')"
 						:disabled="!householdsSelects"
-						:id="props.row.householdId"
 						@submitted="removeHousehold"
 					/>
 				</div>
@@ -231,27 +231,28 @@
 </template>
 
 <script>
-import ColumnField from "@/components/DataGrid/ColumnField";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import BulkSearch from "@/components/Beneficiaries/Household/BulkSearch";
-import Modal from "@/components/Modal";
-import Table from "@/components/DataGrid/Table";
+import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
-import AddressService from "@/services/AddressService";
-import { Notification, Toast } from "@/utils/UI";
-import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
-import addressHelper from "@/mixins/addressHelper";
-import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
-import permissions from "@/mixins/permissions";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import ActionButton from "@/components/ActionButton";
 import AddProjectToHouseholdModal from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
+import BulkSearch from "@/components/Beneficiaries/Household/BulkSearch";
+import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import Modal from "@/components/Modal";
+import SafeDelete from "@/components/SafeDelete";
+import addressHelper from "@/mixins/addressHelper";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
 import { getUniqueIds } from "@/utils/customValidators";
+import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification, Toast } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
 
@@ -331,15 +332,15 @@ export default {
 		};
 	},
 
-	created() {
-		this.setGridFilters("households");
-		this.fetchData();
-	},
-
 	computed: {
 		arrayIds() {
 			return this.bulkSearch.ids?.split(/\s+/);
 		},
+	},
+
+	created() {
+		this.setGridFilters("households");
+		this.fetchData();
 	},
 
 	methods: {
@@ -411,10 +412,10 @@ export default {
 			}
 		},
 
-		async exportHouseholds(type, format) {
-			if (type === EXPORT.HOUSEHOLDS) {
-				this.exportControl.loading = true;
+		async exportHouseholds(exportType, format) {
+			if (exportType === EXPORT.HOUSEHOLDS) {
 				let ids = [];
+				const filename = `BNF Households ${normalizeExportDate()}`;
 
 				if (!this.householdsSelects) {
 					ids = this.table.checkedRows.map((item) => item.householdId);
@@ -422,33 +423,24 @@ export default {
 
 				if (this.bulkSearch.isBulkSearchUsed) {
 					try {
+						this.exportControl.loading = true;
+
 						const body = {
 							searchBy: this.bulkSearch.searchBy,
 							searchIds: this.bulkSearch.ids.split(" "),
 						};
-
 						const { data, status, message } = await BeneficiariesService.exportBulkSearchHouseholds(
 							format,
 							ids,
 							body,
 						);
 
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `BNF Households ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
+						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						if (e.message) {
-							Notification(
-								`${this.$t("Export Households (bulk search)")} ${e}`,
-								"is-danger",
-							);
-						}
+						Notification(
+							`${this.$t("Export Households (bulk search)")} ${e.message || e}`,
+							"is-danger",
+						);
 					} finally {
 						this.exportControl.loading = false;
 					}
@@ -460,17 +452,12 @@ export default {
 							this.filters,
 						);
 
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `BNF Households ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
+						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						if (e.message) Notification(`${this.$t("Export Households")} ${e}`, "is-danger");
+						Notification(
+							`${this.$t("Export Households")} ${e.message || e}`,
+							"is-danger",
+						);
 					} finally {
 						this.exportControl.loading = false;
 					}

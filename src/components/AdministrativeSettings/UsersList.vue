@@ -66,17 +66,18 @@
 
 <script>
 import { mapState } from "vuex";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import UsersService from "@/services/UsersService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import permissions from "@/mixins/permissions";
 import SystemService from "@/services/SystemService";
+import UsersService from "@/services/UsersService";
+import ActionButton from "@/components/ActionButton";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "UsersList",
@@ -181,25 +182,20 @@ export default {
 				});
 		},
 
-		async exportUsers(type, format) {
-			if (type === EXPORT.USERS) {
-				this.exportControl.loading = true;
-				await UsersService.exportUsers(format)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Users ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Users")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+		async exportUsers(exportType, format) {
+			if (exportType === EXPORT.USERS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Users ${normalizeExportDate()}`;
+					const { data, status, message } = await UsersService.exportUsers(format);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Users")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

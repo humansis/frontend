@@ -36,12 +36,18 @@ import validation from "@/mixins/validation";
 export default {
 	name: "StartTransactionsForm",
 
+	mixins: [validation],
+
+	validations: {
+		formModel: {
+			code: { required },
+		},
+	},
+
 	props: {
 		submitButtonLabel: String,
 		closeButton: Boolean,
 	},
-
-	mixins: [validation],
 
 	data() {
 		return {
@@ -49,12 +55,6 @@ export default {
 				code: null,
 			},
 		};
-	},
-
-	validations: {
-		formModel: {
-			code: { required },
-		},
 	},
 
 	methods: {

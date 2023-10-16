@@ -11,21 +11,24 @@ export default {
 	name: "ActionButton",
 
 	props: {
+		type: String,
+		tooltip: String,
+
 		icon: {
 			type: String,
 			required: true,
 		},
+
 		iconSize: {
 			type: String,
 			default: "is-small",
 		},
+
 		disabled: {
 			type: Boolean,
 			required: false,
 			default: false,
 		},
-		type: String,
-		tooltip: String,
 	},
 
 	computed: {

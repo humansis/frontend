@@ -45,15 +45,15 @@
 </template>
 
 <script>
-import CommunityForm from "@/components/Beneficiaries/CommunityForm";
-import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
-import Modal from "@/components/Modal";
-import CommunityService from "@/services/CommunityService";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
-import { Toast } from "@/utils/UI";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import CommunityService from "@/services/CommunityService";
+import CommunitiesList from "@/components/Beneficiaries/CommunitiesList";
+import CommunityForm from "@/components/Beneficiaries/CommunityForm";
+import Modal from "@/components/Modal";
 import permissions from "@/mixins/permissions";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "CommunityPage",

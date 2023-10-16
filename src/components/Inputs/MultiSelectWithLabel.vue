@@ -104,10 +104,6 @@ export default {
 		},
 	},
 
-	created() {
-		this.prepareValidationRules();
-	},
-
 	computed: {
 		options() {
 			if (this.addSelectAll) {
@@ -121,6 +117,10 @@ export default {
 
 			return this.$attrs.options;
 		},
+	},
+
+	created() {
+		this.prepareValidationRules();
 	},
 };
 </script>

@@ -61,14 +61,14 @@
 </template>
 
 <script>
-import VendorsList from "@/components/Beneficiaries/VendorsList";
-import VendorForm from "@/components/Beneficiaries/VendorForm";
-import Modal from "@/components/Modal";
-import { Toast } from "@/utils/UI";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
-import permissions from "@/mixins/permissions";
 import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
+import VendorForm from "@/components/Beneficiaries/VendorForm";
+import VendorsList from "@/components/Beneficiaries/VendorsList";
+import Modal from "@/components/Modal";
+import permissions from "@/mixins/permissions";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Vendors",

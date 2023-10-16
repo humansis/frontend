@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import SyncList from "@/components/AdministrativeSettings/SyncList";
 import SyncForm from "@/components/AdministrativeSettings/SyncForm";
+import SyncList from "@/components/AdministrativeSettings/SyncList";
 import Modal from "@/components/Modal";
 
 export default {

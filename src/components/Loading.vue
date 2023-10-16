@@ -13,15 +13,16 @@ export default {
 	props: {
 		type: String,
 		bLoading: Boolean,
-		color: {
-			type: String,
-			default: "#5ac1dd",
-		},
 		isSmall: Boolean,
 		isNormal: Boolean,
 		isMedium: Boolean,
 		isLarge: Boolean,
 		size: Object,
+
+		color: {
+			type: String,
+			default: "#5ac1dd",
+		},
 	},
 
 	computed: {
