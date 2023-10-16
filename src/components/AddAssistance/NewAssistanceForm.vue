@@ -9,12 +9,14 @@
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
 			/>
+
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				@mapped="updateData"
 				@locationChanged="valuesForAssistanceName"
 			/>
+
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
@@ -58,9 +60,57 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
+			<InputWithLabel
+				v-model="formModel.eloNumber"
+				name="elo-number"
+				label="Elo number"
+				optional
+			/>
+
+			<div class="mb-3">
+				<InputWithLabel
+					v-if="!options.activities.length"
+					v-model="formModel.activity"
+					name="activity"
+					label="Activity"
+					optional
+				/>
+
+				<MultiSelectWithLabel
+					v-else
+					v-model="formModel.activity"
+					name="activity"
+					label="Activity"
+					optional
+					:options="options.activities"
+					:custom-error-message="validationMessages.activity"
+				/>
+			</div>
+
+			<div>
+				<InputWithLabel
+					v-if="!options.budgetLines.length"
+					v-model="formModel.budgetLine"
+					name="budget-line"
+					label="Budget line"
+					optional
+				/>
+
+				<MultiSelectWithLabel
+					v-else
+					v-model="formModel.budgetLine"
+					name="budget-line"
+					label="Budget line"
+					optional
+					:options="options.budgetLines"
+					:custom-error-message="validationMessages.budgetLine"
+				/>
+			</div>
 		</div>
 
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
+
 		<div class="box">
 			<b-field
 				:label="$t('Sector')"
@@ -94,6 +144,7 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
 			<b-field
 				:label="$t('Subsector')"
 				:type="validateType('subsector')"
@@ -126,6 +177,7 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
 			<b-field
 				:label="$t('Assistance Type')"
 				:type="validateType('assistanceType')"
@@ -156,6 +208,7 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
 			<b-field
 				:label="$t('Target Type')"
 				:type="validateType('targetType')"
@@ -189,6 +242,7 @@
 				</MultiSelect>
 			</b-field>
 		</div>
+
 		<div class="box">
 			<b-field
 				:label="$t('Note')"
@@ -208,11 +262,14 @@ import { required } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
+import InputWithLabel from "@/components/Inputs/InputWithLabel";
+import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
 import LocationForm from "@/components/LocationForm";
 import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -222,6 +279,8 @@ export default {
 	components: {
 		LocationForm,
 		AssistanceName,
+		InputWithLabel,
+		MultiSelectWithLabel,
 	},
 
 	mixins: [validation, calendarHelper],
@@ -257,6 +316,11 @@ export default {
 			type: String,
 			default: "",
 		},
+
+		validationMessages: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
@@ -277,6 +341,9 @@ export default {
 				assistanceType: null,
 				note: "",
 				round: null,
+				eloNumber: "",
+				activity: null,
+				budgetLine: null,
 			},
 			options: {
 				rounds: ASSISTANCE.ROUNDS_OPTIONS,
@@ -284,6 +351,8 @@ export default {
 				subsectors: [],
 				assistanceTypes: [],
 				targetTypes: [],
+				activities: [],
+				budgetLines: [],
 			},
 			loading: {
 				sectors: true,
@@ -330,9 +399,10 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchSectors();
+	async mounted() {
+		await this.fetchSectors();
 		this.defaultDateOfAssistance();
+		this.prepareDataFromProjectTargets();
 	},
 
 	updated() {
@@ -567,6 +637,31 @@ export default {
 			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
 				? this.minDateOfAssistance
 				: new Date();
+		},
+
+		prepareDataFromProjectTargets() {
+			if (!this.project.targets.length) {
+				return;
+			}
+
+			this.project.targets.forEach((target) => {
+				const { activity, budgetLine } = target;
+
+				if (activity) {
+					this.options.activities.push({
+						code: activity, value: activity,
+					});
+				}
+
+				if (budgetLine) {
+					this.options.budgetLines.push({
+						code: budgetLine, value: budgetLine,
+					});
+				}
+			});
+
+			this.options.activities = getUniqueObjectsInArray(this.options.activities, "code");
+			this.options.budgetLines = getUniqueObjectsInArray(this.options.budgetLines, "code");
 		},
 	},
 };

@@ -12,6 +12,14 @@
 				{{ $t('Add') }}
 			</b-button>
 		</h3>
+
+		<span
+			v-if="validationMessages.modalityType.length"
+			class="has-text-danger"
+		>
+			{{ validationMessages.modalityType }}
+		</span>
+
 		<Modal
 			can-cancel
 			:header="$t('Create New Commodity')"
@@ -154,6 +162,11 @@ export default {
 		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
+		},
+
+		validationMessages: {
+			type: Object,
+			default: () => {},
 		},
 	},
 

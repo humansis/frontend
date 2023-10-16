@@ -55,7 +55,7 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				width="230"
+				width="170"
 				field="actions"
 				:label="$t('Actions')"
 				:visible="!upcoming"
@@ -253,6 +253,9 @@ export default {
 					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
 					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
+					{ key: "eloNumber" },
+					{ key: "activity" },
+					{ key: "budgetLine" },
 				],
 				total: 0,
 				currentPage: 1,

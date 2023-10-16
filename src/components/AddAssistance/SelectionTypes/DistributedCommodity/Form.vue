@@ -277,6 +277,7 @@ import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
 import SvgIcon from "@/components/SvgIcon";
 import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
+import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
 
@@ -372,27 +373,22 @@ export default {
 		formModel: Object,
 		submitButtonLabel: String,
 		closeButton: Boolean,
-
 		project: {
 			type: Object,
 			default: () => {},
 		},
-
 		targetType: {
 			type: String,
 			default: "",
 		},
-
 		dateOfAssistance: {
 			type: String,
 			required: true,
 		},
-
 		commodity: {
 			type: Array,
 			default: () => [],
 		},
-
 		dateExpiration: {
 			type: String,
 		},
@@ -438,6 +434,10 @@ export default {
 				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
+		},
+
+		isProjectTargetsWithModalityType() {
+			return this.project.targets.every((target) => target.modalityType);
 		},
 
 		cashbackLimitErrorMessage() {
@@ -541,8 +541,12 @@ export default {
 		},
 	},
 
-	created() {
-		this.fetchModalities();
+	async created() {
+		if (this.project.targets.length && this.isProjectTargetsWithModalityType) {
+			await this.fetchModalitiesWithTypes();
+		} else {
+			await this.fetchModalities();
+		}
 	},
 
 	methods: {
@@ -682,29 +686,45 @@ export default {
 		},
 
 		async fetchModalities() {
-			this.loading.modalities = true;
+			try {
+				this.loading.modalities = true;
 
-			await AssistancesService.getListOfModalities()
-				.then(({ data }) => { this.options.modalities = data; })
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Modalities")} ${e}`, "is-danger");
-				});
+				const { data } = await AssistancesService.getListOfModalities();
 
-			this.loading.modalities = false;
+				this.options.modalities = data;
+			} catch (e) {
+				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "is-danger");
+			} finally {
+				this.loading.modalities = false;
+			}
+		},
+
+		async fetchModalitiesWithTypes() {
+			try {
+				this.loading.modalities = true;
+
+				const { data } = await AssistancesService.getListOfModalitiesWithTypes();
+
+				this.prepareModalitiesOptions(data);
+			} catch (e) {
+				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "is-danger");
+			} finally {
+				this.loading.modalities = false;
+			}
 		},
 
 		async fetchModalityTypes(code) {
-			this.loading.types = true;
+			try {
+				this.loading.types = true;
 
-			await AssistancesService.getListOfModalityTypes(code)
-				.then(({ data }) => {
-					this.options.types = data;
-				})
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
-				});
+				const { data } = await AssistancesService.getListOfModalityTypes(code);
 
-			this.loading.types = false;
+				this.prepareModalityTypesOptions(data);
+			} catch (e) {
+				Notification(`${this.$t("Modality Types")}${e.message || e}`, "is-danger");
+			} finally {
+				this.loading.types = false;
+			}
 		},
 
 		submitForm() {
@@ -725,6 +745,50 @@ export default {
 
 		closeForm() {
 			this.$emit("formClosed");
+		},
+
+		prepareModalitiesOptions(modalities) {
+			if (this.project.targets.length) {
+				this.project.targets.forEach((target) => {
+					Object.keys(modalities).forEach((modality) => {
+						const matchedModality = modalities[modality].find(
+							(modalityType) => modalityType.code === target.modalityType.code,
+						);
+
+						if (matchedModality) {
+							this.options.modalities.push({ code: modality, value: this.$t(modality) });
+						}
+					});
+				});
+				this.options.modalities = getUniqueObjectsInArray(this.options.modalities, "code");
+			}
+		},
+
+		prepareModalityTypesOptions(modalityTypes) {
+			this.options.types = [];
+
+			if (this.project.targets.length && this.isProjectTargetsWithModalityType) {
+				this.project.targets.forEach((target) => {
+					const { modalityType } = target;
+
+					if (!modalityType) {
+						return;
+					}
+
+					const matchedModalityType = modalityTypes.find(
+						(type) => type.code === modalityType.code,
+					);
+
+					if (matchedModalityType) {
+						this.options.types.push(modalityType);
+					}
+				});
+				this.options.types = getUniqueObjectsInArray(this.options.types, "code");
+
+				return;
+			}
+
+			this.options.types = modalityTypes;
 		},
 	},
 };

@@ -86,7 +86,6 @@ export const getBookletStatus = (code) => BookletStatusArray
 
 export const splitBySpace = (str) => str.split(/\s+/);
 
-// TODO Start using this function for exporting files everywhere (refactor / techDebt)
 export const downloadFile = (data, filename, status, format, responseMessage) => {
 	if (status === 200) {
 		const blob = new Blob([data], { type: data.type });
@@ -99,12 +98,19 @@ export const downloadFile = (data, filename, status, format, responseMessage) =>
 	}
 };
 
+export const getUniqueObjectsInArray = (filterData, filterBy) => filterData.filter(
+	(filteredValue, index) => index === filterData.findIndex(
+		(value) => filteredValue[filterBy] === value[filterBy],
+	),
+);
+
 export default {
 	BookletStatusArray,
 	copyObject,
 	deepEqual,
 	filterEmptyValues,
 	replaceEmptyValuesWithNull,
+	getUniqueObjectsInArray,
 	getBookletStatus,
 	splitBySpace,
 	downloadFile,

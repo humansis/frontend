@@ -21,6 +21,7 @@
 					:new-assistance-form="componentsData.newAssistanceForm"
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
+					:validation-messages="validationMessages"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -57,6 +58,7 @@
 					:is-assistance-duplicated="isDuplicated"
 					:target-type="targetType"
 					:date-of-assistance="assistanceBody.dateDistribution"
+					:validation-messages="validationMessages"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
@@ -156,6 +158,11 @@ export default {
 				cashbackLimit: null,
 				note: "",
 				round: null,
+			},
+			validationMessages: {
+				activity: "",
+				budgetLine: "",
+				modalityType: "",
 			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
@@ -370,8 +377,10 @@ export default {
 			return true;
 		},
 
+		// TODO Destructure this function in future for simplification and better readability
 		async mapAssistance(assistance) {
 			let round;
+			const { eloNumber, activity, budgetLine } = assistance;
 
 			if (assistance.round) {
 				if (assistance.round < 99) {
@@ -403,7 +412,65 @@ export default {
 				targetType: assistance.target,
 				note: assistance.note,
 				round,
+				eloNumber,
+				activity,
+				budgetLine,
 			};
+
+			if (this.project.targets.length) {
+				const selectableActivities = [];
+				const selectableBudgetLines = [];
+				const selectableModalityTypes = [];
+				const isProjectTargetsWithModalityType = this.project.targets.every(
+					(target) => target.modalityType,
+				);
+				const matchedModalityType = this.project.targets.some(
+					(target) => target.modalityType.code === assistance.commodities[0]?.modalityType,
+				);
+
+				this.project.targets.forEach((target) => {
+					if (target.activity) {
+						if (!this.componentsData.newAssistanceForm.activity?.code) {
+							this.componentsData.newAssistanceForm.activity = target.activity === activity
+								? { code: activity, value: activity }
+								: null;
+						}
+						selectableActivities.push(target.activity);
+					}
+
+					if (target.budgetLine) {
+						if (!this.componentsData.newAssistanceForm.budgetLine?.code) {
+							this.componentsData.newAssistanceForm.budgetLine = target.budgetLine === budgetLine
+								? { code: budgetLine, value: budgetLine }
+								: null;
+						}
+						selectableBudgetLines.push(target.budgetLine);
+					}
+
+					if (isProjectTargetsWithModalityType && !matchedModalityType) {
+						selectableModalityTypes.push(target.modalityType.value);
+					}
+				});
+
+				if (activity && !this.componentsData.newAssistanceForm.activity) {
+					this.validationMessages.activity = `${this.$t("Activity was removed because:")} ${activity}
+						${this.$t("is not included in project targets. Allowed activities:")}
+						${selectableActivities.join(", ")}`;
+				}
+
+				if (budgetLine && !this.componentsData.newAssistanceForm.budgetLine) {
+					this.validationMessages.budgetLine = `${this.$t("Budget line was removed because:")} ${budgetLine}
+						${this.$t("is not included in project targets. Allowed budget lines:")}
+						${selectableBudgetLines.join(", ")}`;
+				}
+
+				if (!matchedModalityType) {
+					this.validationMessages.modalityType = `${this.$t("Modality was removed because:")}
+						${this.$t("modality type")} ${assistance.commodities[0]?.modalityType}
+						${this.$t("is not included in project targets. Allowed modality types:")}
+						${selectableModalityTypes.join(", ")}`;
+				}
+			}
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
@@ -458,7 +525,12 @@ export default {
 				});
 			});
 
-			this.componentsData.distributedCommodity = preparedCommodities;
+			if (this.validationMessages.modalityType.length) {
+				this.componentsData.distributedCommodity = null;
+			} else {
+				this.componentsData.distributedCommodity = preparedCommodities;
+				await this.getDeliveredCommodityValue(preparedCommodities);
+			}
 
 			this.componentsData.activityDetails = {
 				activityDescription: assistance.description || "",
@@ -476,8 +548,6 @@ export default {
 			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
-
-			await this.getDeliveredCommodityValue(preparedCommodities);
 		},
 
 		mapSelectionCriteria() {
@@ -562,6 +632,9 @@ export default {
 				note,
 				round,
 				isDateOfAssistanceValid,
+				eloNumber,
+				activity,
+				budgetLine,
 			} = data;
 
 			this.createAssistanceButtonDisabled = !isDateOfAssistanceValid;
@@ -579,6 +652,9 @@ export default {
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
 				note,
 				round: round?.code,
+				eloNumber,
+				activity: activity?.value || activity,
+				budgetLine: budgetLine?.value || budgetLine,
 			};
 
 			if (this.assistanceBody.target) {

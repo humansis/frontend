@@ -367,6 +367,13 @@ export default {
 		return { data, totalCount };
 	},
 
+	getListOfModalitiesWithTypes() {
+		return fetcher({
+			uri: `modalities/types`,
+			version: 2,
+		});
+	},
+
 	async getListOfModalityTypes(code) {
 		const { data: { data, totalCount } } = await fetcher({ uri: `modalities/${code}/types` });
 		return { data, totalCount };

@@ -3,7 +3,7 @@
 		:label="$t(label)"
 		:label-for="$attrs.name"
 		:type="validateRequiredType()"
-		:message="validateRequiredMsg()"
+		:message="[validateRequiredMsg(), customErrorMessage]"
 		:class="fieldClass"
 	>
 		<template v-if="optional" #label>
@@ -48,6 +48,8 @@ export default {
 	inheritAttrs: false,
 
 	props: {
+		customErrorMessage: { String },
+
 		validation: {
 			type: Object,
 			required: false,

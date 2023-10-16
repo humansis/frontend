@@ -91,6 +91,10 @@ export default {
 		},
 
 		validateRequiredType() {
+			if (this.customErrorMessage) {
+				return "is-danger";
+			}
+
 			return this.validation && this.validatedFieldName
 				? this.validateType(
 					this.validatedFieldName,
