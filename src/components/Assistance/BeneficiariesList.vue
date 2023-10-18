@@ -540,7 +540,10 @@ export default {
 					if (this.isDistributionExportVisible) {
 						availableTypes.push(EXPORT.BANK_DISTRIBUTION_LIST);
 					}
-					availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+
+					if (this.assistance.bnfFile3ExportId) {
+						availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+					}
 				}
 			}
 
