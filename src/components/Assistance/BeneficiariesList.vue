@@ -390,16 +390,6 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-
-		defaultSortDirection: {
-			type: String,
-			default: "asc",
-		},
-
-		defaultSortColumn: {
-			type: String,
-			default: "familyName",
-		},
 	},
 
 	data() {
@@ -591,7 +581,11 @@ export default {
 		},
 
 		defaultSortKey() {
-			return this.isAssistanceTargetInstitution ? "name" : "localFamilyName";
+			return this.isAssistanceTargetInstitution ? "name" : "id";
+		},
+
+		defaultSortDirection() {
+			return this.isAssistanceTargetInstitution ? "asc" : "desc";
 		},
 
 		isAssistanceCompleted() {
@@ -856,13 +850,16 @@ export default {
 						const search = this.assistanceDetail
 							? { phrase: this.table.searchPhrase, field: this.table.searchField }
 							: this.table.searchPhrase;
+						const sort = this.table.sortColumn !== ""
+							? `${this.table.sortColumn}.${this.table.sortDirection}`
+							: "id.desc";
 
 						const { data: { data, totalCount } } = await AssistancesService
 							.getOptimizedListOfBeneficiaries(
 								this.$route.params.assistanceId,
 								page || this.table.currentPage,
 								size || this.perPage,
-								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+								sort,
 								search,
 								this.filters,
 							);

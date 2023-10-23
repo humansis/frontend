@@ -88,8 +88,6 @@
 			<BeneficiariesList
 				:assistance="assistance"
 				:commodities="commodities"
-				default-sort-direction="asc"
-				default-sort-column="name"
 				export-button
 				@assistanceUpdated="fetchUpdatedData"
 			/>
