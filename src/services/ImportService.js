@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri, idsToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri, upload } from "@/utils/fetcher.js";
 
 export default {
 	async getListOfImports(page, size, sort, search = null, filters = null) {
