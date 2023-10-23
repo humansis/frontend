@@ -313,8 +313,8 @@ export default {
 			return this.$refs.search.value;
 		},
 
-		makeTableOverflow(value) {
-			this.$refs.table.tableWrapperClasses["overflow-visible"] = value;
+		setMinHeight(value) {
+			this.$refs.table.tableWrapperClasses["has-min-height"] = value;
 		},
 
 		onResetSort() {

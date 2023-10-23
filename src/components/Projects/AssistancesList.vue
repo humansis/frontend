@@ -87,7 +87,7 @@
 					/>
 					<b-dropdown
 						class="is-pulled-right has-text-left"
-						:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"
+						:position="isOneOfFirstThreeRows(props.index) ? 'is-bottom-left' : 'is-top-left'"
 					>
 						<template #trigger>
 							<b-button
@@ -394,7 +394,7 @@ export default {
 			this.prepareRowClickForTable();
 
 			const maxThreeRows = this.table.data.length <= 3;
-			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
+			this.$refs.assistanceTable.setMinHeight(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -521,22 +521,8 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		isOneOfLastThreeRows(rowId) {
-			let finalCountOfDisplayedRows = this.table.total;
-
-			if (this.perPage <= this.table.total) {
-				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
-						- this.table.total);
-
-				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
-					? this.perPage
-					: countOfDisplayedRows;
-			}
-
-			return (rowId === finalCountOfDisplayedRows - 1
-				|| rowId === finalCountOfDisplayedRows - 2
-				|| rowId === finalCountOfDisplayedRows - 3
-			);
+		isOneOfFirstThreeRows(rowId) {
+			return [0, 1, 2].includes(rowId);
 		},
 
 		isAssistanceMoveEnable(assistance) {
