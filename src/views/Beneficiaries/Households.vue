@@ -446,6 +446,8 @@ export default {
 					}
 				} else {
 					try {
+						this.exportControl.loading = true;
+
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
