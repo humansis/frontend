@@ -537,7 +537,7 @@ export default {
 				}
 
 				if (this.isAssistanceValidated) {
-					if (this.isDistributionExportVisible) {
+					if (this.isDistributionExportVisible && !this.isAssistanceTargetInstitution) {
 						availableTypes.push(EXPORT.BANK_DISTRIBUTION_LIST);
 					}
 
