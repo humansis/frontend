@@ -170,7 +170,8 @@
 					name="second-quantity"
 					type="is-dark"
 					expanded
-					min="1"
+					min="0.01"
+					step="0.01"
 					:controls="false"
 					@blur="validate('secondQuantity')"
 				/>
@@ -329,7 +330,7 @@ export default {
 				},
 				secondQuantity: {
 					required: false,
-					minValue: minValue(1),
+					minValue: minValue(0.01),
 				},
 				divisionNwsFields: {
 					$each: {
