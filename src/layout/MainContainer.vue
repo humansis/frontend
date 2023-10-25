@@ -2,6 +2,7 @@
 	<div class="main-container">
 		<NavBar />
 		<SideMenu />
+    <!--
 		<Modal
 			:can-cancel="false"
 			:header="$t('You need to change your password')"
@@ -15,6 +16,7 @@
 				@formSubmitted="changeForcedPassword"
 			/>
 		</Modal>
+		-->
 		<section class="section">
 			<router-view />
 		</section>
@@ -24,10 +26,10 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import UsersService from "@/services/UsersService";
-import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
-import Modal from "@/components/Modal";
+// import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
+// import Modal from "@/components/Modal";
 import validation from "@/mixins/validation";
-import { Notification, Toast } from "@/utils/UI";
+// import { Notification, Toast } from "@/utils/UI";
 import NavBar from "@/layout/NavBar";
 import SideMenu from "@/layout/SideMenu";
 
@@ -37,8 +39,8 @@ export default {
 	components: {
 		SideMenu,
 		NavBar,
-		Modal,
-		UserPasswordForm,
+		// Modal,
+		// UserPasswordForm,
 	},
 
 	mixins: [validation],
@@ -108,13 +110,12 @@ export default {
 				if (status === 200) {
 					this.storeUser({ ...this.user, changePassword: false });
 
-					Toast(
-						`${this.$t("Password Updated")}`,
-						"is-success",
-					);
+          // FIXME
+					// Toast(`${this.$t("Password Updated")}`, "is-success");
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
+        // FIXME
+				// Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
 			}).finally(() => {
 				this.forcePasswordModal.isWaiting = false;
 				this.forcePasswordModal.isOpened = false;

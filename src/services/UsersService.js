@@ -1,5 +1,5 @@
 import { download, fetcher, idsToUri } from "@/utils/fetcher";
-import { Toast } from "@/utils/UI";
+// import { Toast } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
@@ -47,7 +47,8 @@ export default {
 				return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
 			})
 			.catch((e) => {
-				Toast(`Initialize User ${e}`, "is-danger");
+				// FIXME
+				// Toast(`Initialize User ${e}`, "is-danger");
 			});
 	},
 
@@ -102,7 +103,8 @@ export default {
 				return { data, status };
 			})
 			.catch((e) => {
-				Toast(`Update User ${e}`, "is-danger");
+				// FIXME
+				// Toast(`Update User ${e}`, "is-danger");
 			});
 	},
 
