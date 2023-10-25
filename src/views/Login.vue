@@ -72,7 +72,7 @@ import TranslationService from "@/services/TranslationService";
 import UsersService from "@/services/UsersService";
 import validation from "@/mixins/validation";
 import { setCookie } from "@/utils/cookie";
-import { Notification } from "@/utils/UI";
+// import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 import gitInfo from "@/gitInfo";
 import JWTDecode from "jwt-decode";
@@ -229,11 +229,13 @@ export default {
 							});
 						}
 					} else {
-						Notification(`${this.$t("No Countries")}`, "is-warning");
+            // FIXME
+						// Notification(`${this.$t("No Countries")}`, "is-warning");
 					}
 				}
 			}).catch((e) => {
-				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
+        // FIXME
+				// Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
 				this.$v.$reset();
 			});
 
@@ -244,7 +246,8 @@ export default {
 			return CountriesService.getListOfUsersCountries(userId)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
+          // FIXME
+					// if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
 				});
 		},
 
@@ -258,7 +261,8 @@ export default {
 						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+          // FIXME
+					// if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 				});
 			} else {
 				this.$i18n.locale = languageKey;
