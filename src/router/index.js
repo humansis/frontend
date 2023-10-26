@@ -1,46 +1,45 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-// import { getCookie } from "@/utils/cookie";
+import { createRouter, createWebHistory } from "vue-router";
+import { getCookie } from "@/utils/cookie";
 // import i18n from "@/plugins/i18n";
 // import CONST from "@/store/const";
-// import getters from "@/store/getters";
-// import store from "@/store/index";
+import getters from "@/store/getters";
+import store from "@/store/index";
 
-// let singleNotification = true;
-// const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
-// 	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
+let singleNotification = true;
+const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
+	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
 const routes = [
-	// {
-	// 	path: "/login",
-	// 	name: "Login",
-	// 	component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
-	// },
-	// {
-	// 	path: "/logout",
-	// 	name: "Logout",
-	// 	beforeEnter: (to, from, next) => {
-	// 		store.dispatch("logoutUser");
-	//
-	// 		if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
-	// 			Notification(i18n.t("You need to login to continue"), "is-warning");
-	// 			singleNotification = false;
-	// 		}
-	//
-	// 		return next({ name: "Login", query: to.query });
-	// 	},
-	// },
 	{
-		path: "/",
-		component: () => import(/* webpackChunkName: "Empty" */ "@/layout/Empty"),
-		// redirect: {
-		// 	name: storedCountryCode ? "Projects" : "Login",
-		// 	...(storedCountryCode && {
-		// 		params: {
-		// 			countryCode: storedCountryCode,
-		// 		},
-		// 	}),
-		// },
+		path: "/login",
+		name: "Login",
+		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
 	},
+	{
+		path: "/logout",
+		name: "Logout",
+		beforeEnter: (to, from, next) => {
+			store.dispatch("logoutUser");
+			if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
+				// Notification(i18n.t("You need to login to continue"), "is-warning");
+				singleNotification = false;
+			}
+
+			return next({ name: "Login", query: to.query });
+		},
+	},
+	// {
+	// 	path: "/",
+	// 	component: () => import(/* webpackChunkName: "Empty" */ "@/layout/Empty"),
+	// 	redirect: to => ({
+	// 		name: storedCountryCode ? "Login" : "Login",
+	// 		...(storedCountryCode && {
+	// 			params: {
+	// 				countryCode: storedCountryCode,
+	// 			},
+	// 		}),
+	// 	})
+	// },
 	// {
 	// 	path: "/:countryCode",
 	// 	component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
@@ -466,43 +465,43 @@ const routes = [
 ];
 
 const router = createRouter({
-	history: createWebHashHistory(process.env.BASE_URL),
+	history: createWebHistory(process.env.BASE_URL),
 	routes,
 });
 
-// router.beforeEach((to, from, next) => {
-// 	window.document.title = to.meta && to.meta.breadcrumb
-// 		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
-//
-// 	const token = getCookie("token");
-//
-// 	if (to.name === "Login" && token) {
-// 		return next({ name: "Home" });
-// 	}
-//
-// 	if (to.name !== "Login" && to.name !== "Logout") {
-// 		if (!token) {
-// 			return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
-// 		}
-//
-// 		const storedPermissions = getters.getPermissionsFromVuexStorage();
-// 		const { permissions } = to.meta;
-// 		const canGoNext = permissions?.length
-// 			? permissions.some((permission) => storedPermissions?.[permission])
-// 			: true;
-//
-// 		if (!canGoNext) {
-// 			return next({ name: "NoPermission" });
-// 		}
-// 	}
-//
-// 	return next();
-// });
+router.beforeEach((to, from, next) => {
+	window.document.title = to.meta && to.meta.breadcrumb
+		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
 
-// router.onError((error) => {
-// 	if (/Loading chunk [^\s]+ failed./i.test(error.message)) {
-// 		window.location.reload();
-// 	}
-// });
+	const token = getCookie("token");
+
+	if (to.name === "Login" && token) {
+		return next({ name: "Home" });
+	}
+
+	if (to.name !== "Login" && to.name !== "Logout") {
+		if (!token) {
+			return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
+		}
+
+		const storedPermissions = getters.getPermissionsFromVuexStorage();
+		const { permissions } = to.meta;
+		const canGoNext = permissions?.length
+			? permissions.some((permission) => storedPermissions?.[permission])
+			: true;
+
+		if (!canGoNext) {
+			return next({ name: "NoPermission" });
+		}
+	}
+
+	return next();
+});
+
+router.onError((error) => {
+	if (/Loading chunk [^\s]+ failed./i.test(error.message)) {
+		window.location.reload();
+	}
+});
 
 export default router;

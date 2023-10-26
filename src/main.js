@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "@/router";
 import store from "@/store";
 import i18n from "@/plugins/i18n";
+import vuetify from "@/plugins/vuetify";
 
 const app = createApp(App);
 
@@ -11,4 +12,5 @@ app.config.productionTip = false;
 app.use(router);
 app.use(store);
 app.use(i18n);
+app.use(vuetify);
 app.mount("#app");
