@@ -16,45 +16,44 @@
 									{{ gitInfo.appVersion }}
 								</span>
 							</div>
+<!--							<b-field-->
+<!--								:label="$t('Username')"-->
+<!--								label-position="inside"-->
+<!--								:type="validateType('username')"-->
+<!--								:message="validateMsg('username', 'Required')"-->
+<!--							>-->
+<!--								<b-input-->
+<!--									v-model="formModel.username"-->
+<!--									autofocus-->
+<!--									@blur="validate('username')"-->
+<!--								/>-->
+<!--							</b-field>-->
 
-							<b-field
-								:label="$t('Username')"
-								label-position="inside"
-								:type="validateType('username')"
-								:message="validateMsg('username', 'Required')"
-							>
-								<b-input
-									v-model="formModel.username"
-									autofocus
-									@blur="validate('username')"
-								/>
-							</b-field>
+<!--							<b-field-->
+<!--								:label="$t('Password')"-->
+<!--								label-position="inside"-->
+<!--								:type="validateType('password')"-->
+<!--								:message="validateMsg('password', 'Required')"-->
+<!--							>-->
+<!--								<b-input-->
+<!--									type="password"-->
+<!--									v-model="formModel.password"-->
+<!--									password-reveal-->
+<!--									@blur="validate('password')"-->
+<!--								/>-->
+<!--							</b-field>-->
 
-							<b-field
-								:label="$t('Password')"
-								label-position="inside"
-								:type="validateType('password')"
-								:message="validateMsg('password', 'Required')"
-							>
-								<b-input
-									type="password"
-									v-model="formModel.password"
-									password-reveal
-									@blur="validate('password')"
-								/>
-							</b-field>
-
-							<b-field grouped position="is-centered">
-								<b-button
-									type="is-primary"
-									native-type="submit"
-									:loading="loginButtonLoading"
-								>
-									<span :class="{ 'is-invisible': loginButtonLoading }">
-										{{ $t('Login') }}
-									</span>
-								</b-button>
-							</b-field>
+<!--							<b-field grouped position="is-centered">-->
+<!--								<b-button-->
+<!--									type="is-primary"-->
+<!--									native-type="submit"-->
+<!--									:loading="loginButtonLoading"-->
+<!--								>-->
+<!--									<span :class="{ 'is-invisible': loginButtonLoading }">-->
+<!--										{{ $t('Login') }}-->
+<!--									</span>-->
+<!--								</b-button>-->
+<!--							</b-field>-->
 						</form>
 					</div>
 				</div>
@@ -286,7 +285,7 @@ export default {
 	background-size: cover;
 }
 
-.box {
+.box {;
 	margin: 0 -5rem;
 	padding: 2.5rem 5rem;
 	background-color: rgba(161, 160 ,160, .85);
