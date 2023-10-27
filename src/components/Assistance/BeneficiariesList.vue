@@ -1226,16 +1226,6 @@ export default {
 };
 </script>
 
-<style>
-.table-wrapper {
-	min-height: 75px;
-}
-
-.removed-row {
-	background-color: #f3f3f3 !important;
-}
-</style>
-
 <style lang="scss" scoped>
 @import 'src/assets/scss/button';
 </style>

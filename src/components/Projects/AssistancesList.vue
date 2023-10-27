@@ -30,6 +30,7 @@
 			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
+			:wrapper-classes="['has-min-height-420']"
 			:has-search="!upcoming"
 			:data="table.data"
 			:total="table.total"
@@ -85,10 +86,7 @@
 						:tooltip="$t('Details')"
 						@click="showEdit(props.row.id)"
 					/>
-					<b-dropdown
-						class="is-pulled-right has-text-left"
-						:position="isOneOfFirstThreeRows(props.index) ? 'is-bottom-left' : 'is-top-left'"
-					>
+					<b-dropdown :position="getDropdownPosition(props.index)">
 						<template #trigger>
 							<b-button
 								size="is-small"
@@ -392,9 +390,6 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
-
-			const maxThreeRows = this.table.data.length <= 3;
-			this.$refs.assistanceTable.setMinHeight(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -521,8 +516,12 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		isOneOfFirstThreeRows(rowId) {
-			return [0, 1, 2].includes(rowId);
+		getDropdownPosition(rowId) {
+			if (this.table.data.length === 3 && rowId === 2) {
+				return "is-top-left";
+			}
+
+			return [0, 1, 2].includes(rowId) ? "is-bottom-left" : "is-top-left";
 		},
 
 		isAssistanceMoveEnable(assistance) {
@@ -559,4 +558,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'src/assets/scss/button';
+
+.table .buttons {
+	flex-wrap: nowrap;
+}
 </style>
