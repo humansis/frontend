@@ -35,6 +35,7 @@
 					:target-type="targetType"
 					:data="componentsData.selectionCriteria"
 					:assistance-body="assistanceBody"
+					:is-assistance-duplicated="isDuplicated"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
@@ -425,7 +426,7 @@ export default {
 					(target) => target.modalityType,
 				);
 				const matchedModalityType = this.project.targets.some(
-					(target) => target.modalityType.code === assistance.commodities[0]?.modalityType,
+					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
 				);
 
 				this.project.targets.forEach((target) => {
@@ -488,7 +489,7 @@ export default {
 				};
 				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 			} else {
-				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.scoringType = AssistancesService.getDefaultScoringType();
 				this.$refs.selectionCriteria.minimumSelectionScore = null;
 			}
 
