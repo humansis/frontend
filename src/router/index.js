@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import { getCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
+import { ROLE } from "@/consts";
 import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
 import getters from "@/store/getters";
@@ -10,6 +11,7 @@ import store from "@/store/index";
 Vue.use(VueRouter);
 
 let singleNotification = true;
+const user = getters.getUserFromVuexStorage();
 const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
 	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
@@ -18,6 +20,15 @@ const routes = [
 		path: "/login",
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
+	},
+	{
+		path: "/account-created",
+		name: "AccountCreated",
+		component: () => import(/* webpackChunkName: "AccountCreated" */ "@/views/AccountCreated"),
+		meta: {
+			permissions: [],
+			breadcrumb: () => i18n.t("Account created"),
+		},
 	},
 	{
 		path: "/logout",
@@ -492,6 +503,10 @@ router.beforeEach((to, from, next) => {
 		const canGoNext = permissions?.length
 			? permissions.some((permission) => storedPermissions?.[permission])
 			: true;
+
+		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
+			return next({ name: "AccountCreated" });
+		}
 
 		if (!canGoNext) {
 			return next({ name: "NoPermission" });

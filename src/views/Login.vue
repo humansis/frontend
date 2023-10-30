@@ -73,7 +73,7 @@ import UsersService from "@/services/UsersService";
 import validation from "@/mixins/validation";
 import { setCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
+import { GENERAL, ROLE } from "@/consts";
 import gitInfo from "@/gitInfo";
 import JWTDecode from "jwt-decode";
 
@@ -174,6 +174,11 @@ export default {
 					await setCookie("token", token, user.exp - user.iat);
 
 					await this.storeUser(user);
+
+					if (user.roles[0] === ROLE.GUEST) {
+						await this.$router.push({ name: "AccountCreated" });
+						return;
+					}
 
 					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
 
