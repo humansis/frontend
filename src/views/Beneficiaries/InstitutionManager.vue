@@ -449,10 +449,6 @@ export default {
 		institutionId() {
 			return this.$route.params.institutionId;
 		},
-
-		getValidations() {
-			return this.$v;
-		},
 	},
 
 	async mounted() {

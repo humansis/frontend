@@ -528,10 +528,6 @@ export default {
 		valueOrQuantityLabel() {
 			return this.isModalityCash ? "Value" : "Quantity 1";
 		},
-
-		getValidations() {
-			return this.$v;
-		},
 	},
 
 	watch: {

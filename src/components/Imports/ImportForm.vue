@@ -100,12 +100,6 @@ export default {
 		};
 	},
 
-	computed: {
-		getValidations() {
-			return this.$v;
-		},
-	},
-
 	methods: {
 		submitForm() {
 			this.$v.$touch();

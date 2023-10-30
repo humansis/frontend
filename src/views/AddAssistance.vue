@@ -658,6 +658,10 @@ export default {
 				budgetLine: budgetLine?.value || budgetLine,
 			};
 
+			if (!sector?.code) {
+				this.validationMessages.modalityType = "";
+			}
+
 			if (this.assistanceBody.target) {
 				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 			}
