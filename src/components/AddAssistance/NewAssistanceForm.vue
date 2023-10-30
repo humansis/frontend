@@ -376,7 +376,6 @@ export default {
 			if (sector && typeof sector !== "object") {
 				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
 				await this.fetchSubsectors(sector);
-				this.validateSectorAndSubSector(sector, subsector);
 			}
 
 			if (subsector && typeof subsector !== "object") {
@@ -395,7 +394,9 @@ export default {
 				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
 			}
 
-			if (!this.sectorValidationMessage.length || !this.subsectorValidationMessage.length) {
+			this.validateSectorAndSubSector(sector, subsector);
+
+			if (!this.sectorValidationMessage.length && !this.subsectorValidationMessage.length) {
 				await this.showComponents();
 			}
 
