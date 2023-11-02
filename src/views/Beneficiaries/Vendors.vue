@@ -151,7 +151,6 @@ export default {
 
 		closeVendorSummary() {
 			this.vendorSummary.isOpened = false;
-			this.selectedVendor = null;
 		},
 
 		showVendorSummary(vendor) {

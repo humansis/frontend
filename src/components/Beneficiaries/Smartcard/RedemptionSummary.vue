@@ -118,11 +118,17 @@ export default {
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const filters = { isArchived: true };
+
+				const { data } = await BeneficiariesService.getBeneficiaries(ids, filters);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "is-danger");
+			}
+
+			return [];
 		},
 
 		formatPrice(price, currency) {

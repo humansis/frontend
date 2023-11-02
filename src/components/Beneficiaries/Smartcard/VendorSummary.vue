@@ -2,56 +2,76 @@
 	<div class="modal-card">
 		<header class="modal-card-head">
 			<h2 class="modal-card-title title is-5 mb-0">{{ header }}</h2>
+
 			<button
 				type="button"
 				class="delete"
 				@click="$emit('close')"
 			/>
 		</header>
+
 		<section class="modal-card-body">
 			<div v-if="!history">
 				<span>
 					<span class="has-text-weight-bold">{{ $t("Total No. Transactions") }}: </span>
 					{{ totalNumberOfTransactions }}
 				</span>
+
 				<span>
-					<b-button class="is-right is-pulled-right" @click="showHistory">
+					<b-button
+						class="is-right is-pulled-right"
+						:disabled="isProjectsLoading"
+						@click="showHistory"
+					>
 						{{ $t('See History')}}
 					</b-button>
 				</span>
-				<div v-for="batch in batches" :key="batch.id">
-					<hr class="spacer">
-					<div class="columns">
-						<div class="column is-four-fifths">
-							<p>
-								<strong>{{ $t("Unpaid Transactions") }}: </strong>
-								{{ batch.purchaseIds.length }}
-							</p>
-							<p><strong>{{ $t("Project") }}: </strong> {{ getProjectName(batch.projectId) }}</p>
-							<p>
-								<strong>{{ $t("Unpaid Transaction Value") }}: </strong>
-								{{ formatPrice(batch.value, batch.currency) }}
-							</p>
-						</div>
-						<div class="column has-text-right">
-							<b-button
-								class="mt-3"
-								type="is-primary"
-								:loading="redeemLoading === batch"
-								:label="$t('Redeem')"
-								:disabled="!batch.canRedeem"
-								@click.native="redeem(batch)"
-							/>
+
+				<template v-if="!isBatchesLoading">
+					<div v-for="batch in batches" :key="batch.id">
+						<hr class="spacer">
+
+						<div class="columns">
+							<div class="column is-four-fifths">
+								<p>
+									<strong>{{ $t("Unpaid Transactions") }}: </strong>
+									{{ batch.purchaseIds.length }}
+								</p>
+
+								<p>
+									<strong>{{ $t("Project") }}: </strong> {{ getProjectName(batch.projectId) }}
+								</p>
+
+								<p>
+									<strong>{{ $t("Unpaid Transaction Value") }}: </strong>
+									{{ formatPrice(batch.value, batch.currency) }}
+								</p>
+							</div>
+
+							<div class="column has-text-right">
+								<b-button
+									class="mt-3"
+									type="is-primary"
+									:loading="redeemLoading === batch"
+									:label="$t('Redeem')"
+									:disabled="!batch.canRedeem"
+									@click.native="redeem(batch)"
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
+				</template>
+
+				<b-loading v-else :is-full-page="false" :active="true" />
 			</div>
+
 			<RedeemedBatches
 				v-else-if="!redemptionSummary"
 				:projects="projects"
 				:vendor-id="vendor.id"
 				@showRedemptionSummary="showRedemptionSummary"
 			/>
+
 			<RedemptionSummary
 				v-else
 				:redemption-batch-id="redemptionBatch.id"
@@ -63,10 +83,12 @@
 					{{ $t('Back')}}
 				</b-button>
 			</span>
+
 			<span class="level-right">
 				<b-button @click.native="$emit('close')">
 					{{ $t('Close') }}
 				</b-button>
+
 				<b-button
 					v-if="redemptionSummary"
 					type="is-primary"
@@ -74,6 +96,7 @@
 					:label="$t('Legacy Print')"
 					@click.native="legacyPrint"
 				/>
+
 				<b-button
 					v-if="redemptionSummary && printButtonVisible"
 					type="is-primary"
@@ -117,6 +140,8 @@ export default {
 			redemptionSummary: false,
 			redeemButtonPressed: false,
 			printButtonVisible: true,
+			isProjectsLoading: false,
+			isBatchesLoading: false,
 			batches: [],
 			projects: [],
 			totalNumberOfTransactions: "",
@@ -180,31 +205,42 @@ export default {
 		},
 
 		async fetchSmartcardRedemptions() {
-			await SmartcardService.getSmartCardRedemption(this.vendor.id)
-				.then(({ data }) => {
-					this.batches = data;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Smartcard Redemption")} ${e}`, "is-danger");
-				});
-			this.$emit("loaded");
+			try {
+				this.isBatchesLoading = true;
+
+				const { data } = await SmartcardService.getSmartCardRedemption(this.vendor.id);
+
+				this.batches = data;
+			} catch (e) {
+				Notification(`${this.$t("Smartcard Redemption")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.$emit("loaded");
+				this.isBatchesLoading = false;
+			}
 		},
 
 		async fetchVendorSummary() {
-			await VendorService.getSummaryOfVendor(this.vendor.id)
-				.then((data) => {
-					this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const data = await VendorService.getSummaryOfVendor(this.vendor.id);
+
+				this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
+			} catch (e) {
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "is-danger");
+			}
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.projects = data;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				this.isProjectsLoading = true;
+
+				const { data: { data } } = await ProjectService.getShortListOfProjects();
+
+				this.projects = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.isProjectsLoading = false;
+			}
 		},
 
 		async redeem(batch) {
