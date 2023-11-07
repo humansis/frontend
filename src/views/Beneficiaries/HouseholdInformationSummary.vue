@@ -26,15 +26,15 @@
 </template>
 
 <script>
-import CardComponent from "@/components/CardComponent";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
-import addressHelper from "@/mixins/addressHelper";
 import AddressService from "@/services/AddressService";
-import grid from "@/mixins/grid";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
-import CONST from "@/const";
+import CardComponent from "@/components/CardComponent";
+import addressHelper from "@/mixins/addressHelper";
+import grid from "@/mixins/grid";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdInformationSummary",
@@ -87,7 +87,7 @@ export default {
 
 		async getAddresses(id, type) {
 			let address = null;
-			if (type === CONST.LOCATION_TYPE.camp.type) {
+			if (type === GENERAL.LOCATION_TYPE.camp.type) {
 				await AddressService.getCampAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {
@@ -97,7 +97,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 					});
 			}
-			if (type === CONST.LOCATION_TYPE.residence.type) {
+			if (type === GENERAL.LOCATION_TYPE.residence.type) {
 				await AddressService.getResidenceAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {
@@ -107,7 +107,7 @@ export default {
 						if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 					});
 			}
-			if (type === CONST.LOCATION_TYPE.temporarySettlement.type) {
+			if (type === GENERAL.LOCATION_TYPE.temporarySettlement.type) {
 				await AddressService.getTemporarySettlementAddresses([id])
 					.then(({ data }) => {
 						data.forEach((item) => {

@@ -1,4 +1,5 @@
 import { download, fetcher, idsToUri, upload } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
 	async getListOfProducts(page, size, sort, search = null) {
@@ -68,16 +69,10 @@ export default {
 		return download({ uri: `products/exports?${formatText}` });
 	},
 
-	async getListOfCategories(page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `product-categories?${pageText + sizeText + sortText + fulltext}`,
+	getListOfCategories(page, size, sort, search = null) {
+		return fetcher({
+			uri: `product-categories${queryBuilder({ page, size, sort, search })}`,
 		});
-		return { data, totalCount };
 	},
 
 	async getCategories(ids) {

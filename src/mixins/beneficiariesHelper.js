@@ -1,10 +1,13 @@
-import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
-import BeneficiariesService from "@/services/BeneficiariesService";
-import consts from "@/utils/assistanceConst";
 import AddressService from "@/services/AddressService";
+import AssistancesService from "@/services/AssistancesService";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import institutionHelper from "@/mixins/institutionHelper";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
+	mixins: [institutionHelper],
+
 	methods: {
 		getTransactions(transactionIds) {
 			return AssistancesService
@@ -55,14 +58,14 @@ export default {
 			let target = "";
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					target = "communities";
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					target = "institutions";
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					target = "beneficiaries";
 			}
@@ -96,12 +99,12 @@ export default {
 		setAssignedReliefPackages() {
 			const modality = this.commodities[0]?.modalityType;
 
-			const isTableCheckable = modality !== consts.COMMODITY.SMARTCARD
-				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
-				&& modality !== consts.COMMODITY.MOBILE_MONEY;
+			const isTableCheckable = modality !== ASSISTANCE.COMMODITY.SMARTCARD
+				&& modality !== ASSISTANCE.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== ASSISTANCE.COMMODITY.MOBILE_MONEY;
 
 			this.table.settings = {
-				assignVoucherAction: modality === consts.COMMODITY.QR_CODE_VOUCHER,
+				assignVoucherAction: modality === ASSISTANCE.COMMODITY.QR_CODE_VOUCHER,
 				checkableTable: isTableCheckable,
 			};
 
@@ -179,14 +182,14 @@ export default {
 
 		showDetail(beneficiary) {
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityDetail(beneficiary);
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryDetail(beneficiary);
 			}
@@ -194,14 +197,13 @@ export default {
 
 		showEdit({ id }) {
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityEdit(id);
 					break;
-				case consts.TARGET.INSTITUTION:
-					this.showInstitutionEdit(id);
+				case ASSISTANCE.TARGET.INSTITUTION:
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryEdit(id);
 			}
@@ -218,22 +220,34 @@ export default {
 			};
 		},
 
-		async showInstitutionDetail(institution) {
+		async showInstitutionDetail(detailedInstitution) {
 			this.institutionModal = {
 				isOpened: true,
 				isEditing: false,
 				isWaiting: true,
 			};
 
-			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
+			try {
+				await Promise.all([
+					this.fetchInstitutionIdNames(),
+					this.fetchSupportReceivedTypes(),
+					this.fetchNationalCardTypes(),
+					this.fetchPhoneTypes(),
+					this.fetchProjects(),
+					this.fetchInstitutionTypes(),
+				]);
 
-			this.institutionModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
+				const institution = await BeneficiariesService.getInstitution(
+					detailedInstitution.institution.id,
+					{ includeArchived: true },
+				);
 
-			this.institutionModal.isWaiting = false;
+				this.institutionModel = this.mapToModel(institution);
+			} catch (e) {
+				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.institutionModal.isWaiting = false;
+			}
 		},
 
 		async showCommunityDetail(community) {
@@ -314,7 +328,6 @@ export default {
 		closeInstitutionModal() {
 			this.institutionModal = {
 				isOpened: false,
-				isEditing: false,
 			};
 		},
 

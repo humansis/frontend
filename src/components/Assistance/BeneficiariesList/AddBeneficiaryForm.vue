@@ -63,15 +63,24 @@
 </template>
 
 <script>
-import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification, Toast } from "@/utils/UI";
-import validation from "@/mixins/validation";
 import { required, requiredIf } from "vuelidate/lib/validators";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import validation from "@/mixins/validation";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import consts from "@/utils/assistanceConst";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AddBeneficiaryForm",
+
+	mixins: [validation],
+
+	validations: {
+		formModel: {
+			beneficiaries: { required: requiredIf((form) => !form.removingId) },
+			justification: { required },
+		},
+	},
 
 	props: {
 		formModel: Object,
@@ -79,13 +88,6 @@ export default {
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		assistance: Object,
-	},
-
-	validations: {
-		formModel: {
-			beneficiaries: { required: requiredIf((form) => !form.removingId) },
-			justification: { required },
-		},
 	},
 
 	data() {
@@ -101,19 +103,17 @@ export default {
 		};
 	},
 
-	mixins: [validation],
-
 	computed: {
 		multiselectLabel() {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					result = "name";
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					result = "fullName";
 			}
@@ -126,6 +126,14 @@ export default {
 				...beneficiary,
 				fullName: this.getOptionTitle(beneficiary),
 			}));
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.target === ASSISTANCE.TARGET.INSTITUTION;
+		},
+
+		beneficiaryEndpointVersion() {
+			return this.isAssistanceTargetInstitution ? 2 : 1;
 		},
 	},
 
@@ -153,12 +161,12 @@ export default {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					result = option.name;
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					result = `${option.localFamilyName} ${option.localGivenName}`;
 			}
@@ -184,19 +192,19 @@ export default {
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
 			const body = {
-				removed: true,
+				...(!this.isAssistanceTargetInstitution && { removed: true }),
 				justification,
 			};
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					body.communityIds = [removingId];
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = [removingId];
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					body.beneficiaryIds = [removingId];
 			}
@@ -215,14 +223,14 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					body.beneficiaryIds = getArrayOfIdsByParam(beneficiaries, "id");
 			}
@@ -239,23 +247,24 @@ export default {
 			let assistanceTarget = "";
 
 			switch (target) {
-				case consts.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.COMMUNITY:
 					assistanceTarget = "communities";
 					break;
-				case consts.TARGET.INSTITUTION:
+				case ASSISTANCE.TARGET.INSTITUTION:
 					assistanceTarget = "institutions";
 					break;
-				case consts.TARGET.HOUSEHOLD:
-				case consts.TARGET.INDIVIDUAL:
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					assistanceTarget = "beneficiaries";
 			}
 
-			if (body.removed) {
+			if (body.removed || !body.added) {
 				await BeneficiariesService.removeBeneficiaryFromAssistance(
 					this.$route.params.assistanceId,
 					assistanceTarget,
 					body,
+					this.beneficiaryEndpointVersion,
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {
@@ -279,6 +288,7 @@ export default {
 					this.$route.params.assistanceId,
 					assistanceTarget,
 					body,
+					this.beneficiaryEndpointVersion,
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {

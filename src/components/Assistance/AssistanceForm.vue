@@ -18,7 +18,7 @@
 
 			<LocationForm
 				ref="locationForm"
-				is-assistance-modal
+				is-editing
 				:form-model="formModel"
 				:disabled-adm="disabledAdmInput"
 				:influence-distribution-protocol="influenceDistributionProtocol"
@@ -189,19 +189,17 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import AssistancesService from "@/services/AssistancesService";
+import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import LocationForm from "@/components/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
-import consts from "@/utils/assistanceConst";
 import calendarHelper from "@/mixins/calendarHelper";
-import AssistancesService from "@/services/AssistancesService";
-import SectorsService from "@/services/SectorsService";
 import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceForm",
-
-	mixins: [calendarHelper],
 
 	components: {
 		AssistanceName,
@@ -209,10 +207,33 @@ export default {
 		SvgIcon,
 	},
 
+	mixins: [calendarHelper],
+
+	validations: {
+		formModel: {
+			name: { required },
+		},
+	},
+
+	props: {
+		formModel: Object,
+		editing: Boolean,
+
+		assistance: {
+			type: Object,
+			default: () => {},
+		},
+
+		project: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
 	data() {
 		return {
 			options: {
-				rounds: consts.ROUNDS_OPTIONS,
+				rounds: ASSISTANCE.ROUNDS_OPTIONS,
 				allowedProductCategoryTypes: [
 					"Food", "Non-Food", "Cashback",
 				],
@@ -229,22 +250,67 @@ export default {
 		};
 	},
 
-	props: {
-		formModel: Object,
-		assistance: {
-			type: Object,
-			default: () => {},
+	computed: {
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return new Date(`${endDate} 00:00`);
 		},
-		editing: Boolean,
-		project: {
-			type: Object,
-			default: () => {},
-		},
-	},
 
-	validations: {
-		formModel: {
-			name: { required },
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return new Date(`${startDate} 00:00`);
+		},
+
+		isCommoditySmartCard() {
+			return this.formModel?.commodity[0]?.code === ASSISTANCE.COMMODITY.SMARTCARD;
+		},
+
+		isAssistanceNew() {
+			return this.assistance.state.code === ASSISTANCE.STATUS.NEW;
+		},
+
+		isAssistanceValidated() {
+			return this.assistance.state.code === ASSISTANCE.STATUS.VALIDATED;
+		},
+
+		isAssistanceClosed() {
+			return this.assistance.state.code === ASSISTANCE.STATUS.CLOSED;
+		},
+
+		disabledAdmInput() {
+			return {
+				adm1: true,
+				adm2: true,
+				adm3: this.isAssistanceValidated,
+				adm4: this.isAssistanceValidated,
+			};
+		},
+
+		isDataModifiedForDistributionProtocol() {
+			return Object.values(this.influenceDistributionProtocol).some((value) => value === true);
+		},
+
+		distributionProtocolMessage() {
+			return this.$t("By changing data on a closed distribution, you may create a discrepancy"
+				+ " between data in Humansis and data in the signed distribution protocol. Please "
+				+ "give your name and provide reasoning for the change in the Note section of the "
+				+ "distribution to serve for auditing purposes.");
+		},
+
+		scoringType() {
+			if (!this.isAssistanceTargetInstitution) {
+				return this.assistance.scoringBlueprint?.name || this.defaultScoringType.name;
+			}
+
+			return this.$t("N/A");
+		},
+
+		minimumVulnerabilityScore() {
+			return this.assistance.threshold || "";
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.assistance.target.toLowerCase() === ASSISTANCE.TARGET.INSTITUTION;
 		},
 	},
 
@@ -275,62 +341,6 @@ export default {
 	created() {
 		this.valuesForAssistanceName();
 		this.fetchSubsectors();
-	},
-
-	computed: {
-		maxDateOfAssistance() {
-			const { endDate } = this.project;
-			return new Date(`${endDate} 00:00`);
-		},
-
-		minDateOfAssistance() {
-			const { startDate } = this.project;
-			return new Date(`${startDate} 00:00`);
-		},
-
-		isCommoditySmartCard() {
-			return this.formModel?.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
-		},
-
-		isAssistanceNew() {
-			return this.assistance.state.code === consts.STATUS.NEW;
-		},
-
-		isAssistanceValidated() {
-			return this.assistance.state.code === consts.STATUS.VALIDATED;
-		},
-
-		isAssistanceClosed() {
-			return this.assistance.state.code === consts.STATUS.CLOSED;
-		},
-
-		disabledAdmInput() {
-			return {
-				adm1: true,
-				adm2: true,
-				adm3: this.isAssistanceValidated,
-				adm4: this.isAssistanceValidated,
-			};
-		},
-
-		isDataModifiedForDistributionProtocol() {
-			return Object.values(this.influenceDistributionProtocol).some((value) => value === true);
-		},
-
-		distributionProtocolMessage() {
-			return this.$t("By changing data on a closed distribution, you may create a discrepancy"
-				+ " between data in Humansis and data in the signed distribution protocol. Please "
-				+ "give your name and provide reasoning for the change in the Note section of the "
-				+ "distribution to serve for auditing purposes.");
-		},
-
-		scoringType() {
-			return this.assistance.scoringBlueprint?.name || this.defaultScoringType.name;
-		},
-
-		minimumVulnerabilityScore() {
-			return this.assistance.threshold || "";
-		},
 	},
 
 	methods: {

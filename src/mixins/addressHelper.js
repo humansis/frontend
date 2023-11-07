@@ -1,10 +1,10 @@
 import AddressService from "@/services/AddressService";
-import { Notification } from "@/utils/UI";
 import LocationsService from "@/services/LocationsService";
 import baseHelper from "@/mixins/baseHelper";
-import i18n from "@/plugins/i18n";
-import CONST from "@/const";
 import { getUniqueIds } from "@/utils/customValidators";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
+import i18n from "@/plugins/i18n";
 
 export default {
 	mixins: [baseHelper],
@@ -51,19 +51,19 @@ export default {
 		) {
 			if (temporarySettlementAddressId) {
 				return {
-					typeOfLocation: CONST.LOCATION_TYPE.temporarySettlement.type,
+					typeOfLocation: GENERAL.LOCATION_TYPE.temporarySettlement.type,
 					addressId: temporarySettlementAddressId,
 				};
 			}
 			if (residenceAddressId) {
 				return {
-					typeOfLocation: CONST.LOCATION_TYPE.residence.type,
+					typeOfLocation: GENERAL.LOCATION_TYPE.residence.type,
 					addressId: residenceAddressId,
 				};
 			}
 			if (campAddressId) {
 				return {
-					typeOfLocation: CONST.LOCATION_TYPE.camp.type,
+					typeOfLocation: GENERAL.LOCATION_TYPE.camp.type,
 					addressId: campAddressId,
 				};
 			}

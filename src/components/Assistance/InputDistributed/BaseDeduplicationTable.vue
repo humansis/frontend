@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {

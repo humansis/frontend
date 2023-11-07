@@ -56,14 +56,6 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "EditNote",
 
-	data() {
-		return {
-			note: "",
-			displayFull: false,
-			edit: false,
-		};
-	},
-
 	props: {
 		assistance: {
 			type: Object,
@@ -71,10 +63,12 @@ export default {
 		},
 	},
 
-	watch: {
-		assistance() {
-			this.note = this?.assistance?.note;
-		},
+	data() {
+		return {
+			note: "",
+			displayFull: false,
+			edit: false,
+		};
 	},
 
 	computed: {
@@ -89,6 +83,12 @@ export default {
 
 		completed() {
 			return this.assistance?.completed || false;
+		},
+	},
+
+	watch: {
+		assistance() {
+			this.note = this?.assistance?.note;
 		},
 	},
 

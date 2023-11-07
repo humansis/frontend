@@ -69,6 +69,10 @@ export default {
 		commit(CONST.STORE_ADM_NAMES, admNames);
 	},
 
+	storeInstitutionIdNames: ({ commit }, institutionIdNames) => {
+		commit(CONST.STORE_INSTITUTION_ID_NAMES, institutionIdNames);
+	},
+
 	storeSelectedExportOptions: ({ commit }, selectedExportOptions) => {
 		commit(CONST.STORE_SELECTED_EXPORT_OPTIONS, selectedExportOptions);
 	},

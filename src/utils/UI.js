@@ -10,13 +10,14 @@ export const Toast = (message, type, duration = 5000) => {
 	});
 };
 
-export const Notification = (message, type, position = "is-bottom-right") => {
+export const Notification = (message, type, position = "is-bottom-right", indefinite = false) => {
 	NotificationProgrammatic.open({
 		duration: 30000,
 		message,
 		position,
 		hasIcon: true,
 		queue: false,
+		indefinite,
 		type,
 	});
 };

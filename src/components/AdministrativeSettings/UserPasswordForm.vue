@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
 
@@ -33,12 +33,7 @@ const passwordValidation = (value) => ((value ? passwordRegexp.test(value) : tru
 export default {
 	name: "UserPasswordForm",
 
-	mixins: [Validation],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-	},
+	mixins: [validation],
 
 	validations: {
 		formModel: {
@@ -46,6 +41,11 @@ export default {
 				passwordValidation,
 			},
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
 	},
 
 	methods: {

@@ -51,14 +51,14 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import CountriesService from "@/services/CountriesService";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 export default {
 	name: "CountriesList",

@@ -136,11 +136,11 @@
 <script>
 import { mapState } from "vuex";
 import { requiredIf, sameAs } from "vuelidate/lib/validators";
-import PhoneCodes from "@/utils/phoneCodes";
-import UsersService from "@/services/UsersService";
-import { Notification, Toast } from "@/utils/UI";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import LoginService from "@/services/LoginService";
+import UsersService from "@/services/UsersService";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { Notification, Toast } from "@/utils/UI";
+import { PHONE } from "@/consts";
 
 const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
 
@@ -148,6 +148,27 @@ const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true
 
 export default {
 	name: "Profile",
+
+	validations: {
+		password: {
+			oldPassword: { required: requiredIf((form) => form.newPassword
+						|| form.reenteredPassword) },
+			newPassword: {
+				required: requiredIf((form) => form.oldPassword
+						|| form.reenteredPassword),
+				passwordValidation,
+			},
+			reenteredPassword: {
+				required: requiredIf((form) => form.oldPassword
+						|| form.newPassword),
+				sameAsPassword: sameAs("newPassword"),
+			},
+		},
+		phone: {
+			prefix: { required: requiredIf((form) => form.number) },
+			number: { required: requiredIf((form) => form.prefix) },
+		},
+	},
 
 	data() {
 		return {
@@ -166,44 +187,12 @@ export default {
 			},
 			twoFactorEnabled: false,
 			options: {
-				phonePrefixes: PhoneCodes,
+				phonePrefixes: PHONE.CODES,
 			},
 			changePasswordLoading: false,
 			changePhoneLoading: false,
 			twoFactorLoading: false,
 		};
-	},
-
-	validations: {
-		password: {
-			// eslint-disable-next-line func-names
-			oldPassword: { required: requiredIf(function () {
-				return this.password.newPassword
-					|| this.password.reenteredPassword;
-			}) },
-			newPassword: {
-				// eslint-disable-next-line func-names
-				required: requiredIf(function () {
-					return this.password.oldPassword
-						|| this.password.reenteredPassword;
-				}),
-				passwordValidation,
-			},
-			reenteredPassword: {
-				// eslint-disable-next-line func-names
-				required: requiredIf(function () {
-					return this.password.oldPassword
-						|| this.password.newPassword;
-				}),
-				sameAsPassword: sameAs("newPassword"),
-			},
-		},
-		phone: {
-			// eslint-disable-next-line func-names
-			prefix: { required: requiredIf(function () { return this.phone.number; }) },
-			// eslint-disable-next-line func-names
-			number: { required: requiredIf(function () { return this.phone.prefix; }) },
-		},
 	},
 
 	computed: {
@@ -312,7 +301,7 @@ export default {
 		mapUser(data) {
 			this.userProfile = data;
 			this.userForm.email = data.email;
-			this.phone.prefix = getArrayOfCodeListByKey([data.phonePrefix], PhoneCodes, "code");
+			this.phone.prefix = getArrayOfCodeListByKey([data.phonePrefix], PHONE.CODES, "code");
 			this.phone.number = data.phoneNumber;
 			this.twoFactorEnabled = data["2fa"];
 		},

@@ -65,15 +65,15 @@
 </template>
 
 <script>
-import ProjectSummary from "@/components/Projects/ProjectSummary";
-import AssistancesList from "@/components/Projects/AssistancesList";
+import AssistancesService from "@/services/AssistancesService";
+import ProjectService from "@/services/ProjectService";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import AssistanceMoveForm from "@/components/Assistance/AssistanceMoveForm";
 import Modal from "@/components/Modal";
-import AssistancesService from "@/services/AssistancesService";
-import { Toast, Notification } from "@/utils/UI";
+import AssistancesList from "@/components/Projects/AssistancesList";
+import ProjectSummary from "@/components/Projects/ProjectSummary";
 import permissions from "@/mixins/permissions";
-import ProjectService from "@/services/ProjectService";
+import { Notification, Toast } from "@/utils/UI";
 
 export default {
 	name: "Project",

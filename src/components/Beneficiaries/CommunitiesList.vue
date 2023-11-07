@@ -72,16 +72,16 @@
 </template>
 
 <script>
-import SafeDelete from "@/components/SafeDelete";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
 import CommunityService from "@/services/CommunityService";
+import ActionButton from "@/components/ActionButton";
+import CommunitiesFilter from "@/components/Beneficiaries/CommunitiesFilter";
+import Table from "@/components/DataGrid/Table";
+import SafeDelete from "@/components/SafeDelete";
+import addressHelper from "@/mixins/addressHelper";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
-import CommunitiesFilter from "@/components/Beneficiaries/CommunitiesFilter";
-import addressHelper from "@/mixins/addressHelper";
-import permissions from "@/mixins/permissions";
 
 export default {
 	name: "CommunitiesList",

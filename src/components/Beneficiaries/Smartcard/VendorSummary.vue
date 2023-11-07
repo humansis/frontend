@@ -87,24 +87,24 @@
 </template>
 
 <script>
-import grid from "@/mixins/grid";
-import SmartcardService from "@/services/SmartcardService";
-import { Notification } from "@/utils/UI";
 import ProjectService from "@/services/ProjectService";
+import SmartcardService from "@/services/SmartcardService";
 import VendorService from "@/services/VendorService";
 import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatches";
 import RedemptionSummary from "@/components/Beneficiaries/Smartcard/RedemptionSummary";
+import grid from "@/mixins/grid";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "VendorSummary",
 
 	components: { RedemptionSummary, RedeemedBatches },
 
+	mixins: [grid],
+
 	props: {
 		vendor: Object,
 	},
-
-	mixins: [grid],
 
 	data() {
 		return {

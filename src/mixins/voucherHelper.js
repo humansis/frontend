@@ -1,8 +1,8 @@
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import ProjectService from "@/services/ProjectService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import ProjectService from "@/services/ProjectService";
 import baseHelper from "@/mixins/baseHelper";
+import { Notification } from "@/utils/UI";
 
 export default {
 	mixins: [baseHelper],

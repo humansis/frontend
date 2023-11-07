@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import LogsService from "@/services/LogsService";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 export default {
 	name: "VouchersLogList",

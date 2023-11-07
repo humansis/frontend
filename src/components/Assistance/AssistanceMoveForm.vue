@@ -34,17 +34,15 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "AssistanceForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
-	data() {
-		return {
-			newProject: null,
-		};
+	validations: {
+		newProject: { required },
 	},
 
 	props: {
@@ -54,8 +52,10 @@ export default {
 		},
 	},
 
-	validations: {
-		newProject: { required },
+	data() {
+		return {
+			newProject: null,
+		};
 	},
 
 	methods: {

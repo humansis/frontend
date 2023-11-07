@@ -1,5 +1,5 @@
 <template>
-	<div class="mt-5">
+	<div class="mb-6">
 		<h3 class="title is-4">{{ title }}</h3>
 		<form class="box">
 			<b-field
@@ -45,9 +45,6 @@
 					:select-label="$t('Press enter to select')"
 					:selected-label="$t('Selected')"
 					:deselect-label="$t('Press enter to remove')"
-					group-values="data"
-					group-label="label"
-					group-select
 					:options="options.institutions"
 					:loading="loading.institutions"
 					:class="validateMultiselect('institutions')"
@@ -64,21 +61,44 @@
 </template>
 
 <script>
-import validation from "@/mixins/validation";
-import InstitutionService from "@/services/InstitutionService";
-import { Notification } from "@/utils/UI";
-import CommunityService from "@/services/CommunityService";
 import { requiredIf } from "vuelidate/lib/validators";
+import AssistancesService from "@/services/AssistancesService";
+import CommunityService from "@/services/CommunityService";
+import InstitutionService from "@/services/InstitutionService";
 import addressHelper from "@/mixins/addressHelper";
-import { normalizeText } from "@/utils/datagrid";
+import validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "TargetTypeSelect",
 
 	mixins: [validation, addressHelper],
 
+	/* eslint-disable func-names */
+	validations: {
+		formModel: {
+			communities: { required: requiredIf(function () {
+				return this.visible?.communities;
+			}) },
+			institutions: { required: requiredIf(function () {
+				return this.visible?.institutions;
+			}) },
+		},
+	},
+	/* eslint-enable func-names */
+
 	props: {
 		visible: Object,
+
+		projectId: {
+			type: Number,
+			required: true,
+		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -98,27 +118,25 @@ export default {
 		};
 	},
 
-	watch: {
-		visible: "fetchData",
-	},
-
 	computed: {
 		title() {
 			return this.visible?.communities ? this.$t("Communities") : this.$t("Institutions");
 		},
 	},
 
-	validations: {
-		formModel: {
-			// eslint-disable-next-line func-names
-			communities: { required: requiredIf(function () {
-				return this.visible?.communities;
-			}) },
-			// eslint-disable-next-line func-names
-			institutions: { required: requiredIf(function () {
-				return this.visible?.institutions;
-			}) },
+	watch: {
+		visible: "fetchData",
+		isAssistanceDuplicated(value) {
+			if (value) {
+				const assistanceId = this.$route.query.duplicateAssistance;
+
+				this.fetchUsedInstitutions(assistanceId);
+			}
 		},
+	},
+
+	mounted() {
+		this.fetchData();
 	},
 
 	updated() {
@@ -136,10 +154,6 @@ export default {
 		this.$emit("updatedData", { communities, institutions });
 	},
 
-	mounted() {
-		this.fetchData();
-	},
-
 	methods: {
 		submit() {
 			this.$v.$touch();
@@ -152,9 +166,15 @@ export default {
 		},
 
 		async fetchInstitutions() {
-			await InstitutionService.getListOfInstitutions()
+			await InstitutionService.getListOfInstitutions(
+				null,
+				null,
+				null,
+				null,
+				{ projects: [this.projectId] },
+			)
 				.then(({ data }) => {
-					this.options.institutions = this.prepareInstitutionsForSelect(data);
+					this.options.institutions = data;
 				})
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
@@ -171,6 +191,18 @@ export default {
 					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
 				});
 			this.loading.communities = false;
+		},
+
+		async fetchUsedInstitutions(assistanceId) {
+			try {
+				const { data: { data } } = await AssistancesService.getListOfInstitutions(
+					assistanceId,
+				);
+
+				this.prepareDuplicatedInstitutions(data);
+			} catch (e) {
+				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+			}
 		},
 
 		async prepareCommunitiesForSelect(data) {
@@ -191,25 +223,18 @@ export default {
 			return filledData;
 		},
 
-		prepareInstitutionsForSelect(data) {
-			const groups = [];
+		prepareDuplicatedInstitutions(data) {
+			const notArchivedInstitutions = data.filter((institution) => !institution.archived);
 
-			data.forEach((item) => {
-				const group = groups.find((g) => g.name === item.type);
+			notArchivedInstitutions.forEach((assistanceInstitution, key) => {
+				const { institution } = assistanceInstitution;
+				const { name, id } = institution;
 
-				if (!group) {
-					groups.push({
-						name: item.type,
-						label: normalizeText(item.type),
-						data: [item],
-					});
-				} else {
-					const index = groups.indexOf(group);
-					groups[index].data.push(item);
-				}
+				this.formModel.institutions[key] = {
+					name,
+					id,
+				};
 			});
-
-			return groups;
 		},
 	},
 };

@@ -64,9 +64,11 @@
 
 		<!-- Link to detail -->
 		<template v-if="column.type === 'link'">
-			<b-tooltip v-if="cellData.isArchived" :label="$t('Deleted member')" position="is-right">
+			<b-tooltip v-if="cellData.isArchived" :label="$t(cellData.tooltip)" position="is-right">
 				<p>{{ cellData.name }}</p>
 			</b-tooltip>
+
+			<p v-else-if="!cellData.routeName">{{ cellData }}</p>
 
 			<router-link
 				v-else
@@ -155,7 +157,7 @@
 		<!-- Show Custom Tags Array with background color -->
 		<template v-if="column.type === 'tagArray'">
 			<div
-				v-for="(item, index) in  cellData"
+				v-for="(item, index) in cellData"
 				:key="`tags-array-item-${index}`"
 			>
 				<b-tag :type="getTagTypeByItem(item)">
@@ -217,6 +219,11 @@ export default {
 	components: {
 		SvgIcon,
 		ImageColumn,
+	},
+
+	props: {
+		column: Object,
+		data: Object,
 	},
 
 	computed: {
@@ -303,11 +310,6 @@ export default {
 		},
 
 		normalizeText,
-	},
-
-	props: {
-		column: Object,
-		data: Object,
 	},
 };
 </script>

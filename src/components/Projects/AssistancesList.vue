@@ -30,6 +30,7 @@
 			v-show="beneficiariesCount || upcoming"
 			has-reset-sort
 			default-sort-key="dateDistribution"
+			:wrapper-classes="['has-min-height-420']"
 			:has-search="!upcoming"
 			:data="table.data"
 			:total="table.total"
@@ -55,7 +56,7 @@
 			</template>
 			<b-table-column
 				v-slot="props"
-				width="230"
+				width="170"
 				field="actions"
 				:label="$t('Actions')"
 				:visible="!upcoming"
@@ -85,10 +86,7 @@
 						:tooltip="$t('Details')"
 						@click="showEdit(props.row.id)"
 					/>
-					<b-dropdown
-						class="is-pulled-right has-text-left"
-						:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"
-					>
+					<b-dropdown :position="getDropdownPosition(props.index)">
 						<template #trigger>
 							<b-button
 								size="is-small"
@@ -168,24 +166,24 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
-import ActionButton from "@/components/ActionButton";
-import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText, normalizeExportDate } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
 import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
-import consts from "@/utils/assistanceConst";
+import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT } from "@/consts";
 
 const statusTags = [
-	{ code: consts.STATUS.NEW, type: "is-light" },
-	{ code: consts.STATUS.VALIDATED, type: "is-success" },
-	{ code: consts.STATUS.CLOSED, type: "is-info" },
+	{ code: ASSISTANCE.STATUS.NEW, type: "is-light" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "is-success" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "is-info" },
 ];
 
 export default {
@@ -199,24 +197,27 @@ export default {
 		ExportControl,
 	},
 
+	mixins: [permissions, grid, baseHelper, permissions],
+
 	props: {
 		upcoming: Boolean,
+
 		beneficiariesCount: {
 			type: Number,
 			required: false,
 			default: 0,
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		projectLoaded: {
 			type: Boolean,
 			default: false,
 		},
 	},
-
-	mixins: [permissions, grid, baseHelper, permissions],
 
 	data() {
 		return {
@@ -250,6 +251,9 @@ export default {
 					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
 					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
 					{ key: "commodity", label: "Commodity", type: "svgIcon" },
+					{ key: "eloNumber" },
+					{ key: "activity" },
+					{ key: "budgetLine" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -261,14 +265,6 @@ export default {
 			commodities: [],
 			locations: [],
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
-	},
-
-	created() {
-		this.fetchData();
 	},
 
 	computed: {
@@ -311,6 +307,14 @@ export default {
 				&& !this.isLoadingList
 				&& !this.upcoming;
 		},
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	created() {
+		this.fetchData();
 	},
 
 	methods: {
@@ -386,9 +390,6 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
-
-			const maxThreeRows = this.table.data.length <= 3;
-			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -515,52 +516,40 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		isOneOfLastThreeRows(rowId) {
-			let finalCountOfDisplayedRows = this.table.total;
-
-			if (this.perPage <= this.table.total) {
-				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
-						- this.table.total);
-
-				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
-					? this.perPage
-					: countOfDisplayedRows;
+		getDropdownPosition(rowId) {
+			if (this.table.data.length === 3 && rowId === 2) {
+				return "is-top-left";
 			}
 
-			return (rowId === finalCountOfDisplayedRows - 1
-				|| rowId === finalCountOfDisplayedRows - 2
-				|| rowId === finalCountOfDisplayedRows - 3
-			);
+			return [0, 1, 2].includes(rowId) ? "is-bottom-left" : "is-top-left";
 		},
 
 		isAssistanceMoveEnable(assistance) {
 			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
-		async exportAssistances(type, format) {
-			if (type === EXPORT.ASSISTANCE_OVERVIEW) {
-				this.exportControl.loading = true;
-				const filters = {
-					...this.filters,
-					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
-				};
+		async exportAssistances(exportType, format) {
+			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
+				try {
+					this.exportControl.loading = true;
 
-				await AssistancesService.exportAssistances(format, this.$route.params.projectId, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Assistance overview ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Assistances")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+					const filters = {
+						...this.filters,
+						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+					};
+					const filename = `Assistance overview ${normalizeExportDate()}`;
+					const { data, status, message } = await AssistancesService.exportAssistances(
+						format,
+						this.$route.params.projectId,
+						filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},
@@ -569,4 +558,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'src/assets/scss/button';
+
+.table .buttons {
+	flex-wrap: nowrap;
+}
 </style>

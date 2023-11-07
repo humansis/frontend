@@ -23,18 +23,16 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import SideMenu from "@/layout/SideMenu";
-import NavBar from "@/layout/NavBar";
-import Modal from "@/components/Modal";
-import Validation from "@/mixins/validation";
-import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
 import UsersService from "@/services/UsersService";
+import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
+import Modal from "@/components/Modal";
+import validation from "@/mixins/validation";
 import { Notification, Toast } from "@/utils/UI";
+import NavBar from "@/layout/NavBar";
+import SideMenu from "@/layout/SideMenu";
 
 export default {
 	name: "MainContainer",
-
-	mixins: [Validation],
 
 	components: {
 		SideMenu,
@@ -42,6 +40,8 @@ export default {
 		Modal,
 		UserPasswordForm,
 	},
+
+	mixins: [validation],
 
 	data() {
 		return {

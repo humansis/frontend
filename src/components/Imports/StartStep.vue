@@ -84,16 +84,6 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "StartStep",
 
-	data() {
-		return {
-			dropFiles: [],
-			changeStateButtonLoading: false,
-			startLoading: false,
-			importStatus: "",
-			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
-		};
-	},
-
 	props: {
 		status: {
 			type: String,
@@ -112,19 +102,14 @@ export default {
 		},
 	},
 
-	watch: {
-		status(value) {
-			this.importStatus = value;
-
-			if (value === IMPORT.STATUS.INTEGRITY_CHECK
-				|| value === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
-				this.$emit("moveStepForward");
-			}
-		},
-
-		loadingChangeStateButton(value) {
-			this.changeStateButtonLoading = value;
-		},
+	data() {
+		return {
+			dropFiles: [],
+			changeStateButtonLoading: false,
+			startLoading: false,
+			importStatus: "",
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
+		};
 	},
 
 	computed: {
@@ -155,6 +140,21 @@ export default {
 		isUploadBoxVisible() {
 			return this.importStatus === IMPORT.STATUS.NEW
 				|| this.importStatus === IMPORT.STATUS.UPLOADING;
+		},
+	},
+
+	watch: {
+		status(value) {
+			this.importStatus = value;
+
+			if (value === IMPORT.STATUS.INTEGRITY_CHECK
+				|| value === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
+				this.$emit("moveStepForward");
+			}
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
 		},
 	},
 

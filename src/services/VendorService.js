@@ -1,4 +1,4 @@
-import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
 	async getListOfVendors(page, size, sort, search = null, ids = null, filters) {

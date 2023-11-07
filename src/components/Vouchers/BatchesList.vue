@@ -96,18 +96,18 @@
 </template>
 
 <script>
+import BookletsService from "@/services/BookletsService";
 import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import SafeDelete from "@/components/SafeDelete";
 import Search from "@/components/Search";
-import Table from "@/components/DataGrid/Table";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import BookletsService from "@/services/BookletsService";
-import { generateColumns } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 import VouchersFilter from "@/components/Vouchers/VouchersFilter";
+import grid from "@/mixins/grid";
 import voucherHelper from "@/mixins/voucherHelper";
+import { generateColumns } from "@/utils/datagrid";
 import { getBookletStatus } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "BatchesList",
@@ -150,10 +150,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	computed: {
 		modalHeader() {
 			let result = "";
@@ -164,6 +160,10 @@ export default {
 			}
 			return result;
 		},
+	},
+
+	watch: {
+		$route: "fetchData",
 	},
 
 	created() {

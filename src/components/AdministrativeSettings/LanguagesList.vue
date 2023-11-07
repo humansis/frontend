@@ -41,13 +41,13 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import LanguagesService from "@/services/LanguagesService";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import LanguagesService from "@/services/LanguagesService";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 export default {
 	name: "LanguagesList",

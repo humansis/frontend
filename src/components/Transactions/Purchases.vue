@@ -49,17 +49,6 @@
 					/>
 				</b-collapse>
 			</template>
-			<!-- TODO This component is not currently in use, so i decided to comment this export-->
-
-			<!--			<template #export>-->
-			<!--				<ExportButton-->
-			<!--					class="ml-2"-->
-			<!--					space-between-->
-			<!--					:formats="{ xlsx: true, csv: true}"-->
-			<!--					:loading="exportLoading"-->
-			<!--					@onExport="exportPurchases"-->
-			<!--				/>-->
-			<!--			</template>-->
 			<template slot="progress">
 				<b-progress :value="table.progress" format="percent" />
 			</template>
@@ -86,14 +75,14 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import TransactionService from "@/services/TransactionService";
-import { generateColumns } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 
 const PurchasesFilter = () => import("@/components/Transactions/PurchasesFilter");
 

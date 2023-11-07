@@ -104,12 +104,28 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "CountryForm",
 
-	mixins: [Validation],
+	mixins: [validation],
+
+	validations: {
+		formModel: {
+			name: { required },
+			iso3: { required },
+			availableCurrencies: { required },
+			countryFlag: { required },
+		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+	},
 
 	data() {
 		return {
@@ -126,22 +142,6 @@ export default {
 				{ code: "gpd", value: "GPD" },
 			],
 		};
-	},
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-	},
-
-	validations: {
-		formModel: {
-			name: { required },
-			iso3: { required },
-			availableCurrencies: { required },
-			countryFlag: { required },
-		},
 	},
 
 	mounted() {

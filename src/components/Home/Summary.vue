@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading";
 import HomeService from "@/services/HomeService";
+import Loading from "@/components/Loading";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 

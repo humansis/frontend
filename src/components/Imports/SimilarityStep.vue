@@ -107,25 +107,14 @@
 </template>
 
 <script>
-import { IMPORT } from "@/consts";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "SimilarityStep",
 
 	components: {
 		DuplicityResolver,
-	},
-
-	data() {
-		return {
-			importStatistics: {},
-			duplicitiesContentOpened: false,
-			resolveDuplicitiesLoading: false,
-			file: {},
-			changeStateButtonLoading: false,
-			importStatus: "",
-		};
 	},
 
 	props: {
@@ -146,18 +135,15 @@ export default {
 		},
 	},
 
-	watch: {
-		statistics(value) {
-			this.importStatistics = value;
-		},
-
-		loadingChangeStateButton(value) {
-			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.importStatus = value;
-		},
+	data() {
+		return {
+			importStatistics: {},
+			duplicitiesContentOpened: false,
+			resolveDuplicitiesLoading: false,
+			file: {},
+			changeStateButtonLoading: false,
+			importStatus: "",
+		};
 	},
 
 	computed: {
@@ -187,6 +173,20 @@ export default {
 			return this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
+		},
+	},
+
+	watch: {
+		statistics(value) {
+			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
+
+		status(value) {
+			this.importStatus = value;
 		},
 	},
 

@@ -30,10 +30,8 @@
 					{{ assistanceScoringType }}
 				</div>
 				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
+				<div v-else>
+					<small>{{ $t("N/A") }}</small>
 				</div>
 			</div>
 		</div>
@@ -60,8 +58,8 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
 import Loading from "@/components/Loading";
+import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "SelectionTab",
@@ -75,14 +73,17 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		isStatisticsLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		statistics: {
 			type: Object,
 			default: () => {},

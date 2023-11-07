@@ -42,13 +42,13 @@
 
 <script>
 import { mapState } from "vuex";
-import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
-import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
-import Modal from "@/components/Modal";
 import ProductService from "@/services/ProductService";
-import { Notification, Toast } from "@/utils/UI";
+import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
+import Modal from "@/components/Modal";
 import permissions from "@/mixins/permissions";
-import currencies from "@/utils/currencies";
+import { Notification, Toast } from "@/utils/UI";
+import { CURRENCIES } from "@/consts";
 
 export default {
 	name: "Items",
@@ -81,7 +81,7 @@ export default {
 				uploadedImage: null,
 			},
 			categories: [],
-			currencies,
+			currencies: CURRENCIES,
 		};
 	},
 
@@ -107,11 +107,16 @@ export default {
 
 	methods: {
 		async fetchCategories() {
-			await ProductService.getListOfCategories(1, 1000).then(({ data }) => {
+			try {
+				const { data: { data } } = await ProductService.getListOfCategories(
+					1,
+					1000,
+				);
+
 				this.categories = data;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Categories")} ${e.message || e}`, "is-danger");
+			}
 		},
 
 		showDetail(product) {

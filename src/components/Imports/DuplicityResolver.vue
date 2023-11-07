@@ -102,12 +102,12 @@
 
 <script>
 import ImportService from "@/services/ImportService";
-import { Notification, Toast } from "@/utils/UI";
-import { IMPORT } from "@/consts";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import { generateColumns } from "@/utils/datagrid";
 import Table from "@/components/DataGrid/Table";
 import grid from "@/mixins/grid";
+import { generateColumns } from "@/utils/datagrid";
+import { Notification, Toast } from "@/utils/UI";
+import { IMPORT } from "@/consts";
 
 export default {
 	name: "DuplicityResolver",
@@ -118,6 +118,22 @@ export default {
 	},
 
 	mixins: [grid],
+
+	props: {
+		header: {
+			type: String,
+			required: true,
+		},
+
+		duplicitiesLoading: {
+			type: Boolean,
+		},
+
+		formChangesLoading: {
+			type: Boolean,
+		},
+
+	},
 
 	data() {
 		return {
@@ -156,31 +172,6 @@ export default {
 		};
 	},
 
-	props: {
-		header: {
-			type: String,
-			required: true,
-		},
-		duplicitiesLoading: {
-			type: Boolean,
-		},
-		formChangesLoading: {
-			type: Boolean,
-		},
-
-	},
-
-	created() {
-		this.getTotalCountOfDuplicities();
-		this.fetchData();
-	},
-
-	watch: {
-		duplicites(value) {
-			this.$emit("duplicitiesChange", value);
-		},
-	},
-
 	computed: {
 		filterButtonNotSolved() {
 			return [
@@ -209,6 +200,17 @@ export default {
 		duplicities() {
 			return this.table.data;
 		},
+	},
+
+	watch: {
+		duplicites(value) {
+			this.$emit("duplicitiesChange", value);
+		},
+	},
+
+	created() {
+		this.getTotalCountOfDuplicities();
+		this.fetchData();
 	},
 
 	methods: {

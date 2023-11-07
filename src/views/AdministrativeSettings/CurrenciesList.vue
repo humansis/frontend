@@ -16,10 +16,10 @@
 	>
 		<template v-for="column in table.columns">
 			<b-table-column
-				sortable
-				v-bind="column"
 				v-slot="props"
 				:key="column.id"
+				sortable
+				v-bind="column"
 			>
 				<ColumnField :column="column" :data="props" />
 			</b-table-column>
@@ -28,12 +28,12 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import CurrencyService from "@/services/CurrencyService";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 export default {
 	name: "CurrenciesList",

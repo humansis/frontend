@@ -38,12 +38,12 @@
 </template>
 
 <script>
-import DonorsList from "@/components/AdministrativeSettings/DonorsList";
-import DonorForm from "@/components/AdministrativeSettings/DonorForm";
-import Modal from "@/components/Modal";
 import DonorService from "@/services/DonorService";
-import { Toast } from "@/utils/UI";
+import DonorForm from "@/components/AdministrativeSettings/DonorForm";
+import DonorsList from "@/components/AdministrativeSettings/DonorsList";
+import Modal from "@/components/Modal";
 import permissions from "@/mixins/permissions";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "DonorPage",

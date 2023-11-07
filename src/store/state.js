@@ -35,6 +35,7 @@ export default {
 	icons: null,
 	translations: null,
 	admNames: {},
+	institutionIdNames: {},
 	gridFilters: {
 		households: [],
 		assistanceDetail: [],
@@ -51,6 +52,7 @@ export default {
 		transactionsAssistances: [],
 		transactionsPurchased: [],
 		projects: [],
+		institutions: [],
 		projectAssistances: [],
 		products: [],
 		imports: [],
@@ -107,5 +109,6 @@ export default {
 		editScoring: false,
 		deleteScoring: false,
 		viewScoring: false,
+		projectTargets: false,
 	},
 };

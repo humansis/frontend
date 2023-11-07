@@ -39,13 +39,13 @@
 </template>
 
 <script>
-import UsersList from "@/components/AdministrativeSettings/UsersList";
-import UserForm from "@/components/AdministrativeSettings/UserForm";
-import Modal from "@/components/Modal";
 import UsersService from "@/services/UsersService";
-import { Toast } from "@/utils/UI";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
+import UserForm from "@/components/AdministrativeSettings/UserForm";
+import UsersList from "@/components/AdministrativeSettings/UsersList";
+import Modal from "@/components/Modal";
 import permissions from "@/mixins/permissions";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "UsersPage",

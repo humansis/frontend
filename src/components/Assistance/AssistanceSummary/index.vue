@@ -18,15 +18,21 @@
 			/>
 		</h2>
 
-		<p v-if="assistanceDescription" class="has-text-centered mb-6">
+		<p v-if="assistanceDescription" class="has-text-centered has-text-weight-bold is-size-4 pb-3">
 			{{ assistanceDescription }}
 		</p>
 
 		<b-tabs
+			v-model="activeTab"
 			position="is-centered"
 			class="ml-3"
 		>
-			<b-tab-item :label="$t('To Distribute')" icon="user" class="relative-position">
+			<b-tab-item
+				v-if="!isAssistanceTypeActivity"
+				icon="user"
+				class="relative-position"
+				:label="$t('To Distribute')"
+			>
 				<DistributionTab
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
@@ -61,11 +67,11 @@
 </template>
 
 <script>
-import { normalizeText } from "@/utils/datagrid";
-import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
+import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
-import consts from "@/utils/assistanceConst";
+import { normalizeText } from "@/utils/datagrid";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceSummary",
@@ -81,30 +87,37 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		statistics: {
 			type: Object,
 			default: () => {},
 		},
+
 		isStatisticsLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isCommoditiesLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		commodities: {
 			type: Array,
 			default: () => [],
@@ -113,20 +126,11 @@ export default {
 
 	data() {
 		return {
-			consts,
 			province: null,
+			activeTab: 0,
 			commodity: [],
 			isCommodityLoading: false,
 		};
-	},
-
-	watch: {
-		assistance(newAssistance) {
-			if (newAssistance) {
-				this.setLocation();
-				this.setCommodity();
-			}
-		},
 	},
 
 	computed: {
@@ -156,6 +160,23 @@ export default {
 
 		modalityType() {
 			return this.commodities?.[0]?.modalityType;
+		},
+
+		isAssistanceTypeActivity() {
+			return this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY;
+		},
+	},
+
+	watch: {
+		assistance(newAssistance) {
+			if (newAssistance) {
+				this.setLocation();
+				this.setCommodity();
+
+				if (this.isAssistanceTypeActivity) {
+					this.activeTab = 1;
+				}
+			}
 		},
 	},
 

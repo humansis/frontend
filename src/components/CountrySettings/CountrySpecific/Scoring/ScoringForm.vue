@@ -89,26 +89,27 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
 
 export default {
 	name: "ScoringForm",
 
-	mixins: [Validation],
-
-	props: {
-		formModel: {
-			type: Object,
-			default: () => {},
-		},
-		closeButton: Boolean,
-	},
+	mixins: [validation],
 
 	validations: {
 		formModel: {
 			name: { required },
 			dropFiles: { required },
+		},
+	},
+
+	props: {
+		closeButton: Boolean,
+
+		formModel: {
+			type: Object,
+			default: () => {},
 		},
 	},
 

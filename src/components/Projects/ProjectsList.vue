@@ -72,18 +72,19 @@
 
 <script>
 import { mapState } from "vuex";
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import grid from "@/mixins/grid";
-import baseHelper from "@/mixins/baseHelper";
 import DonorService from "@/services/DonorService";
-import permissions from "@/mixins/permissions";
+import ProjectService from "@/services/ProjectService";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
+import baseHelper from "@/mixins/baseHelper";
+import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 import { EXPORT } from "@/consts";
 
 export default {
@@ -117,7 +118,6 @@ export default {
 					{ key: "startDate", type: "date", width: "120", sortable: true },
 					{ key: "endDate", type: "date", width: "120", sortable: true },
 					{ key: "donors", width: "150" },
-					{ key: "target", label: "Target Households", width: "90" },
 					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
 					{ key: "beneficiariesReached", label: "Registered Individuals", width: "130", sortable: true },
 				],
@@ -130,16 +130,16 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["availableProjects"]),
+	},
+
 	watch: {
 		$route: "fetchData",
 	},
 
 	created() {
 		this.fetchData();
-	},
-
-	computed: {
-		...mapState(["availableProjects"]),
 	},
 
 	methods: {
@@ -230,27 +230,24 @@ export default {
 			this.$emit("showDetail", project);
 		},
 
-		async exportProjects(type, format) {
-			if (type === EXPORT.PROJECTS) {
-				this.exportControl.loading = true;
-				const filters = { ...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }) };
+		async exportProjects(exportType, format) {
+			if (exportType === EXPORT.PROJECTS) {
+				try {
+					this.exportControl.loading = true;
 
-				await ProjectService.exportProjects(format, filters)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Projects ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Projects")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+					const filters = { ...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }) };
+					const filename = `Projects ${normalizeExportDate()}`;
+					const { data, status, message } = await ProjectService.exportProjects(
+						format,
+						filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

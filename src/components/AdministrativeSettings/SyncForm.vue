@@ -20,12 +20,12 @@
 </template>
 
 <script>
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "SyncForm",
 
-	mixins: [Validation],
+	mixins: [validation],
 
 	props: {
 		formModel: Object,

@@ -45,11 +45,11 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
 import TransactionService from "@/services/TransactionService";
+import Table from "@/components/DataGrid/Table";
+import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
 
 const TransactionsFilter = () => import("@/components/Transactions/TransactionsFilter");
 

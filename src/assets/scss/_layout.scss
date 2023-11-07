@@ -101,6 +101,12 @@ aside.aside {
 					display: none;
 				}
 			}
+
+			.b-tooltip .icon {
+				width: auto;
+				font-size: .75em;
+				margin-left: .5em;
+			}
 		}
 	}
 
@@ -112,6 +118,12 @@ aside.aside {
 
 			&:not(:hover) .tooltip-content {
 				display: none;
+			}
+
+			.b-tooltip .icon {
+				width: auto;
+				font-size: .75em;
+				margin-left: .5em;
 			}
 		}
 

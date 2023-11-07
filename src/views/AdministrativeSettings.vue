@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import Users from "@/views/AdministrativeSettings/Users";
+import permissions from "@/mixins/permissions";
 import Donors from "@/views/AdministrativeSettings/Donors";
 import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
 import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
 import Sync from "@/views/AdministrativeSettings/Sync";
-import permissions from "@/mixins/permissions";
+import Users from "@/views/AdministrativeSettings/Users";
 
 export default {
 	name: "AdministrativeSettings",

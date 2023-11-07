@@ -27,6 +27,18 @@ export const getArrayOfCodeListByKey = (codes, array, key, returnAsArray = false
 	return result;
 };
 
+export const getCodeAndValueObject = (codes) => {
+	const codeAndValue = [];
+
+	if (Array.isArray(codes) && codes.length) {
+		codes.forEach((code) => {
+			codeAndValue.push({ code, value: code });
+		});
+		return codeAndValue;
+	}
+	return [{ code: codes, value: codes }];
+};
+
 export const getArrayOfCodeListByParams = (codes, array, codeParam, keyParam) => {
 	const result = [];
 	if (codes.length) {

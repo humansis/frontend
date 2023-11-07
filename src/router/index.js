@@ -1,11 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import getters from "@/store/getters";
-import store from "@/store/index";
+import { getCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
-import { getCookie } from "@/utils/cookie";
 import CONST from "@/store/const";
+import getters from "@/store/getters";
+import store from "@/store/index";
 
 Vue.use(VueRouter);
 
@@ -101,6 +101,36 @@ const routes = [
 							permissions: [],
 							breadcrumb: () => i18n.t("Projects"),
 							description: i18n.t("This page is where you can see all the country's projects (only thoses that you have the right to see)."),
+						},
+					},
+					{
+						path: "add-project",
+						name: "AddProject",
+						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Add Project"),
+							description: i18n.t("This page is a form to add a new project to a humansis."),
+						},
+					},
+					{
+						path: "project-detail/:projectId",
+						name: "ProjectDetail",
+						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Project detail"),
+							description: i18n.t("This page is a form to show detail of a project in humansis."),
+						},
+					},
+					{
+						path: "project-edit/:projectId",
+						name: "ProjectEdit",
+						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: () => i18n.t("Project detail"),
+							description: i18n.t("This page is a form to edit a project in humansis."),
 						},
 					},
 					{
@@ -256,13 +286,53 @@ const routes = [
 					},
 					{
 						path: "institutions",
-						name: "Institutions",
-						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+						component: { render(c) { return c("router-view"); } },
 						meta: {
-							permissions: [],
 							breadcrumb: () => i18n.t("Institutions"),
-							description: "",
+							parent: "Beneficiaries",
 						},
+						children: [
+							{
+								path: "",
+								name: "Institutions",
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institutions"),
+									description: "",
+								},
+							},
+							{
+								path: "add-institution",
+								name: "AddInstitution",
+								component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Add Institution"),
+									description: i18n.t("This page is a form to add a new institution to a humansis."),
+								},
+							},
+							{
+								path: "institution-detail/:institutionId",
+								name: "InstitutionDetail",
+								component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institution Detail"),
+									description: i18n.t("This page is a form to show detail of a institution in humansis."),
+								},
+							},
+							{
+								path: "institution-edit/:institutionId",
+								name: "InstitutionEdit",
+								component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
+								meta: {
+									permissions: [],
+									breadcrumb: () => i18n.t("Institution edit"),
+									description: i18n.t("This page is a form to edit a institution in humansis."),
+								},
+							},
+						],
 					},
 					{
 						path: "vendors",
@@ -275,16 +345,6 @@ const routes = [
 						},
 					},
 				],
-			},
-			{
-				path: "reports",
-				name: "Reports",
-				component: () => import(/* webpackChunkName: "Reports" */ "@/views/Reports"),
-				meta: {
-					permissions: [],
-					breadcrumb: () => i18n.t("Reports"),
-					description: i18n.t("This page is used to see the country's statistics, such as the average transactions of a projects, number of assistances"),
-				},
 			},
 			{
 				path: "vouchers",

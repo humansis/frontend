@@ -1,12 +1,12 @@
 import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import LocationsService from "@/services/LocationsService";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import ProjectService from "@/services/ProjectService";
-import baseHelper from "@/mixins/baseHelper";
-import VendorService from "@/services/VendorService";
+import LocationsService from "@/services/LocationsService";
 import ProductService from "@/services/ProductService";
+import ProjectService from "@/services/ProjectService";
+import VendorService from "@/services/VendorService";
+import baseHelper from "@/mixins/baseHelper";
+import { Notification } from "@/utils/UI";
 
 export default {
 	mixins: [baseHelper],
@@ -60,23 +60,50 @@ export default {
 			this.reload();
 		},
 
-		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false, isInstitution = false) {
+			let beneficiaries = {};
+
+			if (beneficiaryIds.length) {
+				beneficiaries = isInstitution
+					? await BeneficiariesService.getInstitutions(beneficiaryIds, { isArchived: true })
+					: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+			}
+
 			this.table.data.forEach((item, key) => {
-				const beneficiary = this.prepareEntityForTable(item.beneficiaryId, beneficiaries);
+				const { beneficiaryId } = item;
+				const beneficiary = item.type === "Institution"
+					? this.prepareEntityForTable(beneficiaryId, beneficiaries.data)
+					: this.prepareEntityForTable(beneficiaryId, beneficiaries);
 
 				if (beneficiary) {
 					if (hasLink) {
+						const routeName = isInstitution
+							? "InstitutionDetail"
+							: "HouseholdInformationSummary";
+						const routeParams = isInstitution
+							? { institutionId: beneficiaryId }
+							: { householdId: beneficiary.householdId };
+						const tooltip = isInstitution
+							? "Deleted institution"
+							: "Deleted member";
+
 						this.table.data[key].beneficiaryId = {
-							routeName: "HouseholdInformationSummary",
-							name: item.beneficiaryId,
-							routeParams: { householdId: beneficiary.householdId },
+							routeName,
+							name: beneficiaryId,
+							routeParams,
 							isArchived: beneficiary.isArchived,
+							tooltip,
 						};
+					} else {
+						this.table.data[key].beneficiaryId = beneficiaryId;
 					}
 
-					this.table.data[key].localGivenName = beneficiary.localGivenName;
-					this.table.data[key].localFamilyName = beneficiary.localFamilyName;
+					this.table.data[key].localGivenName = isInstitution
+						? beneficiary.name
+						: beneficiary.localGivenName;
+					this.table.data[key].localFamilyName = isInstitution
+						? ""
+						: beneficiary.localFamilyName;
 				}
 			});
 			this.table.progress += 10;

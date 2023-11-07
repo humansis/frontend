@@ -139,34 +139,14 @@
 </template>
 
 <script>
-import { required, requiredIf, minValue } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
-import currencies from "@/utils/currencies";
+import { minValue, required, requiredIf } from "vuelidate/lib/validators";
+import validation from "@/mixins/validation";
+import { CURRENCIES } from "@/consts";
 
 export default {
 	name: "ProductForm",
 
-	mixins: [Validation],
-
-	data() {
-		return {
-			options: {
-				currencies,
-			},
-		};
-	},
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-		editing: Boolean,
-		categories: {
-			type: Array,
-			default: () => [],
-		},
-	},
+	mixins: [validation],
 
 	validations: {
 		formModel: {
@@ -179,6 +159,27 @@ export default {
 			},
 			uploadedImage: { required: requiredIf((form) => !form.image) },
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		editing: Boolean,
+
+		categories: {
+			type: Array,
+			default: () => [],
+		},
+	},
+
+	data() {
+		return {
+			options: {
+				currencies: CURRENCIES,
+			},
+		};
 	},
 
 	methods: {

@@ -9,15 +9,14 @@
 </template>
 
 <script>
-import AdvancedFilter from "@/components/AdvancedFilter";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification } from "@/utils/UI";
-import { getArrayOfCodeListByParams } from "@/utils/codeList";
-import currencies from "@/utils/currencies";
+import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { getArrayOfCodeListByParams } from "@/utils/codeList";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
+import { Notification } from "@/utils/UI";
+import { CURRENCIES, FILTER } from "@/consts";
 
 export default {
 	name: "VouchersFilter",
@@ -32,10 +31,10 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				currencies: consts.DEFAULT_FILTERS.CURRENCIES,
-				statuses: consts.DEFAULT_FILTERS.STATUSES,
-				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
-				beneficiaries: consts.DEFAULT_FILTERS.BENEFICIARIES,
+				currencies: FILTER.DEFAULT_FILTERS.CURRENCIES,
+				statuses: FILTER.DEFAULT_FILTERS.STATUSES,
+				assistances: FILTER.DEFAULT_FILTERS.ASSISTANCES,
+				beneficiaries: FILTER.DEFAULT_FILTERS.BENEFICIARIES,
 			}),
 		},
 	},
@@ -51,7 +50,7 @@ export default {
 					trackBy: "value",
 					multiple: true,
 					loading: false,
-					data: currencies,
+					data: CURRENCIES,
 				},
 				statuses: {
 					name: "Status",

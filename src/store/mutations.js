@@ -1,5 +1,5 @@
-import CONST from "@/store/const";
 import { removeCookie } from "@/utils/cookie";
+import CONST from "@/store/const";
 
 export default {
 	basic(state, payload) {
@@ -105,6 +105,10 @@ export default {
 
 	[CONST.STORE_ADM_NAMES]: (state, admNames) => {
 		state.admNames = admNames;
+	},
+
+	[CONST.STORE_INSTITUTION_ID_NAMES]: (state, institutionIdNames) => {
+		state.institutionIdNames = institutionIdNames;
 	},
 
 	[CONST.STORE_SELECTED_EXPORT_OPTIONS]: (state, selectedExportOptions) => {

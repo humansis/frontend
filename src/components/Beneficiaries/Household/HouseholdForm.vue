@@ -291,36 +291,58 @@
 </template>
 
 <script>
-import LocationForm from "@/components/LocationForm";
-import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import AddressService from "@/services/AddressService";
-import { Notification } from "@/utils/UI";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import CustomFieldsService from "@/services/CustomFieldsService";
+import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
+import LocationForm from "@/components/LocationForm";
+import addressHelper from "@/mixins/addressHelper";
+import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeCustomFields } from "@/utils/datagrid";
-import Validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 import getters from "@/store/getters";
-import CustomFieldsService from "@/services/CustomFieldsService";
-import addressHelper from "@/mixins/addressHelper";
-import CONST from "@/const";
-import calendarHelper from "@/mixins/calendarHelper";
 
 export default {
 	name: "HouseholdForm",
 
-	mixins: [Validation, addressHelper, calendarHelper],
+	components: {
+		LocationForm,
+		TypeOfLocationForm,
+	},
+
+	mixins: [validation, addressHelper, calendarHelper],
+
+	validations: {
+		formModel: {
+			livelihood: {
+				livelihood: {},
+				incomeLevel: {},
+				incomeSpentOnFood: {},
+				debtLevel: {},
+				assets: {},
+				foodConsumptionScore: {},
+				copingStrategiesIndex: {},
+			},
+			externalSupport: {
+				externalSupportReceivedType: {},
+				supportDateReceived: {},
+				supportOrganization: {},
+			},
+			customFields: {},
+			shelterStatus: {},
+		},
+	},
 
 	props: {
 		detailOfHousehold: Object,
+
 		isEditing: {
 			type: Boolean,
 			default: false,
 		},
-	},
-
-	components: {
-		LocationForm,
-		TypeOfLocationForm,
 	},
 
 	data() {
@@ -365,27 +387,6 @@ export default {
 		};
 	},
 
-	validations: {
-		formModel: {
-			livelihood: {
-				livelihood: {},
-				incomeLevel: {},
-				incomeSpentOnFood: {},
-				debtLevel: {},
-				assets: {},
-				foodConsumptionScore: {},
-				copingStrategiesIndex: {},
-			},
-			externalSupport: {
-				externalSupportReceivedType: {},
-				supportDateReceived: {},
-				supportOrganization: {},
-			},
-			customFields: {},
-			shelterStatus: {},
-		},
-	},
-
 	computed: {
 		countryCurrency() {
 			return getters.getCountryFromVuexStorage()?.currency;
@@ -428,15 +429,15 @@ export default {
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
 
 				switch (typeOfLocation) {
-					case CONST.LOCATION_TYPE.camp.type:
+					case GENERAL.LOCATION_TYPE.camp.type:
 						return AddressService.getCampAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
 						});
-					case CONST.LOCATION_TYPE.residence.type:
+					case GENERAL.LOCATION_TYPE.residence.type:
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
 						});
-					case CONST.LOCATION_TYPE.temporarySettlement.type:
+					case GENERAL.LOCATION_TYPE.temporarySettlement.type:
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
 							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
 						});

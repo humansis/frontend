@@ -10,11 +10,11 @@
 
 <script>
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
+import { Notification } from "@/utils/UI";
+import { FILTER } from "@/consts";
 
 export default {
 	name: "CommunitiesFilter",
@@ -29,7 +29,7 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				projects: consts.DEFAULT_FILTERS.PROJECTS,
+				projects: FILTER.DEFAULT_FILTERS.PROJECTS,
 			}),
 		},
 	},

@@ -12,30 +12,23 @@
 					@blur="validate('title')"
 				/>
 			</b-field>
-			<b-field
-				:label="$t('Projects')"
-				:type="validateType('projects')"
-				:message="validateMsg('projects')"
-			>
-				<MultiSelect
-					v-model="formModel.projects"
-					searchable
-					multiple
-					label="name"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="id"
-					:placeholder="$t('Click to select')"
-					:loading="projectsLoading"
-					:disabled="formDisabled || isEditing"
-					:options="options.projects"
-					:class="validateMultiselect('projects')"
-					@select="validate('projects')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+
+			<MultiSelectWithLabel
+				v-model="formModel.projects"
+				name="projects"
+				label="Projects"
+				validated-field-name="projects"
+				variable-to-show="name"
+				track-by="id"
+				searchable
+				multiple
+				add-select-all
+				select-all-label="All projects"
+				:validation="getValidations"
+				:loading="projectsLoading"
+				:options="options.projects"
+				:disabled="formDisabled"
+			/>
 
 			<b-field
 				:label="$t('Description')"
@@ -68,12 +61,25 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "importForm",
 
-	mixins: [Validation],
+	components: {
+		MultiSelectWithLabel,
+	},
+
+	mixins: [validation],
+
+	validations: {
+		formModel: {
+			title: { required },
+			projects: { required },
+			description: {},
+		},
+	},
 
 	props: {
 		formModel: Object,
@@ -81,6 +87,7 @@ export default {
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		isEditing: Boolean,
+
 		options: {
 			type: Object,
 			default: () => {},
@@ -91,14 +98,6 @@ export default {
 		return {
 			projectsLoading: false,
 		};
-	},
-
-	validations: {
-		formModel: {
-			title: { required },
-			projects: { required },
-			description: {},
-		},
 	},
 
 	methods: {

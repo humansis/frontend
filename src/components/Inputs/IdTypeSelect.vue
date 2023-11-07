@@ -30,26 +30,38 @@ import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 
 export default {
-	props: {
-		value: {
-			type: Object,
-			default: () => null,
-		},
-		required: {
-			type: Boolean,
-			default: false,
-		},
-		label: {
-			type: String,
-			default: "ID Type",
-		},
-	},
 
 	mixins: [validation],
 
 	validations() {
 		return {
 			idType: { required: requiredIf(() => this.required) },
+		};
+	},
+
+	props: {
+		value: {
+			type: Object,
+			default: () => null,
+		},
+
+		required: {
+			type: Boolean,
+			default: false,
+		},
+
+		label: {
+			type: String,
+			default: "ID Type",
+		},
+	},
+
+	data() {
+		return {
+			idTypeLoading: true,
+			options: {
+				idType: [],
+			},
 		};
 	},
 
@@ -62,15 +74,6 @@ export default {
 				this.$emit("input", value);
 			},
 		},
-	},
-
-	data() {
-		return {
-			idTypeLoading: true,
-			options: {
-				idType: [],
-			},
-		};
 	},
 
 	async created() {

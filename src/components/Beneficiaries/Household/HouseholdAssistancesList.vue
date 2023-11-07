@@ -32,13 +32,13 @@
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import { Notification } from "@/utils/UI";
-import { generateColumns, normalizeText } from "@/utils/datagrid";
-import consts from "@/utils/assistanceConst";
-import Table from "@/components/DataGrid/Table";
 import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", type: "is-light" },
@@ -129,7 +129,7 @@ export default {
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};
 				this.table.data[key].icon = {
-					type: item.type === consts.TARGET.INDIVIDUAL ? "user" : "home",
+					type: item.type === ASSISTANCE.TARGET.INDIVIDUAL ? "user" : "home",
 					size: "is-medium",
 					tooltip: normalizeText(item.type),
 				};

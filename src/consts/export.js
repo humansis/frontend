@@ -8,6 +8,7 @@ export default {
 	TRANSACTIONS: "Transactions",
 	PURCHASED_ITEMS: "Purchased items",
 	PROJECTS: "Projects",
+	INSTITUTIONS: "Institutions",
 	ASSISTANCE_OVERVIEW: "Assistance overview",
 	PRODUCTS: "Products",
 	CUSTOM_FIELDS: "Custom Fields",
@@ -18,4 +19,13 @@ export default {
 	FORMAT_XLSX: "xlsx",
 	FORMAT_CSV: "csv",
 	FORMAT_ODS: "ods",
+	BNF_FILE_3: {
+		OPTION_NAME: "BNF File 3",
+		STATE: {
+			CREATED: "Created",
+			EXPORTING: "Exporting",
+			EXPORTED: "Exported",
+			FAILED: "Failed",
+		},
+	},
 };

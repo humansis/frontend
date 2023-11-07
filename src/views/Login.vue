@@ -65,33 +65,22 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import JWTDecode from "jwt-decode";
-import { setCookie } from "@/utils/cookie";
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
-import LoginService from "@/services/LoginService";
-import { Notification } from "@/utils/UI";
-import gitInfo from "@/gitInfo";
-import UsersService from "@/services/UsersService";
-import CONST from "@/const";
-import TranslationService from "@/services/TranslationService";
 import CountriesService from "@/services/CountriesService";
+import LoginService from "@/services/LoginService";
+import TranslationService from "@/services/TranslationService";
+import UsersService from "@/services/UsersService";
+import validation from "@/mixins/validation";
+import { setCookie } from "@/utils/cookie";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
+import gitInfo from "@/gitInfo";
+import JWTDecode from "jwt-decode";
 
 export default {
 	name: "Login",
 
-	data() {
-		return {
-			gitInfo,
-			formModel: {
-				username: "",
-				password: "",
-			},
-			loginButtonLoading: false,
-		};
-	},
-
-	mixins: [Validation],
+	mixins: [validation],
 
 	validations: {
 		formModel: {
@@ -104,18 +93,15 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.urlLogin();
-
-		this.$store.commit("fullPage", true);
-	},
-
-	beforeCreate() {
-		document.documentElement.classList.add("layout-center");
-	},
-
-	beforeDestroy() {
-		this.$store.commit("fullPage", false);
+	data() {
+		return {
+			gitInfo,
+			formModel: {
+				username: "",
+				password: "",
+			},
+			loginButtonLoading: false,
+		};
 	},
 
 	computed: {
@@ -127,6 +113,20 @@ export default {
 			"country",
 			"translations",
 		]),
+	},
+
+	beforeCreate() {
+		document.documentElement.classList.add("layout-center");
+	},
+
+	mounted() {
+		this.urlLogin();
+
+		this.$store.commit("fullPage", true);
+	},
+
+	beforeDestroy() {
+		this.$store.commit("fullPage", false);
 	},
 
 	methods: {
@@ -185,7 +185,7 @@ export default {
 					await this.storeAvailableProjects(userDetail.projectIds);
 
 					const language = this.languages.find(({ key }) => key === userDetail?.language)
-						|| CONST.DEFAULT_LANGUAGE;
+						|| GENERAL.DEFAULT_LANGUAGE;
 
 					if (lastLoggedUsername === user.username) {
 						await this.setLocales(this.language.key);

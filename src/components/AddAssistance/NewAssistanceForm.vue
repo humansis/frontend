@@ -9,12 +9,14 @@
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
 			/>
+
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
 				@mapped="updateData"
 				@locationChanged="valuesForAssistanceName"
 			/>
+
 			<b-field class="mt-2" :label="$t('Date of Assistance')">
 				<b-datepicker
 					v-model="formModel.dateOfAssistance"
@@ -58,74 +60,82 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
+			<InputWithLabel
+				v-model="formModel.eloNumber"
+				name="elo-number"
+				label="Elo number"
+				optional
+			/>
+
+			<div class="mb-3">
+				<InputWithLabel
+					v-if="!options.activities.length"
+					v-model="formModel.activity"
+					name="activity"
+					label="Activity"
+					optional
+				/>
+
+				<MultiSelectWithLabel
+					v-else
+					v-model="formModel.activity"
+					name="activity"
+					label="Activity"
+					optional
+					:options="options.activities"
+					:custom-error-message="validationMessages.activity"
+				/>
+			</div>
+
+			<div>
+				<InputWithLabel
+					v-if="!options.budgetLines.length"
+					v-model="formModel.budgetLine"
+					name="budget-line"
+					label="Budget line"
+					optional
+				/>
+
+				<MultiSelectWithLabel
+					v-else
+					v-model="formModel.budgetLine"
+					name="budget-line"
+					label="Budget line"
+					optional
+					:options="options.budgetLines"
+					:custom-error-message="validationMessages.budgetLine"
+				/>
+			</div>
 		</div>
 
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
+
 		<div class="box">
-			<b-field
-				:label="$t('Sector')"
-				:type="validateType('sector')"
-				:message="validateMsg('sector')"
-			>
-				<MultiSelect
-					v-model="formModel.sector"
-					searchable
-					label="value"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:loading="loading.sectors"
-					:options="options.sectors"
-					:class="validateMultiselect('sector')"
-					@select="onSectorSelect"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-				</MultiSelect>
-			</b-field>
-			<b-field
-				:label="$t('Subsector')"
-				:type="validateType('subsector')"
-				:message="validateMsg('subsector')"
-			>
-				<MultiSelect
-					v-model="formModel.subsector"
-					searchable
-					label="value"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:loading="loading.subsectors"
-					:options="options.subsectors"
-					:class="validateMultiselect('subsector')"
-					@select="onSubsectorSelect"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-				</MultiSelect>
-			</b-field>
+			<MultiSelectWithLabel
+				v-model="formModel.sector"
+				name="sector"
+				label="Sector"
+				validated-field-name="sector"
+				:options="options.sectors"
+				:loading="loading.sectors"
+				:validation="getValidations"
+				:custom-error-message="sectorValidationMessage"
+				@select="onSectorSelect"
+			/>
+
+			<MultiSelectWithLabel
+				v-model="formModel.subsector"
+				name="subsector"
+				label="Subsector"
+				validated-field-name="subsector"
+				:options="options.subsectors"
+				:loading="loading.subsectors"
+				:validation="getValidations"
+				:custom-error-message="subsectorValidationMessage"
+				@select="onSubsectorSelect"
+			/>
+
 			<b-field
 				:label="$t('Assistance Type')"
 				:type="validateType('assistanceType')"
@@ -156,6 +166,7 @@
 					</template>
 				</MultiSelect>
 			</b-field>
+
 			<b-field
 				:label="$t('Target Type')"
 				:type="validateType('targetType')"
@@ -189,6 +200,7 @@
 				</MultiSelect>
 			</b-field>
 		</div>
+
 		<div class="box">
 			<b-field
 				:label="$t('Note')"
@@ -205,16 +217,19 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import LocationForm from "@/components/LocationForm";
-import SectorsService from "@/services/SectorsService";
 import AssistancesService from "@/services/AssistancesService";
+import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
-import { Notification } from "@/utils/UI";
-import Validation from "@/mixins/validation";
-import { normalizeText, normalizeSelectorValue } from "@/utils/datagrid";
-import consts from "@/utils/assistanceConst";
-import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import InputWithLabel from "@/components/Inputs/InputWithLabel";
+import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
+import LocationForm from "@/components/LocationForm";
 import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { getUniqueObjectsInArray } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "NewAssistanceForm",
@@ -222,26 +237,47 @@ export default {
 	components: {
 		LocationForm,
 		AssistanceName,
+		InputWithLabel,
+		MultiSelectWithLabel,
 	},
 
-	mixins: [Validation, calendarHelper],
+	mixins: [validation, calendarHelper],
+
+	validations: {
+		formModel: {
+			name: { required },
+			dateOfAssistance: { required },
+			sector: { required },
+			subsector: { required },
+			targetType: { required },
+			assistanceType: { required },
+		},
+	},
 
 	props: {
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		newAssistanceForm: {
 			type: Object,
 			default: null,
 		},
+
 		dataBeforeDuplicated: {
 			type: Object,
 			default: () => {},
 		},
+
 		dateExpiration: {
 			type: String,
 			default: "",
+		},
+
+		validationMessages: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
@@ -263,13 +299,18 @@ export default {
 				assistanceType: null,
 				note: "",
 				round: null,
+				eloNumber: "",
+				activity: null,
+				budgetLine: null,
 			},
 			options: {
-				rounds: consts.ROUNDS_OPTIONS,
+				rounds: ASSISTANCE.ROUNDS_OPTIONS,
 				sectors: [],
 				subsectors: [],
 				assistanceTypes: [],
 				targetTypes: [],
+				activities: [],
+				budgetLines: [],
 			},
 			loading: {
 				sectors: true,
@@ -277,17 +318,24 @@ export default {
 				assistanceTypes: false,
 				targetTypes: false,
 			},
+			sectorValidationMessage: "",
+			subsectorValidationMessage: "",
 		};
 	},
 
-	validations: {
-		formModel: {
-			name: { required },
-			dateOfAssistance: { required },
-			sector: { required },
-			subsector: { required },
-			targetType: { required },
-			assistanceType: { required },
+	computed: {
+		maxDateOfAssistance() {
+			const { endDate } = this.project;
+			return endDate ? new Date(`${endDate} 00:00`) : new Date();
+		},
+
+		minDateOfAssistance() {
+			const { startDate } = this.project;
+			return startDate ? new Date(`${startDate} 00:00`) : new Date();
+		},
+
+		assistanceDates() {
+			return `${this.formModel.dateOfAssistance} - ${this.dateExpiration}`;
 		},
 	},
 
@@ -314,49 +362,44 @@ export default {
 	async mounted() {
 		await this.fetchSectors();
 		this.defaultDateOfAssistance();
+		this.prepareDataFromProjectTargets();
 	},
 
 	updated() {
 		this.$emit("updatedData", this.formModel);
 	},
 
-	computed: {
-		maxDateOfAssistance() {
-			const { endDate } = this.project;
-			return endDate ? new Date(`${endDate} 00:00`) : new Date();
-		},
-
-		minDateOfAssistance() {
-			const { startDate } = this.project;
-			return startDate ? new Date(`${startDate} 00:00`) : new Date();
-		},
-
-		assistanceDates() {
-			return `${this.formModel.dateOfAssistance} - ${this.dateExpiration}`;
-		},
-	},
-
 	methods: {
 		async mapTargets() {
 			const { sector, subsector, assistanceType, targetType } = this.formModel;
+
 			if (sector && typeof sector !== "object") {
 				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
 				await this.fetchSubsectors(sector);
 			}
+
 			if (subsector && typeof subsector !== "object") {
 				this.formModel.subsector = getArrayOfCodeListByKey([subsector], this.options.subsectors, "code");
 				await this.fetchAssistanceTypes(subsector);
 			} else {
 				await this.fetchAssistanceTypes(subsector);
 			}
+
 			if (assistanceType && typeof assistanceType !== "object") {
 				this.formModel.assistanceType = getArrayOfCodeListByKey([assistanceType], this.options.assistanceTypes, "code");
 				await this.fetchTargetTypes(assistanceType);
 			}
+
 			if (targetType && typeof targetType !== "object") {
 				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
 			}
-			await this.showComponents();
+
+			this.validateSectorAndSubSector(sector, subsector);
+
+			if (!this.sectorValidationMessage.length && !this.subsectorValidationMessage.length) {
+				await this.showComponents();
+			}
+
 			this.$emit("updatedData", this.formModel);
 		},
 
@@ -385,19 +428,21 @@ export default {
 			return this.formModel.locationId;
 		},
 
-		onSectorSelect({ code }) {
+		async onSectorSelect({ code }) {
 			this.formModel.subsector = [];
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("sector");
-			this.fetchSubsectors(code);
+			await this.fetchSubsectors(code);
+			this.sectorValidationMessage = "";
 		},
 
-		onSubsectorSelect({ code }) {
+		async onSubsectorSelect({ code }) {
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("subsector");
-			this.fetchAssistanceTypes(code);
+			await this.fetchAssistanceTypes(code);
+			this.subsectorValidationMessage = "";
 		},
 
 		onAssistanceTypeSelect({ code }) {
@@ -430,56 +475,56 @@ export default {
 				targetType: { code: targetType },
 			} = this.formModel;
 
-			if (assistanceType === consts.TYPE.DISTRIBUTION) {
+			if (assistanceType === ASSISTANCE.TYPE.DISTRIBUTION) {
 				switch (targetType) {
-					case consts.TARGET.INDIVIDUAL:
+					case ASSISTANCE.TARGET.INDIVIDUAL:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
 						];
-					case consts.TARGET.HOUSEHOLD:
+					case ASSISTANCE.TARGET.HOUSEHOLD:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
 						];
-					case consts.TARGET.COMMUNITY:
+					case ASSISTANCE.TARGET.COMMUNITY:
 						return [
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
-							consts.COMPONENT.COMMUNITIES,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
-					case consts.TARGET.INSTITUTION:
+					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
-							consts.COMPONENT.DISTRIBUTED_COMMODITY,
-							consts.COMPONENT.INSTITUTIONS,
+							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
+							ASSISTANCE.COMPONENT.INSTITUTIONS,
 						];
 					default:
 						return [];
 				}
-			} else if (assistanceType === consts.TYPE.ACTIVITY) {
+			} else if (assistanceType === ASSISTANCE.TYPE.ACTIVITY) {
 				switch (targetType) {
-					case consts.TARGET.INDIVIDUAL:
+					case ASSISTANCE.TARGET.INDIVIDUAL:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
 						];
-					case consts.TARGET.HOUSEHOLD:
+					case ASSISTANCE.TARGET.HOUSEHOLD:
 						return [
-							consts.COMPONENT.SELECTION_CRITERIA,
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
 						];
-					case consts.TARGET.COMMUNITY:
+					case ASSISTANCE.TARGET.COMMUNITY:
 						return [
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
-							consts.COMPONENT.HOUSEHOLD_TARGETED,
-							consts.COMPONENT.INDIVIDUALS_TARGETED,
-							consts.COMPONENT.COMMUNITIES,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.HOUSEHOLD_TARGETED,
+							ASSISTANCE.COMPONENT.INDIVIDUALS_TARGETED,
+							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
-					case consts.TARGET.INSTITUTION:
+					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
-							consts.COMPONENT.ACTIVITY_DESCRIPTION,
-							consts.COMPONENT.HOUSEHOLD_TARGETED,
-							consts.COMPONENT.INDIVIDUALS_TARGETED,
-							consts.COMPONENT.INSTITUTIONS,
+							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
+							ASSISTANCE.COMPONENT.HOUSEHOLD_TARGETED,
+							ASSISTANCE.COMPONENT.INDIVIDUALS_TARGETED,
+							ASSISTANCE.COMPONENT.INSTITUTIONS,
 						];
 					default:
 						return [];
@@ -564,6 +609,43 @@ export default {
 			this.formModel.dateOfAssistance = this.minDateOfAssistance >= new Date()
 				? this.minDateOfAssistance
 				: new Date();
+		},
+
+		prepareDataFromProjectTargets() {
+			if (!this.project.targets.length) {
+				return;
+			}
+
+			this.project.targets.forEach((target) => {
+				const { activity, budgetLine } = target;
+
+				if (activity) {
+					this.options.activities.push({
+						code: activity, value: activity,
+					});
+				}
+
+				if (budgetLine) {
+					this.options.budgetLines.push({
+						code: budgetLine, value: budgetLine,
+					});
+				}
+			});
+
+			this.options.activities = getUniqueObjectsInArray(this.options.activities, "code");
+			this.options.budgetLines = getUniqueObjectsInArray(this.options.budgetLines, "code");
+		},
+
+		validateSectorAndSubSector(sector, subsector) {
+			if (!this.formModel.sector?.code) {
+				this.sectorValidationMessage = `${this.$t("Sector")}:
+					${sector} ${this.$t("was removed, because this sector is not selectable.")}`;
+			}
+
+			if (!this.formModel.subsector?.code) {
+				this.subsectorValidationMessage = `${this.$t("Subsector")}:
+				 	${normalizeText(subsector)} ${this.$t("was removed, because this subsector is not selectable.")}`;
+			}
 		},
 	},
 };

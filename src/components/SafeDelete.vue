@@ -31,30 +31,36 @@ export default {
 	name: "SafeDelete",
 
 	props: {
-		icon: {
-			type: String,
-			required: true,
-		},
 		entity: String,
 		tooltip: String,
 		id: Number,
 		hasConfirmMessage: Boolean,
+
+		icon: {
+			type: String,
+			required: true,
+		},
+
 		disabled: {
 			type: Boolean,
 			default: false,
 		},
+
 		message: {
 			type: String,
 			default: "",
 		},
+
 		componentType: {
 			type: String,
 			default: "Button",
 		},
+
 		name: {
 			type: String,
 			default: "",
 		},
+
 		iconType: {
 			type: String,
 			default: "is-danger",

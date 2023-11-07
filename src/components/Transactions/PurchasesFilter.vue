@@ -11,11 +11,11 @@
 
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
-import locationHelper from "@/mixins/locationHelper";
 import filtersHelper from "@/mixins/filtersHelper";
+import locationHelper from "@/mixins/locationHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
+import { FILTER } from "@/consts";
 
 export default {
 	name: "PurchasesFilter",
@@ -28,17 +28,17 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				beneficiaryTypes: consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
-				projects: consts.DEFAULT_FILTERS.PROJECTS,
-				assistances: consts.DEFAULT_FILTERS.ASSISTANCES,
-				commodity: consts.DEFAULT_FILTERS.COMMODITY,
-				adm1: consts.DEFAULT_FILTERS.ADM1,
-				adm2: consts.DEFAULT_FILTERS.ADM2,
-				adm3: consts.DEFAULT_FILTERS.ADM3,
-				adm4: consts.DEFAULT_FILTERS.ADM4,
-				vendors: consts.DEFAULT_FILTERS.VENDORS,
-				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
-				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
+				beneficiaryTypes: FILTER.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+				projects: FILTER.DEFAULT_FILTERS.PROJECTS,
+				assistances: FILTER.DEFAULT_FILTERS.ASSISTANCES,
+				commodity: FILTER.DEFAULT_FILTERS.COMMODITY,
+				adm1: FILTER.DEFAULT_FILTERS.ADM1,
+				adm2: FILTER.DEFAULT_FILTERS.ADM2,
+				adm3: FILTER.DEFAULT_FILTERS.ADM3,
+				adm4: FILTER.DEFAULT_FILTERS.ADM4,
+				vendors: FILTER.DEFAULT_FILTERS.VENDORS,
+				dateFrom: FILTER.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: FILTER.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},
@@ -205,21 +205,21 @@ export default {
 
 			this.$emit("filtersChanged", {
 				filters: {
-					projects: preparedFilters.project || consts.DEFAULT_FILTERS.PROJECTS,
-					dateFrom: preparedFilters.dateFrom || consts.DEFAULT_FILTERS.DATE_FROM,
-					dateTo: preparedFilters.dateTo || consts.DEFAULT_FILTERS.DATE_TO,
+					projects: preparedFilters.project || FILTER.DEFAULT_FILTERS.PROJECTS,
+					dateFrom: preparedFilters.dateFrom || FILTER.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: preparedFilters.dateTo || FILTER.DEFAULT_FILTERS.DATE_TO,
 					beneficiaryTypes: preparedFilters.beneficiaryType
-						|| consts.DEFAULT_FILTERS.BENEFICIARY_TYPES,
-					modalityTypes: preparedFilters.commodity || consts.DEFAULT_FILTERS.MODALITY_TYPES,
-					assistances: preparedFilters.distribution || consts.DEFAULT_FILTERS.ASSISTANCES,
-					vendors: preparedFilters.vendor || consts.DEFAULT_FILTERS.VENDORS,
-					locations: location ? [location] : consts.DEFAULT_FILTERS.LOCATIONS,
+						|| FILTER.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+					modalityTypes: preparedFilters.commodity || FILTER.DEFAULT_FILTERS.MODALITY_TYPES,
+					assistances: preparedFilters.distribution || FILTER.DEFAULT_FILTERS.ASSISTANCES,
+					vendors: preparedFilters.vendor || FILTER.DEFAULT_FILTERS.VENDORS,
+					locations: location ? [location] : FILTER.DEFAULT_FILTERS.LOCATIONS,
 				},
 				locationsFilter: {
-					adm1: filtersCopy.adm1 || consts.DEFAULT_FILTERS.ADM1,
-					adm2: filtersCopy.adm2 || consts.DEFAULT_FILTERS.ADM2,
-					adm3: filtersCopy.adm3 || consts.DEFAULT_FILTERS.ADM3,
-					adm4: filtersCopy.adm4 || consts.DEFAULT_FILTERS.ADM4,
+					adm1: filtersCopy.adm1 || FILTER.DEFAULT_FILTERS.ADM1,
+					adm2: filtersCopy.adm2 || FILTER.DEFAULT_FILTERS.ADM2,
+					adm3: filtersCopy.adm3 || FILTER.DEFAULT_FILTERS.ADM3,
+					adm4: filtersCopy.adm4 || FILTER.DEFAULT_FILTERS.ADM4,
 				},
 			});
 		},

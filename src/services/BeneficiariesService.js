@@ -1,6 +1,6 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
-import { EXPORT } from "@/consts";
 import { queryBuilder } from "@/utils/helpers";
+import { EXPORT } from "@/consts";
 
 export default {
 	async getListOfHouseholds(page, size, sort, search = null, filters = null, ids = null) {
@@ -138,11 +138,16 @@ export default {
 		return data;
 	},
 
-	async getInstitutions(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
+	async getInstitutions(ids, filters) {
 		const { data } = await fetcher({
-			uri: `institutions?${idsText}`,
+			uri: `institutions${queryBuilder({ ids, filters })}`,
+		});
+		return data;
+	},
+
+	async getInstitution(id, filters = {}) {
+		const { data } = await fetcher({
+			uri: `institutions/${id}${queryBuilder({ filters })}`,
 		});
 		return data;
 	},
@@ -215,20 +220,22 @@ export default {
 		return data;
 	},
 
-	async addBeneficiaryToAssistance(assistanceId, target, body) {
+	async addBeneficiaryToAssistance(assistanceId, target, body, endpointVersion = 1) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "PUT",
 			body,
+			version: endpointVersion,
 		});
 		return { data, status };
 	},
 
-	async removeBeneficiaryFromAssistance(assistanceId, target, body) {
+	async removeBeneficiaryFromAssistance(assistanceId, target, body, endpointVersion = 1) {
 		const { data, status } = await fetcher({
 			uri: `assistances/${assistanceId}/assistances-${target}`,
 			method: "DELETE",
 			body,
+			version: endpointVersion,
 		});
 		return { data, status };
 	},
@@ -309,6 +316,16 @@ export default {
 		const idsText = ids ? idsToUri(ids, param) : "";
 
 		return download({ uri: `beneficiaries/exports?${formatText + idsText}` });
+	},
+
+	getBnfFile3ExportStatistics(bnfFile3Id) {
+		return fetcher({ uri: `exports/${bnfFile3Id}` });
+	},
+
+	exportBnf3File(format, bnfFile3Id) {
+		return download({
+			uri: `exports/${bnfFile3Id}/content${queryBuilder({ format })}`,
+		});
 	},
 
 	async getBeneficiaryTypes() {

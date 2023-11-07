@@ -12,7 +12,7 @@
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import { copyObject } from "@/utils/helpers";
-import consts from "@/utils/filterConst";
+import { FILTER } from "@/consts";
 
 export default {
 	name: "SyncFilter",
@@ -27,8 +27,8 @@ export default {
 		defaultFilters: {
 			type: Object,
 			default: () => ({
-				dateFrom: consts.DEFAULT_FILTERS.DATE_FROM,
-				dateTo: consts.DEFAULT_FILTERS.DATE_TO,
+				dateFrom: FILTER.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: FILTER.DEFAULT_FILTERS.DATE_TO,
 			}),
 		},
 	},

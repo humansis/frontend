@@ -48,11 +48,38 @@
 </template>
 
 <script>
-import validation from "@/mixins/validation";
 import { requiredIf } from "vuelidate/lib/validators";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "ActivityDetails",
+
+	mixins: [validation],
+
+	/* eslint-disable func-names */
+	validations: {
+		formModel: {
+			activityDescription: { required: requiredIf(function () {
+				return this.visible.activityDescription;
+			}) },
+			householdsTargeted: { required: requiredIf(function () {
+				return this.visible.householdsTargeted;
+			}) },
+			individualsTargeted: { required: requiredIf(function () {
+				return this.visible.individualsTargeted;
+			}) },
+		},
+	},
+	/* eslint-enable func-names */
+
+	props: {
+		visible: Object,
+
+		data: {
+			type: Object,
+			default: null,
+		},
+	},
 
 	data() {
 		return {
@@ -69,34 +96,6 @@ export default {
 			if (data) {
 				this.formModel = data;
 			}
-		},
-	},
-
-	mixins: [validation],
-
-	props: {
-		visible: Object,
-
-		data: {
-			type: Object,
-			default: null,
-		},
-	},
-
-	validations: {
-		formModel: {
-			// eslint-disable-next-line func-names
-			activityDescription: { required: requiredIf(function () {
-				return this.visible.activityDescription;
-			}) },
-			// eslint-disable-next-line func-names
-			householdsTargeted: { required: requiredIf(function () {
-				return this.visible.householdsTargeted;
-			}) },
-			// eslint-disable-next-line func-names
-			individualsTargeted: { required: requiredIf(function () {
-				return this.visible.individualsTargeted;
-			}) },
 		},
 	},
 

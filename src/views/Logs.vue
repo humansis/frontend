@@ -45,12 +45,12 @@
 </template>
 
 <script>
-import DistributionsLogList from "@/components/Logs/DistributionsLogList";
-import BeneficiariesLogList from "@/components/Logs/BeneficiariesLogList";
-import VouchersLogList from "@/components/Logs/VouchersLogList";
 import AdministrativeSettingsLogList from "@/components/Logs/AdministrativeSettingsLogList";
+import BeneficiariesLogList from "@/components/Logs/BeneficiariesLogList";
+import DistributionsLogList from "@/components/Logs/DistributionsLogList";
 import OtherLogList from "@/components/Logs/OtherLogList";
 import ReportsLog from "@/components/Logs/ReportsLog";
+import VouchersLogList from "@/components/Logs/VouchersLogList";
 
 export default {
 	name: "Logs",

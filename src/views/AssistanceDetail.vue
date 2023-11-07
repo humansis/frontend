@@ -110,17 +110,17 @@
 </template>
 
 <script>
+import AssistancesService from "@/services/AssistancesService";
+import ProjectService from "@/services/ProjectService";
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary/index";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
-import AssistancesService from "@/services/AssistancesService";
-import EditNote from "@/components/Assistance/EditNote";
-import { Notification, Toast } from "@/utils/UI";
-import ProjectService from "@/services/ProjectService";
-import consts from "@/utils/assistanceConst";
-import permissions from "@/mixins/permissions";
-import Modal from "@/components/Modal";
 import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
+import EditNote from "@/components/Assistance/EditNote";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
+import Modal from "@/components/Modal";
+import permissions from "@/mixins/permissions";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceDetail",
@@ -138,7 +138,6 @@ export default {
 
 	data() {
 		return {
-			consts,
 			assistance: null,
 			statistics: null,
 			isStatisticsLoading: false,
@@ -165,46 +164,46 @@ export default {
 
 	computed: {
 		assistanceUnit() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) {
+			if (this.assistance?.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 				return this.commodities?.[0]?.unit || "";
 			}
 
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity";
+			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return "Activity";
 
 			return "";
 		},
 
 		startTransactionButtonVisible() {
-			return this.commodities[0]?.modalityType === consts.COMMODITY.MOBILE_MONEY;
+			return this.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.MOBILE_MONEY;
 		},
 
 		isCommoditySmartcard() {
-			return this.commodities[0]?.modalityType === consts.COMMODITY.SMARTCARD;
+			return this.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		inputDistributedButtonVisible() {
 			const modality = this.commodities[0]?.modalityType;
 
 			return !this.isCommoditySmartcard
-				&& modality !== consts.COMMODITY.QR_CODE_VOUCHER
-				&& modality !== consts.COMMODITY.MOBILE_MONEY;
+				&& modality !== ASSISTANCE.COMMODITY.QR_CODE_VOUCHER
+				&& modality !== ASSISTANCE.COMMODITY.MOBILE_MONEY;
 		},
 
 		setAtDistributedButtonLabel() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Set As Distributed";
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Set As Completed";
+			if (this.assistance?.type === ASSISTANCE.TYPE.DISTRIBUTION) return "Set As Distributed";
+			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return "Set As Completed";
 			return "";
 		},
 
 		distributionOrActivity() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distribution Progress";
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Activity Progress";
+			if (this.assistance?.type === ASSISTANCE.TYPE.DISTRIBUTION) return "Distribution Progress";
+			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return "Activity Progress";
 			return "";
 		},
 
 		distributedOrCompleted() {
-			if (this.assistance?.type === consts.TYPE.DISTRIBUTION) return "Distributed";
-			if (this.assistance?.type === consts.TYPE.ACTIVITY) return "Completed";
+			if (this.assistance?.type === ASSISTANCE.TYPE.DISTRIBUTION) return "Distributed";
+			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return "Completed";
 			return "";
 		},
 
@@ -218,6 +217,10 @@ export default {
 
 		isAssistanceCompleted() {
 			return this.assistance?.completed;
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.assistance.target === ASSISTANCE.TARGET.INSTITUTION;
 		},
 
 		modalityType() {
@@ -246,7 +249,8 @@ export default {
 		isInputDistributedButtonVisible() {
 			return this.isAssistanceStateValidated
 				&& this.userCan.assignDistributionItems
-				&& this.inputDistributedButtonVisible;
+				&& this.inputDistributedButtonVisible
+				&& !this.isAssistanceTargetInstitution;
 		},
 
 		isStartTransactionButtonVisible() {
@@ -281,7 +285,7 @@ export default {
 			).then((data) => {
 				this.assistance = data;
 
-				if (this.assistance.type === consts.TYPE.DISTRIBUTION) {
+				if (this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
 			}).catch((e) => {

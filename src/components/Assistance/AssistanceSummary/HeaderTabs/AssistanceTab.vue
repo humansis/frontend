@@ -50,7 +50,7 @@
 				</div>
 				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
 				<div v-else>
-					<small> {{ $t("N/A") }} </small>
+					<small>{{ $t("N/A") }}</small>
 				</div>
 			</div>
 		</div>
@@ -85,7 +85,7 @@
 					{{ dateExpiration }}
 				</div>
 				<div v-else-if="!isExpirationDateLoaded">
-					<small> {{ $t("N/A") }} </small>
+					<small>{{ $t("N/A") }}</small>
 				</div>
 				<Loading v-else type="bubbles" is-normal />
 			</div>
@@ -94,9 +94,9 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading";
 import { mapState } from "vuex";
-import consts from "@/utils/assistanceConst";
+import Loading from "@/components/Loading";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceTab",
@@ -110,26 +110,32 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
 		project: {
 			type: Object,
 			default: () => {},
 		},
+
 		province: {
 			type: Object,
 			default: () => {},
 		},
+
 		isAssistanceLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isProjectLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		isCommodityLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		commodity: {
 			type: Array,
 			default: () => [],
@@ -164,7 +170,7 @@ export default {
 		},
 
 		isCommoditySmartCard() {
-			return this.commodity[0]?.code === consts.COMMODITY.SMARTCARD;
+			return this.commodity[0]?.code === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		isExpirationDateLoaded() {

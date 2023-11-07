@@ -159,19 +159,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Validation from "@/mixins/validation";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "MyOrganizationForm",
 
-	mixins: [Validation],
-
-	props: {
-		formModel: Object,
-		submitButtonLabel: String,
-		closeButton: Boolean,
-		formDisabled: Boolean,
-	},
+	mixins: [validation],
 
 	validations: {
 		formModel: {
@@ -182,6 +175,13 @@ export default {
 			secondaryColor: {},
 			footerContent: { required },
 		},
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
 	},
 
 	data() {

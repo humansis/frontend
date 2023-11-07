@@ -82,12 +82,12 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import Table from "@/components/DataGrid/Table";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
+import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import Validation from "@/mixins/validation";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Summary",
@@ -97,7 +97,13 @@ export default {
 		ColumnField,
 	},
 
-	mixins: [Validation],
+	mixins: [validation],
+
+	validations: {
+		formModel: {
+			selectedProjects: { required },
+		},
+	},
 
 	props: {
 		members: Array,
@@ -105,15 +111,10 @@ export default {
 		livelihood: String,
 		location: String,
 		address: String,
+
 		isEditing: {
 			type: Boolean,
 			default: false,
-		},
-	},
-
-	validations: {
-		formModel: {
-			selectedProjects: { required },
 		},
 	},
 
@@ -141,15 +142,6 @@ export default {
 		};
 	},
 
-	async created() {
-		this.loadingComponent = this.$buefy.loading.open({
-			container: this.$refs.summary,
-		});
-		await this.fetchProjects();
-		this.loadingComponent.close();
-		this.$emit("loaded");
-	},
-
 	computed: {
 		membersData() {
 			return this.members;
@@ -157,6 +149,15 @@ export default {
 		livelihoodFilled() {
 			return this.livelihood;
 		},
+	},
+
+	async created() {
+		this.loadingComponent = this.$buefy.loading.open({
+			container: this.$refs.summary,
+		});
+		await this.fetchProjects();
+		this.loadingComponent.close();
+		this.$emit("loaded");
 	},
 
 	methods: {

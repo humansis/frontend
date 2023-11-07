@@ -416,35 +416,18 @@
 <script>
 import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import calendarHelper from "@/mixins/calendarHelper";
+import idHelper from "@/mixins/idHelper";
+import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import PhoneCodes from "@/utils/phoneCodes";
-import Validation from "@/mixins/validation";
-import calendarHelper from "@/mixins/calendarHelper";
+import { PHONE } from "@/consts";
 
 export default {
 	name: "HouseholdHeadForm",
 
-	mixins: [Validation, calendarHelper],
-
-	props: {
-		showTypeOfBeneficiary: Boolean,
-		detailOfHousehold: Object,
-		isEditing: {
-			type: Boolean,
-			default: false,
-		},
-		beneficiary: Object,
-		isHouseholdHead: {
-			type: Boolean,
-			default: false,
-		},
-		membersSmartCardNumbers: {
-			type: Array,
-			default: () => [],
-		},
-	},
+	mixins: [validation, calendarHelper, idHelper],
 
 	validations: {
 		formModel: {
@@ -496,15 +479,36 @@ export default {
 		},
 	},
 
+	props: {
+		showTypeOfBeneficiary: Boolean,
+		detailOfHousehold: Object,
+		beneficiary: Object,
+
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
+
+		isHouseholdHead: {
+			type: Boolean,
+			default: false,
+		},
+
+		membersSmartCardNumbers: {
+			type: Array,
+			default: () => [],
+		},
+	},
+
 	data() {
 		return {
 			loadingComponent: null,
 			isPrimaryIdValid: true,
 			isSecondaryIdValid: true,
 			isTertiaryIdValid: true,
-			primaryIdValidationMessage: null,
-			secondaryIdValidationMessage: null,
-			tertiaryIdValidationMessage: null,
+			primaryIdValidationMessage: "",
+			secondaryIdValidationMessage: "",
+			tertiaryIdValidationMessage: "",
 			detailOfHouseholdHead: {},
 			householdHeadSmartCardNumbers: [],
 			formModel: {
@@ -568,7 +572,7 @@ export default {
 				residencyStatus: [],
 				referralType: [],
 				phoneType: [],
-				phonePrefixes: PhoneCodes,
+				phonePrefixes: PHONE.CODES,
 				vulnerabilities: [],
 			},
 			idTypeLoading: true,
@@ -576,31 +580,6 @@ export default {
 			phoneTypesLoading: true,
 			referralTypeLoading: true,
 		};
-	},
-
-	watch: {
-		detailOfHousehold: "map",
-		beneficiary: "map",
-	},
-
-	async mounted() {
-		if (this.isEditing) {
-			if (this.isHouseholdHead) {
-				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
-			}
-
-			this.loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.householdHeadForm,
-			});
-		}
-		await Promise.all([
-			this.fetchNationalCardTypes(),
-			this.fetchPhoneTypes(),
-			this.fetchVulnerabilities(),
-			this.fetchResidenceStatus(),
-			this.fetchReferralTypes(),
-		]);
-		await this.map();
 	},
 
 	computed: {
@@ -628,6 +607,31 @@ export default {
 				? this.householdHeadSmartCardNumbers
 				: this.membersSmartCardNumbers;
 		},
+	},
+
+	watch: {
+		detailOfHousehold: "map",
+		beneficiary: "map",
+	},
+
+	async mounted() {
+		if (this.isEditing) {
+			if (this.isHouseholdHead) {
+				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
+			}
+
+			this.loadingComponent = this.$buefy.loading.open({
+				container: this.$refs.householdHeadForm,
+			});
+		}
+		await Promise.all([
+			this.fetchNationalCardTypes(),
+			this.fetchPhoneTypes(),
+			this.fetchVulnerabilities(),
+			this.fetchResidenceStatus(),
+			this.fetchReferralTypes(),
+		]);
+		await this.map();
 	},
 
 	methods: {
@@ -834,31 +838,6 @@ export default {
 				});
 
 			this.referralTypeLoading = false;
-		},
-
-		onIdChange() {
-			const primaryIdCode = this.formModel.primaryId.idType?.code;
-			const secondaryIdCode = this.formModel.secondaryId.idType?.code;
-			const tertiaryIdCode = this.formModel.tertiaryId.idType?.code;
-
-			const isPrimaryEqualsSecondary = primaryIdCode === secondaryIdCode;
-			const isSecondaryEqualsTertiary = secondaryIdCode === tertiaryIdCode;
-			const isPrimaryEqualsTertiary = primaryIdCode === tertiaryIdCode;
-
-			this.isPrimaryIdValid = (this.isSecondaryIdTabDisabled || !isPrimaryEqualsSecondary)
-				&& (this.isTertiaryIdTabDisabled || !isPrimaryEqualsTertiary);
-			this.primaryIdValidationMessage = this.isPrimaryIdValid ? null : this.$t("Primary ID cannot be the same as the secondary or tertiary ID");
-
-			if (!this.isSecondaryIdTabDisabled) {
-				this.isSecondaryIdValid = !isPrimaryEqualsSecondary
-					&& (this.isTertiaryIdTabDisabled || !isSecondaryEqualsTertiary);
-				this.secondaryIdValidationMessage = this.isSecondaryIdValid ? null : this.$t("Secondary ID cannot be the same as the primary or tertiary ID");
-			}
-
-			if (!this.isTertiaryIdTabDisabled) {
-				this.isTertiaryIdValid = !isPrimaryEqualsTertiary && !isSecondaryEqualsTertiary;
-				this.tertiaryIdValidationMessage = this.isTertiaryIdValid ? null : this.$t("Tertiary ID cannot be the same as the primary or secondary ID");
-			}
 		},
 
 		submit() {

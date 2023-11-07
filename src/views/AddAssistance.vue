@@ -21,6 +21,7 @@
 					:new-assistance-form="componentsData.newAssistanceForm"
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
+					:validation-messages="validationMessages"
 					@updatedData="fetchNewAssistanceForm"
 					@onTargetSelect="targetSelected"
 					@showComponent="onShowComponent"
@@ -29,19 +30,28 @@
 
 			<div class="column is-three-fifths">
 				<SelectionCriteria
-					ref="selectionCriteria"
 					v-show="visibleComponents.selectionCriteria"
+					ref="selectionCriteria"
 					:target-type="targetType"
 					:data="componentsData.selectionCriteria"
 					:assistance-body="assistanceBody"
+					:is-assistance-duplicated="isDuplicated"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
+				<TargetTypeSelect
+					v-show="visibleComponents.communities || visibleComponents.institutions"
+					ref="targetTypeSelect"
+					:project-id="assistanceBody.projectId"
+					:visible="targetTypeSelectVisible"
+					:is-assistance-duplicated="isDuplicated"
+					@updatedData="fetchTargetType"
+				/>
 				<DistributedCommodity
 					v-if="isProjectReady"
-					ref="distributedCommodity"
 					v-show="visibleComponents.distributedCommodity"
+					ref="distributedCommodity"
 					:project="project"
 					:commodity="componentsData.distributedCommodity"
 					:selected-beneficiaries="selectedBeneficiariesCount"
@@ -49,23 +59,18 @@
 					:is-assistance-duplicated="isDuplicated"
 					:target-type="targetType"
 					:date-of-assistance="assistanceBody.dateDistribution"
+					:validation-messages="validationMessages"
 					@updatedData="fetchDistributedCommodity"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
 				/>
 				<ActivityDetails
-					ref="activityDetails"
 					v-show="visibleComponents.activityDescription
 						|| visibleComponents.householdsTargeted
 						|| visibleComponents.individualsTargeted"
+					ref="activityDetails"
 					:visible="visibleActivityDetails"
 					:data="componentsData.activityDetails"
 					@updatedData="fetchActivityDetails"
-				/>
-				<TargetTypeSelect
-					ref="targetTypeSelect"
-					v-show="visibleComponents.communities || visibleComponents.institutions"
-					:visible="targetTypeSelectVisible"
-					@updatedData="fetchTargetType"
 				/>
 			</div>
 		</div>
@@ -85,15 +90,15 @@
 </template>
 
 <script>
-import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
-import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity/DistributedCommodity";
-import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import AssistancesService from "@/services/AssistancesService";
-import { Notification, Toast } from "@/utils/UI";
-import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
-import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
-import consts from "@/utils/assistanceConst";
 import ProjectService from "@/services/ProjectService";
+import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
+import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
+import DistributedCommodity from "@/components/AddAssistance/SelectionTypes/DistributedCommodity";
+import SelectionCriteria from "@/components/AddAssistance/SelectionTypes/SelectionCriteria/SelectionCriteria";
+import TargetTypeSelect from "@/components/AddAssistance/SelectionTypes/TargetTypeSelect";
+import { Notification, Toast } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AddAssistance",
@@ -155,6 +160,11 @@ export default {
 				note: "",
 				round: null,
 			},
+			validationMessages: {
+				activity: "",
+				budgetLine: "",
+				modalityType: "",
+			},
 			scoringTypes: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
@@ -184,7 +194,7 @@ export default {
 
 		householdWithoutHead() {
 			return this.project.householdIntegrityIssues?.find(
-				(issue) => issue === consts.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
+				(issue) => issue === ASSISTANCE.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
 			);
 		},
 	},
@@ -368,8 +378,10 @@ export default {
 			return true;
 		},
 
+		// TODO Destructure this function in future for simplification and better readability
 		async mapAssistance(assistance) {
 			let round;
+			const { eloNumber, activity, budgetLine } = assistance;
 
 			if (assistance.round) {
 				if (assistance.round < 99) {
@@ -401,7 +413,68 @@ export default {
 				targetType: assistance.target,
 				note: assistance.note,
 				round,
+				eloNumber,
+				activity,
+				budgetLine,
 			};
+
+			if (this.project.targets.length) {
+				const selectableActivities = [];
+				const selectableBudgetLines = [];
+				const selectableModalityTypes = [];
+				const isProjectTargetsWithModalityType = this.project.targets.every(
+					(target) => target.modalityType,
+				);
+				const matchedModalityType = this.project.targets.some(
+					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
+				);
+				const isAllTargetsWithModality = this.project.targets.every(
+					(target) => target.modalityType,
+				);
+
+				this.project.targets.forEach((target) => {
+					if (target.activity) {
+						if (!this.componentsData.newAssistanceForm.activity?.code) {
+							this.componentsData.newAssistanceForm.activity = target.activity === activity
+								? { code: activity, value: activity }
+								: null;
+						}
+						selectableActivities.push(target.activity);
+					}
+
+					if (target.budgetLine) {
+						if (!this.componentsData.newAssistanceForm.budgetLine?.code) {
+							this.componentsData.newAssistanceForm.budgetLine = target.budgetLine === budgetLine
+								? { code: budgetLine, value: budgetLine }
+								: null;
+						}
+						selectableBudgetLines.push(target.budgetLine);
+					}
+
+					if (isProjectTargetsWithModalityType && !matchedModalityType) {
+						selectableModalityTypes.push(target.modalityType.value);
+					}
+				});
+
+				if (activity && !this.componentsData.newAssistanceForm.activity) {
+					this.validationMessages.activity = `${this.$t("Activity was removed because:")} ${activity}
+						${this.$t("is not included in project targets. Allowed activities:")}
+						${selectableActivities.join(", ")}`;
+				}
+
+				if (budgetLine && !this.componentsData.newAssistanceForm.budgetLine) {
+					this.validationMessages.budgetLine = `${this.$t("Budget line was removed because:")} ${budgetLine}
+						${this.$t("is not included in project targets. Allowed budget lines:")}
+						${selectableBudgetLines.join(", ")}`;
+				}
+
+				if (!matchedModalityType && isAllTargetsWithModality) {
+					this.validationMessages.modalityType = `${this.$t("Modality was removed because:")}
+						${this.$t("modality type")} ${assistance.commodities[0]?.modalityType}
+						${this.$t("is not included in project targets. Allowed modality types:")}
+						${selectableModalityTypes.join(", ")}`;
+				}
+			}
 
 			const scoringType = assistance.scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
@@ -419,7 +492,7 @@ export default {
 				};
 				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 			} else {
-				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.scoringType = AssistancesService.getDefaultScoringType();
 				this.$refs.selectionCriteria.minimumSelectionScore = null;
 			}
 
@@ -428,10 +501,23 @@ export default {
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
 
+				const {
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
+				} = item.fields;
+
 				preparedCommodities.push({
 					modalityType: item.modalityType,
-					value: item.value,
-					unit: item.unit,
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
 					description: item.description,
 					dateExpiration: assistance.dateExpiration
 						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,
@@ -443,7 +529,12 @@ export default {
 				});
 			});
 
-			this.componentsData.distributedCommodity = preparedCommodities;
+			if (this.validationMessages.modalityType.length) {
+				this.componentsData.distributedCommodity = null;
+			} else {
+				this.componentsData.distributedCommodity = preparedCommodities;
+				await this.getDeliveredCommodityValue(preparedCommodities);
+			}
 
 			this.componentsData.activityDetails = {
 				activityDescription: assistance.description || "",
@@ -461,8 +552,6 @@ export default {
 			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
 
 			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
-
-			await this.getDeliveredCommodityValue(preparedCommodities);
 		},
 
 		mapSelectionCriteria() {
@@ -547,6 +636,9 @@ export default {
 				note,
 				round,
 				isDateOfAssistanceValid,
+				eloNumber,
+				activity,
+				budgetLine,
 			} = data;
 
 			this.createAssistanceButtonDisabled = !isDateOfAssistanceValid;
@@ -564,9 +656,16 @@ export default {
 				locationId: this.$refs.newAssistanceForm.getLocationId(),
 				note,
 				round: round?.code,
+				eloNumber,
+				activity: activity?.value || activity,
+				budgetLine: budgetLine?.value || budgetLine,
 			};
 
 			if (this.assistanceBody.target) {
+				if (!sector?.code || !subsector?.code) {
+					this.validationMessages.modalityType = "";
+				}
+
 				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 			}
 		},
@@ -603,7 +702,7 @@ export default {
 		remoteAllowed(commodity) {
 			let result = null;
 
-			if (commodity?.modalityType === consts.COMMODITY.SMARTCARD) {
+			if (commodity?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD) {
 				result = !!commodity?.remoteDistributionAllowed;
 			} else {
 				result = null;
@@ -652,26 +751,26 @@ export default {
 
 		getModalityByType(code) {
 			switch (code) {
-				case consts.COMMODITY.CASH:
-				case consts.COMMODITY.SMARTCARD:
-				case consts.COMMODITY.MOBILE_MONEY:
+				case ASSISTANCE.COMMODITY.CASH:
+				case ASSISTANCE.COMMODITY.SMARTCARD:
+				case ASSISTANCE.COMMODITY.MOBILE_MONEY:
 					return "Cash";
-				case consts.COMMODITY.FOOD_RATIONS:
-				case consts.COMMODITY.READY_TO_EAT_RATIONS:
-				case consts.COMMODITY.BREAD:
-				case consts.COMMODITY.AGRICULTURAL_KIT:
-				case consts.COMMODITY.WASH_KIT:
-				case consts.COMMODITY.SHELTER_TOOL_KIT:
-				case consts.COMMODITY.HYGIENE_KIT:
-				case consts.COMMODITY.DIGNITY_KIT:
-				case consts.COMMODITY.NFI_KIT:
-				case consts.COMMODITY.WINTERIZATION_KIT:
+				case ASSISTANCE.COMMODITY.FOOD_RATIONS:
+				case ASSISTANCE.COMMODITY.READY_TO_EAT_RATIONS:
+				case ASSISTANCE.COMMODITY.BREAD:
+				case ASSISTANCE.COMMODITY.AGRICULTURAL_KIT:
+				case ASSISTANCE.COMMODITY.WASH_KIT:
+				case ASSISTANCE.COMMODITY.SHELTER_TOOL_KIT:
+				case ASSISTANCE.COMMODITY.HYGIENE_KIT:
+				case ASSISTANCE.COMMODITY.DIGNITY_KIT:
+				case ASSISTANCE.COMMODITY.NFI_KIT:
+				case ASSISTANCE.COMMODITY.WINTERIZATION_KIT:
 					return "In Kind";
-				case consts.COMMODITY.LOAN:
-				case consts.COMMODITY.BUSINESS_GRANT:
+				case ASSISTANCE.COMMODITY.LOAN:
+				case ASSISTANCE.COMMODITY.BUSINESS_GRANT:
 					return "Other";
-				case consts.COMMODITY.QR_CODE_VOUCHER:
-				case consts.COMMODITY.PAPER_VOUCHER:
+				case ASSISTANCE.COMMODITY.QR_CODE_VOUCHER:
+				case ASSISTANCE.COMMODITY.PAPER_VOUCHER:
 					return "Other";
 				default:
 					return "";

@@ -54,14 +54,6 @@
 
 			<div class="level-item has-text-centered">
 				<div class="box">
-					<h2 class="heading">{{ $t('Target Households') }}</h2>
-
-					<div class="has-text-weight-bold is-size-5">{{ projectSummary.target }}</div>
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
 					<b-tooltip :label="$t('Number of households imported to project.')">
 						<h2 class="heading">{{ $t('Registered Households') }}</h2>
 
@@ -93,9 +85,9 @@
 
 <script>
 import ProjectService from "@/services/ProjectService";
-import { Notification } from "@/utils/UI";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "ProjectSummary",

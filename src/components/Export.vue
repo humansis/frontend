@@ -55,22 +55,27 @@ export default {
 			type: Array,
 			required: true,
 		},
+
 		availableExportFormats: {
 			type: Array,
 			required: true,
 		},
+
 		isExportLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		location: {
 			type: String,
 			required: true,
 		},
+
 		fieldClass: {
 			type: String,
 			default: "",
 		},
+
 		disabled: {
 			type: Boolean,
 			default: false,
@@ -84,11 +89,6 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.setDefaultSelectedValue();
-		this.setExportInputs(this.location);
-	},
-
 	computed: {
 		...mapState(["country", "selectedExportsOptions"]),
 
@@ -97,6 +97,17 @@ export default {
 				&& this.selectedExportFormat
 				&& !this.disabled;
 		},
+	},
+
+	watch: {
+		availableExportTypes() {
+			this.setDefaultSelectedValue();
+		},
+	},
+
+	mounted() {
+		this.setDefaultSelectedValue();
+		this.setExportInputs(this.location);
 	},
 
 	methods: {
@@ -124,7 +135,8 @@ export default {
 
 			this.$emit("inputUpdated", this.selectedExportType, this.selectedExportFormat);
 
-			if (this.selectedExportType === EXPORT.BANK_DISTRIBUTION_LIST) {
+			if (this.selectedExportType === EXPORT.BANK_DISTRIBUTION_LIST
+				|| this.selectedExportType === EXPORT.BNF_FILE_3.OPTION_NAME) {
 				this.selectedExportFormat = EXPORT.FORMAT_XLSX;
 			}
 		},

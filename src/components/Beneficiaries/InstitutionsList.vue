@@ -51,6 +51,18 @@
 				/>
 			</div>
 		</b-table-column>
+
+		<template #export>
+			<ExportControl
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@onExport="exportInstitutions"
+			/>
+		</template>
+
 		<template #filterButton>
 			<b-button
 				slot="trigger"
@@ -60,6 +72,7 @@
 				{{ $t('Advanced Search') }}
 			</b-button>
 		</template>
+
 		<template #filter>
 			<b-collapse v-model="advancedSearchVisible">
 				<InstitutionsFilter
@@ -72,15 +85,18 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
 import InstitutionService from "@/services/InstitutionService";
-import { generateColumns } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
+import ActionButton from "@/components/ActionButton";
 import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Export";
+import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "InstitutionsList",
@@ -90,6 +106,7 @@ export default {
 		SafeDelete,
 		Table,
 		ActionButton,
+		ExportControl,
 	},
 
 	mixins: [grid, permissions],
@@ -97,14 +114,21 @@ export default {
 	data() {
 		return {
 			advancedSearchVisible: false,
-			filter: [],
+			exportControl: {
+				loading: false,
+				location: "institutions",
+				types: [EXPORT.INSTITUTIONS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
+			filters: [],
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
+					{ key: "id" },
 					{ key: "name" },
 					{ key: "type" },
-					{ key: "contactGivenName", label: "Contact Name" },
+					{ key: "contactGivenName" },
 					{ key: "contactFamilyName" },
 				],
 				total: 0,
@@ -136,8 +160,10 @@ export default {
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
+				this.table.data = [];
 				this.table.total = totalCount;
-				this.table.data = data;
+
+				this.prepareDataForTable(data);
 			}).catch((e) => {
 				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
 			});
@@ -149,14 +175,43 @@ export default {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
-		async onFiltersChange({ filters }) {
+		prepareDataForTable(data) {
+			data.forEach((item, key) => {
+				this.table.data[key] = item;
+				this.table.data[key].type = normalizeText(item.type);
+			});
+		},
+
+		onFiltersChange({ filters }) {
 			this.filters = filters;
-			this.table.currentPage = 1;
-			await this.fetchData();
 		},
 
 		showDetail(entity) {
 			if (this.userCan.viewBeneficiary) this.$emit("showDetail", entity);
+		},
+
+		async exportInstitutions(type, format) {
+			if (type === EXPORT.INSTITUTIONS) {
+				const filters = {
+					...(this.filters.projects?.length
+						&& { projects: this.filters.projects }),
+				};
+
+				try {
+					this.exportControl.loading = true;
+
+					const { data, status, message } = await InstitutionService.exportInstitutions(
+						format,
+						filters,
+					);
+
+					downloadFile(data, this.$t("Institutions"), status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Institutions Export")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
+			}
 		},
 	},
 };

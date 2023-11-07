@@ -178,16 +178,16 @@
 
 <script>
 import { required, requiredIf } from "vuelidate/lib/validators";
-import { Notification } from "@/utils/UI";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import AssistancesService from "@/services/AssistancesService";
-import validation from "@/mixins/validation";
+import BeneficiariesService from "@/services/BeneficiariesService";
 import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/BaseDeduplicationTable";
 import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseDistributedTable";
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
+import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
-import consts from "@/utils/assistanceConst";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "StartTransactionsForm",
@@ -199,31 +199,7 @@ export default {
 		IdTypeSelect,
 	},
 
-	props: {
-		submitButtonLabel: {
-			type: String,
-			default: "Confirm",
-		},
-		defaultIdType: {
-			type: String,
-			default: "Tax Number",
-		},
-		deduplication: Boolean,
-		addingToAssistance: Boolean,
-		closeButton: Boolean,
-	},
-
 	mixins: [validation],
-
-	data() {
-		return {
-			distributedFormVisible: true,
-			distributedButtonLoading: false,
-			distributeData: null,
-			idsListErrorMessage: "",
-			formModel: { ...consts.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL },
-		};
-	},
 
 	validations() {
 		return {
@@ -236,6 +212,54 @@ export default {
 				justification: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
 			},
 		};
+	},
+
+	props: {
+		deduplication: Boolean,
+		addingToAssistance: Boolean,
+		closeButton: Boolean,
+
+		submitButtonLabel: {
+			type: String,
+			default: "Confirm",
+		},
+
+		defaultIdType: {
+			type: String,
+			default: "Tax Number",
+		},
+	},
+
+	data() {
+		return {
+			distributedFormVisible: true,
+			distributedButtonLoading: false,
+			distributeData: null,
+			idsListErrorMessage: "",
+			formModel: { ...ASSISTANCE.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL },
+		};
+	},
+
+	computed: {
+		successfulOperationTitle() {
+			return (this.deduplication && "Removed")
+				|| (this.addingToAssistance && "Added") || "Success";
+		},
+
+		alreadyProcessedOperationTitle() {
+			return this.deduplication ? "Removed in the past"
+				: "Added in the past";
+		},
+
+		nameOfSubmitButton() {
+			return (this.deduplication && "Bulk Remove Again")
+				|| (this.addingToAssistance && "Bulk Add Again")
+					|| "Input Distributed Again";
+		},
+
+		isOperationAddOrRemoveBulk() {
+			return this.deduplication || this.addingToAssistance;
+		},
 	},
 
 	created() {
@@ -339,7 +363,7 @@ export default {
 			if (isIdsListLengthValid(this.formModel.idsList)) {
 				this.idsListErrorMessage = "";
 			} else {
-				const msg = this.$t(`You have entered more than ${consts.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`);
+				const msg = this.$t(`You have entered more than ${ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`);
 				this.idsListErrorMessage = this.$t(msg);
 			}
 		},
@@ -351,7 +375,7 @@ export default {
 		},
 
 		openDistributedForm() {
-			this.formModel = { ...consts.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
+			this.formModel = { ...ASSISTANCE.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
 			this.setDefaultIdType();
@@ -366,28 +390,6 @@ export default {
 
 		close() {
 			this.$emit("close");
-		},
-	},
-
-	computed: {
-		successfulOperationTitle() {
-			return (this.deduplication && "Removed")
-				|| (this.addingToAssistance && "Added") || "Success";
-		},
-
-		alreadyProcessedOperationTitle() {
-			return this.deduplication ? "Removed in the past"
-				: "Added in the past";
-		},
-
-		nameOfSubmitButton() {
-			return (this.deduplication && "Bulk Remove Again")
-				|| (this.addingToAssistance && "Bulk Add Again")
-					|| "Input Distributed Again";
-		},
-
-		isOperationAddOrRemoveBulk() {
-			return this.deduplication || this.addingToAssistance;
 		},
 	},
 };

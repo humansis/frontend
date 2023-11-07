@@ -1,6 +1,12 @@
 import i18n from "@/plugins/i18n";
 
 export default {
+	computed: {
+		getValidations() {
+			return this.$v;
+		},
+	},
+
 	methods: {
 		getValidation(field, object = "formModel") {
 			return typeof field === "string" ? this.validationPropertyLevel(field, object) : field;
@@ -11,13 +17,24 @@ export default {
 			validation.$touch();
 		},
 
-		validateMsg(field, message = i18n.t("Required"), object) {
+		validateMsg(field, message = "Required", object) {
 			const validation = this.getValidation(field, object);
 
 			if (Object.keys(validation).includes("maxLength")
 				&& validation.$error && !validation.maxLength) {
-				return i18n.t("Too long! (max. 255 characters)");
+				return `${i18n.t("Too long! Max characters:")} ${validation.$params.maxLength.max}`;
 			}
+
+			if (Object.keys(validation).includes("minValue")
+				&& validation.$error && !validation.minValue) {
+				return `${i18n.t("Min value:")} ${validation.$params.minValue.min}`;
+			}
+
+			if (Object.keys(validation).includes("maxValue")
+				&& validation.$error && !validation.maxValue) {
+				return `${i18n.t("Max value:")} ${validation.$params.maxValue.max}`;
+			}
+
 			return validation.$error ? i18n.t(message) : "";
 		},
 
@@ -26,7 +43,8 @@ export default {
 
 			let result = "";
 			if (validation.$dirty) {
-				if (errorOrNothing) {
+				if (errorOrNothing
+					|| (validation?.minValue && !Object.keys(validation).includes("required"))) {
 					result = validation.$error ? "is-danger" : "";
 				} else {
 					result = validation.$error ? "is-danger" : "is-success";
@@ -70,6 +88,48 @@ export default {
 				default:
 			}
 			return result;
+		},
+
+		prepareValidationRules() {
+			if (this.validation && this.validatedFieldName) {
+				this.$v = this.validation;
+			}
+		},
+
+		validateRequiredType() {
+			if (this.customErrorMessage) {
+				return "is-danger";
+			}
+
+			return this.validation && this.validatedFieldName
+				? this.validateType(
+					this.validatedFieldName,
+					this.isErrorOrNothing,
+					this.validatedObjectName,
+				)
+				: "";
+		},
+
+		validateRequiredMsg() {
+			return this.validation && this.validatedFieldName
+				? this.validateMsg(this.validatedFieldName, "Required", this.validatedObjectName)
+				: "";
+		},
+
+		validateRequired() {
+			return this.validation && this.validatedFieldName
+				? this.validate(this.validatedFieldName, this.validatedObjectName)
+				: "";
+		},
+
+		validateRequiredMultiselect() {
+			return this.validation && this.validatedFieldName
+				? this.validateMultiselect(
+					this.validatedFieldName,
+					this.isErrorOrNothing,
+					this.validatedObjectName,
+				)
+				: "";
 		},
 	},
 };

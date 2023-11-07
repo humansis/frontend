@@ -17,25 +17,6 @@
 			</div>
 		</div>
 
-		<Modal
-			can-cancel
-			:active="projectModal.isOpened"
-			:header="modalHeader"
-			:is-waiting="projectModal.isWaiting"
-			@close="closeProjectModal"
-		>
-			<ProjectForm
-				close-button
-				class="modal-card"
-				:formModel="projectModel"
-				:submit-button-label="projectModal.isEditing ? $t('Update') : $t('Create')"
-				:form-disabled="projectModal.isDetail"
-				:is-editing="projectModal.isEditing"
-				@formSubmitted="submitProjectForm"
-				@formClosed="closeProjectModal"
-			/>
-		</Modal>
-
 		<ProjectList
 			ref="projectList"
 			@showDetail="showDetail"
@@ -47,238 +28,40 @@
 
 <script>
 import { mapState } from "vuex";
-import ProjectForm from "@/components/Projects/ProjectForm";
-import Modal from "@/components/Modal";
 import ProjectService from "@/services/ProjectService";
-import { Toast, Notification } from "@/utils/UI.js";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
 import ProjectList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
+import { Notification, Toast } from "@/utils/UI.js";
 
 export default {
 	name: "ProjectPage",
 
 	components: {
 		ProjectList,
-		Modal,
-		ProjectForm,
 	},
 
 	mixins: [permissions],
 
-	data() {
-		return {
-			projectModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-				isWaiting: false,
-			},
-			projectModel: {
-				id: null,
-				iso3: "",
-				name: "",
-				internalId: "",
-				sectors: [],
-				subSectors: [],
-				selectedSectors: [],
-				selectedSubsectors: [],
-				startDate: new Date(),
-				endDate: new Date(),
-				donors: [],
-				selectedDonors: [],
-				targetTypes: [],
-				selectedTargetType: [],
-				totalTarget: 0,
-				projectInvoiceAddressLocal: "",
-				projectInvoiceAddressEnglish: "",
-				allowedProductCategoryTypes: [],
-				notes: "",
-			},
-		};
-	},
-
 	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.projectModal.isDetail) {
-				result = this.$t("Detail of Project");
-			} else if (this.projectModal.isEditing) {
-				result = this.$t("Edit Project");
-			} else {
-				result = this.$t("Create New Project");
-			}
-			return result;
-		},
-
 		...mapState(["country"]),
 	},
 
 	methods: {
 		showEdit(project) {
-			this.projectModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-			this.mapToFormModel(project);
-		},
-
-		addNewProject() {
-			this.projectModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
-			this.projectModel = {
-				...this.projectModel,
-				id: null,
-				name: "",
-				internalId: "",
-				donorIds: [],
-				sectors: [],
-				targetTypes: [],
-				selectedSectors: [],
-				selectedSubsectors: [],
-				startDate: new Date(),
-				endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
-				selectedDonors: [],
-				selectedTargetType: [],
-				totalTarget: 0,
-				projectInvoiceAddressLocal: "",
-				projectInvoiceAddressEnglish: "",
-				allowedProductCategoryTypes: ["Food"],
-				notes: "",
-			};
-		},
-
-		closeProjectModal() {
-			this.projectModal.isOpened = false;
-		},
-
-		showDetail(project) {
-			this.mapToFormModel(project);
-			this.projectModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-			};
-		},
-
-		mapToFormModel(
-			{
-				id,
-				iso3,
-				internalId,
-				name,
-				sectors,
-				subSectors,
-				donorIds,
-				target: totalTarget,
-				notes,
-				projectInvoiceAddressLocal,
-				projectInvoiceAddressEnglish,
-				allowedProductCategoryTypes,
-				startDate,
-				endDate,
-			},
-		) {
-			this.projectModel = {
-				...this.projectModel,
-				id,
-				iso3,
-				name,
-				sectors,
-				subSectors,
-				donorIds,
-				internalId,
-				startDate: new Date(startDate),
-				endDate: new Date(endDate),
-				targetType: [],
-				selectedSectors: sectors,
-				selectedSubsectors: subSectors,
-				selectedDonors: [],
-				selectedTargetType: [],
-				totalTarget,
-				projectInvoiceAddressLocal,
-				projectInvoiceAddressEnglish,
-				allowedProductCategoryTypes,
-				notes,
-			};
-		},
-
-		submitProjectForm(projectForm) {
-			const {
-				id,
-				iso3,
-				name,
-				internalId,
-				selectedSectors,
-				selectedSubsectors,
-				startDate,
-				endDate,
-				selectedDonors,
-				totalTarget: target,
-				projectInvoiceAddressLocal,
-				projectInvoiceAddressEnglish,
-				allowedProductCategoryTypes,
-				notes,
-			} = projectForm;
-			const projectBody = {
-				iso3: iso3 || this.country.iso3,
-				name,
-				internalId,
-				projectInvoiceAddressLocal,
-				projectInvoiceAddressEnglish,
-				allowedProductCategoryTypes,
-				notes,
-				target,
-				targetType: projectForm.selectedTargetType === null ? "" : projectForm.selectedTargetType.code,
-				numberOfHouseholds: 0,
-				startDate: this.$moment(startDate).format("YYYY-MM-DD"),
-				endDate: this.$moment(endDate).format("YYYY-MM-DD"),
-				sectors: getArrayOfIdsByParam(selectedSectors, "code"),
-				subSectors: getArrayOfIdsByParam(selectedSubsectors, "code"),
-				donorIds: getArrayOfIdsByParam(selectedDonors, "id"),
-			};
-
-			if (this.projectModal.isEditing && id) {
-				this.updateProject(id, projectBody);
-			} else {
-				this.createProject(projectBody);
-			}
-		},
-
-		async createProject(projectBody) {
-			this.projectModal.isWaiting = true;
-
-			await ProjectService.createProject(projectBody).then((response) => {
-				if (response.status === 200) {
-					Toast(this.$t("Project Successfully Created"), "is-success");
-					this.$refs.projectList.fetchData();
-					this.closeProjectModal();
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
-				this.projectModal.isWaiting = false;
+			this.$router.push({
+				name: "ProjectEdit",
+				params: { projectId: project.id },
 			});
 		},
 
-		async updateProject(id, projectBody) {
-			this.projectModal.isWaiting = true;
+		addNewProject() {
+			this.$router.push({ name: "AddProject" });
+		},
 
-			await ProjectService.updateProject(id, projectBody).then((response) => {
-				if (response.status === 200) {
-					Toast(this.$t("Project Successfully Updated"), "is-success");
-					this.$refs.projectList.fetchData();
-					this.closeProjectModal();
-				}
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
-				this.projectModal.isWaiting = false;
+		showDetail(project) {
+			this.$router.push({
+				name: "ProjectDetail",
+				params: { projectId: project.id },
 			});
 		},
 

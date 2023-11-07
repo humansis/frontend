@@ -40,12 +40,12 @@
 
 <script>
 import { mapState } from "vuex";
+import ProductService from "@/services/ProductService";
 import CategoriesList from "@/components/CountrySettings/Products/Categories/CategoriesList";
 import CategoryForm from "@/components/CountrySettings/Products/Categories/CategoryForm";
 import Modal from "@/components/Modal";
-import ProductService from "@/services/ProductService";
-import { Toast } from "@/utils/UI";
 import permissions from "@/mixins/permissions";
+import { Toast } from "@/utils/UI";
 
 export default {
 	name: "Categories",

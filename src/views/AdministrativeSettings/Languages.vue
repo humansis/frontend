@@ -34,10 +34,10 @@
 </template>
 
 <script>
+import LanguagesService from "@/services/LanguagesService";
 import LanguageForm from "@/components/AdministrativeSettings/LanguageForm";
 import LanguagesList from "@/components/AdministrativeSettings/LanguagesList";
 import Modal from "@/components/Modal";
-import LanguagesService from "@/services/LanguagesService";
 import { Toast } from "@/utils/UI";
 
 export default {

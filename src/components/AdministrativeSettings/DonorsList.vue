@@ -70,17 +70,18 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
-import ActionButton from "@/components/ActionButton";
-import SafeDelete from "@/components/SafeDelete";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import DonorService from "@/services/DonorService";
-import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
-import grid from "@/mixins/grid";
+import ActionButton from "@/components/ActionButton";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
-import { EXPORT } from "@/consts";
+import SafeDelete from "@/components/SafeDelete";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT } from "@/consts";
 
 export default {
 	name: "DonorsList",
@@ -149,25 +150,20 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async exportDonors(type, format) {
-			if (type === EXPORT.DONORS) {
-				this.exportControl.loading = true;
-				await DonorService.exportDonors(format)
-					.then(({ data, status, message }) => {
-						if (status === 200) {
-							const blob = new Blob([data], { type: data.type });
-							const link = document.createElement("a");
-							link.href = window.URL.createObjectURL(blob);
-							link.download = `Donors ${normalizeExportDate()}.${format}`;
-							link.click();
-						} else {
-							Notification(message, "is-warning");
-						}
-					})
-					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Export Donors")} ${e}`, "is-danger");
-					});
-				this.exportControl.loading = false;
+		async exportDonors(exportType, format) {
+			if (exportType === EXPORT.DONORS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Donors ${normalizeExportDate()}`;
+					const { data, status, message } = await DonorService.exportDonors(format);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Donors")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
 			}
 		},
 	},

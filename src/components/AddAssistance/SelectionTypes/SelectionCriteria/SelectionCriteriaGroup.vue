@@ -68,10 +68,10 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import LocationsService from "@/services/LocationsService";
 import ActionButton from "@/components/ActionButton";
 import ColumnField from "@/components/DataGrid/ColumnField";
-import LocationsService from "@/services/LocationsService";
+import Table from "@/components/DataGrid/Table";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -84,17 +84,34 @@ export default {
 	},
 
 	props: {
+		groupId: Number,
+		targetType: String,
+		count: Number,
+
 		data: {
 			type: Array,
 			default: () => [],
 		},
-		groupId: Number,
-		targetType: String,
-		count: Number,
+
 		loading: {
 			type: Boolean,
 			default: false,
 		},
+	},
+
+	data() {
+		return {
+			table: {
+				columns: [
+					{ field: "criteriaTarget", label: this.$t("Criteria Target") },
+					{ field: "criteria", label: this.$t("Criteria") },
+					{ field: "condition", label: this.$t("Condition"), type: "textOrNone" },
+					{ field: "value", label: this.$t("Value"), type: "customValue" },
+					{ field: "scoreWeight", label: this.$t("Score Weight") },
+				],
+			},
+			criteriaLocation: "",
+		};
 	},
 
 	computed: {
@@ -119,21 +136,6 @@ export default {
 
 			return criteriaGroups || [];
 		},
-	},
-
-	data() {
-		return {
-			table: {
-				columns: [
-					{ field: "criteriaTarget", label: this.$t("Criteria Target") },
-					{ field: "criteria", label: this.$t("Criteria") },
-					{ field: "condition", label: this.$t("Condition"), type: "textOrNone" },
-					{ field: "value", label: this.$t("Value"), type: "customValue" },
-					{ field: "scoreWeight", label: this.$t("Score Weight") },
-				],
-			},
-			criteriaLocation: "",
-		};
 	},
 
 	methods: {

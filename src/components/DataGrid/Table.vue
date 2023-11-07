@@ -6,9 +6,8 @@
 			<div class="level p-3 has-border-bottom">
 				<div class="level-left">
 					<slot name="search">
-						<div class="level-item">
+						<div v-if="hasSearch" class="level-item">
 							<Search
-								v-if="hasSearch"
 								ref="search"
 								:search-phrase="searchPhrase"
 								:search-fields="searchFields"
@@ -21,7 +20,10 @@
 					</slot>
 					<slot name="title" />
 					<slot name="export" />
-					<slot name="filterButton" />
+					<slot name="exportMessage" />
+					<div class="filter-button">
+						<slot name="filterButton" />
+					</div>
 					<slot name="bulkSearchButton" />
 					<slot name="actions" />
 				</div>
@@ -141,89 +143,120 @@ export default {
 		columns: Array,
 		total: Number,
 		currentPage: Number,
+
 		paginated: {
 			type: Boolean,
 			default: true,
 		},
+
 		defaultSortDirection: {
 			type: String,
 			default: "desc",
 		},
+
 		defaultSortKey: {
 			type: String,
 			default: "id",
 		},
+
 		backendSorting: {
 			type: Boolean,
 			default: true,
 		},
+
 		backendSearching: {
 			type: Boolean,
 			default: true,
 		},
+
 		backendPagination: {
 			type: Boolean,
 			default: true,
 		},
+
 		checkable: {
 			type: Boolean,
 			default: false,
 		},
+
 		checkedRows: {
 			type: Array,
 			default: () => [],
 		},
-		disablePrecheckedRows: {
+
+		isDisabledPrecheckedRows: {
 			type: Boolean,
 			default: false,
 		},
+
+		isDisabledUnprecheckedRows: {
+			type: Boolean,
+			default: false,
+		},
+
 		rowClass: {
 			type: Function,
 			default: () => "",
 		},
+
 		isLoading: {
 			type: Boolean,
 			default: false,
 		},
+
 		hasResetSort: {
 			type: Boolean,
 			default: false,
 		},
+
 		hasSearch: {
 			type: Boolean,
 			default: false,
 		},
+
 		searchPhrase: {
 			type: String,
 			default: "",
 		},
+
 		customPerPage: {
 			type: Number,
 			default: null,
 		},
+
 		hasClickableRows: {
 			type: Boolean,
 			default: true,
 		},
+
 		noDataMessage: {
 			type: String,
 			default: "No data",
 		},
+
 		showTableHeader: {
 			type: Boolean,
 			default: true,
 		},
+
 		isSearchVisible: {
 			type: Boolean,
 			default: true,
 		},
+
 		searchFields: {
 			type: Array,
 			default: () => [],
 		},
+
 		defaultSearchField: {
 			type: Object,
 			default: () => ({}),
+		},
+
+		wrapperClasses: {
+			type: Array,
+			default: () => [],
 		},
 	},
 
@@ -240,6 +273,10 @@ export default {
 		...mapState(["perPage"]),
 	},
 
+	mounted() {
+		this.addWrapperClasses();
+	},
+
 	methods: {
 		...mapActions(["storePerPage"]),
 
@@ -250,7 +287,7 @@ export default {
 		},
 
 		checkboxChecked(rows) {
-			if (this.disablePrecheckedRows) {
+			if (this.isDisabledPrecheckedRows) {
 				const immediatelyCheckedRows = this.checkedRows.map((row) => row.id);
 				const checkedNewRows = rows.filter((row) => !immediatelyCheckedRows.includes(row.id));
 
@@ -264,12 +301,12 @@ export default {
 
 		isRowCheckable(row) {
 			if (row.removed) return false;
-			if (this.disablePrecheckedRows) {
-				const immediatelyCheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
-				return !immediatelyCheckedRows.includes(row.id);
-			}
 
-			return true;
+			const precheckedRows = this.checkedRows.map((checkedRow) => checkedRow?.id);
+			const isRowPrechecked = precheckedRows.includes(row.id);
+
+			return !(this.isDisabledUnprecheckedRows
+				|| (isRowPrechecked && this.isDisabledPrecheckedRows));
 		},
 
 		onChangePerPage(value) {
@@ -285,8 +322,10 @@ export default {
 			return this.$refs.search.value;
 		},
 
-		makeTableOverflow(value) {
-			this.$refs.table.tableWrapperClasses["overflow-visible"] = value;
+		addWrapperClasses() {
+			this.wrapperClasses.forEach((value) => {
+				this.$refs.table.tableWrapperClasses[value] = true;
+			});
 		},
 
 		onResetSort() {

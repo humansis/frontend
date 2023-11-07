@@ -1,4 +1,4 @@
-import { download, fetcher, idsToUri, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
@@ -263,16 +263,11 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getListOfInstitutions(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/assistances-institutions?${pageText + sizeText + sortText + fulltext}`,
+	getListOfInstitutions(id, page, size, sort, filters) {
+		return fetcher({
+			uri: `assistances/${id}/assistances-institutions${queryBuilder({ page, sort, size, filters })}`,
+			version: 2,
 		});
-		return { data, totalCount };
 	},
 
 	async getReliefPackagesForAssistance(assistanceId, reliefPackageIds) {
@@ -370,6 +365,13 @@ export default {
 			uri: `modalities`,
 		});
 		return { data, totalCount };
+	},
+
+	getListOfModalitiesWithTypes() {
+		return fetcher({
+			uri: `modalities/types`,
+			version: 2,
+		});
 	},
 
 	async getListOfModalityTypes(code) {

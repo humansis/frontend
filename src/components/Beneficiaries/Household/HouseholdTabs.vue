@@ -9,7 +9,7 @@
 			has-navigation
 			@stepsChanged="stepsChanged"
 		>
-			<b-step-item step="1" :label="$t('Household')" :clickable="!formLoading">
+			<b-step-item step="1" :label="$t('Household')">
 				<HouseholdForm
 					v-if="steps[1]"
 					ref="householdForm"
@@ -19,7 +19,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="2" :label="$t('Household Head')" :clickable="!formLoading">
+			<b-step-item step="2" :label="$t('Household Head')">
 				<HouseholdHeadForm
 					v-if="steps[2]"
 					ref="householdHeadForm"
@@ -31,7 +31,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="3" :label="$t('Members')" :clickable="!formLoading">
+			<b-step-item step="3" :label="$t('Members')">
 				<Members
 					v-if="steps[3]"
 					ref="householdMembers"
@@ -41,7 +41,7 @@
 				/>
 			</b-step-item>
 
-			<b-step-item step="4" :label="$t('Summary')" :clickable="!formLoading">
+			<b-step-item step="4" :label="$t('Summary')">
 				<Summary
 					v-if="steps[4]"
 					ref="householdSummary"
@@ -86,32 +86,20 @@
 
 <script>
 import { mapState } from "vuex";
-import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import Members from "@/components/Beneficiaries/Household/Members";
 import Summary from "@/components/Beneficiaries/Household/Summary";
-import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import CardComponent from "@/components/CardComponent";
-import { Toast, Notification } from "@/utils/UI";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
 import permissions from "@/mixins/permissions";
-import CONST from "@/const";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { Notification, Toast } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdTabs",
-
-	props: {
-		isEditing: Boolean,
-		detailOfHousehold: {
-			type: Object,
-			default: () => {},
-		},
-		isLoaded: {
-			type: Boolean,
-			default: false,
-		},
-	},
 
 	components: {
 		CardComponent,
@@ -123,6 +111,20 @@ export default {
 	},
 
 	mixins: [permissions],
+
+	props: {
+		isEditing: Boolean,
+
+		detailOfHousehold: {
+			type: Object,
+			default: () => {},
+		},
+
+		isLoaded: {
+			type: Boolean,
+			default: false,
+		},
+	},
 
 	data() {
 		return {
@@ -162,7 +164,9 @@ export default {
 	watch: {
 		isLoaded(value) {
 			if (value) {
-				this.steps[1] = true;
+				Object.keys(this.steps).forEach((key) => {
+					this.steps[key] = true;
+				});
 			}
 		},
 	},
@@ -175,45 +179,48 @@ export default {
 
 	methods: {
 		stepsChanged(active, next) {
-			if (this.$refs.householdForm?.$parent === active) {
+			let lastAvailableStep = 1;
+
+			if (active.step < next.step) {
 				if (this.$refs.householdForm.submit()) {
 					this.household = this.$refs.householdForm.formModel;
 					this.livelihood = this.prepareLivelihoodForSummary();
 					this.address = this.prepareAddressForSummary();
 					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
+					lastAvailableStep = 2;
+
+					if (this.$refs.householdHeadForm?.submit()
+					) {
+						this.householdHead = this.$refs.householdHeadForm.formModel;
+						lastAvailableStep = 3;
+
+						const members = this.$refs.householdMembers?.submit();
+
+						if (members) {
+							this.householdMembers = members;
+							this.prepareSummaryMembers(
+								[this.householdHead, ...members],
+							);
+							this.address = this.prepareAddressForSummary();
+							this.location = this.prepareLocationForSummary();
+							lastAvailableStep = 4;
+						}
+					}
 				}
+
+				const step = (Number(next.step) <= lastAvailableStep)
+					? Number(next.step)
+					: lastAvailableStep;
+				this.changeStep(step);
+			} else {
+				this.changeStep(next.step);
 			}
-			if (this.$refs.householdHeadForm?.$parent === active) {
-				if (this.$refs.householdHeadForm.submit()) {
-					this.householdHead = this.$refs.householdHeadForm.formModel;
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
-			if (this.$refs.householdMembers?.$parent === active) {
-				if (this.$refs.householdMembers.submit()) {
-					this.householdMembers = this.$refs.householdMembers.members;
-					this.prepareSummaryMembers(
-						[this.householdHead, ...this.$refs.householdMembers.members],
-					);
-					this.address = this.prepareAddressForSummary();
-					this.location = this.prepareLocationForSummary();
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
-			if (this.$refs.householdSummary?.$parent === active) {
-				if (this.$refs.householdSummary.submit()) {
-					this.loading[next.step] = !this.steps[next.step];
-					this.steps[next.step] = true;
-					this.$refs.customSteps.changeStep(next);
-				}
-			}
+		},
+
+		changeStep(stepId) {
+			this.$refs.customSteps.changeStep(Number(stepId));
+			this.loading[stepId] = !this.steps[stepId];
+			this.steps[stepId] = true;
 		},
 
 		close() {
@@ -222,6 +229,8 @@ export default {
 
 		nextPage(next) {
 			this.steps[this.activeStep + 2] = true;
+			let members = null;
+
 			switch (this.activeStep) {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
@@ -239,10 +248,12 @@ export default {
 					}
 					break;
 				case 2:
-					if (this.$refs.householdMembers.submit()) {
-						this.householdMembers = this.$refs.householdMembers.members;
+					members = this.$refs.householdMembers?.submit();
+
+					if (members) {
+						this.householdMembers = members;
 						this.prepareSummaryMembers(
-							[this.householdHead, ...this.$refs.householdMembers.members],
+							[this.householdHead, ...members],
 						);
 						next.action();
 					}
@@ -396,7 +407,7 @@ export default {
 				street,
 				postcode,
 			} = this.household.currentLocation;
-			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
+			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
 				return `${campName}, ${tentNumber}`;
 			}
 			return `${number}, ${street}, ${postcode}`;
@@ -431,7 +442,7 @@ export default {
 			},
 		) {
 			const address = {};
-			if (typeOfLocation.code === CONST.LOCATION_TYPE.camp.code) {
+			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
 				address.campAddress = {
 					tentNumber,
 					camp: {
@@ -439,14 +450,14 @@ export default {
 						locationId: locationId || camp?.locationId,
 					},
 				};
-			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.residence.code) {
+			} else if (typeOfLocation.code === GENERAL.LOCATION_TYPE.residence.code) {
 				address.residenceAddress = {
 					number: number || null,
 					street: street || null,
 					postcode: postcode || null,
 					locationId,
 				};
-			} else if (typeOfLocation.code === CONST.LOCATION_TYPE.temporarySettlement.code) {
+			} else if (typeOfLocation.code === GENERAL.LOCATION_TYPE.temporarySettlement.code) {
 				address.temporarySettlementAddress = {
 					number: number || null,
 					street: street || null,

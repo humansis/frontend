@@ -21,9 +21,8 @@ export default {
 		});
 	},
 
-	async createProject(body) {
-		const { data, status } = await fetcher({ uri: "projects", method: "POST", body });
-		return { data, status };
+	createProject(body) {
+		return fetcher({ uri: "projects", method: "POST", body });
 	},
 
 	async getDetailOfProject(id) {

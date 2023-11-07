@@ -1,13 +1,14 @@
 <template>
 	<div>
 		<b-collapse
-			v-for="(collapse, index) of collapses"
+			v-for="(member, index) of members"
 			ref="members"
 			class="card has-multiselect"
 			animation="slide"
 			:key="index"
 			:open="isOpen === index"
 			@open="isOpen = index"
+			@close="isOpen = -1"
 		>
 			<div
 				slot="trigger"
@@ -16,7 +17,7 @@
 			>
 				<p class="card-header-title">
 					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
-					<span class="ml-3">{{ memberTitle(preparedMembers[index]) }}</span>
+					<span class="ml-3">{{ memberTitle(member) }}</span>
 				</p>
 				<a class="card-header-icon">
 					<b-button
@@ -26,7 +27,7 @@
 					>
 						<b-icon icon="trash" />
 					</b-button>
-					<b-icon icon="arrow-down" />
+					<b-icon :icon="isOpen === index ? 'arrow-up' : 'arrow-down'" />
 				</a>
 			</div>
 			<div class="card-content">
@@ -34,9 +35,9 @@
 					<HouseholdHeadForm
 						ref="member"
 						:show-type-of-beneficiary="false"
-						:is-editing="!!preparedMembers[index]"
+						:is-editing="!!member"
 						:detailOfHousehold="detailOfHousehold"
-						:beneficiary="preparedMembers[index]"
+						:beneficiary="member"
 						:members-smart-card-numbers="smartCardNumbers[index]"
 					/>
 				</div>
@@ -55,8 +56,8 @@
 </template>
 
 <script>
-import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -68,6 +69,7 @@ export default {
 
 	props: {
 		detailOfHousehold: Object,
+
 		isEditing: {
 			type: Boolean,
 			default: false,
@@ -77,9 +79,7 @@ export default {
 	data() {
 		return {
 			isOpen: 0,
-			collapses: [],
 			members: [],
-			preparedMembers: [],
 			smartCardNumbers: [],
 		};
 	},
@@ -103,8 +103,7 @@ export default {
 			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
 				if (this.detailOfHousehold.householdHeadId !== id) {
 					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then((data) => {
-						this.preparedMembers[this.collapses.length] = data;
-						this.collapses.push(this.collapses.length);
+						this.members.push(data);
 					});
 					promises.push(beneficiaryPromise);
 
@@ -132,46 +131,66 @@ export default {
 		},
 
 		addMember() {
-			if (this.collapses.length && this.$refs.member[this.collapses.length - 1].submit()) {
-				this.members.push(this.$refs.member[this.collapses.length - 1].formModel);
+			const countOfMembers = this.members.length;
 
-				const newCollapseIndex = (this.collapses.length - 1) + 1;
-
-				this.collapses.push(newCollapseIndex);
-				this.isOpen = newCollapseIndex;
-			} else {
-				this.collapses.push(this.collapses.length);
+			if (countOfMembers && !this.$refs.member[countOfMembers - 1].submit()) {
+				this.isOpen = countOfMembers - 1;
+				return;
 			}
+
+			this.isOpen = countOfMembers;
+			this.members.push({
+				enParentsName: null,
+				gender: null,
+				nationalIds: [],
+				phoneIds: [],
+				residencyStatus: null,
+				referralType: null,
+				referralComment: null,
+				isHead: false,
+				vulnerabilityCriteria: [],
+				id: null,
+				dateOfBirth: null,
+				localFamilyName: null,
+				localGivenName: null,
+				localParentsName: null,
+				enFamilyName: null,
+				enGivenName: null,
+				householdId: null,
+				isArchived: false,
+			});
 		},
 
 		memberTitle(member) {
-			return member && this.isEditing
+			return member?.id && this.isEditing
 				? `${this.$t("ID")} ${member.id}: ${member.localFamilyName} ${member.localGivenName}`
 				: this.$t("Member");
 		},
 
 		removeMember(index) {
-			this.collapses.splice(index, 1);
 			this.members.splice(index, 1);
 		},
 
 		submit() {
-			this.members = [];
+			const members = [];
 			let result = 0;
-			if (this.$refs.member) {
-				this.$refs.member.forEach((form) => {
-					if (form.submit()) {
-						result += 1;
-					}
-				});
-				if (result === this.$refs.member.length) {
-					this.$refs.member.forEach((form) => {
-						this.members.push(form.formModel);
-					});
-					return true;
+
+			if (!this.$refs.member) {
+				return members;
+			}
+
+			this.$refs.member.forEach((form) => {
+				if (form.submit()) {
+					result += 1;
 				}
-			} else {
-				return true;
+			});
+
+			if (result === this.$refs.member.length) {
+				this.$refs.member.forEach((form) => {
+					members.push(form.formModel);
+				});
+
+				return members;
 			}
 
 			return false;

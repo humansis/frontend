@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
+import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 
 export default {
 	name: "Home",
