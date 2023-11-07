@@ -1,6 +1,12 @@
 import i18n from "@/plugins/i18n";
 
 export default {
+	computed: {
+		getValidations() {
+			return this.$v;
+		},
+	},
+
 	methods: {
 		getValidation(field, object = "formModel") {
 			return typeof field === "string" ? this.validationPropertyLevel(field, object) : field;

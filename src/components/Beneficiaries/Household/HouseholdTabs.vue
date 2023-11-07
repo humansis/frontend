@@ -194,10 +194,12 @@ export default {
 						this.householdHead = this.$refs.householdHeadForm.formModel;
 						lastAvailableStep = 3;
 
-						if (this.$refs.householdMembers?.submit()) {
-							this.householdMembers = this.$refs.householdMembers.members;
+						const members = this.$refs.householdMembers?.submit();
+
+						if (members) {
+							this.householdMembers = members;
 							this.prepareSummaryMembers(
-								[this.householdHead, ...this.$refs.householdMembers.members],
+								[this.householdHead, ...members],
 							);
 							this.address = this.prepareAddressForSummary();
 							this.location = this.prepareLocationForSummary();
@@ -227,6 +229,8 @@ export default {
 
 		nextPage(next) {
 			this.steps[this.activeStep + 2] = true;
+			let members = null;
+
 			switch (this.activeStep) {
 				case 0:
 					if (this.$refs.householdForm.submit()) {
@@ -244,10 +248,12 @@ export default {
 					}
 					break;
 				case 2:
-					if (this.$refs.householdMembers.submit()) {
-						this.householdMembers = this.$refs.householdMembers.members;
+					members = this.$refs.householdMembers?.submit();
+
+					if (members) {
+						this.householdMembers = members;
 						this.prepareSummaryMembers(
-							[this.householdHead, ...this.$refs.householdMembers.members],
+							[this.householdHead, ...members],
 						);
 						next.action();
 					}

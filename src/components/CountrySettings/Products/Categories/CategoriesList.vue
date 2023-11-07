@@ -83,12 +83,11 @@ export default {
 			exportLoading: false,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
+				columns: generateColumns([
 					{ key: "name", width: "400", sortable: true },
 					{ key: "type", width: "150", type: "svgIcon", sortable: true },
 					{ type: "image", key: "image", width: "100" },
-				],
+				]),
 				total: 0,
 				currentPage: 1,
 				sortDirection: "asc",
@@ -122,25 +121,27 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
-			await ProductService.getListOfCategories(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.prepareDataForTable(response.data);
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Categories")} ${e}`, "is-danger");
-			});
+				const { data: { data, totalCount } } = await ProductService.getListOfCategories(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.searchPhrase,
+				);
 
-			this.isLoadingList = false;
+				this.table.data = [];
+				this.table.total = totalCount;
+				this.prepareDataForTable(data);
+			} catch (e) {
+				Notification(`${this.$t("Categories")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
-		async prepareDataForTable(data) {
+		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 

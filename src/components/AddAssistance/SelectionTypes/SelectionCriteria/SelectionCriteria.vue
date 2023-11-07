@@ -188,6 +188,11 @@ export default {
 			type: Array,
 			default: null,
 		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -280,15 +285,19 @@ export default {
 			this.$emit("onDeliveredCommodityValue");
 		},
 
-		data(data) {
+		async data(data) {
 			if (data) {
 				this.groups = data;
+
+				if (this.isAssistanceDuplicated) {
+					await this.fetchCriteriaInfo();
+				}
 			}
 		},
 	},
 
-	created() {
-		this.fetchScoringTypes();
+	async created() {
+		await this.fetchScoringTypes();
 	},
 
 	updated() {
@@ -410,13 +419,13 @@ export default {
 			this.fetchCriteriaInfo();
 		},
 
-		fetchCriteriaInfo() {
+		async fetchCriteriaInfo() {
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
+			await this.getCountOfBeneficiaries({ totalCount: true });
+			await this.getCountOfBeneficiaries({ totalCount: false });
 		},
 
 		onVulnerabilityScoreInput() {

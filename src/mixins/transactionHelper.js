@@ -61,9 +61,14 @@ export default {
 		},
 
 		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false, isInstitution = false) {
-			const beneficiaries = isInstitution
-				? await BeneficiariesService.getInstitutions(beneficiaryIds, { isArchived: true })
-				: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+			let beneficiaries = {};
+
+			if (beneficiaryIds.length) {
+				beneficiaries = isInstitution
+					? await BeneficiariesService.getInstitutions(beneficiaryIds, { isArchived: true })
+					: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+			}
+
 			this.table.data.forEach((item, key) => {
 				const { beneficiaryId } = item;
 				const beneficiary = item.type === "Institution"

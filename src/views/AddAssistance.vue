@@ -35,6 +35,7 @@
 					:target-type="targetType"
 					:data="componentsData.selectionCriteria"
 					:assistance-body="assistanceBody"
+					:is-assistance-duplicated="isDuplicated"
 					@updatedData="fetchSelectionCriteria"
 					@beneficiariesCounted="selectedBeneficiariesCount = $event"
 					@onDeliveredCommodityValue="getDeliveredCommodityValue"
@@ -425,7 +426,10 @@ export default {
 					(target) => target.modalityType,
 				);
 				const matchedModalityType = this.project.targets.some(
-					(target) => target.modalityType.code === assistance.commodities[0]?.modalityType,
+					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
+				);
+				const isAllTargetsWithModality = this.project.targets.every(
+					(target) => target.modalityType,
 				);
 
 				this.project.targets.forEach((target) => {
@@ -464,7 +468,7 @@ export default {
 						${selectableBudgetLines.join(", ")}`;
 				}
 
-				if (!matchedModalityType) {
+				if (!matchedModalityType && isAllTargetsWithModality) {
 					this.validationMessages.modalityType = `${this.$t("Modality was removed because:")}
 						${this.$t("modality type")} ${assistance.commodities[0]?.modalityType}
 						${this.$t("is not included in project targets. Allowed modality types:")}
@@ -488,7 +492,7 @@ export default {
 				};
 				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 			} else {
-				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.scoringType = AssistancesService.getDefaultScoringType();
 				this.$refs.selectionCriteria.minimumSelectionScore = null;
 			}
 
@@ -658,6 +662,10 @@ export default {
 			};
 
 			if (this.assistanceBody.target) {
+				if (!sector?.code || !subsector?.code) {
+					this.validationMessages.modalityType = "";
+				}
+
 				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 			}
 		},

@@ -810,6 +810,8 @@ export default {
 					adm2Id: adm2?.id,
 					adm3Id: adm3?.id,
 					adm4Id: adm4?.id,
+					locationId: adm4?.locationId || adm3?.locationId
+						|| adm2?.locationId || adm1?.locationId,
 					firstTargetType,
 					secondTargetType,
 					firstTarget,

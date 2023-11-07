@@ -107,11 +107,16 @@ export default {
 
 	methods: {
 		async fetchCategories() {
-			await ProductService.getListOfCategories(1, 1000).then(({ data }) => {
+			try {
+				const { data: { data } } = await ProductService.getListOfCategories(
+					1,
+					1000,
+				);
+
 				this.categories = data;
-			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Categories")} ${e.message || e}`, "is-danger");
+			}
 		},
 
 		showDetail(product) {

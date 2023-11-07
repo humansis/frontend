@@ -27,6 +27,18 @@
 	max-width: 40px;
 }
 
+.table-wrapper {
+	min-height: 75px;
+
+	&.has-min-height-420 {
+		min-height: 420px;
+	}
+}
+
+.table .removed-row {
+	background-color: #f3f3f3 !important;
+}
+
 .table-link {
 	color: #0D92B3;
 	font-weight: bold;

@@ -446,10 +446,17 @@ export default {
 					}
 				} else {
 					try {
+						this.exportControl.loading = true;
+
+						const filters = {
+							...this.filters,
+							...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+						};
+
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
-							this.filters,
+							filters,
 						);
 
 						downloadFile(data, filename, status, format, message);

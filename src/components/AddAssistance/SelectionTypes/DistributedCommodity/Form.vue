@@ -61,7 +61,7 @@
 						<b-input
 							v-model.number="divisionField.value.$model"
 							type="number"
-							min="1"
+							step="0.01"
 							expanded
 							:controls="false"
 							:class="validateMultiselect(divisionField)"
@@ -85,7 +85,8 @@
 					name="quantity"
 					type="is-dark"
 					expanded
-					min="1"
+					min="0.01"
+					step="0.01"
 					:controls="false"
 					@blur="validate('quantity')"
 					@input="checkQuantityOrValue"
@@ -111,7 +112,8 @@
 					name="value"
 					type="is-dark"
 					expanded
-					min="1"
+					min="0.01"
+					step="0.01"
 					:controls="false"
 					@blur="validate('value')"
 					@input="checkQuantityOrValue"
@@ -170,7 +172,8 @@
 					name="second-quantity"
 					type="is-dark"
 					expanded
-					min="1"
+					min="0.01"
+					step="0.01"
 					:controls="false"
 					@blur="validate('secondQuantity')"
 				/>
@@ -311,13 +314,13 @@ export default {
 					required: requiredIf(function () {
 						return this.displayedFields.quantity;
 					}),
-					minValue: minValue(1),
+					minValue: minValue(0.01),
 				},
 				value: {
 					required: requiredIf(function () {
 						return this.displayedFields.value && !this.isModalityInKind;
 					}),
-					minValue: minValue(1),
+					minValue: minValue(0.01),
 				},
 				currency: {
 					required: requiredIf(function () {
@@ -329,7 +332,7 @@ export default {
 				},
 				secondQuantity: {
 					required: false,
-					minValue: minValue(1),
+					minValue: minValue(0.01),
 				},
 				divisionNwsFields: {
 					$each: {
@@ -524,10 +527,6 @@ export default {
 
 		valueOrQuantityLabel() {
 			return this.isModalityCash ? "Value" : "Quantity 1";
-		},
-
-		getValidations() {
-			return this.$v;
 		},
 	},
 

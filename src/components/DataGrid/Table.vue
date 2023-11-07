@@ -253,6 +253,11 @@ export default {
 			type: Object,
 			default: () => ({}),
 		},
+
+		wrapperClasses: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	data() {
@@ -266,6 +271,10 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+	},
+
+	mounted() {
+		this.addWrapperClasses();
 	},
 
 	methods: {
@@ -313,8 +322,10 @@ export default {
 			return this.$refs.search.value;
 		},
 
-		makeTableOverflow(value) {
-			this.$refs.table.tableWrapperClasses["overflow-visible"] = value;
+		addWrapperClasses() {
+			this.wrapperClasses.forEach((value) => {
+				this.$refs.table.tableWrapperClasses[value] = true;
+			});
 		},
 
 		onResetSort() {

@@ -103,11 +103,13 @@ export default {
 				) },
 				phoneNo: secondPhone?.number,
 			};
-			const externalReceivedTypes = getArrayOfCodeListByKey(
-				supportReceivedTypes,
-				this.options.externalReceivedTypes,
-				"code",
-			);
+			const externalReceivedTypes = supportReceivedTypes
+				?	getArrayOfCodeListByKey(
+					supportReceivedTypes,
+					this.options.externalReceivedTypes,
+					"code",
+				)
+				: null;
 			const modifiedSupportDateReceived = supportDateReceived
 				? new Date(supportDateReceived)
 				: null;

@@ -112,71 +112,29 @@
 		<h3 class="title is-4">{{ $t('Target') }}</h3>
 
 		<div class="box">
-			<b-field
-				:label="$t('Sector')"
-				:type="validateType('sector')"
-				:message="validateMsg('sector')"
-			>
-				<MultiSelect
-					v-model="formModel.sector"
-					searchable
-					label="value"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:loading="loading.sectors"
-					:options="options.sectors"
-					:class="validateMultiselect('sector')"
-					@select="onSectorSelect"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-				</MultiSelect>
-			</b-field>
+			<MultiSelectWithLabel
+				v-model="formModel.sector"
+				name="sector"
+				label="Sector"
+				validated-field-name="sector"
+				:options="options.sectors"
+				:loading="loading.sectors"
+				:validation="getValidations"
+				:custom-error-message="sectorValidationMessage"
+				@select="onSectorSelect"
+			/>
 
-			<b-field
-				:label="$t('Subsector')"
-				:type="validateType('subsector')"
-				:message="validateMsg('subsector')"
-			>
-				<MultiSelect
-					v-model="formModel.subsector"
-					searchable
-					label="value"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:loading="loading.subsectors"
-					:options="options.subsectors"
-					:class="validateMultiselect('subsector')"
-					@select="onSubsectorSelect"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ normalizeSelectorValue(props.option.value) }}</span>
-						</div>
-					</template>
-				</MultiSelect>
-			</b-field>
+			<MultiSelectWithLabel
+				v-model="formModel.subsector"
+				name="subsector"
+				label="Subsector"
+				validated-field-name="subsector"
+				:options="options.subsectors"
+				:loading="loading.subsectors"
+				:validation="getValidations"
+				:custom-error-message="subsectorValidationMessage"
+				@select="onSubsectorSelect"
+			/>
 
 			<b-field
 				:label="$t('Assistance Type')"
@@ -360,6 +318,8 @@ export default {
 				assistanceTypes: false,
 				targetTypes: false,
 			},
+			sectorValidationMessage: "",
+			subsectorValidationMessage: "",
 		};
 	},
 
@@ -412,24 +372,34 @@ export default {
 	methods: {
 		async mapTargets() {
 			const { sector, subsector, assistanceType, targetType } = this.formModel;
+
 			if (sector && typeof sector !== "object") {
 				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
 				await this.fetchSubsectors(sector);
 			}
+
 			if (subsector && typeof subsector !== "object") {
 				this.formModel.subsector = getArrayOfCodeListByKey([subsector], this.options.subsectors, "code");
 				await this.fetchAssistanceTypes(subsector);
 			} else {
 				await this.fetchAssistanceTypes(subsector);
 			}
+
 			if (assistanceType && typeof assistanceType !== "object") {
 				this.formModel.assistanceType = getArrayOfCodeListByKey([assistanceType], this.options.assistanceTypes, "code");
 				await this.fetchTargetTypes(assistanceType);
 			}
+
 			if (targetType && typeof targetType !== "object") {
 				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
 			}
-			await this.showComponents();
+
+			this.validateSectorAndSubSector(sector, subsector);
+
+			if (!this.sectorValidationMessage.length && !this.subsectorValidationMessage.length) {
+				await this.showComponents();
+			}
+
 			this.$emit("updatedData", this.formModel);
 		},
 
@@ -458,19 +428,21 @@ export default {
 			return this.formModel.locationId;
 		},
 
-		onSectorSelect({ code }) {
+		async onSectorSelect({ code }) {
 			this.formModel.subsector = [];
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("sector");
-			this.fetchSubsectors(code);
+			await this.fetchSubsectors(code);
+			this.sectorValidationMessage = "";
 		},
 
-		onSubsectorSelect({ code }) {
+		async onSubsectorSelect({ code }) {
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("subsector");
-			this.fetchAssistanceTypes(code);
+			await this.fetchAssistanceTypes(code);
+			this.subsectorValidationMessage = "";
 		},
 
 		onAssistanceTypeSelect({ code }) {
@@ -662,6 +634,18 @@ export default {
 
 			this.options.activities = getUniqueObjectsInArray(this.options.activities, "code");
 			this.options.budgetLines = getUniqueObjectsInArray(this.options.budgetLines, "code");
+		},
+
+		validateSectorAndSubSector(sector, subsector) {
+			if (!this.formModel.sector?.code) {
+				this.sectorValidationMessage = `${this.$t("Sector")}:
+					${sector} ${this.$t("was removed, because this sector is not selectable.")}`;
+			}
+
+			if (!this.formModel.subsector?.code) {
+				this.subsectorValidationMessage = `${this.$t("Subsector")}:
+				 	${normalizeText(subsector)} ${this.$t("was removed, because this subsector is not selectable.")}`;
+			}
 		},
 	},
 };
