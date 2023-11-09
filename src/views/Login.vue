@@ -1,65 +1,59 @@
 <template>
-	<section class="hero is-primary is-fullheight">
-		<div class="hero-body">
-			<div class="container">
-				<div class="columns is-centered">
-					<div class="column is-5-tablet is-4-desktop is-3-widescreen">
-						<form class="box" @submit.prevent="submitForm">
-							<div class="logo mb-4">
-								<img src="@/assets/images/bms_logo_with_title.png" alt="">
-							</div>
-
-							<h1 class="title is-6 has-text-centered mb-4">Beneficiary Management System</h1>
-
-							<div class="has-text-light has-text-centered mb-4">
-								<span v-if="gitInfo.appVersion !== '__APP_VERSION__'">
-									{{ gitInfo.appVersion }}
-								</span>
-							</div>
-<!--							<b-field-->
-<!--								:label="$t('Username')"-->
-<!--								label-position="inside"-->
-<!--								:type="validateType('username')"-->
-<!--								:message="validateMsg('username', 'Required')"-->
-<!--							>-->
-<!--								<b-input-->
-<!--									v-model="formModel.username"-->
-<!--									autofocus-->
-<!--									@blur="validate('username')"-->
-<!--								/>-->
-<!--							</b-field>-->
-
-<!--							<b-field-->
-<!--								:label="$t('Password')"-->
-<!--								label-position="inside"-->
-<!--								:type="validateType('password')"-->
-<!--								:message="validateMsg('password', 'Required')"-->
-<!--							>-->
-<!--								<b-input-->
-<!--									type="password"-->
-<!--									v-model="formModel.password"-->
-<!--									password-reveal-->
-<!--									@blur="validate('password')"-->
-<!--								/>-->
-<!--							</b-field>-->
-
-<!--							<b-field grouped position="is-centered">-->
-<!--								<b-button-->
-<!--									type="is-primary"-->
-<!--									native-type="submit"-->
-<!--									:loading="loginButtonLoading"-->
-<!--								>-->
-<!--									<span :class="{ 'is-invisible': loginButtonLoading }">-->
-<!--										{{ $t('Login') }}-->
-<!--									</span>-->
-<!--								</b-button>-->
-<!--							</b-field>-->
-						</form>
+	<v-container fluid class="hero fill-height">
+		<v-row>
+			<v-col class="d-flex justify-center">
+				<v-card class="mx-auto px-6 py-8 login-box" max-width="600" width="100%">
+					<div class="logo">
+						<img src="@/assets/images/bms_logo_with_title.png" alt="humansis">
 					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+
+					<h1 class="text-subtitle-1 text-center text-white mt-5 mb-5">Beneficiary Management System</h1>
+
+					<div
+						v-if="gitInfo.appVersion !== '__APP_VERSION__'"
+						class="text-subtitle-2 font-italic text-center text-white mb-5"
+					>
+						{{ gitInfo.appVersion }}
+					</div>
+
+					<v-form
+						@submit.prevent="submitForm"
+					>
+						<v-text-field
+							v-model="formModel.username"
+							label="Email"
+							name="email"
+							placeholder="Enter your email"
+							bg-color="white"
+							class="mx-12"
+						></v-text-field>
+
+						<v-text-field
+							v-model="formModel.password"
+							label="Password"
+							name="password"
+							placeholder="Enter your password"
+							bg-color="white"
+							class="mx-12"
+							:append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+							:type="passwordVisible ? 'text' : 'password'"
+							@click:append-inner="passwordVisible = !passwordVisible"
+						/>
+
+						<div class="text-center">
+							<v-btn
+								color="primary"
+								type="submit"
+								class="text-center"
+							>
+								{{ $t("login") }}
+							</v-btn>
+						</div>
+					</v-form>
+				</v-card>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
@@ -79,22 +73,10 @@ import JWTDecode from "jwt-decode";
 export default {
 	name: "Login",
 
-	mixins: [validation],
-
-	validations: {
-		formModel: {
-			username: {
-				required,
-			},
-			password: {
-				required,
-			},
-		},
-	},
-
 	data() {
 		return {
 			gitInfo,
+			passwordVisible: false,
 			formModel: {
 				username: "",
 				password: "",
@@ -156,9 +138,6 @@ export default {
 		},
 
 		async submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) return;
-
 			this.loginButtonLoading = true;
 
 			const lastLoggedUsername = this.user.username || this.lastUsername;
@@ -234,8 +213,6 @@ export default {
 				}
 			}).catch((e) => {
         // FIXME
-				// Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
-				this.$v.$reset();
 			});
 
 			this.loginButtonLoading = false;
@@ -273,24 +250,24 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .hero {
 	background-image: url(~@/assets/images/login_page.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
+	min-height: 100vh;
+
+	.logo {
+		margin: 0 auto;
+		width: 150px;
+		height: 150px;
+		background-color: #f1f1fb;
+		border-radius: 100px;
+	}
+
+	.login-box {
+		background-color: rgba(161,160,160,.85);
+	}
 }
 
-.box {;
-	margin: 0 -5rem;
-	padding: 2.5rem 5rem;
-	background-color: rgba(161, 160 ,160, .85);
-}
-
-.logo {
-	margin: 0 auto;
-	width: 150px;
-	height: 150px;
-	background-color: #f1f1fb;
-	border-radius: 100px;
-}
 </style>

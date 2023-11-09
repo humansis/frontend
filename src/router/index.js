@@ -28,52 +28,52 @@ const routes = [
 			return next({ name: "Login", query: to.query });
 		},
 	},
-	// {
-	// 	path: "/",
-	// 	component: () => import(/* webpackChunkName: "Empty" */ "@/layout/Empty"),
-	// 	redirect: to => ({
-	// 		name: storedCountryCode ? "Login" : "Login",
-	// 		...(storedCountryCode && {
-	// 			params: {
-	// 				countryCode: storedCountryCode,
-	// 			},
-	// 		}),
-	// 	})
-	// },
-	// {
-	// 	path: "/:countryCode",
-	// 	component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
-	// 	beforeEnter: (to, from, next) => {
-	// 		if (!to.params.countryCode) {
-	// 			let countryCode = getters.getCountryFromVuexStorage()?.iso3;
-	//
-	// 			if (!countryCode) {
-	// 				store.commit(CONST.STORE_COUNTRY, getters.getCountriesFromVuexStorage()[0]);
-	// 				countryCode = getters.getCountriesFromVuexStorage()[0].iso3;
-	// 			}
-	//
-	// 			return next({
-	// 				...to,
-	// 				params: {
-	// 					...to.params,
-	// 					countryCode,
-	// 				},
-	// 			});
-	// 		}
-	//
-	// 		if (getters.getCountryFromVuexStorage().iso3 !== to.params.countryCode) {
-	// 			const newCountry = getters.getCountriesFromVuexStorage()
-	// 				.find((country) => country.iso3 === to.params.countryCode);
-	//
-	// 			if (!newCountry) {
-	// 				return next({ name: "NotFound" });
-	// 			}
-	//
-	// 			store.commit(CONST.STORE_COUNTRY, newCountry);
-	// 		}
-	//
-	// 		return next();
-	// 	},
+	{
+		path: "/",
+		redirect: to => ({
+			name: storedCountryCode ? "Login" : "Login",
+			...(storedCountryCode && {
+				params: {
+					countryCode: storedCountryCode,
+				},
+			}),
+		})
+	},
+	{
+		path: "/:countryCode",
+		component: () => import(/* webpackChunkName: "MainContainer" */ "@/layout/MainContainer"),
+		beforeEnter: (to, from, next) => {
+			// if (!to.params.countryCode) {
+			// 	let countryCode = getters.getCountryFromVuexStorage()?.iso3;
+			//
+			// 	if (!countryCode) {
+			// 		store.commit(CONST.STORE_COUNTRY, getters.getCountriesFromVuexStorage()[0]);
+			// 		countryCode = getters.getCountriesFromVuexStorage()[0].iso3;
+			// 	}
+			//
+			// 	return next({
+			// 		...to,
+			// 		params: {
+			// 			...to.params,
+			// 			countryCode,
+			// 		},
+			// 	});
+			// }
+			//
+			// if (getters.getCountryFromVuexStorage().iso3 !== to.params.countryCode) {
+			// 	const newCountry = getters.getCountriesFromVuexStorage()
+			// 		.find((country) => country.iso3 === to.params.countryCode);
+			//
+			// 	if (!newCountry) {
+			// 		return next({name: "NotFound"});
+			// 	}
+			//
+			// 	store.commit(CONST.STORE_COUNTRY, newCountry);
+			// }
+
+			return next();
+		},
+	}
 	// 	/* eslint-disable max-len */
 	//  children: [
 	//  	{
