@@ -161,4 +161,10 @@ export default {
 		{ code: "familyName", value: "Local family name" },
 		{ code: "nationalId", value: "ID Number" },
 	],
+	RELIEF_PACKAGES: {
+		STATE: {
+			DISTRIBUTED: "Distributed",
+			TO_DISTRIBUTED: "To distributed",
+		},
+	},
 };

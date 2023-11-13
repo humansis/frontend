@@ -244,12 +244,20 @@
 			>
 				<div class="buttons is-right">
 					<ActionButton
+						v-if="isNotDistributedButtonVisible(props.row)"
+						icon="user-slash"
+						:tooltip="$t('Set as not distributed')"
+						@click="openNotDistributedConfirm(props)"
+					/>
+
+					<ActionButton
 						v-if="userCan.editDistribution"
 						icon="search"
 						type="is-primary"
 						:tooltip="$t('View')"
 						@click="openViewModal(props.row)"
 					/>
+
 					<ActionButton
 						v-if="userCan.editDistribution && !isAssistanceValidated"
 						icon="trash"
@@ -259,6 +267,7 @@
 						@click.native="openAddBeneficiaryModal(getIdForDelete(props.row), !(props.row.removed
 							|| isAssistanceCompleted))"
 					/>
+
 					<ActionButton
 						v-if="table.settings.assignVoucherAction
 							&& userCan.assignDistributionItems"
@@ -340,7 +349,7 @@ import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
-import { Notification } from "@/utils/UI";
+import { Notification, Toast } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, INSTITUTION } from "@/consts";
 
 const statusTags = [
@@ -387,6 +396,11 @@ export default {
 		},
 
 		assistanceDetail: {
+			type: Boolean,
+			default: false,
+		},
+
+		isNotDistributedAvailable: {
 			type: Boolean,
 			default: false,
 		},
@@ -788,6 +802,26 @@ export default {
 			return this.isAssistanceTargetInstitution ? row.institution.id : row.id;
 		},
 
+		openNotDistributedConfirm({ index, row: { id, reliefPackages } }) {
+			this.$buefy.dialog.confirm({
+				title: this.$t("Set as not distributed"),
+				message: this.$t("Do you really want to set as not distributed?"),
+				confirmText: this.$t("Set"),
+				cancelText: this.$t("Cancel"),
+				type: "is-info",
+				hasIcon: true,
+				onConfirm: async () => {
+					await this.setAsNotDistributed(index, id, reliefPackages);
+				},
+			});
+		},
+
+		isNotDistributedButtonVisible({ status }) {
+			return this.isNotDistributedAvailable
+				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+				&& this.userCan.revertDistribution;
+		},
+
 		openViewModal(row) {
 			if (this.isAssistanceTargetInstitution) {
 				this.showDetail(row);
@@ -929,6 +963,7 @@ export default {
 
 		async prepareDataForTable(data) {
 			this.table.progress += 25;
+			this.table.checkedRows = [];
 			let beneficiaryIds = [];
 			let beneficiaries = [];
 
@@ -983,7 +1018,7 @@ export default {
 								rp.lastModified || rp.lastModified,
 							).format("YYYY-MM-DD hh:mm"));
 							const isDistributed = reliefPackages.length && reliefPackages.every(
-								(rp) => rp.state === "Distributed",
+								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
 
 							this.table.data[key] = {
@@ -1040,7 +1075,7 @@ export default {
 							? this.preparePhoneForTable(beneficiary.phones)
 							: this.$t("None");
 						const isDistributed = reliefPackages.length && reliefPackages.every(
-							(rp) => rp.state === "Distributed",
+							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 						);
 
 						this.table.data[key] = {
@@ -1108,6 +1143,40 @@ export default {
 					await this.fetchBnfFile3Statistics(bnfFile3ExportId);
 				}
 			}, 5000);
+		},
+
+		async setAsNotDistributed(tableIndex, bnfId, reliefPackage) {
+			try {
+				const { data, status, message } = await AssistancesService
+					.revertDistributionOfReliefPackage(reliefPackage[0].id);
+
+				if (status !== 200) {
+					throw new Error(message);
+				}
+
+				Toast(
+					`${this.$t("Successfully set as not distributed for Beneficiary ID")} ${bnfId}`,
+					"is-success",
+				);
+
+				const updatedRow = {
+					status: [data.state],
+					distributed: [`${data.distributed} ${data.unit}`],
+					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+				};
+				const unDistributedItemIndex = this.table.checkedRows.findIndex(
+					(row) => row.id === this.table.data[tableIndex].id,
+				);
+
+				this.table.checkedRows.splice(unDistributedItemIndex, 1);
+				this.table.data = this.table.data.map(
+					(row, index) => (index === tableIndex ? { ...row, ...updatedRow } : row),
+				);
+
+				this.$emit("fetchAssistanceStatistics");
+			} catch (e) {
+				Notification(`${this.$t("Set as not distributed")} ${e.message || e}`, "is-danger");
+			}
 		},
 
 		async exportDistribution(type, format) {

@@ -297,6 +297,13 @@ export default {
 		return { data, status, message };
 	},
 
+	revertDistributionOfReliefPackage(id) {
+		return fetcher({
+			uri: `assistances/relief-packages/${id}/revert-distribution`,
+			method: "PATCH",
+		});
+	},
+
 	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
 		const idsText = smartcardDepositIds ? idsToUri(smartcardDepositIds) : "";
 
