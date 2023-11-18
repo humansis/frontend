@@ -1,14 +1,15 @@
 <template>
-	<div>
-		<h2 class="title">{{ $t('Assistances Map')}}</h2>
+	<h2 class="mb-4">{{ $t('Assistances Map')}}</h2>
+
+	<v-sheet height="400">
 		<LMap :zoom="getZoom" :center="getCenter">
 			<LTileLayer :url="url" :attribution="attribution" />
 		</LMap>
-	</div>
+	</v-sheet>
 </template>
 
 <script>
-import { LMap, LTileLayer } from "vue2-leaflet";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { mapState } from "vuex";
 import L from "leaflet";
 
@@ -89,9 +90,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.vue2leaflet-map{
-	height: 400px;
-}
-</style>

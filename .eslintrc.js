@@ -4,37 +4,31 @@ module.exports = {
 		node: true,
 	},
 	extends: [
-		"plugin:vue/essential",
+		"plugin:vue/vue3-essential",
+		"plugin:import/recommended",
 		"@vue/airbnb",
 	],
 	parserOptions: {
-		parser: "@babel/eslint-parser",
+		ecmaVersion: 2020,
 	},
 	plugins: ["simple-import-sort"],
 	rules: {
-		"import/extensions": ["warn", "ignorePackages"],
-		"import/order": "off",
+		"import/extensions": ["error", "always", {
+			js: "never",
+			vue: "never",
+		}],
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
-		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+		"no-console": "off",
+		"no-debugger": "off",
 		"no-tabs": "off",
-		"no-plusplus": "off",
 		"object-curly-newline": "off",
 		quotes: ["warn", "double", { avoidEscape: true, allowTemplateLiterals: true }],
 		"vue/html-closing-bracket-newline": "warn",
 		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
 		"vue/html-self-closing": "warn",
-		"simple-import-sort/imports": [
-			"error",
-			{
-				groups: [
-					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
-					["^.+\\.css$"],
-				],
-			},
-		],
+		"vue/no-multiple-template-root": "off",
 		"vue/order-in-components": ["error", {
 			order: [
 				"el",
@@ -66,5 +60,24 @@ module.exports = {
 				"renderError",
 			],
 		}],
+		"simple-import-sort/imports": [
+			"error",
+			{
+				groups: [
+					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
+					["^.+\\.css$"],
+				],
+			},
+		],
+	},
+	settings: {
+		"import/resolver": {
+			alias: {
+				map: [
+					["@", "./src"],
+				],
+				extensions: [".js", ".vue"],
+			},
+		},
 	},
 };

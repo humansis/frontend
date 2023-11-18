@@ -1,183 +1,198 @@
 <template>
-	<div>
-		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
-		<b-notification
-			v-if="showNoProjectError"
-			type="is-warning is-light"
-			has-icon
-			icon="exclamation-triangle"
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("This project does not contain any assistances")}}.
-				{{ $t("Create your first one")}}.
-			</div>
-		</b-notification>
-		<b-notification
-			v-if="showNoBeneficiariesError"
-			type="is-warning is-light"
-			has-icon
-			icon="user-plus"
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("Please add some beneficiaries first!")}}
-				{{ $t("Then you will be able to manage some assistances")}}.
-			</div>
-		</b-notification>
-		<Table
-			ref="assistanceTable"
-			v-show="beneficiariesCount || upcoming"
-			has-reset-sort
-			default-sort-key="dateDistribution"
-			:wrapper-classes="['has-min-height-420']"
-			:has-search="!upcoming"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:has-clickable-rows="false"
-			:search-phrase="table.searchPhrase"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@onSearch="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				width="170"
-				field="actions"
-				:label="$t('Actions')"
-				:visible="!upcoming"
-			>
-				<div class="buttons is-right">
-					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
-						icon="edit"
-						:tooltip="$t('Update')"
-						@click="goToUpdate(props.row.id)"
-					/>
-					<ActionButton
-						v-if="(props.row.validated
-							|| props.row.completed)
-							&& isAssistanceDetailAllowed"
-						:icon="props.row.validated && props.row.completed
-							? 'eye' : 'edit'"
-						:tooltip="props.row.validated && props.row.completed
-							? $t('View') : $t('Update')"
-						@click="goToDetail(props.row.id)"
-					/>
-					<ActionButton
-						v-if="userCan.editDistribution"
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Details')"
-						@click="showEdit(props.row.id)"
-					/>
-					<b-dropdown :position="getDropdownPosition(props.index)">
-						<template #trigger>
-							<b-button
-								size="is-small"
-								icon-left="ellipsis-h"
-							/>
-						</template>
-						<b-dropdown-item
-							v-if="userCan.editDistribution"
-							@click="duplicate(props.row.id)"
-						>
-							<b-icon icon="copy" />
+	<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
 
-							{{ $t("Duplicate") }}
-						</b-dropdown-item>
-						<b-dropdown-item
-							@click="assistanceMove(props.row.id)"
-							:disabled="isAssistanceMoveEnable(props.row)"
-						>
-							<b-icon icon="share" />
+<!--	<b-notification-->
+<!--		v-if="showNoProjectError"-->
+<!--		type="is-warning is-light"-->
+<!--		has-icon-->
+<!--		icon="exclamation-triangle"-->
+<!--		:closable="false"-->
+<!--	>-->
+<!--		<div class="mt-3">-->
+<!--			{{ $t("This project does not contain any assistances")}}.-->
+<!--			{{ $t("Create your first one")}}.-->
+<!--		</div>-->
+<!--	</b-notification>-->
 
-							{{ $t("Move") }}
-						</b-dropdown-item>
-						<SafeDelete
-							:disabled="!props.row.deletable || !userCan.deleteDistribution"
-							componentType="DropDownItem"
-							:name="$t('Delete')"
-							icon="trash"
-							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
-							:entity="$t('Assistance')"
-							:id="props.row.id"
-							@submitted="$emit('remove', $event)"
-						/>
-					</b-dropdown>
-				</div>
-			</b-table-column>
-			<template v-if="!upcoming" #export>
-				<ExportControl
-					:disabled="!table.data.length"
-					:available-export-formats="exportControl.formats"
-					:available-export-types="exportControl.types"
-					:is-export-loading="exportControl.loading"
-					:location="exportControl.location"
-					@onExport="exportAssistances"
-				/>
-			</template>
-			<template #progress>
-				<b-progress :value="table.progress" format="percent" />
-			</template>
-			<template #filterButton>
-				<b-button
-					:class="filterButtonNew"
-					slot="trigger"
-					icon-left="sticky-note"
-					@click="statusFilter('new')"
-				>
-					{{ $t('New') }}
-				</b-button>
-				<b-button
-					:class="filterButtonValidated"
-					slot="trigger"
-					icon-left="spinner"
-					@click="statusFilter('validated')"
-				>
-					{{ $t('Validated') }}
-				</b-button>
-				<b-button
-					:class="filterButtonClosed"
-					slot="trigger"
-					icon-left="check"
-					@click="statusFilter('closed')"
-				>
-					{{ $t('Closed') }}
-				</b-button>
-			</template>
-		</Table>
-	</div>
+<!--	<b-notification-->
+<!--		v-if="showNoBeneficiariesError"-->
+<!--		type="is-warning is-light"-->
+<!--		has-icon-->
+<!--		icon="user-plus"-->
+<!--		:closable="false"-->
+<!--	>-->
+<!--		<div class="mt-3">-->
+<!--			{{ $t("Please add some beneficiaries first!")}}-->
+<!--			{{ $t("Then you will be able to manage some assistances")}}.-->
+<!--		</div>-->
+<!--	</b-notification>-->
+
+	<v-data-table-server
+		v-model:items-per-page="table.itemsPerPage"
+		:headers="table.visibleColumns"
+		:items="table.data"
+		:items-length="table.total"
+		:loading="isLoadingList"
+	/>
+<!--		v-model:items-per-page="itemsPerPage"-->
+<!--		:loading="loading"-->
+<!--		:search="search"-->
+<!--		item-value="name"-->
+<!--		@update:options="loadItems"-->
+
+<!--	<Table-->
+<!--		ref="assistanceTable"-->
+<!--		v-show="beneficiariesCount || upcoming"-->
+<!--		has-reset-sort-->
+<!--		default-sort-key="dateDistribution"-->
+<!--		:has-search="!upcoming"-->
+<!--		:data="table.data"-->
+<!--		:total="table.total"-->
+<!--		:current-page="table.currentPage"-->
+<!--		:is-loading="isLoadingList"-->
+<!--		:has-clickable-rows="false"-->
+<!--		:search-phrase="table.searchPhrase"-->
+<!--		@pageChanged="onPageChange"-->
+<!--		@sorted="onSort"-->
+<!--		@changePerPage="onChangePerPage"-->
+<!--		@resetSort="resetSort"-->
+<!--		@onSearch="onSearch"-->
+<!--	>-->
+<!--		<template v-for="column in table.columns" :key="column.id">-->
+<!--			<b-table-column-->
+<!--				v-bind="column"-->
+<!--				:sortable="column.sortable"-->
+<!--				v-slot="props"-->
+<!--			>-->
+<!--				<ColumnField :data="props" :column="column" />-->
+<!--			</b-table-column>-->
+<!--		</template>-->
+<!--		<b-table-column-->
+<!--			v-slot="props"-->
+<!--			width="170"-->
+<!--			field="actions"-->
+<!--			:label="$t('Actions')"-->
+<!--			:visible="!upcoming"-->
+<!--		>-->
+<!--			<div class="buttons is-right">-->
+<!--				<ActionButton-->
+<!--					v-if="!props.row.validated-->
+<!--						&& userCan.editDistribution"-->
+<!--					icon="edit"-->
+<!--					:tooltip="$t('Update')"-->
+<!--					@click="goToUpdate(props.row.id)"-->
+<!--				/>-->
+<!--				<ActionButton-->
+<!--					v-if="(props.row.validated-->
+<!--						|| props.row.completed)-->
+<!--						&& isAssistanceDetailAllowed"-->
+<!--					:icon="props.row.validated && props.row.completed-->
+<!--						? 'eye' : 'edit'"-->
+<!--					:tooltip="props.row.validated && props.row.completed-->
+<!--						? $t('View') : $t('Update')"-->
+<!--					@click="goToDetail(props.row.id)"-->
+<!--				/>-->
+<!--				<ActionButton-->
+<!--					v-if="userCan.editDistribution"-->
+<!--					icon="search"-->
+<!--					type="is-primary"-->
+<!--					:tooltip="$t('Details')"-->
+<!--					@click="showEdit(props.row.id)"-->
+<!--				/>-->
+<!--				<b-dropdown-->
+<!--					class="is-pulled-right has-text-left"-->
+<!--					:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"-->
+<!--				>-->
+<!--					<template #trigger>-->
+<!--						<b-button-->
+<!--							size="is-small"-->
+<!--							icon-left="ellipsis-h"-->
+<!--						/>-->
+<!--					</template>-->
+<!--					<b-dropdown-item-->
+<!--						v-if="userCan.editDistribution"-->
+<!--						@click="duplicate(props.row.id)"-->
+<!--					>-->
+<!--						<b-icon icon="copy" />-->
+<!---->
+<!--						{{ $t("Duplicate") }}-->
+<!--					</b-dropdown-item>-->
+<!--					<b-dropdown-item-->
+<!--						@click="assistanceMove(props.row.id)"-->
+<!--						:disabled="isAssistanceMoveEnable(props.row)"-->
+<!--					>-->
+<!--						<b-icon icon="share" />-->
+<!---->
+<!--						{{ $t("Move") }}-->
+<!--					</b-dropdown-item>-->
+<!--					<SafeDelete-->
+<!--						:disabled="!props.row.deletable || !userCan.deleteDistribution"-->
+<!--						componentType="DropDownItem"-->
+<!--						:name="$t('Delete')"-->
+<!--						icon="trash"-->
+<!--						:message="$t('All distribution data will be deleted. Do you wish to continue?')"-->
+<!--						:entity="$t('Assistance')"-->
+<!--						:id="props.row.id"-->
+<!--						@submitted="$emit('remove', $event)"-->
+<!--					/>-->
+<!--				</b-dropdown>-->
+<!--			</div>-->
+<!--		</b-table-column>-->
+<!--		<template v-if="!upcoming" #export>-->
+<!--			<ExportControl-->
+<!--				:disabled="!table.data.length"-->
+<!--				:available-export-formats="exportControl.formats"-->
+<!--				:available-export-types="exportControl.types"-->
+<!--				:is-export-loading="exportControl.loading"-->
+<!--				:location="exportControl.location"-->
+<!--				@onExport="exportAssistances"-->
+<!--			/>-->
+<!--		</template>-->
+<!--		<template #progress>-->
+<!--			<b-progress :value="table.progress" format="percent" />-->
+<!--		</template>-->
+<!--		<template #filterButton>-->
+<!--			<b-button-->
+<!--				:class="filterButtonNew"-->
+<!--				slot="trigger"-->
+<!--				icon-left="sticky-note"-->
+<!--				@click="statusFilter('new')"-->
+<!--			>-->
+<!--				{{ $t('New') }}-->
+<!--			</b-button>-->
+<!--			<b-button-->
+<!--				:class="filterButtonValidated"-->
+<!--				slot="trigger"-->
+<!--				icon-left="spinner"-->
+<!--				@click="statusFilter('validated')"-->
+<!--			>-->
+<!--				{{ $t('Validated') }}-->
+<!--			</b-button>-->
+<!--			<b-button-->
+<!--				:class="filterButtonClosed"-->
+<!--				slot="trigger"-->
+<!--				icon-left="check"-->
+<!--				@click="statusFilter('closed')"-->
+<!--			>-->
+<!--				{{ $t('Closed') }}-->
+<!--			</b-button>-->
+<!--		</template>-->
+<!--	</Table>-->
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
-import baseHelper from "@/mixins/baseHelper";
-import grid from "@/mixins/grid";
-import permissions from "@/mixins/permissions";
-import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
-import { downloadFile } from "@/utils/helpers";
-import { Notification } from "@/utils/UI";
+// import ActionButton from "@/components/ActionButton";
+// import ColumnField from "@/components/DataGrid/ColumnField";
+// import Table from "@/components/DataGrid/Table";
+// import ExportControl from "@/components/Export";
+// import SafeDelete from "@/components/SafeDelete";
+// import baseHelper from "@/mixins/baseHelper";
+// import grid from "@/mixins/grid";
+// import permissions from "@/mixins/permissions";
+// import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+// import { downloadFile } from "@/utils/helpers";
+// import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT } from "@/consts";
 
 const statusTags = [
@@ -190,14 +205,19 @@ export default {
 	name: "AssistancesList",
 
 	components: {
-		Table,
-		ActionButton,
-		SafeDelete,
-		ColumnField,
-		ExportControl,
+		// Table,
+		// ActionButton,
+		// SafeDelete,
+		// ColumnField,
+		// ExportControl,
 	},
 
-	mixins: [permissions, grid, baseHelper, permissions],
+	mixins: [
+		// permissions,
+		// grid,
+		// baseHelper,
+		// permissions,
+	],
 
 	props: {
 		upcoming: Boolean,
@@ -235,28 +255,30 @@ export default {
 				closed: false,
 			},
 			filters: { states: ["new", "validated"] },
+			isLoadingList: false,
 			table: {
 				data: [],
 				columns: [],
 				visibleColumns: [
-					{ key: "assistanceID", label: "Assistance ID", type: "link", sortKey: "id", sortable: true },
-					{ key: "assistanceName", label: "Name", type: "link", sortKey: "name", sortable: true },
+					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id", sortable: true },
+					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name", sortable: true },
 					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
 					{ key: "round", sortable: true },
 					{ key: "type", type: "assistancesType", sortable: true },
-					{ key: "location", label: "Location", sortable: true },
+					{ key: "location", title: "Location", sortable: true },
 					{ key: "target", sortable: true },
 					{ key: "reached" },
 					{ key: "progress", sortable: true },
-					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
-					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
-					{ key: "commodity", label: "Commodity", type: "svgIcon" },
+					{ key: "dateDistribution", title: "Date of Assistance", type: "date", sortable: true },
+					{ key: "dateExpiration", title: "Expiration Date", sortable: true },
+					{ key: "commodity", title: "Commodity", type: "svgIcon" },
 					{ key: "eloNumber" },
 					{ key: "activity" },
 					{ key: "budgetLine" },
 				],
 				total: 0,
 				currentPage: 1,
+				itemsPerPage: 10,
 				sortDirection: "desc",
 				sortColumn: "dateDistribution",
 				searchPhrase: "",
@@ -322,7 +344,7 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
+			// this.table.columns = generateColumns(this.table.visibleColumns); // FIXME
 			if (this.upcoming) {
 				await this.fetchUpcomingAssistances();
 			} else {
@@ -347,7 +369,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				// if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
 		},
 
@@ -367,7 +389,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+				// if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
 			});
 		},
 
@@ -390,6 +412,9 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
+
+			const maxThreeRows = this.table.data.length <= 3;
+			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -460,7 +485,7 @@ export default {
 
 		getRouteNameToAssistance(data) {
 			return data.state.value === "Closed"
-				|| data.state.value === "Validated"
+			|| data.state.value === "Validated"
 				? "AssistanceDetail"
 				: "AssistanceEdit";
 		},
@@ -516,12 +541,22 @@ export default {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
 		},
 
-		getDropdownPosition(rowId) {
-			if (this.table.data.length === 3 && rowId === 2) {
-				return "is-top-left";
+		isOneOfLastThreeRows(rowId) {
+			let finalCountOfDisplayedRows = this.table.total;
+
+			if (this.perPage <= this.table.total) {
+				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
+					- this.table.total);
+
+				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
+					? this.perPage
+					: countOfDisplayedRows;
 			}
 
-			return [0, 1, 2].includes(rowId) ? "is-bottom-left" : "is-top-left";
+			return (rowId === finalCountOfDisplayedRows - 1
+				|| rowId === finalCountOfDisplayedRows - 2
+				|| rowId === finalCountOfDisplayedRows - 3
+			);
 		},
 
 		isAssistanceMoveEnable(assistance) {
@@ -546,7 +581,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+					// Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
 				} finally {
 					this.exportControl.loading = false;
 				}
@@ -555,11 +590,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-@import 'src/assets/scss/button';
-
-.table .buttons {
-	flex-wrap: nowrap;
-}
-</style>

@@ -1,49 +1,37 @@
 <template>
-	<div class="mb-4">
-		<h2 class="title">{{ $t('Summary') }}</h2>
+	<h2 class="mb-4">{{ $t('Summary') }}</h2>
 
-		<div class="columns is-multiline" ref="summary">
-			<div
-				v-for="{ id, code, value, icon } in summary"
-				class="column is-half"
-				:ref="code"
-				:key="id"
+	<v-row>
+		<v-col
+			v-for="{ id, code, value, icon } in summary"
+			cols="6"
+			:ref="code"
+			:key="id"
+		>
+			<v-card
+				:loading="!(value || value === 0)"
+				min-height="76"
 			>
-				<div class="box">
-					<article class="media is-align-items-center">
-						<div class="media-left">
-							<b-icon
-								size="is-medium"
-								type="is-primary"
-								:icon="icon"
-							/>
-						</div>
-						<div class="level">
-							<div class="content">
-								<p class="heading mb-0"> {{ $t(normalizeText(code)) }}</p>
-								<p v-if="value || value === 0" class="subtitle is-4">{{ value }}</p>
-								<Loading v-else type="bubbles" is-small class="subtitle" />
-							</div>
-						</div>
-					</article>
-				</div>
-			</div>
-		</div>
-	</div>
+				<template v-slot:prepend>
+					<v-icon :icon="icon" color="primary" class="pb-2" />
+				</template>
+
+				<template v-slot:item>
+					<v-card-subtitle class="pt-1 pb-0">{{ $t(normalizeText(code)) }}</v-card-subtitle>
+					<v-card-title>{{ value || value === 0 ? value : "&nbsp;" }}</v-card-title>
+				</template>
+			</v-card>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
 import HomeService from "@/services/HomeService";
-import Loading from "@/components/Loading";
 import { normalizeText } from "@/utils/datagrid";
-import { Notification } from "@/utils/UI";
+// import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Summary",
-
-	components: {
-		Loading,
-	},
 
 	data() {
 		return {
@@ -105,17 +93,10 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
-					});
+					// if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
+				});
 			});
 		},
 	},
 };
 </script>
-
-<style scoped>
-.columns {
-	position: relative;
-	min-height: 64px;
-}
-</style>

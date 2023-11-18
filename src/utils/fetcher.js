@@ -89,8 +89,7 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async (
-	{
+export const fetcher = async ({
 		uri,
 		version = 1,
 		auth = true,

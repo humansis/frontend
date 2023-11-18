@@ -1,17 +1,17 @@
 <template>
-	<div>
-		<div class="columns is-multiline">
-			<div class="column">
+	<v-container fluid>
+		<v-row>
+			<v-col class="mb-4">
 				<DistributionMap />
-			</div>
+			</v-col>
 
-			<div class="column">
-				<Summary />
-			</div>
-		</div>
+			<v-col class="mb-4">
+				<HomeSummary />
+			</v-col>
+		</v-row>
 
 		<UpcomingAssistances />
-	</div>
+	</v-container>
 </template>
 
 <script>
@@ -20,11 +20,11 @@ import Summary from "@/components/Home/Summary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 
 export default {
-	name: "Home",
+	name: "HomePage",
 
 	components: {
 		DistributionMap,
-		Summary,
+		HomeSummary: Summary,
 		UpcomingAssistances,
 	},
 };
