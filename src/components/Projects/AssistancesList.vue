@@ -1,0 +1,592 @@
+<template>
+	<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
+
+<!--	<b-notification-->
+<!--		v-if="showNoProjectError"-->
+<!--		type="is-warning is-light"-->
+<!--		has-icon-->
+<!--		icon="exclamation-triangle"-->
+<!--		:closable="false"-->
+<!--	>-->
+<!--		<div class="mt-3">-->
+<!--			{{ $t("This project does not contain any assistances")}}.-->
+<!--			{{ $t("Create your first one")}}.-->
+<!--		</div>-->
+<!--	</b-notification>-->
+
+<!--	<b-notification-->
+<!--		v-if="showNoBeneficiariesError"-->
+<!--		type="is-warning is-light"-->
+<!--		has-icon-->
+<!--		icon="user-plus"-->
+<!--		:closable="false"-->
+<!--	>-->
+<!--		<div class="mt-3">-->
+<!--			{{ $t("Please add some beneficiaries first!")}}-->
+<!--			{{ $t("Then you will be able to manage some assistances")}}.-->
+<!--		</div>-->
+<!--	</b-notification>-->
+
+	<v-data-table-server
+		v-model:items-per-page="table.itemsPerPage"
+		:headers="table.visibleColumns"
+		:items="table.data"
+		:items-length="table.total"
+		:loading="isLoadingList"
+	/>
+<!--		v-model:items-per-page="itemsPerPage"-->
+<!--		:loading="loading"-->
+<!--		:search="search"-->
+<!--		item-value="name"-->
+<!--		@update:options="loadItems"-->
+
+<!--	<Table-->
+<!--		ref="assistanceTable"-->
+<!--		v-show="beneficiariesCount || upcoming"-->
+<!--		has-reset-sort-->
+<!--		default-sort-key="dateDistribution"-->
+<!--		:has-search="!upcoming"-->
+<!--		:data="table.data"-->
+<!--		:total="table.total"-->
+<!--		:current-page="table.currentPage"-->
+<!--		:is-loading="isLoadingList"-->
+<!--		:has-clickable-rows="false"-->
+<!--		:search-phrase="table.searchPhrase"-->
+<!--		@pageChanged="onPageChange"-->
+<!--		@sorted="onSort"-->
+<!--		@changePerPage="onChangePerPage"-->
+<!--		@resetSort="resetSort"-->
+<!--		@onSearch="onSearch"-->
+<!--	>-->
+<!--		<template v-for="column in table.columns" :key="column.id">-->
+<!--			<b-table-column-->
+<!--				v-bind="column"-->
+<!--				:sortable="column.sortable"-->
+<!--				v-slot="props"-->
+<!--			>-->
+<!--				<ColumnField :data="props" :column="column" />-->
+<!--			</b-table-column>-->
+<!--		</template>-->
+<!--		<b-table-column-->
+<!--			v-slot="props"-->
+<!--			width="170"-->
+<!--			field="actions"-->
+<!--			:label="$t('Actions')"-->
+<!--			:visible="!upcoming"-->
+<!--		>-->
+<!--			<div class="buttons is-right">-->
+<!--				<ActionButton-->
+<!--					v-if="!props.row.validated-->
+<!--						&& userCan.editDistribution"-->
+<!--					icon="edit"-->
+<!--					:tooltip="$t('Update')"-->
+<!--					@click="goToUpdate(props.row.id)"-->
+<!--				/>-->
+<!--				<ActionButton-->
+<!--					v-if="(props.row.validated-->
+<!--						|| props.row.completed)-->
+<!--						&& isAssistanceDetailAllowed"-->
+<!--					:icon="props.row.validated && props.row.completed-->
+<!--						? 'eye' : 'edit'"-->
+<!--					:tooltip="props.row.validated && props.row.completed-->
+<!--						? $t('View') : $t('Update')"-->
+<!--					@click="goToDetail(props.row.id)"-->
+<!--				/>-->
+<!--				<ActionButton-->
+<!--					v-if="userCan.editDistribution"-->
+<!--					icon="search"-->
+<!--					type="is-primary"-->
+<!--					:tooltip="$t('Details')"-->
+<!--					@click="showEdit(props.row.id)"-->
+<!--				/>-->
+<!--				<b-dropdown-->
+<!--					class="is-pulled-right has-text-left"-->
+<!--					:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"-->
+<!--				>-->
+<!--					<template #trigger>-->
+<!--						<b-button-->
+<!--							size="is-small"-->
+<!--							icon-left="ellipsis-h"-->
+<!--						/>-->
+<!--					</template>-->
+<!--					<b-dropdown-item-->
+<!--						v-if="userCan.editDistribution"-->
+<!--						@click="duplicate(props.row.id)"-->
+<!--					>-->
+<!--						<b-icon icon="copy" />-->
+<!---->
+<!--						{{ $t("Duplicate") }}-->
+<!--					</b-dropdown-item>-->
+<!--					<b-dropdown-item-->
+<!--						@click="assistanceMove(props.row.id)"-->
+<!--						:disabled="isAssistanceMoveEnable(props.row)"-->
+<!--					>-->
+<!--						<b-icon icon="share" />-->
+<!---->
+<!--						{{ $t("Move") }}-->
+<!--					</b-dropdown-item>-->
+<!--					<SafeDelete-->
+<!--						:disabled="!props.row.deletable || !userCan.deleteDistribution"-->
+<!--						componentType="DropDownItem"-->
+<!--						:name="$t('Delete')"-->
+<!--						icon="trash"-->
+<!--						:message="$t('All distribution data will be deleted. Do you wish to continue?')"-->
+<!--						:entity="$t('Assistance')"-->
+<!--						:id="props.row.id"-->
+<!--						@submitted="$emit('remove', $event)"-->
+<!--					/>-->
+<!--				</b-dropdown>-->
+<!--			</div>-->
+<!--		</b-table-column>-->
+<!--		<template v-if="!upcoming" #export>-->
+<!--			<ExportControl-->
+<!--				:disabled="!table.data.length"-->
+<!--				:available-export-formats="exportControl.formats"-->
+<!--				:available-export-types="exportControl.types"-->
+<!--				:is-export-loading="exportControl.loading"-->
+<!--				:location="exportControl.location"-->
+<!--				@onExport="exportAssistances"-->
+<!--			/>-->
+<!--		</template>-->
+<!--		<template #progress>-->
+<!--			<b-progress :value="table.progress" format="percent" />-->
+<!--		</template>-->
+<!--		<template #filterButton>-->
+<!--			<b-button-->
+<!--				:class="filterButtonNew"-->
+<!--				slot="trigger"-->
+<!--				icon-left="sticky-note"-->
+<!--				@click="statusFilter('new')"-->
+<!--			>-->
+<!--				{{ $t('New') }}-->
+<!--			</b-button>-->
+<!--			<b-button-->
+<!--				:class="filterButtonValidated"-->
+<!--				slot="trigger"-->
+<!--				icon-left="spinner"-->
+<!--				@click="statusFilter('validated')"-->
+<!--			>-->
+<!--				{{ $t('Validated') }}-->
+<!--			</b-button>-->
+<!--			<b-button-->
+<!--				:class="filterButtonClosed"-->
+<!--				slot="trigger"-->
+<!--				icon-left="check"-->
+<!--				@click="statusFilter('closed')"-->
+<!--			>-->
+<!--				{{ $t('Closed') }}-->
+<!--			</b-button>-->
+<!--		</template>-->
+<!--	</Table>-->
+</template>
+
+<script>
+import AssistancesService from "@/services/AssistancesService";
+// import ActionButton from "@/components/ActionButton";
+// import ColumnField from "@/components/DataGrid/ColumnField";
+// import Table from "@/components/DataGrid/Table";
+// import ExportControl from "@/components/Export";
+// import SafeDelete from "@/components/SafeDelete";
+// import baseHelper from "@/mixins/baseHelper";
+// import grid from "@/mixins/grid";
+// import permissions from "@/mixins/permissions";
+// import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+// import { downloadFile } from "@/utils/helpers";
+// import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT } from "@/consts";
+
+const statusTags = [
+	{ code: ASSISTANCE.STATUS.NEW, type: "is-light" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "is-success" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "is-info" },
+];
+
+export default {
+	name: "AssistancesList",
+
+	components: {
+		// Table,
+		// ActionButton,
+		// SafeDelete,
+		// ColumnField,
+		// ExportControl,
+	},
+
+	mixins: [
+		// permissions,
+		// grid,
+		// baseHelper,
+		// permissions,
+	],
+
+	props: {
+		upcoming: Boolean,
+
+		beneficiariesCount: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
+
+		project: {
+			type: Object,
+			default: () => {},
+		},
+
+		projectLoaded: {
+			type: Boolean,
+			default: false,
+		},
+	},
+
+	data() {
+		return {
+			exportControl: {
+				loading: false,
+				location: "projectAssistances",
+				types: [EXPORT.ASSISTANCE_OVERVIEW],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
+			exportLoading: false,
+			selectedFilters: ["new", "validated"],
+			statusActive: {
+				new: true,
+				validated: true,
+				closed: false,
+			},
+			filters: { states: ["new", "validated"] },
+			isLoadingList: false,
+			table: {
+				data: [],
+				columns: [],
+				visibleColumns: [
+					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id", sortable: true },
+					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name", sortable: true },
+					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
+					{ key: "round", sortable: true },
+					{ key: "type", type: "assistancesType", sortable: true },
+					{ key: "location", title: "Location", sortable: true },
+					{ key: "target", sortable: true },
+					{ key: "reached" },
+					{ key: "progress", sortable: true },
+					{ key: "dateDistribution", title: "Date of Assistance", type: "date", sortable: true },
+					{ key: "dateExpiration", title: "Expiration Date", sortable: true },
+					{ key: "commodity", title: "Commodity", type: "svgIcon" },
+					{ key: "eloNumber" },
+					{ key: "activity" },
+					{ key: "budgetLine" },
+				],
+				total: 0,
+				currentPage: 1,
+				itemsPerPage: 10,
+				sortDirection: "desc",
+				sortColumn: "dateDistribution",
+				searchPhrase: "",
+				progress: null,
+			},
+			commodities: [],
+			locations: [],
+		};
+	},
+
+	computed: {
+		filterButtonNew() {
+			return [
+				"btn ml-3 is-light",
+				{ "is-selected": this.statusActive.new },
+			];
+		},
+
+		filterButtonValidated() {
+			return [
+				"btn ml-3 is-success is-light",
+				{ "is-selected": this.statusActive.validated },
+			];
+		},
+
+		filterButtonClosed() {
+			return [
+				"btn ml-3 is-info is-light",
+				{ "is-selected": this.statusActive.closed },
+			];
+		},
+
+		isAssistanceDetailAllowed() {
+			return this.userCan.editDistribution || this.userCan.viewDistribution;
+		},
+
+		showNoProjectError() {
+			return !this.project?.assistanceCount
+				&& this.beneficiariesCount
+				&& !this.isLoadingList
+				&& !this.upcoming;
+		},
+
+		showNoBeneficiariesError() {
+			return !this.beneficiariesCount
+				&& this.projectLoaded
+				&& this.table.data
+				&& !this.isLoadingList
+				&& !this.upcoming;
+		},
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	created() {
+		this.fetchData();
+	},
+
+	methods: {
+		async fetchData() {
+			this.isLoadingList = true;
+			this.table.progress = null;
+
+			// this.table.columns = generateColumns(this.table.visibleColumns); // FIXME
+			if (this.upcoming) {
+				await this.fetchUpcomingAssistances();
+			} else {
+				await this.fetchProjectAssistances();
+			}
+			this.isLoadingList = false;
+		},
+
+		async fetchProjectAssistances() {
+			await AssistancesService.getListOfProjectAssistances(
+				this.$route.params.projectId,
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.searchPhrase,
+				this.filters,
+			).then(async ({ data, totalCount }) => {
+				this.table.data = [];
+				this.table.progress = 0;
+				this.table.total = totalCount;
+				if (totalCount > 0) {
+					await this.prepareDataForTable(data);
+				}
+			}).catch((e) => {
+				// if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+			});
+		},
+
+		async fetchUpcomingAssistances() {
+			await AssistancesService.getListOfAssistances(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				true,
+				null,
+				this.filters,
+			).then(({ data, totalCount }) => {
+				this.table.data = [];
+				this.table.progress = 0;
+				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				}
+			}).catch((e) => {
+				// if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+			});
+		},
+
+		prepareDataForTable(data) {
+			this.table.progress += 15;
+			data.forEach((item, key) => {
+				const roundIsNaN = Number.isNaN(parseInt(item.round, 10));
+				this.table.data[key] = item;
+				this.table.data[key].dateDistribution = `${item.dateDistribution}`;
+				this.table.data[key].type = this.$t(normalizeText(item.type));
+				this.table.data[key].target = this.$t(normalizeText(item.target));
+				this.table.data[key].round = roundIsNaN ? this.$t("N/A") : item.round;
+				this.table.data[key].status = item.state.code;
+				this.table.data[key].reached = this.reachedTextFormat(item);
+				this.table.data[key].progress = this.assistanceProgress(item);
+			});
+			this.table.progress += 10;
+
+			this.prepareLocationForTable();
+			this.prepareCommodityForTable();
+			this.prepareStatisticsForTable();
+			this.prepareRowClickForTable();
+
+			const maxThreeRows = this.table.data.length <= 3;
+			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
+		},
+
+		prepareStatisticsForTable() {
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].beneficiaries = item.total;
+			});
+			this.table.progress += 25;
+		},
+
+		prepareCommodityForTable() {
+			this.table.data.forEach((item) => {
+				this.commodities.push(item.commodities);
+			});
+			this.table.progress += 15;
+			this.table.data.forEach((item, key) => {
+				const preparedCommodity = item.commodities;
+
+				let dateExpiration = "";
+
+				if (item.dateExpiration) {
+					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
+				} else {
+					dateExpiration = "No Date";
+				}
+
+				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
+				this.table.data[key].dateExpiration = isCommoditySmartCard
+					? dateExpiration : this.$t("N/A");
+
+				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
+					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
+			});
+			this.table.progress += 10;
+		},
+
+		prepareLocationForTable() {
+			this.table.data.forEach((item, key) => {
+				this.table.data[key].location = item.location.name;
+			});
+			this.table.progress += 25;
+		},
+
+		prepareRowClickForTable() {
+			this.table.data.forEach((item, key) => {
+				const { id, projectId, name } = this.table.data[key];
+				const routeParams = {
+					assistanceId: id,
+					...(this.upcoming && { projectId }),
+				};
+
+				this.table.data[key].assistanceID = {
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name: id,
+					routeParams,
+				};
+				this.table.data[key].assistanceName = {
+					routeName: this.getRouteNameToAssistance(this.table.data[key]),
+					name,
+					routeParams,
+				};
+			});
+		},
+
+		reachedTextFormat(data) {
+			return data.reached === 0 ? `${data.reached} / ${data.total}`
+				: `${data.reached} / ${data.total}`;
+		},
+
+		getRouteNameToAssistance(data) {
+			return data.state.value === "Closed"
+			|| data.state.value === "Validated"
+				? "AssistanceDetail"
+				: "AssistanceEdit";
+		},
+
+		assistanceProgress(data) {
+			return (data.state.value === "New" && this.$t("N/A"))
+				|| `${Math.trunc(data.progress * 100)} %`;
+		},
+
+		goToDetail(id) {
+			this.$router.push({
+				name: "AssistanceDetail",
+				params: {
+					assistanceId: id,
+				},
+			});
+		},
+
+		goToUpdate(id) {
+			const assistance = this.table.data.find((item) => item.id === id);
+
+			if (this.upcoming) {
+				this.showDetail(assistance);
+			} else {
+				this.$router.push({
+					name: "AssistanceEdit",
+					params: {
+						assistanceId: assistance.id,
+					},
+				});
+			}
+		},
+
+		statusFilter(filter) {
+			this.statusActive[filter] = !this.statusActive[filter];
+
+			if (this.selectedFilters.includes(filter)) {
+				this.selectedFilters = this.selectedFilters.filter((item) => item !== filter);
+			} else {
+				this.selectedFilters.push(filter);
+			}
+
+			this.onFiltersChange({ states: this.selectedFilters });
+		},
+
+		async onFiltersChange(selectedFilters) {
+			this.filters = selectedFilters;
+			this.table.currentPage = 1;
+			await this.fetchData();
+		},
+
+		duplicate(id) {
+			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
+		},
+
+		isOneOfLastThreeRows(rowId) {
+			let finalCountOfDisplayedRows = this.table.total;
+
+			if (this.perPage <= this.table.total) {
+				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
+					- this.table.total);
+
+				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
+					? this.perPage
+					: countOfDisplayedRows;
+			}
+
+			return (rowId === finalCountOfDisplayedRows - 1
+				|| rowId === finalCountOfDisplayedRows - 2
+				|| rowId === finalCountOfDisplayedRows - 3
+			);
+		},
+
+		isAssistanceMoveEnable(assistance) {
+			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
+		},
+
+		async exportAssistances(exportType, format) {
+			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
+				try {
+					this.exportControl.loading = true;
+
+					const filters = {
+						...this.filters,
+						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+					};
+					const filename = `Assistance overview ${normalizeExportDate()}`;
+					const { data, status, message } = await AssistancesService.exportAssistances(
+						format,
+						this.$route.params.projectId,
+						filters,
+					);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					// Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+				} finally {
+					this.exportControl.loading = false;
+				}
+			}
+		},
+	},
+};
+</script>

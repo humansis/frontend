@@ -66,6 +66,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import { required } from "vuelidate/lib/validators";
+import { jwtDecode } from "jwt-decode";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
@@ -75,7 +76,6 @@ import { setCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 import gitInfo from "@/gitInfo";
-import JWTDecode from "jwt-decode";
 
 export default {
 	name: "Login",
@@ -168,7 +168,7 @@ export default {
 				if (response.status === 200) {
 					const { data: { token, userId } } = response;
 
-					const user = await JWTDecode(token);
+					const user = await jwtDecode(token);
 					user.userId = userId;
 
 					await setCookie("token", token, user.exp - user.iat);
