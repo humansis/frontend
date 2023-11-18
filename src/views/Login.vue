@@ -16,27 +16,28 @@
 						{{ gitInfo.appVersion }}
 					</div>
 
-					<v-form
-						@submit.prevent="submitForm"
-					>
+					<v-form @submit.prevent="submitForm">
 						<v-text-field
-							v-model="formModel.username"
+							v-model="v$.formModel.username.$model"
 							label="Email"
 							name="email"
+							type="email"
 							placeholder="Enter your email"
 							bg-color="white"
 							class="mx-12"
-						></v-text-field>
+							:error-messages="v$.formModel.username.$errors.map(e => e.$message)"
+						/>
 
 						<v-text-field
-							v-model="formModel.password"
+							v-model="v$.formModel.password.$model"
 							label="Password"
 							name="password"
 							placeholder="Enter your password"
 							bg-color="white"
 							class="mx-12"
-							:append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+							:append-inner-icon="passwordVisible ? 'eye-slash' : 'eye'"
 							:type="passwordVisible ? 'text' : 'password'"
+							:error-messages="v$.formModel.password.$errors.map(e => e.$message)"
 							@click:append-inner="passwordVisible = !passwordVisible"
 						/>
 
@@ -58,20 +59,29 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { required } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
 import UsersService from "@/services/UsersService";
-import validation from "@/mixins/validation";
 import { setCookie } from "@/utils/cookie";
-// import { Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 import gitInfo from "@/gitInfo";
-import JWTDecode from "jwt-decode";
+import { useVuelidate } from "@vuelidate/core";
+import { email, required } from "@vuelidate/validators";
+import { jwtDecode } from "jwt-decode";
 
 export default {
-	name: "Login",
+	name: "LoginPage",
+
+	validations() {
+		return {
+			formModel: {
+				username: { required, email },
+				password: { required },
+			},
+		};
+	},
 
 	data() {
 		return {
@@ -85,6 +95,8 @@ export default {
 		};
 	},
 
+	setup: () => ({ v$: useVuelidate() }),
+
 	computed: {
 		...mapState([
 			"user",
@@ -97,6 +109,7 @@ export default {
 	},
 
 	beforeCreate() {
+		// TODO it is necessary?
 		document.documentElement.classList.add("layout-center");
 	},
 
@@ -106,7 +119,7 @@ export default {
 		this.$store.commit("fullPage", true);
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.$store.commit("fullPage", false);
 	},
 
@@ -123,7 +136,7 @@ export default {
 		]),
 
 		urlLogin() {
-			if (process.env.VUE_APP_ENV === "prod") return;
+			if (import.meta.env.VITE_APP_ENV === "prod") return;
 
 			const { username, password } = this.$route.query;
 
@@ -138,108 +151,113 @@ export default {
 		},
 
 		async submitForm() {
-			this.loginButtonLoading = true;
+			const isFormCorrect = await this.v$.$validate();
+			if (!isFormCorrect) return;
 
-			const lastLoggedUsername = this.user.username || this.lastUsername;
+			try {
+				this.loginButtonLoading = true;
 
-			await LoginService.logUserIn(this.formModel).then(async (response) => {
-				if (response.status === 200) {
-					const { data: { token, userId } } = response;
+				const lastLoggedUsername = this.user.username || this.lastUsername;
 
-					const user = await JWTDecode(token);
-					user.userId = userId;
+				const { data, status, message } = await LoginService.logUserIn(this.formModel);
 
-					await setCookie("token", token, user.exp - user.iat);
+				if (status !== 200) {
+					throw new Error(message);
+				}
 
-					await this.storeUser(user);
+				const { token, userId } = data;
 
-					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+				const user = await jwtDecode(token);
+				user.userId = userId;
 
-					this.updateStoredUser({
-						attribute: "changePassword",
-						value: userDetail.changePassword,
-					});
+				await setCookie("token", token, user.exp - user.iat);
 
-					await this.storeAvailableProjects(userDetail.projectIds);
+				await this.storeUser(user);
 
-					const language = this.languages.find(({ key }) => key === userDetail?.language)
-						|| GENERAL.DEFAULT_LANGUAGE;
+				const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+
+				this.updateStoredUser({
+					attribute: "changePassword",
+					value: userDetail.changePassword,
+				});
+
+				await this.storeAvailableProjects(userDetail.projectIds);
+
+				const language = this.languages.find(({ key }) => key === userDetail?.language)
+					|| GENERAL.DEFAULT_LANGUAGE;
+
+				if (lastLoggedUsername === user.username) {
+					await this.setLocales(this.language.key);
+				} else {
+					await this.setLocales(language.key);
+				}
+
+				if (lastLoggedUsername === user.username) {
+					await this.storeLanguage(this.language);
+				} else {
+					await this.storeLanguage(language);
+				}
+
+				const { data: countries } = await CountriesService.getListOfUsersCountries(userId);
+
+				if (countries.length) {
+					await this.storeCountries(countries);
 
 					if (lastLoggedUsername === user.username) {
-						await this.setLocales(this.language.key);
+						await this.storeCountry(this.country);
 					} else {
-						await this.setLocales(language.key);
-					}
-
-					if (lastLoggedUsername === user.username) {
-						await this.storeLanguage(this.language);
-					} else {
-						await this.storeLanguage(language);
-					}
-
-					const countries = await this.fetchUsersCountries(userId);
-
-					if (countries.length) {
-						await this.storeCountries(countries);
-
-						if (lastLoggedUsername === user.username) {
-							await this.storeCountry(this.country);
-						} else {
-							await this.storeCountry(countries[0]);
-						}
-					}
-
-					const { data: { privileges } } = user.roles[0]
-						? await LoginService.getRolePermissions(user.roles[0]) : {}
-							.then(({ data }) => data);
-
-					await this.storePermissions(privileges);
-
-					if (countries.length) {
-						if (this.$route.query.redirect) {
-							this.$router.push(this.$route.query.redirect.toString());
-						} else {
-							this.$router.push({
-								name: "Projects",
-								params: {
-									countryCode: this.country?.iso3 || countries[0].iso3,
-								},
-							});
-						}
-					} else {
-            // FIXME
-						// Notification(`${this.$t("No Countries")}`, "is-warning");
+						await this.storeCountry(countries[0]);
 					}
 				}
-			}).catch((e) => {
-        // FIXME
-			});
 
-			this.loginButtonLoading = false;
-		},
+				let rolePrivileges = [];
 
-		fetchUsersCountries(userId) {
-			return CountriesService.getListOfUsersCountries(userId)
-				.then(({ data }) => data)
-				.catch((e) => {
-          // FIXME
-					// if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
-				});
+				if (user.roles[0]) {
+					const { data: { privileges } } = await LoginService.getRolePermissions(user.roles[0]);
+					rolePrivileges = privileges;
+				}
+
+				await this.storePermissions(rolePrivileges);
+
+				if (countries.length) {
+					if (this.$route.query.redirect) {
+						this.$router.push(this.$route.query.redirect.toString());
+					} else {
+						this.$router.push({
+							name: "Home",
+							// TODO
+							// name: "Projects",
+							params: {
+								countryCode: this.country?.iso3 || countries[0].iso3,
+							},
+						});
+					}
+				} else {
+					Notification(this.$t("No Countries"), "warning");
+				}
+			} catch (e) {
+				Notification(`${this.$t("Login")} ${e}`, "error");
+			} finally {
+				this.loginButtonLoading = false;
+			}
 		},
 
 		async setLocales(languageKey) {
 			if (!this.translations || languageKey !== this.language.key) {
-				await TranslationService.getTranslations(languageKey).then((response) => {
-					if (response.status === 200) {
-						this.storeTranslations(response.data);
-						this.$i18n.locale = languageKey;
-						this.$i18n.fallbackLocale = languageKey;
-						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
+				try {
+					const { data, status, message } = await TranslationService.getTranslations(languageKey);
+
+					if (status !== 200) {
+						throw new Error(message);
 					}
-				}).catch((e) => {
-          // FIXME
-					// if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-				});
+
+					this.storeTranslations(data);
+					this.$i18n.locale = languageKey;
+					this.$i18n.fallbackLocale = languageKey;
+					this.$root.$i18n.setLocaleMessage(languageKey, data);
+				} catch (e) {
+					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "warning");
+				}
 			} else {
 				this.$i18n.locale = languageKey;
 				this.$i18n.fallbackLocale = languageKey;

@@ -1,6 +1,10 @@
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
-import { Notification } from "@/utils/UI";
+// import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
+
+const {
+	global: { t },
+} = i18n;
 
 export const queryBuilder = (param) => {
 	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
@@ -63,10 +67,10 @@ export const replaceEmptyValuesWithNull = (param) => {
 };
 
 export const BookletStatusArray = [
-	{ code: "0", value: i18n.t("Unassigned") },
-	{ code: "1", value: i18n.t("Distributed") },
-	{ code: "2", value: i18n.t("Used") },
-	{ code: "3", value: i18n.t("Deactivated") },
+	{ code: "0", value: t("Unassigned") },
+	{ code: "1", value: t("Distributed") },
+	{ code: "2", value: t("Used") },
+	{ code: "3", value: t("Deactivated") },
 ];
 
 export const copyObject = (obj) => JSON.parse(JSON.stringify(obj));
@@ -94,7 +98,7 @@ export const downloadFile = (data, filename, status, format, responseMessage) =>
 		link.download = `${filename}.${format}`;
 		link.click();
 	} else {
-		Notification(responseMessage, "is-warning");
+		// Notification(responseMessage, "is-warning");
 	}
 };
 

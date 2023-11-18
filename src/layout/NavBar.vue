@@ -1,105 +1,90 @@
 <template>
-	<b-navbar v-show="isNavBarVisible" id="navbar-main" class="navbar is-fixed-top">
-		<template #brand>
-			<a @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
-				<b-icon :icon="menuToggleIcon" />
-			</a>
-		</template>
+	<v-app-bar v-show="isNavBarVisible" density="compact">
+		<v-app-bar-nav-icon @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
+			<v-icon :icon="menuToggleIcon" />
+		</v-app-bar-nav-icon>
 
-		<template #start>
-			<Breadcrumbs />
-		</template>
+		<v-breadcrumbs :items="breadcrumbs" />
 
-		<template #end>
-			<b-navbar-item>
-				<b-tooltip
-					multilined
-					position="is-bottom"
-					:label= "$t(tooltip.label)"
-					:active="tooltip.active"
-				>
-					<a href="https://www.humansis.org/knowledge-base/" target="_blank">
-						<b-icon icon="question" size="is-medium" />
-					</a>
-				</b-tooltip>
-			</b-navbar-item>
-
-			<b-dropdown
-				v-model="country.iso3"
-				position="is-bottom-left"
-				aria-role="menu"
+		<template v-slot:append>
+			<v-tooltip
+				:text="tooltip.label"
+				location="bottom"
+				:disabled="!tooltip.active"
+				max-width="240"
 			>
-				<a
-					class="navbar-item"
-					slot="trigger"
-					role="button"
-				>
-					<b-icon icon="globe-africa" size="is-medium" />
-					<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
-				</a>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						v-bind="props"
+						href="https://www.humansis.org/knowledge-base/"
+						icon="question"
+						size="x-small"
+						target="_blank"
+						rel="noopener noreferrer"
+					/>
+				</template>
+			</v-tooltip>
 
-				<b-dropdown-item
-					v-for="value in countries"
-					:key="value.name"
-					:value="value.iso3"
-					@click="handleChangeCountry(value)"
-				>
-					<b-icon class="mr-1" icon="globe" />
-					{{ $t(value.iso3)  }}
-				</b-dropdown-item>
-			</b-dropdown>
+			<v-menu>
+				<template v-slot:activator="{ props }">
+					<v-btn v-bind="props" icon="globe-africa" size="small">
+						<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
+					</v-btn>
+				</template>
 
-			<b-dropdown
-				v-model="language.name"
-				position="is-bottom-left"
-				aria-role="menu"
-			>
-				<a
-					class="navbar-item"
-					slot="trigger"
-					role="button"
-				>
-					<b-icon icon="language" size="is-medium" />
-				</a>
+				<v-list>
+					<v-list-item
+						v-for="value in countries"
+						:key="value.name"
+						:value="value.iso3"
+						@click="handleChangeCountry(value)"
+					>
+						<v-icon class="mr-1" icon="globe" size="x-small" />
+						{{ $t(value.iso3) }}
+					</v-list-item>
+				</v-list>
+			</v-menu>
 
-				<b-dropdown-item
-					v-for="value in languages"
-					:key="value.key"
-					:value="value.key"
-					:class="language.key === value.key ? 'is-active' : ''"
-					@click="handleChangeLanguage(value)"
-				>
-					<b-icon class="mr-1" icon="language" />
-					{{ $t(value.name) }}
-				</b-dropdown-item>
-			</b-dropdown>
+			<v-menu>
+				<template v-slot:activator="{ props }">
+					<v-btn v-bind="props" icon="language" size="small" />
+				</template>
 
-			<b-dropdown
-				position="is-bottom-left"
-				aria-role="menu"
-			>
-				<a
-					class="navbar-item"
-					slot="trigger"
-					role="button"
-				>
-					<b-icon icon="user" size="is-medium" />
-				</a>
+				<v-list>
+					<v-list-item
+						v-for="value in languages"
+						:key="value.key"
+						:value="value.key"
+						:class="language.key === value.key ? 'is-active' : ''"
+						@click="handleChangeLanguage(value)"
+					>
+						<v-icon class="mr-1" icon="language" size="x-small" />
+						{{ $t(value.name) }}
+					</v-list-item>
+				</v-list>
+			</v-menu>
 
-				<router-link :to="{ name: 'Profile' }">
-					<b-dropdown-item value="profile">
-						<b-icon class="mr-1" icon="user" />
+			<v-menu>
+				<template v-slot:activator="{ props }">
+					<v-btn v-bind="props" icon="user" size="small" />
+				</template>
+
+				<v-list>
+					<v-list-item value="profile">
+						<!--						<router-link :to="{ name: 'Profile' }">-->
+						<v-icon class="mr-1" icon="fa-user" size="x-small" />
 						{{ $t('Profile') }}
-					</b-dropdown-item>
-				</router-link>
+						<!--						</router-link>-->
+					</v-list-item>
 
-				<b-dropdown-item @click="logout" value="logout">
-					<b-icon class="mr-1" icon="sign-out-alt" />
-					{{ $t('Log out') }}
-				</b-dropdown-item>
-			</b-dropdown>
+					<v-list-item @click="logout" value="logout">
+						<v-icon class="mr-1" icon="sign-out-alt" size="x-small" />
+						{{ $t('Log out') }}
+					</v-list-item>
+				</v-list>
+			</v-menu>
 		</template>
-	</b-navbar>
+	</v-app-bar>
 </template>
 
 <script>
@@ -107,7 +92,7 @@ import { mapActions, mapState } from "vuex";
 import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
-// import { Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "NavBar",
@@ -132,6 +117,19 @@ export default {
 			"icons",
 			"admNames",
 		]),
+
+		breadcrumbs() {
+			return this.$route.matched.map((item) => {
+				if (!item.meta?.breadcrumb && !item.name) {
+					return null;
+				}
+
+				return {
+					title: item.meta?.breadcrumb || item.name,
+					href: item.path,
+				};
+			}).filter((r) => r);
+		},
 
 		menuToggleIcon() {
 			return this.isAsideExpanded ? "arrow-left" : "arrow-right";
@@ -184,16 +182,15 @@ export default {
 					await this.fetchAdmNames();
 				}
 			}).catch((e) => {
-        // FIXME
-				// if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "error");
 			});
 
 			this.$router.go();
 		},
 
 		setTooltip() {
-			this.tooltip.active = !!this.$route.meta.description;
-			this.tooltip.label = this.$route.meta.description;
+			this.tooltip.active = !!this.$route.meta?.description;
+			this.tooltip.label = this.$route.meta?.description;
 		},
 
 		async fetchIcons() {
@@ -201,8 +198,7 @@ export default {
 				.then(({ data }) => {
 					this.storeIcons(data);
 				}).catch((e) => {
-          // FIXME
-					// if (e.message) Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Icons")} ${e}`, "error");
 				});
 		},
 
@@ -211,8 +207,7 @@ export default {
 				.then(({ data }) => {
 					this.storeAdmNames(data);
 				}).catch((e) => {
-          // FIXME
-					// if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
+					if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "error");
 				});
 		},
 

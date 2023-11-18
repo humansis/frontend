@@ -1,26 +1,28 @@
 <template>
-	<div class="container">
-		<NavBar />
+	<v-layout class="rounded rounded-md">
 		<SideMenu />
-    <!--
-		<Modal
-			:can-cancel="false"
-			:header="$t('You need to change your password')"
-			:active="forcePasswordModal.isOpened"
-			:is-waiting="forcePasswordModal.isWaiting"
-		>
-			<UserPasswordForm
-				class="modal-card"
-				:formModel="userModel"
-				:submit-button-label="$t('Update')"
-				@formSubmitted="changeForcedPassword"
-			/>
-		</Modal>
-		-->
-		<section class="section">
+
+		<NavBar />
+
+		<v-main>
+			<!--
+			<Modal
+				:can-cancel="false"
+				:header="$t('You need to change your password')"
+				:active="forcePasswordModal.isOpened"
+				:is-waiting="forcePasswordModal.isWaiting"
+			>
+				<UserPasswordForm
+					class="modal-card"
+					:formModel="userModel"
+					:submit-button-label="$t('Update')"
+					@formSubmitted="changeForcedPassword"
+				/>
+			</Modal>
+			-->
 			<router-view />
-		</section>
-	</div>
+		</v-main>
+	</v-layout>
 </template>
 
 <script>
@@ -28,7 +30,7 @@ import { mapActions, mapState } from "vuex";
 import UsersService from "@/services/UsersService";
 // import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
 // import Modal from "@/components/Modal";
-import validation from "@/mixins/validation";
+// import validation from "@/mixins/validation";
 // import { Notification, Toast } from "@/utils/UI";
 import NavBar from "@/layout/NavBar";
 import SideMenu from "@/layout/SideMenu";
@@ -43,7 +45,7 @@ export default {
 		// UserPasswordForm,
 	},
 
-	mixins: [validation],
+	// mixins: [validation],
 
 	data() {
 		return {
@@ -52,7 +54,7 @@ export default {
 				isWaiting: false,
 			},
 			userModel: {
-				password: "",
+				password: "", // TODO add validation
 			},
 		};
 	},
@@ -127,6 +129,6 @@ export default {
 
 <style>
 html, body, .main-container, .section {
-	height: 100%;
+	height: 100%; /* TODO remove? */
 }
 </style>

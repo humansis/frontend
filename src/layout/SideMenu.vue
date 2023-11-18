@@ -1,58 +1,98 @@
 <template>
 	<aside>
-		<v-card>
-			<v-layout>
-				<v-navigation-drawer
-					width="300"
-					permanent
-					expand-on-hover
-					rail
-					class="bg-deep-purple-lighten-3"
+		<v-navigation-drawer
+			width="300"
+			rail-width="50"
+			permanent
+			:rail="!isAsideExpanded"
+			class="bg-deep-purple-lighten-3"
+		>
+			<v-list>
+				<v-list-item prepend-avatar="">
+					<router-link :to="{ name: 'Home' }" class="hms-logo">
+						<img src="@/assets/images/bms_logo.png" alt="">
+					</router-link>
+				</v-list-item>
+			</v-list>
+
+			<v-divider />
+
+			<v-list density="compact" nav>
+				<template
+					v-for="(sideBarItem, index) in sideBarItems"
+					:key="index"
 				>
-					<v-list>
-						<v-list-item
-							prepend-avatar=""
-						></v-list-item>
-					</v-list>
-
-					<v-divider></v-divider>
-
-					<v-list>
-						<template
-							v-for="(sideBarItem, index) in sideBarItems"
-							:key="index"
-						>
-							<v-list-item
-								v-if="!sideBarItem.subItems?.length"
-								:prepend-icon="sideBarItem.prependIcon"
-								:title="sideBarItem.title"
-							></v-list-item>
-
-							<v-list-group
-								v-else
-								:value="sideBarItem.title"
-							>
+					<v-list-item
+						v-if="!sideBarItem.subItems?.length"
+						:title="sideBarItem.title"
+						:to="sideBarItem.to"
+					>
+						<template v-slot:prepend>
+							<v-tooltip :text="sideBarItem.title" :disabled="isAsideExpanded">
 								<template v-slot:activator="{ props }">
-									<v-list-item
+									<v-icon
 										v-bind="props"
-										prepend-icon="mdi-account-circle"
-										title="Users"
+										:icon="sideBarItem.prependIcon"
+										size="small"
 									/>
 								</template>
-
-								<v-list-item
-									v-for="(subItem, index) in sideBarItem.subItems"
-									:key="index"
-									:title="subItem.title"
-									:prepend-icon="subItem.prependIcon"
-									:value="subItem.title"
-								></v-list-item>
-							</v-list-group>
+							</v-tooltip>
 						</template>
-					</v-list>
-				</v-navigation-drawer>
-			</v-layout>
-		</v-card>
+					</v-list-item>
+
+					<v-list-group
+						v-else
+						:value="sideBarItem.title"
+						fluid
+					>
+						<template v-slot:activator="{ props }">
+							<v-list-item
+								v-bind="props"
+								:title="sideBarItem.title"
+								:to="sideBarItem.to"
+							>
+								<template v-slot:prepend>
+									<v-tooltip
+										:text="sideBarItem.title"
+										:disabled="isAsideExpanded"
+									>
+										<template v-slot:activator="{ props }">
+											<v-icon
+												v-bind="props"
+												:icon="sideBarItem.prependIcon"
+												size="small"
+											/>
+										</template>
+									</v-tooltip>
+								</template>
+							</v-list-item>
+						</template>
+
+						<v-list-item
+							v-for="(subItem, index) in sideBarItem.subItems"
+							:key="index"
+							:title="subItem.title"
+							:to="subItem.to"
+						>
+							<template v-slot:prepend>
+								<v-tooltip
+									:text="subItem.title"
+									:disabled="isAsideExpanded"
+								>
+									<template v-slot:activator="{ props }">
+										<v-icon
+											v-bind="props"
+											:icon="subItem.prependIcon"
+											size="small"
+										/>
+									</template>
+								</v-tooltip>
+							</template>
+						</v-list-item>
+					</v-list-group>
+				</template>
+			</v-list>
+		</v-navigation-drawer>
 	</aside>
 <!--	<aside-->
 <!--		v-show="isAsideVisible"-->
@@ -311,67 +351,73 @@ export default {
 			sideBarItems: [
 				{
 					title: "Home",
-					prependIcon: "mdi-home",
+					prependIcon: "home",
+					to: { name: "Home" },
 				},
 				{
 					title: "Projects",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "clipboard-list",
+					to: "/error404",
 				},
 				{
 					title: "Beneficiaries",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "user-friends",
 					subItems: [
 						{
 							title: "Households",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "home",
+							// to: { name: "Households" },
 						},
 						{
 							title: "Institutions",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "building",
+							// to: { name: "Institutions" },
 						},
 						{
 							title: "Communities",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "users",
+							// to: { name: "Communities" },
 						},
 						{
 							title: "Vendors",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "store",
+							// to: { name: "Vendors" },
 						},
 					]
 				},
 				{
 					title: "Imports",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "file-import",
 				},
 				{
 					title: "Reports",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "chart-line",
 				},
 				{
 					title: "Vouchers",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "ticket-alt",
 				},
 				{
 					title: "Country Settings",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "globe-africa",
 					subItems: [
 						{
 							title: "Products",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "shopping-cart",
 						},
 						{
 							title: "Country specifics",
-							prependIcon: "mdi-clipboard-text-outline",
+							prependIcon: "map-marker-alt",
 						},
 					]
 				},
 				{
 					title: "Administrative Settings",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "wrench",
 				},
 				{
 					title: "Transactions",
-					prependIcon: "mdi-clipboard-text-outline",
+					prependIcon: "exchange-alt",
 				},
 			],
 			gitInfo,
@@ -447,11 +493,11 @@ export default {
 		]),
 
 		environment() {
-			return process.env.VUE_APP_ENV.toUpperCase();
+			return import.meta.env.VITE_APP_ENV.toUpperCase();
 		},
 
 		organization() {
-			return process.env.VUE_APP_ORGANIZATION;
+			return import.meta.env.VITE_APP_ORGANIZATION;
 		},
 
 		appVersion() {
@@ -468,7 +514,7 @@ export default {
 		},
 
 		asideBackgroundClass() {
-			return `${process.env.VUE_APP_ENV}-aside-style`;
+			return `${import.meta.env.VITE_APP_ENV}-aside-style`;
 		},
 
 		isCountrySettingsVisible() {
@@ -511,7 +557,27 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.hms-logo {
+	margin: 0 0 0 -.5rem;
+
+	img {
+		flex-shrink: 0;
+		width: auto;
+		max-width: 1.6rem;
+		height: auto;
+		font-size: 2rem;
+		box-sizing: content-box;
+		border-radius: 50%;
+		padding: .25rem;
+		background: #fbfcfc;
+	}
+}
+
+.v-list-item__content:has(> .hms-logo) {
+	overflow: visible;
+}
+
 .git-info {
 	position: absolute;
 	bottom: 20px;
@@ -538,5 +604,11 @@ export default {
 
 .small-menu-item a {
 	padding: .6rem 0 !important;
+}
+</style>
+
+<style>
+.v-list-item__content:has(> .hms-logo) {
+	overflow: visible;
 }
 </style>
