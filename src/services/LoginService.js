@@ -2,13 +2,14 @@ import { fetcher } from "@/utils/fetcher";
 
 export default {
 	async logUserIn(body) {
-		const { data, status } = await fetcher({
+		const { data, status, messages } = await fetcher({
 			uri: "login",
 			auth: false,
 			method: "POST",
 			body,
 		});
-		return { data, status };
+
+		return { data, status, messages };
 	},
 
 	async tryLogin(body) {
@@ -20,16 +21,17 @@ export default {
 			contentType: null,
 			tryRequest: true,
 		});
+
 		if (status !== 200) {
 			throw new Error();
 		}
 	},
 
 	async getRolePermissions(role) {
-		const { data, status } = await fetcher({
+		const { data, status, messages } = await fetcher({
 			uri: `acl/roles/${role}`,
 		});
 
-		return { data, status };
+		return { data, status, messages };
 	},
 };

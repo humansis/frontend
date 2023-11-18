@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { getCookie } from "@/utils/cookie";
-// import i18n from "@/plugins/i18n";
+import i18n from "@/plugins/i18n";
 // import { Notification } from "@/utils/UI";
 // import { ROLE } from "@/consts";
 // import CONST from "@/store/const";
 import getters from "@/store/getters";
 import store from "@/store/index";
+
+const {
+	global: { t },
+} = i18n;
 
 let singleNotification = true;
 //const user = getters.getUserFromVuexStorage();
@@ -43,7 +47,7 @@ const routes = [
 	{
 		path: "/",
 		redirect: to => ({
-			name: storedCountryCode ? "Login" : "Login",
+			name: storedCountryCode ? "Home" : "Login",
 			...(storedCountryCode && {
 				params: {
 					countryCode: storedCountryCode,
@@ -85,19 +89,21 @@ const routes = [
 
 			return next();
 		},
+		children: [
+			{
+				path: "/",
+				name: "Home",
+				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
+				meta: {
+					permissions: [],
+					breadcrumb: t("Home"),
+					description: t("This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones."),
+				},
+			},
+		],
 	}
 	// 	/* eslint-disable max-len */
 	//  children: [
-	//  	{
-	//  		path: "/",
-	//  		name: "Home",
-	//  		component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
-	//  		meta: {
-	//  			permissions: [],
-	//  			breadcrumb: () => i18n.t("Home"),
-	//  			description: i18n.t("This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones."),
-	//  		},
-	//  	},
 	//  	{
 	//  		path: "projects",
 	//  		component: { render(c) { return c("router-view"); } },
@@ -477,13 +483,13 @@ const routes = [
 ];
 
 const router = createRouter({
-	history: createWebHistory(process.env.BASE_URL),
+	history: createWebHistory(import.meta.env.BASE_URL),
 	routes,
 });
 
 router.beforeEach((to, from, next) => {
 	window.document.title = to.meta && to.meta.breadcrumb
-		? `${to.meta.breadcrumb()} | Humansis` : "Humansis";
+		? `${to.meta.breadcrumb} | Humansis` : "Humansis";
 
 	const token = getCookie("token");
 
