@@ -1,39 +1,75 @@
 <template>
-	<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
+	<h2 class="mb-4">{{ upcoming ? $t('Assistances') : '' }}</h2>
 
-<!--	<b-notification-->
-<!--		v-if="showNoProjectError"-->
-<!--		type="is-warning is-light"-->
-<!--		has-icon-->
-<!--		icon="exclamation-triangle"-->
-<!--		:closable="false"-->
-<!--	>-->
-<!--		<div class="mt-3">-->
-<!--			{{ $t("This project does not contain any assistances")}}.-->
-<!--			{{ $t("Create your first one")}}.-->
-<!--		</div>-->
-<!--	</b-notification>-->
+	<!--	<b-notification-->
+	<!--		v-if="showNoProjectError"-->
+	<!--		type="is-warning is-light"-->
+	<!--		has-icon-->
+	<!--		icon="exclamation-triangle"-->
+	<!--		:closable="false"-->
+	<!--	>-->
+	<!--		<div class="mt-3">-->
+	<!--			{{ $t("This project does not contain any assistances")}}.-->
+	<!--			{{ $t("Create your first one")}}.-->
+	<!--		</div>-->
+	<!--	</b-notification>-->
 
-<!--	<b-notification-->
-<!--		v-if="showNoBeneficiariesError"-->
-<!--		type="is-warning is-light"-->
-<!--		has-icon-->
-<!--		icon="user-plus"-->
-<!--		:closable="false"-->
-<!--	>-->
-<!--		<div class="mt-3">-->
-<!--			{{ $t("Please add some beneficiaries first!")}}-->
-<!--			{{ $t("Then you will be able to manage some assistances")}}.-->
-<!--		</div>-->
-<!--	</b-notification>-->
+	<!--	<b-notification-->
+	<!--		v-if="showNoBeneficiariesError"-->
+	<!--		type="is-warning is-light"-->
+	<!--		has-icon-->
+	<!--		icon="user-plus"-->
+	<!--		:closable="false"-->
+	<!--	>-->
+	<!--		<div class="mt-3">-->
+	<!--			{{ $t("Please add some beneficiaries first!")}}-->
+	<!--			{{ $t("Then you will be able to manage some assistances")}}.-->
+	<!--		</div>-->
+	<!--	</b-notification>-->
 
-	<v-data-table-server
+	<Table
 		v-model:items-per-page="table.itemsPerPage"
 		:headers="table.visibleColumns"
 		:items="table.data"
 		:items-length="table.total"
 		:loading="isLoadingList"
-	/>
+		:reset-sort-button="true"
+	>
+		<template v-slot:table-header>
+			<v-btn
+				class="ml-0"
+				color="grey-lighten-2"
+				icon-left="sticky-note"
+				size="small"
+				:class="filterButtonNew"
+				@click="statusFilter('new')"
+			>
+				{{ $t('New') }}
+			</v-btn>
+
+			<v-btn
+				class="ml-0"
+				icon-left="spinner"
+				color="green-lighten-1"
+				size="small"
+				:class="filterButtonValidated"
+				@click="statusFilter('validated')"
+			>
+				{{ $t('Validated') }}
+			</v-btn>
+
+			<v-btn
+				class="ml-0"
+				icon-left="check"
+				color="light-blue-lighten-4"
+				size="small"
+				:class="filterButtonClosed"
+				@click="statusFilter('closed')"
+			>
+				{{ $t('Closed') }}
+			</v-btn>
+		</template>
+	</Table>
 <!--		v-model:items-per-page="itemsPerPage"-->
 <!--		:loading="loading"-->
 <!--		:search="search"-->
@@ -183,32 +219,32 @@
 <script>
 import AssistancesService from "@/services/AssistancesService";
 // import ActionButton from "@/components/ActionButton";
-// import ColumnField from "@/components/DataGrid/ColumnField";
-// import Table from "@/components/DataGrid/Table";
+import ColumnField from "@/components/DataGrid/ColumnField";
+import Table from "@/components/DataGrid/Table";
 // import ExportControl from "@/components/Export";
 // import SafeDelete from "@/components/SafeDelete";
 // import baseHelper from "@/mixins/baseHelper";
 // import grid from "@/mixins/grid";
 // import permissions from "@/mixins/permissions";
-// import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { normalizeExportDate, normalizeText } from "@/utils/datagrid";
 // import { downloadFile } from "@/utils/helpers";
 // import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT } from "@/consts";
 
 const statusTags = [
-	{ code: ASSISTANCE.STATUS.NEW, type: "is-light" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "is-success" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "is-info" },
+	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "red" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "green" },
 ];
 
 export default {
 	name: "AssistancesList",
 
 	components: {
-		// Table,
+		Table,
 		// ActionButton,
 		// SafeDelete,
-		// ColumnField,
+		ColumnField,
 		// ExportControl,
 	},
 
@@ -262,19 +298,19 @@ export default {
 				visibleColumns: [
 					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id", sortable: true },
 					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name", sortable: true },
-					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
-					{ key: "round", sortable: true },
-					{ key: "type", type: "assistancesType", sortable: true },
+					{ key: "status", title: "Status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
+					{ key: "round", title: "Round", sortable: true },
+					{ key: "type", title: "Type", type: "assistancesType", sortable: true },
 					{ key: "location", title: "Location", sortable: true },
-					{ key: "target", sortable: true },
-					{ key: "reached" },
-					{ key: "progress", sortable: true },
+					{ key: "target", title: "Target", sortable: true },
+					{ key: "reached", title: "Reached" },
+					{ key: "progress", title: "Progress", sortable: true },
 					{ key: "dateDistribution", title: "Date of Assistance", type: "date", sortable: true },
 					{ key: "dateExpiration", title: "Expiration Date", sortable: true },
 					{ key: "commodity", title: "Commodity", type: "svgIcon" },
-					{ key: "eloNumber" },
-					{ key: "activity" },
-					{ key: "budgetLine" },
+					{ key: "eloNumber", title: "EloNumber" },
+					{ key: "activity", title: "Activity" },
+					{ key: "budgetLine", title: "BudgetLine" },
 				],
 				total: 0,
 				currentPage: 1,
@@ -435,7 +471,7 @@ export default {
 				let dateExpiration = "";
 
 				if (item.dateExpiration) {
-					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
+					dateExpiration = item.dateExpiration;
 				} else {
 					dateExpiration = "No Date";
 				}

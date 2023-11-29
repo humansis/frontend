@@ -16,6 +16,12 @@ const humansisTheme = {
 };
 
 const vuetify = createVuetify({
+	display: {
+		mobileBreakpoint: "xs",
+		thresholds: {
+			xs: 660,
+		},
+	},
 	icons: {
 		defaultSet: "fa",
 		aliases,

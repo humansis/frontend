@@ -1,7 +1,7 @@
 <template>
-	<v-app-bar v-show="isNavBarVisible" density="compact">
+	<v-app-bar v-show="isNavBarVisible" density="compact" elevation="0">
 		<v-app-bar-nav-icon @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
-			<v-icon :icon="menuToggleIcon" />
+			<v-icon :icon="menuToggleIcon" class="expand-icon" />
 		</v-app-bar-nav-icon>
 
 		<v-breadcrumbs :items="breadcrumbs" />
@@ -21,13 +21,15 @@
 						size="x-small"
 						target="_blank"
 						rel="noopener noreferrer"
+						class="mr-2"
 					/>
 				</template>
 			</v-tooltip>
 
 			<v-menu>
 				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" icon="globe-africa" size="small">
+					<v-btn v-bind="props" icon="globe-africa" size="small" class="mr-2">
+						<v-icon class="mr-1" icon="globe-africa" size="large" />
 						<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
 					</v-btn>
 				</template>
@@ -47,7 +49,7 @@
 
 			<v-menu>
 				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" icon="language" size="small" />
+					<v-btn v-bind="props" icon="language" size="small" class="mr-2" />
 				</template>
 
 				<v-list>
@@ -71,10 +73,10 @@
 
 				<v-list>
 					<v-list-item value="profile">
-						<!--						<router-link :to="{ name: 'Profile' }">-->
-						<v-icon class="mr-1" icon="fa-user" size="x-small" />
-						{{ $t('Profile') }}
-						<!--						</router-link>-->
+						<router-link :to="{ name: 'Profile' }">
+							<v-icon class="mr-1" icon="fa-user" size="x-small" />
+							{{ $t('Profile') }}
+						</router-link>
 					</v-list-item>
 
 					<v-list-item @click="logout" value="logout">
@@ -218,11 +220,9 @@ export default {
 
 };
 </script>
-
-<style lang="scss" scoped>
-.dropdown-item {
-	display: flex;
-	align-items: center;
+<style lang="scss">
+.navbar-item .expand-icon > svg {
+	height: 16px;
 }
 
 .country-name {
@@ -230,12 +230,6 @@ export default {
 	font-size: 12px;
 	position: absolute;
 	background-color: white;
-	width: 50%;
-	padding-left: 5%;
-}
-
-.is-rtl .country-name {
-	padding-left: 0;
-	padding-right: 5%;
+	margin-left: -3px;
 }
 </style>
