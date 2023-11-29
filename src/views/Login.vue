@@ -268,7 +268,7 @@ export default {
 
 <style scoped lang="scss">
 .hero {
-	background-image: url(~@/assets/images/login_page.jpg);
+	background-image: url(@/assets/images/login_page.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
 	min-height: 100vh;
