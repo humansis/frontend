@@ -1,190 +1,190 @@
-.card-content > .progress-wrapper {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-
-	.progress {
-		border-radius: 0;
-		height: .25rem;
-	}
-
-	progress::-moz-progress-bar { background: $base-color; }
-	progress::-webkit-progress-value { background: $base-color; }
-}
-
-.b-steps .steps {
-	margin-bottom: 1rem;
-
-	.step-items .step-item {
-		.step-marker {
-			border-color: $grey;
-		}
-
-		.step-details {
-			margin-top: .5rem;
-		}
-	}
-}
-
-.b-table {
-	&.has-clickable-rows {
-		cursor: pointer;
-	}
-
-	.table th {
-		vertical-align: middle;
-	}
-
-	.level-left {
-		flex-grow: 1;
-	}
-
-	.per-page-select {
-		max-width: 80px;
-	}
-}
-
-.b-numberinput {
-	input {
-		text-align: left !important;
-	}
-}
-
-.table-action {
-	&.button.is-light {
-		background-color: transparent;
-
-		&:hover,
-		&:focus {
-			background-color: #eeeeee;
-		}
-	}
-}
-
-.loading-overlay {
-	z-index: 20;
-}
-
-.level {
-	&.level-center {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 10px;
-
-		.level-item {
-			flex-grow: 0;
-			margin-bottom: 0;
-		}
-	}
-}
-
-.modal {
-	.modal-background {
-		background-color: rgb(19 46 48 / 80%);
-		position: fixed !important;
-	}
-
-	.animation-content {
-		width: 100%;
-	}
-
-	.modal-card {
-		width: auto;
-	}
-
-	.modal-card-head {
-		.delete {
-			&:hover,
-			&:focus {
-				background-color: rgba(10, 10, 10, 0.5);
-			}
-		}
-	}
-
-	.modal-card-foot {
-		display: flex;
-		justify-content: flex-end;
-	}
-
-	.modal {
-		position: fixed !important;
-		overflow: auto !important;
-	}
-}
-
-.vue2leaflet-map {
-	z-index: 1;
-}
-
-.vue-multiselect-error {
-	border: 1px solid #f14668;
-	border-radius: 5px;
-}
-
-.vue-multiselect-success {
-	padding-top: -50px;
-	border: 1px solid #48c774;
-	border-radius: 5px;
-}
-
-.multiselect__content {
-	margin-left: 0 !important;
-	margin-top: 0 !important;
-}
-
-.multiselect__option--highlight {
-	background: $primary !important;
-
-	&::after {
-		background: $primary !important;
-	}
-}
-
-.multiselect__tag {
-	background: $primary !important;
-}
-
-.multiselect__tag-icon {
-	&:hover,&:focus {
-		background: #354e6b !important;
-	}
-
-	&::after {
-		color: $base-color-light !important;
-	}
-}
-
-.multiselect__spinner {
-	&::before, &::after {
-		border-top-color: $primary !important;
-	}
-}
-
-.datepicker-cell {
-	&.is-week-number {
-		opacity: .5;
-	}
-}
-
-.notification-no-data {
-	background-color: #ffffff !important;
-	padding: 7.25rem 2.5rem 5.25rem 1.5rem;
-
-	.media {
-		width: 160px;
-		margin: 0 auto;
-	}
-}
-
-.notification {
-	&.is-bottom-right {
-		padding: 1rem 2.5rem 1rem 0.7rem;
-	}
-}
-
-.notices.is-top {
-	padding-right: 0;
-}
+//.card-content > .progress-wrapper {
+//	position: absolute;
+//	top: 0;
+//	left: 0;
+//	width: 100%;
+//
+//	.progress {
+//		border-radius: 0;
+//		height: .25rem;
+//	}
+//
+//	progress::-moz-progress-bar { background: $base-color; }
+//	progress::-webkit-progress-value { background: $base-color; }
+//}
+//
+//.b-steps .steps {
+//	margin-bottom: 1rem;
+//
+//	.step-items .step-item {
+//		.step-marker {
+//			border-color: $grey;
+//		}
+//
+//		.step-details {
+//			margin-top: .5rem;
+//		}
+//	}
+//}
+//
+//.b-table {
+//	&.has-clickable-rows {
+//		cursor: pointer;
+//	}
+//
+//	.table th {
+//		vertical-align: middle;
+//	}
+//
+//	.level-left {
+//		flex-grow: 1;
+//	}
+//
+//	.per-page-select {
+//		max-width: 80px;
+//	}
+//}
+//
+//.b-numberinput {
+//	input {
+//		text-align: left !important;
+//	}
+//}
+//
+//.table-action {
+//	&.button.is-light {
+//		background-color: transparent;
+//
+//		&:hover,
+//		&:focus {
+//			background-color: #eeeeee;
+//		}
+//	}
+//}
+//
+//.loading-overlay {
+//	z-index: 20;
+//}
+//
+//.level {
+//	&.level-center {
+//		display: flex;
+//		align-items: center;
+//		justify-content: center;
+//		flex-wrap: wrap;
+//		gap: 10px;
+//
+//		.level-item {
+//			flex-grow: 0;
+//			margin-bottom: 0;
+//		}
+//	}
+//}
+//
+//.modal {
+//	.modal-background {
+//		background-color: rgb(19 46 48 / 80%);
+//		position: fixed !important;
+//	}
+//
+//	.animation-content {
+//		width: 100%;
+//	}
+//
+//	.modal-card {
+//		width: auto;
+//	}
+//
+//	.modal-card-head {
+//		.delete {
+//			&:hover,
+//			&:focus {
+//				background-color: rgba(10, 10, 10, 0.5);
+//			}
+//		}
+//	}
+//
+//	.modal-card-foot {
+//		display: flex;
+//		justify-content: flex-end;
+//	}
+//
+//	.modal {
+//		position: fixed !important;
+//		overflow: auto !important;
+//	}
+//}
+//
+//.vue2leaflet-map {
+//	z-index: 1;
+//}
+//
+//.vue-multiselect-error {
+//	border: 1px solid #f14668;
+//	border-radius: 5px;
+//}
+//
+//.vue-multiselect-success {
+//	padding-top: -50px;
+//	border: 1px solid #48c774;
+//	border-radius: 5px;
+//}
+//
+//.multiselect__content {
+//	margin-left: 0 !important;
+//	margin-top: 0 !important;
+//}
+//
+//.multiselect__option--highlight {
+//	background: $primary !important;
+//
+//	&::after {
+//		background: $primary !important;
+//	}
+//}
+//
+//.multiselect__tag {
+//	background: $primary !important;
+//}
+//
+//.multiselect__tag-icon {
+//	&:hover,&:focus {
+//		background: #354e6b !important;
+//	}
+//
+//	&::after {
+//		color: $base-color-light !important;
+//	}
+//}
+//
+//.multiselect__spinner {
+//	&::before, &::after {
+//		border-top-color: $primary !important;
+//	}
+//}
+//
+//.datepicker-cell {
+//	&.is-week-number {
+//		opacity: .5;
+//	}
+//}
+//
+//.notification-no-data {
+//	background-color: #ffffff !important;
+//	padding: 7.25rem 2.5rem 5.25rem 1.5rem;
+//
+//	.media {
+//		width: 160px;
+//		margin: 0 auto;
+//	}
+//}
+//
+//.notification {
+//	&.is-bottom-right {
+//		padding: 1rem 2.5rem 1rem 0.7rem;
+//	}
+//}
+//
+//.notices.is-top {
+//	padding-right: 0;
+//}
