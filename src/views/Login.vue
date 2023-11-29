@@ -230,8 +230,6 @@ export default {
 					} else {
 						this.$router.push({
 							name: "Home",
-							// TODO
-							// name: "Projects",
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},

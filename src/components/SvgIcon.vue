@@ -1,16 +1,21 @@
 <template>
 	<span>
-		<b-tooltip
+		<v-tooltip
 			v-for="(icon, key) in filteredIcons"
+			location="top"
+			color="red"
 			:key="key"
-			:label="$t(icon.value)" :active="icon !== undefined"
+			:text="$t(icon.value)"
 		>
-			<svg
-				width="30"
-				height="30"
-				v-html="icon.svg"
-			/>
-		</b-tooltip>
+			<template v-slot:activator="{ props }">
+				<svg
+					v-bind="props"
+					width="30"
+					height="30"
+					v-html="icon.svg"
+				/>
+			</template>
+		</v-tooltip>
 	</span>
 </template>
 
@@ -21,7 +26,10 @@ export default {
 	name: "SvgIcon",
 
 	props: {
-		items: Array,
+		items: {
+			type: Array,
+			required: true,
+		},
 	},
 
 	computed: {

@@ -5,10 +5,10 @@
 			rail-width="50"
 			permanent
 			:rail="!isAsideExpanded"
-			class="bg-deep-purple-lighten-3"
+			class="bg-indigo-lighten-3"
 		>
 			<v-list>
-				<v-list-item prepend-avatar="">
+				<v-list-item prepend-avatar="" class="side-menu-logo">
 					<router-link :to="{ name: 'Home' }" class="hms-logo">
 						<img src="@/assets/images/bms_logo.png" alt="">
 					</router-link>
@@ -383,7 +383,7 @@ export default {
 							prependIcon: "store",
 							// to: { name: "Vendors" },
 						},
-					]
+					],
 				},
 				{
 					title: "Imports",
@@ -409,7 +409,7 @@ export default {
 							title: "Country specifics",
 							prependIcon: "map-marker-alt",
 						},
-					]
+					],
 				},
 				{
 					title: "Administrative Settings",
@@ -439,15 +439,15 @@ export default {
 									id: 3,
 									name: "Fresh Fruits",
 									slug: "fresh-fruit",
-									children: []
+									children: [],
 								},
 								{
 									id: 4,
 									name: "Fresh Vegetables",
 									slug: "fresh-vegetable",
-									children: []
-								}
-							]
+									children: [],
+								},
+							],
 						},
 						{
 							id: 5,
@@ -458,11 +458,11 @@ export default {
 									id: 6,
 									name: "Local Breakfast",
 									slug: "local-breakfast",
-									children: []
-								}
-							]
-						}
-					]
+									children: [],
+								},
+							],
+						},
+					],
 				},
 				{
 					id: 7,
@@ -473,16 +473,16 @@ export default {
 							id: 8,
 							name: "Air Fresheners",
 							slug: "air-freshners",
-							children: []
+							children: [],
 						},
 						{
 							id: 9,
 							name: "Cleaning Supplies",
 							slug: "cleaning-supplies",
-						}
-					]
-				}
-			]
+						},
+					],
+				},
+			],
 		};
 	},
 
@@ -536,7 +536,7 @@ export default {
 		window.addEventListener("resize", this.checkScreenHeight);
 	},
 
-	destroyed() {
+	unmounted() {
 		window.removeEventListener("resize", this.checkScreenHeight);
 	},
 
@@ -557,20 +557,26 @@ export default {
 };
 </script>
 
-<style scoped>
-.hms-logo {
-	margin: 0 0 0 -.5rem;
+<style lang="scss" scoped>
+.side-menu-logo {
+	:deep(.v-list-item__content) {
+		margin: auto auto;
+	}
 
-	img {
-		flex-shrink: 0;
-		width: auto;
-		max-width: 1.6rem;
-		height: auto;
-		font-size: 2rem;
-		box-sizing: content-box;
-		border-radius: 50%;
-		padding: .25rem;
-		background: #fbfcfc;
+	a {
+		margin: 0 0 0 -.5rem;
+
+		img {
+			flex-shrink: 0;
+			width: auto;
+			max-width: 1.6rem;
+			height: auto;
+			font-size: 2rem;
+			box-sizing: content-box;
+			border-radius: 50%;
+			padding: .25rem;
+			background: #fbfcfc;
+		}
 	}
 }
 

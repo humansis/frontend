@@ -1,174 +1,74 @@
 <template>
-	<section class="section">
-		<div class="columns">
-			<div class="column is-half is-offset-one-quarter">
-				<section class="modal-card-body">
-					<p class="is-size-4 my-5">{{ $t('User Information') }}</p>
-					<b-field :label="$t('Email')">
-						<b-input v-model="userForm.email" disabled />
-					</b-field>
-					<form @submit.prevent="submitPasswordForm">
-						<p class="is-size-4 my-5">{{ $t('Change Password') }}</p>
-						<section>
-							<b-field
-								:label="$t('Old Password')"
-								:type="validateType('password.oldPassword', true)"
-								:message="validateMsg('password.oldPassword')"
-							>
-								<b-input
-									v-model="password.oldPassword"
-									type="password"
-									@blur="validate('password.oldPassword')"
-								/>
-							</b-field>
+	<v-container fluid>
+		<v-card class="mx-auto mt-16" max-width="900">
+			<v-card-text>
+				<p class="text-h6">{{ $t('User Information') }}</p>
 
-							<b-field
-								:label="$t('New Password')"
-								:type="validateType('password.newPassword', true)"
-								:message="newPasswordMessage()"
-							>
-								<b-input
-									v-model="password.newPassword"
-									type="password"
-									@input="validate('password.newPassword')"
-								/>
-							</b-field>
+				<v-text-field
+					v-model="userForm.email"
+					variant="outlined"
+					density="compact"
+					hide-details="auto"
+					class="mt-4 mb-4"
+					disabled
+				>
+					<template v-slot:label>
+						<span>{{ $t('Email') }}</span>
+					</template>
+				</v-text-field>
 
-							<b-field
-								:label="$t('Re-Enter New Password')"
-								:type="validateType('password.reenteredPassword', true)"
-								:message="reenterPasswordMessage()"
-							>
-								<b-input
-									v-model="password.reenteredPassword"
-									type="password"
-									@input="validate('password.reenteredPassword')"
-								/>
-							</b-field>
+				<p class="text-h6"> {{ $t('Change Password') }}</p>
 
-							<div class="level-right mt-5">
-								<b-button
-									type="is-primary"
-									slot="trigger"
-									native-type="submit"
-									:loading="changePasswordLoading"
-								>
-									{{ $t('Save') }}
-								</b-button>
-							</div>
-						</section>
-					</form>
-					<form @submit.prevent="submitTelephoneForm">
-						<p class="is-size-4 my-5">{{ $t('Change Phone Number') }}</p>
-						<b-field grouped>
-							<b-field
-								:label="$t('Phone Ext')"
-								:type="validateType('phone.prefix', true)"
-								:message="validateMsg('phone.prefix')"
-							>
-								<MultiSelect
-									v-model="phone.prefix"
-									searchable
-									label="value"
-									:select-label="$t('Press enter to select')"
-									:selected-label="$t('Selected')"
-									:deselect-label="$t('Press enter to remove')"
-									track-by="code"
-									:options="options.phonePrefixes"
-									:placeholder="$t('Click to select')"
-									:class="validateMultiselect('phone.prefix', true)"
-									@select="validate('phone.prefix')"
-								>
-									<span slot="noOptions">{{ $t("List is empty")}}</span>
-								</MultiSelect>
-							</b-field>
-							<b-field
-								expanded
-								:label="$t('Phone Number')"
-								:type="validateType('phone.number', true)"
-								:message="validateMsg('phone.number')"
-							>
-								<b-input
-									v-model="phone.number"
-									@blur="validate('phone.number')"
-								/>
-							</b-field>
-						</b-field>
-						<div class="level-right mt-5">
-							<b-button type="is-primary" native-type="submit" :loading="changePhoneLoading">
-								{{ $t('Save') }}
-							</b-button>
-						</div>
-					</form>
-					<!-- Disabled part with 2FA
-					<section>
-						<p class="is-size-4 my-5">{{ $t('Two Factor Authentication') }}</p>
-						<div class="has-text-centered">
-							{{ $t(`Two-factor authentication adds an additional layer of security
-							to your account by requiring more than a password to log in`) }}
-						</div>
-						<br>
-						<div class="has-text-centered">
-							<strong>
-								{{ $t('Two Factor Authentication') }}
-								{{ twoFactorEnabled ? $t('Enabled') : $t('Disabled') }}
-							</strong>
-						</div>
-						<div class="level-right mt-5">
-							<b-button
-								type="is-primary"
-								native-type="submit"
-								:disabled="canEnableTwoFA"
-								:loading="twoFactorLoading"
-								@click="enableTwoFactor"
-							>
-								{{ twoFactorEnabled ? $t('Disable') : $t('Enable') }}
-							</b-button>
-						</div>
-					</section>
-					-->
-				</section>
-			</div>
-		</div>
-	</section>
+				<v-text-field
+					v-model="test"
+					variant="outlined"
+					density="compact"
+					hide-details="auto"
+					class="mt-4 mb-4"
+				>
+					<template v-slot:label>
+						<span>{{ $t('Old Password') }}</span>
+					</template>
+				</v-text-field>
+
+				<v-text-field
+					v-model="test"
+					variant="outlined"
+					density="compact"
+					hide-details="auto"
+					class="mt-4 mb-4"
+				>
+					<template v-slot:label>
+						<span>{{ $t('New Password') }}</span>
+					</template>
+				</v-text-field>
+
+				<v-text-field
+					v-model="test"
+					variant="outlined"
+					density="compact"
+					hide-details="auto"
+					class="mt-4 mb-4"
+				>
+					<template v-slot:label>
+						<span>{{ $t('Re-Enter New Password') }}</span>
+					</template>
+				</v-text-field>
+			</v-card-text>
+		</v-card>
+	</v-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { requiredIf, sameAs } from "vuelidate/lib/validators";
 import LoginService from "@/services/LoginService";
 import UsersService from "@/services/UsersService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
-
-const passwordRegexp = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/);
-
-const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
 
 export default {
 	name: "Profile",
-
-	validations: {
-		password: {
-			oldPassword: { required: requiredIf((form) => form.newPassword
-						|| form.reenteredPassword) },
-			newPassword: {
-				required: requiredIf((form) => form.oldPassword
-						|| form.reenteredPassword),
-				passwordValidation,
-			},
-			reenteredPassword: {
-				required: requiredIf((form) => form.oldPassword
-						|| form.newPassword),
-				sameAsPassword: sameAs("newPassword"),
-			},
-		},
-		phone: {
-			prefix: { required: requiredIf((form) => form.number) },
-			number: { required: requiredIf((form) => form.prefix) },
-		},
-	},
 
 	data() {
 		return {
@@ -386,3 +286,29 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.v-label {
+	opacity: 1;
+	font-size: 20px;
+
+	> span {
+		font-size: 14px;
+		font-weight: bold;
+	}
+}
+
+.v-field--disabled {
+	opacity: .8;
+	background-color: #f5f5f5;
+}
+
+.v-field--disabled, .v-input--disabled {
+	pointer-events: unset;
+
+	input {
+		cursor: not-allowed !important;
+	}
+}
+
+</style>
