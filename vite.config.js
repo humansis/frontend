@@ -7,17 +7,6 @@ export default defineConfig({
 	plugins: [
 		vue(),
 	],
-	build: {
-		rollupOptions: {
-			// https://rollupjs.org/guide/en/#outputmanualchunks
-			output: {
-				manualChunks: {
-					"main-container": "@/layout/MainContainer",
-					home: "@/views/Home",
-				},
-			},
-		},
-	},
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
