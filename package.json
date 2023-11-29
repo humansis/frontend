@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix",
     "upgrade": "yarn run upgrade-eslint && yarn run upgrade-yarn",
     "upgrade-eslint": "npx install-peerdeps --yarn --dev @vue/eslint-config-airbnb",
     "upgrade-yarn": "yarn upgrade-interactive --latest"
