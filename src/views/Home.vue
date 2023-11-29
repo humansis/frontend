@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-row>
+		<v-row :class="{ 'flex-column': isMobile }">
 			<v-col class="mb-4">
 				<DistributionMap />
 			</v-col>
@@ -18,6 +18,7 @@
 import DistributionMap from "@/components/Home/DistributionMap";
 import Summary from "@/components/Home/Summary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 
 export default {
 	name: "HomePage",
@@ -27,5 +28,7 @@ export default {
 		HomeSummary: Summary,
 		UpcomingAssistances,
 	},
+
+	mixins: [vuetifyHelper],
 };
 </script>

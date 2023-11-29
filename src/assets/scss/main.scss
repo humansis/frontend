@@ -1,3 +1,4 @@
+@import "theme-default";
 
 /* Mixins */
 //@import "mixins";
@@ -8,7 +9,7 @@
 //@import "nav-bar";
 //@import "aside";
 //@import "tiles";
-//@import "table";
+@import "table";
 //@import "card";
 //@import "form";
 //@import "modal";
@@ -17,8 +18,8 @@
 //@import "misc";
 //
 ///* Custom styles */
-//@import "layout";
-//@import "components";
+@import "layout";
+@import "components";
 //@import "helpers";
 //
 //@import "rtl-support";
