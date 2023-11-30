@@ -29,10 +29,53 @@
 				label="Distribute"
 				validated-field-name="division"
 				v-model="formModel.division"
-				:options="options.division"
+				:options="divisionOptions"
 				:validation="getValidations"
 				@select="onDivisionSelect"
 			/>
+
+			<MultiSelectWithLabel
+				v-if="displayedFields.customField"
+				v-model="formModel.customField"
+				name="custom-field"
+				label="Custom field"
+				variable-to-show="field"
+				:options="options.customFields"
+				:loading="loading.customFields"
+				:validation="getValidations"
+			/>
+
+			<b-field
+				v-if="displayedFields.amountMultiplier"
+				label-for="amount-multiplier"
+				:label="$t('Amount multiplier')"
+				:type="validateType('amountMultiplier')"
+				:message="validateMsg('amountMultiplier')"
+			>
+				<b-numberinput
+					v-model="formModel.amountMultiplier"
+					id="amount-multiplier"
+					name="amount-multiplier"
+					type="is-dark"
+					expanded
+					min="0.01"
+					step="0.01"
+					:controls="false"
+					@blur="validate('amountMultiplier')"
+				/>
+			</b-field>
+
+			<template v-if="displayedFields.customField && displayedFields.amountMultiplier">
+				<b-field
+					v-if="isModalityCash"
+					:message="$t('Total amount = Custom field * Amount multiplier')"
+				/>
+
+				<b-field
+					v-if="isModalityInKind"
+					:message="$t('Quantity 1 = Custom field * Amount multiplier')"
+				/>
+			</template>
 
 			<b-field
 				v-if="displayedFields.unit"
@@ -276,8 +319,10 @@
 <script>
 import { maxValue, minValue, required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
 import SvgIcon from "@/components/SvgIcon";
+import assistanceHelper from "@/mixins/assistanceHelper";
 import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
@@ -292,7 +337,7 @@ export default {
 		MultiSelectWithLabel,
 	},
 
-	mixins: [validation, calendarHelper],
+	mixins: [validation, calendarHelper, assistanceHelper],
 
 	validations() {
 		/* eslint-disable func-names */
@@ -304,6 +349,17 @@ export default {
 					required: requiredIf(function () {
 						return this.displayedFields.division;
 					}),
+				},
+				customField: {
+					required: requiredIf(function () {
+						return this.displayedFields.customField;
+					}),
+				},
+				amountMultiplier: {
+					required: requiredIf(function () {
+						return this.displayedFields.amountMultiplier;
+					}),
+					minValue: minValue(0.01),
 				},
 				unit: {
 					required: requiredIf(function () {
@@ -365,7 +421,7 @@ export default {
 				cashbackLimit: {
 					required: requiredIf((form) => form.allowedProductCategoryTypes.includes(this.CASHBACK)),
 					minValue: minValue(1),
-					maxValue: maxValue(this.maxCashback),
+					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
 				},
 			},
 		};
@@ -405,7 +461,20 @@ export default {
 				currencies: CURRENCIES,
 				modalities: [],
 				types: [],
-				division: [
+				customFields: [],
+			},
+			loading: {
+				modalities: false,
+				types: false,
+				customFields: false,
+			},
+		};
+	},
+
+	computed: {
+		divisionOptions() {
+			return [
+				...(this.isTargetHousehold ? [
 					{
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
@@ -422,16 +491,23 @@ export default {
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
 					},
-				],
-			},
-			loading: {
-				modalities: false,
-				types: false,
-			},
-		};
-	},
+				] : []),
+				...(this.isTargetIndividual ? [
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL),
+					},
+				] : []),
+				...(this.isCustomAmountEnabled ? [
+					{
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD),
 
-	computed: {
+					},
+				] : []),
+			];
+		},
+
 		cashbackLimitDisabled() {
 			return this.formModel[this.valueOrQuantity] >= 1
 				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
@@ -486,6 +562,14 @@ export default {
 
 		minDateOfDistribution() {
 			return this.dateOfAssistance ? new Date(this.dateOfAssistance) : null;
+		},
+
+		isTargetHousehold() {
+			return this.targetType === ASSISTANCE.TARGET.HOUSEHOLD;
+		},
+
+		isTargetIndividual() {
+			return this.targetType === ASSISTANCE.TARGET.INDIVIDUAL;
 		},
 
 		isModalityCash() {
@@ -593,7 +677,7 @@ export default {
 				case ASSISTANCE.COMMODITY.MOBILE_MONEY:
 					this.displayedFields = {
 						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
+						division: this.isTargetHousehold || this.isTargetIndividual,
 						currency: true,
 						value: true,
 					};
@@ -602,7 +686,7 @@ export default {
 				case ASSISTANCE.COMMODITY.SMARTCARD:
 					this.displayedFields = {
 						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
+						division: this.isTargetHousehold || this.isTargetIndividual,
 						currency: true,
 						value: true,
 						remoteDistributionAllowed: true,
@@ -624,7 +708,7 @@ export default {
 				case ASSISTANCE.COMMODITY.ACTIVITY_ITEM:
 					this.displayedFields = {
 						...ASSISTANCE.DEFAULT_DISPLAYED_FIELDS,
-						division: this.targetType === ASSISTANCE.TARGET.HOUSEHOLD,
+						division: this.isTargetHousehold || this.isTargetIndividual,
 						unit: true,
 						quantity: true,
 						value: true,
@@ -653,28 +737,39 @@ export default {
 			}
 		},
 
-		onDivisionSelect({ code }) {
-			this.displayedFields.value = this.isModalityInKind;
-			this.displayedFields.quantity = false;
-			this.displayedFields.householdMembersNwsFields = false;
-			this.displayedFields.householdMembersNesFields = false;
+		async onDivisionSelect({ code }) {
+			this.displayedFields = {
+				...this.displayedFields,
+				value: this.isModalityInKind,
+				quantity: false,
+				householdMembersNwsFields: false,
+				householdMembersNesFields: false,
+				customField: false,
+				amountMultiplier: false,
+				currency: true,
+			};
 
 			switch (code) {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL:
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
-					this.displayedFields.currency = true;
 					this.displayedFields.value = true;
 					this.displayedFields.quantity = this.isModalityInKind;
 
 					break;
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
-					this.displayedFields.currency = true;
 					this.displayedFields.householdMembersNwsFields = true;
 
 					break;
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
-					this.displayedFields.currency = true;
 					this.displayedFields.householdMembersNesFields = true;
+
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD:
+					this.displayedFields.customField = true;
+					this.displayedFields.amountMultiplier = true;
+
+					await this.fetchCustomFields();
 
 					break;
 				default:
@@ -723,6 +818,26 @@ export default {
 				Notification(`${this.$t("Modality Types")}${e.message || e}`, "is-danger");
 			} finally {
 				this.loading.types = false;
+			}
+		},
+
+		async fetchCustomFields() {
+			try {
+				this.loading.customFields = true;
+
+				const { data } = await CustomFieldsService.getListOfCustomFields(
+					null,
+					null,
+					null,
+					null,
+					{ type: "number" },
+				);
+
+				this.options.customFields = data;
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.loading.customFields = false;
 			}
 		},
 

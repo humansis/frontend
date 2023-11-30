@@ -91,6 +91,7 @@
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
+import CustomFieldsService from "@/services/CustomFieldsService";
 import ProjectService from "@/services/ProjectService";
 import NewAssistanceForm from "@/components/AddAssistance/NewAssistanceForm";
 import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
@@ -203,6 +204,7 @@ export default {
 		await this.fetchProject();
 
 		this.isDuplicated = !!this.$route.query.duplicateAssistance;
+
 		if (this.isDuplicated) {
 			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
 				.then(({ data, message }) => {
@@ -498,6 +500,21 @@ export default {
 
 			const commodities = await this.fetchAssistanceCommodities();
 			const preparedCommodities = [];
+
+			if (this.isDuplicated) {
+				const customFields = await this.fetchCustomFields() || [];
+
+				commodities.forEach((item, index) => {
+					const commodity = item?.division?.customFieldName;
+					const isCommodityFound = customFields.find((field) => field.field === commodity);
+
+					if (commodity && !isCommodityFound) {
+						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been renamed or removed, Commodity must be added again.")}`, "is-warning");
+						commodities.splice(index, 1);
+					}
+				});
+			}
+
 			commodities.forEach((item) => {
 				const modality = this.getModalityByType(item.modalityType);
 
@@ -623,6 +640,23 @@ export default {
 				.catch((e) => {
 					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
 				});
+		},
+
+		async fetchCustomFields() {
+			try {
+				const { data } = await CustomFieldsService.getListOfCustomFields(
+					null,
+					null,
+					null,
+					null,
+					{ type: "number" },
+				);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "is-danger");
+				return false;
+			}
 		},
 
 		async fetchNewAssistanceForm(data) {

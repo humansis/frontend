@@ -1,15 +1,12 @@
 import { download, fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfCustomFields(page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
+	async getListOfCustomFields(page, size, sort, search = null, filters = null) {
 		const { data: { data, totalCount } } = await fetcher({
-			uri: `country-specifics?${pageText + sizeText + sortText + fulltext}`,
+			uri: `country-specifics${queryBuilder({ page, size, sort, search, filters })}`,
 		});
+
 		return { data, totalCount };
 	},
 

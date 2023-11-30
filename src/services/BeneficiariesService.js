@@ -322,6 +322,13 @@ export default {
 		return fetcher({ uri: `exports/${bnfFile3Id}` });
 	},
 
+	recalculateReliefPackages(id) {
+		return fetcher({
+			uri: `assistances/${id}/recalculate`,
+			method: "POST",
+		});
+	},
+
 	exportBnf3File(format, bnfFile3Id) {
 		return download({
 			uri: `exports/${bnfFile3Id}/content${queryBuilder({ format })}`,

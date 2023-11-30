@@ -433,14 +433,14 @@ export default {
 	},
 
 	async updateAssistanceStatusValidated({ assistanceId, validated }) {
-		const { data, status } = await fetcher({
+		const { data, status, message } = await fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",
 			body: {
 				validated,
 			},
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 	async updateAssistanceNote({ assistanceId, note }) {

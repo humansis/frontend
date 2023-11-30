@@ -86,6 +86,8 @@ export default {
 		secondUnit: false,
 		secondQuantity: false,
 		description: false,
+		customField: false,
+		amountMultiplier: false,
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: false,
 		householdMembersNwsFields: false,
@@ -120,6 +122,7 @@ export default {
 		CASHBACK: "Cashback",
 		DISTRIBUTION: {
 			PER_HOUSEHOLD: "Per Household",
+			PER_INDIVIDUAL: "Per Individual",
 			PER_MEMBER_CODE: "Per Household Member",
 			PER_MEMBER_LABEL: "Per Member (uniformly)",
 			PER_MEMBERS_CODE: "Per Household Members",
@@ -127,6 +130,7 @@ export default {
 			PER_MEMBERS_NES_CODE: "Per Members NES",
 			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1-3, 4-5, 6-8, 9+)",
 			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-8, 9+)",
+			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
 		},
 	},
 	FIELD_TYPE: {

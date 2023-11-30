@@ -114,50 +114,74 @@
 				@close="closeInputDistributedModal"
 			/>
 		</Modal>
-		<div class="buttons space-between align-end">
-			<b-button
-				v-if="isAddBeneficiaryAllowed"
-				class="mb-4"
-				type="is-primary"
-				icon-left="plus"
-				@click="openAddBeneficiaryModal(null, true)"
-			>
-				{{ $t('Add') }}
-			</b-button>
-			<b-button
-				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
-				class="mb-4"
-				type="is-primary"
-				icon-left="plus"
-				@click="openAddBeneficiariesByIdsModal"
-			>
-				{{ $t('Bulk add') }}
-			</b-button>
-			<b-button
-				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
-				class="mb-4"
-				type="is-primary"
-				icon-left="minus"
-				@click="openInputDistributedModal"
-			>
-				{{ $t('Bulk remove') }}
-			</b-button>
-			<b-field v-if="changeButton">
-				<p class="control">
-					<b-button rounded @click="randomSample">
-						<b-icon icon="exchange-alt" />
-					</b-button>
-				</p>
-				<b-input
-					v-model="randomSampleSize"
-					type="number"
-					placeholder="%"
-					custom-class="has-text-centered"
-					min="1"
-					max="100"
-					icon-right="percent"
-				/>
-			</b-field>
+		<div class="is-flex space-between control-panel">
+			<div v-if="isCustomAmountBoxVisible && isCustomAmountEnabled && customFieldName" class="mb-5">
+				<b-message class="custom-amount-box" type="is-info">
+					{{ $t(`To change the amount to be distributed, you must change the Custom field:`) }}
+					{{ customFieldName }}
+					{{ $t(`value for the Beneficiary, and then use Recalculate.`) }}
+				</b-message>
+			</div>
+
+			<div class="buttons space-between align-end">
+				<b-button
+					v-if="isRecalculationButtonVisible && isCustomAmountEnabled && customFieldName"
+					class="mb-4"
+					type="is-primary"
+					icon-left="redo"
+					:loading="isRecalculationLoading"
+					@click="recalculate()"
+				>
+					{{ $t('Recalculate') }}
+				</b-button>
+
+				<b-button
+					v-if="isAddBeneficiaryAllowed"
+					class="mb-4"
+					type="is-primary"
+					icon-left="plus"
+					@click="openAddBeneficiaryModal(null, true)"
+				>
+					{{ $t('Add') }}
+				</b-button>
+
+				<b-button
+					v-if="isBulkAddOrRemoveBeneficiaryAllowed"
+					class="mb-4"
+					type="is-primary"
+					icon-left="plus"
+					@click="openAddBeneficiariesByIdsModal"
+				>
+					{{ $t('Bulk add') }}
+				</b-button>
+
+				<b-button
+					v-if="isBulkAddOrRemoveBeneficiaryAllowed"
+					class="mb-4"
+					type="is-primary"
+					icon-left="minus"
+					@click="openInputDistributedModal"
+				>
+					{{ $t('Bulk remove') }}
+				</b-button>
+
+				<b-field v-if="changeButton" class="random-sample">
+					<p class="control">
+						<b-button rounded @click="randomSample">
+							<b-icon icon="exchange-alt" />
+						</b-button>
+					</p>
+					<b-input
+						v-model="randomSampleSize"
+						type="number"
+						placeholder="%"
+						custom-class="has-text-centered"
+						min="1"
+						max="100"
+						icon-right="percent"
+					/>
+				</b-field>
+			</div>
 		</div>
 		<Table
 			ref="beneficiariesList"
@@ -343,6 +367,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 import ExportControl from "@/components/Export";
 import Modal from "@/components/Modal";
+import assistanceHelper from "@/mixins/assistanceHelper";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
 import permissions from "@/mixins/permissions";
@@ -377,7 +402,7 @@ export default {
 		InstitutionForm,
 	},
 
-	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper, assistanceHelper],
 
 	props: {
 		assistance: Object,
@@ -404,11 +429,22 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		isRecalculationButtonVisible: {
+			type: Boolean,
+			default: false,
+		},
+
+		isCustomAmountBoxVisible: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			isLoadingList: false,
+			isRecalculationLoading: false,
 			advancedSearchVisible: false,
 			exportControl: {
 				loading: false,
@@ -442,15 +478,6 @@ export default {
 					checkableTable: false,
 				},
 				visibleColumns: [],
-				householdsAndIndividualEditColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "Local given name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Local family name", sortable: true, sortKey: "localFamilyName" },
-					{ key: "gender" },
-					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
-					{ key: "residencyStatus" },
-					{ key: "vulnerabilities", type: "svgIcon" },
-				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
 					{ key: "name", sortable: true },
@@ -554,6 +581,31 @@ export default {
 			return availableTypes;
 		},
 
+		prepareValueType() {
+			const currencyTypes = [ASSISTANCE.COMMODITY.CASH, ASSISTANCE.COMMODITY.SMARTCARD];
+
+			return currencyTypes.includes(this.assistance?.commodities[0].modalityType)
+				? "Currency"
+				: "Unit";
+		},
+
+		householdsAndIndividualEditColumns() {
+			return [
+				{ key: "id", label: "Beneficiary ID", sortable: true },
+				{ key: "givenName", label: "Local given name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", label: "Local family name", sortable: true, sortKey: "localFamilyName" },
+				{ key: "gender" },
+				{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
+				{ key: "residencyStatus" },
+				{ key: "vulnerabilities", type: "svgIcon" },
+				...this.isCustomAmountEnabled && this.customFieldName
+					? [
+						{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
+					]
+					: [],
+			];
+		},
+
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
 				{ key: "id", label: "Beneficiary ID", sortable: true },
@@ -592,6 +644,10 @@ export default {
 				{ key: "distributed", type: "arrayTextBreak" },
 				{ key: "lastModified", type: "arrayTextBreak" },
 			];
+		},
+
+		customFieldName() {
+			return this.commodities?.[0]?.division?.customFieldName;
 		},
 
 		defaultSortKey() {
@@ -939,7 +995,7 @@ export default {
 				default:
 					baseColumns = this.assistanceDetail
 						? this.householdsAndIndividualDetailColumns
-						: this.table.householdsAndIndividualEditColumns;
+						: this.householdsAndIndividualEditColumns;
 			}
 
 			const modality = this.commodities[0]?.modalityType;
@@ -1145,6 +1201,30 @@ export default {
 			}, 5000);
 		},
 
+		async recalculate() {
+			try {
+				this.isRecalculationLoading = true;
+
+				const { message, status } = await BeneficiariesService.recalculateReliefPackages(
+					this.assistance.id,
+				);
+
+				if (status !== 200) {
+					throw new Error(message);
+				}
+
+				this.$emit("assistanceUpdated");
+				await this.reloadBeneficiariesList();
+				this.$emit("fetchAssistanceStatistics");
+
+				Toast(this.$t("Assistance Successfully Recalculated"), "is-success");
+			} catch (e) {
+				Notification(`${this.$t("Recalculation")} ${e.message || e}`, "is-danger");
+			} finally {
+				this.isRecalculationLoading = false;
+			}
+		},
+
 		async setAsNotDistributed(tableIndex, bnfId, reliefPackage) {
 			try {
 				const { data, status, message } = await AssistancesService
@@ -1297,4 +1377,26 @@ export default {
 
 <style lang="scss" scoped>
 @import 'src/assets/scss/button';
+
+.control-panel {
+	flex-direction: column;
+
+	@media screen and (min-width: 1024px) {
+		flex-direction: row;
+		gap: 48px;
+	}
+
+	.buttons {
+		flex-wrap: nowrap;
+		margin-left: auto;
+	}
+
+	.custom-amount-box {
+		width: 100%;
+
+		@media screen and (min-width: 1024px) {
+			max-width: 700px;
+		}
+	}
+}
 </style>

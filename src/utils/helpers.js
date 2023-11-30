@@ -17,7 +17,7 @@ export const queryBuilder = (param) => {
 		}
 	}
 	if (upcoming) { query.push(`upcoming=${upcoming}`); }
-	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }
+	if (ids?.length) { query.push(idsToUri(ids, idsParam)); }
 	if (format) { query.push(`type=${format}`); }
 
 	return query.length ? `?${query.join("&").replace(/&+/g, "&")}` : "";

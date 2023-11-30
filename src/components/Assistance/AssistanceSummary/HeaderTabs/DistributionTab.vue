@@ -13,7 +13,9 @@
 				>
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
+
 				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+
 				<div v-else class="level-item">
 					<b-tooltip :label="$t('Data not loaded')">
 						<b-icon icon="exclamation-circle" size="is-medium" />
@@ -39,6 +41,7 @@
 					>
 						<SvgIcon :items="commodity" />
 					</b-tooltip>
+
 					<span
 						v-if="assistanceRemote"
 						class="remote-disribution-flag"
@@ -48,7 +51,9 @@
 					{{ amountTotal }}
 					{{ assistanceUnit }}
 				</div>
+
 				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+
 				<div v-else class="level-item">
 					<b-tooltip :label="$t('Data not loaded')">
 						<b-icon icon="exclamation-circle" size="is-medium" />
@@ -72,7 +77,9 @@
 					{{ $t("of") }}
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
+
 				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+
 				<div v-else class="level-item">
 					<b-tooltip :label="$t('Data not loaded')">
 						<b-icon icon="exclamation-circle" size="is-medium" />
@@ -98,6 +105,7 @@
 					>
 						<SvgIcon :items="commodity" />
 					</b-tooltip>
+
 					<span
 						v-if="assistanceRemote"
 						class="remote-disribution-flag"
@@ -109,12 +117,22 @@
 					{{ amountTotal }}
 					{{ assistanceUnit }}
 				</div>
+
 				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+
 				<div v-else class="level-item">
 					<b-tooltip :label="$t('Data not loaded')">
 						<b-icon icon="exclamation-circle" size="is-medium" />
 					</b-tooltip>
 				</div>
+			</div>
+		</div>
+
+		<div v-if="isCustomAmountEnabled && customFieldName" class="level-item has-text-centered">
+			<div class="box">
+				<h2 class="heading">{{ $t('By custom field') }}</h2>
+
+				<p>{{ customFieldName }}</p>
 			</div>
 		</div>
 	</nav>
@@ -123,6 +141,7 @@
 <script>
 import Loading from "@/components/Loading";
 import SvgIcon from "@/components/SvgIcon";
+import assistanceHelper from "@/mixins/assistanceHelper";
 import { ASSISTANCE } from "@/consts";
 
 export default {
@@ -132,6 +151,8 @@ export default {
 		SvgIcon,
 		Loading,
 	},
+
+	mixins: [assistanceHelper],
 
 	props: {
 		assistance: {
@@ -199,6 +220,10 @@ export default {
 
 		assistanceRemote() {
 			return !!this.assistance?.remoteDistributionAllowed;
+		},
+
+		customFieldName() {
+			return this.commodities[0]?.division?.customFieldName;
 		},
 
 		isToDistributeValid() {

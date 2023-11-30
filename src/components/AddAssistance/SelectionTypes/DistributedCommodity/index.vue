@@ -183,6 +183,8 @@ export default {
 					{ key: "modality" },
 					{ key: "modalityType" },
 					{ key: "division", label: "For Each" },
+					{ key: "customFieldName", label: "Custom field" },
+					{ key: "amountMultiplier" },
 					{ key: "unit", label: "Unit 1" },
 					{ key: "quantity", label: "Quantity 1" },
 					{ key: "value" },
@@ -202,6 +204,8 @@ export default {
 				{
 					modalityType,
 					division,
+					customFieldId,
+					amountMultiplier,
 					unit,
 					quantity,
 					value,
@@ -217,7 +221,7 @@ export default {
 				},
 			) => {
 				const quantitiesSource = this.isModalityCash ? value : quantity;
-				const quantities = quantitiesSource ? null : divisionFields;
+				const quantities = (quantitiesSource || this.isDivisionPerCustom) ? null : divisionFields;
 
 				return {
 					modalityType,
@@ -234,6 +238,8 @@ export default {
 						: {
 							code: this.getDivision(division),
 							quantities,
+							customFieldId: customFieldId || division.customField?.id,
+							amountMultiplier: amountMultiplier || division.amountMultiplier,
 						},
 					remoteDistributionAllowed,
 					allowedProductCategoryTypes,
@@ -248,6 +254,8 @@ export default {
 					modality,
 					modalityType,
 					division,
+					customField,
+					amountMultiplier,
 					unit,
 					quantity,
 					value,
@@ -266,6 +274,9 @@ export default {
 				modality: modality?.value || modality,
 				modalityType: modalityType?.value || modalityType,
 				division: this.getDivisionName(division),
+				customFieldId: customField?.id || division?.customField?.id,
+				customFieldName: customField?.field || division?.customFieldName,
+				amountMultiplier: amountMultiplier || division?.amountMultiplier,
 				unit,
 				currency: currency?.value || currency,
 				quantity: (!this.isModalityCash && this.isPerHouseholdMembers(division))
@@ -304,6 +315,11 @@ export default {
 			return modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
+		isDivisionPerCustom() {
+			const divisionCode = this.table.data[0]?.division?.code;
+			return divisionCode === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD;
+		},
+
 		formattedDate() {
 			const date = this.table.data[0]?.dateExpiration;
 			return date ? this.$moment(date).format("YYYY-MM-DD") : "";
@@ -328,20 +344,7 @@ export default {
 				this.dateExpiration = data[0]?.dateExpiration;
 
 				if (this.isAssistanceDuplicated) {
-					this.showAllColumns();
-					this.hideEmptyColumns();
-
-					if (this.isModalityCash) {
-						this.showColumn("value");
-					} else if (this.isModalityInKind) {
-						this.showColumn("quantity");
-					}
-
-					this.table.columns.forEach((column, i) => {
-						if (column.field === "dateExpiration") {
-							this.table.columns[i].visible = this.isModalityTypeSmartCard;
-						}
-					});
+					this.toggleColumnsVisibility();
 				}
 			}
 		},
@@ -378,6 +381,24 @@ export default {
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
 				default:
 					return divisionString;
+			}
+		},
+
+		toggleColumnsVisibility() {
+			this.showAllColumns();
+			this.hideEmptyColumns();
+
+			if (this.isDivisionPerCustom) {
+				this.showColumn("customFieldName");
+				this.showColumn("amountMultiplier");
+			} else if (this.isModalityCash) {
+				this.showColumn("value");
+			} else if (this.isModalityInKind) {
+				this.showColumn("quantity");
+			}
+
+			if (this.isModalityTypeSmartCard) {
+				this.showColumn("dateExpiration");
 			}
 		},
 
@@ -418,18 +439,7 @@ export default {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
 
-			this.showAllColumns();
-			this.hideEmptyColumns();
-
-			if (this.isModalityCash) {
-				this.showColumn("value");
-			} else if (this.isModalityInKind) {
-				this.showColumn("quantity");
-			}
-
-			if (this.isModalityTypeSmartCard) {
-				this.showColumn("dateExpiration");
-			}
+			this.toggleColumnsVisibility();
 
 			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
 		},

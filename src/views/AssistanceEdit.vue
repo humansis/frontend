@@ -24,6 +24,8 @@
 					ref="assistanceListOfBeneficiariesGrid"
 					export-button
 					add-button
+					is-recalculation-button-visible
+					is-custom-amount-box-visible
 					:assistance="assistance"
 					:commodities="commodities"
 					@assistanceUpdated="fetchUpdatedData"
@@ -49,8 +51,9 @@
 			<b-step-item clickable step="4" :label="$t('Validate and Lock')">
 				<BeneficiariesList
 					ref="validateAndLockGrid"
-					:add-button="false"
 					export-button
+					is-recalculation-button-visible
+					:add-button="false"
 					:assistance="assistance"
 					:commodities="commodities"
 					@assistanceUpdated="fetchUpdatedData"
@@ -202,17 +205,19 @@ export default {
 
 			await AssistancesService.updateAssistanceStatusValidated(
 				{ assistanceId, validated: true },
-			).then(({ status }) => {
-				if (status === 200) {
-					Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
-
-					this.$router.push({
-						name: "AssistanceDetail",
-						params: {
-							assistanceId: this.$route.params.assistanceId,
-						},
-					});
+			).then(({ status, message }) => {
+				if (status !== 200) {
+					throw new Error(message);
 				}
+
+				Toast(this.$t("Assistance Successfully Validated and Locked"), "is-success");
+
+				this.$router.push({
+					name: "AssistanceDetail",
+					params: {
+						assistanceId: this.$route.params.assistanceId,
+					},
+				});
 			}).catch((e) => {
 				Toast(`${this.$t("Assistance")} ${e}`, "is-danger");
 			});
