@@ -4,9 +4,11 @@ import * as directives from "vuetify/directives";
 import { aliases, fa } from "vuetify/iconsets/fa-svg";
 import "vuetify/styles";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { far } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
-library.add(fas); // Include needed solid icons
+library.add(fas);
+library.add(far);
 
 const humansisTheme = {
 	dark: false,
