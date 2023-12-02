@@ -1,59 +1,121 @@
 <template>
 	<v-container fluid>
-		<v-card class="mx-auto mt-16" max-width="900">
+		<v-card class="mx-auto mt-16" max-width="800">
 			<v-card-text>
-				<p class="text-h6">{{ $t('User Information') }}</p>
+				<form @submit.prevent="submitPasswordForm">
+					<p class="text-h6">{{ $t('User Information') }}</p>
 
-				<v-text-field
-					v-model="userForm.email"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
-					class="mt-4 mb-4"
-					disabled
-				>
-					<template v-slot:label>
-						<span>{{ $t('Email') }}</span>
-					</template>
-				</v-text-field>
+					<DataInput
+						v-model="userForm.email"
+						label="Email"
+						name="email"
+						variant="outlined"
+						density="compact"
+						hide-details="auto"
+						class="mt-4 mb-4"
+						disabled
+					/>
 
-				<p class="text-h6"> {{ $t('Change Password') }}</p>
+					<p class="text-h6"> {{ $t('Change Password') }}</p>
 
-				<v-text-field
-					v-model="test"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
-					class="mt-4 mb-4"
-				>
-					<template v-slot:label>
-						<span>{{ $t('Old Password') }}</span>
-					</template>
-				</v-text-field>
+					<DataInput
+						v-model="password.oldPassword"
+						label="Old Password"
+						name="old-password"
+						type="password"
+						variant="outlined"
+						density="compact"
+						hide-details="auto"
+						class="mt-4 mb-4"
+						:error-messages="v$.password.oldPassword.$errors.map(e => e.$message)"
+						@blur="v$.password.oldPassword.$touch"
+					/>
 
-				<v-text-field
-					v-model="test"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
-					class="mt-4 mb-4"
-				>
-					<template v-slot:label>
-						<span>{{ $t('New Password') }}</span>
-					</template>
-				</v-text-field>
+					<DataInput
+						v-model="password.newPassword"
+						label="New Password"
+						name="new-password"
+						type="password"
+						variant="outlined"
+						density="compact"
+						hide-details="auto"
+						class="mt-4 mb-4"
+						:error-messages="v$.password.newPassword.$errors.map(e => e.$message)"
+						@blur="v$.password.newPassword.$touch"
+					/>
 
-				<v-text-field
-					v-model="test"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
-					class="mt-4 mb-4"
-				>
-					<template v-slot:label>
-						<span>{{ $t('Re-Enter New Password') }}</span>
-					</template>
-				</v-text-field>
+					<DataInput
+						v-model="password.reenteredPassword"
+						label="Re-Enter New Password"
+						name="re-enter-new-password"
+						type="password"
+						variant="outlined"
+						density="compact"
+						hide-details="auto"
+						class="mt-4 mb-4"
+						:error-messages="v$.password.reenteredPassword.$errors.map(e => e.$message)"
+						@blur="v$.password.reenteredPassword.$touch"
+					/>
+
+					<div class="text-end">
+						<v-btn
+							class="ml-0"
+							color="primary"
+							size="small"
+							type="submit"
+						>
+							{{ $t('Save') }}
+						</v-btn>
+					</div>
+				</form>
+
+				<form @submit.prevent="submitTelephoneForm">
+					<p class="text-h6"> {{ $t('Change Phone Number') }}</p>
+
+					<v-row class="mt-2 mb-2" :class="{ 'flex-column': isMobile }">
+						<v-col>
+							<DataSelect
+								v-model="phone.prefix"
+								:items="options.phonePrefixes"
+								label="Phone Ext"
+								name="phone-ext"
+								variant="outlined"
+								density="compact"
+								hide-details="auto"
+								item-title="value"
+								item-value="code"
+								clearable
+								multiple
+								:error-messages="v$.phone.prefix.$errors.map(e => e.$message)"
+								@blur="v$.phone.prefix.$touch"
+							/>
+						</v-col>
+
+						<v-col>
+							<DataInput
+								v-model="phone.number"
+								label="Phone Number"
+								name="phone-number"
+								variant="outlined"
+								density="compact"
+								hide-details="auto"
+								:error-messages="v$.phone.number.$errors.map(e => e.$message)"
+								@blur="v$.phone.number.$touch"
+							/>
+						</v-col>
+					</v-row>
+
+					<div class="text-end">
+						<v-btn
+							class="ml-0"
+							color="primary"
+							size="small"
+							type="submit"
+						>
+							{{ $t('Save') }}
+						</v-btn>
+					</div>
+				</form>
 			</v-card-text>
 		</v-card>
 	</v-container>
@@ -63,12 +125,51 @@
 import { mapState } from "vuex";
 import LoginService from "@/services/LoginService";
 import UsersService from "@/services/UsersService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
+import { useVuelidate } from "@vuelidate/core";
+import { requiredIf, sameAs } from "@vuelidate/validators";
+
+const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
+const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
 
 export default {
 	name: "Profile",
+
+	components: {
+		DataInput,
+		DataSelect,
+	},
+
+	mixins: [vuetifyHelper],
+
+	validations() {
+		return {
+			password: {
+				oldPassword: { required: requiredIf(this.password.newPassword
+						|| this.password.reenteredPassword) },
+				newPassword: {
+					required: requiredIf(this.password.oldPassword || this.password.reenteredPassword),
+					passwordValidation,
+				},
+				reenteredPassword: {
+					required: requiredIf(this.password.oldPassword || this.password.newPassword),
+					...((this.password.oldPassword || this.password.newPassword)
+						&& { sameAsPassword: sameAs("newPassword") }),
+				},
+			},
+			phone: {
+				prefix: { required: requiredIf(this.phone.number) },
+				number: { required: requiredIf(this.phone.prefix?.length) },
+			},
+		};
+	},
+
+	setup: () => ({ v$: useVuelidate() }),
 
 	data() {
 		return {
@@ -109,8 +210,9 @@ export default {
 
 	methods: {
 		async submitPasswordForm() {
-			this.$v.password.$touch();
-			if (this.$v.password.$invalid) return;
+			this.v$.password.$touch();
+			console.log(this.v$);
+			if (this.v$.password.$invalid) return;
 			this.changePasswordLoading = true;
 
 			const { id } = this.userProfile;
@@ -135,35 +237,36 @@ export default {
 			}).catch(() => {
 				Notification(`${this.$t("Invalid Password")}`, "is-danger");
 			});
-			this.$v.password.$reset();
+			this.v$.password.$reset();
 
 			this.changePasswordLoading = false;
 		},
 
 		async submitTelephoneForm() {
-			this.$v.phone.$touch();
-			if (this.$v.phone.$invalid) return;
-			this.changePhoneLoading = true;
-			this.phone.number = this.phone.number.replace(/\s+/g, "");
-
-			const { id } = this.userProfile;
-
-			await UsersService.patchUser(id, {
-				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix?.code || null,
-			}).then(({ data }) => {
-				this.mapUser(data);
-				Toast(
-					`${this.$t("Phone Updated")}`,
-					"is-success",
-				);
-				this.fetchUser();
-			}).catch((e) => {
-				Notification(`${this.$t("Phone Update")} ${e}`, "is-danger");
-			});
-			this.$v.phone.$reset();
-
-			this.changePhoneLoading = false;
+			this.v$.phone.$touch();
+			console.log(this.v$.phone.number);
+			// if (this.v$.phone.$invalid) return;
+			// this.changePhoneLoading = true;
+			// this.phone.number = this.phone.number?.replace(/\s+/g, "");
+			//
+			// const { id } = this.userProfile;
+			//
+			// await UsersService.patchUser(id, {
+			// 	phoneNumber: this.phone.number || null,
+			// 	phonePrefix: this.phone.prefix?.code || null,
+			// }).then(({ data }) => {
+			// 	this.mapUser(data);
+			// 	Toast(
+			// 		`${this.$t("Phone Updated")}`,
+			// 		"is-success",
+			// 	);
+			// 	this.fetchUser();
+			// }).catch((e) => {
+			// 	Notification(`${this.$t("Phone Update")} ${e}`, "is-danger");
+			// });
+			// this.v$.phone.$reset();
+			//
+			// this.changePhoneLoading = false;
 		},
 
 		async enableTwoFactor() {
@@ -202,25 +305,24 @@ export default {
 			this.userProfile = data;
 			this.userForm.email = data.email;
 			this.phone.prefix = getArrayOfCodeListByKey([data.phonePrefix], PHONE.CODES, "code");
-			this.phone.number = data.phoneNumber;
 			this.twoFactorEnabled = data["2fa"];
 		},
 
 		newPasswordMessage() {
-			if (!this.$v.password.newPassword.required) {
+			if (!this.v$.password.newPassword.required) {
 				return this.$t("Required");
 			}
-			if (!this.$v.password.newPassword.passwordValidation) {
+			if (!this.v$.password.newPassword.passwordValidation) {
 				return this.$t("The Password Is Not Strong Enough... Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
 			}
 			return "";
 		},
 
 		reenterPasswordMessage() {
-			if (!this.$v.password.reenteredPassword.required) {
+			if (!this.v$.password.reenteredPassword.required) {
 				return this.$t("Required");
 			}
-			if (!this.$v.password.reenteredPassword.sameAsPassword) {
+			if (!this.v$.password.reenteredPassword.sameAsPassword) {
 				return this.$t("Passwords must be same");
 			}
 			return "";
@@ -231,13 +333,13 @@ export default {
 			const fieldsLevel = fields.split(".");
 			switch (fieldsLevel.length) {
 				case 1:
-					result = this.$v[fieldsLevel[0]];
+					result = this.v$[fieldsLevel[0]];
 					break;
 				case 2:
-					result = this.$v[fieldsLevel[0]][fieldsLevel[1]];
+					result = this.v$[fieldsLevel[0]][fieldsLevel[1]];
 					break;
 				case 3:
-					result = this.$v[fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
+					result = this.v$[fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
 					break;
 				default:
 			}
@@ -286,29 +388,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-.v-label {
-	opacity: 1;
-	font-size: 20px;
-
-	> span {
-		font-size: 14px;
-		font-weight: bold;
-	}
-}
-
-.v-field--disabled {
-	opacity: .8;
-	background-color: #f5f5f5;
-}
-
-.v-field--disabled, .v-input--disabled {
-	pointer-events: unset;
-
-	input {
-		cursor: not-allowed !important;
-	}
-}
-
-</style>
