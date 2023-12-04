@@ -1,9 +1,55 @@
 .v-table > .v-table__wrapper > table {
-  border-top: 2px solid #c8c8c8;
+  border-top: .125rem solid #c8c8c8;
 
   > thead > tr > th {
-    font-weight: bold;
+    font-weight: bold !important;
     white-space: nowrap;
+  }
+
+  .v-data-table-header__content .v-icon {
+    font-size: 1rem;
+  }
+}
+
+.table-footer {
+  flex-direction: column;
+  text-align: center;
+
+  .per-page-col,
+  .go-page-col {
+    max-width: 8.125rem;
+
+    > div {
+      margin-right: 0 !important;
+    }
+  }
+
+  @media (min-width: $tablet) {
+    flex-direction: row;
+
+    .per-page-col {
+      max-width: 8.125rem;
+      margin-right: 0;
+    }
+
+    .total-count-col {
+      max-width: 14rem;
+      margin-right: auto;
+    }
+
+    .pagination-col {
+      max-width: 28rem;
+      margin-left: auto;
+
+      > nav > ul {
+        justify-content: end;
+      }
+    }
+
+    .go-page-col {
+      max-width: 8.125rem;
+      margin-left: 0;
+    }
   }
 }
 

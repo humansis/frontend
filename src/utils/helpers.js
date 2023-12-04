@@ -1,10 +1,8 @@
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
-// import { Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
 
-const {
-	global: { t },
-} = i18n;
+const { global: { t } } = i18n;
 
 export const queryBuilder = (param) => {
 	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
@@ -98,7 +96,7 @@ export const downloadFile = (data, filename, status, format, responseMessage) =>
 		link.download = `${filename}.${format}`;
 		link.click();
 	} else {
-		// Notification(responseMessage, "is-warning");
+		Notification(responseMessage, "error");
 	}
 };
 

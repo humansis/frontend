@@ -28,19 +28,26 @@
 	<!--	</b-notification>-->
 
 	<Table
-		v-model:items-per-page="table.itemsPerPage"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
 		:headers="table.visibleColumns"
 		:items="table.data"
-		:items-length="table.total"
+		:total-count="table.total"
 		:loading="isLoadingList"
-		:reset-sort-button="true"
+		reset-sort-button
+		@per-page-changed="perPageChange"
+		@page-changed="pageChange"
+		@update:sortBy="onSort"
+		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
 		<template v-slot:table-header>
 			<v-btn
 				class="ml-0"
-				color="grey-lighten-2"
+				color="gray-darken-4"
 				icon-left="sticky-note"
+				variant="tonal"
 				size="small"
+				prepend-icon="sticky-note"
 				:class="filterButtonNew"
 				@click="statusFilter('new')"
 			>
@@ -50,8 +57,10 @@
 			<v-btn
 				class="ml-0"
 				icon-left="spinner"
-				color="green-lighten-1"
+				color="green-darken-4"
+				variant="tonal"
 				size="small"
+				prepend-icon="spinner"
 				:class="filterButtonValidated"
 				@click="statusFilter('validated')"
 			>
@@ -61,8 +70,10 @@
 			<v-btn
 				class="ml-0"
 				icon-left="check"
-				color="light-blue-lighten-4"
+				color="blue-darken-4"
+				variant="tonal"
 				size="small"
+				prepend-icon="check"
 				:class="filterButtonClosed"
 				@click="statusFilter('closed')"
 			>
@@ -219,22 +230,21 @@
 <script>
 import AssistancesService from "@/services/AssistancesService";
 // import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 // import ExportControl from "@/components/Export";
 // import SafeDelete from "@/components/SafeDelete";
 // import baseHelper from "@/mixins/baseHelper";
-// import grid from "@/mixins/grid";
+import grid from "@/mixins/grid";
 // import permissions from "@/mixins/permissions";
-import { normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 // import { downloadFile } from "@/utils/helpers";
-// import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT } from "@/consts";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "red" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "green" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "green-lighten-1" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "light-blue-lighten-4" },
 ];
 
 export default {
@@ -244,13 +254,12 @@ export default {
 		Table,
 		// ActionButton,
 		// SafeDelete,
-		ColumnField,
 		// ExportControl,
 	},
 
 	mixins: [
 		// permissions,
-		// grid,
+		grid,
 		// baseHelper,
 		// permissions,
 	],
@@ -277,6 +286,7 @@ export default {
 
 	data() {
 		return {
+			TABLE,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
@@ -295,26 +305,25 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [
-					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id", sortable: true },
-					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name", sortable: true },
-					{ key: "status", title: "Status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
-					{ key: "round", title: "Round", sortable: true },
-					{ key: "type", title: "Type", type: "assistancesType", sortable: true },
-					{ key: "location", title: "Location", sortable: true },
-					{ key: "target", title: "Target", sortable: true },
-					{ key: "reached", title: "Reached" },
-					{ key: "progress", title: "Progress", sortable: true },
-					{ key: "dateDistribution", title: "Date of Assistance", type: "date", sortable: true },
-					{ key: "dateExpiration", title: "Expiration Date", sortable: true },
-					{ key: "commodity", title: "Commodity", type: "svgIcon" },
-					{ key: "eloNumber", title: "EloNumber" },
-					{ key: "activity", title: "Activity" },
-					{ key: "budgetLine", title: "BudgetLine" },
-				],
+				visibleColumns: generateColumns([
+					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
+					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
+					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
+					{ key: "round" },
+					{ key: "type", type: "assistancesType" },
+					{ key: "location" },
+					{ key: "target" },
+					{ key: "reached", sortable: false },
+					{ key: "progress" },
+					{ key: "dateDistribution", title: "Date of Assistance", type: "date" },
+					{ key: "dateExpiration", title: "Expiration Date" },
+					{ key: "commodity", type: "svgIcon", sortable: false },
+					{ key: "eloNumber", sortable: false },
+					{ key: "activity", sortable: false },
+					{ key: "budgetLine", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				itemsPerPage: 10,
 				sortDirection: "desc",
 				sortColumn: "dateDistribution",
 				searchPhrase: "",
@@ -328,21 +337,21 @@ export default {
 	computed: {
 		filterButtonNew() {
 			return [
-				"btn ml-3 is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		filterButtonValidated() {
 			return [
-				"btn ml-3 is-success is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.validated },
 			];
 		},
 
 		filterButtonClosed() {
 			return [
-				"btn ml-3 is-info is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.closed },
 			];
 		},
@@ -380,7 +389,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			// this.table.columns = generateColumns(this.table.visibleColumns); // FIXME
 			if (this.upcoming) {
 				await this.fetchUpcomingAssistances();
 			} else {
@@ -405,7 +413,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				// if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
 			});
 		},
 
@@ -413,7 +421,9 @@ export default {
 			await AssistancesService.getListOfAssistances(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				true,
 				null,
 				this.filters,
@@ -425,7 +435,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				// if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "error");
 			});
 		},
 
@@ -449,8 +459,8 @@ export default {
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
 
-			const maxThreeRows = this.table.data.length <= 3;
-			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
+			// const maxThreeRows = this.table.data.length <= 3;
+			// this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -467,14 +477,7 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				const preparedCommodity = item.commodities;
-
-				let dateExpiration = "";
-
-				if (item.dateExpiration) {
-					dateExpiration = item.dateExpiration;
-				} else {
-					dateExpiration = "No Date";
-				}
+				const dateExpiration = item.dateExpiration || "No Date";
 
 				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
@@ -617,7 +620,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					// Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

@@ -1,7 +1,5 @@
 <template>
-	<v-text-field
-		v-bind="$attrs"
-	>
+	<v-text-field>
 		<template v-slot:label>
 			<span>{{ $t(label) }}</span>
 		</template>
@@ -10,8 +8,6 @@
 
 <script>
 export default {
-	inheritAttrs: false,
-
 	props: {
 		label: {
 			type: String,
@@ -23,11 +19,10 @@ export default {
 
 <style lang="scss">
 .v-label {
-	opacity: 1;
+	opacity: .6;
 
 	> span {
-		font-size: 14px;
-		font-weight: bold;
+		font-size: .9rem;
 	}
 }
 
@@ -36,7 +31,8 @@ export default {
 	background-color: #f5f5f5;
 }
 
-.v-field--disabled, .v-input--disabled {
+.v-field--disabled,
+.v-input--disabled {
 	pointer-events: unset;
 
 	input {

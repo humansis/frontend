@@ -1,16 +1,18 @@
 <template>
-	<div class="has-text-centered has-redirect-message">
-		<h1 class="title mb-4 has-text-weight-bold is-size-1-mobile has-redirect-code">404</h1>
-		<h2 class="subtitle is-size-4-mobile is-size-3">{{ $t("Page Not Found") }}</h2>
-		<b-button
-			class="mt-4 is-size-5-mobile"
-			icon-left="home"
-			outlined
-			type="is-info is-light is-large"
-			@click="$router.push('/')"
+	<div class="text-center has-redirect-message">
+		<h1 class="has-redirect-code">404</h1>
+
+		<h2 class="text-h4 text-grey-darken-2 my-10">{{ $t("Page Not Found") }}</h2>
+
+		<v-btn
+			size="x-large"
+			color="light-blue-lighten-4"
+			prepend-icon="home"
+			class="text-none"
+			@click="$router.push({ name: 'Dashboard' })"
 		>
-			<span class="button-text">{{ $t("Go to Dashboard") }}</span>
-		</b-button>
+			{{ $t('Go to Dashboard') }}
+		</v-btn>
 	</div>
 </template>
 

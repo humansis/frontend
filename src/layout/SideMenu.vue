@@ -92,6 +92,16 @@
 					</v-list-group>
 				</template>
 			</v-list>
+
+			<div class="git-info">
+				<p>{{ organization }}</p>
+
+				<p><strong>{{ environment }}</strong></p>
+
+				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
+					{{ appVersion }}
+				</p>
+			</div>
 		</v-navigation-drawer>
 	</aside>
 <!--	<aside-->
@@ -357,7 +367,7 @@ export default {
 				{
 					title: "Projects",
 					prependIcon: "clipboard-list",
-					to: "/error404",
+					to: { name: "NotFound" },
 				},
 				{
 					title: "Beneficiaries",
@@ -586,8 +596,8 @@ export default {
 
 .git-info {
 	position: absolute;
-	bottom: 20px;
-	padding: 4px;
+	bottom: 1.25rem;
+	padding: .25rem;
 	color: #ffffff;
 	display: flex;
 	flex-direction: column;
@@ -601,7 +611,7 @@ export default {
 
 .git-info p {
 	text-align: center;
-	margin-bottom: 1px;
+	margin-bottom: .0625rem;
 }
 
 .git-info p strong {

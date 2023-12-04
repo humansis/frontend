@@ -10,6 +10,7 @@ import INSTITUTION from "./institution";
 import PHONE from "./phone";
 import ROLE from "./role";
 import SCORING from "./scoring";
+import TABLE from "./table";
 
 export {
 	ASSISTANCE,
@@ -24,4 +25,5 @@ export {
 	PHONE,
 	ROLE,
 	SCORING,
+	TABLE,
 };
