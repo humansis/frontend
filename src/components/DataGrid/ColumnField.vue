@@ -11,6 +11,10 @@
 		{{ cellData || this.$t("None") }}
 	</template>
 
+	<template v-if="column.type === 'customValue'">
+		{{ customValue }}
+	</template>
+
 	<template v-if="column.type === 'arrayTextBreak'">
 		<div
 			v-for="(item, index) in cellData"
@@ -98,7 +102,24 @@ export default {
 				? this.cellData
 				: this.$t("N/A");
 		},
+
+		customValue() {
+			if (this.cellData.value) {
+				return this.cellData.value;
+			}
+
+			if (typeof this.cellData === "object") {
+				const newDate = this.$moment(this.cellData);
+
+				if (newDate.isValid()) {
+					return newDate.format("YYYY-MM-DD hh:mm");
+				}
+			}
+
+			return this.cellData;
+		},
 	},
+
 	methods: {
 		normalizeText,
 

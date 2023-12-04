@@ -2,7 +2,7 @@ import AddressService from "@/services/AddressService";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {

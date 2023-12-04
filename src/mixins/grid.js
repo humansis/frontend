@@ -72,7 +72,7 @@ export default {
 			}
 		},
 
-		onSearch(value) {
+		search(value) {
 			this.table.searchPhrase = value;
 			this.table.currentPage = 1;
 			this.fetchData();
@@ -98,17 +98,16 @@ export default {
 			this.showDetail(entity);
 		},
 
-		showDetail(entity) {
-			this.$emit("showDetail", entity);
+		showDetail(id) {
+			this.$emit("showDetail", id);
 		},
 
-		showEdit(id) {
-			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("showEdit", entity);
+		showEdit(row) {
+			this.$emit("showEdit", row);
 		},
 
 		remove(id) {
-			this.$emit("remove", id);
+			this.$emit("onDelete", id);
 		},
 
 		download(scoring) {

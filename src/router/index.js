@@ -109,67 +109,81 @@ const routes = [
 					{
 						path: "",
 						name: "Projects",
-						component: () => import("@/views/Projects"),
+						component: () => import("@/views/Projects/Projects"),
 						meta: {
 							permissions: [],
-							breadcrumb: () => t("Projects"),
+							breadcrumb: t("Projects"),
 							description: t("This page is where you can see all the country's projects (only thoses that you have the right to see)."),
 						},
 					},
-					//  			{
-					//  				path: "add-project",
-					//  				name: "AddProject",
-					//  				component: () => import(/* webpackChunkName: "AddProject" */ "@/views/ProjectManager"),
-					//  				meta: {
-					//  					permissions: [],
-					//  					breadcrumb: () => i18n.t("Add Project"),
-					//  					description: i18n.t("This page is a form to add a new project to a humansis."),
-					//  				},
-					//  			},
-					//  			{
-					//  				path: "project-detail/:projectId",
-					//  				name: "ProjectDetail",
-					//  				component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/ProjectManager"),
-					//  				meta: {
-					//  					permissions: [],
-					//  					breadcrumb: () => i18n.t("Project detail"),
-					//  					description: i18n.t("This page is a form to show detail of a project in humansis."),
-					//  				},
-					//  			},
-					//  			{
-					//  				path: "project-edit/:projectId",
-					//  				name: "ProjectEdit",
-					//  				component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/ProjectManager"),
-					//  				meta: {
-					//  					permissions: [],
-					//  					breadcrumb: () => i18n.t("Project detail"),
-					//  					description: i18n.t("This page is a form to edit a project in humansis."),
-					//  				},
-					//  			},
-					//  			{
-					//  				path: "/:countryCode/project/:projectId",
-					//  				component: { render(c) { return c("router-view"); } },
-					//  				meta: {
-					//  					breadcrumb: () => i18n.t("Project"),
-					//  				},
-					//  				children: [
-					//  					{
-					//  						path: "",
-					//  						name: "Project",
-					//  						component: () => import(/* webpackChunkName: "Project" */ "@/views/Project"),
-					//  						meta: {
-					//  							permissions: [],
-					//  							description: i18n.t("This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions."),
-					//  						},
-					//  					},
-					//  					{
-					//  						path: "assistance/:assistanceId",
-					//  						name: "AssistanceEdit",
-					//  						component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/AssistanceEdit"),
-					//  						meta: {
-					//  							breadcrumb: () => i18n.t("Edit Assistance"),
-					//  							description: "",
-					//  						},
+					{
+						path: "add-project",
+						name: "AddProject",
+						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/Projects/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: t("Add Project"),
+							description: t("This page is a form to add a new project to a humansis."),
+						},
+					},
+					{
+						path: "project-detail/:projectId",
+						name: "ProjectDetail",
+						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/Projects/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: t("Project detail"),
+							description: t("This page is a form to show detail of a project in humansis."),
+						},
+					},
+					{
+						path: "project-edit/:projectId",
+						name: "ProjectEdit",
+						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/Projects/ProjectManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: t("Project detail"),
+							description: t("This page is a form to edit a project in humansis."),
+						},
+					},
+					{
+						path: "/:countryCode/project/:projectId",
+						component: RouterView,
+						meta: {
+							breadcrumb: t("Project"),
+						},
+						children: [
+							{
+								path: "",
+								name: "Project",
+								component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects/Project"),
+								meta: {
+									permissions: [],
+									description: t("This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions."),
+								},
+							},
+							{
+								path: "assistance/:assistanceId",
+								name: "AssistanceEdit",
+								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/Assistance/AssistanceEdit"),
+								meta: {
+									breadcrumb: t("Edit Assistance"),
+									description: "",
+								},
+							},
+							{
+								path: "add-assistance",
+								name: "AddAssistance",
+								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
+								meta: {
+									permissions: ["addDistribution"],
+									breadcrumb: t("Add Assistance"),
+									description: t("This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed."),
+									parent: "Assistance",
+								},
+							},
+						],
+					},
 					//  					},
 					//  					{
 					//  						path: "assistance/detail/:assistanceId",
@@ -178,17 +192,6 @@ const routes = [
 					//  						meta: {
 					//  							breadcrumb: () => i18n.t("Assistance Detail"),
 					//  							description: "",
-					//  						},
-					//  					},
-					//  					{
-					//  						path: "add-assistance",
-					//  						name: "AddAssistance",
-					//  						component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/AddAssistance"),
-					//  						meta: {
-					//  							permissions: ["addDistribution"],
-					//  							breadcrumb: () => i18n.t("Add Assistance"),
-					//  							description: i18n.t("This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed."),
-					//  							parent: "Assistance",
 					//  						},
 					//  					},
 				],

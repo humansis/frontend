@@ -1,11 +1,23 @@
 <template>
 	<v-card>
 		<v-row class="mt-1 mb-1">
-			<v-col class="d-flex flex-wrap gr-3">
+			<v-col cols="8" class="d-flex flex-wrap gr-3 align-center">
+				<Search
+					v-if="isSearchVisible"
+					:search-phrase="searchPhrase"
+					:search-fields="searchFields"
+					:default-search-field="defaultSearchField"
+					:is-disabled="isSearchDisabled"
+					ref="search"
+					class="ml-4"
+					@search="$emit('search', $event)"
+				/>
+
+				<slot name="export" />
 				<slot name="table-header" />
 			</v-col>
 
-			<v-col>
+			<v-col cols="4">
 				<div v-if="resetSortButton" class="text-end mr-5">
 					<v-btn
 						color="grey-lighten-2"
@@ -22,13 +34,15 @@
 		<v-data-table
 			v-bind="$attrs"
 			hide-default-footer
+			@[rowClickEvent]="handleRowClick"
 		>
 			<template v-slot:bottom>
-				<v-row class="align-center ma-2 pa-0 table-footer">
+				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
+							:is-clearable="false"
 							name="per-page"
 							variant="outlined"
 							density="compact"
@@ -76,10 +90,10 @@
 							density="compact"
 							label="Go to page"
 							append-inner-icon="arrow-right"
+							class="go-to-page"
 							hide-spin-buttons
 							hide-details
 							dense
-							class="go-to-page"
 							@click:appendInner="goToPage"
 						/>
 					</v-col>
@@ -91,7 +105,15 @@
 				v-slot:[`item.${column.key}`]="{ item }"
 				:key="index"
 			>
-				<ColumnField :column="column" :cell-data="item[column.key]" />
+				<template v-if="column.key === 'actions'">
+					<div class="table-actions">
+						<slot name="actions" :row="item" />
+					</div>
+				</template>
+
+				<template v-else>
+					<ColumnField :column="column" :cell-data="item[column.key]" />
+				</template>
 			</template>
 		</v-data-table>
 	</v-card>
@@ -101,6 +123,7 @@
 import ColumnField from "@/components/DataGrid/ColumnField";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import Search from "@/components/Inputs/Search";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
@@ -111,6 +134,7 @@ export default {
 		ColumnField,
 		DataSelect,
 		DataInput,
+		Search,
 	},
 
 	mixins: [vuetifyHelper],
@@ -127,11 +151,47 @@ export default {
 			type: Number,
 			default: 0,
 		},
+
+		searchPhrase: {
+			type: String,
+			default: "",
+		},
+
+		searchFields: {
+			type: Array,
+			default: () => [],
+		},
+
+		defaultSearchField: {
+			type: Object,
+			default: () => ({}),
+		},
+
+		isSearchDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		isSearchVisible: {
+			type: Boolean,
+			default: false,
+		},
+
+		isRowClickDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		isFooterDisabled: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			TABLE,
+			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
 			page: 1,
 			perPage: this.$attrs["items-per-page"],
 		};
@@ -144,6 +204,10 @@ export default {
 	},
 
 	methods: {
+		handleRowClick(clickEvent, row) {
+			this.$emit("rowClicked", row);
+		},
+
 		perPageChanged() {
 			if (this.pageCount === 1 && this.page > 1) {
 				this.page = 1;

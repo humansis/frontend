@@ -367,7 +367,7 @@ export default {
 				{
 					title: "Projects",
 					prependIcon: "clipboard-list",
-					to: { name: "NotFound" },
+					to: { name: "Projects" },
 				},
 				{
 					title: "Beneficiaries",

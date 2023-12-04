@@ -3,7 +3,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
 import ProjectService from "@/services/ProjectService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
 export default {

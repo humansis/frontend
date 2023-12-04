@@ -6,9 +6,9 @@
 			v-for="{
 				id, code, value, icon,
 			} in summary"
-			cols="6"
 			:ref="code"
 			:key="id"
+			cols="6"
 		>
 			<v-card
 				:loading="!(value || value === 0)"
@@ -61,10 +61,6 @@ export default {
 				},
 			],
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	mounted() {

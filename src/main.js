@@ -5,6 +5,7 @@ import router from "@/router";
 import store from "@/store";
 import i18n from "@/plugins/i18n";
 import vuetify from "@/plugins/vuetify";
+import moment from "moment";
 import "@/assets/scss/main.scss";
 
 const app = createApp(App);
@@ -12,6 +13,7 @@ const app = createApp(App);
 app.config.productionTip = false;
 
 app.component("font-awesome-icon", FontAwesomeIcon); // Register component globally
+app.config.globalProperties.$moment = moment;
 
 app.use(router);
 app.use(store);

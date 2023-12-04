@@ -20,6 +20,7 @@
 
 					<DataInput
 						v-model="password.oldPassword"
+						:error-messages="validationMsg('oldPassword', 'password')"
 						label="Old Password"
 						name="old-password"
 						type="password"
@@ -27,12 +28,12 @@
 						density="compact"
 						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('oldPassword', 'password')"
 						@blur="validate('oldPassword', 'password')"
 					/>
 
 					<DataInput
 						v-model="password.newPassword"
+						:error-messages="validationMsg('newPassword', 'password')"
 						label="New Password"
 						name="new-password"
 						type="password"
@@ -40,12 +41,12 @@
 						density="compact"
 						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('newPassword', 'password')"
 						@blur="validate('newPassword', 'password')"
 					/>
 
 					<DataInput
 						v-model="password.reenteredPassword"
+						:error-messages="validationMsg('reenteredPassword', 'password')"
 						label="Re-Enter New Password"
 						name="re-enter-new-password"
 						type="password"
@@ -53,7 +54,6 @@
 						density="compact"
 						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('reenteredPassword', 'password')"
 						@blur="validate('reenteredPassword', 'password')"
 					/>
 
@@ -77,6 +77,7 @@
 							<DataSelect
 								v-model="phone.prefix"
 								:items="options.phonePrefixes"
+								:error-messages="validationMsg('prefix', 'phone')"
 								label="Phone Ext"
 								name="phone-ext"
 								variant="outlined"
@@ -86,7 +87,6 @@
 								item-value="code"
 								is-search-enabled
 								clearable
-								:error-messages="validationMsg('prefix', 'phone')"
 								@blur="validate('prefix', 'phone')"
 							/>
 						</v-col>
@@ -94,12 +94,12 @@
 						<v-col>
 							<DataInput
 								v-model="phone.number"
+								:error-messages="validationMsg('number', 'phone')"
 								label="Phone Number"
 								name="phone-number"
 								variant="outlined"
 								density="compact"
 								hide-details="auto"
-								:error-messages="validationMsg('number', 'phone')"
 								@blur="validate('number', 'phone')"
 							/>
 						</v-col>
@@ -249,7 +249,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix || null,
+				phonePrefix: this.phone.prefix?.code || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(

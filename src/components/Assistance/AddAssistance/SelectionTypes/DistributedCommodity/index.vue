@@ -1,0 +1,449 @@
+<template>
+	<div class="d-flex align-baseline justify-space-between mt-2 mb-5">
+		<h2 class="text-h6 mt-5 text-left font-weight-bold">{{ $t('Distributed Commodity') }}</h2>
+
+		<v-btn
+			:disabled="isAlreadyCreatedDistributedCommodity"
+			color="primary"
+			size="small"
+			prepend-icon="plus"
+			class="text-none"
+			@click="addNewCommodity"
+		>
+			{{ $t('Add') }}
+		</v-btn>
+	</div>
+
+	<span
+		v-if="validationMessages.modalityType.length"
+		class="error"
+	>
+		{{ validationMessages.modalityType }}
+	</span>
+
+	<Modal
+		v-model="commodityModal.isOpened"
+		:header="$t('Create New Commodity')"
+	>
+		<DistributedCommodityForm
+			close-button
+			class="modal-card"
+			:project="project"
+			:submit-button-label="$t('Create')"
+			:formModel="formModel"
+			:target-type="targetType"
+			:date-of-assistance="dateOfAssistance"
+			:date-expiration="dateExpiration"
+			:commodity="commodity"
+			@formSubmitted="submitCommodityForm"
+			@formClosed="closeCommodityModal"
+		/>
+	</Modal>
+
+	<Table
+		v-if="table.data.length"
+		:headers="preparedTableColumns"
+		:items="modifiedTableData"
+		is-row-click-disabled
+		is-footer-disabled
+	>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				tooltip="Delete"
+				icon="trash"
+				icon-color="red"
+				@actionConfirmed="removeCommodity(row.index)"
+			/>
+		</template>
+	</Table>
+
+	<v-alert
+		v-else
+		variant="outlined"
+		type="warning"
+		border="top"
+		class="mt-5"
+	>
+		{{ $t('There Is No Distributed Commodity') }}.
+		{{ $t('Please Add One Distributed Commodity') }}.
+	</v-alert>
+</template>
+
+<script>
+import DistributedCommodityForm from "@/components/Assistance/AddAssistance/SelectionTypes/DistributedCommodity/Form";
+import ButtonAction from "@/components/ButtonAction";
+import Table from "@/components/DataGrid/Table";
+import Modal from "@/components/Inputs/Modal";
+import { generateColumns } from "@/utils/datagrid";
+import { ASSISTANCE } from "@/consts";
+
+export default {
+	name: "DistributedCommodity",
+
+	components: {
+		Modal,
+		DistributedCommodityForm,
+		ButtonAction,
+		Table,
+	},
+
+	emits: [
+		"onDeliveredCommodityValue",
+		"updatedData",
+	],
+
+	props: {
+		commodity: {
+			type: Array,
+			default: () => [],
+		},
+
+		selectedBeneficiaries: {
+			type: Number,
+			required: true,
+			default: 0,
+		},
+
+		project: {
+			type: Object,
+			default: () => {},
+		},
+
+		calculatedCommodityValue: {
+			type: Array,
+			default: () => [],
+		},
+
+		targetType: {
+			type: String,
+			default: "",
+		},
+
+		dateOfAssistance: {
+			type: String,
+			required: true,
+		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
+
+		validationMessages: {
+			type: Object,
+			default: () => {},
+		},
+	},
+
+	data() {
+		return {
+			commodityModal: {
+				isOpened: false,
+			},
+			dateExpiration: "",
+			formModel: { ...ASSISTANCE.DEFAULT_FORM_MODEL },
+			table: {
+				data: [],
+				columns: [
+					{ key: "modality", sortable: false },
+					{ key: "modalityType", sortable: false },
+					{ key: "division", label: "For Each", sortable: false },
+					{ key: "unit", label: "Unit 1", sortable: false },
+					{ key: "quantity", label: "Quantity 1", sortable: false },
+					{ key: "value", sortable: false },
+					{ key: "currency", sortable: false },
+					{ key: "secondUnit", label: "Unit 2", sortable: false },
+					{ key: "secondQuantity", label: "Quantity 2", sortable: false },
+					{ key: "dateExpiration", label: "Expiration Date", visible: false, sortable: false },
+					{ key: "description", sortable: false },
+					{ key: "actions", value: "actions", sortable: false },
+				],
+			},
+		};
+	},
+
+	computed: {
+		preparedCommodities() {
+			return this.modifiedTableData.map((
+				{
+					modalityType,
+					division,
+					unit,
+					quantity,
+					value,
+					divisionFields,
+					currency,
+					secondUnit,
+					secondQuantity,
+					description,
+					dateExpiration,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				},
+			) => {
+				const quantitiesSource = this.isModalityCash ? value : quantity;
+				const quantities = quantitiesSource ? null : divisionFields;
+
+				return {
+					modalityType,
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
+					dateExpiration,
+					description: description || "",
+					division: (division === "" || division === null)
+						? null
+						: {
+							code: this.getDivision(division),
+							quantities,
+						},
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				};
+			});
+		},
+
+		modifiedTableData() {
+			const tableData = this.table.data.map((
+				{
+					modality,
+					modalityType,
+					division,
+					unit,
+					quantity,
+					value,
+					payloadDivisionNwsFields,
+					payloadDivisionNesFields,
+					currency,
+					secondUnit,
+					secondQuantity,
+					dateExpiration,
+					description,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				},
+			) => ({
+				modality: modality?.value || modality,
+				modalityType: modalityType?.value || modalityType,
+				division: this.getDivisionName(division),
+				unit,
+				currency: currency?.value || currency,
+				quantity: (!this.isModalityCash && this.isPerHouseholdMembers(division))
+					? null
+					: Number(quantity) || null,
+				value: (this.isModalityCash && this.isPerHouseholdMembers(division))
+					? null
+					: Number(value) || null,
+				divisionFields: division?.fields || division?.quantities
+					|| (this.isPerMembersNws(division) ? payloadDivisionNwsFields : payloadDivisionNesFields),
+				secondUnit,
+				secondQuantity,
+				dateExpiration,
+				description,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
+			}));
+
+			return tableData || [];
+		},
+
+		isModalityCash() {
+			const modality = this.table.data[0]?.modality?.value || this.table.data[0]?.modality;
+			return modality === ASSISTANCE.MODALITY.CASH;
+		},
+
+		isModalityInKind() {
+			const modality = this.table.data[0]?.modality?.value || this.table.data[0]?.modality;
+			return modality === ASSISTANCE.MODALITY.IN_KIND;
+		},
+
+		isModalityTypeSmartCard() {
+			const modalityType = this.table.data[0]?.modalityType?.value
+				|| this.table.data[0]?.modalityType;
+			return modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
+		},
+
+		formattedDate() {
+			const date = this.table.data[0]?.dateExpiration;
+			return date ? this.$moment(date).format("YYYY-MM-DD") : "";
+		},
+
+		isAlreadyCreatedDistributedCommodity() {
+			return this.table.data.length > 0;
+		},
+
+		preparedTableColumns() {
+			return generateColumns(this.table.columns);
+		},
+	},
+
+	watch: {
+		table: {
+			deep: true,
+			handler() {
+				this.$emit("onDeliveredCommodityValue");
+			},
+		},
+
+		commodity(data) {
+			if (data.length) {
+				this.table.data = data;
+				this.dateExpiration = data[0]?.dateExpiration;
+
+				if (this.isAssistanceDuplicated) {
+					this.showAllColumns();
+					this.hideEmptyColumns();
+
+					if (this.isModalityCash) {
+						this.showColumn("value");
+					} else if (this.isModalityInKind) {
+						this.showColumn("quantity");
+					}
+
+					this.table.columns.forEach((column, i) => {
+						if (column.field === "dateExpiration") {
+							this.table.columns[i].visible = this.isModalityTypeSmartCard;
+						}
+					});
+				}
+			}
+		},
+	},
+
+	updated() {
+		if (this.table.data.length) {
+			this.$emit("updatedData", this.preparedCommodities);
+		}
+	},
+
+	methods: {
+		submit() {
+			return !!this.table.data.length;
+		},
+
+		getDivisionName(division) {
+			if (division?.quantities) {
+				if (division.quantities?.length === 4) {
+					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+				}
+
+				return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+			}
+
+			return division?.code || null;
+		},
+
+		getDivision(divisionString) {
+			switch (divisionString) {
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
+				default:
+					return divisionString;
+			}
+		},
+
+		showAllColumns() {
+			this.table.columns.forEach((column, i) => {
+				this.table.columns[i].visible = true;
+			});
+		},
+
+		hideEmptyColumns() {
+			this.table.columns.forEach((column, i) => {
+				const field = this.table.data[0][column.key];
+
+				if ((field === null || field === undefined || field === "") && column.key !== "actions") {
+					this.table.columns[i].visible = false;
+				}
+			});
+		},
+
+		showColumn(columnName) {
+			this.table.columns.forEach((column, i) => {
+				if (column.field === columnName) {
+					this.table.columns[i].visible = true;
+				}
+			});
+		},
+
+		addNewCommodity() {
+			this.commodityModal.isOpened = true;
+			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
+		},
+
+		closeCommodityModal() {
+			this.commodityModal.isOpened = false;
+		},
+
+		submitCommodityForm(commodityForm) {
+			this.table.data.push(commodityForm);
+			this.commodityModal.isOpened = false;
+
+			this.showAllColumns();
+			this.hideEmptyColumns();
+
+			if (this.isModalityCash) {
+				this.showColumn("value");
+			} else if (this.isModalityInKind) {
+				this.showColumn("quantity");
+			}
+
+			if (this.isModalityTypeSmartCard) {
+				this.showColumn("dateExpiration");
+			}
+
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+		},
+
+		removeCommodity(index) {
+			this.table.data.splice(index, 1);
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+		},
+
+		isDivisionFields(column, props) {
+			return (this.isModalityCash ? column.field === "value" : column.field === "quantity") && this.isPerHouseholdMembers(props.row.division);
+		},
+
+		mapDivisionFields(divisionFields) {
+			return divisionFields
+				.filter((field) => (field.value))
+				.map((field) => (
+					field.rangeTo === null
+						? `<i>${field.rangeFrom}+:</i> <b>${field.value}</b>`
+						: `<i>${field.rangeFrom} - ${field.rangeTo}:</i> <b>${field.value}</b>`
+				)).join("<br />");
+		},
+
+		isPerHouseholdMembers(division) {
+			const divisionStr = this.getDivisionStr(division);
+			return divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+		},
+
+		isPerMembersNws(division) {
+			return this.getDivisionStr(division) === ASSISTANCE
+				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+		},
+
+		getDivisionStr(division) {
+			return division?.code || division;
+		},
+
+		clearComponent() {
+			this.table.data = [];
+			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
+			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+		},
+	},
+};
+</script>

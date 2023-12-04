@@ -1,7 +1,9 @@
 <template>
 	<v-text-field>
 		<template v-slot:label>
-			<span>{{ $t(label) }}</span>
+			<span>{{ $t(label) }}
+				<i v-if="optional" class="test">- {{ $t('Optional') }}</i>
+			</span>
 		</template>
 	</v-text-field>
 </template>
@@ -13,16 +15,25 @@ export default {
 			type: String,
 			default: "",
 		},
+
+		optional: {
+			type: Boolean,
+			default: false,
+		},
 	},
 };
 </script>
 
 <style lang="scss">
 .v-label {
-	opacity: .6;
+	opacity: .65;
 
 	> span {
 		font-size: .9rem;
+
+		> i {
+			font-size: 13px;
+		}
 	}
 }
 
@@ -35,7 +46,9 @@ export default {
 .v-input--disabled {
 	pointer-events: unset;
 
-	input {
+	.v-field__input,
+	.v-field__append-inner,
+	.v-chip__content > span {
 		cursor: not-allowed !important;
 	}
 }

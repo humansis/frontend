@@ -6,8 +6,40 @@
     white-space: nowrap;
   }
 
+   > tbody > tr > td {
+     padding-top: 5px;
+     padding-bottom: 5px;
+   }
+
+  .table-actions > button {
+    height: 35px;
+    width: 35px;
+  }
+
   .v-data-table-header__content .v-icon {
     font-size: 1rem;
+  }
+}
+
+.action-button {
+  &.disabled {
+    opacity: .25;
+    pointer-events: auto;
+    cursor: not-allowed;
+
+    &.texted-button {
+      opacity: 1;
+    }
+
+    .v-btn__overlay {
+      background: none;
+    }
+  }
+
+  .v-icon {
+    font-size: initial;
+    height: initial;
+    width: initial;
   }
 }
 
