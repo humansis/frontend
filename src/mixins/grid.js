@@ -13,31 +13,58 @@ export default {
 
 	computed: {
 		...mapState(["perPage"]),
+
+		sortValue() {
+			return [{
+				key: this.table.sortColumn?.key || this.table.sortColumn,
+				order: this.table.sortDirection,
+			}];
+		},
 	},
 
 	methods: {
 		...mapActions(["storePerPage"]),
 
-		onPageChange(currentPage) {
+		perPageChange({ currentPerPage, currentPage }) {
+			this.storePerPage(currentPerPage);
+
+			if (currentPage) {
+				this.table.currentPage = currentPage;
+			}
+
+			this.fetchData();
+		},
+
+		pageChange(currentPage) {
 			this.table.currentPage = currentPage || 1;
 			this.fetchData();
 		},
 
-		onSort(column) {
-			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
-			const sortKey = currentColumn.sortKey || column;
+		onSort(sortData) {
+			const sort = sortData.length
+				? sortData
+				: [{
+					key: this.table.sortColumn.key || this.table.sortColumn,
+					order: this.table.sortDirection === "asc"
+						? "desc"
+						: "asc",
+				}];
+			const currentColumn = this.table.visibleColumns.find(({ key }) => key === sort[0].key);
+			const sortKey = currentColumn.sortKey || sort[0].key;
 
-			if (!this.table.sortReset) {
-				if (this.table.sortColumn === sortKey) {
-					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-				} else {
-					this.table.sortColumn = sortKey;
-					this.table.sortDirection = "desc";
-				}
-			}
+			this.table.sortColumn = { key: currentColumn.key, sortKey };
+			this.table.sortDirection = sort[0].order;
 
-			this.table.sortReset = false;
 			this.fetchData();
+		},
+
+		resetSort({ key, order }) {
+			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
+				this.table.sortColumn = key;
+				this.table.sortDirection = order;
+
+				this.fetchData();
+			}
 		},
 
 		onSearch(value) {
@@ -85,18 +112,6 @@ export default {
 
 		statusChange(id, enabled) {
 			this.$emit("statusChange", { id, enabled });
-		},
-
-		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
-			this.table.sortReset = true;
-			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
-				this.table.sortColumn = sortColumn;
-				this.table.sortDirection = sortDirection;
-
-				if (forceFetch) {
-					this.fetchData();
-				}
-			}
 		},
 
 		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {

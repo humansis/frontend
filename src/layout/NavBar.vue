@@ -72,12 +72,12 @@
 				</template>
 
 				<v-list>
-					<v-list-item value="profile">
-						<router-link :to="{ name: 'Profile' }">
+					<router-link :to="{ name: 'Profile' }">
+						<v-list-item value="profile">
 							<v-icon class="mr-1" icon="fa-user" size="x-small" />
 							{{ $t('Profile') }}
-						</router-link>
-					</v-list-item>
+						</v-list-item>
+					</router-link>
 
 					<v-list-item @click="logout" value="logout">
 						<v-icon class="mr-1" icon="sign-out-alt" size="x-small" />

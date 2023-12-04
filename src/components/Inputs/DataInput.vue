@@ -23,11 +23,10 @@ export default {
 
 <style lang="scss">
 .v-label {
-	opacity: 1;
+	opacity: 0.6;
 
 	> span {
 		font-size: 14px;
-		font-weight: bold;
 	}
 }
 

@@ -90,14 +90,14 @@ export const getResponseJSON = async (response, download = false) => {
 };
 
 export const fetcher = async ({
-		uri,
-		version = 1,
-		auth = true,
-		method,
-		body,
-		contentType,
-		tryRequest = false,
-	}) => {
+	uri,
+	version = 1,
+	auth = true,
+	method,
+	body,
+	contentType,
+	tryRequest = false,
+}) => {
 	const url = `${CONFIG.API}/v${version}/${uri}`;
 
 	let headers = {};
