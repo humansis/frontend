@@ -357,7 +357,7 @@ export default {
 				{
 					title: "Projects",
 					prependIcon: "clipboard-list",
-					to: "/error404",
+					to: { name: "NotFound" },
 				},
 				{
 					title: "Beneficiaries",

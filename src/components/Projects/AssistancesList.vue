@@ -28,12 +28,14 @@
 	<!--	</b-notification>-->
 
 	<Table
-		v-model:items-per-page="table.itemsPerPage"
+		v-model:items-per-page="perPage"
 		:headers="table.visibleColumns"
 		:items="table.data"
-		:items-length="table.total"
+		:total-count="table.total"
 		:loading="isLoadingList"
-		:reset-sort-button="true"
+		reset-sort-button
+		@per-page-changed="perPageChange"
+		@page-changed="pageChange"
 	>
 		<template v-slot:table-header>
 			<v-btn
@@ -224,7 +226,7 @@ import Table from "@/components/DataGrid/Table";
 // import ExportControl from "@/components/Export";
 // import SafeDelete from "@/components/SafeDelete";
 // import baseHelper from "@/mixins/baseHelper";
-// import grid from "@/mixins/grid";
+import grid from "@/mixins/grid";
 // import permissions from "@/mixins/permissions";
 import { normalizeExportDate, normalizeText } from "@/utils/datagrid";
 // import { downloadFile } from "@/utils/helpers";
@@ -233,8 +235,8 @@ import { ASSISTANCE, EXPORT } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "red" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "green" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "green-lighten-1" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "light-blue-lighten-4" },
 ];
 
 export default {
@@ -250,7 +252,7 @@ export default {
 
 	mixins: [
 		// permissions,
-		// grid,
+		grid,
 		// baseHelper,
 		// permissions,
 	],
@@ -314,7 +316,6 @@ export default {
 				],
 				total: 0,
 				currentPage: 1,
-				itemsPerPage: 10,
 				sortDirection: "desc",
 				sortColumn: "dateDistribution",
 				searchPhrase: "",

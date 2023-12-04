@@ -1,7 +1,6 @@
 <template>
 	<router-view />
-
-	<VSonner position="bottom-left" />
+	<VSonner position="top-center" visibleToasts="4" />
 </template>
 
 <script>

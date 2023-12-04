@@ -1,9 +1,20 @@
 import i18n from "@/plugins/i18n";
+import { useVuelidate } from "@vuelidate/core";
+
+const { global: { t } } = i18n;
 
 export default {
+	data() {
+		return {
+			v$: useVuelidate(),
+		};
+	},
+
 	methods: {
 		getValidation(field, object = "formModel") {
-			return typeof field === "string" ? this.validationPropertyLevel(field, object) : field;
+			return field.length
+				? this.validationPropertyLevel(field, object)
+				: console.error("First parameter must be name of the validated field");
 		},
 
 		validate(field, object) {
@@ -11,119 +22,53 @@ export default {
 			validation.$touch();
 		},
 
-		validateMsg(field, message = "Required", object) {
-			const validation = this.getValidation(field, object);
-
-			if (Object.keys(validation).includes("maxLength")
-				&& validation.$error && !validation.maxLength) {
-				return `${i18n.t("Too long! Max characters:")} ${validation.$params.maxLength.max}`;
-			}
-
-			if (Object.keys(validation).includes("minValue")
-				&& validation.$error && !validation.minValue) {
-				return `${i18n.t("Min value:")} ${validation.$params.minValue.min}`;
-			}
-
-			if (Object.keys(validation).includes("maxValue")
-				&& validation.$error && !validation.maxValue) {
-				return `${i18n.t("Max value:")} ${validation.$params.maxValue.max}`;
-			}
-
-			return validation.$error ? i18n.t(message) : "";
-		},
-
-		validateType(field, errorOrNothing = false, object) {
-			const validation = this.getValidation(field, object);
-
-			let result = "";
-			if (validation.$dirty) {
-				if (errorOrNothing
-					|| (validation?.minValue && !Object.keys(validation).includes("required"))) {
-					result = validation.$error ? "is-danger" : "";
-				} else {
-					result = validation.$error ? "is-danger" : "is-success";
-				}
-			}
-
-			return result;
-		},
-
-		validateMultiselect(field, errorOrNothing = false, object) {
-			const validation = this.getValidation(field, object);
-
-			let result = "";
-			if (validation.$dirty) {
-				if (errorOrNothing) {
-					result = validation.$error ? "vue-multiselect-error" : "";
-				} else {
-					result = validation.$error ? "vue-multiselect-error" : "vue-multiselect-success";
-				}
-			}
-			return result;
-		},
-
 		validationPropertyLevel(fields, object) {
 			let result;
 			const fieldsLevel = fields.split(".");
-			if (!this.$v[object]) {
-				return this.$v[fieldsLevel[0]];
+
+			if (!this.v$[object]) {
+				return this.v$[fieldsLevel[0]];
 			}
 
 			switch (fieldsLevel.length) {
 				case 1:
-					result = this.$v[object][fieldsLevel[0]];
+					result = this.v$[object][fieldsLevel[0]];
 					break;
+
 				case 2:
-					result = this.$v[object][fieldsLevel[0]][fieldsLevel[1]];
+					result = this.v$[object][fieldsLevel[0]][fieldsLevel[1]];
 					break;
+
 				case 3:
-					result = this.$v[object][fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
+					result = this.v$[object][fieldsLevel[0]][fieldsLevel[1]][fieldsLevel[2]];
 					break;
+
 				default:
+					break;
 			}
+
 			return result;
 		},
 
-		prepareValidationRules() {
-			if (this.validation && this.validatedFieldName) {
-				this.$v = this.validation;
-			}
-		},
+		validationMsg(field, object = "formModel") {
+			const validation = this.getValidation(field, object);
 
-		validateRequiredType() {
-			if (this.customErrorMessage) {
-				return "is-danger";
+			if (Object.keys(validation).includes("required") && validation.required.$invalid) {
+				return t("This value is required");
 			}
 
-			return this.validation && this.validatedFieldName
-				? this.validateType(
-					this.validatedFieldName,
-					this.isErrorOrNothing,
-					this.validatedObjectName,
-				)
-				: "";
-		},
+			if (Object.keys(validation).includes("passwordValidation")
+				&& validation.passwordValidation.$invalid) {
+				return t("The Password Is Not Strong Enough... "
+					+ "Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
+			}
 
-		validateRequiredMsg() {
-			return this.validation && this.validatedFieldName
-				? this.validateMsg(this.validatedFieldName, "Required", this.validatedObjectName)
-				: "";
-		},
+			if (Object.keys(validation).includes("sameAsPassword")
+				&& validation.sameAsPassword.$invalid) {
+				return t("Passwords must be same");
+			}
 
-		validateRequired() {
-			return this.validation && this.validatedFieldName
-				? this.validate(this.validatedFieldName, this.validatedObjectName)
-				: "";
-		},
-
-		validateRequiredMultiselect() {
-			return this.validation && this.validatedFieldName
-				? this.validateMultiselect(
-					this.validatedFieldName,
-					this.isErrorOrNothing,
-					this.validatedObjectName,
-				)
-				: "";
+			return validation?.$error ? t(validation?.$errors[0]?.$message) : "";
 		},
 	},
 };

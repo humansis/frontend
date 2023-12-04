@@ -446,24 +446,24 @@ const routes = [
 			},
 		],
 	},
-	// {
-	// 	path: "/no-permission",
-	// 	name: "NoPermission",
-	// 	component: () => import(/* webpackChunkName: "Logs" */ "@/views/NoPermission"),
-	// 	meta: {
-	// 		permissions: [],
-	// 		breadcrumb: () => i18n.t("No permission"),
-	// 	},
-	// },
-	// {
-	// 	path: "/not-found",
-	// 	name: "NotFound",
-	// 	component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
-	// },
-	// {
-	// 	path: "/*",
-	// 	component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
-	// },
+	{
+		path: "/no-permission",
+		name: "NoPermission",
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
+		meta: {
+			permissions: [],
+			breadcrumb: t("No permission"),
+		},
+	},
+	{
+		path: "/not-found",
+		name: "NotFound",
+		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+	},
+	{
+		path: "/:pathMatch(.*)*",
+		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+	},
 	/* eslint-enable max-len */
 ];
 
