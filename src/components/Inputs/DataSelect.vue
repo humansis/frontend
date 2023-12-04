@@ -9,8 +9,8 @@
 		</template>
 
 		<template v-slot:prepend-item>
-			<v-list>
-				<v-list-item>
+			<v-list v-if="isSearchEnabled || $attrs.multiple">
+				<v-list-item v-if="isSearchEnabled">
 					<v-text-field
 						v-model="searchValue"
 						placeholder="Search"
@@ -21,6 +21,7 @@
 				</v-list-item>
 
 				<v-list-item
+					v-if="$attrs.multiple"
 					:title="$t('Select All')"
 					@click="toggle"
 				>
@@ -47,6 +48,11 @@ export default {
 		label: {
 			type: String,
 			default: "",
+		},
+
+		isSearchEnabled: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

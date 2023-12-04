@@ -22,16 +22,21 @@ html {
 	}
 }
 
-.has-redirect-code {
-	font-size: 15rem;
-	color: #0e2640;
-}
-
 .has-redirect-message {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -80%);
+
+	.has-redirect-code {
+		font-size: 13rem;
+		color: #0e2640;
+		line-height: 1;
+	}
+}
+
+.toast {
+	width: 270px;
 }
 
 .table-wrapper {
