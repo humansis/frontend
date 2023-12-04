@@ -26,7 +26,7 @@
 						variant="outlined"
 						density="compact"
 						hide-details="auto"
-						class="mt-4 mb-4"
+						class="mt-4 mb-5"
 						:error-messages="validationMsg('oldPassword', 'password')"
 						@blur="validate('oldPassword', 'password')"
 					/>
@@ -39,7 +39,7 @@
 						variant="outlined"
 						density="compact"
 						hide-details="auto"
-						class="mt-4 mb-4"
+						class="mt-4 mb-5"
 						:error-messages="validationMsg('newPassword', 'password')"
 						@blur="validate('newPassword', 'password')"
 					/>
@@ -52,7 +52,7 @@
 						variant="outlined"
 						density="compact"
 						hide-details="auto"
-						class="mt-4 mb-4"
+						class="mt-4 mb-5"
 						:error-messages="validationMsg('reenteredPassword', 'password')"
 						@blur="validate('reenteredPassword', 'password')"
 					/>

@@ -25,8 +25,8 @@
 			:hide-default-footer="true"
 		>
 			<template v-slot:bottom>
-				<v-row class="align-center ma-3">
-					<v-col class="per-page">
+				<v-row class="align-center ma-2 pa-0 table-footer">
+					<v-col>
 						<v-select
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
@@ -39,7 +39,7 @@
 						/>
 					</v-col>
 
-					<v-col class="max-width-100">
+					<v-col>
 						<v-chip
 							label=""
 							color="light-blue-darken-2"
@@ -58,7 +58,7 @@
 
 					</v-col>
 
-					<v-col offset="5" class="max-width-100">
+					<v-col>
 						<v-pagination
 							v-model="page"
 							:length="pageCount"
@@ -67,7 +67,7 @@
 						/>
 					</v-col>
 
-					<v-col class="go-to-page">
+					<v-col>
 						<v-text-field
 							v-model.number="page"
 							type="number"
@@ -163,12 +163,45 @@ export default {
 </script>
 
 <style lang="scss">
-.per-page, .go-to-page {
-	min-width: 70px;
-	max-width: 130px;
-}
+.table-footer {
+	flex-direction: column;
+	text-align: center;
 
-.max-width-100 {
-	max-width: 500px;
+	.v-col:nth-child(1),
+	.v-col:nth-child(4) {
+		max-width: 130px;
+
+		> div {
+			margin-right: 0 !important;
+		}
+	}
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+
+		.v-col:nth-child(1) {
+			max-width: 130px;
+			margin-right: 0;
+		}
+
+		.v-col:nth-child(2) {
+			max-width: 225px;
+			margin-right: auto;
+		}
+
+		.v-col:nth-child(3) {
+			max-width: 450px;
+			margin-left: auto;
+
+			> nav > ul {
+				justify-content: end;
+			}
+		}
+
+		.v-col:nth-child(4) {
+			max-width: 130px;
+			margin-left: 0;
+		}
+	}
 }
 </style>
