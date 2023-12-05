@@ -28,6 +28,7 @@ module.exports = {
 		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
 		"vue/html-self-closing": "warn",
+		"vue/multi-word-component-names": "off",
 		"vue/no-multiple-template-root": "off",
 		"vue/order-in-components": ["error", {
 			order: [

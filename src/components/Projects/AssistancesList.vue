@@ -29,6 +29,7 @@
 
 	<Table
 		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
 		:headers="table.visibleColumns"
 		:items="table.data"
 		:total-count="table.total"
@@ -36,13 +37,17 @@
 		reset-sort-button
 		@per-page-changed="perPageChange"
 		@page-changed="pageChange"
+		@update:sortBy="onSort"
+		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
 		<template v-slot:table-header>
 			<v-btn
 				class="ml-0"
-				color="grey-lighten-2"
+				color="gray-darken-4"
 				icon-left="sticky-note"
+				variant="tonal"
 				size="small"
+				prepend-icon="sticky-note"
 				:class="filterButtonNew"
 				@click="statusFilter('new')"
 			>
@@ -52,8 +57,10 @@
 			<v-btn
 				class="ml-0"
 				icon-left="spinner"
-				color="green-lighten-1"
+				color="green-darken-4"
+				variant="tonal"
 				size="small"
+				prepend-icon="spinner"
 				:class="filterButtonValidated"
 				@click="statusFilter('validated')"
 			>
@@ -63,8 +70,10 @@
 			<v-btn
 				class="ml-0"
 				icon-left="check"
-				color="light-blue-lighten-4"
+				color="blue-darken-4"
+				variant="tonal"
 				size="small"
+				prepend-icon="check"
 				:class="filterButtonClosed"
 				@click="statusFilter('closed')"
 			>
@@ -228,10 +237,10 @@ import Table from "@/components/DataGrid/Table";
 // import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 // import permissions from "@/mixins/permissions";
-import { normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 // import { downloadFile } from "@/utils/helpers";
 // import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT } from "@/consts";
+import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
@@ -279,6 +288,7 @@ export default {
 
 	data() {
 		return {
+			TABLE,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
@@ -297,23 +307,23 @@ export default {
 			table: {
 				data: [],
 				columns: [],
-				visibleColumns: [
-					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id", sortable: true },
-					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name", sortable: true },
-					{ key: "status", title: "Status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
-					{ key: "round", title: "Round", sortable: true },
-					{ key: "type", title: "Type", type: "assistancesType", sortable: true },
-					{ key: "location", title: "Location", sortable: true },
-					{ key: "target", title: "Target", sortable: true },
-					{ key: "reached", title: "Reached" },
-					{ key: "progress", title: "Progress", sortable: true },
-					{ key: "dateDistribution", title: "Date of Assistance", type: "date", sortable: true },
-					{ key: "dateExpiration", title: "Expiration Date", sortable: true },
-					{ key: "commodity", title: "Commodity", type: "svgIcon" },
-					{ key: "eloNumber", title: "EloNumber" },
-					{ key: "activity", title: "Activity" },
-					{ key: "budgetLine", title: "BudgetLine" },
-				],
+				visibleColumns: generateColumns([
+					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
+					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
+					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
+					{ key: "round" },
+					{ key: "type", type: "assistancesType" },
+					{ key: "location" },
+					{ key: "target" },
+					{ key: "reached", sortable: false },
+					{ key: "progress" },
+					{ key: "dateDistribution", title: "Date of Assistance", type: "date" },
+					{ key: "dateExpiration", title: "Expiration Date" },
+					{ key: "commodity", type: "svgIcon", sortable: false },
+					{ key: "eloNumber", sortable: false },
+					{ key: "activity", sortable: false },
+					{ key: "budgetLine", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
 				sortDirection: "desc",
@@ -329,21 +339,21 @@ export default {
 	computed: {
 		filterButtonNew() {
 			return [
-				"btn ml-3 is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		filterButtonValidated() {
 			return [
-				"btn ml-3 is-success is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.validated },
 			];
 		},
 
 		filterButtonClosed() {
 			return [
-				"btn ml-3 is-info is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.closed },
 			];
 		},
@@ -414,7 +424,9 @@ export default {
 			await AssistancesService.getListOfAssistances(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				true,
 				null,
 				this.filters,

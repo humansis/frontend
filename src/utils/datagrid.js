@@ -1,5 +1,7 @@
 import i18n from "@/plugins/i18n";
 
+const { global: { t } } = i18n;
+
 export const normalizeText = (text = "") => text
 	.replace(/([A-Z])/g, " $1")
 	.replace(/(_)/g, " ")
@@ -28,25 +30,16 @@ export const normalizeExportDate = (date = new Date()) => date
 export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
 
-	visibleColumns.forEach((column) => {
-		let label = "";
-
-		if (!column.withoutLabel) {
-			label = column.label ? i18n.t(column.label) : i18n.t(normalizeText(column.key));
-		}
+	visibleColumns.forEach(({ key, title, type, sortKey, customTags, sortable }) => {
+		const preparedTitle = title ? t(title) : t(normalizeText(key));
 
 		preparedColumns.push({
-			field: column.key,
-			label,
-			type: column.type,
-			width: column.width,
-			centered: false,
-			sortable: column.sortable,
-			attribute: column.attribute,
-			visible: column.visible,
-			customSort: column.customSort,
-			customTags: column.customTags,
-			boldText: column.bold,
+			key,
+			title: preparedTitle,
+			type,
+			sortKey,
+			customTags,
+			sortable,
 		});
 	});
 

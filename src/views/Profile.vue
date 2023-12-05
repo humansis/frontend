@@ -84,8 +84,8 @@
 								hide-details="auto"
 								item-title="value"
 								item-value="code"
-								clearable
-								multiple
+								is-search-enabled
+								:clearable="true"
 								:error-messages="validationMsg('prefix', 'phone')"
 								@blur="validate('prefix', 'phone')"
 							/>
@@ -123,6 +123,7 @@
 
 <script>
 import { mapState } from "vuex";
+import LoginService from "@/services/LoginService";
 import UsersService from "@/services/UsersService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -207,64 +208,61 @@ export default {
 
 	methods: {
 		async submitPasswordForm() {
-			Notification("Household Successfully Updated", "green");
 			this.v$.password.$touch();
-			// if (this.v$.password.$invalid) return;
-			// this.changePasswordLoading = true;
-			//
-			// const { id } = this.userProfile;
-			// const { data: { salt } } = await UsersService.requestSalt(this.userProfile.username);
-			// await LoginService.tryLogin({
-			// 	username: this.userProfile.username,
-			// 	password: this.password.oldPassword,
-			// 	// TODO uncomment after BE implement login with salted password
-			// 	// password: UsersService.saltPassword(salt, this.password.oldPassword),
-			// }).then(async () => {
-			// 	await UsersService.patchUser(id, {
-			// 		password: UsersService.saltPassword(salt, this.password.newPassword),
-			// 	}).then(({ data }) => {
-			// 		this.mapUser(data);
-			// 		Toast(
-			// 			`${this.$t("Password Updated")}`,
-			// 			"is-success",
-			// 		);
-			// 	}).catch((e) => {
-			// 		Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
-			// 	});
-			// }).catch(() => {
-			// 	Notification(`${this.$t("Invalid Password")}`, "is-danger");
-			// });
-			// this.v$.password.$reset();
-			//
-			// this.changePasswordLoading = false;
+
+			if (this.v$.password.$invalid || !this.password.oldPassword.length) return;
+			this.changePasswordLoading = true;
+
+			const { id } = this.userProfile;
+			const { data: { salt } } = await UsersService.requestSalt(this.userProfile.username);
+			await LoginService.tryLogin({
+				username: this.userProfile.username,
+				password: this.password.oldPassword,
+			}).then(async () => {
+				await UsersService.patchUser(id, {
+					password: UsersService.saltPassword(salt, this.password.newPassword),
+				}).then(({ data }) => {
+					this.mapUser(data);
+					Notification(
+						`${this.$t("Password Updated")}`,
+						"success",
+					);
+				}).catch((e) => {
+					Notification(`${this.$t("Password Update")} ${e}`, "error");
+				});
+			}).catch(() => {
+				Notification(`${this.$t("Invalid Password")}`, "error");
+			});
+			this.v$.password.$reset();
+
+			this.changePasswordLoading = false;
 		},
 
 		async submitTelephoneForm() {
-			Notification("Lorem ipsumassssssssssssssssssssssssss dolor sit amet, consectetur adipisicing elit. Accusantium alAmet beatae deleniti eius fuga illo iure molestias perferendis, veniam? Magni provident sed voluptate!", "red");
 			this.v$.phone.$touch();
-			console.log(this.v$.phone.number);
-			// if (this.v$.phone.$invalid) return;
-			// this.changePhoneLoading = true;
-			// this.phone.number = this.phone.number?.replace(/\s+/g, "");
-			//
-			// const { id } = this.userProfile;
-			//
-			// await UsersService.patchUser(id, {
-			// 	phoneNumber: this.phone.number || null,
-			// 	phonePrefix: this.phone.prefix?.code || null,
-			// }).then(({ data }) => {
-			// 	this.mapUser(data);
-			// 	Toast(
-			// 		`${this.$t("Phone Updated")}`,
-			// 		"is-success",
-			// 	);
-			// 	this.fetchUser();
-			// }).catch((e) => {
-			// 	Notification(`${this.$t("Phone Update")} ${e}`, "is-danger");
-			// });
-			// this.v$.phone.$reset();
-			//
-			// this.changePhoneLoading = false;
+
+			if (this.v$.phone.$invalid || !this.phone.number.length) return;
+			this.changePhoneLoading = true;
+			this.phone.number = this.phone.number?.replace(/\s+/g, "");
+
+			const { id } = this.userProfile;
+
+			await UsersService.patchUser(id, {
+				phoneNumber: this.phone.number || null,
+				phonePrefix: this.phone.prefix || null,
+			}).then(({ data }) => {
+				this.mapUser(data);
+				Notification(
+					`${this.$t("Phone Updated")}`,
+					"success",
+				);
+				this.fetchUser();
+			}).catch((e) => {
+				Notification(`${this.$t("Phone Update")} ${e}`, "error");
+			});
+			this.v$.phone.$reset();
+
+			this.changePhoneLoading = false;
 		},
 
 		async enableTwoFactor() {
@@ -276,12 +274,12 @@ export default {
 				"2fa": !this.twoFactorEnabled,
 			}).then(({ data }) => {
 				this.mapUser(data);
-				Toast(
+				Notification(
 					`${this.$t(`Two Factor ${data["2fa"] ? "Enabled" : "Disabled"}`)}`,
-					"is-success",
+					"success",
 				);
 			}).catch((e) => {
-				Notification(`${this.$t("Two Factor Update")} ${e}`, "is-danger");
+				Notification(`${this.$t("Two Factor Update")} ${e}`, "error");
 			});
 
 			this.twoFactorLoading = false;
@@ -303,6 +301,7 @@ export default {
 			this.userProfile = data;
 			this.userForm.email = data.email;
 			this.phone.prefix = getArrayOfCodeListByKey([data.phonePrefix], PHONE.CODES, "code");
+			this.phone.number = data.phoneNumber;
 			this.twoFactorEnabled = data["2fa"];
 		},
 	},

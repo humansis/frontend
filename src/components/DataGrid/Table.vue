@@ -12,6 +12,7 @@
 							color="grey-lighten-2"
 							prepend-icon="eraser"
 							size="x-small"
+							@click="$emit('resetSort')"
 						>
 							{{ $t('Reset Sort') }}
 						</v-btn>
@@ -27,9 +28,10 @@
 			<template v-slot:bottom>
 				<v-row class="align-center ma-2 pa-0 table-footer">
 					<v-col>
-						<v-select
+						<DataSelect
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
+							name="per-page"
 							variant="outlined"
 							density="compact"
 							class="per-page mr-5"
@@ -68,7 +70,7 @@
 					</v-col>
 
 					<v-col>
-						<v-text-field
+						<DataInput
 							v-model.number="page"
 							type="number"
 							step="any"
@@ -99,6 +101,8 @@
 
 <script>
 import ColumnField from "@/components/DataGrid/ColumnField";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
@@ -107,6 +111,8 @@ export default {
 
 	components: {
 		ColumnField,
+		DataSelect,
+		DataInput,
 	},
 
 	mixins: [vuetifyHelper],
@@ -161,47 +167,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-.table-footer {
-	flex-direction: column;
-	text-align: center;
-
-	.v-col:nth-child(1),
-	.v-col:nth-child(4) {
-		max-width: 130px;
-
-		> div {
-			margin-right: 0 !important;
-		}
-	}
-
-	@media (min-width: 768px) {
-		flex-direction: row;
-
-		.v-col:nth-child(1) {
-			max-width: 130px;
-			margin-right: 0;
-		}
-
-		.v-col:nth-child(2) {
-			max-width: 225px;
-			margin-right: auto;
-		}
-
-		.v-col:nth-child(3) {
-			max-width: 450px;
-			margin-left: auto;
-
-			> nav > ul {
-				justify-content: end;
-			}
-		}
-
-		.v-col:nth-child(4) {
-			max-width: 130px;
-			margin-left: 0;
-		}
-	}
-}
-</style>
