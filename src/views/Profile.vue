@@ -249,7 +249,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix || null,
+				phonePrefix: this.phone.prefix?.code || this.phone.prefix || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(
