@@ -683,4 +683,8 @@ export default [
 		code: "170",
 		value: "ZWL",
 	},
+	{
+		code: "171",
+		value: "AFA",
+	},
 ];
