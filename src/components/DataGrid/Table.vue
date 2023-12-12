@@ -1,33 +1,31 @@
 <template>
 	<v-card>
-		<div class="mt-3 mb-3">
-			<v-row>
-				<v-col class="d-flex flex-wrap gr-3">
-					<slot name="table-header" />
-				</v-col>
+		<v-row class="mt-1 mb-1">
+			<v-col class="d-flex flex-wrap gr-3">
+				<slot name="table-header" />
+			</v-col>
 
-				<v-col>
-					<div v-if="resetSortButton" class="text-end mr-5">
-						<v-btn
-							color="grey-lighten-2"
-							prepend-icon="eraser"
-							size="x-small"
-							@click="$emit('resetSort')"
-						>
-							{{ $t('Reset Sort') }}
-						</v-btn>
-					</div>
-				</v-col>
-			</v-row>
-		</div>
+			<v-col>
+				<div v-if="resetSortButton" class="text-end mr-5">
+					<v-btn
+						color="grey-lighten-2"
+						prepend-icon="eraser"
+						size="x-small"
+						@click="$emit('resetSort')"
+					>
+						{{ $t('Reset Sort') }}
+					</v-btn>
+				</div>
+			</v-col>
+		</v-row>
 
 		<v-data-table
 			v-bind="$attrs"
-			:hide-default-footer="true"
+			hide-default-footer
 		>
 			<template v-slot:bottom>
 				<v-row class="align-center ma-2 pa-0 table-footer">
-					<v-col>
+					<v-col class="per-page-col">
 						<DataSelect
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
@@ -41,7 +39,7 @@
 						/>
 					</v-col>
 
-					<v-col>
+					<v-col class="total-count-col">
 						<v-chip
 							label=""
 							color="light-blue-darken-2"
@@ -60,7 +58,7 @@
 
 					</v-col>
 
-					<v-col>
+					<v-col class="pagination-col">
 						<v-pagination
 							v-model="page"
 							:length="pageCount"
@@ -69,19 +67,19 @@
 						/>
 					</v-col>
 
-					<v-col>
+					<v-col class="go-page-col">
 						<DataInput
 							v-model.number="page"
 							type="number"
-							step="any"
 							min="0"
 							variant="outlined"
 							density="compact"
 							label="Go to page"
 							append-inner-icon="arrow-right"
-							:hide-spin-buttons="true"
+							hide-spin-buttons
 							hide-details
 							dense
+							class="go-to-page"
 							@click:appendInner="goToPage"
 						/>
 					</v-col>

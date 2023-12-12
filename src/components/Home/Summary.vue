@@ -3,7 +3,9 @@
 
 	<v-row>
 		<v-col
-			v-for="{ id, code, value, icon } in summary"
+			v-for="{
+				id, code, value, icon,
+			} in summary"
 			cols="6"
 			:ref="code"
 			:key="id"
@@ -18,7 +20,7 @@
 
 				<template v-slot:item>
 					<v-card-subtitle class="pt-1 pb-0">{{ $t(normalizeText(code)) }}</v-card-subtitle>
-					<v-card-title>{{ value || value === 0 ? value : "&nbsp;" }}</v-card-title>
+					<v-card-title>{{ value ?? "&nbsp;" }}</v-card-title>
 				</template>
 			</v-card>
 		</v-col>
@@ -28,7 +30,7 @@
 <script>
 import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
-// import { Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Summary",
@@ -93,8 +95,8 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-					// if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "is-danger");
-				});
+						if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "error");
+					});
 			});
 		},
 	},

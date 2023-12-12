@@ -596,8 +596,8 @@ export default {
 
 .git-info {
 	position: absolute;
-	bottom: 20px;
-	padding: 4px;
+	bottom: 1.25rem;
+	padding: .25rem;
 	color: #ffffff;
 	display: flex;
 	flex-direction: column;
@@ -611,7 +611,7 @@ export default {
 
 .git-info p {
 	text-align: center;
-	margin-bottom: 1px;
+	margin-bottom: .0625rem;
 }
 
 .git-info p strong {

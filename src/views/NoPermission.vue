@@ -13,7 +13,7 @@
 			color="light-blue-lighten-4"
 			prepend-icon="home"
 			class="text-none"
-			@click="$router.push('/')"
+			@click="$router.push({ name: 'Dashboard' })"
 		>
 			{{ $t('Go to Dashboard') }}
 		</v-btn>

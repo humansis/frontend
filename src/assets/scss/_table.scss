@@ -1,5 +1,5 @@
 .v-table > .v-table__wrapper > table {
-  border-top: 2px solid #c8c8c8;
+  border-top: .125rem solid #c8c8c8;
 
   > thead > tr > th {
     font-weight: bold !important;
@@ -15,30 +15,30 @@
   flex-direction: column;
   text-align: center;
 
-  .v-col:nth-child(1),
-  .v-col:nth-child(4) {
-    max-width: 130px;
+  .per-page-col,
+  .go-page-col {
+    max-width: 8.125rem;
 
     > div {
       margin-right: 0 !important;
     }
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: $tablet) {
     flex-direction: row;
 
-    .v-col:nth-child(1) {
-      max-width: 130px;
+    .per-page-col {
+      max-width: 8.125rem;
       margin-right: 0;
     }
 
-    .v-col:nth-child(2) {
-      max-width: 225px;
+    .total-count-col {
+      max-width: 14rem;
       margin-right: auto;
     }
 
-    .v-col:nth-child(3) {
-      max-width: 450px;
+    .pagination-col {
+      max-width: 28rem;
       margin-left: auto;
 
       > nav > ul {
@@ -46,8 +46,8 @@
       }
     }
 
-    .v-col:nth-child(4) {
-      max-width: 130px;
+    .go-page-col {
+      max-width: 8.125rem;
       margin-left: 0;
     }
   }

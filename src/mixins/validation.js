@@ -59,7 +59,7 @@ export default {
 
 			if (Object.keys(validation).includes("passwordValidation")
 				&& validation.passwordValidation.$invalid) {
-				return t("The Password Is Not Strong Enough... "
+				return t("The Password Is Not Strong Enough… "
 					+ "Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
 			}
 
