@@ -1,6 +1,14 @@
 <template>
-	<v-app-bar v-show="isNavBarVisible" density="compact" elevation="0">
-		<v-app-bar-nav-icon @click.prevent="menuToggle" :title="toggleTooltip" class="navbar-item">
+	<v-app-bar
+		v-show="isNavBarVisible"
+		density="compact"
+		elevation="0"
+	>
+		<v-app-bar-nav-icon
+			class="navbar-item"
+			:title="toggleTooltip"
+			@click.prevent="menuToggle"
+		>
 			<v-icon :icon="menuToggleIcon" class="expand-icon" />
 		</v-app-bar-nav-icon>
 
@@ -222,14 +230,14 @@ export default {
 </script>
 <style lang="scss">
 .navbar-item .expand-icon > svg {
-	height: 16px;
+	height: 1rem;
 }
 
 .country-name {
-	line-height: 10px;
-	font-size: 12px;
+	line-height: .625rem;
+	font-size: .8rem;
 	position: absolute;
 	background-color: white;
-	margin-left: -3px;
+	margin-left: -.187rem;
 }
 </style>

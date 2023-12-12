@@ -230,7 +230,6 @@
 <script>
 import AssistancesService from "@/services/AssistancesService";
 // import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 // import ExportControl from "@/components/Export";
 // import SafeDelete from "@/components/SafeDelete";
@@ -239,7 +238,7 @@ import grid from "@/mixins/grid";
 // import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 // import { downloadFile } from "@/utils/helpers";
-// import { Notification } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
@@ -255,7 +254,6 @@ export default {
 		Table,
 		// ActionButton,
 		// SafeDelete,
-		ColumnField,
 		// ExportControl,
 	},
 
@@ -391,7 +389,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			// this.table.columns = generateColumns(this.table.visibleColumns); // FIXME
 			if (this.upcoming) {
 				await this.fetchUpcomingAssistances();
 			} else {
@@ -416,7 +413,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				// if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
 			});
 		},
 
@@ -438,7 +435,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				// if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "error");
 			});
 		},
 
@@ -462,8 +459,8 @@ export default {
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
 
-			const maxThreeRows = this.table.data.length <= 3;
-			this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
+			// const maxThreeRows = this.table.data.length <= 3;
+			// this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -480,14 +477,7 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				const preparedCommodity = item.commodities;
-
-				let dateExpiration = "";
-
-				if (item.dateExpiration) {
-					dateExpiration = item.dateExpiration;
-				} else {
-					dateExpiration = "No Date";
-				}
+				const dateExpiration = item.dateExpiration || "No Date";
 
 				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
@@ -630,7 +620,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					// Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

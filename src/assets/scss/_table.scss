@@ -15,8 +15,8 @@
   flex-direction: column;
   text-align: center;
 
-  .v-col:nth-child(1),
-  .v-col:nth-child(4) {
+  .per-page-col,
+  .go-page-col {
     max-width: 130px;
 
     > div {
@@ -27,17 +27,17 @@
   @media (min-width: 768px) {
     flex-direction: row;
 
-    .v-col:nth-child(1) {
+    .per-page-col {
       max-width: 130px;
       margin-right: 0;
     }
 
-    .v-col:nth-child(2) {
+    .total-count-col {
       max-width: 225px;
       margin-right: auto;
     }
 
-    .v-col:nth-child(3) {
+    .pagination-col {
       max-width: 450px;
       margin-left: auto;
 
@@ -46,7 +46,7 @@
       }
     }
 
-    .v-col:nth-child(4) {
+    .go-page-col {
       max-width: 130px;
       margin-left: 0;
     }

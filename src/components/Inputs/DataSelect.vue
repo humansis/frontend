@@ -1,9 +1,5 @@
 <template>
-	<v-select
-		v-bind="$attrs"
-		:value="data"
-		:items="options"
-	>
+	<v-select :value="data" :items="options">
 		<template v-slot:label>
 			<span>{{ $t(label) }}</span>
 		</template>
@@ -16,14 +12,14 @@
 						placeholder="Search"
 						density="compact"
 						hide-details="auto"
-						@input="searchFruits"
+						@input="search"
 					/>
 				</v-list-item>
 
 				<v-list-item
 					v-if="$attrs.multiple"
 					:title="$t('Select All')"
-					@click="toggle"
+					@click="selectAll"
 				>
 					<template v-slot:prepend>
 						<v-checkbox-btn
@@ -42,8 +38,6 @@
 
 <script>
 export default {
-	inheritAttrs: false,
-
 	props: {
 		label: {
 			type: String,
@@ -58,8 +52,8 @@ export default {
 
 	data() {
 		return {
-			data: [],
-			options: [],
+			options: this.$attrs.items,
+			data: this.$attrs.modelValue,
 			searchValue: "",
 		};
 	},
@@ -68,18 +62,14 @@ export default {
 		selectedAllOptions() {
 			return this.data?.length === this.options.length;
 		},
+
 		selectedSomeOptions() {
 			return this.data?.length > 0;
 		},
 	},
 
-	created() {
-		this.options = this.$attrs.items;
-		this.data = this.$attrs.modelValue;
-	},
-
 	methods: {
-		searchFruits() {
+		search() {
 			if (this.searchValue.length) {
 				this.options = this.$attrs.items;
 			}
@@ -89,12 +79,8 @@ export default {
 			);
 		},
 
-		toggle() {
-			if (this.selectedAllOptions) {
-				this.data = [];
-			} else {
-				this.data = this.options.slice();
-			}
+		selectAll() {
+			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
 		},
 	},

@@ -41,14 +41,19 @@ export default {
 		},
 
 		onSort(sortData) {
-			const sort = sortData.length
-				? sortData
-				: [{
+			let sort = null;
+
+			if (sortData.length) {
+				sort = sortData;
+			} else {
+				sort = [{
 					key: this.table.sortColumn.key || this.table.sortColumn,
 					order: this.table.sortDirection === "asc"
 						? "desc"
 						: "asc",
 				}];
+			}
+
 			const currentColumn = this.table.visibleColumns.find(({ key }) => key === sort[0].key);
 			const sortKey = currentColumn.sortKey || sort[0].key;
 
