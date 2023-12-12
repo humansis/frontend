@@ -85,6 +85,7 @@
 								item-title="value"
 								item-value="code"
 								is-search-enabled
+								:multiple="true"
 								clearable
 								:error-messages="validationMsg('prefix', 'phone')"
 								@blur="validate('prefix', 'phone')"
@@ -249,7 +250,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix?.code || this.phone.prefix || null,
+				phonePrefix: this.phone.prefix[0] || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(

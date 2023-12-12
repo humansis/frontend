@@ -35,7 +35,7 @@ const routes = [
 	},
 	{
 		path: "/",
-		name: "root",
+		name: "Dashboard",
 		redirect: () => ({
 			name: storedCountryCode ? "Home" : "Login",
 			...(storedCountryCode && {

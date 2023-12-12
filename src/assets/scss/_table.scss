@@ -1,5 +1,5 @@
 .v-table > .v-table__wrapper > table {
-  border-top: 2px solid #c8c8c8;
+  border-top: .125rem solid #c8c8c8;
 
   > thead > tr > th {
     font-weight: bold !important;
@@ -17,28 +17,28 @@
 
   .per-page-col,
   .go-page-col {
-    max-width: 130px;
+    max-width: 8.125rem;
 
     > div {
       margin-right: 0 !important;
     }
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: $tablet) {
     flex-direction: row;
 
     .per-page-col {
-      max-width: 130px;
+      max-width: 8.125rem;
       margin-right: 0;
     }
 
     .total-count-col {
-      max-width: 225px;
+      max-width: 14rem;
       margin-right: auto;
     }
 
     .pagination-col {
-      max-width: 450px;
+      max-width: 28rem;
       margin-left: auto;
 
       > nav > ul {
@@ -47,7 +47,7 @@
     }
 
     .go-page-col {
-      max-width: 130px;
+      max-width: 8.125rem;
       margin-left: 0;
     }
   }

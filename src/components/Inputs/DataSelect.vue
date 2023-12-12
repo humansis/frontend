@@ -48,11 +48,17 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		items: {
+			type: Array,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
-			options: this.$attrs.items,
+			options: this.items,
+			// TODO move later
 			data: this.$attrs.modelValue,
 			searchValue: "",
 		};
