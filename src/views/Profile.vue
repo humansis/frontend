@@ -85,7 +85,6 @@
 								item-title="value"
 								item-value="code"
 								is-search-enabled
-								:multiple="true"
 								clearable
 								:error-messages="validationMsg('prefix', 'phone')"
 								@blur="validate('prefix', 'phone')"

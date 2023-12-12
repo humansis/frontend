@@ -58,8 +58,7 @@ export default {
 	data() {
 		return {
 			options: this.items,
-			// TODO move later
-			data: this.$attrs.modelValue,
+			data: this.$attrs.modelValue, // TODO get from props
 			searchValue: "",
 		};
 	},
