@@ -85,7 +85,7 @@
 								item-title="value"
 								item-value="code"
 								is-search-enabled
-								:clearable="true"
+								clearable
 								:error-messages="validationMsg('prefix', 'phone')"
 								@blur="validate('prefix', 'phone')"
 							/>
@@ -135,7 +135,7 @@ import { PHONE } from "@/consts";
 import { requiredIf, sameAs } from "@vuelidate/validators";
 
 const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
-const passwordValidation = (value) => (value ? passwordRegexp.test(value) : true);
+const passwordValidation = (value) => (!value || passwordRegexp.test(value));
 
 export default {
 	name: "Profile",
@@ -249,7 +249,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix?.code || this.phone.prefix || null,
+				phonePrefix: this.phone.prefix[0] || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(

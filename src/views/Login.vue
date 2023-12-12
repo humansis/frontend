@@ -4,7 +4,7 @@
 			<v-col class="d-flex justify-center">
 				<v-card class="mx-auto px-6 py-8 login-box" max-width="600" width="100%">
 					<div class="logo">
-						<img src="@/assets/images/bms_logo_with_title.png" alt="humansis">
+						<img src="@/assets/images/bms_logo_with_title.png" alt="logo Humansis">
 					</div>
 
 					<h1 class="text-subtitle-1 text-center text-white mt-5 mb-5">Beneficiary Management System</h1>
@@ -287,7 +287,7 @@ export default {
 	}
 
 	.login-box {
-		background-color: rgba(161,160,160,.85);
+		background-color: rgba(161, 160, 160, .85);
 	}
 }
 
