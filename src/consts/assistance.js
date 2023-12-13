@@ -64,11 +64,16 @@ export default {
 			},
 			{
 				rangeFrom: 4,
-				rangeTo: 8,
+				rangeTo: 6,
 				value: null,
 			},
 			{
-				rangeFrom: 9,
+				rangeFrom: 7,
+				rangeTo: 9,
+				value: null,
+			},
+			{
+				rangeFrom: 10,
 				rangeTo: null,
 				value: null,
 			},
@@ -129,7 +134,7 @@ export default {
 			PER_MEMBERS_NWS_CODE: "Per Members NWS",
 			PER_MEMBERS_NES_CODE: "Per Members NES",
 			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1-3, 4-5, 6-8, 9+)",
-			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-8, 9+)",
+			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
 			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
 		},
 	},

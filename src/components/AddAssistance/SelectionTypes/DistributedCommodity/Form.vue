@@ -600,8 +600,9 @@ export default {
 		divisionNesFields() {
 			return [
 				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNesField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 8 members)`), fieldName: "quantityNesField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 6 members)`), fieldName: "quantityNesField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (7 - 9 members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (10+ members)`), fieldName: "quantityNesField4" },
 			];
 		},
 
