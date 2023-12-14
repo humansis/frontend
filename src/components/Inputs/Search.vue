@@ -64,7 +64,7 @@ export default {
 
 	data() {
 		return {
-			value: "",
+			value: this.searchPhrase,
 			selectedSearchField: this.defaultSearchField,
 		};
 	},
@@ -73,12 +73,6 @@ export default {
 		isSearchDisabled() {
 			return !!(this.searchFields.length && !this.selectedSearchField) || this.isDisabled;
 		},
-	},
-
-	mounted() {
-		if (this.searchPhrase) {
-			this.value = this.searchPhrase;
-		}
 	},
 
 	methods: {

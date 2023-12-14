@@ -10,6 +10,7 @@
 		:density="density"
 		:hide-details="hideDetails"
 		:multiple="multiple"
+		:no-data-text="$t('List is empty')"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>

@@ -13,9 +13,7 @@
 					@search="$emit('search', $event)"
 				/>
 
-				<slot name="export" />
-				<slot name="filterButton" />
-				<slot name="table-header" />
+				<slot name="tableControls" />
 			</v-col>
 
 			<v-col cols="5" lg="3">
@@ -45,7 +43,7 @@
 			</v-col>
 		</v-row>
 
-		<slot name="filter" />
+		<slot name="advancedControls" />
 
 		<v-data-table
 			v-bind="$attrs"
@@ -53,6 +51,14 @@
 			hide-default-footer
 			@[rowClickEvent]="handleRowClick"
 		>
+			<template v-slot:loader>
+				<v-progress-linear
+					:indeterminate="progress ? null : true"
+					:model-value="progress ?? null"
+				/>
+				<v-skeleton-loader :type="`table-row@${perPage}`" />
+			</template>
+
 			<template v-slot:bottom>
 				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
@@ -114,7 +120,7 @@
 
 			<template
 				v-for="(column, index) in $attrs.headers"
-				v-slot:[`item.${column.key}`]="{ item, index }"
+				v-slot:[`item.${column.key}`]="{ item }"
 				:key="index"
 			>
 				<template v-if="column.key === 'actions'">
@@ -140,7 +146,7 @@ import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
 export default {
-	name: "Table",
+	name: "DataGrid",
 
 	components: {
 		ColumnField,
@@ -182,6 +188,16 @@ export default {
 		defaultSearchField: {
 			type: Object,
 			default: () => ({}),
+		},
+
+		progress: {
+			type: Number,
+			default: null,
+		},
+
+		isSearchDisabled: {
+			type: Boolean,
+			default: false,
 		},
 
 		isSearchVisible: {

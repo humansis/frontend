@@ -226,64 +226,82 @@ const routes = [
 			//  			},
 			//  		],
 			//  	},
-			//  	{
-			//  		path: "beneficiaries",
-			//  		redirect: { name: "Households" },
-			//  		component: { render(c) { return c("router-view"); } },
-			//  		meta: {
-			//  			breadcrumb: () => i18n.t("Beneficiaries"),
-			//  		},
+			{
+				path: "imports",
+				component: RouterView,
+				meta: {
+					permissions: [],
+				},
+				children: [
+					{
+						path: "",
+						name: "Imports",
+						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
+						meta: {
+							permissions: [],
+						},
+					},
+				],
+			},
+			{
+				path: "beneficiaries",
+				redirect: { name: "Households" },
+				component: RouterView,
+				meta: {
+					permissions: [],
+					breadcrumb: "Beneficiaries",
+				},
+				children: [
+					{
+						path: "households",
+						component: RouterView,
+						meta: {
+							// breadcrumb: "Households",
+							// parent: "Beneficiaries",
+						},
+						children: [
+							{
+								path: "",
+								name: "Households",
+								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
+								meta: {
+									permissions: [],
+									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
+								},
+							},
+							{
+								path: "add",
+								name: "AddHousehold",
+								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
+								meta: {
+									permissions: ["addBeneficiary"],
+									breadcrumb: "Add Household",
+									description: "This page is a form to add a new household to the platform.",
+								},
+							},
+							{
+								path: "edit/:householdId",
+								name: "EditHousehold",
+								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
+								meta: {
+									permissions: ["viewBeneficiary", "editBeneficiary"],
+									breadcrumb: "Edit Household",
+								},
+							},
+							{
+								path: "summary/:householdId",
+								name: "HouseholdInformationSummary",
+								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
+								meta: {
+									permissions: ["viewBeneficiary"],
+									breadcrumb: "Household Information Summary",
+								},
+							},
+						],
+					},
+				],
+			},
 			//  		children: [
-			//  			{
-			//  				path: "households",
-			//  				component: { render(c) { return c("router-view"); } },
-			//  				meta: {
-			//  					breadcrumb: () => i18n.t("Households"),
-			//  					parent: "Beneficiaries",
-			//  				},
-			//  				children: [
-			//  					{
-			//  						path: "",
-			//  						name: "Households",
-			//  						component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							description: i18n.t("This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list."),
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "add",
-			//  						name: "AddHousehold",
-			//  						component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
-			//  						meta: {
-			//  							permissions: ["addBeneficiary"],
-			//  							breadcrumb: () => i18n.t("Add Household"),
-			//  							description: i18n.t("This page is a form to add a new household to the platform."),
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "edit/:householdId",
-			//  						name: "EditHousehold",
-			//  						component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
-			//  						meta: {
-			//  							permissions: ["viewBeneficiary", "editBeneficiary"],
-			//  							breadcrumb: () => i18n.t("Edit Household"),
-			//  							description: "",
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "summary/:householdId",
-			//  						name: "HouseholdInformationSummary",
-			//  						component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
-			//  						meta: {
-			//  							permissions: ["viewBeneficiary"],
-			//  							breadcrumb: () => i18n.t("Household Information Summary"),
-			//  							description: "",
-			//  							parent: "Households",
-			//  						},
-			//  					},
-			//  				],
-			//  			},
 			//  			{
 			//  				path: "communities",
 			//  				name: "Communities",
@@ -472,7 +490,7 @@ const routes = [
 	},
 	{
 		path: "/:pathMatch(.*)*",
-		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+		redirect: { name: "NotFound" },
 	},
 	/* eslint-enable max-len */
 ];

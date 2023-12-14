@@ -376,7 +376,7 @@ export default {
 						{
 							title: "Households",
 							prependIcon: "home",
-							// to: { name: "Households" },
+							to: { name: "Households" },
 						},
 						{
 							title: "Institutions",

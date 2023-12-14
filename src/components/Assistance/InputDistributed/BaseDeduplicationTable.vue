@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		:headers="table.columns"
 		:items="data"
 		is-row-click-disabled
@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "BaseDeduplicationTable",
 
 	components: {
-		Table,
+		DataGrid,
 	},
 
 	props: {

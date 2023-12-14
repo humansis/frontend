@@ -23,7 +23,7 @@
 		<p>{{ $t("Then you will be able to manage some assistances") }}</p>
 	</v-alert>
 
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -39,7 +39,7 @@
 		@search="search"
 		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
-		<template v-slot:table-header>
+		<template #tableHeader>
 			<v-btn
 				:class="filterButtonNew"
 				color="gray-darken-4"
@@ -165,13 +165,13 @@
 				@onExport="exportAssistances"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
@@ -192,8 +192,8 @@ export default {
 	name: "AssistancesList",
 
 	components: {
-		Table,
 		ButtonAction,
+		DataGrid,
 		ExportControl,
 	},
 

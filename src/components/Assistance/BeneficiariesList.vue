@@ -154,7 +154,7 @@
 
 	<v-divider />
 
-	<Table
+	<DataGrid
 		ref="beneficiariesList"
 		v-model="table.checkedRows"
 		v-model:items-per-page="perPage"
@@ -222,7 +222,7 @@
 			/>
 		</template>
 
-		<template v-if="assistanceDetail" v-slot:table-header>
+		<template v-if="assistanceDetail" #tableHeader>
 			<v-btn
 				:class="toDistributeButtonClass"
 				color="gray-darken-4"
@@ -287,7 +287,7 @@
 				@onExport="exportDistribution"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
@@ -301,7 +301,7 @@ import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditB
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
@@ -331,7 +331,7 @@ export default {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
-		Table,
+		DataGrid,
 		DataInput,
 		ButtonAction,
 		Modal,

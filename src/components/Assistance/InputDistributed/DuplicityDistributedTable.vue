@@ -6,7 +6,7 @@
 			</v-chip>
 		</p>
 
-		<Table
+		<DataGrid
 			:headers="table.columns"
 			:items="beneficiaries"
 			is-row-click-disabled
@@ -16,14 +16,14 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "BeneficiariesModalList",
 
 	components: {
-		Table,
+		DataGrid,
 	},
 
 	props: {

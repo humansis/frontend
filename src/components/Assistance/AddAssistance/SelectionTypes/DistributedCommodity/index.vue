@@ -40,7 +40,7 @@
 		/>
 	</Modal>
 
-	<Table
+	<DataGrid
 		v-if="table.data.length"
 		:headers="preparedTableColumns"
 		:items="modifiedTableData"
@@ -55,7 +55,7 @@
 				@actionConfirmed="removeCommodity(row.index)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 
 	<v-alert
 		v-else
@@ -72,7 +72,7 @@
 <script>
 import DistributedCommodityForm from "@/components/Assistance/AddAssistance/SelectionTypes/DistributedCommodity/Form";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import Modal from "@/components/Inputs/Modal";
 import { generateColumns } from "@/utils/datagrid";
 import { ASSISTANCE } from "@/consts";
@@ -84,7 +84,7 @@ export default {
 		Modal,
 		DistributedCommodityForm,
 		ButtonAction,
-		Table,
+		DataGrid,
 	},
 
 	emits: [

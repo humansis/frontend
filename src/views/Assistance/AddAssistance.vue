@@ -312,6 +312,7 @@ export default {
 				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
 
 				if (isBeforeToday) {
+					// FIXME
 					this.$buefy.dialog.confirm({
 						title: this.$t("Date of Assistance"),
 						message: this.$t("You picked date from the past. Is it ok?"),
@@ -406,6 +407,7 @@ export default {
 					return true;
 				}
 
+				// FIXME
 				this.$buefy.dialog.alert({
 					title: this.$t("Warning"),
 					message: this.$t(`Please add "Has valid card = true" criterion for each group`),

@@ -465,6 +465,7 @@ export default {
 		},
 
 		unvalidateAssistance() {
+			// FIXME
 			this.$buefy.dialog.confirm({
 				title: this.$t("Unvalidate Assistance"),
 				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
