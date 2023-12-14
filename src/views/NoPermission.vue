@@ -4,7 +4,7 @@
 
 		<h2 class="text-h4 text-grey-darken-2 my-10">{{ $t("Forbidden") }}</h2>
 
-		<h2 class="text-h4 text-grey-darken-2 my-10">
+		<h2 class="text-h5 text-grey-darken-2 my-10">
 			{{ $t("(You do not have permission to requested page.)") }}
 		</h2>
 

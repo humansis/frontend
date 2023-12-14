@@ -38,6 +38,7 @@
 				<template v-slot:activator="{ props }">
 					<v-btn v-bind="props" icon="globe-africa" size="small" class="mr-2">
 						<v-icon class="mr-1" icon="globe-africa" size="large" />
+
 						<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
 					</v-btn>
 				</template>
@@ -49,7 +50,6 @@
 						:value="value.iso3"
 						@click="handleChangeCountry(value)"
 					>
-						<v-icon class="mr-1" icon="globe" size="x-small" />
 						{{ $t(value.iso3) }}
 					</v-list-item>
 				</v-list>
@@ -68,7 +68,6 @@
 						:class="language.key === value.key ? 'is-active' : ''"
 						@click="handleChangeLanguage(value)"
 					>
-						<v-icon class="mr-1" icon="language" size="x-small" />
 						{{ $t(value.name) }}
 					</v-list-item>
 				</v-list>
@@ -142,7 +141,7 @@ export default {
 		},
 
 		menuToggleIcon() {
-			return this.isAsideExpanded ? "arrow-left" : "arrow-right";
+			return this.isAsideExpanded ? "xmark" : "bars";
 		},
 
 		toggleTooltip() {

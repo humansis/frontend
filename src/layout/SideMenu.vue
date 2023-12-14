@@ -1,7 +1,7 @@
 <template>
 	<aside>
 		<v-navigation-drawer
-			width="300"
+			width="250"
 			rail-width="50"
 			permanent
 			:rail="!isAsideExpanded"
