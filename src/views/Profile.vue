@@ -164,7 +164,7 @@ export default {
 			},
 			phone: {
 				prefix: { required: requiredIf(this.phone.number) },
-				number: { required: requiredIf(this.phone.prefix?.length) },
+				number: { required: requiredIf(this.phone.prefix?.value || this.phone.prefix?.length) },
 			},
 		};
 	},
@@ -241,7 +241,7 @@ export default {
 		async submitTelephoneForm() {
 			this.v$.phone.$touch();
 
-			if (this.v$.phone.$invalid || !this.phone.number.length) return;
+			if (this.v$.phone.$invalid) return;
 			this.changePhoneLoading = true;
 			this.phone.number = this.phone.number?.replace(/\s+/g, "");
 
@@ -249,7 +249,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix[0] || null,
+				phonePrefix: this.phone.prefix || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(
