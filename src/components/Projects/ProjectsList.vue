@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -52,7 +52,7 @@
 				@export="onExportProjects"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
@@ -60,7 +60,7 @@ import { mapState } from "vuex";
 import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
@@ -75,7 +75,7 @@ export default {
 
 	components: {
 		ExportControl,
-		Table,
+		DataGrid,
 		ButtonAction,
 	},
 

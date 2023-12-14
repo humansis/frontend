@@ -2,7 +2,7 @@
 	<v-expansion-panels v-model="openedGroups" class="mt-5 criteria-group">
 		<v-expansion-panel :title="groupName">
 			<v-expansion-panel-text>
-				<Table
+				<DataGrid
 					:headers="table.columns"
 					:items="criteriaGroups"
 					:loading="loading"
@@ -17,7 +17,7 @@
 							@actionConfirmed="onRemove(row.index)"
 						/>
 					</template>
-				</Table>
+				</DataGrid>
 
 				<v-row>
 					<v-col>
@@ -55,7 +55,7 @@
 <script>
 import LocationsService from "@/services/LocationsService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
@@ -63,7 +63,7 @@ export default {
 	name: "SelectionCriteriaGroup",
 
 	components: {
-		Table,
+		DataGrid,
 		ButtonAction,
 	},
 

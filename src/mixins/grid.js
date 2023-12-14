@@ -7,7 +7,6 @@ export default {
 	data() {
 		return {
 			show: true,
-			isLoadingList: false,
 		};
 	},
 
@@ -80,10 +79,6 @@ export default {
 		onSearch(value) {
 			this.table.searchPhrase = value;
 			this.table.currentPage = 1;
-			this.fetchData();
-		},
-
-		onChangePerPage() {
 			this.fetchData();
 		},
 

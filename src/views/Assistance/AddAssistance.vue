@@ -412,6 +412,7 @@ export default {
 					return true;
 				}
 
+				// FIXME
 				this.$buefy.dialog.alert({
 					title: this.$t("Warning"),
 					message: this.$t(`Please add "Has valid card = true" criterion for each group`),

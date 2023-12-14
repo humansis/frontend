@@ -42,6 +42,7 @@
 			</v-btn>
 
 			<ConfirmAction
+				v-if="isConfirmAction"
 				:is-dialog-opened="isDialogOpened"
 				:confirm-title="confirmTitle"
 				:confirm-message="confirmMessage"

@@ -24,14 +24,14 @@
     "leaflet": "^1.9.4",
     "moment": "^2.29.4",
     "sanitize-html": "^2.11.0",
-    "vue": "^3.3.8",
+    "vue": "^3.3.11",
     "vue-country-flag-next": "^2.3.2",
-    "vue-i18n": "^9.7.1",
+    "vue-i18n": "^9.8.0",
     "vue-multiselect": "^2.1.8",
     "vue-qrcode-reader": "^5.4.1",
     "vue-router": "^4.2.5",
     "vue-swatches": "^2.1.1",
-    "vuetify": "^3.4.3",
+    "vuetify": "^3.4.7",
     "vuetify-sonner": "^0.3.2",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
@@ -41,8 +41,8 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.0",
     "@fortawesome/vue-fontawesome": "^3.0.5",
-    "@vitejs/plugin-vue": "^4.5.0",
-    "@vue/eslint-config-airbnb": "7.0.0",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "@vue/eslint-config-airbnb": "7.0.1",
     "eslint": "8.2.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.29.0",
@@ -50,6 +50,6 @@
     "eslint-plugin-vue": "9.2.0",
     "eslint-plugin-vuejs-accessibility": "^2.2.0",
     "sass": "^1.69.5",
-    "vite": "^5.0.2"
+    "vite": "^5.0.8"
   }
 }

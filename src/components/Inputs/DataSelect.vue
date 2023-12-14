@@ -12,6 +12,7 @@
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
 		:multiple="multiple"
+		:no-data-text="$t('List is empty')"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
