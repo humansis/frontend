@@ -1,5 +1,6 @@
 import i18n from "@/plugins/i18n";
 import { useVuelidate } from "@vuelidate/core";
+import {isIdsListLengthValid} from "@/utils/customValidators";
 
 const { global: { t } } = i18n;
 

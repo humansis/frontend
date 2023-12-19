@@ -5,11 +5,8 @@
 			:items="availableExportTypes"
 			:disabled="disabled"
 			name="select-export-type"
-			variant="outlined"
-			density="compact"
 			label="Select type"
 			class="export-type"
-			hide-details
 			@input="inputChanged"
 		/>
 
@@ -17,14 +14,12 @@
 			v-model="selectedExportFormat"
 			:items="availableExportFormats"
 			:disabled="disabled"
+			:icon-loading="isExportLoading"
+			:is-append-icon-enabled="isExportButtonEnabled"
 			name="select-export-format"
-			variant="outlined"
-			density="compact"
 			label="Select format"
 			class="export-format"
 			append-icon="download"
-			:icon-loading="isExportLoading"
-			hide-details
 			@input="inputChanged"
 			@append-icon-clicked="startExport"
 		/>

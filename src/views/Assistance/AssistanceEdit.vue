@@ -176,10 +176,10 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.fetchAssistance();
-		this.fetchProject();
-		this.fetchAssistanceStatistics();
+	async mounted() {
+		await this.fetchAssistance();
+		await this.fetchProject();
+		await this.fetchAssistanceStatistics();
 	},
 
 	methods: {

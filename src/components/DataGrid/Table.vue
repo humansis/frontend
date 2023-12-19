@@ -25,7 +25,7 @@
 						size="x-small"
 						@click="$emit('resetSort')"
 					>
-						{{ $t('Reset Sort') }}
+						{{ $t('Reset Table Sort') }}
 					</v-btn>
 				</div>
 			</v-col>
@@ -33,6 +33,7 @@
 
 		<v-data-table
 			v-bind="$attrs"
+			:cell-props="getCellProps"
 			hide-default-footer
 			@[rowClickEvent]="handleRowClick"
 		>
@@ -44,11 +45,8 @@
 							:items="TABLE.PER_PAGE_OPTIONS"
 							:is-clearable="false"
 							name="per-page"
-							variant="outlined"
-							density="compact"
 							class="per-page mr-5"
 							label="Per page"
-							hide-details
 							@update:modelValue="perPageChanged"
 						/>
 					</v-col>
@@ -86,8 +84,6 @@
 							v-model.number="page"
 							type="number"
 							min="0"
-							variant="outlined"
-							density="compact"
 							label="Go to page"
 							append-inner-icon="arrow-right"
 							class="go-to-page"
@@ -106,7 +102,7 @@
 				:key="index"
 			>
 				<template v-if="column.key === 'actions'">
-					<div class="table-actions">
+					<div :class="['table-actions', { 'removed-row': item.removed }]">
 						<slot name="actions" :row="item" />
 					</div>
 				</template>
@@ -226,6 +222,20 @@ export default {
 			this.page = this.pageCount;
 			this.$emit("pageChanged", this.pageCount);
 		},
+
+		getCellProps(data) {
+			if (data.item.removed) {
+				return { class: "removed-row" };
+			}
+
+			return { class: "" };
+		},
 	},
 };
 </script>
+
+<style lang="scss">
+.removed-row {
+	background-color: #f3f3f3;
+}
+</style>

@@ -1,8 +1,12 @@
 <template>
-	<v-text-field>
+	<v-text-field
+		:variant="variant"
+		:density="density"
+		:hide-details="hideDetails"
+	>
 		<template v-slot:label>
 			<span>{{ $t(label) }}
-				<i v-if="optional" class="test">- {{ $t('Optional') }}</i>
+				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
 			</span>
 		</template>
 	</v-text-field>
@@ -20,6 +24,21 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		variant: {
+			type: String,
+			default: "outlined",
+		},
+
+		density: {
+			type: String,
+			default: "compact",
+		},
+
+		hideDetails: {
+			type: String,
+			default: "auto",
+		},
 	},
 };
 </script>
@@ -30,10 +49,6 @@ export default {
 
 	> span {
 		font-size: .9rem;
-
-		> i {
-			font-size: 13px;
-		}
 	}
 }
 

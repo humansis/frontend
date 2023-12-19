@@ -37,40 +37,58 @@
 			</v-col>
 
 			<v-col cols="7">
-				<SelectionCriteria
-					v-if="visibleComponents.selectionCriteria"
-					ref="selectionCriteria"
-					:target-type="targetType"
-					:data="componentsData.selectionCriteria"
-					:assistance-body="assistanceBody"
-					@updatedData="fetchSelectionCriteria"
-					@beneficiariesCounted="selectedBeneficiariesCount = $event"
-					@onDeliveredCommodityValue="getDeliveredCommodityValue"
-				/>
+				<div v-show="visibleComponents.selectionCriteria">
+					<SelectionCriteria
+						ref="selectionCriteria"
+						:target-type="targetType"
+						:data="componentsData.selectionCriteria"
+						:assistance-body="assistanceBody"
+						@updatedData="fetchSelectionCriteria"
+						@beneficiariesCounted="selectedBeneficiariesCount = $event"
+						@onDeliveredCommodityValue="getDeliveredCommodityValue"
+					/>
+				</div>
 
-				<TargetTypeSelect
-					v-if="visibleComponents.communities || visibleComponents.institutions"
-					ref="targetTypeSelect"
-					:project-id="assistanceBody.projectId"
-					:visible="targetTypeSelectVisible"
-					:is-assistance-duplicated="isDuplicated"
-					@updatedData="fetchTargetType"
-				/>
+				<div v-show="visibleComponents.communities || visibleComponents.institutions">
+					<TargetTypeSelect
+						ref="targetTypeSelect"
+						:project-id="assistanceBody.projectId"
+						:visible="targetTypeSelectVisible"
+						:is-assistance-duplicated="isDuplicated"
+						@updatedData="fetchTargetType"
+					/>
+				</div>
 
-				<DistributedCommodity
-					v-if="isProjectReady && visibleComponents.distributedCommodity"
-					ref="distributedCommodity"
-					:project="project"
-					:commodity="componentsData.distributedCommodity"
-					:selected-beneficiaries="selectedBeneficiariesCount"
-					:calculated-commodity-value="calculatedCommodityValue"
-					:is-assistance-duplicated="isDuplicated"
-					:target-type="targetType"
-					:date-of-assistance="assistanceBody.dateDistribution"
-					:validation-messages="validationMessages"
-					@updatedData="fetchDistributedCommodity"
-					@onDeliveredCommodityValue="getDeliveredCommodityValue"
-				/>
+				<div v-show="visibleComponents.distributedCommodity">
+					<DistributedCommodity
+						v-if="isProjectReady"
+						ref="distributedCommodity"
+						:project="project"
+						:commodity="componentsData.distributedCommodity"
+						:selected-beneficiaries="selectedBeneficiariesCount"
+						:calculated-commodity-value="calculatedCommodityValue"
+						:is-assistance-duplicated="isDuplicated"
+						:target-type="targetType"
+						:date-of-assistance="assistanceBody.dateDistribution"
+						:validation-messages="validationMessages"
+						@updatedData="fetchDistributedCommodity"
+						@onDeliveredCommodityValue="getDeliveredCommodityValue"
+					/>
+				</div>
+
+				<div
+					v-show="visibleComponents.activityDescription
+						|| visibleComponents.householdsTargeted
+						|| visibleComponents.individualsTargeted"
+				>
+					<ActivityDetails
+						ref="activityDetails"
+						:visible="visibleActivityDetails"
+						:data="componentsData.activityDetails"
+						@updatedData="fetchActivityDetails"
+					/>
+				</div>
+
 			</v-col>
 		</v-row>
 
@@ -103,7 +121,7 @@
 import AssistancesService from "@/services/AssistancesService";
 import ProjectService from "@/services/ProjectService";
 import NewAssistanceForm from "@/components/Assistance/AddAssistance/NewAssistanceForm";
-// import ActivityDetails from "@/components/AddAssistance/SelectionTypes/ActivityDetails";
+import ActivityDetails from "@/components/Assistance/AddAssistance/SelectionTypes/ActivityDetails";
 import DistributedCommodity from "@/components/Assistance/AddAssistance/SelectionTypes/DistributedCommodity";
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
@@ -115,7 +133,7 @@ export default {
 
 	components: {
 		TargetTypeSelect,
-		// ActivityDetails,
+		ActivityDetails,
 		NewAssistanceForm,
 		SelectionCriteria,
 		DistributedCommodity,
@@ -206,6 +224,16 @@ export default {
 			return this.project.householdIntegrityIssues?.find(
 				(issue) => issue === ASSISTANCE.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
 			);
+		},
+
+		visibleRightSidePanel() {
+			return this.visibleComponents.selectionCriteria
+				|| this.visibleComponents.communities
+				|| this.visibleComponents.institutions
+				|| this.visibleComponents.distributedCommodity
+				|| this.visibleComponents.activityDescription
+				|| this.visibleComponents.householdsTargeted
+				|| this.visibleComponents.individualsTargeted;
 		},
 	},
 
@@ -436,7 +464,7 @@ export default {
 					(target) => target.modalityType,
 				);
 				const matchedModalityType = this.project.targets.some(
-					(target) => target.modalityType.code === assistance.commodities[0]?.modalityType,
+					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
 				);
 
 				this.project.targets.forEach((target) => {

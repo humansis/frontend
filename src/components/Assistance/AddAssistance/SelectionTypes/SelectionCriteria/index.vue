@@ -73,9 +73,6 @@
 				:disabled="calculationLoading || !groups.length"
 				label="Scoring"
 				name="scoring"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="identifier"
 				item-value="id"
 				@update:modelValue="scoringTypeChanged"
@@ -87,9 +84,6 @@
 				v-model="minimumSelectionScore"
 				:label="vulnerabilityScoreLabel"
 				name="minimum-vulnerability-score"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				@update:modelValue="onVulnerabilityScoreInput"
 			/>
 		</v-col>

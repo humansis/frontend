@@ -17,6 +17,18 @@
 			</v-btn>
 
 			<v-btn
+				v-else-if="!isOnlyIcon && defaultButton"
+				:prepend-icon="icon"
+				color="primary"
+				size="small"
+				variant="elevated"
+				class="text-none"
+				@click.stop="buttonClicked"
+			>
+				{{ $t(label) }}
+			</v-btn>
+
+			<v-btn
 				v-else
 				v-bind="props"
 				:class="['text-none action-button texted-button', { disabled }]"
@@ -143,6 +155,11 @@ export default {
 		},
 
 		disabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		defaultButton: {
 			type: Boolean,
 			default: false,
 		},

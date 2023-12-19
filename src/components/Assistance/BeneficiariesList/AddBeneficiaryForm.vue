@@ -1,0 +1,330 @@
+<template>
+	<v-card-text>
+		<p v-if="!formModel.removingId" class="mb-5">
+			{{ $t('Please select the beneficiaries that you want to add to the') }}
+			<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
+		</p>
+
+		<p v-if="formModel.removingId" class="mb-5">
+			{{ $t('You are about to remove this beneficiary from') }}
+			<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
+			{{ $t('Do you wish to continue?') }}
+		</p>
+
+		<DataSelect
+			v-if="!formModel.removingId"
+			v-model="formModel.beneficiaries"
+			:items="beneficiariesOptions"
+			:item-title="multiselectLabel"
+			:loading="loading.beneficiaries"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('beneficiaries')"
+			label="Beneficiaries"
+			name="beneficiaries"
+			item-value="id"
+			class="mb-6"
+			is-search-enabled
+			@update:modelValue="validate('beneficiaries')"
+		/>
+
+		<DataInput
+			v-model="formModel.justification"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('justification')"
+			label="Justification"
+			name="justification"
+			@update:modelValue="validate('justification')"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="closeForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="submitForm"
+		>
+			{{ submitButtonLabel }}
+		</v-btn>
+	</v-card-actions>
+</template>
+
+<script>
+import BeneficiariesService from "@/services/BeneficiariesService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import validation from "@/mixins/validation";
+import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { Notification } from "@/utils/UI";
+import { ASSISTANCE } from "@/consts";
+import { required, requiredIf } from "@vuelidate/validators";
+
+export default {
+	name: "AddBeneficiaryForm",
+
+	components: {
+		DataSelect,
+		DataInput,
+	},
+
+	mixins: [validation],
+
+	validations() {
+		return {
+			formModel: {
+				beneficiaries: { required: requiredIf(!this.formModel.removingId) },
+				justification: { required },
+			},
+		};
+	},
+
+	props: {
+		formModel: Object,
+		submitButtonLabel: String,
+		closeButton: Boolean,
+		formDisabled: Boolean,
+		assistance: Object,
+	},
+
+	data() {
+		return {
+			target: "",
+			options: {
+				beneficiaries: [],
+			},
+			loading: {
+				beneficiaries: true,
+			},
+			submitButtonLoading: false,
+		};
+	},
+
+	computed: {
+		multiselectLabel() {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case ASSISTANCE.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.INSTITUTION:
+					result = "name";
+					break;
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
+				default:
+					result = "fullName";
+			}
+
+			return result;
+		},
+
+		beneficiariesOptions() {
+			return this.options.beneficiaries.map((beneficiary) => ({
+				...beneficiary,
+				fullName: this.getOptionTitle(beneficiary),
+			}));
+		},
+
+		isAssistanceTargetInstitution() {
+			return this.target === ASSISTANCE.TARGET.INSTITUTION;
+		},
+
+		beneficiaryEndpointVersion() {
+			return this.isAssistanceTargetInstitution ? 2 : 1;
+		},
+	},
+
+	mounted() {
+		this.target = this.assistance.target;
+
+		if (!this.formModel.removingId) this.fetchBeneficiariesByProject();
+		this.formModel.justification = "";
+		this.formModel.beneficiaries = [];
+	},
+
+	methods: {
+		submitForm() {
+			this.v$.$touch();
+			if (!this.v$.$invalid) {
+				if (this.formModel.removingId) {
+					this.removeBeneficiaryFromAssistance(this.formModel);
+				} else {
+					this.addBeneficiaryToAssistance(this.formModel);
+				}
+			}
+		},
+
+		getOptionTitle(option) {
+			let result = "";
+
+			switch (this.assistance.target) {
+				case ASSISTANCE.TARGET.COMMUNITY:
+				case ASSISTANCE.TARGET.INSTITUTION:
+					result = option.name;
+					break;
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
+				default:
+					result = `${option.localFamilyName} ${option.localGivenName}`;
+			}
+
+			return result;
+		},
+
+		async fetchBeneficiariesByProject() {
+			const { projectId } = this.$route.params;
+
+			await BeneficiariesService.getBeneficiariesByProject(
+				projectId,
+				this.target,
+				this.$route.params.assistanceId,
+			)
+				.then(({ data }) => {
+					this.options.beneficiaries = data;
+				}).catch((e) => {
+					if (e.message) Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
+				});
+			this.loading.beneficiaries = false;
+		},
+
+		async removeBeneficiaryFromAssistance({ justification, removingId }) {
+			const body = {
+				...(!this.isAssistanceTargetInstitution && { removed: true }),
+				justification,
+			};
+
+			switch (this.assistance.target) {
+				case ASSISTANCE.TARGET.COMMUNITY:
+					body.communityIds = [removingId];
+					break;
+				case ASSISTANCE.TARGET.INSTITUTION:
+					body.institutionIds = [removingId];
+					break;
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = [removingId];
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				this.target,
+				this.$t("Beneficiary Successfully Removed"),
+			);
+		},
+
+		async addBeneficiaryToAssistance({ beneficiaries, justification }) {
+			const body = {
+				added: true,
+				justification,
+			};
+
+			switch (this.assistance.target) {
+				case ASSISTANCE.TARGET.COMMUNITY:
+					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
+					break;
+				case ASSISTANCE.TARGET.INSTITUTION:
+					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
+					break;
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
+				default:
+					body.beneficiaryIds = getArrayOfIdsByParam(beneficiaries, "id");
+			}
+
+			await this.addOrRemoveBeneficiaryFromAssistance(
+				body,
+				this.target,
+				this.$t("Beneficiary Successfully Added"),
+			);
+		},
+
+		async addOrRemoveBeneficiaryFromAssistance(body, target, successMessage) {
+			this.submitButtonLoading = true;
+			let assistanceTarget = "";
+
+			switch (target) {
+				case ASSISTANCE.TARGET.COMMUNITY:
+					assistanceTarget = "communities";
+					break;
+				case ASSISTANCE.TARGET.INSTITUTION:
+					assistanceTarget = "institutions";
+					break;
+				case ASSISTANCE.TARGET.HOUSEHOLD:
+				case ASSISTANCE.TARGET.INDIVIDUAL:
+				default:
+					assistanceTarget = "beneficiaries";
+			}
+
+			if (body.removed || !body.added) {
+				await BeneficiariesService.removeBeneficiaryFromAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+					this.beneficiaryEndpointVersion,
+				)
+					.then(({ data, status }) => {
+						if (status === 400) {
+							Notification(data, "warning");
+						} else {
+							Notification(successMessage, "success");
+						}
+					})
+					.catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Beneficiary")} ${e}`,
+								"error",
+							);
+						}
+					});
+			}
+
+			if (body.added) {
+				await BeneficiariesService.addBeneficiaryToAssistance(
+					this.$route.params.assistanceId,
+					assistanceTarget,
+					body,
+					this.beneficiaryEndpointVersion,
+				)
+					.then(({ data, status }) => {
+						if (status === 400) {
+							Notification(data, "warning");
+						} else {
+							Notification(successMessage, "success");
+						}
+					})
+					.catch((e) => {
+						if (e.message) {
+							Notification(
+								`${this.$t("Beneficiary")} ${e}`,
+								"is-danger",
+							);
+						}
+					});
+			}
+
+			this.submitButtonLoading = false;
+			this.closeForm();
+			this.$emit("addingOrRemovingSubmitted");
+		},
+
+		closeForm() {
+			this.$emit("formClosed");
+		},
+
+	},
+};
+</script>

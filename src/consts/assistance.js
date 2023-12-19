@@ -34,6 +34,7 @@ export default {
 		secondUnit: null,
 		secondQuantity: null,
 		description: null,
+		// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 		payloadDivisionNwsFields: [
 			{
 				rangeFrom: 1,

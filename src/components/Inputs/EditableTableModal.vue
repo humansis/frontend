@@ -32,9 +32,6 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="subsectors"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						item-title="value"
 						item-value="code"
 						is-search-enabled
@@ -51,9 +48,6 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="project-name"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mb-6"
 						@blur="inputChanged(formInput, data)"
 					/>
@@ -64,9 +58,6 @@
 						type="number"
 						step="any"
 						min="0"
-						variant="outlined"
-						density="compact"
-						hide-details
 						dense
 						class="mb-6"
 						:label="formInput.label"

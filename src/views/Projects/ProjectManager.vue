@@ -17,9 +17,6 @@
 							:error-messages="validationMsg('name')"
 							label="Project name"
 							name="project-name"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							class="mb-6"
 							@blur="validate('name')"
 						/>
@@ -29,9 +26,6 @@
 							:disabled="formDisabled"
 							label="Internal ID"
 							name="project-name"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							class="mb-6"
 							optional
 						/>
@@ -44,9 +38,6 @@
 							:error-messages="validationMsg('selectedSectors')"
 							label="Sectors"
 							name="sectors"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							item-title="value"
 							item-value="code"
 							is-search-enabled
@@ -64,9 +55,6 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							item-title="value"
 							item-value="code"
 							is-search-enabled
@@ -102,9 +90,6 @@
 							:clearable="true"
 							label="Donors"
 							name="donors"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							item-title="fullname"
 							item-value="id"
 							is-search-enabled
@@ -122,9 +107,6 @@
 							:disabled="formDisabled"
 							label="Local Invoice Address"
 							name="local-invoice-address"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							class="mb-6"
 							optional
 						/>
@@ -134,9 +116,6 @@
 							:disabled="formDisabled"
 							label="English Invoice Address"
 							name="english-invoice-address"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							class="mb-2"
 							optional
 						/>
@@ -505,7 +484,7 @@ export default {
 
 				this.options.sectors = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "error");
 			} finally {
 				this.sectorsLoading = false;
 			}
@@ -520,7 +499,7 @@ export default {
 				this.filterSubSectors();
 				this.getSectorsWithoutSelectedSubSector();
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("SubSectors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("SubSectors")} ${e}`, "error");
 			} finally {
 				this.subSectorsLoading = false;
 			}
@@ -533,7 +512,7 @@ export default {
 
 				this.options.donors = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "error");
 			} finally {
 				this.donorsLoading = false;
 			}
@@ -545,7 +524,7 @@ export default {
 
 				this.options.targetTypes = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "error");
 			}
 		},
 
@@ -555,7 +534,7 @@ export default {
 
 				this.mapToFormModel(data);
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Project Detail")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project Detail")} ${e}`, "error");
 			}
 		},
 
@@ -564,24 +543,24 @@ export default {
 				const { status, message } = await ProjectService.createProject(projectBody);
 
 				if (status === 200) {
-					Notification(this.$t("Project Successfully Created"), "is-success");
+					Notification(this.$t("Project Successfully Created"), "success");
 					await this.$router.push({ name: "Projects" });
 				} else {
-					Notification(message, "is-danger");
+					Notification(message, "error");
 				}
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
 			}
 		},
 
 		async updateProject(id, projectBody) {
 			await ProjectService.updateProject(id, projectBody).then((response) => {
 				if (response.status === 200) {
-					Notification(this.$t("Project Successfully Updated"), "is-success");
+					Notification(this.$t("Project Successfully Updated"), "success");
 					this.$router.push({ name: "Projects" });
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
 			});
 		},
 
@@ -591,7 +570,7 @@ export default {
 
 				this.editableTableColumns[OPTIONS_FOR_COLUMN_INDEX.MODALITY_TYPE].options = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "is-danger");
+				if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "error");
 			}
 		},
 

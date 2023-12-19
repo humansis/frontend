@@ -6,12 +6,15 @@
 		:disabled="disabled"
 		:clearable="!disabled && isClearable"
 		:item-title="itemTitle"
+		:variant="variant"
+		:density="density"
+		:hide-details="hideDetails"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
 		<template v-slot:label>
 			<span>{{ $t(label) }}
-				<i v-if="optional" class="test">- {{ $t('Optional') }}</i>
+				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
 			</span>
 		</template>
 
@@ -29,7 +32,7 @@
 
 		<template v-if="iconLoading || (!iconLoading && appendIcon)" v-slot:append>
 			<v-icon
-				v-if="!iconLoading && appendIcon"
+				v-if="!iconLoading && appendIcon && isAppendIconEnabled"
 				:icon="appendIcon"
 				@click="$emit('append-icon-clicked')"
 			/>
@@ -132,6 +135,26 @@ export default {
 		itemTitle: {
 			type: String,
 			default: "value",
+		},
+
+		isAppendIconEnabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		variant: {
+			type: String,
+			default: "outlined",
+		},
+
+		density: {
+			type: String,
+			default: "compact",
+		},
+
+		hideDetails: {
+			type: String,
+			default: "auto",
 		},
 	},
 

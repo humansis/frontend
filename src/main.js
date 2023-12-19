@@ -7,8 +7,10 @@ import i18n from "@/plugins/i18n";
 import vuetify from "@/plugins/vuetify";
 import moment from "moment";
 import "@/assets/scss/main.scss";
-
+import htmlSecureDirective from "@/plugins/vuehtmlsecure";
 const app = createApp(App);
+
+app.directive("html-secure", htmlSecureDirective);
 
 app.config.productionTip = false;
 

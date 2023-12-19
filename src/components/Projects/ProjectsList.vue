@@ -87,7 +87,7 @@ export default {
 			exportControl: {
 				loading: false,
 				location: "projects",
-				types: [EXPORT.PROJECTS, EXPORT.IMPORTS],
+				types: [EXPORT.PROJECTS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
 			table: {
@@ -96,7 +96,7 @@ export default {
 				visibleColumns: generateColumns([
 					{ key: "id" },
 					{ key: "name" },
-					{ key: "sectors", type: "svgIcon", minWidth: "200" },
+					{ key: "sectors", type: "svgIcon", minWidth: "200", sortable: false },
 					{ key: "startDate", type: "date" },
 					{ key: "endDate", type: "date" },
 					{ key: "donors" },

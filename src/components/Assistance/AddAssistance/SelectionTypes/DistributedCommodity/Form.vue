@@ -7,9 +7,6 @@
 			:error-messages="validationMsg('modality')"
 			label="Modality"
 			name="modality"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="value"
 			item-value="code"
 			class="mb-6"
@@ -23,9 +20,6 @@
 			:error-messages="validationMsg('modalityType')"
 			label="Modality Type"
 			name="modality-type"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="value"
 			item-value="code"
 			class="mb-6"
@@ -40,9 +34,6 @@
 			:error-messages="validationMsg('division')"
 			label="Distribute"
 			name="division"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="value"
 			item-value="code"
 			class="mb-6"
@@ -55,9 +46,6 @@
 			:error-messages="validationMsg('unit')"
 			label="Unit 1"
 			name="unit"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			@blur="validate('unit')"
 		/>
@@ -72,9 +60,6 @@
 					:label="divisionFields[divisionFieldsValidationString][i].label"
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
 					name="division"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 					class="mb-6"
 					@keydown="validate(`${divisionFieldsValidationString}.${key}`)"
 					@blur="validate(`${divisionFieldsValidationString}.${key}`)"
@@ -90,9 +75,6 @@
 			name="quantity-one"
 			type="number"
 			min="1"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			hide-spin-buttons
 			@blur="validate('quantity')"
@@ -108,9 +90,6 @@
 			name="value"
 			type="number"
 			min="1"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			hide-spin-buttons
 			@blur="validate('value')"
@@ -125,9 +104,6 @@
 			:optional="isModalityInKind"
 			label="Currency"
 			name="currency"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="value"
 			item-value="code"
 			class="mb-6"
@@ -140,9 +116,6 @@
 			:error-messages="validationMsg('secondUnit')"
 			label="Unit 2"
 			name="unit"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			optional
 			@blur="validate('secondUnit')"
@@ -156,9 +129,6 @@
 			name="quantity-two"
 			type="number"
 			min="1"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			hide-spin-buttons
 			@blur="validate('secondQuantity')"
@@ -179,9 +149,6 @@
 			:error-messages="validationMsg('description')"
 			label="Description"
 			name="description"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			@blur="validate('description')"
 		/>
@@ -232,9 +199,6 @@
 			label="Cashback Limit"
 			name="cashback-limit"
 			type="number"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			hide-spin-buttons
 			@blur="validate('cashbackLimit')"
@@ -325,6 +289,7 @@ export default {
 					required: false,
 					minValue: minValue(1),
 				},
+				// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 				divisionNwsFields: {
 					firstNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
@@ -741,6 +706,7 @@ export default {
 				return;
 			}
 
+			// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 			if (this.displayedFields.householdMembersNwsFields) {
 				this.formModel.payloadDivisionNwsFields[0].value = this.formModel
 					.divisionNwsFields.firstNwsFields;

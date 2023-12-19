@@ -8,9 +8,6 @@
 			label="Name of Assistance"
 			name="name-of-assistance"
 			persistent-placeholder
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mt-4 mb-5"
 			maxlength="70"
 			@input="isValid"

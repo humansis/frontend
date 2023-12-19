@@ -44,9 +44,6 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="value"
 			item-value="code"
 			is-search-enabled
@@ -65,9 +62,6 @@
 			v-model="formModel.sector"
 			label="Sector"
 			name="sector"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mt-4 mb-6"
 			disabled
 		/>
@@ -76,9 +70,6 @@
 			v-model="subSectorName"
 			label="Subsector"
 			name="subsector"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			disabled
 		/>
@@ -87,9 +78,6 @@
 			v-model="formModel.type"
 			label="Assistance Type"
 			name="assistance-type"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			disabled
 		/>
@@ -98,9 +86,7 @@
 			v-model="formModel.target"
 			label="Target"
 			name="target"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
+
 			class="mb-6"
 			disabled
 		/>
@@ -124,9 +110,6 @@
 					v-model="scoringType"
 					label="Scoring"
 					name="scoring"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 					disabled
 				/>
 			</v-col>
@@ -136,9 +119,6 @@
 					v-model="minimumVulnerabilityScore"
 					label="Minimum Vulnerability Score"
 					name="minimum-vulnerability-score"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 					class="mb-6"
 					disabled
 				/>
@@ -179,9 +159,6 @@
 			v-model="formModel.cashbackLimit"
 			label="Cashback Limit"
 			name="cashback-limit"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			disabled
 		/>

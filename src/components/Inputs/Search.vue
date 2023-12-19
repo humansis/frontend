@@ -3,9 +3,6 @@
 		v-model="value"
 		label="Search"
 		name="search"
-		variant="outlined"
-		density="compact"
-		hide-details="auto"
 		append-inner-icon="search"
 		clearable
 		class="search"

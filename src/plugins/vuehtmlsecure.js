@@ -1,4 +1,3 @@
-import Vue from "vue";
 import sanitizeHtml from "sanitize-html";
 
 const options = {
@@ -11,13 +10,15 @@ const options = {
 	allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
 };
 
-Vue.directive("html-secure", {
-	bind(el, binding) {
+const htmlSecureDirective = {
+	mounted(el, binding) {
 		// eslint-disable-next-line no-param-reassign
 		el.innerHTML = sanitizeHtml(binding.value, options);
 	},
-	update(el, binding) {
+	updated(el, binding) {
 		// eslint-disable-next-line no-param-reassign
 		el.innerHTML = sanitizeHtml(binding.value, options);
 	},
-});
+};
+
+export default htmlSecureDirective;

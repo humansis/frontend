@@ -1,5 +1,80 @@
 <template>
 	<div :class="['d-flex justify-end gc-3 mb-4 mt-2', { 'mt-12': !isAssistanceTargetHouseholdOrIndividual }]">
+		<Modal
+			v-model="addBeneficiaryModal.isOpened"
+			:header="addBeneficiaryModel.removingId
+				? $t('Remove Beneficiary From This Assistance')
+				: $t('Add Beneficiaries to This Assistance')
+			"
+		>
+			<AddBeneficiaryForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				:formModel="addBeneficiaryModel"
+				:assistance="assistance"
+				@addingOrRemovingSubmitted="addedOrRemovedBeneficiary"
+				@formClosed="closeAddBeneficiaryModal"
+			/>
+		</Modal>
+
+		<Modal
+			v-model="inputDistributedModal.isOpened"
+			:header="$t('Input Deduplication')"
+		>
+			<InputDistributed
+				close-button
+				deduplication
+				class="modal-card"
+				@submit="fetchDataAfterBeneficiaryChange"
+				@close="closeInputDistributedModal"
+			/>
+		</Modal>
+
+		<Modal
+			v-model="assignVoucherModal.isOpened"
+			:header="$t('Assign Booklet to a Beneficiary')"
+		>
+			<AssignVoucherForm
+				close-button
+				:submit-button-label="$t('Confirm')"
+				:beneficiary="assignVoucherToBeneficiaryId"
+				:assistance="assistance"
+				:project="project"
+				@scannedCode="assignBookletToBeneficiary"
+				@formClosed="closeAssignVoucherModal"
+			/>
+		</Modal>
+
+		<Modal
+			v-model="addBeneficiariesByIdsModal.isOpened"
+			:header="$t('Add to assistance')"
+		>
+			<InputDistributed
+				close-button
+				adding-to-assistance
+				class="modal-card"
+				@submit="fetchDataAfterBeneficiaryChange"
+				@close="closeAddBeneficiariesByIdsModal"
+			/>
+		</Modal>
+
+		<Modal
+			v-model="beneficiaryModal.isOpened"
+			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
+				: $t('Detail of Beneficiary')"
+			@close="closeBeneficiaryModal"
+		>
+			<EditBeneficiaryForm
+				close-button
+				:submit-button-label="$t('Save')"
+				class="modal-card"
+				:disabled="!beneficiaryModal.isEditing"
+				:formModel="beneficiaryModel"
+				@formSubmitted="submitEditBeneficiaryForm"
+				@formClosed="closeBeneficiaryModal"
+			/>
+		</Modal>
+
 		<v-btn
 			v-if="isAddBeneficiaryAllowed"
 			color="primary"
@@ -41,8 +116,6 @@
 			type="number"
 			min="1"
 			max="100"
-			density="compact"
-			variant="outlined"
 			prepend-icon="exchange-alt	"
 			append-inner-icon="percent"
 			class="random-sample"
@@ -54,21 +127,105 @@
 
 	<Table
 		ref="beneficiariesList"
+		v-model="table.checkedRows"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
-		:isSearchVisible="!upcoming"
+		:show-select="table.settings.checkableTable"
 		is-row-click-disabled
 		reset-sort-button
+		@update:modelValue="onRowsCheck"
 		@per-page-changed="onChangePerPage"
 		@page-changed="onPageChange"
 		@search="onSearch"
 		@update:sortBy="onSort"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
+		@resetSort="resetSort(defaultSortOptions)"
 	>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				v-if="userCan.editDistribution"
+				icon="search"
+				tooltip-text="View"
+				@actionConfirmed="openViewModal(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.editDistribution && !isAssistanceValidated"
+				:disabled="row.removed || isAssistanceCompleted"
+				icon="trash"
+				icon-color="red"
+				tooltip-text="Delete"
+				@actionConfirmed="openAddBeneficiaryModal(getIdForDelete(row), !(row.removed
+					|| isAssistanceCompleted))"
+			/>
+
+			<ButtonAction
+				v-if="table.settings.assignVoucherAction
+					&& userCan.assignDistributionItems"
+				:disabled="!row.canAssignVoucher"
+				icon="qrcode"
+				tooltip-text="Assign Voucher"
+				@actionConfirmed="openAssignVoucherModal(row.id, row.canAssignVoucher)"
+			/>
+		</template>
+
+		<template v-if="assistanceDetail" v-slot:table-header>
+			<v-btn
+				:class="toDistributeButtonClass"
+				color="gray-darken-4"
+				variant="tonal"
+				size="small"
+				class="ml-0"
+				prepend-icon="sticky-note"
+				@click="statusFilter('toDistribute', 'To distribute')"
+				@keydown.enter.prevent
+			>
+				{{ $t('To distribute') }}
+			</v-btn>
+
+			<v-btn
+				:class="distributedButtonClass"
+				color="green-darken-4"
+				variant="tonal"
+				size="small"
+				class="ml-0"
+				prepend-icon="sticky-note"
+				@click="statusFilter('distributed')"
+				@keydown.enter.prevent
+			>
+				{{ $t('Distributed') }}
+			</v-btn>
+
+			<v-btn
+				:class="expiredButtonClass"
+				class="ml-0"
+				color="red-darken-1"
+				variant="tonal"
+				size="small"
+				prepend-icon="sticky-note"
+				@click="statusFilter('expired')"
+				@keydown.enter.prevent
+			>
+				{{ $t('Expired') }}
+			</v-btn>
+
+			<v-btn
+				:class="canceledButtonClass"
+				class="ml-0"
+				color="amber-lighten-1"
+				variant="tonal"
+				size="small"
+				prepend-icon="sticky-note"
+				@click="statusFilter('canceled')"
+				@keydown.enter.prevent
+			>
+				{{ $t('Canceled') }}
+			</v-btn>
+		</template>
+
 		<template v-slot:export>
 			<ExportControl
 				:disabled="isExportButtonDisabled"
@@ -88,53 +245,50 @@ import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
-// import ActionButton from "@/components/ActionButton";
-// import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
-// import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
-// import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-// import EditCommunityForm from "@/components/Assistance/BeneficiariesList/EditCommunityForm";
-// import InputDistributed from "@/components/Assistance/InputDistributed/index";
-// import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
+import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
+import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
+import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
+import InputDistributed from "@/components/Assistance/InputDistributed/index";
+import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
+import ButtonAction from "@/components/ButtonAction";
 import Table from "@/components/DataGrid/Table";
 import DataInput from "@/components/Inputs/DataInput";
 import ExportControl from "@/components/Inputs/ExportControl";
-// import Modal from "@/components/Modal";
+import Modal from "@/components/Inputs/Modal";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
+import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, INSTITUTION } from "@/consts";
+import { ASSISTANCE, EXPORT, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: "To distribute", type: "is-light" },
-	{ code: "Distribution in progress", type: "is-info" },
-	{ code: "Distributed", type: "is-success" },
-	{ code: "Expired", type: "is-danger" },
-	{ code: "Canceled", type: "is-warning" },
+	{ code: "To distribute", type: "grey-lighten-2" },
+	{ code: "Distributed", type: "green-lighten-1" },
+	{ code: "Expired", type: "red-lighten-1" },
+	{ code: "Canceled", type: "amber-lighten-4" },
 ];
 
 export default {
 	name: "BeneficiariesList",
 
 	components: {
-		// AssignVoucherForm,
-		// AddBeneficiaryForm,
-		// EditBeneficiaryForm,
-		// EditCommunityForm,
+		AssignVoucherForm,
+		AddBeneficiaryForm,
+		EditBeneficiaryForm,
 		Table,
 		DataInput,
-		// ActionButton,
-		// Modal,
+		ButtonAction,
+		Modal,
 		ExportControl,
-		// ColumnField,
-		// InputDistributed,
-		// InstitutionForm,
+		InputDistributed,
+		InstitutionForm,
 	},
 
-	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper],
+	mixins: [permissions, baseHelper, beneficiariesHelper, urlFiltersHelper, grid],
 
 	props: {
 		assistance: Object,
@@ -212,6 +366,7 @@ export default {
 					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities", type: "svgIcon" },
+					{ key: "actions", value: "actions", sortable: false },
 				],
 				communityColumns: [
 					{ key: "id", label: "ID", sortable: true },
@@ -220,12 +375,13 @@ export default {
 					{ key: "contactFamilyName", sortable: true },
 				],
 				institutionEditColumns: [
-					{ key: "id", label: "ID", sortable: true },
-					{ key: "name", sortable: true },
-					{ key: "type", sortable: true },
-					{ key: "contactGivenName", sortable: true },
-					{ key: "contactFamilyName", sortable: true },
-					{ key: "phone", label: "Phone Number" },
+					{ key: "id", label: "ID" },
+					{ key: "name" },
+					{ key: "type" },
+					{ key: "contactGivenName" },
+					{ key: "contactFamilyName" },
+					{ key: "phone", label: "Phone Number", sortable: false },
+					{ key: "actions", value: "actions", sortable: false },
 				],
 			},
 			addBeneficiaryModal: {
@@ -328,6 +484,7 @@ export default {
 					: [],
 				{ key: "spent", type: "arrayTextBreak", sortable: true },
 				{ key: "lastModified", type: "arrayTextBreak", sortable: true },
+				{ key: "actions", value: "actions", sortable: false },
 			];
 
 			if (!this.isCommoditySmartcard) {
@@ -350,6 +507,7 @@ export default {
 				{ key: "toDistribute", type: "arrayTextBreak" },
 				{ key: "distributed", type: "arrayTextBreak" },
 				{ key: "lastModified", type: "arrayTextBreak" },
+				{ key: "actions", value: "actions", sortable: false },
 			];
 		},
 
@@ -448,14 +606,23 @@ export default {
 			return this.exportControl.loading
 				|| (!this.isBnfFile3Exported && this.exportControl.isBnfFileTypeSelected);
 		},
+
+		defaultSortOptions() {
+			if (!this.assistanceDetail) {
+				if (this.assistance.target === ASSISTANCE.TARGET.INSTITUTION) {
+					return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION;
+				}
+				return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD;
+			}
+		},
 	},
 
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
-				if (newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
-					this.table.sortColumn = "";
-					this.table.sortDirection = "";
+				if (!this.assistanceDetail && newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
+					this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.key;
+					this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.order;
 				}
 
 				await this.reloadBeneficiariesList();
@@ -464,13 +631,23 @@ export default {
 	},
 
 	async created() {
-		if (this.assistanceDetail) {
+		if (!this.assistanceDetail) {
+			if (this.assistance?.target === ASSISTANCE.TARGET.HOUSEHOLD
+				|| this.assistance?.target === ASSISTANCE.TARGET.INDIVIDUAL) {
+				this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.key;
+				this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.order;
+			}
+		} else {
 			this.setGridFilters("assistanceDetail", false);
 		}
 		await this.reloadBeneficiariesList();
 	},
 
 	methods: {
+		test(item) {
+			console.log(item);
+		},
+
 		async reloadBeneficiariesList() {
 			if (this.assistance) {
 				this.prepareTableColumns();
@@ -564,9 +741,9 @@ export default {
 
 		openViewModal(row) {
 			if (this.isAssistanceTargetInstitution) {
-				this.showDetail(row);
+				this.showDetailModal(row);
 			} else {
-				this.showEdit(row);
+				this.showEditModal(row);
 			}
 		},
 
@@ -601,7 +778,9 @@ export default {
 								this.$route.params.assistanceId,
 								page || this.table.currentPage,
 								size || this.perPage,
-								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+								this.table.sortColumn !== ""
+									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+									: "",
 								this.filters,
 							);
 
@@ -630,7 +809,9 @@ export default {
 								this.$route.params.assistanceId,
 								page || this.table.currentPage,
 								size || this.perPage,
-								this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+								this.table.sortColumn !== ""
+									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+									: "",
 								search,
 								this.filters,
 							);

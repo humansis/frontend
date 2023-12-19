@@ -1,6 +1,6 @@
 <template>
 	<template v-if="(!column.type || (column.type === 'text'))">
-		{{ cellData }}
+		<div v-html-secure="cellData" />
 	</template>
 
 	<template v-if="column.type === 'assistancesType'">
@@ -32,6 +32,21 @@
 		>
 			{{ normalizeText($t(cellData)) }}
 		</v-chip>
+	</template>
+
+	<template v-if="column.type === 'tagArray'">
+		<div
+			v-for="(item, index) in cellData"
+			:key="`tags-array-item-${index}`"
+		>
+			<v-chip
+				variant="flat"
+				:color="getTagTypeByItem(item)"
+				size="small"
+			>
+				{{ normalizeText($t(cellData[index])) }}
+			</v-chip>
+		</div>
 	</template>
 
 	<template v-if="column.type === 'link'">
@@ -128,11 +143,15 @@ export default {
 		},
 
 		getRouteName() {
-			return "Home";
+			return this.cellData.routeName || "Home";
 		},
 
 		getLinkName() {
 			return this.cellData.name || "";
+		},
+
+		getTagTypeByItem(item) {
+			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
 
 		isAssistanceRemote(data) {

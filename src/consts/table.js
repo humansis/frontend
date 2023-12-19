@@ -3,5 +3,9 @@ export default {
 	DEFAULT_SORT_OPTIONS: {
 		ASSISTANCES: { key: "dateDistribution", order: "desc" },
 		PROJECTS: { key: "endDate", order: "desc" },
+		ASSISTANCE_EDIT: {
+			HOUSEHOLD: { key: "id", order: "desc" },
+			INSTITUTION: { key: "id", order: "desc" },
+		},
 	},
 };

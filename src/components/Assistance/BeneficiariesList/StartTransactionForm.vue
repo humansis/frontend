@@ -1,16 +1,21 @@
 <template>
 	<v-card-text>
-		<DataSelect
-			v-model="newProject"
-			:items="projects"
-			:error-messages="validationMsg('newProject')"
-			:clearable="true"
-			label="Target project"
-			name="target-project"
-			item-title="name"
-			item-value="id"
-			is-search-enabled
-			class="my-4"
+		<v-alert
+			variant="outlined"
+			type="success"
+			border="top"
+			class="mt-5"
+		>
+			{{ $t('The confirmation code has been sent to your email') }}.
+		</v-alert>
+
+		<DataInput
+			v-model="formModel.code"
+			:error-messages="validationMsg('code')"
+			label="code"
+			name="code"
+			class="mb-6"
+			@blur="validate('code')"
 		/>
 	</v-card-text>
 
@@ -18,6 +23,7 @@
 		<v-spacer />
 
 		<v-btn
+			v-if="closeButton"
 			class="text-none"
 			size="small"
 			color="blue-grey-lighten-4"
@@ -34,60 +40,61 @@
 			variant="elevated"
 			@click="submitForm"
 		>
-			{{ $t('Move') }}
+			{{ $t(submitButtonLabel) }}
 		</v-btn>
 	</v-card-actions>
 </template>
 
 <script>
-import DataSelect from "@/components/Inputs/DataSelect";
+import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
 import { required } from "@vuelidate/validators";
 
 export default {
-	name: "AssistanceForm",
+	name: "StartTransactionsForm",
 
 	components: {
-		DataSelect,
+		DataInput,
 	},
 
 	mixins: [validation],
 
 	validations() {
 		return {
-			newProject: { required },
+			formModel: {
+				code: { required },
+			},
 		};
 	},
 
 	props: {
-		projects: {
-			type: Array,
-			default: () => [],
-		},
+		submitButtonLabel: String,
+		closeButton: Boolean,
 	},
 
 	data() {
 		return {
-			newProject: null,
+			formModel: {
+				code: null,
+			},
 		};
 	},
 
 	methods: {
 		submitForm() {
 			this.v$.$touch();
-
 			if (this.v$.$invalid) {
 				return;
 			}
 
-			this.$emit("formSubmitted", this.newProject);
-			this.closeForm();
+			this.$emit("formSubmitted", this.formModel.code);
+			this.v$.$reset();
 		},
 
 		closeForm() {
 			this.$emit("formClosed");
-			this.v$.$reset();
 		},
+
 	},
 };
 </script>

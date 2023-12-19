@@ -35,9 +35,6 @@
 				:items="options.rounds"
 				label="Round"
 				name="round"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="value"
 				item-value="code"
 				class="mb-6"
@@ -49,9 +46,6 @@
 				v-model="formModel.eloNumber"
 				label="Elo number"
 				name="elo-number"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				class="mb-6"
 			/>
 
@@ -61,9 +55,6 @@
 					v-model="formModel.activity"
 					label="Activity"
 					name="activity"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 				/>
 
 				<DataSelect
@@ -73,9 +64,6 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 					item-title="value"
 					item-value="code"
 					is-search-enabled
@@ -89,9 +77,6 @@
 					v-model="formModel.budgetLine"
 					label="Budget line"
 					name="budget-line"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 				/>
 
 				<DataSelect
@@ -101,9 +86,6 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
-					variant="outlined"
-					density="compact"
-					hide-details="auto"
 					item-title="value"
 					item-value="code"
 					is-search-enabled
@@ -126,9 +108,6 @@
 				:error-messages="validationMsg('sector')"
 				label="Sector"
 				name="sector"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="value"
 				item-value="code"
 				class="mb-6"
@@ -142,9 +121,6 @@
 				:error-messages="validationMsg('subsector')"
 				label="Subsector"
 				name="sub-sector"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="value"
 				item-value="code"
 				class="mb-6"
@@ -158,9 +134,6 @@
 				:error-messages="validationMsg('assistanceType')"
 				label="Assistance Type"
 				name="assistance-type"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="value"
 				item-value="code"
 				class="mb-6"
@@ -174,9 +147,6 @@
 				:error-messages="validationMsg('targetType')"
 				label="Target Type"
 				name="target-type"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="value"
 				item-value="code"
 				@update:modelValue="onTargetTypeSelect"
@@ -447,6 +417,7 @@ export default {
 				this.validate("targetType");
 				this.$emit("onTargetSelect", targetType);
 				await this.showComponents();
+				this.$emit("updatedData", this.formModel);
 			}
 		},
 

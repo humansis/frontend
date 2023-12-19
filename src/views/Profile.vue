@@ -9,9 +9,6 @@
 						v-model="userForm.email"
 						label="Email"
 						name="email"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-4"
 						disabled
 					/>
@@ -24,9 +21,6 @@
 						label="Old Password"
 						name="old-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
 						@blur="validate('oldPassword', 'password')"
 					/>
@@ -37,9 +31,6 @@
 						label="New Password"
 						name="new-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
 						@blur="validate('newPassword', 'password')"
 					/>
@@ -50,9 +41,6 @@
 						label="Re-Enter New Password"
 						name="re-enter-new-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
 						@blur="validate('reenteredPassword', 'password')"
 					/>
@@ -80,9 +68,6 @@
 								:error-messages="validationMsg('prefix', 'phone')"
 								label="Phone Ext"
 								name="phone-ext"
-								variant="outlined"
-								density="compact"
-								hide-details="auto"
 								item-title="value"
 								item-value="code"
 								is-search-enabled
@@ -97,9 +82,6 @@
 								:error-messages="validationMsg('number', 'phone')"
 								label="Phone Number"
 								name="phone-number"
-								variant="outlined"
-								density="compact"
-								hide-details="auto"
 								@blur="validate('number', 'phone')"
 							/>
 						</v-col>

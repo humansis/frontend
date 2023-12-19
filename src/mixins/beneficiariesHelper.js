@@ -180,7 +180,7 @@ export default {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		showDetail(beneficiary) {
+		showDetailModal(beneficiary) {
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityDetail(beneficiary);
@@ -195,7 +195,8 @@ export default {
 			}
 		},
 
-		showEdit({ id }) {
+		showEditModal({ id }) {
+			console.log(id);
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityEdit(id);

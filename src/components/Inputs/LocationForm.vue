@@ -10,9 +10,6 @@
 			:disabled="formDisabled || disabledAdm.adm1"
 			:clearable="true"
 			name="province"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="name"
 			item-value="id"
 			is-search-enabled
@@ -28,9 +25,6 @@
 			:disabled="formDisabled || disabledAdm.adm2"
 			:clearable="true"
 			name="district"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="name"
 			item-value="id"
 			is-search-enabled
@@ -47,9 +41,6 @@
 			:disabled="formDisabled || disabledAdm.adm3"
 			:clearable="true"
 			name="commune"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="name"
 			item-value="id"
 			is-search-enabled
@@ -73,9 +64,6 @@
 			:disabled="formDisabled || disabledAdm.adm4"
 			:clearable="true"
 			name="village"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			item-title="name"
 			item-value="id"
 			is-search-enabled

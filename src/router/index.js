@@ -182,18 +182,17 @@ const routes = [
 									parent: "Assistance",
 								},
 							},
+							{
+								path: "assistance/detail/:assistanceId",
+								name: "AssistanceDetail",
+								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceDetail"),
+								meta: {
+									breadcrumb: t("Assistance Detail"),
+									description: "",
+								},
+							},
 						],
 					},
-					//  					},
-					//  					{
-					//  						path: "assistance/detail/:assistanceId",
-					//  						name: "AssistanceDetail",
-					//  						component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/AssistanceDetail"),
-					//  						meta: {
-					//  							breadcrumb: () => i18n.t("Assistance Detail"),
-					//  							description: "",
-					//  						},
-					//  					},
 				],
 			},
 			//  		],

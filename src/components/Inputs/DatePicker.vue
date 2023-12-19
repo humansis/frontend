@@ -14,9 +14,7 @@
 				:name="name"
 				:error-messages="$attrs['error-messages']"
 				:disabled="disabled"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
+				:optional="optional"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
 				class="mb-6"
@@ -74,6 +72,11 @@ export default {
 		},
 
 		disabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		optional: {
 			type: Boolean,
 			default: false,
 		},

@@ -13,9 +13,6 @@
 				:error-messages="validationMsg('communities')"
 				label="Communities"
 				name="communities"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="name"
 				item-value="id"
 				multiple
@@ -30,9 +27,6 @@
 				:error-messages="validationMsg('institutions')"
 				label="Institutions"
 				name="institutions"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				item-title="name"
 				item-value="id"
 				multiple
