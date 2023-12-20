@@ -149,8 +149,7 @@ export default {
 				condition: { required },
 				value: { required: requiredIf(
 					this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION,
-				),
-				},
+				) },
 			},
 		};
 	},

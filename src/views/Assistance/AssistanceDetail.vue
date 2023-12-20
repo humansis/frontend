@@ -2,7 +2,7 @@
 	<v-container fluid>
 		<Modal
 			v-model="inputDistributedModal.isOpened"
-			header="'Input Distributed"
+			header="Input Distributed"
 		>
 			<InputDistributed
 				close-button
@@ -18,7 +18,7 @@
 		>
 			<StartTransactionForm
 				close-button
-				:submit-button-label="$t('Confirm')"
+				submit-button-label="Confirm"
 				class="modal-card"
 				@formSubmitted="confirmTransaction"
 				@formClosed="closeTransactionModal"

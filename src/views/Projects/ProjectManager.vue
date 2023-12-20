@@ -185,11 +185,11 @@
 		<v-row class="mt-5">
 			<v-col class="d-flex justify-end">
 				<v-btn
-					class="text-none"
+					:to="{ name: 'Projects' }"
 					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
-					@click="$router.push({ name: 'Projects' })"
+					class="text-none"
 				>
 					{{ $t('Cancel') }}
 				</v-btn>

@@ -94,11 +94,11 @@
 
 		<div class="d-flex justify-end mt-5">
 			<v-btn
+				:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
 				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="text-none mr-3"
-				@click="goBack"
 			>
 				{{ $t('Back') }}
 			</v-btn>
@@ -637,13 +637,6 @@ export default {
 			Object.keys(this.visibleComponents).forEach((item) => {
 				this.visibleComponents[item] = components
 					.find((component) => item === component);
-			});
-		},
-
-		goBack() {
-			this.$router.push({
-				name: "Project",
-				params: { projectId: this.$route.params.projectId },
 			});
 		},
 

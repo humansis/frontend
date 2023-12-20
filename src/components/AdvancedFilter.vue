@@ -12,13 +12,13 @@
 				v-if="!options.type || options.type === 'multiselect'"
 				v-model="selectedFiltersOptions[filter]"
 				:label="$t(options.name)"
-				:multiple="true"
 				:loading="options.loading"
 				:items="options.data"
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
 				name="filter-select"
 				is-search-enabled
+				multiple
 				clearable
 				@update:modelValue="filterChanged(filter)"
 			/>

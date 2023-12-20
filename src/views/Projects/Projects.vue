@@ -4,11 +4,11 @@
 			<h2 class="me-auto">{{ $t('Projects') }}</h2>
 
 			<v-btn
-				class="text-none ml-0"
+				:to="{ name: 'AddProject' }"
 				color="primary"
 				size="small"
 				prepend-icon="plus"
-				@click="$router.push({ name: 'AddProject' })"
+				class="text-none ml-0"
 			>
 				{{ $t('New') }}
 			</v-btn>
@@ -16,8 +16,8 @@
 
 		<ProjectsList
 			ref="projectsList"
-			@showDetail="(id) => $router.push({ name: 'ProjectDetail', params: { projectId: id } })"
-			@showEdit="(id) => $router.push({ name: 'ProjectEdit', params: { projectId: id } })"
+			@showDetail="showDetail"
+			@showEdit="showEdit"
 			@onDelete="onProjectDelete"
 		/>
 	</v-container>
@@ -43,6 +43,20 @@ export default {
 	},
 
 	methods: {
+		showEdit(id) {
+			this.$router.push({
+				name: "ProjectEdit",
+				params: { projectId: id },
+			});
+		},
+
+		showDetail(id) {
+			this.$router.push({
+				name: "ProjectDetail",
+				params: { projectId: id },
+			});
+		},
+
 		async onProjectDelete(id) {
 			await ProjectService.deleteProject(id).then((response) => {
 				if (response.status === 204) {

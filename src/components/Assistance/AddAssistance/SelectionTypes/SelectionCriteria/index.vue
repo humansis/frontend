@@ -52,8 +52,8 @@
 
 	<SelectionCriteriaGroup
 		v-for="(group, key) of groups"
-		:data="group && group.data"
-		:count="group && group.tableData?.length"
+		:data="group?.data"
+		:count="group?.tableData?.length"
 		:key="key"
 		:group-id="key"
 		:target-type="selectedTargetType"
