@@ -9,6 +9,7 @@
 		:variant="variant"
 		:density="density"
 		:hide-details="hideDetails"
+		:multiple="multiple"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
@@ -18,7 +19,7 @@
 			</span>
 		</template>
 
-		<template v-slot:item="{ props, item }">
+		<template v-if="!multiple" v-slot:item="{ props, item }">
 			<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
 		</template>
 
@@ -46,7 +47,7 @@
 		</template>
 
 		<template v-slot:prepend-item>
-			<v-list v-if="isSearchEnabled || $attrs.multiple">
+			<v-list v-if="isSearchEnabled || multiple">
 				<v-list-item v-if="isSearchEnabled">
 					<v-text-field
 						v-model="searchValue"
@@ -58,7 +59,7 @@
 				</v-list-item>
 
 				<v-list-item
-					v-if="$attrs.multiple"
+					v-if="multiple"
 					:title="$t('Select All')"
 					@click="selectAll"
 				>
@@ -155,6 +156,11 @@ export default {
 		hideDetails: {
 			type: String,
 			default: "auto",
+		},
+
+		multiple: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

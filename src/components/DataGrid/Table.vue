@@ -14,6 +14,7 @@
 				/>
 
 				<slot name="export" />
+				<slot name="filterButton" />
 				<slot name="table-header" />
 			</v-col>
 
@@ -30,6 +31,8 @@
 				</div>
 			</v-col>
 		</v-row>
+
+		<slot name="filter" />
 
 		<v-data-table
 			v-bind="$attrs"
