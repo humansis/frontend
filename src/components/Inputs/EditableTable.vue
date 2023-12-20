@@ -58,8 +58,8 @@
 			<tr class="last-row">
 				<td :colspan="preparedColumns.length + 1">
 					<v-btn
-						class="text-none"
 						:disabled="tableAction.isDetail || !isUserAllowedUseTableAction"
+						class="text-none"
 						@click="addNewRow"
 					>
 						<span>
@@ -77,8 +77,8 @@
 			:form-inputs="preparedInputs"
 			:modal-state="editableTableModal"
 			:form-data="formData"
-			close-button
 			create-button-label="Add Target"
+			close-button
 			@formClosed="closeProjectTargetModal"
 			@rowConfirmed="rowConfirmed"
 			@modalInputChanged="$emit('modalInputChanged', $event)"
@@ -211,9 +211,10 @@ export default {
 
 		rowConfirmed(data) {
 			this.$emit("tableChanged", { ...data, index: this.table.index });
+
 			Notification(
 				this.$t(`${this.contentName} Successfully ${data.isCreate ? "Created" : "Edited"}`),
-				"is-success",
+				"success",
 			);
 			this.editableTableModal.isOpened = false;
 		},
@@ -238,14 +239,15 @@ export default {
 				this.formData = {};
 				this.editableTableModal.isOpened = true;
 			} else {
-				Notification(`${this.$t(this.noOpenableModalMessage)}`, "is-danger");
+				Notification(`${this.$t(this.noOpenableModalMessage)}`, "error");
 			}
 		},
 
 		deleteRow(index) {
 			this.table.data.splice(index, 1);
 			this.$emit("rowRemoved");
-			Notification(this.$t(`${this.contentName} Successfully Deleted`), "is-success");
+
+			Notification(this.$t(`${this.contentName} Successfully Deleted`), "success");
 		},
 
 		closeProjectTargetModal() {

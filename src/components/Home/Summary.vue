@@ -91,7 +91,7 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "error");
+						Notification(`${this.$t("Summaries")} ${e.message || e}`, "error");
 					});
 			});
 		},

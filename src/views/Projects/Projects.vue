@@ -8,7 +8,7 @@
 				color="primary"
 				size="small"
 				prepend-icon="plus"
-				@click="addNewProject"
+				@click="$router.push({ name: 'AddProject' })"
 			>
 				{{ $t('New') }}
 			</v-btn>
@@ -16,8 +16,8 @@
 
 		<ProjectsList
 			ref="projectsList"
-			@showDetail="showDetail"
-			@showEdit="showEdit"
+			@showDetail="(id) => $router.push({ name: 'ProjectDetail', params: { projectId: id } })"
+			@showEdit="(id) => $router.push({ name: 'ProjectEdit', params: { projectId: id } })"
 			@onDelete="onProjectDelete"
 		/>
 	</v-container>
@@ -27,7 +27,7 @@ import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import ProjectsList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
-import { Notification } from "@/utils/UI.js";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Projects",
@@ -43,24 +43,6 @@ export default {
 	},
 
 	methods: {
-		showEdit(id) {
-			this.$router.push({
-				name: "ProjectEdit",
-				params: { projectId: id },
-			});
-		},
-
-		addNewProject() {
-			this.$router.push({ name: "AddProject" });
-		},
-
-		showDetail(id) {
-			this.$router.push({
-				name: "ProjectDetail",
-				params: { projectId: id },
-			});
-		},
-
 		async onProjectDelete(id) {
 			await ProjectService.deleteProject(id).then((response) => {
 				if (response.status === 204) {
@@ -68,7 +50,7 @@ export default {
 					this.$refs.projectsList.removeFromList(id);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
+				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 			});
 		},
 	},

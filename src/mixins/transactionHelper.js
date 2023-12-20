@@ -155,7 +155,7 @@ export default {
 			return ProductService.getProducts(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
+					Notification(`${this.$t("Products")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -164,7 +164,7 @@ export default {
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -173,7 +173,7 @@ export default {
 			return VendorService.getListOfVendors(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -206,7 +206,7 @@ export default {
 			return AssistancesService.getAssistances(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -214,7 +214,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -222,7 +222,7 @@ export default {
 			return ProjectService.getListOfProjects(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -234,7 +234,7 @@ export default {
 					this.filtersOptions.project.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -245,7 +245,7 @@ export default {
 					this.filtersOptions.commodity.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Modality")}${e}`, "is-danger");
+					Notification(`${this.$t("Modality")}${e.message || e}`, "error");
 				});
 		},
 
@@ -260,7 +260,7 @@ export default {
 					this.filtersOptions.vendor.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Vendor")}${e}`, "is-danger");
+					Notification(`${this.$t("Vendor")}${e.message || e}`, "error");
 				});
 		},
 
@@ -271,7 +271,7 @@ export default {
 					this.filtersOptions.beneficiaryType.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiary Types")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -284,7 +284,7 @@ export default {
 					this.filtersOptions.distribution.data = data;
 					this.filtersOptions.distribution.loading = false;
 				}).catch((e) => {
-					Notification(`Project Assistances ${e}`, "is-danger");
+					Notification(`Project Assistances ${e.message || e}`, "error");
 				});
 		},
 	},

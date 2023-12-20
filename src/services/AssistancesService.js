@@ -237,7 +237,6 @@ export default {
 	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filters = null) {
 		let fulltext = "";
 
-		console.log(sort);
 		if (search.field?.length && search.phrase?.length) {
 			fulltext = `&filter[${search.field}]=${search.phrase}`;
 		} else if (search.length) {

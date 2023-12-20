@@ -110,15 +110,16 @@ export default {
 
 <style lang="scss">
 .v-date-picker-month__day {
-	height: 36px;
-	width: 40px;
+	height: 2.25rem;
+	width: 2.5rem;
 }
 
 .v-date-picker-month__weekday {
 	font-weight: bold;
 }
 
-.v-date-picker-months, .v-date-picker-years {
+.v-date-picker-months,
+.v-date-picker-years {
 	overflow-y: hidden;
 }
 </style>

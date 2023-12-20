@@ -1,15 +1,10 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { getCookie } from "@/utils/cookie";
-import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
 // import { Notification } from "@/utils/UI";
 // import { ROLE } from "@/consts";
 import getters from "@/store/getters";
 import store from "@/store/index";
-
-const {
-	global: { t },
-} = i18n;
 
 let singleNotification = true;
 //const user = getters.getUserFromVuexStorage();
@@ -98,8 +93,8 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				meta: {
 					permissions: [],
-					breadcrumb: t("Home"),
-					description: t("This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones."),
+					breadcrumb: "Home",
+					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
 				},
 			},
 			{
@@ -112,8 +107,8 @@ const routes = [
 						component: () => import("@/views/Projects/Projects"),
 						meta: {
 							permissions: [],
-							breadcrumb: t("Projects"),
-							description: t("This page is where you can see all the country's projects (only thoses that you have the right to see)."),
+							breadcrumb: "Projects",
+							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
 					{
@@ -122,8 +117,8 @@ const routes = [
 						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/Projects/ProjectManager"),
 						meta: {
 							permissions: [],
-							breadcrumb: t("Add Project"),
-							description: t("This page is a form to add a new project to a humansis."),
+							breadcrumb: "Add Project",
+							description: "This page is a form to add a new project to a humansis.",
 						},
 					},
 					{
@@ -132,8 +127,8 @@ const routes = [
 						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/Projects/ProjectManager"),
 						meta: {
 							permissions: [],
-							breadcrumb: t("Project detail"),
-							description: t("This page is a form to show detail of a project in humansis."),
+							breadcrumb: "Project detail",
+							description: "This page is a form to show detail of a project in humansis.",
 						},
 					},
 					{
@@ -142,15 +137,15 @@ const routes = [
 						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/Projects/ProjectManager"),
 						meta: {
 							permissions: [],
-							breadcrumb: t("Project detail"),
-							description: t("This page is a form to edit a project in humansis."),
+							breadcrumb: "Project detail",
+							description: "This page is a form to edit a project in humansis.",
 						},
 					},
 					{
 						path: "/:countryCode/project/:projectId",
 						component: RouterView,
 						meta: {
-							breadcrumb: t("Project"),
+							breadcrumb: "Project",
 						},
 						children: [
 							{
@@ -159,7 +154,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects/Project"),
 								meta: {
 									permissions: [],
-									description: t("This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions."),
+									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
 							{
@@ -167,7 +162,7 @@ const routes = [
 								name: "AssistanceEdit",
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/Assistance/AssistanceEdit"),
 								meta: {
-									breadcrumb: t("Edit Assistance"),
+									breadcrumb: "Edit Assistance",
 									description: "",
 								},
 							},
@@ -177,8 +172,8 @@ const routes = [
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
 									permissions: ["addDistribution"],
-									breadcrumb: t("Add Assistance"),
-									description: t("This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed."),
+									breadcrumb: "Add Assistance",
+									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
 								},
 							},
@@ -187,7 +182,7 @@ const routes = [
 								name: "AssistanceDetail",
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceDetail"),
 								meta: {
-									breadcrumb: t("Assistance Detail"),
+									breadcrumb: "Assistance Detail",
 									description: "",
 								},
 							},
@@ -455,8 +450,8 @@ const routes = [
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				meta: {
 					permissions: [],
-					breadcrumb: t("Profile"),
-					description: t("This page is where you can change your password"),
+					breadcrumb: "Profile",
+					description: "This page is where you can change your password",
 				},
 			},
 		],
@@ -467,7 +462,7 @@ const routes = [
 		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
 		meta: {
 			permissions: [],
-			breadcrumb: t("No permission"),
+			breadcrumb: "No permission",
 		},
 	},
 	{

@@ -26,7 +26,7 @@
 
 	<Modal
 		v-model="detailModal.isOpened"
-		:header="$t('Selected Beneficiaries')"
+		header="Selected Beneficiaries"
 	>
 		<BeneficiariesModalList
 			close-button
@@ -37,7 +37,7 @@
 
 	<Modal
 		v-model="criteriaModal.isOpened"
-		:header="$t('Create New Criteria')"
+		header="Create New Criteria"
 	>
 		<SelectionCriteriaForm
 			close-button
@@ -53,7 +53,7 @@
 	<SelectionCriteriaGroup
 		v-for="(group, key) of groups"
 		:data="group && group.data"
-		:count="group && group.tableData.length"
+		:count="group && group.tableData?.length"
 		:key="key"
 		:group-id="key"
 		:target-type="selectedTargetType"
@@ -308,7 +308,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
@@ -492,7 +492,7 @@ export default {
 							}
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+						Notification(`${this.$t("Calculation")} ${e.message || e}`, "error");
 					});
 			}
 
@@ -516,7 +516,7 @@ export default {
 							this.beneficiariesScores = data.data;
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Calculation")} ${e}`, "is-danger");
+						Notification(`${this.$t("Calculation")} ${e.message || e}`, "error");
 					}).finally(() => {
 						this.minimumSelectionScoreValid = null;
 					});
@@ -540,7 +540,7 @@ export default {
 					});
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
 				}).finally(() => {
 					this.scoringTypesLoading = false;
 					this.scoringType = this.options.scoringTypes?.[0] || null;

@@ -1,8 +1,4 @@
-import i18n from "@/plugins/i18n";
 import { useVuelidate } from "@vuelidate/core";
-import {isIdsListLengthValid} from "@/utils/customValidators";
-
-const { global: { t } } = i18n;
 
 export default {
 	data() {
@@ -57,27 +53,27 @@ export default {
 			if (Object.keys(validation).includes("required")
 				&& validation.required.$invalid
 				&& validation.$errors[0]) {
-				return t("This value is required");
+				return this.$t("This value is required");
 			}
 
 			if (Object.keys(validation).includes("minValue")
 				&& validation.minValue.$invalid
 				&& validation.$errors[0]) {
-				return t(validation?.$errors[0]?.$message);
+				return this.$t(validation?.$errors[0]?.$message);
 			}
 
 			if (Object.keys(validation).includes("passwordValidation")
 				&& validation.passwordValidation.$invalid && validation.$errors[0]) {
-				return t("The Password Is Not Strong Enough… "
+				return this.$t("The Password Is Not Strong Enough… "
 					+ "Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
 			}
 
 			if (Object.keys(validation).includes("sameAsPassword")
 				&& validation.sameAsPassword.$invalid && validation.$errors[0]) {
-				return t("Passwords must be same");
+				return this.$t("Passwords must be same");
 			}
 
-			return validation?.$error ? t(validation?.$errors[0]?.$message) : "";
+			return validation?.$error ? this.$t(validation?.$errors[0]?.$message) : "";
 		},
 	},
 };

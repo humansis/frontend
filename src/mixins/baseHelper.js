@@ -22,7 +22,7 @@ export default {
 				}
 			}
 
-			if (!finalEntity.length) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
+			if (!finalEntity.length) return (emptyValue === "None") ? this.$t("None") : emptyValue;
 
 			return finalEntity;
 		},

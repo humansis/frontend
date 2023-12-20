@@ -15,7 +15,7 @@
 	</div>
 
 	<span
-		v-if="validationMessages.modalityType.length"
+		v-if="validationMessages.modalityType?.length"
 		class="error"
 	>
 		{{ validationMessages.modalityType }}
@@ -23,18 +23,18 @@
 
 	<Modal
 		v-model="commodityModal.isOpened"
-		:header="$t('Create New Commodity')"
+		header="Create New Commodity"
 	>
 		<DistributedCommodityForm
-			close-button
-			class="modal-card"
 			:project="project"
-			:submit-button-label="$t('Create')"
 			:formModel="formModel"
 			:target-type="targetType"
 			:date-of-assistance="dateOfAssistance"
 			:date-expiration="dateExpiration"
 			:commodity="commodity"
+			submit-button-label="Create"
+			class="modal-card"
+			close-button
 			@formSubmitted="submitCommodityForm"
 			@formClosed="closeCommodityModal"
 		/>

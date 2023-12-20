@@ -189,7 +189,7 @@
 					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
-					@click="goBack"
+					@click="$router.push({ name: 'Projects' })"
 				>
 					{{ $t('Cancel') }}
 				</v-btn>
@@ -220,7 +220,6 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
-import calendarHelper from "@/mixins/calendarHelper";
 import permissions from "@/mixins/permissions";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } from "@/utils/codeList";
@@ -256,7 +255,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [validation, calendarHelper, permissions],
+	mixins: [validation, permissions],
 
 	validations() {
 		return {
@@ -484,7 +483,7 @@ export default {
 
 				this.options.sectors = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "error");
+				Notification(`${this.$t("Sectors")} ${e.message || e}`, "error");
 			} finally {
 				this.sectorsLoading = false;
 			}
@@ -499,7 +498,7 @@ export default {
 				this.filterSubSectors();
 				this.getSectorsWithoutSelectedSubSector();
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("SubSectors")} ${e}`, "error");
+				Notification(`${this.$t("SubSectors")} ${e.message || e}`, "error");
 			} finally {
 				this.subSectorsLoading = false;
 			}
@@ -512,7 +511,7 @@ export default {
 
 				this.options.donors = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Donors")} ${e}`, "error");
+				Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
 			} finally {
 				this.donorsLoading = false;
 			}
@@ -524,7 +523,7 @@ export default {
 
 				this.options.targetTypes = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "error");
+				Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -534,7 +533,7 @@ export default {
 
 				this.mapToFormModel(data);
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Project Detail")} ${e}`, "error");
+				Notification(`${this.$t("Project Detail")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -549,7 +548,7 @@ export default {
 					Notification(message, "error");
 				}
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
+				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -560,7 +559,7 @@ export default {
 					this.$router.push({ name: "Projects" });
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
+				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -570,7 +569,7 @@ export default {
 
 				this.editableTableColumns[OPTIONS_FOR_COLUMN_INDEX.MODALITY_TYPE].options = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Modality Types")}${e}`, "error");
+				Notification(`${this.$t("Modality Types")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -584,10 +583,6 @@ export default {
 
 		getCodeAndValueObject(value) {
 			return getCodeAndValueObject(value);
-		},
-
-		goBack() {
-			this.$router.push({ name: "Projects" });
 		},
 
 		tableChanged(tableRow) {

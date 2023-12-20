@@ -23,22 +23,16 @@
 		>
 
 			<template v-slot:icon="{ step }">
-				<v-icon v-if="step === 1" icon="1" />
-
-				<v-icon v-else-if="step === 2" icon="2" />
-
-				<v-icon v-else-if="step === 3" icon="3" />
-
-				<v-icon v-else icon="4" />
+				<v-icon :icon="`${step}`" />
 			</template>
 
 			<template v-slot:item.1>
 				<BeneficiariesList
 					ref="assistanceListOfBeneficiariesGrid"
-					export-button
-					add-button
 					:assistance="assistance"
 					:commodities="commodities"
+					export-button
+					add-button
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</template>
@@ -50,11 +44,11 @@
 			<template v-slot:item.3>
 				<BeneficiariesList
 					ref="exportRandomSampleGrid"
-					changeButton
-					export-button
 					:add-button="false"
 					:assistance="assistance"
 					:commodities="commodities"
+					changeButton
+					export-button
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</template>
@@ -63,9 +57,9 @@
 				<BeneficiariesList
 					ref="validateAndLockGrid"
 					:add-button="false"
-					export-button
 					:assistance="assistance"
 					:commodities="commodities"
+					export-button
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</template>
@@ -248,7 +242,7 @@ export default {
 					});
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 
 			this.validateAssistanceButtonLoading = false;

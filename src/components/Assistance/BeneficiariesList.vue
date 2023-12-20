@@ -3,15 +3,15 @@
 		<Modal
 			v-model="addBeneficiaryModal.isOpened"
 			:header="addBeneficiaryModel.removingId
-				? $t('Remove Beneficiary From This Assistance')
-				: $t('Add Beneficiaries to This Assistance')
+				? 'Remove Beneficiary From This Assistance'
+				: 'Add Beneficiaries to This Assistance'
 			"
 		>
 			<AddBeneficiaryForm
-				close-button
-				:submit-button-label="$t('Confirm')"
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
+				submit-button-label="Confirm"
+				close-button
 				@addingOrRemovingSubmitted="addedOrRemovedBeneficiary"
 				@formClosed="closeAddBeneficiaryModal"
 			/>
@@ -19,12 +19,12 @@
 
 		<Modal
 			v-model="inputDistributedModal.isOpened"
-			:header="$t('Input Deduplication')"
+			header="'Input Deduplication"
 		>
 			<InputDistributed
-				close-button
-				deduplication
 				class="modal-card"
+				deduplication
+				close-button
 				@submit="fetchDataAfterBeneficiaryChange"
 				@close="closeInputDistributedModal"
 			/>
@@ -32,14 +32,14 @@
 
 		<Modal
 			v-model="assignVoucherModal.isOpened"
-			:header="$t('Assign Booklet to a Beneficiary')"
+			header="Assign Booklet to a Beneficiary"
 		>
 			<AssignVoucherForm
-				close-button
-				:submit-button-label="$t('Confirm')"
 				:beneficiary="assignVoucherToBeneficiaryId"
 				:assistance="assistance"
 				:project="project"
+				submit-button-label="Confirm"
+				close-button
 				@scannedCode="assignBookletToBeneficiary"
 				@formClosed="closeAssignVoucherModal"
 			/>
@@ -47,7 +47,7 @@
 
 		<Modal
 			v-model="addBeneficiariesByIdsModal.isOpened"
-			:header="$t('Add to assistance')"
+			header="Add to assistance"
 		>
 			<InputDistributed
 				close-button
@@ -60,16 +60,17 @@
 
 		<Modal
 			v-model="beneficiaryModal.isOpened"
-			:header="beneficiaryModal.isEditing ? $t('Edit This Beneficiary')
-				: $t('Detail of Beneficiary')"
+			:header="beneficiaryModal.isEditing
+				? 'Edit This Beneficiary'
+				: 'Detail of Beneficiary'"
 			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
-				close-button
-				:submit-button-label="$t('Save')"
-				class="modal-card"
-				:disabled="!beneficiaryModal.isEditing"
 				:formModel="beneficiaryModel"
+				:disabled="!beneficiaryModal.isEditing"
+				submit-button-label="Save"
+				class="modal-card"
+				close-button
 				@formSubmitted="submitEditBeneficiaryForm"
 				@formClosed="closeBeneficiaryModal"
 			/>
@@ -644,10 +645,6 @@ export default {
 	},
 
 	methods: {
-		test(item) {
-			console.log(item);
-		},
-
 		async reloadBeneficiariesList() {
 			if (this.assistance) {
 				this.prepareTableColumns();
@@ -768,7 +765,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 					});
 					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
@@ -793,7 +790,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					} catch (e) {
-						if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 					}
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
@@ -825,7 +822,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					} catch (e) {
-						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					} finally {
 						if (this.assistanceDetail) {
 							this.setGridFiltersToUrl("assistanceDetail", false, {
@@ -1024,7 +1021,7 @@ export default {
 			return BeneficiariesService.getCommunities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -1032,7 +1029,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -1044,7 +1041,7 @@ export default {
 
 				this.bnfFile3Statistics = data;
 			} catch (e) {
-				Notification(`${this.$t("BNF File 3 Statistics")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("BNF File 3 Statistics")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -1127,7 +1124,7 @@ export default {
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "is-danger");
+						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "error");
 					}
 				} else if (exportType === EXPORT.INSTITUTIONS) {
 					try {
@@ -1139,7 +1136,7 @@ export default {
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
+						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
 					}
 				} else {
 					try {
@@ -1153,7 +1150,7 @@ export default {
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
+						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
 					}
 				}
 			} else {
@@ -1166,7 +1163,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export")} ${e.message || e}`, "error");
 				}
 			}
 		},

@@ -15,7 +15,7 @@ export default {
 					transactionIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+					Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -23,7 +23,7 @@ export default {
 			return AssistancesService
 				.getTransactionStatuses().then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transaction Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Transaction Statuses")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -31,7 +31,7 @@ export default {
 			return AssistancesService
 				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+					Notification(`${this.$t("Smartcard Deposit")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -41,7 +41,7 @@ export default {
 					bookletIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Booklets")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -49,7 +49,7 @@ export default {
 			return AssistancesService
 				.getBookletStatuses().then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklet Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Booklet Statuses")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -77,19 +77,17 @@ export default {
 				booklet.code,
 			).then(({ status }) => {
 				if (status === 200) {
-					Toast(
+					Notification(
 						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
-						"is-success",
+						"success",
 					);
 					this.closeAssignVoucherModal();
 				}
 			}).catch((e) => {
-				if (e.message) {
-					Notification(
-						`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
-						"is-danger",
-					);
-				}
+				Notification(
+					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e.message || e}`,
+					"error",
+				);
 				this.closeAssignVoucherModal();
 			});
 
@@ -118,7 +116,7 @@ export default {
 					reliefPackageIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Relief Packages")} ${e}`, "is-danger");
+					Notification(`${this.$t("Relief Packages")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -146,7 +144,7 @@ export default {
 			return BeneficiariesService.getNationalIds(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -154,7 +152,7 @@ export default {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -196,7 +194,6 @@ export default {
 		},
 
 		showEditModal({ id }) {
-			console.log(id);
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.COMMUNITY:
 					this.showCommunityEdit(id);
@@ -245,7 +242,7 @@ export default {
 
 				this.institutionModel = this.mapToModel(institution);
 			} catch (e) {
-				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "error");
 			} finally {
 				this.institutionModal.isWaiting = false;
 			}

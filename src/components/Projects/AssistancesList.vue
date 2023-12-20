@@ -90,7 +90,7 @@
 			<ButtonAction
 				v-if="(row.validated || row.completed) && isAssistanceDetailAllowed"
 				:icon="row.validated && row.completed ? 'eye' : 'edit'"
-				:tooltip-text="row.validated && row.completed ? $t('View') : $t('Update')"
+				:tooltip-text="row.validated && row.completed ? 'View' : 'Update'"
 				@actionConfirmed="goToDetail(row.id)"
 			/>
 
@@ -352,7 +352,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -374,7 +374,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "error");
+				Notification(`${this.$t("Upcoming Assistances")} ${e.message || e}`, "error");
 			});
 		},
 

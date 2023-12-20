@@ -47,6 +47,8 @@ import { required } from "@vuelidate/validators";
 export default {
 	name: "AssistanceForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		DataSelect,
 	},

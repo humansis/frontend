@@ -217,8 +217,8 @@ export default {
 .assistance-summary {
 	.remote-disribution-flag {
 		position: relative;
-		top: -10px;
-		left: -5px;
+		top: -.625rem;
+		left: -.3125rem;
 	}
 
 	.v-col {
@@ -230,7 +230,7 @@ export default {
 	}
 
 	.v-slide-group--vertical .v-slide-group__content {
-		margin: auto auto;
+		margin: auto;
 	}
 }
 </style>

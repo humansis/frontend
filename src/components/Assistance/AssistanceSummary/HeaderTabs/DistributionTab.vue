@@ -7,7 +7,7 @@
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
 			class="ma-2"
 		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('In assistance')}}</p>
 
 				<div
@@ -40,7 +40,7 @@
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
 			class="ma-2"
 		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('To distribute')}}</p>
 
 				<div
@@ -93,7 +93,7 @@
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
 			class="ma-2"
 		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('Reached')}}</p>
 
 				<div
@@ -128,7 +128,7 @@
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
 			class="ma-2"
 		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('Distributed')}}</p>
 
 				<div

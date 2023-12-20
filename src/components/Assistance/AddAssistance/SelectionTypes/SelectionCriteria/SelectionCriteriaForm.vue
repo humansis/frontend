@@ -50,7 +50,7 @@
 			/>
 
 			<DataSelect
-				v-if="isValueMultiselect"
+				v-else-if="isValueMultiselect"
 				v-model="formModel.value"
 				:items="valueSelectOptions"
 				:loading="valueSelectLoading"
@@ -64,7 +64,7 @@
 			/>
 
 			<DataInput
-				v-if="fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.STRING"
+				v-else-if="fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.STRING"
 				v-model="formModel.value"
 				:error-messages="validationMsg('value')"
 				label="Value"
@@ -73,7 +73,7 @@
 			/>
 
 			<DataInput
-				v-if="isValueDefaultInput"
+				v-else-if="isValueDefaultInput"
 				v-model="formModel.value"
 				:error-messages="validationMsg('value')"
 				:step="(fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
@@ -124,7 +124,6 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
-import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -140,7 +139,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [validation, calendarHelper],
+	mixins: [validation],
 
 	validations() {
 		return {
@@ -148,7 +147,6 @@ export default {
 				criteriaTarget: { required },
 				criteria: { required },
 				condition: { required },
-				// eslint-disable-next-line func-names
 				value: { required: requiredIf(
 					this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION,
 				),
@@ -274,7 +272,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaTargets()
 				.then(({ data }) => { this.options.criteriaTargets = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Targets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Targets")} ${e.message || e}`, "error");
 				});
 
 			this.criteriaTargetLoading = false;
@@ -286,7 +284,7 @@ export default {
 			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
 				.then(({ data }) => { this.options.criteria = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Fields")} ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Fields")} ${e.message || e}`, "error");
 				});
 
 			this.criteriaLoading = false;
@@ -304,7 +302,7 @@ export default {
 					}
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Criteria Conditions")} ${e}`, "is-danger");
+					Notification(`${this.$t("Criteria Conditions")} ${e.message || e}`, "error");
 				});
 
 			this.criteriaConditionsLoading = false;
@@ -318,7 +316,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
 				});
 
 			this.valueSelectLoading = false;
@@ -332,7 +330,7 @@ export default {
 					this.valueSelectOptions = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
 				});
 
 			this.valueSelectLoading = false;
@@ -344,7 +342,7 @@ export default {
 			await BeneficiariesService.getListOfLocationsTypes()
 				.then(({ data }) => { this.valueSelectOptions = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
 				});
 
 			this.valueSelectLoading = false;

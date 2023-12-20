@@ -5,7 +5,7 @@
 				Import the file that contains the modified assistance.
 				The database will be updated with the new list of beneficiaries for this
 				assistance when you will click on "update" after importing.
-				`) }}
+			`) }}
 		</strong>
 
 		<FileUpload

@@ -29,7 +29,7 @@ export default {
 
 <style lang="scss">
 .file-upload {
-	border: 1px dashed black;
+	border: .0625rem dashed black;
 
 	.v-input__control > .v-field {
 		display: flex;

@@ -76,11 +76,11 @@ export default {
 
 <style lang="scss">
 .search {
-	min-width: 180px;
-	max-width: 225px;
+	min-width: 11.25rem;
+	max-width: 14.06rem;
 
 	> .v-input__control {
-		margin-right: 25px;
+		margin-right: 1.5625rem;
 	}
 }
 </style>

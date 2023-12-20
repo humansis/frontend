@@ -141,7 +141,7 @@ export default {
 				.then(({ data }) => {
 					this.filterProjects(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "error");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -162,7 +162,7 @@ export default {
 							|| `${this.$t("Error code 400")}`, "error");
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -184,18 +184,18 @@ export default {
 						this.$refs.assistancesList.fetchData();
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 				});
 		},
 
 		async removeAssistance(id) {
 			await AssistancesService.removeAssistance(id).then((response) => {
 				if (response.status === 204) {
-					Notification(this.$t("Assistance Successfully Deleted"), "is-success");
+					Notification(this.$t("Assistance Successfully Deleted"), "success");
 					this.$refs.assistancesList.fetchData();
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -205,7 +205,7 @@ export default {
 			this.assistanceModal = {
 				isOpened: true,
 				isEditing: true,
-				title: this.$t("Edit Assistance"),
+				title: "Edit Assistance",
 			};
 		},
 
@@ -213,7 +213,7 @@ export default {
 			this.assistance = assistance;
 			this.assistanceMoveModal = {
 				isOpened: true,
-				title: this.$t(`Move the Assistance ${assistance.name}`),
+				title: `${this.$t("Move the Assistance")} ${assistance.name}`,
 			};
 		},
 

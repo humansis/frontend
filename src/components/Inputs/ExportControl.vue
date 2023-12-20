@@ -177,8 +177,9 @@ export default {
 </script>
 
 <style lang="scss">
-.export-type, .export-format {
-	min-width: 180px;
+.export-type,
+.export-format {
+	min-width: 11.25rem;
 	max-width: fit-content;
 }
 </style>

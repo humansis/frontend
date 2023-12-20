@@ -2,14 +2,14 @@
 	<div class="d-flex assistance-name">
 		<DataInput
 			v-model.trim="assistanceName"
-			:placeholder="$t('Will be generated')"
 			:disabled="!isCustom || isSwitchDisabled"
 			:error-messages="validationMsg('assistanceName')"
 			label="Name of Assistance"
 			name="name-of-assistance"
-			persistent-placeholder
+			placeholder="Will be generated"
 			class="mt-4 mb-5"
 			maxlength="70"
+			persistent-placeholder
 			@input="isValid"
 		/>
 

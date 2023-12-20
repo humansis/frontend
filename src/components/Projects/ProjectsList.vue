@@ -140,7 +140,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 			});
 
 			this.isLoadingList = false;
@@ -189,7 +189,7 @@ export default {
 			return DonorService.getListOfDonors(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -213,7 +213,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

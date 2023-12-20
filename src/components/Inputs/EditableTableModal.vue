@@ -55,30 +55,30 @@
 					<DataInput
 						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT"
 						v-model.number="data[formInput.key]"
+						:label="formInput.label"
+						:error-messages="validateRequiredMsg(formInput)"
+						:hide-spin-buttons="true"
+						:disabled="isFormDisabled"
 						type="number"
 						step="any"
 						min="0"
 						dense
 						class="mb-6"
-						:label="formInput.label"
-						:error-messages="validateRequiredMsg(formInput)"
-						:hide-spin-buttons="true"
-						:disabled="isFormDisabled"
 						@blur="inputChanged(formInput, data)"
 					/>
 
 					<v-textarea
 						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_AREA"
 						v-model="data[formInput.key]"
+						:label="formInput.label"
+						:error-messages="validateRequiredMsg(formInput)"
+						:disabled="isFormDisabled"
 						name="notes"
 						variant="outlined"
 						density="compact"
 						hide-details="auto"
 						class="mt-6"
 						auto-grow
-						:label="formInput.label"
-						:error-messages="validateRequiredMsg(formInput)"
-						:disabled="isFormDisabled"
 						@blur="inputChanged(formInput, data)"
 					/>
 
@@ -86,10 +86,10 @@
 						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION
 							&& formInput.key === 'adm1'"
 						ref="locationForm"
-						is-adm1-optional
 						:form-model="data"
 						:form-disabled="isFormDisabled"
 						:is-editing="modalState.isEditing"
+						is-adm1-optional
 					/>
 				</div>
 			</v-card-text>

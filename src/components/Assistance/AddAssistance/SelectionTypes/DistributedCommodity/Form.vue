@@ -61,7 +61,6 @@
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
 					name="division"
 					class="mb-6"
-					@keydown="validate(`${divisionFieldsValidationString}.${key}`)"
 					@blur="validate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
@@ -167,13 +166,13 @@
 			<div
 				v-for="(productCategoryType, index) of project.allowedProductCategoryTypes"
 				:key="`product-category-type-${productCategoryType}`"
-				:class="['category-types', { 'last-type': index === (project.allowedProductCategoryTypes.length - 1) }] "
+				:class="['category-types', { 'last-type': isLastCategoryType(index) }] "
 			>
 				<v-checkbox
 					v-model="formModel.allowedProductCategoryTypes"
 					:label="productCategoryType"
 					:value="productCategoryType"
-					:error-messages="index === (project.allowedProductCategoryTypes.length - 1)
+					:error-messages="isLastCategoryType(index)
 						&& validationMsg('allowedProductCategoryTypes')"
 					:disabled="formDisabled"
 					hide-details="auto"
@@ -552,6 +551,10 @@ export default {
 			return getCodeAndValueObject(value);
 		},
 
+		isLastCategoryType(index) {
+			return index === (this.project.allowedProductCategoryTypes.length - 1);
+		},
+
 		async onModalitySelect({ code }) {
 			this.formModel.modalityType = null;
 			this.displayedFields = ASSISTANCE.DEFAULT_DISPLAYED_FIELDS;
@@ -665,7 +668,7 @@ export default {
 
 				this.options.modalities = data;
 			} catch (e) {
-				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "is-danger");
+				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "error");
 			} finally {
 				this.loading.modalities = false;
 			}
@@ -679,7 +682,7 @@ export default {
 
 				this.prepareModalitiesOptions(data);
 			} catch (e) {
-				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "is-danger");
+				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "error");
 			} finally {
 				this.loading.modalities = false;
 			}
@@ -693,7 +696,7 @@ export default {
 
 				this.prepareModalityTypesOptions(data);
 			} catch (e) {
-				Notification(`${this.$t("Modality Types")}${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Modality Types")}${e.message || e}`, "error");
 			} finally {
 				this.loading.types = false;
 			}

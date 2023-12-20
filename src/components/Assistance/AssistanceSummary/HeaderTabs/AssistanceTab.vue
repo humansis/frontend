@@ -3,10 +3,8 @@
 		class="mt-2 mb-6 justify-center"
 		no-gutters
 	>
-		<v-col
-			class="ma-2"
-		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('Project')}}</p>
 
 				<div
@@ -35,10 +33,8 @@
 			</v-sheet>
 		</v-col>
 
-		<v-col
-			class="ma-2"
-		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t(admNames.adm1) }}</p>
 
 				<div
@@ -67,10 +63,8 @@
 			</v-sheet>
 		</v-col>
 
-		<v-col
-			class="ma-2"
-		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ $t('Round') }}</p>
 
 				<div
@@ -93,10 +87,8 @@
 			</v-sheet>
 		</v-col>
 
-		<v-col
-			class="ma-2"
-		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ 'Date of Assistance' }}</p>
 
 				<div
@@ -125,10 +117,8 @@
 			</v-sheet>
 		</v-col>
 
-		<v-col
-			class="ma-2"
-		>
-			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content" max-width="max-content">
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
 				<p class="text-overline">{{ 'Expiration Date' }}</p>
 
 				<div

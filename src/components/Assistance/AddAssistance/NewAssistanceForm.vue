@@ -180,7 +180,6 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
-import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
@@ -206,7 +205,7 @@ export default {
 		"showComponent",
 	],
 
-	mixins: [validation, calendarHelper],
+	mixins: [validation],
 
 	validations: {
 		formModel: {
@@ -499,7 +498,7 @@ export default {
 					this.options.sectors = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Sectors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Sectors")} ${e.message || e}`, "error");
 				});
 			this.loading.sectors = false;
 		},
@@ -513,7 +512,7 @@ export default {
 
 				this.options.subsectors = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+				Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
 			} finally {
 				this.loading.subsectors = false;
 			}
@@ -526,7 +525,7 @@ export default {
 					this.options.assistanceTypes = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistance Types")} ${e.message || e}`, "error");
 				});
 			this.loading.assistanceTypes = false;
 		},
@@ -538,7 +537,7 @@ export default {
 					this.options.targetTypes = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
 				});
 			this.loading.targetTypes = false;
 		},

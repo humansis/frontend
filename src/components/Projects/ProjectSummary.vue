@@ -124,7 +124,7 @@ export default {
 
 				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "error");
+				Notification(`${this.$t("Detail of Project")} ${e.message || e}`, "error");
 			});
 		},
 

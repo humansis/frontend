@@ -210,10 +210,10 @@ export default {
 						"success",
 					);
 				}).catch((e) => {
-					Notification(`${this.$t("Password Update")} ${e}`, "error");
+					Notification(`${this.$t("Password Update")} ${e.message || e}`, "error");
 				});
-			}).catch(() => {
-				Notification(`${this.$t("Invalid Password")}`, "error");
+			}).catch((e) => {
+				Notification(`${this.$t("Invalid Password")} ${e.message || e}`, "error");
 			});
 			this.v$.password.$reset();
 
@@ -240,7 +240,7 @@ export default {
 				);
 				this.fetchUser();
 			}).catch((e) => {
-				Notification(`${this.$t("Phone Update")} ${e}`, "error");
+				Notification(`${this.$t("Phone Update")} ${e.message || e}`, "error");
 			});
 			this.v$.phone.$reset();
 
@@ -261,7 +261,7 @@ export default {
 					"success",
 				);
 			}).catch((e) => {
-				Notification(`${this.$t("Two Factor Update")} ${e}`, "error");
+				Notification(`${this.$t("Two Factor Update")} ${e.message || e}`, "error");
 			});
 
 			this.twoFactorLoading = false;
@@ -275,7 +275,7 @@ export default {
 					this.mapUser(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("User")} ${e}`, "is-danger");
+					Notification(`${this.$t("User")} ${e.message || e}`, "is-danger");
 				});
 		},
 

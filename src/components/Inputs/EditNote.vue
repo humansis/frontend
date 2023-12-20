@@ -152,7 +152,7 @@ export default {
 <style lang="scss" scoped>
 .edit-note {
 	.note-text {
-		margin-left: 15px;
+		margin-left: .9375rem;
 		flex-grow: 1;
 		white-space: nowrap;
 		overflow: hidden;

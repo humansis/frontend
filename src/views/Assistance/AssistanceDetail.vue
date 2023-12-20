@@ -2,7 +2,7 @@
 	<v-container fluid>
 		<Modal
 			v-model="inputDistributedModal.isOpened"
-			:header="$t('Input Distributed')"
+			header="'Input Distributed"
 		>
 			<InputDistributed
 				close-button
@@ -14,7 +14,7 @@
 
 		<Modal
 			v-model="transactionModal.isOpened"
-			:header="$t('Start Transaction')"
+			header="Start Transaction"
 		>
 			<StartTransactionForm
 				close-button
@@ -62,12 +62,12 @@
 
 		<BeneficiariesList
 			ref="beneficiariesList"
-			export-button
-			assistance-detail
 			:add-button="isAddButtonVisible"
 			:commodities="commodities"
 			:assistance="assistance"
 			:project="project"
+			export-button
+			assistance-detail
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
 			@assistanceUpdated="fetchAssistanceData"
@@ -136,10 +136,10 @@ import AssistancesService from "@/services/AssistancesService";
 import ProjectService from "@/services/ProjectService";
 import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
-import ButtonAction from "@/components/ButtonAction";
 import StartTransactionForm from "@/components/Assistance/BeneficiariesList/StartTransactionForm";
-import EditNote from "@/components/Inputs/EditNote";
 import InputDistributed from "@/components/Assistance/InputDistributed";
+import ButtonAction from "@/components/ButtonAction";
+import EditNote from "@/components/Inputs/EditNote";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { Notification } from "@/utils/UI";
@@ -313,7 +313,7 @@ export default {
 					this.commodities = data.commodities;
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			}).finally(() => {
 				this.isAssistanceLoading = false;
 			});
@@ -327,7 +327,7 @@ export default {
 			).then((data) => {
 				this.statistics = data;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance Statistics")} ${e}`, "error");
+				Notification(`${this.$t("Assistance Statistics")} ${e.message || e}`, "error");
 			}).finally(() => {
 				this.isStatisticsLoading = false;
 			});
@@ -341,7 +341,7 @@ export default {
 			).then(({ data }) => {
 				this.project = data;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			}).finally(() => {
 				this.isProjectLoading = false;
 			});
@@ -369,7 +369,7 @@ export default {
 							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
 						}
 					}).catch((e) => {
-						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e}. `;
+						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e.message || e}. `;
 					});
 				}));
 
@@ -410,7 +410,7 @@ export default {
 						if (response.status === 204) this.transactionModal.isOpened = true;
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Start Transaction")} ${e}`, "error");
+						Notification(`${this.$t("Start Transaction")} ${e.message || e}`, "error");
 					});
 
 				this.startTransactionButtonLoading = false;
@@ -440,7 +440,7 @@ export default {
 					this.fetchAssistanceStatistics();
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "error");
+				Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
 			});
 
 			this.transactionModal.isWaiting = false;
@@ -469,7 +469,7 @@ export default {
 							});
 						}
 					}).catch((e) => {
-						Notification(`${this.$t("Assistance")} ${e}`, "error");
+						Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 					});
 				},
 			});
@@ -488,7 +488,7 @@ export default {
 					});
 				}
 			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 		},
 	},

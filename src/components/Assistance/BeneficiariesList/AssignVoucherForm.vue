@@ -162,7 +162,7 @@ export default {
 
 <style scoped>
 .scan-container {
-	max-width: 600px;
+	max-width: 37.5rem;
 	margin: 0 auto;
 }
 </style>

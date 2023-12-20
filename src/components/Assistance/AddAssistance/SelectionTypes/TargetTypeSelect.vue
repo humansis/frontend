@@ -158,7 +158,7 @@ export default {
 					this.options.institutions = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+					Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 				});
 			this.loading.institutions = false;
 		},
@@ -169,7 +169,7 @@ export default {
 					this.options.communities = await this.prepareCommunitiesForSelect(data);
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Communities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
 				});
 			this.loading.communities = false;
 		},
@@ -182,7 +182,7 @@ export default {
 
 				this.prepareDuplicatedInstitutions(data);
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+				Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 			}
 		},
 

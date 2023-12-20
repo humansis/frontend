@@ -251,7 +251,7 @@ export default {
 					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance Selection Criteria")} ${e}`, "error");
+					Notification(`${this.$t("Assistance Selection Criteria")} ${e.message || e}`, "error");
 				});
 
 			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
@@ -259,13 +259,13 @@ export default {
 					this.duplicateAssistance = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Duplicate Assistance")} ${e}`, "error");
+					Notification(`${this.$t("Duplicate Assistance")} ${e.message || e}`, "error");
 				});
 
 			await AssistancesService.getScoringTypes()
 				.then(({ data }) => { this.scoringTypes = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "error");
+					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
 				}).finally(() => {
 					this.scoringTypesLoading = false;
 				});
@@ -286,7 +286,7 @@ export default {
 						this.isProjectReady = true;
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Project")} ${e}`, "error");
+						Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 					});
 			}
 		},
@@ -385,7 +385,7 @@ export default {
 						Notification(message || `${this.$t("Error code 400")}`, "warning");
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("New Assistance")} ${e}`, "error");
+					Notification(`${this.$t("New Assistance")} ${e.message || e}`, "error");
 				});
 
 			this.loading = false;
@@ -564,7 +564,7 @@ export default {
 				});
 			});
 
-			if (this.validationMessages.modalityType.length) {
+			if (this.validationMessages.modalityType?.length) {
 				this.componentsData.distributedCommodity = null;
 			} else {
 				this.componentsData.distributedCommodity = preparedCommodities;
@@ -641,7 +641,8 @@ export default {
 		},
 
 		goBack() {
-			this.$router.push({ name: "Project",
+			this.$router.push({
+				name: "Project",
 				params: { projectId: this.$route.params.projectId },
 			});
 		},
@@ -656,7 +657,7 @@ export default {
 			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "error");
+					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
 				});
 		},
 

@@ -361,7 +361,7 @@ export default {
 					this.findSubsectorName(data);
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "error");
+					Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
 				});
 		},
 

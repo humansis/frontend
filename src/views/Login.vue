@@ -239,7 +239,7 @@ export default {
 					Notification(this.$t("No Countries"), "warning");
 				}
 			} catch (e) {
-				Notification(`${this.$t("Login")} ${e}`, "error");
+				Notification(`${this.$t("Login")} ${e.message || e}`, "error");
 			} finally {
 				this.loginButtonLoading = false;
 			}
@@ -259,7 +259,7 @@ export default {
 					this.$i18n.fallbackLocale = languageKey;
 					this.$root.$i18n.setLocaleMessage(languageKey, data);
 				} catch (e) {
-					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "warning");
+					Notification(`${this.$t("Translations")} ${e.message || e}`, "warning");
 				}
 			} else {
 				this.$i18n.locale = languageKey;
@@ -280,15 +280,14 @@ export default {
 
 	.logo {
 		margin: 0 auto;
-		width: 150px;
-		height: 150px;
+		width: 9.375rem;
+		height: 9.375rem;
 		background-color: #f1f1fb;
-		border-radius: 100px;
+		border-radius: 6.25rem;
 	}
 
 	.login-box {
 		background-color: rgba(161, 160, 160, .85);
 	}
 }
-
 </style>

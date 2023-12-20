@@ -5,7 +5,7 @@
 			<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
 		</p>
 
-		<p v-if="formModel.removingId" class="mb-5">
+		<p v-else class="mb-5">
 			{{ $t('You are about to remove this beneficiary from') }}
 			<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
 			{{ $t('Do you wish to continue?') }}
@@ -57,7 +57,7 @@
 			variant="elevated"
 			@click="submitForm"
 		>
-			{{ submitButtonLabel }}
+			{{ $t(submitButtonLabel) }}
 		</v-btn>
 	</v-card-actions>
 </template>
@@ -194,7 +194,7 @@ export default {
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Project Beneficiaries")} ${e.message || e}`, "error");
 				});
 			this.loading.beneficiaries = false;
 		},
@@ -283,12 +283,7 @@ export default {
 						}
 					})
 					.catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Beneficiary")} ${e}`,
-								"error",
-							);
-						}
+						Notification(`${this.$t("Beneficiary")} ${e.message || e}`, "error");
 					});
 			}
 
@@ -307,12 +302,7 @@ export default {
 						}
 					})
 					.catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Beneficiary")} ${e}`,
-								"is-danger",
-							);
-						}
+						Notification(`${this.$t("Beneficiary")} ${e}`, "error");
 					});
 			}
 

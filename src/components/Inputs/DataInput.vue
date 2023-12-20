@@ -3,6 +3,7 @@
 		:variant="variant"
 		:density="density"
 		:hide-details="hideDetails"
+		:placeholder="$t(placeHolder)"
 	>
 		<template v-slot:label>
 			<span>{{ $t(label) }}
@@ -38,6 +39,11 @@ export default {
 		hideDetails: {
 			type: String,
 			default: "auto",
+		},
+
+		placeHolder: {
+			type: String,
+			default: "",
 		},
 	},
 };
