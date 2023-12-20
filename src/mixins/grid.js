@@ -54,7 +54,7 @@ export default {
 				}];
 			}
 
-			const currentColumn = this.table.visibleColumns.find(({ key }) => key === sort[0].key);
+			const currentColumn = this.table.columns.find(({ key }) => key === sort[0].key);
 			const sortKey = currentColumn.sortKey || sort[0].key;
 
 			this.table.sortColumn = { key: currentColumn.key, sortKey };
@@ -64,6 +64,7 @@ export default {
 		},
 
 		resetSort({ key, order }) {
+			console.log(key, order);
 			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
 				this.table.sortColumn = key;
 				this.table.sortDirection = order;

@@ -7,7 +7,7 @@
 			name="select-export-type"
 			label="Select type"
 			class="export-type"
-			@input="inputChanged"
+			@update:modelValue="inputChanged"
 		/>
 
 		<DataSelect
@@ -20,7 +20,7 @@
 			label="Select format"
 			class="export-format"
 			append-icon="download"
-			@input="inputChanged"
+			@update:modelValue="inputChanged"
 			@append-icon-clicked="startExport"
 		/>
 	</div>

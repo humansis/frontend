@@ -609,19 +609,17 @@ export default {
 		},
 
 		defaultSortOptions() {
-			if (!this.assistanceDetail) {
-				if (this.assistance.target === ASSISTANCE.TARGET.INSTITUTION) {
-					return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION;
-				}
-				return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD;
+			if (this.assistance.target === ASSISTANCE.TARGET.INSTITUTION) {
+				return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION;
 			}
+			return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD;
 		},
 	},
 
 	watch: {
 		async assistance(newAssistance) {
 			if (newAssistance) {
-				if (!this.assistanceDetail && newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
+				if (newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
 					this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.key;
 					this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.order;
 				}
@@ -825,6 +823,7 @@ export default {
 						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					} finally {
 						if (this.assistanceDetail) {
+							console.log("ted");
 							this.setGridFiltersToUrl("assistanceDetail", false, {
 								sortColumn: true,
 								sortDirection: true,

@@ -2,7 +2,7 @@
 	<Table
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
-		:headers="table.visibleColumns"
+		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
@@ -92,8 +92,7 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: generateColumns([
+				columns: generateColumns([
 					{ key: "id" },
 					{ key: "name" },
 					{ key: "sectors", type: "svgIcon", minWidth: "200", sortable: false },
@@ -125,7 +124,6 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ProjectService.getListOfProjects(
 				this.table.currentPage,
 				this.perPage,

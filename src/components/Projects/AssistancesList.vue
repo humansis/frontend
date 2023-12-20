@@ -26,7 +26,7 @@
 	<Table
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
-		:headers="table.visibleColumns"
+		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
@@ -244,8 +244,7 @@ export default {
 			isLoadingList: false,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: generateColumns([
+				columns: generateColumns([
 					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
 					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
 					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
