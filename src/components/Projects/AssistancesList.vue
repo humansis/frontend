@@ -36,6 +36,7 @@
 		@per-page-changed="perPageChange"
 		@page-changed="pageChange"
 		@update:sortBy="onSort"
+		@search="search"
 		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
 		<template v-slot:table-header>
@@ -179,6 +180,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+import getters from "@/store/getters";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },

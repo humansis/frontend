@@ -19,6 +19,7 @@
 			show-actions
 			editable
 			hide-actions
+			alt-labels
 			class="assistance mt-6"
 		>
 

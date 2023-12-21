@@ -12,7 +12,7 @@
 
 		<p
 			v-if="influenceDistributionProtocol.assistanceName"
-			class="text-caption text-red"
+			class="text-caption text-red mb-3"
 		>
 			{{ distributionProtocolMessage }}
 		</p>
@@ -21,8 +21,9 @@
 			ref="locationForm"
 			:form-model="formModel"
 			:disabled-adm="disabledAdmInput"
+			:disabled-adm-clear="disabledAdmInput"
 			:influence-distribution-protocol="influenceDistributionProtocol"
-			:distribution-protocol-message="distributionProtocolMessage"
+			distribution-protocol-message="TSASAGASGASGAS"
 			is-editing
 			@locationChanged="valuesForAssistanceName"
 		/>
@@ -51,7 +52,7 @@
 
 		<p
 			v-if="influenceDistributionProtocol.round"
-			class="text-caption text-red"
+			class="text-caption text-red mb-3"
 		>
 			{{ distributionProtocolMessage }}
 		</p>

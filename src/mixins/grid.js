@@ -64,7 +64,6 @@ export default {
 		},
 
 		resetSort({ key, order }) {
-			console.log(key, order);
 			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
 				this.table.sortColumn = key;
 				this.table.sortDirection = order;

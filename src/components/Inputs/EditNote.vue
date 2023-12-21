@@ -34,7 +34,7 @@
 						/>
 
 						<ButtonAction
-							v-if="noteComputed && !edit"
+							v-if="!completed && !edit"
 							tooltipText="Edit note"
 							icon="pen"
 							@actionConfirmed="toggleEdit"
@@ -124,12 +124,12 @@ export default {
 			)
 				.then((response) => {
 					if (response.status === 200) {
-						Notification(this.$t("Note Successfully Updated"), "is-success");
+						Notification(this.$t("Note Successfully Updated"), "success");
 						this.edit = false;
 					}
 					this.assistance.note = this.note;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 				});
 		},
 

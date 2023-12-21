@@ -8,7 +8,7 @@
 			:optional="isAdm1Optional"
 			:loading="provincesLoading"
 			:disabled="formDisabled || disabledAdm.adm1"
-			:clearable="true"
+			:clearable="!disabledAdmClear.adm1"
 			name="province"
 			item-title="name"
 			item-value="id"
@@ -23,7 +23,7 @@
 			:label="admNames.adm2"
 			:loading="districtsLoading"
 			:disabled="formDisabled || disabledAdm.adm2"
-			:clearable="true"
+			:clearable="!disabledAdmClear.adm2"
 			name="district"
 			item-title="name"
 			item-value="id"
@@ -39,7 +39,7 @@
 			:label="admNames.adm3"
 			:loading="communesLoading"
 			:disabled="formDisabled || disabledAdm.adm3"
-			:clearable="true"
+			:clearable="!disabledAdmClear.adm3"
 			name="commune"
 			item-title="name"
 			item-value="id"
@@ -62,7 +62,7 @@
 			:label="admNames.adm4"
 			:loading="villagesLoading"
 			:disabled="formDisabled || disabledAdm.adm4"
-			:clearable="true"
+			:clearable="!disabledAdmClear.adm4"
 			name="village"
 			item-title="name"
 			item-value="id"
@@ -74,7 +74,7 @@
 
 		<p
 			v-if="influenceDistributionProtocol.village"
-			class="help is-danger"
+			class="text-caption text-red mb-3"
 		>
 			{{ distributionProtocolMessage }}
 		</p>
@@ -150,6 +150,16 @@ export default {
 		isAdm1Optional: {
 			type: Boolean,
 			default: false,
+		},
+
+		disabledAdmClear: {
+			type: Object,
+			default: () => ({
+				adm1: false,
+				adm2: false,
+				adm3: false,
+				adm4: false,
+			}),
 		},
 	},
 

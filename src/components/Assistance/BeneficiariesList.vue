@@ -136,13 +136,19 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:show-select="table.settings.checkableTable"
+		:isSearchVisible="!isAssistanceTargetInstitution"
+		:search-phrase="table.searchPhrase"
+		:search-fields="searchFields"
+		:default-search-field="defaultSearchField"
 		is-row-click-disabled
 		reset-sort-button
+		reset-filters-button
 		@update:modelValue="onRowsCheck"
 		@per-page-changed="onChangePerPage"
 		@page-changed="onPageChange"
 		@search="onSearch"
 		@update:sortBy="onSort"
+		@resetFilters="resetFilters"
 		@resetSort="resetSort(defaultSortOptions)"
 	>
 		<template v-slot:actions="{ row }">
@@ -360,28 +366,28 @@ export default {
 				},
 				visibleColumns: [],
 				householdsAndIndividualEditColumns: [
-					{ key: "id", label: "Beneficiary ID", sortable: true },
-					{ key: "givenName", label: "Local given name", sortable: true, sortKey: "localGivenName" },
-					{ key: "familyName", label: "Local family name", sortable: true, sortKey: "localFamilyName" },
+					{ key: "id", title: "Beneficiary ID", sortable: true },
+					{ key: "givenName", title: "Local given name", sortable: true, sortKey: "localGivenName" },
+					{ key: "familyName", title: "Local family name", sortable: true, sortKey: "localFamilyName" },
 					{ key: "gender" },
-					{ key: "dateOfBirth", label: "Date of Birth", type: "date" },
+					{ key: "dateOfBirth", title: "Date of Birth", type: "date" },
 					{ key: "residencyStatus" },
 					{ key: "vulnerabilities", type: "svgIcon" },
 					{ key: "actions", value: "actions", sortable: false },
 				],
 				communityColumns: [
-					{ key: "id", label: "ID", sortable: true },
+					{ key: "id", title: "ID", sortable: true },
 					{ key: "name", sortable: true },
-					{ key: "contactGivenName", label: "Contact Name", sortable: true },
+					{ key: "contactGivenName", title: "Contact Name", sortable: true },
 					{ key: "contactFamilyName", sortable: true },
 				],
 				institutionEditColumns: [
-					{ key: "id", label: "ID" },
+					{ key: "id", title: "ID" },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },
 					{ key: "contactFamilyName" },
-					{ key: "phone", label: "Phone Number", sortable: false },
+					{ key: "phone", title: "Phone Number", sortable: false },
 					{ key: "actions", value: "actions", sortable: false },
 				],
 			},
@@ -472,10 +478,10 @@ export default {
 
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
-				{ key: "id", label: "Beneficiary ID", sortable: true },
-				{ key: "givenName", label: "Local given name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", label: "Local family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
-				{ key: "nationalId", label: "ID Number", sortable: true },
+				{ key: "id", title: "Beneficiary ID", sortable: true },
+				{ key: "givenName", title: "Local given name", sortable: true, sortKey: "localGivenName" },
+				{ key: "familyName", title: "Local family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
+				{ key: "nationalId", title: "ID Number", sortable: true },
 				{ key: "status", type: "tagArray", customTags: statusTags },
 				...!this.isAssistanceTypeActivity
 					? [
@@ -498,12 +504,12 @@ export default {
 
 		institutionDetailColumns() {
 			return [
-				{ key: "id", label: "ID", sortable: true },
+				{ key: "id", title: "ID", sortable: true },
 				{ key: "name", sortable: true },
 				{ key: "type", sortable: true },
-				{ key: "contactGivenName", label: "Contact Name", sortable: true },
+				{ key: "contactGivenName", title: "Contact Name", sortable: true },
 				{ key: "contactFamilyName", sortable: true },
-				{ key: "phone", label: "Phone Number" },
+				{ key: "phone", title: "Phone Number" },
 				{ key: "status", type: "tagArray", customTags: statusTags },
 				{ key: "toDistribute", type: "arrayTextBreak" },
 				{ key: "distributed", type: "arrayTextBreak" },
@@ -711,7 +717,10 @@ export default {
 		async onFiltersChange(selectedFilters) {
 			this.filters = selectedFilters;
 			this.table.currentPage = 1;
-			await this.fetchData();
+
+			if (selectedFilters.reliefPackageStates?.length) {
+				await this.fetchData();
+			}
 		},
 
 		resetTableSort() {
@@ -725,9 +734,9 @@ export default {
 				expired: false,
 				canceled: false,
 			};
-			this.$refs.beneficiariesList.onResetSearch();
 			this.selectedFilters = [];
 			this.onFiltersChange({ reliefPackageStates: [] });
+			this.$refs.beneficiariesList.resetSearch();
 		},
 
 		getIdForDelete(row) {
@@ -823,7 +832,6 @@ export default {
 						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					} finally {
 						if (this.assistanceDetail) {
-							console.log("ted");
 							this.setGridFiltersToUrl("assistanceDetail", false, {
 								sortColumn: true,
 								sortDirection: true,

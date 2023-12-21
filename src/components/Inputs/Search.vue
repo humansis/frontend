@@ -1,25 +1,44 @@
 <template>
-	<DataInput
-		v-model="value"
-		label="Search"
-		name="search"
-		append-inner-icon="search"
-		clearable
-		class="search"
-		@click:append-inner="search"
-		@click:clear="search"
-	/>
+	<div class="d-inline-flex ml-4" :class="{ 'flex-column': isMobile }">
+		<DataSelect
+			v-if="searchFields.length"
+			v-model="selectedSearchField"
+			:items="searchFields"
+			label="Select format"
+			name="select-format"
+			item-title="value"
+			item-value="code"
+			clearable
+			class="format"
+		/>
+
+		<DataInput
+			v-model="value"
+			label="Search"
+			name="search"
+			append-inner-icon="search"
+			class="search"
+			clearable
+			@click:append-inner="search"
+			@click:clear="search"
+		/>
+	</div>
 </template>
 
 <script>
 import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 
 export default {
 	name: "Search",
 
 	components: {
 		DataInput,
+		DataSelect,
 	},
+
+	mixins: [vuetifyHelper],
 
 	props: {
 		searchPhrase: {
@@ -27,15 +46,15 @@ export default {
 			default: "",
 		},
 
-		// searchFields: {
-		// 	type: Array,
-		// 	required: true,
-		// },
-		//
-		// defaultSearchField: {
-		// 	type: Object,
-		// 	required: () => {},
-		// },
+		searchFields: {
+			type: Array,
+			required: true,
+		},
+
+		defaultSearchField: {
+			type: Object,
+			default: () => {},
+		},
 
 		isDisabled: {
 			type: Boolean,
@@ -46,7 +65,7 @@ export default {
 	data() {
 		return {
 			value: "",
-			// selectedSearchField: this.defaultSearchField,
+			selectedSearchField: this.defaultSearchField,
 		};
 	},
 
@@ -70,6 +89,13 @@ export default {
 
 			this.$emit("search", searchBody);
 		},
+
+		clearSearch() {
+			if (this.value) {
+				this.value = "";
+				this.search();
+			}
+		},
 	},
 };
 </script>
@@ -82,5 +108,11 @@ export default {
 	> .v-input__control {
 		margin-right: 1.5625rem;
 	}
+}
+
+.format {
+	min-width: 12rem;
+	max-width: 15rem;
+
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
 	<v-card>
 		<v-row class="mt-1 mb-1">
-			<v-col cols="8" class="d-flex flex-wrap gr-3 align-center">
+			<v-col cols="7" lg="9" class="d-flex flex-wrap gr-3 align-center">
 				<Search
 					v-if="isSearchVisible"
 					:search-phrase="searchPhrase"
@@ -18,12 +18,25 @@
 				<slot name="table-header" />
 			</v-col>
 
-			<v-col cols="4">
-				<div v-if="resetSortButton" class="text-end mr-5">
+			<v-col cols="5" lg="3">
+				<div v-if="resetSortButton || resetFiltersButton" class="text-end mr-5">
 					<v-btn
+						v-if="resetFiltersButton"
 						color="grey-lighten-2"
 						prepend-icon="eraser"
 						size="x-small"
+						class="mt-2"
+						@click="$emit('resetFilters')"
+					>
+						{{ $t('Reset Filters') }}
+					</v-btn>
+
+					<v-btn
+						v-if="resetSortButton"
+						color="grey-lighten-2"
+						prepend-icon="eraser"
+						size="x-small"
+						class="ml-4 mt-2"
 						@click="$emit('resetSort')"
 					>
 						{{ $t('Reset Table Sort') }}
@@ -146,6 +159,11 @@ export default {
 			default: false,
 		},
 
+		resetFiltersButton: {
+			type: Boolean,
+			default: false,
+		},
+
 		totalCount: {
 			type: Number,
 			default: 0,
@@ -164,11 +182,6 @@ export default {
 		defaultSearchField: {
 			type: Object,
 			default: () => ({}),
-		},
-
-		isSearchDisabled: {
-			type: Boolean,
-			default: false,
 		},
 
 		isSearchVisible: {
@@ -232,6 +245,10 @@ export default {
 			}
 
 			return { class: "" };
+		},
+
+		resetSearch() {
+			this.$refs.search.clearSearch();
 		},
 	},
 };
