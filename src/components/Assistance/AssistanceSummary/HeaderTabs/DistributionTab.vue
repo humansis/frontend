@@ -178,11 +178,25 @@
 				</v-tooltip>
 			</v-sheet>
 		</v-col>
+
+		<v-col
+			v-if="isCustomAmountEnabled && customFieldName"
+			class="ma-2"
+		>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('By custom field')}}</p>
+
+				<div class="font-weight-bold pa-2 text-subtitle-1">
+					{{ customFieldName }}
+				</div>
+			</v-sheet>
+		</v-col>
 	</v-row>
 </template>
 
 <script>
 import SvgIcon from "@/components/SvgIcon";
+import assistanceHelper from "@/mixins/assistanceHelper";
 import { ASSISTANCE } from "@/consts";
 
 export default {
@@ -191,6 +205,8 @@ export default {
 	components: {
 		SvgIcon,
 	},
+
+	mixins: [assistanceHelper],
 
 	props: {
 		assistance: {
@@ -250,6 +266,10 @@ export default {
 			if (this.assistance?.type === ASSISTANCE.TYPE.ACTIVITY) return this.$t("Activity");
 
 			return "";
+		},
+
+		customFieldName() {
+			return this.commodities[0]?.division?.customFieldName;
 		},
 
 		assistanceType() {

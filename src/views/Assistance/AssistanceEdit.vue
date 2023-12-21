@@ -34,6 +34,8 @@
 					:commodities="commodities"
 					export-button
 					add-button
+					is-recalculation-button-visible
+					is-custom-amount-box-visible
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</template>
@@ -61,6 +63,7 @@
 					:assistance="assistance"
 					:commodities="commodities"
 					export-button
+					is-recalculation-button-visible
 					@assistanceUpdated="fetchUpdatedData"
 				/>
 			</template>
@@ -231,17 +234,19 @@ export default {
 
 			await AssistancesService.updateAssistanceStatusValidated(
 				{ assistanceId, validated: true },
-			).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Assistance Successfully Validated and Locked"), "success");
-
-					this.$router.push({
-						name: "AssistanceDetail",
-						params: {
-							assistanceId: this.$route.params.assistanceId,
-						},
-					});
+			).then(({ status, message }) => {
+				if (status !== 200) {
+					throw new Error(message);
 				}
+
+				Notification(this.$t("Assistance Successfully Validated and Locked"), "success");
+
+				this.$router.push({
+					name: "AssistanceDetail",
+					params: {
+						assistanceId: this.$route.params.assistanceId,
+					},
+				});
 			}).catch((e) => {
 				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
