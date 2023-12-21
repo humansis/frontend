@@ -43,6 +43,7 @@
 						:target-type="targetType"
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
+						:is-assistance-duplicated="isDuplicated"
 						@updatedData="fetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
 						@onDeliveredCommodityValue="getDeliveredCommodityValue"

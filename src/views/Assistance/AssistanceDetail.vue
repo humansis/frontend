@@ -66,11 +66,13 @@
 			:commodities="commodities"
 			:assistance="assistance"
 			:project="project"
+			:is-not-distributed-available="isNotDistributedAvailable"
 			export-button
 			assistance-detail
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
 			@assistanceUpdated="fetchAssistanceData"
+			@fetchAssistanceStatistics="fetchAssistanceStatistics"
 		/>
 
 		<div class="d-flex justify-end mt-5">
@@ -243,6 +245,14 @@ export default {
 			return this.assistance?.completed;
 		},
 
+		isAssistanceTargetHousehold() {
+			return this.assistance.target === ASSISTANCE.TARGET.HOUSEHOLD;
+		},
+
+		isAssistanceTargetIndividual() {
+			return this.assistance.target === ASSISTANCE.TARGET.INDIVIDUAL;
+		},
+
 		isAssistanceTargetInstitution() {
 			return this.assistance.target === ASSISTANCE.TARGET.INSTITUTION;
 		},
@@ -268,6 +278,13 @@ export default {
 				&& this.userCan.assignDistributionItems
 				&& !this.isCommoditySmartcard
 				&& this.setAtDistributedButtonVisible;
+		},
+
+		isNotDistributedAvailable() {
+			return (this.isAssistanceValidated || this.isAssistanceCompleted)
+				&& (this.isAssistanceTargetHousehold || this.isAssistanceTargetIndividual)
+				&& this.userCan.assignDistributionItems
+				&& !this.isCommoditySmartcard;
 		},
 
 		isInputDistributedButtonVisible() {

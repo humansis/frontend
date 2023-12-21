@@ -178,15 +178,20 @@
 			{{ $t('Close') }}
 		</v-btn>
 
-		<v-btn
-			color="primary"
-			size="small"
-			class="text-none ml-3"
-			variant="elevated"
-			@click="submitForm"
-		>
-			{{ $t('Update') }}
-		</v-btn>
+		<ButtonAction
+			:is-confirm-action="isDataModifiedForDistributionProtocol"
+			:confirm-message="updateButtonMessage"
+			:is-only-icon="false"
+			label="Update"
+			confirm-title="Do you really want to apply the change?"
+			close-button-name="No"
+			confirm-button-name="Yes"
+			confirm-button-color="warning"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="warning"
+			default-button
+			@actionConfirmed="submitForm"
+		/>
 	</v-card-actions>
 </template>
 
@@ -194,6 +199,7 @@
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
+import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
@@ -214,6 +220,7 @@ export default {
 		DataSelect,
 		DataInput,
 		LocationForm,
+		ButtonAction,
 		SvgIcon,
 	},
 
@@ -259,6 +266,10 @@ export default {
 				village: false,
 				round: false,
 			},
+			updateButtonMessage: "By changing data on a closed distribution, you may create"
+				+ " a discrepancy between data in Humansis and data in the signed distribution "
+				+ "protocol. Please check you gave your name and provided reasoning for the change "
+				+ "in the Note section of the distribution to serve for auditing purposes.",
 		};
 	},
 
@@ -393,12 +404,8 @@ export default {
 			};
 
 			if (isValid) {
-				if (this.isDataModifiedForDistributionProtocol) {
-					this.confirmUpdate(data);
-				} else {
-					this.$emit("formSubmitted", data);
-					this.closeForm();
-				}
+				this.$emit("formSubmitted", data);
+				this.closeForm();
 			}
 		},
 

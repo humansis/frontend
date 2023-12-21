@@ -114,12 +114,12 @@
 
 			<template
 				v-for="(column, index) in $attrs.headers"
-				v-slot:[`item.${column.key}`]="{ item }"
+				v-slot:[`item.${column.key}`]="{ item, index }"
 				:key="index"
 			>
 				<template v-if="column.key === 'actions'">
 					<div :class="['table-actions', { 'removed-row': item.removed }]">
-						<slot name="actions" :row="item" />
+						<slot name="actions" :row="item" :index="index" />
 					</div>
 				</template>
 

@@ -179,6 +179,14 @@
 					@editModalOpened="editModalOpened"
 					@modalOpened="targetModalOpened"
 				/>
+
+				<p
+					v-for="message in targetTableValidateMessages"
+					:key="message"
+					class="text-caption text-red"
+				>
+					{{ message }}
+				</p>
 			</v-card-text>
 		</v-card>
 

@@ -178,6 +178,11 @@ export default {
 			type: Array,
 			default: null,
 		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -273,6 +278,10 @@ export default {
 		data(data) {
 			if (data) {
 				this.groups = data;
+
+				if (this.isAssistanceDuplicated) {
+					this.fetchCriteriaInfo();
+				}
 			}
 		},
 	},

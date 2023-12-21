@@ -1,5 +1,5 @@
 <template>
-	<v-expansion-panels class="mt-5 criteria-group">
+	<v-expansion-panels v-model="openedGroups" class="mt-5 criteria-group">
 		<v-expansion-panel :title="groupName">
 			<v-expansion-panel-text>
 				<Table
@@ -95,6 +95,7 @@ export default {
 				]),
 			},
 			criteriaLocation: "",
+			openedGroups: [0],
 		};
 	},
 

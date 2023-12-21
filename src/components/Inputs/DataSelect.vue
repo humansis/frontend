@@ -206,8 +206,8 @@ export default {
 		},
 
 		chipClosed(item) {
-			const updatedModel = this.$attrs.modelValue.filter(
-				(removedItem) => removedItem !== item.value,
+			const updatedModel = this.modelValue.filter(
+				(removedItem) => removedItem.code !== item.value,
 			);
 
 			this.$emit("update:modelValue", updatedModel);

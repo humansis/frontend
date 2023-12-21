@@ -31,7 +31,7 @@
 						<ButtonAction
 							v-if="tableAction.isDetail"
 							icon="search"
-							label="Show Detail"
+							tooltip-text="Show Detail"
 							@actionConfirmed="showDetailModal(index)"
 						/>
 
@@ -39,7 +39,7 @@
 							v-if="tableAction.isEdit || tableAction.isCreate"
 							:disabled="!isUserAllowedUseTableAction"
 							icon="edit"
-							label="Edit"
+							tooltip-text="Edit"
 							@actionConfirmed="showEditModal(index)"
 						/>
 
@@ -48,7 +48,7 @@
 							:disabled="tableAction.isDetail"
 							icon="trash"
 							iconColor="red"
-							label="Delete"
+							tooltip-text="Delete"
 							@actionConfirmed="deleteRow(index)"
 						/>
 					</td>

@@ -151,7 +151,22 @@
 		@resetFilters="resetFilters"
 		@resetSort="resetSort(defaultSortOptions)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ index, row }">
+			<ButtonAction
+				v-if="isNotDistributedButtonVisible(row)"
+				icon="user-slash"
+				tooltip-text="Set as not distributed"
+				confirm-title="Set as not distributed"
+				confirm-message="Do you really want to set as not distributed?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="info"
+				close-button-name="Cancel"
+				confirm-button-name="Set"
+				confirm-button-color="primary"
+				is-confirm-action
+				@actionConfirmed="setAsNotDistributed(index, row.id, row.reliefPackages)"
+			/>
+
 			<ButtonAction
 				v-if="userCan.editDistribution"
 				icon="search"
@@ -326,6 +341,11 @@ export default {
 		defaultSortColumn: {
 			type: String,
 			default: "familyName",
+		},
+
+		isNotDistributedAvailable: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
@@ -743,6 +763,12 @@ export default {
 			return this.isAssistanceTargetInstitution ? row.institution.id : row.id;
 		},
 
+		isNotDistributedButtonVisible({ status }) {
+			return this.isNotDistributedAvailable
+				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+				&& this.userCan.revertDistribution;
+		},
+
 		openViewModal(row) {
 			if (this.isAssistanceTargetInstitution) {
 				this.showDetailModal(row);
@@ -885,6 +911,7 @@ export default {
 
 		async prepareDataForTable(data) {
 			this.table.progress += 25;
+			this.table.checkedRows = [];
 			let beneficiaryIds = [];
 			let beneficiaries = [];
 
@@ -939,7 +966,7 @@ export default {
 								rp.lastModified || rp.lastModified,
 							).format("YYYY-MM-DD hh:mm"));
 							const isDistributed = reliefPackages.length && reliefPackages.every(
-								(rp) => rp.state === "Distributed",
+								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
 
 							this.table.data[key] = {
@@ -992,7 +1019,7 @@ export default {
 							? this.preparePhoneForTable(beneficiary.phones)
 							: this.$t("None");
 						const isDistributed = reliefPackages.length && reliefPackages.every(
-							(rp) => rp.state === "Distributed",
+							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 						);
 
 						this.table.data[key] = {
@@ -1021,6 +1048,40 @@ export default {
 				this.setAssignedReliefPackages();
 			} else {
 				this.table.progress = 100;
+			}
+		},
+
+		async setAsNotDistributed(tableIndex, bnfId, reliefPackage) {
+			try {
+				const { data, status, message } = await AssistancesService
+					.revertDistributionOfReliefPackage(reliefPackage[0].id);
+
+				if (status !== 200) {
+					throw new Error(message);
+				}
+
+				Notification(
+					`${this.$t("Successfully set as not distributed for Beneficiary ID")} ${bnfId}`,
+					"success",
+				);
+
+				const updatedRow = {
+					status: [data.state],
+					distributed: [`${data.distributed} ${data.unit}`],
+					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+				};
+				const unDistributedItemIndex = this.table.checkedRows.findIndex(
+					(row) => row.id === this.table.data[tableIndex].id,
+				);
+
+				this.table.checkedRows.splice(unDistributedItemIndex, 1);
+				this.table.data = this.table.data.map(
+					(row, index) => (index === tableIndex ? { ...row, ...updatedRow } : row),
+				);
+
+				this.$emit("fetchAssistanceStatistics");
+			} catch (e) {
+				Notification(`${this.$t("Set as not distributed")} ${e.message || e}`, "error");
 			}
 		},
 

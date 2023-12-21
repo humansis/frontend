@@ -25,7 +25,7 @@
 					</v-col>
 
 					<v-col cols="10">
-						<span>{{ $t(confirmMessage) }}</span>
+						<span class="text-body-2">{{ $t(confirmMessage) }}</span>
 					</v-col>
 				</v-row>
 

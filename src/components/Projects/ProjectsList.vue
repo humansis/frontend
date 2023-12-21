@@ -18,20 +18,20 @@
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
-				label="Show Detail"
+				tooltip-text="Show Detail"
 				@actionConfirmed="showDetail(row.id)"
 			/>
 
 			<ButtonAction
 				icon="edit"
-				label="Edit"
+				tooltip-text="Edit"
 				@actionConfirmed="showEdit(row.id)"
 			/>
 
 			<ButtonAction
 				:disabled="!row.deletable"
 				icon="trash"
-				label="Delete"
+				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Project"
 				confirm-message="Are you sure sure you want to delete Project?"
