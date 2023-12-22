@@ -290,18 +290,6 @@ export default {
 		this.fetchScoringTypes();
 	},
 
-	updated() {
-		this.$emit(
-			"updatedData",
-			this.prepareCriteria(),
-			this.minimumSelectionScore,
-			this.vulnerabilityScoreTouched || this.calculationLoading,
-			this.scoringType,
-		);
-
-		this.$emit("beneficiariesCounted", this.countOf);
-	},
-
 	methods: {
 		submit() {
 			return !!this.groups.length;
@@ -582,6 +570,16 @@ export default {
 
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.$emit(
+				"updatedData",
+				this.prepareCriteria(),
+				this.minimumSelectionScore,
+				this.vulnerabilityScoreTouched || this.calculationLoading,
+				this.scoringType,
+			);
+
+			this.$emit("beneficiariesCounted", this.countOf);
 		},
 
 		showBeneficiariesInGroup(key) {

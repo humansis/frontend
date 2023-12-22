@@ -99,6 +99,12 @@ export default {
 		},
 	},
 
+	watch: {
+		modelValue(value) {
+			this.selectedDate = value;
+		},
+	},
+
 	methods: {
 		datePickerValueChanged() {
 			this.isDatePickerOpened = false;

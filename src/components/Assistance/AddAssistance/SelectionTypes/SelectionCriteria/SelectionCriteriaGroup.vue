@@ -5,6 +5,7 @@
 				<Table
 					:headers="table.columns"
 					:items="criteriaGroups"
+					:loading="loading"
 					is-row-click-disabled
 					is-footer-disabled
 				>

@@ -160,7 +160,7 @@
 			v-model="formModel.cashbackLimit"
 			label="Cashback Limit"
 			name="cashback-limit"
-			class="mb-6"
+			class="mb-6 mt-5"
 			disabled
 		/>
 	</v-card-text>
