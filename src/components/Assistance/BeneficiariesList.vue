@@ -168,6 +168,7 @@
 		:search-phrase="table.searchPhrase"
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
+		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
 		reset-filters-button
@@ -286,6 +287,14 @@
 				@inputUpdated="exportValuesUpdated"
 				@onExport="exportDistribution"
 			/>
+
+			<template v-if="exportControl.isBnfFileTypeSelected && !isBnfFile3Exported">
+				<v-icon icon="exclamation" type="warning" class="pr-1" />
+
+				<p class="text-red">
+					{{ $t("BNF File 3 is generated, please wait several minutes.") }}
+				</p>
+			</template>
 		</template>
 	</Table>
 </template>
@@ -815,16 +824,22 @@ export default {
 			this.$refs.beneficiariesList.onResetSort();
 		},
 
-		resetFilters() {
+		async resetFilters() {
 			this.statusActive = {
 				toDistribute: false,
 				distributed: false,
 				expired: false,
 				canceled: false,
 			};
+
 			this.selectedFilters = [];
-			this.onFiltersChange({ reliefPackageStates: [] });
-			this.$refs.beneficiariesList.resetSearch();
+			await this.onFiltersChange({ reliefPackageStates: [] });
+
+			if (this.$refs.beneficiariesList.searchValue().length) {
+				this.$refs.beneficiariesList.resetSearch();
+			} else {
+				await this.fetchData();
+			}
 		},
 
 		getIdForDelete(row) {
@@ -1043,9 +1058,10 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
+								selectable: !isDistributed,
 							};
 
-							if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
+							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
 						}
 					});
 
@@ -1106,9 +1122,10 @@ export default {
 							spent,
 							lastModified,
 							phone,
+							selectable: !isDistributed,
 						};
 
-						if (isDistributed) this.table.checkedRows.push(this.table.data[key]);
+						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
 					});
 			}
 
@@ -1161,6 +1178,7 @@ export default {
 					status: [data.state],
 					distributed: [`${data.distributed} ${data.unit}`],
 					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+					selectable: true,
 				};
 				const unDistributedItemIndex = this.table.checkedRows.findIndex(
 					(row) => row.id === this.table.data[tableIndex].id,

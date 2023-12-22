@@ -336,8 +336,14 @@ export default {
 			};
 		},
 
-		onRowsCheck(rows) {
-			this.$emit("rowsChecked", rows);
+		onRowsCheck() {
+			const selectedData = this.table.data.filter(
+				(item) => this.table.checkedRows.includes(item.id)
+					&& (item.reliefPackages[0].state !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+							|| item.reliefPackages[0] !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED),
+			);
+
+			this.$emit("rowsChecked", selectedData);
 		},
 
 		async randomSample() {

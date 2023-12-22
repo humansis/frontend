@@ -7,7 +7,7 @@
 					:search-phrase="searchPhrase"
 					:search-fields="searchFields"
 					:default-search-field="defaultSearchField"
-					:is-disabled="isSearchDisabled"
+					:is-disabled="isSearchVisible"
 					ref="search"
 					class="ml-4"
 					@search="$emit('search', $event)"
@@ -249,6 +249,10 @@ export default {
 
 		resetSearch() {
 			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
 		},
 	},
 };
