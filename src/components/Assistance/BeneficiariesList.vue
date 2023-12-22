@@ -173,8 +173,8 @@
 		reset-sort-button
 		reset-filters-button
 		@update:modelValue="onRowsCheck"
-		@per-page-changed="onChangePerPage"
-		@page-changed="onPageChange"
+		@per-page-changed="perPageChange"
+		@page-changed="pageChange"
 		@search="onSearch"
 		@update:sortBy="onSort"
 		@resetFilters="resetFilters"

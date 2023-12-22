@@ -81,9 +81,11 @@
 
 		<v-col cols="6">
 			<DataInput
-				v-model="minimumSelectionScore"
+				v-model.number="minimumSelectionScore"
 				:label="vulnerabilityScoreLabel"
 				name="minimum-vulnerability-score"
+				type="number"
+				hide-spin-buttons
 				@update:modelValue="onVulnerabilityScoreInput"
 			/>
 		</v-col>
@@ -438,7 +440,12 @@ export default {
 			const assistanceBody = { ...this.assistanceBody };
 
 			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
-			assistanceBody.threshold = totalCount ? null : threshold;
+
+			if (typeof threshold === "string") {
+				assistanceBody.threshold = null;
+			} else {
+				assistanceBody.threshold = totalCount ? null : threshold;
+			}
 
 			if (totalCount) {
 				assistanceBody.scoringBlueprintId = null;
@@ -498,12 +505,14 @@ export default {
 
 		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {
 			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
-
+			const threshold = typeof this.minimumSelectionScore === "string"
+				? null
+				: this.minimumSelectionScore;
 			const body = {
 				beneficiaryIds,
 				sector: assistanceBody.sector,
 				scoringBlueprintId: this.scoringType?.id || null,
-				threshold: this.minimumSelectionScore,
+				threshold,
 			};
 
 			if (beneficiaryIds.length) {

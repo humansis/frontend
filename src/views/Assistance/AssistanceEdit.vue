@@ -23,6 +23,10 @@
 			class="assistance mt-6"
 		>
 
+			<template v-slot:title="{ title }">
+				<p>{{ $t(title) }}</p>
+			</template>
+
 			<template v-slot:icon="{ step }">
 				<v-icon :icon="`${step}`" />
 			</template>

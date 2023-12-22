@@ -1,5 +1,18 @@
 <template>
 	<v-container fluid="">
+		<ConfirmAction
+			:is-dialog-opened="openConfirmModal"
+			confirm-title="Date of Assistance"
+			confirm-message="You picked date from the past. Is it ok?"
+			prepend-icon="exclamation-circle"
+			prepend-icon-color="warning"
+			close-button-name="Cancel"
+			confirm-button-name="Yes and Continue"
+			confirm-button-color="warning"
+			@modalClosed="confirmModalClosed"
+			@actionConfirmed="submitAddingAssistance"
+		/>
+
 		<div class="new-assistance-title">
 			<h1 class="text-h5 font-weight-bold">{{ $t('New Assistance') }}</h1>
 
@@ -127,6 +140,7 @@ import ActivityDetails from "@/components/Assistance/AddAssistance/SelectionType
 import DistributedCommodity from "@/components/Assistance/AddAssistance/SelectionTypes/DistributedCommodity";
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
+import ConfirmAction from "@/components/ConfirmAction";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -139,6 +153,7 @@ export default {
 		NewAssistanceForm,
 		SelectionCriteria,
 		DistributedCommodity,
+		ConfirmAction,
 	},
 
 	data() {
@@ -152,6 +167,7 @@ export default {
 			},
 			project: {},
 			isProjectReady: false,
+			openConfirmModal: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -312,17 +328,7 @@ export default {
 				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
 
 				if (isBeforeToday) {
-					this.$buefy.dialog.confirm({
-						title: this.$t("Date of Assistance"),
-						message: this.$t("You picked date from the past. Is it ok?"),
-						confirmText: this.$t("Yes and Continue"),
-						cancelText: this.$t("Cancel"),
-						type: "is-warning",
-						hasIcon: true,
-						onConfirm: () => {
-							this.submitAddingAssistance();
-						},
-					});
+					this.openConfirmModal = true;
 				} else {
 					this.submitAddingAssistance();
 				}
@@ -838,6 +844,10 @@ export default {
 				default:
 					return "";
 			}
+		},
+
+		confirmModalClosed() {
+			this.openConfirmModal = false;
 		},
 	},
 };

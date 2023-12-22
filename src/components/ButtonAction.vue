@@ -163,12 +163,25 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		openConfirmModal: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			isDialogOpened: false,
 		};
+	},
+
+	watch: {
+		openConfirmModal(value) {
+			if (value) {
+				this.isDialogOpened = value;
+			}
+		},
 	},
 
 	methods: {

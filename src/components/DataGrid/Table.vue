@@ -50,10 +50,10 @@
 		<v-data-table
 			v-bind="$attrs"
 			:cell-props="getCellProps"
-			hide-default-footer
+			:hide-default-footer="!showDefaultFooter"
 			@[rowClickEvent]="handleRowClick"
 		>
-			<template v-slot:bottom>
+			<template v-if="!showDefaultFooter" v-slot:bottom>
 				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
@@ -195,6 +195,11 @@ export default {
 		},
 
 		isFooterDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		showDefaultFooter: {
 			type: Boolean,
 			default: false,
 		},
