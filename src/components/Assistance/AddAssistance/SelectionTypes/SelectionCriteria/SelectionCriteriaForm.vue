@@ -141,6 +141,11 @@ export default {
 
 	mixins: [validation],
 
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
+
 	validations() {
 		return {
 			formModel: {

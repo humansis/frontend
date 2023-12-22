@@ -7,7 +7,7 @@
 			size="small"
 			prepend-icon="plus"
 			class="text-none"
-			@click="addCriteria()"
+			@click="addCriteria"
 		>
 			{{ $t('Add Group') }}
 		</v-btn>
@@ -374,18 +374,7 @@ export default {
 		},
 
 		addCriteria(id) {
-			this.criteriaModal.isOpened = true;
-
-			this.criteriaModel = {
-				criteriaTarget: null,
-				criteria: null,
-				condition: null,
-				value: null,
-				scoreWeight: 1,
-				groupId: id,
-				count: 0,
-				data: [],
-			};
+			console.log("test", id);
 		},
 
 		closeCriteriaModal() {
