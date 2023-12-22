@@ -13,9 +13,7 @@
 					@search="$emit('search', $event)"
 				/>
 
-				<slot name="export" />
-				<slot name="filterButton" />
-				<slot name="table-header" />
+				<slot name="tableControls" />
 			</v-col>
 
 			<v-col cols="5" lg="3">
@@ -45,7 +43,7 @@
 			</v-col>
 		</v-row>
 
-		<slot name="filter" />
+		<slot name="advancedControls" />
 
 		<v-data-table
 			v-bind="$attrs"

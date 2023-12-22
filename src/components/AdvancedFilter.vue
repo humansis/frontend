@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row class="mt-2">
 		<v-col
 			v-for="(options, filter) in filtersOptions"
 			:key="filter"
@@ -13,12 +13,13 @@
 				v-model="selectedFiltersOptions[filter]"
 				:label="$t(options.name)"
 				:loading="options.loading"
+				:multiple="options.multiple"
 				:items="options.data"
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
 				name="filter-select"
+				is-data-shown-as-tag
 				is-search-enabled
-				multiple
 				clearable
 				@update:modelValue="onFilterChanged(filter)"
 			/>
@@ -42,6 +43,20 @@
 			/>
 
 			<!-- TODO dateTimePicker -->
+		</v-col>
+	</v-row>
+
+	<v-row class="mt-1">
+		<v-col class="d-flex justify-end">
+			<v-btn
+				color="primary"
+				size="small"
+				prepend-icon="search"
+				class="text-none ml-3"
+				@click="$emit('onSearch')"
+			>
+				{{ $t('Search') }}
+			</v-btn>
 		</v-col>
 	</v-row>
 </template>
@@ -103,12 +118,6 @@ export default {
 			});
 
 			this.$emit("filtersChanged", filters, filterName);
-			this.$forceUpdate();
-		},
-
-		removeFilterValue(filter) {
-			this.selectedFiltersOptions[filter] = null;
-			this.filterChanged(filter);
 		},
 	},
 };

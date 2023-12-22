@@ -7,5 +7,6 @@ export default {
 			HOUSEHOLD: { key: "id", order: "desc" },
 			INSTITUTION: { key: "id", order: "desc" },
 		},
+		INSTITUTIONS: { key: "id", order: "desc" },
 	},
 };
