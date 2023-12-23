@@ -67,6 +67,19 @@
 		{{ $t('There Is No Distributed Commodity') }}.
 		{{ $t('Please Add One Distributed Commodity') }}.
 	</v-alert>
+
+	<p
+		v-for="({ modalityType, unit, value }, key) of calculatedCommodityValue"
+		:key="`calculated-commodity-item${key}`"
+		class="text-h6 text-right mt-5"
+	>
+		<strong class="is-size-4">
+			{{ value }}
+		</strong>
+		{{ unit }}
+		({{ $t(modalityType) }})
+		{{ $t("To Be Delivered") }}
+	</p>
 </template>
 
 <script>
@@ -132,6 +145,11 @@ export default {
 		validationMessages: {
 			type: Object,
 			default: () => {},
+		},
+
+		isCommodityValueCalculating: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

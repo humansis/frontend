@@ -397,13 +397,26 @@ export default {
 			this.fetchCriteriaInfo();
 		},
 
-		fetchCriteriaInfo() {
+		async fetchCriteriaInfo() {
+			this.calculationLoading = true;
 			this.groups.forEach((group, key) => {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
+			await this.getCountOfBeneficiaries({ totalCount: true });
+			await this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.$emit(
+				"updatedData",
+				this.prepareCriteria(),
+				this.minimumSelectionScore,
+				this.vulnerabilityScoreTouched,
+				this.scoringType,
+			);
+
+			this.$emit("beneficiariesCounted", this.countOf);
+			this.$emit("onDeliveredCommodityValue");
+			this.calculationLoading = false;
 		},
 
 		onVulnerabilityScoreInput() {
@@ -469,7 +482,6 @@ export default {
 
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
 			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
-			this.calculationLoading = true;
 
 			if (this.assistanceBodyIsValid(assistanceBody)) {
 				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
@@ -499,8 +511,6 @@ export default {
 						Notification(`${this.$t("Calculation")} ${e.message || e}`, "error");
 					});
 			}
-
-			this.calculationLoading = false;
 		},
 
 		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {

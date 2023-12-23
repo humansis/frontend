@@ -56,7 +56,7 @@
 
 		<DataInput
 			v-if="displayedFields.amountMultiplier"
-			v-model="formModel.amountMultiplier"
+			v-model.number="formModel.amountMultiplier"
 			:error-messages="validationMsg('amountMultiplier')"
 			label="Amount multiplier"
 			name="amount-multiplier"
