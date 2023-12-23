@@ -6,6 +6,7 @@
 		:disabled="disabled"
 		:clearable="!disabled && isClearable"
 		:item-title="itemTitle"
+		:item-value="itemValue"
 		:variant="variant"
 		:density="density"
 		:hide-details="hideDetails"
@@ -138,6 +139,11 @@ export default {
 			default: "value",
 		},
 
+		itemValue: {
+			type: String,
+			default: "code",
+		},
+
 		isAppendIconEnabled: {
 			type: Boolean,
 			default: false,
@@ -206,8 +212,8 @@ export default {
 		},
 
 		chipClosed(item) {
-			const updatedModel = this.modelValue.filter(
-				(removedItem) => removedItem.code !== item.value,
+			const updatedModel = this.modelValue?.filter(
+				(removedItem) => removedItem[this.itemValue] !== item.value,
 			);
 
 			this.$emit("update:modelValue", updatedModel);

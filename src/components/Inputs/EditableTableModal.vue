@@ -26,7 +26,8 @@
 							|| formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT"
 						v-model="data[formInput.key]"
 						:items="formInput.options"
-						:multiple="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT"
+						:multiple="isInputTypeMultiselect(formInput)"
+						:is-data-shown-as-tag="isInputTypeMultiselect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:clearable="true"
 						:disabled="isFormDisabled"
@@ -35,7 +36,6 @@
 						item-title="value"
 						item-value="code"
 						is-search-enabled
-						is-data-shown-as-tag
 						optional
 						class="mb-6"
 						@update:modelValue="inputChanged(formInput, data)"
@@ -288,6 +288,10 @@ export default {
 			this.validateAfterAction(formInput);
 			this.checkDependencies(formInput);
 			this.$emit("modalInputChanged", { formInput, data });
+		},
+
+		isInputTypeMultiselect({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT;
 		},
 	},
 };

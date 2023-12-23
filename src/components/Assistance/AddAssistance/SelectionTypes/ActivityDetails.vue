@@ -11,6 +11,7 @@
 				:error-messages="validationMsg('activityDescription')"
 				label="Activity Description"
 				name="activity-description"
+				class="mb-6"
 				@blur="validate('activityDescription')"
 			/>
 
@@ -22,6 +23,7 @@
 				name="households-targeted"
 				type="number"
 				min="0"
+				class="mb-6"
 				hide-spin-buttons
 				@blur="validate('householdsTargeted')"
 			/>
@@ -34,6 +36,7 @@
 				name="individuals-targeted"
 				type="number"
 				min="0"
+				class="mb-6"
 				hide-spin-buttons
 				@blur="validate('individualsTargeted')"
 			/>
@@ -100,8 +103,8 @@ export default {
 
 	methods: {
 		submit() {
-			this.$v.$touch();
-			return !this.$v.$invalid;
+			this.v$.$touch();
+			return !this.v$.$invalid;
 		},
 	},
 };
