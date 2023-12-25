@@ -324,6 +324,12 @@ export default {
 			}
 		},
 
+		project(data) {
+			if (data) {
+				this.prepareDataFromProjectTargets();
+			}
+		},
+
 		assistanceDates() {
 			if (this.dateExpiration) {
 				this.isDateOfAssistanceValid = this.$moment(this.formModel.dateOfAssistance)
@@ -336,7 +342,6 @@ export default {
 	async mounted() {
 		await this.fetchSectors();
 		this.defaultDateOfAssistance();
-		this.prepareDataFromProjectTargets();
 	},
 
 	updated() {

@@ -23,7 +23,7 @@
 			:disabled-adm="disabledAdmInput"
 			:disabled-adm-clear="disabledAdmInput"
 			:influence-distribution-protocol="influenceDistributionProtocol"
-			distribution-protocol-message="TSASAGASGASGAS"
+			:distribution-protocol-message="distributionProtocolMessage"
 			is-editing
 			@locationChanged="valuesForAssistanceName"
 		/>
