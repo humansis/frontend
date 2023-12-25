@@ -539,7 +539,7 @@ export default {
 				};
 				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
 			} else {
-				this.$refs.selectionCriteria.scoringType = null;
+				this.$refs.selectionCriteria.scoringType = AssistancesService.getDefaultScoringType();
 				this.$refs.selectionCriteria.minimumSelectionScore = null;
 			}
 

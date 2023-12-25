@@ -34,6 +34,12 @@
   font-size: .8125rem;
 }
 
+.warning-message {
+  .v-messages__message {
+    color:red;
+  }
+}
+
 
 //.card-content > .progress-wrapper {
 //	position: absolute;

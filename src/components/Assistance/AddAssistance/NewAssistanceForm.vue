@@ -106,11 +106,13 @@
 				:items="options.sectors"
 				:loading="loading.sectors"
 				:error-messages="validationMsg('sector')"
+				:hint="sectorValidationMessage"
+				persistent-hint
 				label="Sector"
 				name="sector"
 				item-title="value"
 				item-value="code"
-				class="mb-6"
+				class="mb-6 warning-message"
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -119,11 +121,13 @@
 				:items="options.subsectors"
 				:loading="loading.subsectors"
 				:error-messages="validationMsg('subsector')"
+				:hint="subsectorValidationMessage"
+				persistent-hint
 				label="Subsector"
 				name="sub-sector"
 				item-title="value"
 				item-value="code"
-				class="mb-6"
+				class="mb-6 warning-message"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -282,6 +286,8 @@ export default {
 				assistanceTypes: false,
 				targetTypes: false,
 			},
+			sectorValidationMessage: "",
+			subsectorValidationMessage: "",
 		};
 	},
 
@@ -344,20 +350,29 @@ export default {
 				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
 				await this.fetchSubsectors(sector);
 			}
+
 			if (subsector && typeof subsector !== "object") {
 				this.formModel.subsector = getArrayOfCodeListByKey([subsector], this.options.subsectors, "code");
 				await this.fetchAssistanceTypes(subsector);
 			} else {
 				await this.fetchAssistanceTypes(subsector);
 			}
+
 			if (assistanceType && typeof assistanceType !== "object") {
 				this.formModel.assistanceType = getArrayOfCodeListByKey([assistanceType], this.options.assistanceTypes, "code");
 				await this.fetchTargetTypes(assistanceType);
 			}
+
 			if (targetType && typeof targetType !== "object") {
 				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
 			}
-			await this.showComponents();
+
+			this.validateSectorAndSubSector(sector, subsector);
+
+			if (!this.sectorValidationMessage.length && !this.subsectorValidationMessage.length) {
+				await this.showComponents();
+			}
+
 			this.$emit("updatedData", this.formModel);
 		},
 
@@ -386,19 +401,21 @@ export default {
 			return this.formModel.locationId;
 		},
 
-		onSectorSelect({ code }) {
+		async onSectorSelect({ code }) {
 			this.formModel.subsector = [];
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("sector");
-			this.fetchSubsectors(code);
+			await this.fetchSubsectors(code);
+			this.sectorValidationMessage = "";
 		},
 
-		onSubsectorSelect({ code }) {
+		async onSubsectorSelect({ code }) {
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
 			this.validate("subsector");
-			this.fetchAssistanceTypes(code);
+			await this.fetchAssistanceTypes(code);
+			this.subsectorValidationMessage = "";
 		},
 
 		onAssistanceTypeSelect({ code }) {
@@ -591,6 +608,18 @@ export default {
 
 			this.options.activities = getUniqueObjectsInArray(this.options.activities, "code");
 			this.options.budgetLines = getUniqueObjectsInArray(this.options.budgetLines, "code");
+		},
+
+		validateSectorAndSubSector(sector, subsector) {
+			if (!this.formModel.sector?.code) {
+				this.sectorValidationMessage = `${this.$t("Sector")}:
+					${sector} ${this.$t("was removed, because this sector is not selectable.")}`;
+			}
+
+			if (!this.formModel.subsector?.code) {
+				this.subsectorValidationMessage = `${this.$t("Subsector")}:
+				 	${normalizeText(subsector)} ${this.$t("was removed, because this subsector is not selectable.")}`;
+			}
 		},
 	},
 };

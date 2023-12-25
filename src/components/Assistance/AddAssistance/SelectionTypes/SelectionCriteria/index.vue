@@ -288,8 +288,8 @@ export default {
 		},
 	},
 
-	created() {
-		this.fetchScoringTypes();
+	async created() {
+		await this.fetchScoringTypes();
 	},
 
 	methods: {

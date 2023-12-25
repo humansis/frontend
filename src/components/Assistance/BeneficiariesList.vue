@@ -554,18 +554,19 @@ export default {
 
 		householdsAndIndividualEditColumns() {
 			return [
-				{ key: "id", title: "Beneficiary ID", sortable: true },
-				{ key: "givenName", title: "Local given name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", sortable: true, sortKey: "localFamilyName" },
-				{ key: "gender" },
-				{ key: "dateOfBirth", title: "Date of Birth", type: "date" },
-				{ key: "residencyStatus" },
-				{ key: "vulnerabilities", type: "svgIcon" },
+				{ key: "id", title: "Beneficiary ID" },
+				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
+				{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
+				{ key: "gender", sortable: false },
+				{ key: "dateOfBirth", title: "Date of Birth", type: "date", sortable: false },
+				{ key: "residencyStatus", sortable: false },
+				{ key: "vulnerabilities", type: "svgIcon", sortable: false },
 				...this.isCustomAmountEnabled && this.customFieldName
 					? [
-						{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
+						{ key: "toDistribute", type: "arrayTextBreak", sortable: false },
 					]
 					: [],
+				{ key: "actions", value: "actions", sortable: false },
 			];
 		},
 

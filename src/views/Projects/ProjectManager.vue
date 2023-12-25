@@ -953,11 +953,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-.warning-message {
-	.v-messages__message {
-		color:red;
-	}
-}
-</style>
