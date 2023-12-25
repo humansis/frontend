@@ -1,211 +1,197 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Username')"
-				:type="validateType('username')"
-				:message="validateMsg('username')"
+	<v-card-text>
+		<DataInput
+			v-model="formModel.username"
+			:disabled="formDisabled || isEditing"
+			:error-messages="validationMsg('username')"
+			label="Username"
+			name="username"
+			class="mb-6"
+			@blur="onValidate('username')"
+		/>
+
+		<DataInput
+			v-model="formModel.password"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('password')"
+			:append-inner-icon="passwordVisible ? 'eye-slash' : 'eye'"
+			:type="passwordVisible ? 'text' : 'password'"
+			label="Password"
+			name="password"
+			class="mb-6"
+			@click:append-inner="passwordVisible = !passwordVisible"
+			@blur="onValidate('password')"
+		/>
+
+		<DataInput
+			v-model="formModel.name"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('name')"
+			label="Name"
+			name="name"
+			class="mb-3"
+			@blur="onValidate('name')"
+		/>
+
+		<div
+			v-for="({ code, value }, index) of options.categoryTypes"
+			:key="`category-type-${code}`"
+			:class="['category-types', { 'last-type': isLastCategoryType(index) }] "
+		>
+			<v-checkbox
+				v-model="formModel.categoryType"
+				:value="value"
+				:disabled="formDisabled"
+				:error-messages="isLastCategoryType(index) && validationMsg('categoryType')"
+				:name="`category-type-${index}`"
+				hide-details="auto"
+				@blur="onValidate('categoryType')"
 			>
-				<b-input
-					v-model="formModel.username"
-					:disabled="formDisabled || isEditing"
-					@blur="validate('username')"
-				/>
-			</b-field>
+				<template v-slot:label>
+					{{ $t(value) }}
 
-			<b-field
-				:label="$t('Password')"
-				:type="validateType('password')"
-				:message="validateMsg('password')"
-			>
-				<b-input
-					v-model="formModel.password"
-					type="password"
-					password-reveal
-					:disabled="formDisabled"
-					@blur="validate('password')"
-				/>
-			</b-field>
-
-			<b-field
-				:label="$t('Name')"
-				:type="validateType('name')"
-				:message="validateMsg('name')"
-			>
-				<b-input
-					v-model="formModel.name"
-					:disabled="formDisabled"
-					@blur="validate('name')"
-				/>
-			</b-field>
-
-			<b-field
-				:label="$t('Allowed Category Types')"
-				:type="validateType('categoryType')"
-				:message="validateMsg('categoryType')"
-				:addons="false"
-			>
-				<div
-					v-for="({code, value}) of options.categoryTypes"
-					class="mb-3"
-					:key="`category-type-${code}`"
-				>
-					<b-checkbox
-						v-model="formModel.categoryType"
-						:native-value="code"
-						:disabled="formDisabled"
-						@blur="validate('categoryType')"
-					>
-						<div class="is-flex is-align-items-center">
-							{{ $t(value) }}
-							<SvgIcon class="ml-2" :items="[{code, value}]" />
-						</div>
-					</b-checkbox>
-				</div>
-			</b-field>
-
-			<b-field>
-				<template #label>
-					{{ $t('Vendor No.') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
+					<SvgIcon
+						:items="[{ code, value }]"
+						class="ml-2"
+					/>
 				</template>
-				<b-input
-					v-model="formModel.vendorNo"
-					:disabled="formDisabled"
-				/>
-			</b-field>
+			</v-checkbox>
+		</div>
 
-			<b-field>
-				<template #label>
-					{{ $t('Contract No.') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.contractNo"
-					:disabled="formDisabled"
-				/>
-			</b-field>
+		<DataInput
+			v-model="formModel.vendorNo"
+			:disabled="formDisabled"
+			label="Vendor No."
+			name="vendor-no"
+			class="mt-6 mb-6"
+			optional
+		/>
 
-			<b-field>
-				<template #label>
-					{{ $t('Remote Distribution Permission') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-checkbox
-					v-model="formModel.canDoRemoteDistributions"
-					:disabled="formDisabled"
-				>
-					{{ $t('Allowed') }}
-				</b-checkbox>
-			</b-field>
+		<DataInput
+			v-model="formModel.contractNo"
+			:disabled="formDisabled"
+			label="Contract No."
+			name="contract-no"
+			class="mb-2"
+			optional
+		/>
 
-			<b-field>
-				<template #label>
-					{{ $t('Address Street') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.addressStreet"
-					:disabled="formDisabled"
-					@blur="validate('addressStreet')"
-				/>
-			</b-field>
+		<v-checkbox
+			v-model="formModel.canDoRemoteDistributions"
+			:disabled="formDisabled"
+			name="remote-distribution-permission"
+			hide-details
+			class="checkbox"
+		>
+			<template v-slot:label>
+				<span>{{ $t('Remote Distribution Permission') }}
+					<i class="optional-text">- {{ $t('Optional') }}</i>
+				</span>
+			</template>
+		</v-checkbox>
 
-			<b-field>
-				<template #label>
-					{{ $t('Address Number') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.addressNumber"
-					:disabled="formDisabled"
-					@blur="validate('addressNumber')"
-				/>
-			</b-field>
+		<DataInput
+			v-model="formModel.addressStreet"
+			:disabled="formDisabled"
+			label="Address Street"
+			name="address-street"
+			class="mb-6"
+			optional
+		/>
 
-			<b-field>
-				<template #label>
-					{{ $t('Address Postcode') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.addressPostcode"
-					:disabled="formDisabled"
-					@blur="validate('addressPostcode')"
-				/>
-			</b-field>
+		<DataInput
+			v-model="formModel.addressNumber"
+			:disabled="formDisabled"
+			label="Address Number"
+			name="address-number"
+			class="mb-6"
+			optional
+		/>
 
-			<LocationForm
-				ref="locationForm"
-				:form-model="formModel"
-				:form-disabled="formDisabled"
-				@mapped="mapping = false"
-			/>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button v-if="closeButton" @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-				:label="submitButtonLabel"
-				:loading="formLoading"
-				:disabled="mapping || formLoading"
-			/>
-		</footer>
-	</form>
+		<DataInput
+			v-model="formModel.addressPostcode"
+			:disabled="formDisabled"
+			label="Address Postcode"
+			name="address-postcode"
+			class="mb-6"
+			optional
+		/>
+
+		<LocationForm
+			ref="locationForm"
+			:form-model="formModel"
+			:form-disabled="formDisabled"
+			:disabled-adm-clear="disabledAdmInput"
+			@mapped="mapping = false"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			v-if="closeButton"
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="!formDisabled"
+			:disabled="mapping || formLoading"
+			:loading="formLoading"
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
-import LocationForm from "@/components/LocationForm";
+import DataInput from "@/components/Inputs/DataInput";
+import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
+import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "VendorForm",
 
 	components: {
 		LocationForm,
+		DataInput,
 		SvgIcon,
 	},
 
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			username: { required },
-			// eslint-disable-next-line func-names
-			password: { required: requiredIf(function () {
-				return !this.isEditing;
-			}) },
-			name: { required },
-			categoryType: { required },
-			shop: {},
-			addressStreet: {},
-			addressNumber: {},
-			addressPostcode: {},
-			adm1: { required },
-			adm2: {},
-			adm3: {},
-			adm4: {},
-			vendorNo: {},
-			contractNo: {},
-		},
+	validations() {
+		return {
+			formModel: {
+				username: { required },
+				password: { required: requiredIf(!this.isEditing) },
+				name: { required },
+				categoryType: { required },
+				shop: {},
+				addressStreet: {},
+				addressNumber: {},
+				addressPostcode: {},
+				adm1: { required },
+				adm2: {},
+				adm3: {},
+				adm4: {},
+				vendorNo: {},
+				contractNo: {},
+			},
+		};
 	},
 
 	props: {
@@ -220,6 +206,7 @@ export default {
 	data() {
 		return {
 			mapping: true,
+			passwordVisible: false,
 			options: {
 				categoryTypes: [
 					{
@@ -239,21 +226,36 @@ export default {
 		};
 	},
 
+	computed: {
+		disabledAdmInput() {
+			return {
+				adm1: this.formDisabled,
+				adm2: this.formDisabled,
+				adm3: this.formDisabled,
+				adm4: this.formDisabled,
+			};
+		},
+	},
+
 	methods: {
-		submitForm() {
-			this.$v.$touch();
+		isLastCategoryType(index) {
+			return index === (this.options.categoryTypes.length - 1);
+		},
+
+		onSubmitForm() {
+			this.v$.$touch();
 			this.$refs.locationForm.submitLocationForm();
-			if (this.$v.$invalid) {
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };

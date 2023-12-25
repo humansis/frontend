@@ -26,6 +26,7 @@
 						v-if="!sideBarItem.subItems?.length"
 						:title="sideBarItem.title"
 						:to="sideBarItem.to"
+						:active="isRouteActive(sideBarItem)"
 						exact
 					>
 						<template v-slot:prepend>
@@ -369,6 +370,15 @@ export default {
 					title: "Projects",
 					prependIcon: "clipboard-list",
 					to: { name: "Projects" },
+					alias: [
+						"Project",
+						"AddProject",
+						"ProjectDetail",
+						"ProjectEdit",
+						"AddAssistance",
+						"AssistanceEdit",
+						"AssistanceDetail",
+					],
 				},
 				{
 					title: "Beneficiaries",
@@ -387,7 +397,7 @@ export default {
 						{
 							title: "Vendors",
 							prependIcon: "store",
-							// to: { name: "Vendors" },
+							to: { name: "Vendors" },
 						},
 					],
 				},
@@ -402,6 +412,7 @@ export default {
 				{
 					title: "Vouchers",
 					prependIcon: "ticket-alt",
+					to: { name: "Vouchers" },
 				},
 				{
 					title: "Country Settings",
@@ -502,6 +513,12 @@ export default {
 				|| name === "AssistanceEdit"
 				|| name === "AssistanceDetail"
 				|| name === "AddAssistance";
+		},
+
+		isRouteActive(item) {
+			const actualRoute = this.$route.name;
+
+			return actualRoute === item.to?.name || item.alias?.includes(actualRoute);
 		},
 	},
 };

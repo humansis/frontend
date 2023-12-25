@@ -35,12 +35,15 @@ export default {
 		},
 
 		fillParentProvinces() {
+			const adm1Map = new Map(this.filtersOptions.adm1.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm2.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm1.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm1Map.get(item.parentId);
 
-					this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},
@@ -58,12 +61,15 @@ export default {
 		},
 
 		fillParentDistricts() {
+			const adm2Map = new Map(this.filtersOptions.adm2.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm3.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm2.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm2Map.get(item.parentId);
 
-					this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},
@@ -81,12 +87,15 @@ export default {
 		},
 
 		fillParentCommunes() {
+			const adm3Map = new Map(this.filtersOptions.adm3.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm4.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm3.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm3Map.get(item.parentId);
 
-					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},

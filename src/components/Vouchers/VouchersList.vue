@@ -1,146 +1,120 @@
 <template>
-	<Table
+	<DataGrid
 		ref="vouchersList"
-		has-reset-sort
-		has-search
-		checkable
-		default-sort-key="code"
-		default-sort-direction="desc"
-		:data="table.data"
-		:total="table.total"
+		v-model="table.checkedRows"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
 		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		:checked-rows="table.checkedRows"
-		@checked="onRowsChecked"
-		@clicked="showDetail"
+		show-select
+		reset-sort-button
+		reset-filters-button
+		is-search-visible
+		@update:modelValue="onRowsChecked"
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VOUCHERS)"
+		@resetFilters="onResetFilters"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				:key="column.id"
-				v-slot="props"
-			>
-				<template v-if="column.field === 'status'">
-					{{ getStatus(props.row[column.field]) }}
-				</template>
-				<ColumnField v-else :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				:disabled="!bookletsSelects"
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<ButtonAction
+				:disabled="!bookletsSelects"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<ButtonAction
+				:disabled="!row.deletable || !bookletsSelects"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Voucher"
+				confirm-message="Are you sure sure you want to delete Voucher?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.exportPrintVouchers"
+				:disabled="!bookletsSelects"
+				icon="print"
+				tooltip-text="Print"
+				@actionConfirmed="onPrintBooklets(row)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="180"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					:disabled="!bookletsSelects"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					icon="edit"
-					:tooltip="$t('Edit')"
-					:disabled="!bookletsSelects"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					icon="trash"
-					:entity="$t('Voucher')"
-					:tooltip="$t('Delete')"
-					:disabled="!props.row.deletable || !bookletsSelects"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-				<ActionButton
-					v-if="userCan.exportPrintVouchers"
-					icon="print"
-					type="is-dark"
-					:disabled="!bookletsSelects"
-					:tooltip="$t('Print')"
-					@click="printBooklets(props.row)"
-				/>
-			</div>
-		</b-table-column>
-		<template #filterButton>
-			<b-button
-				slot="trigger"
-				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				@click="filtersToggle"
-			>
-				{{ $t('Advanced Search') }}
-			</b-button>
-		</template>
-		<template #progress>
-			<b-progress :value="table.progress" format="percent" />
-		</template>
-		<template slot="resetSort">
-			<div class="level-right">
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small mr-2"
-					@click="resetFilters"
-				>
-					{{ $t('Reset Filters') }}
-				</b-button>
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small"
-					@click="resetTableSort"
-				>
-					{{ $t('Reset Table Sort') }}
-				</b-button>
-			</div>
-		</template>
-		<template #filter>
-			<b-collapse v-model="advancedSearchVisible">
-				<VouchersFilter
-					ref="vouchersFilter"
-					:defaultFilters="{ ...filters }"
-					@filtersChanged="onFiltersChange"
-					@onSearch="onSearch(table.searchPhrase)"
-				/>
-			</b-collapse>
-		</template>
-		<template #export>
+
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="isExportDisabled"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportBooklets"
+				@export="onExportBooklets"
 			/>
-			<b-button
-				v-show="!bookletsSelects"
-				type="is-primary"
-				class="ml-3"
-				:loading="printSelectionLoading"
-				@click="printSelection"
+
+			<v-btn
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				size="small"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
 			>
-				<template>
-					<span>{{ $t('Print Selection') }}</span>
-				</template>
-			</b-button>
+				{{ $t('Advanced Search') }}
+			</v-btn>
+
+			<v-btn
+				v-show="!bookletsSelects"
+				:loading="printSelectionLoading"
+				size="small"
+				color="primary"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onPrintSelection"
+			>
+				{{ $t('Print Selection') }}
+			</v-btn>
 		</template>
-	</Table>
+
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="isAdvancedSearchVisible">
+				<v-expansion-panel :value="true" eager>
+					<v-expansion-panel-text>
+						<VouchersFilter
+							ref="vouchersFilter"
+							:defaultFilters="{ ...filters }"
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</template>
+	</DataGrid>
 </template>
 
 <script>
 import BookletsService from "@/services/BookletsService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
@@ -149,27 +123,27 @@ import voucherHelper from "@/mixins/voucherHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile, getBookletStatus } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "VouchersList",
 
 	components: {
+		ButtonAction,
 		ExportControl,
 		VouchersFilter,
-		SafeDelete,
-		Table,
-		ActionButton,
-		ColumnField,
+		DataGrid,
 	},
 
 	mixins: [permissions, grid, voucherHelper, urlFiltersHelper],
 
 	data() {
 		return {
-			advancedSearchVisible: false,
+			TABLE,
+			isAdvancedSearchVisible: false,
 			filters: {},
 			printLoading: false,
+			isLoadingList: false,
 			printSelectionLoading: false,
 			bookletsSelects: true,
 			exportControl: {
@@ -180,23 +154,23 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "project" },
-					{ key: "code", sortable: true },
-					{ key: "quantityOfVouchers", label: "Quantity of Vouchers", sortable: true, sortKey: "numberVouchers" },
-					{ key: "totalValue", label: "Total Value", sortable: true, sortKey: "value" },
-					{ key: "currency", sortable: true },
-					{ key: "status", sortable: true },
-					{ key: "beneficiary", sortable: true },
-					{ key: "assistance", sortable: true, sortKey: "distribution" },
-				],
+				columns: generateColumns([
+					{ key: "project", sortable: false },
+					{ key: "code" },
+					{ key: "quantityOfVouchers", title: "Quantity of Vouchers", sortKey: "numberVouchers" },
+					{ key: "totalValue", title: "Total Value", sortKey: "value" },
+					{ key: "currency" },
+					{ key: "status" },
+					{ key: "beneficiary" },
+					{ key: "assistance", sortKey: "distribution" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				checkedRows: [],
 				total: 0,
 				currentPage: 1,
-				searchPhrase: "desc",
-				sortColumn: "code",
-				sortDirection: "",
+				searchPhrase: "",
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.VOUCHERS.key,
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.VOUCHERS.order,
 				progress: null,
 				dataUpdated: false,
 			},
@@ -220,12 +194,12 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
-			this.setGridFiltersToUrl("vouchers", false);
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
@@ -238,18 +212,19 @@ export default {
 				}
 			});
 
+			this.setGridFiltersToUrl("vouchers", false);
 			this.isLoadingList = false;
 		},
 
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
 		getStatus(code) {
 			return getBookletStatus(code).value;
 		},
 
-		async exportBooklets(exportType, format) {
+		async onExportBooklets(exportType, format) {
 			if (exportType === EXPORT.VOUCHERS) {
 				try {
 					this.exportControl.loading = true;
@@ -268,7 +243,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Booklets")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Booklets")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
@@ -280,9 +255,10 @@ export default {
 			this.bookletsSelects = !rows?.length;
 		},
 
-		async printSelection() {
+		async onPrintSelection() {
 			this.printSelectionLoading = true;
-			const ids = this.table.checkedRows.map((item) => item.id);
+
+			const ids = this.table.checkedRows.map((id) => id);
 
 			await BookletsService.exportQRVouchers(ids)
 				.then(({ data, status, message }) => {
@@ -293,16 +269,16 @@ export default {
 						link.download = `Booklets.pdf`;
 						link.click();
 					} else {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
+					Notification(`${this.$t("Print Booklet")} ${e.message || e}`, "error");
 				});
 			this.printSelectionLoading = false;
 		},
 
-		async printBooklets({ code, id }) {
-			Notification(`${this.$t("Your Voucher Download is Starting")}`, "is-success");
+		async onPrintBooklets({ code, id }) {
+			Notification(`${this.$t("Your Voucher Download is Starting")}`, "success");
 
 			await BookletsService.exportQRVouchers([id])
 				.then(({ data, status, message }) => {
@@ -313,14 +289,14 @@ export default {
 						link.download = `Booklet-${code}.pdf`;
 						link.click();
 					} else {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				}).catch((e) => {
-					Notification(`${this.$t("Print Booklet")} ${e}`, "is-danger");
+					Notification(`${this.$t("Print Booklet")} ${e.message || e}`, "error");
 				});
 		},
 
-		resetFilters() {
+		onResetFilters() {
 			this.resetSearch({ tableRef: "vouchersList", filtersRef: "vouchersFilter" });
 		},
 

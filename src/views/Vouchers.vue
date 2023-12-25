@@ -1,66 +1,52 @@
 <template>
-	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Vouchers') }}</h1>
-			</div>
+	<v-container fluid>
+		<div class="d-flex mb-4">
+			<h2 class="me-auto">{{ $t('Vouchers') }}</h2>
 
-			<div class="level-right">
-				<b-button
-					v-if="userCan.addVouchers"
-					type="is-primary"
-					icon-left="plus"
-					@click="addNewVoucher"
-				>
-					{{ $t('Add') }}
-				</b-button>
-			</div>
+			<v-btn
+				v-if="userCan.addVouchers"
+				color="primary"
+				size="small"
+				prepend-icon="plus"
+				class="text-none ml-0"
+				@click="onAddNewVoucher"
+			>
+				{{ $t('Add') }}
+			</v-btn>
 		</div>
 
 		<Modal
-			can-cancel
-			:active="voucherModal.isOpened"
+			v-model="voucherModal.isOpened"
 			:header="modalHeader"
-			:is-waiting="voucherModal.isWaiting"
-			@close="closeVoucherModal"
 		>
 			<VoucherForm
-				close-button
-				class="modal-card"
-				:submit-button-label="voucherModal.isEditing ? $t('Update') : $t('Create')"
-				:formModel="voucherModel"
+				:form-model="voucherModel"
+				:submit-button-label="voucherModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="voucherModal.isDetail"
 				:is-editing="voucherModal.isEditing"
-				@formSubmitted="submitVoucherForm"
-				@formClosed="closeVoucherModal"
+				close-button
+				@formSubmitted="onSubmitVoucherForm"
+				@formClosed="onCloseVoucherModal"
 			/>
 		</Modal>
 
-		<!-- switch between two styles of displaying Batches/Vouchers list -->
-		<BatchesList
-			v-if="false"
-			ref="batchesList"
-			@remove="removeVoucher"
-			@showDetail="showDetail"
-		/>
 		<VouchersList
 			ref="vouchersList"
-			@remove="removeVoucher"
-			@showDetail="showDetail"
-			@showEdit="showEdit"
+			@delete="onRemoveVoucher"
+			@showDetail="onShowDetail"
+			@showEdit="onShowEdit"
 		/>
-	</div>
+	</v-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import BookletsService from "@/services/BookletsService";
-import Modal from "@/components/Modal";
-import BatchesList from "@/components/Vouchers/BatchesList";
+import Modal from "@/components/Inputs/Modal";
 import VoucherForm from "@/components/Vouchers/VoucherForm";
 import VouchersList from "@/components/Vouchers/VouchersList";
 import permissions from "@/mixins/permissions";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "VouchersPage",
@@ -69,7 +55,6 @@ export default {
 		VouchersList,
 		Modal,
 		VoucherForm,
-		BatchesList,
 	},
 
 	mixins: [permissions],
@@ -101,11 +86,11 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.voucherModal.isDetail) {
-				result = this.$t("Detail of This Voucher Booklets");
+				result = "Detail of This Voucher Booklets";
 			} else if (this.voucherModal.isEditing) {
-				result = this.$t("Edit This Voucher Booklets");
+				result = "Edit This Voucher Booklets";
 			} else {
-				result = this.$t("Create New Voucher Booklets");
+				result = "Create New Voucher Booklets";
 			}
 			return result;
 		},
@@ -114,7 +99,7 @@ export default {
 	},
 
 	methods: {
-		showDetail(voucher) {
+		onShowDetail(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {
 				isOpened: true,
@@ -124,7 +109,7 @@ export default {
 			};
 		},
 
-		showEdit(voucher) {
+		onShowEdit(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {
 				isEditing: true,
@@ -163,11 +148,11 @@ export default {
 			};
 		},
 
-		closeVoucherModal() {
+		onCloseVoucherModal() {
 			this.voucherModal.isOpened = false;
 		},
 
-		addNewVoucher() {
+		onAddNewVoucher() {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: false,
@@ -189,7 +174,7 @@ export default {
 			};
 		},
 
-		submitVoucherForm(voucherForm) {
+		onSubmitVoucherForm(voucherForm) {
 			const {
 				id,
 				quantityOfBooklets,
@@ -226,7 +211,8 @@ export default {
 			await BookletsService.createBooklet(voucherBody)
 				.then((response) => {
 					if (response.status === 204) {
-						Toast(this.$t("Booklet Successfully Created"), "is-success");
+						Notification(this.$t("Booklet Successfully Created"), "success");
+
 						if (this.$refs.vouchersList) {
 							this.$refs.vouchersList.fetchData();
 						} else if (this.$refs.batchesList) {
@@ -234,10 +220,10 @@ export default {
 						} else {
 							this.$router.go();
 						}
-						this.closeVoucherModal();
+						this.onCloseVoucherModal();
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+					Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
 				});
 			this.voucherModal.isWaiting = false;
 		},
@@ -250,7 +236,8 @@ export default {
 				id,
 			).then((response) => {
 				if (response.status === 200) {
-					Toast(this.$t("Booklet Successfully Updated"), "is-success");
+					Notification(this.$t("Booklet Successfully Updated"), "success");
+
 					if (this.$refs.vouchersList) {
 						this.$refs.vouchersList.fetchData();
 					} else if (this.$refs.batchesList) {
@@ -258,22 +245,22 @@ export default {
 					} else {
 						this.$router.go();
 					}
-					this.closeVoucherModal();
+					this.onCloseVoucherModal();
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Booklet")} ${e}`, "is-danger");
+				Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
 			});
 			this.voucherModal.isWaiting = false;
 		},
 
-		async removeVoucher(id) {
+		async onRemoveVoucher(id) {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
-					Toast(this.$t("Booklet successfully removed"), "is-success");
+					Notification(this.$t("Booklet successfully removed"), "success");
 					this.$refs.vouchersList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`${this.$t("Booklet")} ${e}`, "is-danger");
+				Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
 			});
 		},
 	},

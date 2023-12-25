@@ -1,188 +1,182 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Project')"
-				:type="validateType('projectId')"
-				:message="validateMsg('projectId')"
-			>
-				<MultiSelect
-					v-model="formModel.projectId"
-					searchable
-					label="name"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="id"
-					:placeholder="$t('Click to select')"
-					:disabled="formDisabled || isEditing"
-					:options="options.projects"
-					:class="validateMultiselect('projectId')"
-					@select="validate('projectId')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+	<v-card-text>
+		<DataSelect
+			v-model="formModel.projectId"
+			:items="options.projects"
+			:disabled="formDisabled || isEditing"
+			:error-messages="validationMsg('projectId')"
+			label="Project"
+			name="project"
+			item-title="name"
+			item-value="id"
+			class="mb-6"
+			@update:modelValue="onValidate('projectId')"
+		/>
 
-			<b-field
-				v-if="isEditing"
-				:label="$t('Code')"
-			>
-				<b-input
-					v-model="formModel.code"
-					disabled
-				/>
-			</b-field>
+		<DataInput
+			v-if="isEditing"
+			v-model="formModel.code"
+			label="Code"
+			name="code"
+			class="mb-6"
+		/>
 
-			<b-field
-				v-if="!formDisabled && !isEditing"
-				:label="$t('Quantity of Booklets')"
-				:type="validateType('quantityOfBooklets')"
-				:message="validateMsg('quantityOfBooklets')"
-			>
-				<b-numberinput
-					v-model="formModel.quantityOfBooklets"
-					expanded
-					min="0"
-					type="is-dark"
-					:disabled="formDisabled || isEditing"
-					:controls="false"
-					@input="validate('quantityOfBooklets')"
-				/>
-			</b-field>
+		<DataInput
+			v-if="!formDisabled && !isEditing"
+			v-model.number="formModel.quantityOfBooklets"
+			:disabled="formDisabled || isEditing"
+			:error-messages="validationMsg('quantityOfBooklets')"
+			label="Quantity of Booklets"
+			name="quantity-of-booklets"
+			type="number"
+			min="0"
+			class="mb-6"
+			hide-spin-buttons
+			@blur="onValidate('quantityOfBooklets')"
+		/>
 
-			<b-field
-				:label="$t('Quantity of Vouchers')"
-				:type="validateType('quantityOfVouchers')"
-				:message="validateMsg('quantityOfVouchers')"
-			>
-				<b-numberinput
-					v-model="formModel.quantityOfVouchers"
-					expanded
-					min="0"
-					type="is-dark"
-					:disabled="formDisabled"
-					:controls="false"
-					@input="validate('quantityOfVouchers')"
-				/>
-			</b-field>
+		<DataInput
+			v-model.number="formModel.quantityOfVouchers"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('quantityOfVouchers')"
+			label="Quantity of Vouchers"
+			name="quantity-of-vouchers"
+			type="number"
+			min="0"
+			class="mb-6"
+			hide-spin-buttons
+			@blur="onValidate('quantityOfVouchers')"
+		/>
 
-			<b-field
-				:label="$t('Individual Value')"
-				:type="validateType('values')"
-				:message="validateMsg('values')"
-			>
-				<b-taginput
-					v-model="formModel.values"
-					:placeholder="$t('Values')"
-					:disabled="formDisabled"
-					:before-adding="beforeAdding"
-					@blur="validate('values')"
-				/>
-			</b-field>
+		<TagInput
+			v-model="formModel.values"
+			:disabled="formDisabled"
+			:persistent-hint="!formDisabled"
+			:error-messages="validationMsg('values')"
+			label="Individual Value"
+			type="number"
+			hint="Use enter to add value"
+			class="mb-6"
+			multiple
+			clearable
+			hide-spin-buttons
+			@update:modelValue="onValidate('values')"
+		/>
 
-			<b-field
-				:label="$t('Currency')"
-				:type="validateType('currency')"
-				:message="validateMsg('currency')"
-			>
-				<MultiSelect
-					v-model="formModel.currency"
-					searchable
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="value"
-					:placeholder="$t('Click to select')"
-					:disabled="formDisabled"
-					:options="options.currencies"
-					:class="validateMultiselect('currency')"
-					@select="validate('currency')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.currency"
+			:items="options.currencies"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('currency')"
+			label="Currency"
+			name="currency"
+			item-title="value"
+			item-value="value"
+			class="mb-6"
+			searchable
+			@update:modelValue="onValidate('currency')"
+		/>
 
-			<b-field
-				v-if="formDisabled || isEditing"
-				:label="$t('Status')"
-			>
-				<MultiSelect
-					v-model="formModel.status"
-					label="value"
-					track-by="value"
-					:disabled="formDisabled || isEditing"
-					:options="options.statuses"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-if="formDisabled || isEditing"
+			v-model="formModel.status"
+			:items="options.statuses"
+			:disabled="formDisabled || isEditing"
+			label="Status"
+			name="status"
+			item-title="value"
+			item-value="value"
+			class="mb-6"
+		/>
 
-			<b-field v-if="!formDisabled" :label="$t('Define a Password')">
-				<b-checkbox v-model="formModel.defineAPassword" />
-			</b-field>
+		<v-checkbox
+			v-if="!formDisabled"
+			v-model="formModel.defineAPassword"
+			:label="$t('Define a Password')"
+			hide-details
+			class="checkbox"
+		/>
 
-			<b-field
-				v-if="formModel.defineAPassword && !formDisabled"
-				:label="$t('Password')"
-				:type="validateType('password')"
-				:message="validateMsg('password')"
-			>
-				<b-input
-					v-model="formModel.password"
-					type="password"
-					password-reveal
-					:disabled="formDisabled"
-					@blur="validate('password')"
-				/>
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button
-				v-if="closeButton"
-				@click="closeForm"
-			>
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-			>
-				{{ $t(submitButtonLabel) }}
-			</b-button>
-		</footer>
-	</form>
+		<DataInput
+			v-if="formModel.defineAPassword && !formDisabled"
+			v-model="formModel.password"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('password')"
+			:append-inner-icon="passwordVisible ? 'eye-slash' : 'eye'"
+			:type="passwordVisible ? 'text' : 'password'"
+			label="Password"
+			name="password"
+			class="mb-6"
+			@blur="onValidate('password')"
+			@click:append-inner="passwordVisible = !passwordVisible"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			v-if="closeButton"
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="!formDisabled"
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
 import ProjectService from "@/services/ProjectService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import TagInput from "@/components/Inputs/TagInput";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { BookletStatusArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { CURRENCIES } from "@/consts";
+import { maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "VoucherForm",
 
+	components: {
+		TagInput,
+		DataSelect,
+		DataInput,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			// eslint-disable-next-line func-names
-			quantityOfBooklets: { required: requiredIf(function () {
-				return !this.isEditing;
-			}) },
-			quantityOfVouchers: { required },
-			values: { required },
-			projectId: { required },
-			password: { required: requiredIf((form) => form.defineAPassword) },
-			status: {},
-			currency: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				quantityOfBooklets: { required: requiredIf(!this.isEditing) },
+				quantityOfVouchers: { required },
+				values: {
+					required,
+					maxLengthValue: maxLength(this.formModel.quantityOfVouchers),
+				},
+				projectId: { required },
+				password: { required: requiredIf(this.formModel.defineAPassword) },
+				status: {},
+				currency: { required },
+			},
+		};
 	},
 
 	props: {
@@ -195,6 +189,7 @@ export default {
 
 	data() {
 		return {
+			passwordVisible: false,
 			options: {
 				projects: [],
 				currencies: CURRENCIES,
@@ -216,29 +211,20 @@ export default {
 			if (this.formModel.projectId) {
 				this.formModel.projectId = getArrayOfCodeListByKey([this.formModel.projectId], this.options.projects, "id");
 			}
-			if (this.formModel.status) {
-				this.formModel.status = getArrayOfCodeListByKey([this.formModel.status], this.options.statuses, "code");
-			}
 		},
 
-		beforeAdding(tag) {
-			// Values length must be lower or equal than quantityOfVoucher and value must be number
-			return this.formModel.values.length < this.formModel.quantityOfVouchers
-				&& !Number.isNaN(Number(tag));
-		},
-
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
-			this.$v.$reset();
+		onCloseForm() {
+			this.v$.$reset();
 			this.$emit("formClosed");
 		},
 
@@ -247,7 +233,7 @@ export default {
 				.then(({ data }) => {
 					this.options.projects = data;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 	},

@@ -3,8 +3,8 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -20,6 +20,11 @@ import { CURRENCIES, FILTER } from "@/consts";
 
 export default {
 	name: "VouchersFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -101,7 +106,7 @@ export default {
 	},
 
 	methods: {
-		async filterChanged(filters, filtername) {
+		async onFilterChanged(filters, filtername) {
 			if (filtername === "assistances") {
 				this.fetchBeneficiaries(filters.distributions);
 			}
@@ -141,7 +146,7 @@ export default {
 					this.filtersOptions.assistances.data = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 				});
 
 			this.filtersOptions.assistances.loading = false;
@@ -162,7 +167,7 @@ export default {
 							});
 						})
 						.catch((e) => {
-							if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+							Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 						});
 				});
 				await Promise.all(promise);
