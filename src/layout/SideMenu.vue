@@ -387,7 +387,7 @@ export default {
 						{
 							title: "Vendors",
 							prependIcon: "store",
-							// to: { name: "Vendors" },
+							to: { name: "Vendors" },
 						},
 					],
 				},
@@ -402,6 +402,7 @@ export default {
 				{
 					title: "Vouchers",
 					prependIcon: "ticket-alt",
+					to: { name: "Vouchers" },
 				},
 				{
 					title: "Country Settings",
