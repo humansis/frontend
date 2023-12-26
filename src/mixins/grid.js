@@ -4,6 +4,16 @@ import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 export default {
 	mixins: [urlFiltersHelper],
 
+	emits: [
+		"showMove",
+		"showDetail",
+		"showDetail",
+		"showEdit",
+		"onDelete",
+		"download",
+		"statusChange",
+	],
+
 	data() {
 		return {
 			show: true,

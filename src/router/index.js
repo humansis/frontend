@@ -301,7 +301,6 @@ const routes = [
 					},
 				],
 			},
-			//  		children: [
 			{
 				path: "institutions",
 				component: RouterView,
@@ -352,7 +351,6 @@ const routes = [
 					},
 				],
 			},
-			//  			},
 			{
 				path: "vendors",
 				name: "Vendors",
@@ -409,38 +407,38 @@ const routes = [
 					description: "This page is where you can manage users, donors and your organization's specifics",
 				},
 			},
-			//  	{
-			//  		path: "transactions",
-			//  		name: "Transactions",
-			//  		component: { render(c) { return c("router-view"); } },
-			//  		meta: {
-			//  			permissions: [],
-			//  			breadcrumb: () => i18n.t("Transactions"),
-			//  			description: "",
-			//  		},
-			//  		children: [
-			//  			{
-			//  				path: "assistances",
-			//  				name: "TransactionsAssistances",
-			//  				component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Assistances"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  			{
-			//  				path: "purchases",
-			//  				name: "TransactionsPurchases",
-			//  				component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Purchases"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  		],
-			//  	},
+			{
+				path: "transactions",
+				name: "Transactions",
+				component: RouterView,
+				meta: {
+					permissions: [],
+					breadcrumb: "Transactions",
+					description: "",
+				},
+				children: [
+					{
+						path: "assistances",
+						name: "TransactionsAssistances",
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Assistances",
+							description: "",
+						},
+					},
+					{
+						path: "purchases",
+						name: "TransactionsPurchases",
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Purchases",
+							description: "",
+						},
+					},
+				],
+			},
 			//  	{
 			//  		path: "logs",
 			//  		name: "Logs",
