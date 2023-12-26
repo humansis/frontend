@@ -353,26 +353,28 @@ const routes = [
 				],
 			},
 			//  			},
-			{
-				path: "vendors",
-				name: "Vendors",
-				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
-				meta: {
-					permissions: ["viewVendors"],
-					breadcrumb: "Vendors",
-					description: "",
-				},
-			},
-			{
-				path: "vouchers",
-				name: "Vouchers",
-				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
-				meta: {
-					permissions: ["viewVouchers"],
-					breadcrumb: "Vouchers",
-					description: "This page is where you can create, edit, assign and print vouchers booklets",
-				},
-			},
+			//  			{
+			//  				path: "vendors",
+			//  				name: "Vendors",
+			//  				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
+			//  				meta: {
+			//  					permissions: ["viewVendors"],
+			//  					breadcrumb: () => i18n.t("Vendors"),
+			//  					description: "",
+			//  				},
+			//  			},
+			//  		],
+			//  	},
+			//  	{
+			//  		path: "vouchers",
+			//  		name: "Vouchers",
+			//  		component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
+			//  		meta: {
+			//  			permissions: ["viewVouchers"],
+			//  			breadcrumb: () => i18n.t("Vouchers"),
+			//  			description: i18n.t("This page is where you can create, edit, assign and print vouchers booklets"),
+			//  		},
+			//  	},
 			{
 				path: "country-settings",
 				name: "Country Settings",
@@ -399,48 +401,48 @@ const routes = [
 					},
 				],
 			},
-			{
-				path: "administrative-settings",
-				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
-				meta: {
-					permissions: ["adminSettings"],
-					breadcrumb: "Administrative Settings",
-					description: "This page is where you can manage users, donors and your organization's specifics",
-				},
-			},
 			//  	{
-			//  		path: "transactions",
-			//  		name: "Transactions",
-			//  		component: { render(c) { return c("router-view"); } },
+			//  		path: "administrative-settings",
+			//  		name: "Administrative Settings",
+			//  		component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
 			//  		meta: {
-			//  			permissions: [],
-			//  			breadcrumb: () => i18n.t("Transactions"),
-			//  			description: "",
+			//  			permissions: ["adminSettings"],
+			//  			breadcrumb: () => i18n.t("Administrative Settings"),
+			//  			description: i18n.t("This page is where you can manage users, donors and your organization's specifics"),
 			//  		},
-			//  		children: [
-			//  			{
-			//  				path: "assistances",
-			//  				name: "TransactionsAssistances",
-			//  				component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Assistances"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  			{
-			//  				path: "purchases",
-			//  				name: "TransactionsPurchases",
-			//  				component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Purchases"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  		],
 			//  	},
+			{
+				path: "transactions",
+				name: "Transactions",
+				component: RouterView,
+				meta: {
+					permissions: [],
+					breadcrumb: "Transactions",
+					description: "",
+				},
+				children: [
+					{
+						path: "assistances",
+						name: "TransactionsAssistances",
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Assistances",
+							description: "",
+						},
+					},
+					{
+						path: "purchases",
+						name: "TransactionsPurchases",
+						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Purchases",
+							description: "",
+						},
+					},
+				],
+			},
 			//  	{
 			//  		path: "logs",
 			//  		name: "Logs",
