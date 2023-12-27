@@ -221,7 +221,7 @@ export default {
 			this.$emit("onEdit", project);
 		},
 
-		onDelete(id) {
+		delete(id) {
 			this.$emit("onDelete", id);
 		},
 

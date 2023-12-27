@@ -2,16 +2,13 @@
 	<v-container fluid>
 		<v-card class="mx-auto mt-16" max-width="800">
 			<v-card-text>
-				<form @submit.prevent="submitPasswordForm">
+				<form @submit.prevent="onSubmitPasswordForm">
 					<p class="text-h6">{{ $t('User Information') }}</p>
 
 					<DataInput
 						v-model="userForm.email"
 						label="Email"
 						name="email"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-4"
 						disabled
 					/>
@@ -20,41 +17,32 @@
 
 					<DataInput
 						v-model="password.oldPassword"
+						:error-messages="validationMsg('oldPassword', 'password')"
 						label="Old Password"
 						name="old-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('oldPassword', 'password')"
-						@blur="validate('oldPassword', 'password')"
+						@blur="onValidate('oldPassword', 'password')"
 					/>
 
 					<DataInput
 						v-model="password.newPassword"
+						:error-messages="validationMsg('newPassword', 'password')"
 						label="New Password"
 						name="new-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('newPassword', 'password')"
-						@blur="validate('newPassword', 'password')"
+						@blur="onValidate('newPassword', 'password')"
 					/>
 
 					<DataInput
 						v-model="password.reenteredPassword"
+						:error-messages="validationMsg('reenteredPassword', 'password')"
 						label="Re-Enter New Password"
 						name="re-enter-new-password"
 						type="password"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
 						class="mt-4 mb-5"
-						:error-messages="validationMsg('reenteredPassword', 'password')"
-						@blur="validate('reenteredPassword', 'password')"
+						@blur="onValidate('reenteredPassword', 'password')"
 					/>
 
 					<div class="text-end">
@@ -77,30 +65,24 @@
 							<DataSelect
 								v-model="phone.prefix"
 								:items="options.phonePrefixes"
+								:error-messages="validationMsg('prefix', 'phone')"
 								label="Phone Ext"
 								name="phone-ext"
-								variant="outlined"
-								density="compact"
-								hide-details="auto"
 								item-title="value"
 								item-value="code"
 								is-search-enabled
 								clearable
-								:error-messages="validationMsg('prefix', 'phone')"
-								@blur="validate('prefix', 'phone')"
+								@blur="onValidate('prefix', 'phone')"
 							/>
 						</v-col>
 
 						<v-col>
 							<DataInput
 								v-model="phone.number"
+								:error-messages="validationMsg('number', 'phone')"
 								label="Phone Number"
 								name="phone-number"
-								variant="outlined"
-								density="compact"
-								hide-details="auto"
-								:error-messages="validationMsg('number', 'phone')"
-								@blur="validate('number', 'phone')"
+								@blur="onValidate('number', 'phone')"
 							/>
 						</v-col>
 					</v-row>
@@ -207,7 +189,7 @@ export default {
 	},
 
 	methods: {
-		async submitPasswordForm() {
+		async onSubmitPasswordForm() {
 			this.v$.password.$touch();
 
 			if (this.v$.password.$invalid || !this.password.oldPassword.length) return;
@@ -228,10 +210,10 @@ export default {
 						"success",
 					);
 				}).catch((e) => {
-					Notification(`${this.$t("Password Update")} ${e}`, "error");
+					Notification(`${this.$t("Password Update")} ${e.message || e}`, "error");
 				});
-			}).catch(() => {
-				Notification(`${this.$t("Invalid Password")}`, "error");
+			}).catch((e) => {
+				Notification(`${this.$t("Invalid Password")} ${e.message || e}`, "error");
 			});
 			this.v$.password.$reset();
 
@@ -249,7 +231,7 @@ export default {
 
 			await UsersService.patchUser(id, {
 				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix || null,
+				phonePrefix: this.phone.prefix?.code || null,
 			}).then(({ data }) => {
 				this.mapUser(data);
 				Notification(
@@ -258,7 +240,7 @@ export default {
 				);
 				this.fetchUser();
 			}).catch((e) => {
-				Notification(`${this.$t("Phone Update")} ${e}`, "error");
+				Notification(`${this.$t("Phone Update")} ${e.message || e}`, "error");
 			});
 			this.v$.phone.$reset();
 
@@ -279,7 +261,7 @@ export default {
 					"success",
 				);
 			}).catch((e) => {
-				Notification(`${this.$t("Two Factor Update")} ${e}`, "error");
+				Notification(`${this.$t("Two Factor Update")} ${e.message || e}`, "error");
 			});
 
 			this.twoFactorLoading = false;
@@ -293,7 +275,7 @@ export default {
 					this.mapUser(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("User")} ${e}`, "is-danger");
+					Notification(`${this.$t("User")} ${e.message || e}`, "error");
 				});
 		},
 

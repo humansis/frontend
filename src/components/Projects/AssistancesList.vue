@@ -1,245 +1,186 @@
 <template>
-	<h2 class="mb-4">{{ upcoming ? $t('Assistances') : '' }}</h2>
+	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
 
-	<!--	<b-notification-->
-	<!--		v-if="showNoProjectError"-->
-	<!--		type="is-warning is-light"-->
-	<!--		has-icon-->
-	<!--		icon="exclamation-triangle"-->
-	<!--		:closable="false"-->
-	<!--	>-->
-	<!--		<div class="mt-3">-->
-	<!--			{{ $t("This project does not contain any assistances")}}.-->
-	<!--			{{ $t("Create your first one")}}.-->
-	<!--		</div>-->
-	<!--	</b-notification>-->
+	<v-alert
+		v-if="showNoProjectError"
+		variant="outlined"
+		type="warning"
+		border="top"
+		class="mb-6"
+	>
+		<p>{{ $t("This project does not contain any assistances") }}</p>
+		<p>{{ $t("Create your first one") }}</p>
+	</v-alert>
 
-	<!--	<b-notification-->
-	<!--		v-if="showNoBeneficiariesError"-->
-	<!--		type="is-warning is-light"-->
-	<!--		has-icon-->
-	<!--		icon="user-plus"-->
-	<!--		:closable="false"-->
-	<!--	>-->
-	<!--		<div class="mt-3">-->
-	<!--			{{ $t("Please add some beneficiaries first!")}}-->
-	<!--			{{ $t("Then you will be able to manage some assistances")}}.-->
-	<!--		</div>-->
-	<!--	</b-notification>-->
+	<v-alert
+		v-if="showNoBeneficiariesError"
+		variant="outlined"
+		type="warning"
+		border="top"
+		class="mb-6"
+	>
+		<p>{{ $t("Please add some beneficiaries first!") }}</p>
+		<p>{{ $t("Then you will be able to manage some assistances") }}</p>
+	</v-alert>
 
 	<Table
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
-		:headers="table.visibleColumns"
+		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-search-visible="!upcoming"
+		is-row-click-disabled
 		reset-sort-button
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
 		<template v-slot:table-header>
 			<v-btn
-				class="ml-0"
+				:class="filterButtonNew"
 				color="gray-darken-4"
 				icon-left="sticky-note"
 				variant="tonal"
 				size="small"
+				class="ml-0"
 				prepend-icon="sticky-note"
-				:class="filterButtonNew"
-				@click="statusFilter('new')"
+				@click="onStatusFilter('new')"
 			>
 				{{ $t('New') }}
 			</v-btn>
 
 			<v-btn
+				:class="filterButtonValidated"
 				class="ml-0"
 				icon-left="spinner"
 				color="green-darken-4"
 				variant="tonal"
 				size="small"
 				prepend-icon="spinner"
-				:class="filterButtonValidated"
-				@click="statusFilter('validated')"
+				@click="onStatusFilter('validated')"
 			>
 				{{ $t('Validated') }}
 			</v-btn>
 
 			<v-btn
+				:class="filterButtonClosed"
 				class="ml-0"
 				icon-left="check"
 				color="blue-darken-4"
 				variant="tonal"
 				size="small"
 				prepend-icon="check"
-				:class="filterButtonClosed"
-				@click="statusFilter('closed')"
+				@click="onStatusFilter('closed')"
 			>
 				{{ $t('Closed') }}
 			</v-btn>
 		</template>
-	</Table>
-<!--		v-model:items-per-page="itemsPerPage"-->
-<!--		:loading="loading"-->
-<!--		:search="search"-->
-<!--		item-value="name"-->
-<!--		@update:options="loadItems"-->
 
-<!--	<Table-->
-<!--		ref="assistanceTable"-->
-<!--		v-show="beneficiariesCount || upcoming"-->
-<!--		has-reset-sort-->
-<!--		default-sort-key="dateDistribution"-->
-<!--		:has-search="!upcoming"-->
-<!--		:data="table.data"-->
-<!--		:total="table.total"-->
-<!--		:current-page="table.currentPage"-->
-<!--		:is-loading="isLoadingList"-->
-<!--		:has-clickable-rows="false"-->
-<!--		:search-phrase="table.searchPhrase"-->
-<!--		@pageChanged="onPageChange"-->
-<!--		@sorted="onSort"-->
-<!--		@changePerPage="onChangePerPage"-->
-<!--		@resetSort="resetSort"-->
-<!--		@onSearch="onSearch"-->
-<!--	>-->
-<!--		<template v-for="column in table.columns" :key="column.id">-->
-<!--			<b-table-column-->
-<!--				v-bind="column"-->
-<!--				:sortable="column.sortable"-->
-<!--				v-slot="props"-->
-<!--			>-->
-<!--				<ColumnField :data="props" :column="column" />-->
-<!--			</b-table-column>-->
-<!--		</template>-->
-<!--		<b-table-column-->
-<!--			v-slot="props"-->
-<!--			width="170"-->
-<!--			field="actions"-->
-<!--			:label="$t('Actions')"-->
-<!--			:visible="!upcoming"-->
-<!--		>-->
-<!--			<div class="buttons is-right">-->
-<!--				<ActionButton-->
-<!--					v-if="!props.row.validated-->
-<!--						&& userCan.editDistribution"-->
-<!--					icon="edit"-->
-<!--					:tooltip="$t('Update')"-->
-<!--					@click="goToUpdate(props.row.id)"-->
-<!--				/>-->
-<!--				<ActionButton-->
-<!--					v-if="(props.row.validated-->
-<!--						|| props.row.completed)-->
-<!--						&& isAssistanceDetailAllowed"-->
-<!--					:icon="props.row.validated && props.row.completed-->
-<!--						? 'eye' : 'edit'"-->
-<!--					:tooltip="props.row.validated && props.row.completed-->
-<!--						? $t('View') : $t('Update')"-->
-<!--					@click="goToDetail(props.row.id)"-->
-<!--				/>-->
-<!--				<ActionButton-->
-<!--					v-if="userCan.editDistribution"-->
-<!--					icon="search"-->
-<!--					type="is-primary"-->
-<!--					:tooltip="$t('Details')"-->
-<!--					@click="showEdit(props.row.id)"-->
-<!--				/>-->
-<!--				<b-dropdown-->
-<!--					class="is-pulled-right has-text-left"-->
-<!--					:position="isOneOfLastThreeRows(props.index) ? 'is-top-left' : 'is-bottom-left'"-->
-<!--				>-->
-<!--					<template #trigger>-->
-<!--						<b-button-->
-<!--							size="is-small"-->
-<!--							icon-left="ellipsis-h"-->
-<!--						/>-->
-<!--					</template>-->
-<!--					<b-dropdown-item-->
-<!--						v-if="userCan.editDistribution"-->
-<!--						@click="duplicate(props.row.id)"-->
-<!--					>-->
-<!--						<b-icon icon="copy" />-->
-<!---->
-<!--						{{ $t("Duplicate") }}-->
-<!--					</b-dropdown-item>-->
-<!--					<b-dropdown-item-->
-<!--						@click="assistanceMove(props.row.id)"-->
-<!--						:disabled="isAssistanceMoveEnable(props.row)"-->
-<!--					>-->
-<!--						<b-icon icon="share" />-->
-<!---->
-<!--						{{ $t("Move") }}-->
-<!--					</b-dropdown-item>-->
-<!--					<SafeDelete-->
-<!--						:disabled="!props.row.deletable || !userCan.deleteDistribution"-->
-<!--						componentType="DropDownItem"-->
-<!--						:name="$t('Delete')"-->
-<!--						icon="trash"-->
-<!--						:message="$t('All distribution data will be deleted. Do you wish to continue?')"-->
-<!--						:entity="$t('Assistance')"-->
-<!--						:id="props.row.id"-->
-<!--						@submitted="$emit('remove', $event)"-->
-<!--					/>-->
-<!--				</b-dropdown>-->
-<!--			</div>-->
-<!--		</b-table-column>-->
-<!--		<template v-if="!upcoming" #export>-->
-<!--			<ExportControl-->
-<!--				:disabled="!table.data.length"-->
-<!--				:available-export-formats="exportControl.formats"-->
-<!--				:available-export-types="exportControl.types"-->
-<!--				:is-export-loading="exportControl.loading"-->
-<!--				:location="exportControl.location"-->
-<!--				@onExport="exportAssistances"-->
-<!--			/>-->
-<!--		</template>-->
-<!--		<template #progress>-->
-<!--			<b-progress :value="table.progress" format="percent" />-->
-<!--		</template>-->
-<!--		<template #filterButton>-->
-<!--			<b-button-->
-<!--				:class="filterButtonNew"-->
-<!--				slot="trigger"-->
-<!--				icon-left="sticky-note"-->
-<!--				@click="statusFilter('new')"-->
-<!--			>-->
-<!--				{{ $t('New') }}-->
-<!--			</b-button>-->
-<!--			<b-button-->
-<!--				:class="filterButtonValidated"-->
-<!--				slot="trigger"-->
-<!--				icon-left="spinner"-->
-<!--				@click="statusFilter('validated')"-->
-<!--			>-->
-<!--				{{ $t('Validated') }}-->
-<!--			</b-button>-->
-<!--			<b-button-->
-<!--				:class="filterButtonClosed"-->
-<!--				slot="trigger"-->
-<!--				icon-left="check"-->
-<!--				@click="statusFilter('closed')"-->
-<!--			>-->
-<!--				{{ $t('Closed') }}-->
-<!--			</b-button>-->
-<!--		</template>-->
-<!--	</Table>-->
+		<template v-if="!upcoming" v-slot:actions="{ row }">
+			<ButtonAction
+				v-if="!row.validated && userCan.editDistribution"
+				icon="edit"
+				tooltip-text="Update"
+				@actionConfirmed="onGoToUpdate(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="(row.validated || row.completed) && isAssistanceDetailAllowed"
+				:icon="row.validated && row.completed ? 'eye' : 'edit'"
+				:tooltip-text="row.validated && row.completed ? 'View' : 'Update'"
+				@actionConfirmed="onGoToDetail(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.editDistribution"
+				icon="search"
+				tooltip-text="Details"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<v-menu
+				transition="scale-transition"
+			>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						v-bind="props"
+						icon=""
+						class="action-button"
+					>
+						<v-icon icon="ellipsis-h" />
+					</v-btn>
+				</template>
+
+				<v-list>
+					<v-list-item class="dropdown-actions">
+						<ButtonAction
+							v-if="userCan.editDistribution"
+							:is-only-icon="false"
+							icon="copy"
+							label="Duplicate"
+							button-size="small"
+							@actionConfirmed="onDuplicate(row.id)"
+						/>
+
+						<ButtonAction
+							v-if="userCan.editDistribution"
+							:is-only-icon="false"
+							:disabled="isAssistanceMoveEnable(row)"
+							icon="share"
+							label="Move"
+							button-size="small"
+							@actionConfirmed="onAssistanceMove(row.id)"
+						/>
+
+						<ButtonAction
+							:is-only-icon="false"
+							label="Delete"
+							icon="trash"
+							button-size="small"
+							icon-color="red"
+							confirm-action
+							confirm-title="Deleting Assistance"
+							confirm-message="All distribution data will be deleted. Do you wish to continue?"
+							prepend-icon="circle-exclamation"
+							prepend-icon-color="red"
+							@actionConfirmed="$emit('remove', row.id)"
+						/>
+					</v-list-item>
+				</v-list>
+			</v-menu>
+		</template>
+
+		<template v-slot:export>
+			<ExportControl
+				v-if="!upcoming"
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@export="onExportAssistances"
+			/>
+		</template>
+	</Table>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
-// import ActionButton from "@/components/ActionButton";
+import ButtonAction from "@/components/ButtonAction";
 import Table from "@/components/DataGrid/Table";
-// import ExportControl from "@/components/Export";
-// import SafeDelete from "@/components/SafeDelete";
-// import baseHelper from "@/mixins/baseHelper";
+import ExportControl from "@/components/Inputs/ExportControl";
+import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
-// import permissions from "@/mixins/permissions";
+import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
-// import { downloadFile } from "@/utils/helpers";
+import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+import getters from "@/store/getters";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
@@ -252,20 +193,21 @@ export default {
 
 	components: {
 		Table,
-		// ActionButton,
-		// SafeDelete,
-		// ExportControl,
+		ButtonAction,
+		ExportControl,
 	},
 
 	mixins: [
-		// permissions,
+		permissions,
 		grid,
-		// baseHelper,
-		// permissions,
+		baseHelper,
 	],
 
 	props: {
-		upcoming: Boolean,
+		upcoming: {
+			type: Boolean,
+			default: false,
+		},
 
 		beneficiariesCount: {
 			type: Number,
@@ -304,8 +246,7 @@ export default {
 			isLoadingList: false,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: generateColumns([
+				columns: generateColumns([
 					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
 					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
 					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
@@ -321,6 +262,7 @@ export default {
 					{ key: "eloNumber", sortable: false },
 					{ key: "activity", sortable: false },
 					{ key: "budgetLine", sortable: false },
+					...!this.upcoming ? [{ key: "actions", value: "actions", sortable: false, minWidth: "150" }] : [],
 				]),
 				total: 0,
 				currentPage: 1,
@@ -376,10 +318,6 @@ export default {
 		},
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.fetchData();
 	},
@@ -402,7 +340,9 @@ export default {
 				this.$route.params.projectId,
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
@@ -413,7 +353,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "error");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -435,7 +375,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "error");
+				Notification(`${this.$t("Upcoming Assistances")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -458,9 +398,6 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
-
-			// const maxThreeRows = this.table.data.length <= 3;
-			// this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -534,7 +471,7 @@ export default {
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
-		goToDetail(id) {
+		onGoToDetail(id) {
 			this.$router.push({
 				name: "AssistanceDetail",
 				params: {
@@ -543,7 +480,7 @@ export default {
 			});
 		},
 
-		goToUpdate(id) {
+		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
 			if (this.upcoming) {
@@ -558,7 +495,7 @@ export default {
 			}
 		},
 
-		statusFilter(filter) {
+		onStatusFilter(filter) {
 			this.statusActive[filter] = !this.statusActive[filter];
 
 			if (this.selectedFilters.includes(filter)) {
@@ -576,33 +513,15 @@ export default {
 			await this.fetchData();
 		},
 
-		duplicate(id) {
+		onDuplicate(id) {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
-		},
-
-		isOneOfLastThreeRows(rowId) {
-			let finalCountOfDisplayedRows = this.table.total;
-
-			if (this.perPage <= this.table.total) {
-				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
-					- this.table.total);
-
-				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
-					? this.perPage
-					: countOfDisplayedRows;
-			}
-
-			return (rowId === finalCountOfDisplayedRows - 1
-				|| rowId === finalCountOfDisplayedRows - 2
-				|| rowId === finalCountOfDisplayedRows - 3
-			);
 		},
 
 		isAssistanceMoveEnable(assistance) {
 			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
-		async exportAssistances(exportType, format) {
+		async onExportAssistances(exportType, format) {
 			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
 				try {
 					this.exportControl.loading = true;
@@ -629,3 +548,14 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.dropdown-actions .v-list-item__content {
+	display: flex;
+	flex-direction: column;
+
+	> button {
+		justify-content: left;
+	}
+}
+</style>

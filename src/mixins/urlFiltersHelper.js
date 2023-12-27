@@ -1,5 +1,6 @@
 import { mapActions, mapState } from "vuex";
 import { deepEqual } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 
 export default {
 	computed: {
@@ -101,7 +102,9 @@ export default {
 			const newQuery = {
 				...(this.table.currentPage > 1 && page && { page: this.table.currentPage.toString() }),
 				...(this.table.searchPhrase && searchPhrase && { search: this.table.searchPhrase }),
-				...(this.table.sortColumn && sortColumn && { sortColumn: this.table.sortColumn }),
+				...(this.table.sortColumn
+					&& sortColumn
+					&& { sortColumn: this.table.sortColumn.sortKey || this.table.sortColumn }),
 				...(this.table.sortDirection
 					&& sortDirection
 					&& { sortDirection: this.table.sortDirection }
@@ -118,24 +121,31 @@ export default {
 				this.$router.replace({
 					name,
 					query: newQuery,
-				}).catch((error) => {
-					console.error(error);
+				}).catch((e) => {
+					Notification(`${this.$t("Grid filters")} ${e.message || e}`, "error");
 				});
 			}
 
-			const routeQuery = this.$route.query;
+			this.$router.replace({
+				name,
+				query: newQuery,
+			}).then(() => {
+				const routeQuery = this.$route.query;
 
-			if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
-				updatedGridFilters[entity][filterEntityIndex].query = { ...routeQuery };
-			} else {
-				updatedGridFilters[entity].push({
-					country: this.country.iso3,
-					query: routeQuery,
+				if (filterEntityIndex !== -1 && filterEntityIndex !== undefined) {
+					updatedGridFilters[entity][filterEntityIndex].query = { ...routeQuery };
+				} else {
+					updatedGridFilters[entity].push({
+						country: this.country.iso3,
+						query: routeQuery,
+					});
+				}
+
+				this.storeGridFilters({
+					...updatedGridFilters,
 				});
-			}
-
-			this.storeGridFilters({
-				...updatedGridFilters,
+			}).catch((e) => {
+				Notification(`${this.$t("Grid filters")} ${e.message || e}`, "error");
 			});
 		},
 

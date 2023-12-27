@@ -1,25 +1,68 @@
 <template>
-	<v-select :value="data" :items="options">
+	<v-select
+		v-model="data"
+		:items="options"
+		:readonly="disabled"
+		:disabled="disabled"
+		:clearable="!disabled && isClearable"
+		:item-title="itemTitle"
+		:item-value="itemValue"
+		:variant="variant"
+		:density="density"
+		:hide-details="hideDetails"
+		:multiple="multiple"
+		return-object
+		@update:modelValue="$emit('update:modelValue', $event)"
+	>
 		<template v-slot:label>
-			<span>{{ $t(label) }}</span>
+			<span>{{ $t(label) }}
+				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
+			</span>
+		</template>
+
+		<template v-if="!multiple" v-slot:item="{ props, item }">
+			<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+		</template>
+
+		<template v-slot:selection="{ item }">
+			<v-chip v-if="isDataShownAsTag" :closable="!disabled" @click:close="onChipClosed(item)">
+				<span>{{ $t(item.title) }}</span>
+			</v-chip>
+
+			<span v-else>{{ $t(normalizeFirstLetter(item.title)) }}</span>
+		</template>
+
+		<template v-if="isAppendIconEnabled" v-slot:append>
+			<v-icon
+				v-if="!iconLoading"
+				:icon="appendIcon"
+				@click="$emit('append-icon-clicked')"
+			/>
+
+			<v-progress-circular
+				v-else
+				:size="25"
+				:indeterminate="iconLoading"
+				color="primary"
+			/>
 		</template>
 
 		<template v-slot:prepend-item>
-			<v-list v-if="isSearchEnabled || $attrs.multiple">
+			<v-list v-if="isSearchEnabled || multiple">
 				<v-list-item v-if="isSearchEnabled">
 					<v-text-field
 						v-model="searchValue"
 						placeholder="Search"
 						density="compact"
 						hide-details="auto"
-						@input="search"
+						@input="onSearch"
 					/>
 				</v-list-item>
 
 				<v-list-item
-					v-if="$attrs.multiple"
+					v-if="multiple"
 					:title="$t('Select All')"
-					@click="selectAll"
+					@click="onSelectAll"
 				>
 					<template v-slot:prepend>
 						<v-checkbox-btn
@@ -37,6 +80,8 @@
 </template>
 
 <script>
+import { normalizeFirstLetter } from "@/utils/datagrid";
+
 export default {
 	props: {
 		label: {
@@ -49,16 +94,86 @@ export default {
 			default: false,
 		},
 
+		appendIcon: {
+			type: String,
+			default: "",
+		},
+
+		iconLoading: {
+			type: Boolean,
+			default: false,
+		},
+
+		optional: {
+			type: Boolean,
+			default: false,
+		},
+
 		items: {
 			type: Array,
-			required: true,
+			default: () => [],
+		},
+
+		isDataShownAsTag: {
+			type: Boolean,
+			default: false,
+		},
+
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		isClearable: {
+			type: Boolean,
+			default: true,
+		},
+
+		modelValue: {
+			type: Object,
+			default: () => {},
+		},
+
+		itemTitle: {
+			type: String,
+			default: "value",
+		},
+
+		itemValue: {
+			type: String,
+			default: "code",
+		},
+
+		isAppendIconEnabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		variant: {
+			type: String,
+			default: "outlined",
+		},
+
+		density: {
+			type: String,
+			default: "compact",
+		},
+
+		hideDetails: {
+			type: String,
+			default: "auto",
+		},
+
+		multiple: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
 	data() {
 		return {
 			options: this.items,
-			data: this.$attrs.modelValue, // TODO get from props
+			data: this.modelValue,
 			searchValue: "",
 		};
 	},
@@ -73,20 +188,39 @@ export default {
 		},
 	},
 
-	methods: {
-		search() {
-			if (this.searchValue.length) {
-				this.options = this.$attrs.items;
-			}
+	watch: {
+		items(value) {
+			this.options = value;
+		},
 
+		modelValue(value) {
+			this.data = value;
+		},
+	},
+
+	methods: {
+		onSearch() {
+			this.options = this.items;
 			this.options = this.options.filter(
-				(item) => item.value.toLowerCase().includes(this.searchValue.toLowerCase()),
+				(item) => item[this.itemTitle].toLowerCase().includes(this.searchValue.toLowerCase()),
 			);
 		},
 
-		selectAll() {
+		onSelectAll() {
 			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
+		},
+
+		onChipClosed(item) {
+			const updatedModel = this.modelValue?.filter(
+				(removedItem) => removedItem[this.itemValue] !== item.value,
+			);
+
+			this.$emit("update:modelValue", updatedModel);
+		},
+
+		normalizeFirstLetter(value) {
+			return normalizeFirstLetter(value);
 		},
 	},
 

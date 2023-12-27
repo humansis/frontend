@@ -1,3 +1,46 @@
+.v-field__clearable {
+  margin-right: .625rem;
+}
+
+.v-selection-control > label {
+  opacity: 1 !important;
+}
+
+.category-types {
+  height: 2.187rem;
+
+  &.last-type {
+    height: 4.375rem;
+  }
+
+  .v-selection-control__wrapper {
+    left: -0.8rem;
+  }
+}
+
+.checkbox .v-selection-control__wrapper {
+  left: -0.8rem;
+}
+
+.box {
+  height: 100%;
+
+  p {
+    padding: 0.5rem;
+  }
+}
+
+.optional-text {
+  font-size: .8125rem;
+}
+
+.warning-message {
+  .v-messages__message {
+    color: red;
+  }
+}
+
+
 //.card-content > .progress-wrapper {
 //	position: absolute;
 //	top: 0;

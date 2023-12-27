@@ -1,41 +1,68 @@
 <template>
 	<v-card>
 		<v-row class="mt-1 mb-1">
-			<v-col class="d-flex flex-wrap gr-3">
+			<v-col cols="7" lg="9" class="d-flex flex-wrap gr-3 align-center">
+				<Search
+					v-if="isSearchVisible"
+					:search-phrase="searchPhrase"
+					:search-fields="searchFields"
+					:default-search-field="defaultSearchField"
+					:is-disabled="isSearchVisible"
+					ref="search"
+					class="ml-4"
+					@search="$emit('search', $event)"
+				/>
+
+				<slot name="export" />
+				<slot name="filterButton" />
 				<slot name="table-header" />
 			</v-col>
 
-			<v-col>
-				<div v-if="resetSortButton" class="text-end mr-5">
+			<v-col cols="5" lg="3">
+				<div v-if="resetSortButton || resetFiltersButton" class="text-end mr-5">
 					<v-btn
+						v-if="resetFiltersButton"
 						color="grey-lighten-2"
 						prepend-icon="eraser"
 						size="x-small"
+						class="mt-2"
+						@click="$emit('resetFilters')"
+					>
+						{{ $t('Reset Filters') }}
+					</v-btn>
+
+					<v-btn
+						v-if="resetSortButton"
+						color="grey-lighten-2"
+						prepend-icon="eraser"
+						size="x-small"
+						class="ml-4 mt-2"
 						@click="$emit('resetSort')"
 					>
-						{{ $t('Reset Sort') }}
+						{{ $t('Reset Table Sort') }}
 					</v-btn>
 				</div>
 			</v-col>
 		</v-row>
 
+		<slot name="filter" />
+
 		<v-data-table
 			v-bind="$attrs"
-			hide-default-footer
+			:cell-props="getCellProps"
+			@[rowClickEvent]="onHandleRowClick"
 		>
-			<template v-slot:bottom>
-				<v-row class="align-center ma-2 pa-0 table-footer">
+			<template v-if="!showDefaultFooter" v-slot:bottom>
+				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
+							:is-clearable="false"
 							name="per-page"
-							variant="outlined"
-							density="compact"
 							class="per-page mr-5"
 							label="Per page"
-							hide-details
-							@update:modelValue="perPageChanged"
+							@update:modelValue="onPerPageChanged"
 						/>
 					</v-col>
 
@@ -72,15 +99,13 @@
 							v-model.number="page"
 							type="number"
 							min="0"
-							variant="outlined"
-							density="compact"
 							label="Go to page"
 							append-inner-icon="arrow-right"
+							class="go-to-page"
 							hide-spin-buttons
 							hide-details
 							dense
-							class="go-to-page"
-							@click:appendInner="goToPage"
+							@click:appendInner="onGoToPage"
 						/>
 					</v-col>
 				</v-row>
@@ -88,10 +113,18 @@
 
 			<template
 				v-for="(column, index) in $attrs.headers"
-				v-slot:[`item.${column.key}`]="{ item }"
+				v-slot:[`item.${column.key}`]="{ item, index }"
 				:key="index"
 			>
-				<ColumnField :column="column" :cell-data="item[column.key]" />
+				<template v-if="column.key === 'actions'">
+					<div :class="['table-actions', { 'removed-row': item.removed }]">
+						<slot name="actions" :row="item" :index="index" />
+					</div>
+				</template>
+
+				<template v-else>
+					<ColumnField :column="column" :cell-data="item[column.key]" />
+				</template>
 			</template>
 		</v-data-table>
 	</v-card>
@@ -101,6 +134,7 @@
 import ColumnField from "@/components/DataGrid/ColumnField";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import Search from "@/components/Inputs/Search";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
@@ -111,6 +145,7 @@ export default {
 		ColumnField,
 		DataSelect,
 		DataInput,
+		Search,
 	},
 
 	mixins: [vuetifyHelper],
@@ -123,15 +158,56 @@ export default {
 			default: false,
 		},
 
+		resetFiltersButton: {
+			type: Boolean,
+			default: false,
+		},
+
 		totalCount: {
 			type: Number,
 			default: 0,
+		},
+
+		searchPhrase: {
+			type: String,
+			default: "",
+		},
+
+		searchFields: {
+			type: Array,
+			default: () => [],
+		},
+
+		defaultSearchField: {
+			type: Object,
+			default: () => ({}),
+		},
+
+		isSearchVisible: {
+			type: Boolean,
+			default: false,
+		},
+
+		isRowClickDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		isFooterDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		showDefaultFooter: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
 	data() {
 		return {
 			TABLE,
+			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
 			page: 1,
 			perPage: this.$attrs["items-per-page"],
 		};
@@ -144,7 +220,11 @@ export default {
 	},
 
 	methods: {
-		perPageChanged() {
+		onHandleRowClick(clickEvent, row) {
+			this.$emit("rowClicked", row);
+		},
+
+		onPerPageChanged() {
 			if (this.pageCount === 1 && this.page > 1) {
 				this.page = 1;
 				this.$emit("perPageChanged", { currentPerPage: this.perPage, currentPage: this.page });
@@ -153,7 +233,7 @@ export default {
 			this.$emit("perPageChanged", { currentPerPage: this.perPage });
 		},
 
-		goToPage() {
+		onGoToPage() {
 			if (this.page <= this.pageCount) {
 				this.$emit("pageChanged", this.page);
 				return;
@@ -162,6 +242,24 @@ export default {
 			this.page = this.pageCount;
 			this.$emit("pageChanged", this.pageCount);
 		},
+
+		getCellProps(data) {
+			return { class: data.item.removed ? "removed-row" : "" };
+		},
+
+		resetSearch() {
+			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
+		},
 	},
 };
 </script>
+
+<style lang="scss">
+.removed-row {
+	background-color: #f3f3f3;
+}
+</style>

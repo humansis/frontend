@@ -1,6 +1,12 @@
 <template>
 	<div>
 		<div v-for="({ idNumber, beneficiaries }, index) of data" :key="index">
+			<p>{{ $t('Conflicts with ID Number') }}
+				<v-chip class="ml-2 mr-2" color="is-primary">
+					{{ idNumber }}
+				</v-chip>
+			</p>
+
 			<Table
 				class="distributed-table duplicity-distributed-table mb-3"
 				has-search
