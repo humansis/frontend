@@ -51,7 +51,7 @@
 			item-title="field"
 			item-value="code"
 			class="mb-6"
-			@update:modelValue="validate('customField')"
+			@update:modelValue="onValidate('customField')"
 		/>
 
 		<DataInput
@@ -65,8 +65,8 @@
 			step="0.01"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('amountMultiplier')"
-			@input="checkQuantityOrValue"
+			@blur="onValidate('amountMultiplier')"
+			@input="onCheckQuantityOrValue"
 		/>
 
 		<template v-if="displayedFields.customField && displayedFields.amountMultiplier">
@@ -83,7 +83,6 @@
 			>
 				{{ $t('Quantity 1 = Custom field * Amount multiplier')}}
 			</p>
-
 		</template>
 
 		<DataInput
@@ -93,7 +92,7 @@
 			label="Unit 1"
 			name="unit"
 			class="mb-6"
-			@blur="validate('unit')"
+			@blur="onValidate('unit')"
 		/>
 
 		<template v-if="showDivisionFields">
@@ -107,7 +106,7 @@
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
 					name="division"
 					class="mb-6"
-					@blur="validate(`${divisionFieldsValidationString}.${key}`)"
+					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
 		</template>
@@ -122,8 +121,8 @@
 			min="1"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('quantity')"
-			@input="checkQuantityOrValue"
+			@blur="onValidate('quantity')"
+			@input="onCheckQuantityOrValue"
 		/>
 
 		<DataInput
@@ -137,8 +136,8 @@
 			min="1"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('value')"
-			@input="checkQuantityOrValue"
+			@blur="onValidate('value')"
+			@input="onCheckQuantityOrValue"
 		/>
 
 		<DataSelect
@@ -152,7 +151,7 @@
 			item-title="value"
 			item-value="code"
 			class="mb-6"
-			@update:modelValue="validate('currency')"
+			@update:modelValue="onValidate('currency')"
 		/>
 
 		<DataInput
@@ -163,7 +162,7 @@
 			name="unit"
 			class="mb-6"
 			optional
-			@blur="validate('secondUnit')"
+			@blur="onValidate('secondUnit')"
 		/>
 
 		<DataInput
@@ -176,7 +175,7 @@
 			min="1"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('secondQuantity')"
+			@blur="onValidate('secondQuantity')"
 		/>
 
 		<DatePicker
@@ -195,7 +194,7 @@
 			label="Description"
 			name="description"
 			class="mb-6"
-			@blur="validate('description')"
+			@blur="onValidate('description')"
 		/>
 
 		<v-checkbox
@@ -222,7 +221,7 @@
 						&& validationMsg('allowedProductCategoryTypes')"
 					:disabled="formDisabled"
 					hide-details="auto"
-					@blur="validate('allowedProductCategoryTypes')"
+					@blur="onValidate('allowedProductCategoryTypes')"
 				>
 					<template v-slot:label>
 						{{ $t(productCategoryType) }}
@@ -246,7 +245,7 @@
 			type="number"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('cashbackLimit')"
+			@blur="onValidate('cashbackLimit')"
 		/>
 	</v-card-text>
 
@@ -258,7 +257,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -268,7 +267,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -601,7 +600,7 @@ export default {
 	},
 
 	methods: {
-		checkQuantityOrValue() {
+		onCheckQuantityOrValue() {
 			if (this.displayedFields.allowedProductCategoryTypes
 				&& this.formModel.allowedProductCategoryTypes.length === 1
 				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
@@ -811,13 +810,13 @@ export default {
 
 				this.options.customFields = data;
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
 			} finally {
 				this.loading.customFields = false;
 			}
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 
 			if (this.v$.$invalid) {
@@ -852,7 +851,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 

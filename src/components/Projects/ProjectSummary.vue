@@ -41,8 +41,8 @@
 			<v-col class="ma-2">
 				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
 					<v-tooltip
-						location="top"
 						:text="$t('Number of donors.')"
+						location="top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">
@@ -58,8 +58,8 @@
 			<v-col class="ma-2">
 				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
 					<v-tooltip
-						location="top"
 						:text="$t('Number of households imported to project.')"
+						location="top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">
@@ -75,8 +75,8 @@
 			<v-col class="ma-2">
 				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
 					<v-tooltip
-						location="top"
 						:text="$t('Number of beneficiaries imported to project.')"
+						location="top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">

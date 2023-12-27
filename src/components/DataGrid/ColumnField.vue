@@ -40,8 +40,8 @@
 			:key="`tags-array-item-${index}`"
 		>
 			<v-chip
-				variant="flat"
 				:color="getTagTypeByItem(item)"
+				variant="flat"
 				size="small"
 			>
 				{{ normalizeText($t(cellData[index])) }}

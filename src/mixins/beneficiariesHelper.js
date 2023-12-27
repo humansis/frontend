@@ -53,7 +53,7 @@ export default {
 				});
 		},
 
-		async assignBookletToBeneficiary(booklet) {
+		async onAssignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
 			let target = "";
 
@@ -81,14 +81,14 @@ export default {
 						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
 						"success",
 					);
-					this.closeAssignVoucherModal();
+					this.onCloseAssignVoucherModal();
 				}
 			}).catch((e) => {
 				Notification(
 					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e.message || e}`,
 					"error",
 				);
-				this.closeAssignVoucherModal();
+				this.onCloseAssignVoucherModal();
 			});
 
 			this.assignVoucherModal.isWaiting = false;
@@ -156,25 +156,25 @@ export default {
 				});
 		},
 
-		openAssignVoucherModal(id, canAssignVoucher) {
+		onOpenAssignVoucherModal(id, canAssignVoucher) {
 			if (canAssignVoucher) {
 				this.assignVoucherToBeneficiaryId = this.table.data.find((item) => item.id === id);
 				this.assignVoucherModal.isOpened = true;
 			}
 		},
 
-		closeAssignVoucherModal() {
+		onCloseAssignVoucherModal() {
 			this.assignVoucherModal.isOpened = false;
 		},
 
-		openAddBeneficiaryModal(id, canBeOpened) {
+		onOpenAddBeneficiaryModal(id, canBeOpened) {
 			if (canBeOpened) {
 				this.addBeneficiaryModel.removingId = id;
 				this.addBeneficiaryModal.isOpened = true;
 			}
 		},
 
-		closeAddBeneficiaryModal() {
+		onCloseAddBeneficiaryModal() {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
@@ -316,7 +316,7 @@ export default {
 			this.communityModal.isWaiting = false;
 		},
 
-		closeBeneficiaryModal() {
+		onCloseBeneficiaryModal() {
 			this.beneficiaryModal = {
 				isOpened: false,
 				isEditing: false,
@@ -346,7 +346,7 @@ export default {
 			this.$emit("rowsChecked", selectedData);
 		},
 
-		async randomSample() {
+		async onRandomSample() {
 			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
 			const randomPage = this.rnd(1, this.table.total / size);
 			this.table.customPerPage = size;
@@ -357,7 +357,7 @@ export default {
 			return Math.floor((b - a + 1) * Math.random()) + a;
 		},
 
-		async submitEditBeneficiaryForm() {
+		async onSubmitEditBeneficiaryForm() {
 			this.beneficiaryModal = {
 				isOpened: false,
 				isEditing: false,
@@ -418,7 +418,7 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+		async onResetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;

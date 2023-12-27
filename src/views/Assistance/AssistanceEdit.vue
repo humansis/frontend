@@ -40,7 +40,7 @@
 					add-button
 					is-recalculation-button-visible
 					is-custom-amount-box-visible
-					@assistanceUpdated="fetchUpdatedData"
+					@assistanceUpdated="onFetchUpdatedData"
 				/>
 			</template>
 
@@ -54,9 +54,9 @@
 					:add-button="false"
 					:assistance="assistance"
 					:commodities="commodities"
-					changeButton
+					change-button
 					export-button
-					@assistanceUpdated="fetchUpdatedData"
+					@assistanceUpdated="onFetchUpdatedData"
 				/>
 			</template>
 
@@ -68,7 +68,7 @@
 					:commodities="commodities"
 					export-button
 					is-recalculation-button-visible
-					@assistanceUpdated="fetchUpdatedData"
+					@assistanceUpdated="onFetchUpdatedData"
 				/>
 			</template>
 		</v-stepper>
@@ -80,7 +80,7 @@
 			default-sort-direction="asc"
 			default-sort-column="name"
 			export-button
-			@assistanceUpdated="fetchUpdatedData"
+			@assistanceUpdated="onFetchUpdatedData"
 		/>
 
 		<div class="d-flex justify-end mt-5">
@@ -91,7 +91,7 @@
 				variant="elevated"
 				prepend-icon="arrow-left"
 				class="text-none mr-3"
-				@click="backStep"
+				@click="onBackStep"
 			>
 				{{ $t('Back') }}
 			</v-btn>
@@ -102,7 +102,7 @@
 				size="small"
 				append-icon="arrow-right"
 				class="text-none"
-				@click="nextStep"
+				@click="onNextStep"
 			>
 				{{ $t('Next') }}
 			</v-btn>
@@ -114,7 +114,7 @@
 				size="small"
 				append-icon="lock"
 				class="text-none"
-				@click="validateAssistance"
+				@click="onValidateAssistance"
 			>
 				{{ $t('Validate and Lock') }}
 			</v-btn>
@@ -232,7 +232,7 @@ export default {
 			this.beneficiariesData = beneficiariesTable;
 		},
 
-		async validateAssistance() {
+		async onValidateAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
 			this.validateAssistanceButtonLoading = true;
 
@@ -258,18 +258,18 @@ export default {
 			this.validateAssistanceButtonLoading = false;
 		},
 
-		fetchUpdatedData() {
+		onFetchUpdatedData() {
 			this.fetchAssistance();
 			this.fetchAssistanceStatistics();
 		},
 
-		nextStep() {
+		onNextStep() {
 			this.activeStep = this.activeStep >= this.steps.length
 				? this.activeStep
 				: this.activeStep + 1;
 		},
 
-		backStep() {
+		onBackStep() {
 			this.activeStep = this.activeStep <= 1
 				? this.activeStep
 				: this.activeStep + -1;

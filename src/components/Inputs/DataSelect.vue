@@ -25,22 +25,22 @@
 		</template>
 
 		<template v-slot:selection="{ item }">
-			<v-chip v-if="isDataShownAsTag" :closable="!disabled" @click:close="chipClosed(item)">
+			<v-chip v-if="isDataShownAsTag" :closable="!disabled" @click:close="onChipClosed(item)">
 				<span>{{ $t(item.title) }}</span>
 			</v-chip>
 
 			<span v-else>{{ $t(normalizeFirstLetter(item.title)) }}</span>
 		</template>
 
-		<template v-if="iconLoading || (!iconLoading && appendIcon)" v-slot:append>
+		<template v-if="isAppendIconEnabled" v-slot:append>
 			<v-icon
-				v-if="!iconLoading && appendIcon && isAppendIconEnabled"
+				v-if="!iconLoading"
 				:icon="appendIcon"
 				@click="$emit('append-icon-clicked')"
 			/>
 
 			<v-progress-circular
-				v-if="iconLoading"
+				v-else
 				:size="25"
 				:indeterminate="iconLoading"
 				color="primary"
@@ -55,14 +55,14 @@
 						placeholder="Search"
 						density="compact"
 						hide-details="auto"
-						@input="search"
+						@input="onSearch"
 					/>
 				</v-list-item>
 
 				<v-list-item
 					v-if="multiple"
 					:title="$t('Select All')"
-					@click="selectAll"
+					@click="onSelectAll"
 				>
 					<template v-slot:prepend>
 						<v-checkbox-btn
@@ -199,19 +199,19 @@ export default {
 	},
 
 	methods: {
-		search() {
+		onSearch() {
 			this.options = this.items;
 			this.options = this.options.filter(
 				(item) => item[this.itemTitle].toLowerCase().includes(this.searchValue.toLowerCase()),
 			);
 		},
 
-		selectAll() {
+		onSelectAll() {
 			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
 		},
 
-		chipClosed(item) {
+		onChipClosed(item) {
 			const updatedModel = this.modelValue?.filter(
 				(removedItem) => removedItem[this.itemValue] !== item.value,
 			);

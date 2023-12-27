@@ -10,7 +10,7 @@
 				color="primary"
 				size="small"
 				prepend-icon="plus"
-				@click="goToAddAssistance"
+				@click="onGoToAddAssistance"
 			>
 				{{ $t('New') }}
 			</v-btn>
@@ -22,8 +22,8 @@
 		>
 			<AssistanceMoveForm
 				:projects="projects"
-				@formClosed="closeAssistanceMoveModal"
-				@formSubmitted="moveAssistance"
+				@formClosed="onCloseAssistanceMoveModal"
+				@formSubmitted="onMoveAssistance"
 			/>
 		</Modal>
 
@@ -33,11 +33,11 @@
 		>
 			<AssistanceForm
 				:project="project"
-				:formModel="assistanceModel"
+				:form-model="assistanceModel"
 				:assistance="assistance"
 				:editing="assistanceModal.isEditing"
-				@formClosed="closeAssistanceModal"
-				@formSubmitted="editAssistance"
+				@formClosed="onCloseAssistanceModal"
+				@formSubmitted="onEditAssistance"
 			/>
 		</Modal>
 
@@ -46,9 +46,9 @@
 			:beneficiaries-count="beneficiariesCount"
 			:project="project"
 			:project-loaded="projectLoaded"
-			@remove="removeAssistance"
-			@showEdit="showEdit"
-			@showMove="showMove"
+			@remove="onRemoveAssistance"
+			@showEdit="onShowEdit"
+			@showMove="onShowMove"
 		/>
 	</v-container>
 </template>
@@ -121,15 +121,15 @@ export default {
 			this.getListOfProjects();
 		},
 
-		closeAssistanceModal() {
+		onCloseAssistanceModal() {
 			this.assistanceModal.isOpened = false;
 		},
 
-		closeAssistanceMoveModal() {
+		onCloseAssistanceMoveModal() {
 			this.assistanceMoveModal.isOpened = false;
 		},
 
-		goToAddAssistance() {
+		onGoToAddAssistance() {
 			this.$router.push({
 				name: "AddAssistance",
 				params: { projectId: this.$route.params.projectId },
@@ -145,7 +145,7 @@ export default {
 				});
 		},
 
-		async moveAssistance({ id }) {
+		async onMoveAssistance({ id }) {
 			await AssistancesService.moveAssistance(
 				this.assistance.id,
 				this.project.id,
@@ -166,7 +166,9 @@ export default {
 				});
 		},
 
-		async editAssistance({ id, name, dateDistribution, dateExpiration, round, note, locationId }) {
+		async onEditAssistance(
+			{ id, name, dateDistribution, dateExpiration, round, note, locationId },
+		) {
 			const formattedDateDistribution = dateDistribution
 				? this.$moment(dateDistribution).format("YYYY-MM-DD")
 				: null;
@@ -188,7 +190,7 @@ export default {
 				});
 		},
 
-		async removeAssistance(id) {
+		async onRemoveAssistance(id) {
 			await AssistancesService.removeAssistance(id).then((response) => {
 				if (response.status === 204) {
 					Notification(this.$t("Assistance Successfully Deleted"), "success");
@@ -199,7 +201,7 @@ export default {
 			});
 		},
 
-		showEdit(assistance) {
+		onShowEdit(assistance) {
 			this.assistanceModel = this.mapToFormModel(assistance);
 			this.assistance = assistance;
 			this.assistanceModal = {
@@ -209,7 +211,7 @@ export default {
 			};
 		},
 
-		showMove(assistance) {
+		onShowMove(assistance) {
 			this.assistance = assistance;
 			this.assistanceMoveModal = {
 				isOpened: true,

@@ -46,15 +46,15 @@
 
 				<v-progress-circular
 					v-else-if="isAssistanceLoading"
-					color="primary"
-					:size="25"
 					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
 				/>
 
 				<v-tooltip
 					v-else
-					location="top"
 					:text="$t('Data not loaded')"
+					location="top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
@@ -76,9 +76,9 @@
 
 				<v-progress-circular
 					v-else-if="isAssistanceLoading"
-					color="primary"
-					:size="25"
 					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
 				/>
 
 				<div v-else class="pa-2 text-subtitle-1">
@@ -100,15 +100,15 @@
 
 				<v-progress-circular
 					v-else-if="isAssistanceLoading"
-					color="primary"
-					:size="25"
 					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
 				/>
 
 				<v-tooltip
 					v-else
-					location="top"
 					:text="$t('Data not loaded')"
+					location="top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
@@ -134,9 +134,9 @@
 
 				<v-progress-circular
 					v-else
-					color="primary"
-					:size="25"
 					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
 				/>
 			</v-sheet>
 		</v-col>

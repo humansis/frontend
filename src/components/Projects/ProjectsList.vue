@@ -8,24 +8,24 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
-		@rowClicked="goToDetail"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
+		@rowClicked="onGoToDetail"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row.id)"
+				@actionConfirmed="onShowDetail(row.id)"
 			/>
 
 			<ButtonAction
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row.id)"
+				@actionConfirmed="onShowEdit(row.id)"
 			/>
 
 			<ButtonAction
@@ -38,7 +38,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 
@@ -49,7 +49,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportProjects"
+				@export="onExportProjects"
 			/>
 		</template>
 	</Table>
@@ -195,13 +195,13 @@ export default {
 				});
 		},
 
-		goToDetail({ item: { id } }) {
+		onGoToDetail({ item: { id } }) {
 			if (this.userCan.viewProject) {
 				this.$router.push({ name: "Project", params: { projectId: id } });
 			}
 		},
 
-		async exportProjects(exportType, format) {
+		async onExportProjects(exportType, format) {
 			if (exportType === EXPORT.PROJECTS) {
 				try {
 					this.exportControl.loading = true;

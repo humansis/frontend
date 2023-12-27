@@ -8,7 +8,7 @@
 			size="small"
 			prepend-icon="plus"
 			class="text-none"
-			@click="addNewCommodity"
+			@click="onAddNewCommodity"
 		>
 			{{ $t('Add') }}
 		</v-btn>
@@ -35,8 +35,8 @@
 			submit-button-label="Create"
 			class="modal-card"
 			close-button
-			@formSubmitted="submitCommodityForm"
-			@formClosed="closeCommodityModal"
+			@formSubmitted="onSubmitCommodityForm"
+			@formClosed="onCloseCommodityModal"
 		/>
 	</Modal>
 
@@ -52,7 +52,7 @@
 				tooltip="Delete"
 				icon="trash"
 				icon-color="red"
-				@actionConfirmed="removeCommodity(row.index)"
+				@actionConfirmed="onRemoveCommodity(row.index)"
 			/>
 		</template>
 	</Table>
@@ -322,7 +322,7 @@ export default {
 		table: {
 			deep: true,
 			handler() {
-				this.$emit("onDeliveredCommodityValue");
+				this.$emit("deliveredCommodityValue");
 			},
 		},
 
@@ -414,27 +414,27 @@ export default {
 			});
 		},
 
-		addNewCommodity() {
+		onAddNewCommodity() {
 			this.commodityModal.isOpened = true;
 			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
 		},
 
-		closeCommodityModal() {
+		onCloseCommodityModal() {
 			this.commodityModal.isOpened = false;
 		},
 
-		submitCommodityForm(commodityForm) {
+		onSubmitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
 			this.commodityModal.isOpened = false;
 
 			this.toggleColumnsVisibility();
 
-			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+			this.$emit("deliveredCommodityValue", this.preparedCommodities);
 		},
 
-		removeCommodity(index) {
+		onRemoveCommodity(index) {
 			this.table.data.splice(index, 1);
-			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+			this.$emit("deliveredCommodityValue", this.preparedCommodities);
 		},
 
 		isDivisionFields(column, props) {
@@ -470,7 +470,7 @@ export default {
 		clearComponent() {
 			this.table.data = [];
 			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
-			this.$emit("onDeliveredCommodityValue", this.preparedCommodities);
+			this.$emit("deliveredCommodityValue", this.preparedCommodities);
 		},
 	},
 };

@@ -7,7 +7,7 @@
 			size="small"
 			prepend-icon="plus"
 			class="text-none"
-			@click="addCriteria()"
+			@click="onAddCriteria"
 		>
 			{{ $t('Add Group') }}
 		</v-btn>
@@ -40,13 +40,13 @@
 		header="Create New Criteria"
 	>
 		<SelectionCriteriaForm
-			close-button
-			class="modal-card"
-			ref="criteriaForm"
-			:submit-button-label="$t('Create')"
 			:formModel="criteriaModel"
-			@formSubmitted="submitCriteriaForm"
-			@formClosed="closeCriteriaModal"
+			ref="criteriaForm"
+			submit-button-label="'Create'"
+			class="modal-card"
+			close-button
+			@formSubmitted="onSubmitCriteriaForm"
+			@formClosed="onCloseCriteriaModal"
 		/>
 	</Modal>
 
@@ -58,10 +58,10 @@
 		:group-id="key"
 		:target-type="selectedTargetType"
 		:loading="calculationLoading"
-		@addCriteria="addCriteria"
+		@addCriteria="onAddCriteria"
 		@updatedCriteria="onUpdatedCriteria"
-		@removeGroup="removeCriteriaGroup(key)"
-		@showDetail="showBeneficiariesInGroup(key)"
+		@removeGroup="onRemoveCriteriaGroup(key)"
+		@showDetail="onShowBeneficiariesInGroup(key)"
 	/>
 
 	<v-row class="mt-6 align-center justify-end">
@@ -75,7 +75,7 @@
 				name="scoring"
 				item-title="identifier"
 				item-value="id"
-				@update:modelValue="scoringTypeChanged"
+				@update:modelValue="onScoringTypeChanged"
 			/>
 		</v-col>
 
@@ -97,7 +97,7 @@
 				size="small"
 				class="text-none"
 				variant="elevated"
-				@click="updateVulnerabilityScores"
+				@click="onUpdateVulnerabilityScores"
 			>
 				{{ $t('Update') }}
 			</v-btn>
@@ -112,20 +112,20 @@
 				size="small"
 				class="text-none mr-3"
 				variant="elevated"
-				@click="showTotalBeneficiaries"
+				@click="onShowTotalBeneficiaries"
 			>
 				{{ $t('Details') }}
 			</v-btn>
 
 			<ExportControl
-				type="is-primary"
-				field-class="is-pulled-right ml-3"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
 				:disabled="isExportButtonDisabled"
-				@onExport="exportSelectedBeneficiaries"
+				type="is-primary"
+				field-class="is-pulled-right ml-3"
+				@export="onExportSelectedBeneficiaries"
 			/>
 		</v-col>
 	</v-row>
@@ -274,7 +274,7 @@ export default {
 				this.minimumSelectionScore = null;
 			}
 
-			this.$emit("onDeliveredCommodityValue");
+			this.$emit("deliveredCommodityValue");
 		},
 
 		data(data) {
@@ -297,7 +297,7 @@ export default {
 			return !!this.groups.length;
 		},
 
-		async exportSelectedBeneficiaries(exportType, format) {
+		async onExportSelectedBeneficiaries(exportType, format) {
 			if (exportType === EXPORT.VULNERABILITY_SCORES) {
 				try {
 					this.exportControl.loading = true;
@@ -314,7 +314,7 @@ export default {
 			}
 		},
 
-		async scoringTypeChanged() {
+		async onScoringTypeChanged() {
 			await this.fetchCriteriaInfo();
 		},
 
@@ -363,7 +363,7 @@ export default {
 			return result;
 		},
 
-		addCriteria(id) {
+		onAddCriteria(id) {
 			this.criteriaModal.isOpened = true;
 
 			this.criteriaModel = {
@@ -378,11 +378,11 @@ export default {
 			};
 		},
 
-		closeCriteriaModal() {
+		onCloseCriteriaModal() {
 			this.criteriaModal.isOpened = false;
 		},
 
-		submitCriteriaForm(criteriaForm) {
+		onSubmitCriteriaForm(criteriaForm) {
 			if (criteriaForm.groupId !== undefined) {
 				this.groups[criteriaForm.groupId].tableData = [];
 				this.groups[criteriaForm.groupId].data.push(criteriaForm);
@@ -415,7 +415,7 @@ export default {
 			);
 
 			this.$emit("beneficiariesCounted", this.countOf);
-			this.$emit("onDeliveredCommodityValue");
+			this.$emit("deliveredCommodityValue");
 			this.calculationLoading = false;
 		},
 
@@ -425,7 +425,7 @@ export default {
 			this.countOf = 0;
 		},
 
-		async updateVulnerabilityScores() {
+		async onUpdateVulnerabilityScores() {
 			if (this.calculationLoading || !this.groups.length) return;
 
 			await this.fetchCriteriaInfo();
@@ -477,7 +477,7 @@ export default {
 				this.countOf = 0;
 			}
 
-			this.$emit("onDeliveredCommodityValue");
+			this.$emit("deliveredCommodityValue");
 		},
 
 		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
@@ -567,7 +567,7 @@ export default {
 			return sector && subsector && target && type;
 		},
 
-		removeCriteriaGroup(groupKey) {
+		onRemoveCriteriaGroup(groupKey) {
 			this.groups.splice(groupKey, 1);
 
 			this.groups.forEach((group, key) => {
@@ -601,12 +601,12 @@ export default {
 			this.$emit("beneficiariesCounted", this.countOf);
 		},
 
-		showBeneficiariesInGroup(key) {
+		onShowBeneficiariesInGroup(key) {
 			this.beneficiariesData = this.groups[key]?.tableData;
 			this.detailModal.isOpened = true;
 		},
 
-		showTotalBeneficiaries() {
+		onShowTotalBeneficiaries() {
 			this.beneficiariesData = this.totalBeneficiariesData;
 			this.detailModal.isOpened = true;
 		},

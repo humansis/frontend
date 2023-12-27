@@ -1,8 +1,8 @@
 <template>
 	<v-tooltip
-		location="top"
 		:disabled="!tooltipText.length"
 		:text="$t(tooltipText)"
+		location="top"
 	>
 		<template v-slot:activator="{ props }">
 			<v-btn
@@ -11,19 +11,19 @@
 				:class="['action-button', { disabled }, buttonClass]"
 				:disabled="disabled"
 				icon=""
-				@click.stop="buttonClicked"
+				@click.stop="onButtonClicked"
 			>
 				<v-icon :icon="icon" :color="iconColor" />
 			</v-btn>
 
 			<v-btn
-				v-else-if="!isOnlyIcon && defaultButton"
+				v-else-if="defaultButton"
 				:prepend-icon="icon"
 				color="primary"
 				size="small"
 				variant="elevated"
 				class="text-none"
-				@click.stop="buttonClicked"
+				@click.stop="onButtonClicked"
 			>
 				{{ $t(label) }}
 			</v-btn>
@@ -34,7 +34,7 @@
 				:class="['text-none action-button texted-button', { disabled }]"
 				:disabled="disabled"
 				:size="buttonSize"
-				@click.stop="buttonClicked"
+				@click.stop="onButtonClicked"
 			>
 				<v-icon :icon="icon" :color="iconColor" />
 
@@ -51,7 +51,7 @@
 				:close-button-color="closeButtonColor"
 				:confirm-button-name="confirmButtonName"
 				:confirm-button-color="confirmButtonColor"
-				@modalClosed="modalClosed()"
+				@modalClosed="onModalClosed"
 				@actionConfirmed="$emit('actionConfirmed')"
 			/>
 		</template>
@@ -185,7 +185,7 @@ export default {
 	},
 
 	methods: {
-		buttonClicked() {
+		onButtonClicked() {
 			if (this.isConfirmAction) {
 				this.isDialogOpened = true;
 			} else {
@@ -193,7 +193,7 @@ export default {
 			}
 		},
 
-		modalClosed() {
+		onModalClosed() {
 			this.isDialogOpened = false;
 		},
 	},

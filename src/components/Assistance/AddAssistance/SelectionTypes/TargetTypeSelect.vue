@@ -16,7 +16,7 @@
 				item-title="name"
 				item-value="id"
 				multiple
-				@update:modelValue="validate('communities')"
+				@update:modelValue="onValidate('communities')"
 			/>
 
 			<DataSelect
@@ -30,7 +30,7 @@
 				item-title="name"
 				item-value="id"
 				multiple
-				@update:modelValue="validate('institutions')"
+				@update:modelValue="onValidate('institutions')"
 			/>
 		</v-card-text>
 	</v-card>

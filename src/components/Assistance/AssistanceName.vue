@@ -10,7 +10,7 @@
 			class="mt-4 mb-5"
 			maxlength="70"
 			persistent-placeholder
-			@input="isValid"
+			@input="onIsValid"
 		/>
 
 		<v-switch
@@ -163,9 +163,9 @@ export default {
 	},
 
 	methods: {
-		isValid() {
+		onIsValid() {
 			this.v$.assistanceName.$touch();
-			this.validate("assistanceName");
+			this.onValidate("assistanceName");
 
 			return !this.v$.$invalid;
 		},

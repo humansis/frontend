@@ -1,6 +1,6 @@
 <template>
 	<v-dialog
-		v-model="dialog"
+		v-model="isOpened"
 		width="400"
 	>
 		<v-card>
@@ -38,7 +38,7 @@
 					:color="closeButtonColor"
 					variant="elevated"
 					class="text-none"
-					@click="dialog = false"
+					@click="isOpened = false"
 				>
 					{{ $t(closeButtonName) }}
 				</v-btn>
@@ -47,7 +47,7 @@
 					:color="confirmButtonColor"
 					variant="elevated"
 					class="text-none"
-					@click="actionConfirmed"
+					@click="onActionConfirmed"
 				>
 					{{ $t(confirmButtonName) }}
 				</v-btn>
@@ -111,16 +111,16 @@ export default {
 
 	data() {
 		return {
-			dialog: false,
+			isOpened: false,
 		};
 	},
 
 	watch: {
 		isDialogOpened(value) {
-			this.dialog = value;
+			this.isOpened = value;
 		},
 
-		dialog(value) {
+		isOpened(value) {
 			if (!value) {
 				this.$emit("modalClosed");
 			}
@@ -128,8 +128,8 @@ export default {
 	},
 
 	methods: {
-		actionConfirmed() {
-			this.dialog = false;
+		onActionConfirmed() {
+			this.isOpened = false;
 			this.$emit("actionConfirmed");
 		},
 	},

@@ -43,7 +43,7 @@
 		</v-alert>
 
 		<div class="scan-container">
-			<qrcode-drop-zone @decode="onDecode" @init="logErrors">
+			<qrcode-drop-zone @decode="onDecode" @init="onLogErrors">
 				<qrcode-stream @decode="onDecode" @init="onInit" />
 			</qrcode-drop-zone>
 
@@ -130,7 +130,7 @@ export default {
 			this.scannedResult = scannedResult;
 		},
 
-		logErrors(promise) {
+		onLogErrors(promise) {
 			promise.catch(console.error);
 		},
 

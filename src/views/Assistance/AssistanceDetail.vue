@@ -7,8 +7,8 @@
 			<InputDistributed
 				close-button
 				class="modal-card"
-				@submit="fetchBeneficiariesAndStatistics"
-				@close="closeInputDistributedModal"
+				@submit="onFetchBeneficiariesAndStatistics"
+				@close="onCloseInputDistributedModal"
 			/>
 		</Modal>
 
@@ -20,8 +20,8 @@
 				close-button
 				submit-button-label="Confirm"
 				class="modal-card"
-				@formSubmitted="confirmTransaction"
-				@formClosed="closeTransactionModal"
+				@formSubmitted="onConfirmTransaction"
+				@formClosed="onCloseTransactionModal"
 			/>
 		</Modal>
 
@@ -71,8 +71,8 @@
 			assistance-detail
 			@beneficiariesCounted="beneficiariesCount = $event"
 			@rowsChecked="onRowsCheck"
-			@assistanceUpdated="fetchAssistanceData"
-			@fetchAssistanceStatistics="fetchAssistanceStatistics"
+			@assistanceUpdated="onFetchAssistanceData"
+			@fetchAssistanceStatistics="onFetchAssistanceStatistics"
 		/>
 
 		<div class="d-flex justify-end mt-5">
@@ -89,7 +89,7 @@
 				confirm-message="Are you sure you want to close this Assistance?"
 				is-confirm-action
 				default-button
-				@actionConfirmed="closeAssistance"
+				@actionConfirmed="onCloseAssistance"
 			/>
 
 			<v-btn
@@ -100,7 +100,7 @@
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"
-				@click="setGeneralReliefItemAsDistributed"
+				@click="onSetGeneralReliefItemAsDistributed"
 			>
 				{{ $t(setAtDistributedButtonLabel) }}
 			</v-btn>
@@ -112,7 +112,7 @@
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"
-				@click="openInputDistributedModal"
+				@click="onOpenInputDistributedModal"
 			>
 				{{ $t("Input Distributed") }}
 			</v-btn>
@@ -125,7 +125,7 @@
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"
-				@click="startTransaction"
+				@click="onStartTransaction"
 			>
 				{{ $t("Start Transaction") }} ({{ beneficiariesCount }})
 			</v-btn>
@@ -303,19 +303,19 @@ export default {
 
 	mounted() {
 		this.fetchAssistance();
-		this.fetchAssistanceStatistics();
+		this.onFetchAssistanceStatistics();
 		this.fetchProject();
 	},
 
 	methods: {
-		fetchAssistanceData() {
+		onFetchAssistanceData() {
 			this.fetchAssistance();
-			this.fetchAssistanceStatistics();
+			this.onFetchAssistanceStatistics();
 		},
 
-		fetchBeneficiariesAndStatistics() {
+		onFetchBeneficiariesAndStatistics() {
 			this.$refs.beneficiariesList.fetchData();
-			this.fetchAssistanceStatistics();
+			this.onFetchAssistanceStatistics();
 		},
 
 		async fetchAssistance() {
@@ -336,7 +336,7 @@ export default {
 			});
 		},
 
-		async fetchAssistanceStatistics() {
+		async onFetchAssistanceStatistics() {
 			this.isStatisticsLoading = true;
 
 			AssistancesService.getAssistanceStatistics(
@@ -369,7 +369,7 @@ export default {
 			this.selectedBeneficiaries = rows;
 		},
 
-		async setGeneralReliefItemAsDistributed() {
+		async onSetGeneralReliefItemAsDistributed() {
 			let error = "";
 			let success = "";
 
@@ -395,25 +395,25 @@ export default {
 
 				this.setAtDistributedButtonVisible = false;
 				this.$refs.beneficiariesList.fetchData();
-				this.fetchAssistanceStatistics();
+				this.onFetchAssistanceStatistics();
 
 				this.setAtDistributedButtonLoading = false;
 			}
 		},
 
-		closeTransactionModal() {
+		onCloseTransactionModal() {
 			this.transactionModal.isOpened = false;
 		},
 
-		openInputDistributedModal() {
+		onOpenInputDistributedModal() {
 			this.inputDistributedModal.isOpened = true;
 		},
 
-		closeInputDistributedModal() {
+		onCloseInputDistributedModal() {
 			this.inputDistributedModal.isOpened = false;
 		},
 
-		async startTransaction() {
+		async onStartTransaction() {
 			const now = new Date().toISOString();
 			const dateOfDistribution = this.assistance.dateDistribution;
 			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
@@ -439,7 +439,7 @@ export default {
 			}
 		},
 
-		async confirmTransaction(code) {
+		async onConfirmTransaction(code) {
 			this.transactionModal.isWaiting = true;
 
 			const body = {
@@ -454,14 +454,14 @@ export default {
 					Notification(this.$t("Successful Transaction"), "success");
 
 					this.$refs.beneficiariesList.fetchData();
-					this.fetchAssistanceStatistics();
+					this.onFetchAssistanceStatistics();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
 			});
 
 			this.transactionModal.isWaiting = false;
-			this.closeTransactionModal();
+			this.onCloseTransactionModal();
 		},
 
 		unvalidateAssistance() {
@@ -492,7 +492,7 @@ export default {
 			});
 		},
 
-		async closeAssistance() {
+		async onCloseAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
 
 			await AssistancesService.updateAssistanceToStatusCompleted(

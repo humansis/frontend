@@ -20,7 +20,7 @@
 				is-search-enabled
 				multiple
 				clearable
-				@update:modelValue="filterChanged(filter)"
+				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<DataInput
@@ -29,7 +29,7 @@
 				:label="$t(options.name)"
 				name="filter-input"
 				clearable
-				@update:modelValue="filterChanged(filter)"
+				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<DatePicker
@@ -38,7 +38,7 @@
 				:label="$t(options.name)"
 				name="filter-datepicker"
 				clearable
-				@update:modelValue="filterChanged(filter)"
+				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<!-- TODO dateTimePicker -->
@@ -75,7 +75,7 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filterName) {
+		onFilterChanged(filterName) {
 			const filters = {};
 
 			Object.keys(this.selectedFiltersOptions).forEach((key) => {

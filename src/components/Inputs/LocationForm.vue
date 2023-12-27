@@ -224,7 +224,7 @@ export default {
 				this.formModel.locationId = null;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm1");
+				this.onValidate("adm1");
 				this.fetchDistricts(location.id);
 			}
 			this.componentKey += 1;
@@ -237,7 +237,7 @@ export default {
 				this.formModel.locationId = this.formModel.adm1.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm2");
+				this.onValidate("adm2");
 				this.fetchCommunes(location.id);
 			}
 			this.componentKey += 1;
@@ -250,7 +250,7 @@ export default {
 				this.formModel.locationId = this.formModel.adm2.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm3");
+				this.onValidate("adm3");
 				this.fetchVillages(location.id);
 			}
 			this.componentKey += 1;
@@ -263,7 +263,7 @@ export default {
 				this.formModel.locationId = this.formModel.adm3.locationId;
 			} else {
 				this.formModel.locationId = location.locationId;
-				this.validate("adm4");
+				this.onValidate("adm4");
 			}
 			this.componentKey += 1;
 			this.$emit("locationChanged", "adm4");
@@ -274,7 +274,7 @@ export default {
 			await LocationsService.getListOfAdm1()
 				.then((result) => { this.options.provinces = result.data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm1")} ${e}`, "is-danger");
+					Notification(`${this.$t("Adm1")} ${e.message || e}`, "error");
 				});
 			this.provincesLoading = false;
 		},
@@ -284,7 +284,7 @@ export default {
 			await LocationsService.getListOfAdm2(adm1Id)
 				.then((result) => { this.options.districts = result.data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm2")} ${e}`, "is-danger");
+					Notification(`${this.$t("Adm2")} ${e.message || e}`, "error");
 				});
 			this.districtsLoading = false;
 		},
@@ -294,7 +294,7 @@ export default {
 			await LocationsService.getListOfAdm3(adm2Id)
 				.then((result) => { this.options.communes = result.data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm3")} ${e}`, "is-danger");
+					Notification(`${this.$t("Adm3")} ${e.message || e}`, "error");
 				});
 			this.communesLoading = false;
 		},
@@ -304,7 +304,7 @@ export default {
 			await LocationsService.getListOfAdm4(adm3Id)
 				.then((result) => { this.options.villages = result.data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Adm4")} ${e}`, "is-danger");
+					Notification(`${this.$t("Adm4")} ${e.message || e}`, "error");
 				});
 			this.villagesLoading = false;
 		},
@@ -319,7 +319,7 @@ export default {
 					this.formModel.locationId = data.locationId;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Camp")} ${e}`, "is-danger");
+					Notification(`${this.$t("Camp")} ${e.message || e}`, "error");
 				});
 		},
 

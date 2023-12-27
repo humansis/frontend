@@ -77,8 +77,8 @@
 
 				<v-tooltip
 					v-else
-					location="top"
 					:text="$t('Data not loaded')"
+					location="top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />

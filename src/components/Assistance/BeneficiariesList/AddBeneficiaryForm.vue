@@ -24,7 +24,7 @@
 			item-value="id"
 			class="mb-6"
 			is-search-enabled
-			@update:modelValue="validate('beneficiaries')"
+			@update:modelValue="onValidate('beneficiaries')"
 		/>
 
 		<DataInput
@@ -33,7 +33,7 @@
 			:error-messages="validationMsg('justification')"
 			label="Justification"
 			name="justification"
-			@update:modelValue="validate('justification')"
+			@update:modelValue="onValidate('justification')"
 		/>
 	</v-card-text>
 
@@ -45,7 +45,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -55,7 +55,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -155,7 +155,7 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (!this.v$.$invalid) {
 				if (this.formModel.removingId) {
@@ -307,11 +307,11 @@ export default {
 			}
 
 			this.submitButtonLoading = false;
-			this.closeForm();
+			this.onCloseForm();
 			this.$emit("addingOrRemovingSubmitted");
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 

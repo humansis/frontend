@@ -15,7 +15,7 @@
 			label="code"
 			name="code"
 			class="mb-6"
-			@blur="validate('code')"
+			@blur="onValidate('code')"
 		/>
 	</v-card-text>
 
@@ -28,7 +28,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -38,7 +38,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -81,7 +81,7 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -91,7 +91,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 

@@ -34,12 +34,11 @@ export default {
 		return {
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
+				columns: generateColumns([
 					{ key: "documentNumber", sortable: false },
 					{ key: "beneficiaryId", sortable: false },
 					{ key: "message", sortable: false },
-				],
+				]),
 				total: 0,
 			},
 		};
@@ -47,10 +46,8 @@ export default {
 
 	mounted() {
 		if (this.showOnlyIdNumber) {
-			this.table.visibleColumns = [this.table.visibleColumns[0]];
+			this.table.columns = [this.table.columns[0]];
 		}
-
-		this.table.columns = generateColumns(this.table.visibleColumns);
 	},
 };
 </script>

@@ -12,22 +12,21 @@
 			<v-card-text class="mt-4">
 				<div v-for="formInput in formInputs" :key="formInput.key" class="mb-3">
 					<DatePicker
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.CALENDAR"
+						v-if="isInputTypeCalendar(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						name="start-date"
-						@blur="inputChanged(formInput, data)"
+						@blur="onInputChanged(formInput, data)"
 					/>
 
 					<DataSelect
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.SINGLE_SELECT
-							|| formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT"
+						v-if="isInputTypeSingleSelect(formInput) || isInputTypeMultiSelect(formInput)"
 						v-model="data[formInput.key]"
 						:items="formInput.options"
-						:multiple="isInputTypeMultiselect(formInput)"
-						:is-data-shown-as-tag="isInputTypeMultiselect(formInput)"
+						:multiple="isInputTypeMultiSelect(formInput)"
+						:is-data-shown-as-tag="isInputTypeMultiSelect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:clearable="true"
 						:disabled="isFormDisabled"
@@ -38,22 +37,22 @@
 						is-search-enabled
 						optional
 						class="mb-6"
-						@update:modelValue="inputChanged(formInput, data)"
+						@update:modelValue="onInputChanged(formInput, data)"
 					/>
 
 					<DataInput
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_INPUT"
+						v-if="isInputTypeText(formInput)"
 						v-model="data[formInput.key]"
 						:error-messages="validateRequiredMsg('name')"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="project-name"
 						class="mb-6"
-						@blur="inputChanged(formInput, data)"
+						@blur="onInputChanged(formInput, data)"
 					/>
 
 					<DataInput
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT"
+						v-if="isInputTypeNumber(formInput)"
 						v-model.number="data[formInput.key]"
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
@@ -64,11 +63,11 @@
 						min="0"
 						dense
 						class="mb-6"
-						@blur="inputChanged(formInput, data)"
+						@blur="onInputChanged(formInput, data)"
 					/>
 
 					<v-textarea
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_AREA"
+						v-if="isInputTypeTextArea(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
@@ -79,12 +78,11 @@
 						hide-details="auto"
 						class="mt-6"
 						auto-grow
-						@blur="inputChanged(formInput, data)"
+						@blur="onInputChanged(formInput, data)"
 					/>
 
 					<LocationForm
-						v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION
-							&& formInput.key === 'adm1'"
+						v-if="isInputTypeLocation(formInput) && isLocationTypeAdm1(formInput)"
 						ref="locationForm"
 						:form-model="data"
 						:form-disabled="isFormDisabled"
@@ -102,7 +100,7 @@
 					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
-					@click="closeForm"
+					@click="onCloseForm"
 				>
 					{{ $t('Close') }}
 				</v-btn>
@@ -114,7 +112,7 @@
 					size="small"
 					class="text-none ml-3"
 					variant="elevated"
-					@click="submitForm"
+					@click="onSubmitForm"
 				>
 					{{ buttonLabel }}
 				</v-btn>
@@ -251,16 +249,16 @@ export default {
 
 		validateAfterAction(formInput) {
 			return this.isInputWithValidationsRules(formInput.key)
-				? this.validate(formInput.key, "data")
+				? this.onValidate(formInput.key, "data")
 				: "";
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -284,14 +282,42 @@ export default {
 			return newObject;
 		},
 
-		inputChanged(formInput, data) {
+		onInputChanged(formInput, data) {
 			this.validateAfterAction(formInput);
 			this.checkDependencies(formInput);
 			this.$emit("modalInputChanged", { formInput, data });
 		},
 
-		isInputTypeMultiselect({ type }) {
+		isInputTypeSingleSelect({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.SINGLE_SELECT;
+		},
+
+		isInputTypeMultiSelect({ type }) {
 			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT;
+		},
+
+		isInputTypeCalendar({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.CALENDAR;
+		},
+
+		isInputTypeText({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_INPUT;
+		},
+
+		isInputTypeNumber({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT;
+		},
+
+		isInputTypeTextArea({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_AREA;
+		},
+
+		isInputTypeLocation({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION;
+		},
+
+		isLocationTypeAdm1({ key }) {
+			return key === GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM1;
 		},
 	},
 };

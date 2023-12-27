@@ -12,7 +12,7 @@
 				label="Activity Description"
 				name="activity-description"
 				class="mb-6"
-				@blur="validate('activityDescription')"
+				@blur="onValidate('activityDescription')"
 			/>
 
 			<DataInput
@@ -25,7 +25,7 @@
 				min="0"
 				class="mb-6"
 				hide-spin-buttons
-				@blur="validate('householdsTargeted')"
+				@blur="onValidate('householdsTargeted')"
 			/>
 
 			<DataInput
@@ -38,7 +38,7 @@
 				min="0"
 				class="mb-6"
 				hide-spin-buttons
-				@blur="validate('individualsTargeted')"
+				@blur="onValidate('individualsTargeted')"
 			/>
 		</v-card-text>
 	</v-card>

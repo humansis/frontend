@@ -16,9 +16,9 @@
 
 		<ProjectsList
 			ref="projectsList"
-			@showDetail="showDetail"
-			@showEdit="showEdit"
-			@onDelete="onProjectDelete"
+			@showDetail="onShowDetail"
+			@showEdit="onShowEdit"
+			@delete="onProjectDelete"
 		/>
 	</v-container>
 </template>
@@ -43,14 +43,14 @@ export default {
 	},
 
 	methods: {
-		showEdit(id) {
+		onShowEdit(id) {
 			this.$router.push({
 				name: "ProjectEdit",
 				params: { projectId: id },
 			});
 		},
 
-		showDetail(id) {
+		onShowDetail(id) {
 			this.$router.push({
 				name: "ProjectDetail",
 				params: { projectId: id },

@@ -87,7 +87,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -98,7 +98,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -141,11 +141,11 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.$emit("formSubmitted", this.formModel);
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 
@@ -155,7 +155,7 @@ export default {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => { this.options.referralType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "error");
+					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
 				});
 
 			this.referralTypeLoading = false;

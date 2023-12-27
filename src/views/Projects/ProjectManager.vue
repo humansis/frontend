@@ -1,9 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-card
-			max-width="2560"
-			class="mx-auto mt-5"
-		>
+		<v-card class="mx-auto mt-5">
 			<v-card-title class="font-weight-bold">
 				{{ $t(pageTitle) }}
 			</v-card-title>
@@ -18,7 +15,7 @@
 							label="Project name"
 							name="project-name"
 							class="mb-6"
-							@blur="validate('name')"
+							@blur="onValidate('name')"
 						/>
 
 						<DataInput
@@ -44,8 +41,8 @@
 							is-data-shown-as-tag
 							multiple
 							class="mb-6"
-							@blur="validate('selectedSectors')"
-							@update:modelValue="selectorsSelect"
+							@blur="onValidate('selectedSectors')"
+							@update:modelValue="onSelectorsSelect"
 						/>
 
 						<DataSelect
@@ -63,7 +60,7 @@
 							is-data-shown-as-tag
 							multiple
 							optional
-							@update:modelValue="subSectorSelect"
+							@update:modelValue="onSubSectorSelect"
 						/>
 
 						<DatePicker
@@ -72,7 +69,7 @@
 							:disabled="formDisabled"
 							label="Start Date"
 							name="start-date"
-							@blur="validate('startDate')"
+							@blur="onValidate('startDate')"
 						/>
 
 						<DatePicker
@@ -81,7 +78,7 @@
 							:disabled="formDisabled"
 							label="End Date"
 							name="end-date"
-							@blur="validate('endDate')"
+							@blur="onValidate('endDate')"
 						/>
 
 						<DataSelect
@@ -133,7 +130,7 @@
 									&& validationMsg('allowedProductCategoryTypes')"
 								:disabled="formDisabled"
 								hide-details="auto"
-								@blur="validate('allowedProductCategoryTypes')"
+								@blur="onValidate('allowedProductCategoryTypes')"
 							>
 								<template v-slot:label>
 									{{ $t(productCategoryType) }}
@@ -173,11 +170,11 @@
 					content-name="Target"
 					new-row-button-name="Add new target"
 					no-openable-modal-message="Please add some Sector for using Target"
-					@tableChanged="tableChanged"
-					@modalInputChanged="newTargetModalChanged"
-					@rowRemoved="validateTarget"
-					@editModalOpened="editModalOpened"
-					@modalOpened="targetModalOpened"
+					@tableChanged="onTableChanged"
+					@modalInputChanged="onNewTargetModalChanged"
+					@rowRemoved="onValidateTarget"
+					@editModalOpened="onEditModalOpened"
+					@modalOpened="onTargetModalOpened"
 				/>
 
 				<p
@@ -208,7 +205,7 @@
 					color="primary"
 					size="small"
 					class="text-none ml-3"
-					@click="validateNewProject"
+					@click="onValidateNewProject"
 				>
 					{{ buttonName }}
 				</v-btn>
@@ -358,22 +355,22 @@ export default {
 					propertyName: "value",
 				},
 				{
-					key: "adm1",
+					key: GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM1,
 					type: GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION,
 					propertyName: "name",
 				},
 				{
-					key: "adm2",
+					key: GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM2,
 					type: GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION,
 					propertyName: "name",
 				},
 				{
-					key: "adm3",
+					key: GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM3,
 					type: GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION,
 					propertyName: "name",
 				},
 				{
-					key: "adm4",
+					key: GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM4,
 					type: GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION,
 					propertyName: "name",
 				},
@@ -593,16 +590,16 @@ export default {
 			return getCodeAndValueObject(value);
 		},
 
-		tableChanged(tableRow) {
+		onTableChanged(tableRow) {
 			if (!tableRow.isCreate) {
 				this.formModel.targets[tableRow.index] = tableRow.data;
 			} else {
 				this.formModel.targets.push(tableRow.data);
 			}
-			this.validateTarget();
+			this.onValidateTarget();
 		},
 
-		validateNewProject() {
+		onValidateNewProject() {
 			this.v$.formModel.$touch();
 
 			if (this.v$.formModel.$invalid) {
@@ -791,10 +788,10 @@ export default {
 			}
 		},
 
-		selectorsSelect($event) {
+		onSelectorsSelect($event) {
 			this.$nextTick(() => {
 				this.formModel.selectedSectors = $event;
-				this.validate("selectedSectors");
+				this.onValidate("selectedSectors");
 				this.filterSubSectors();
 				this.getSectorsWithoutSelectedSubSector();
 
@@ -804,7 +801,7 @@ export default {
 					? this.formModel.selectedSubSectors.filter((selectedSubSector) => this.options.subSectors
 						.find((subSector) => subSector.code === selectedSubSector.code))
 					: [];
-				this.validateTarget();
+				this.onValidateTarget();
 
 				if (!this.formModel.selectedSectors.length) {
 					this.options.subSectors = [];
@@ -812,10 +809,10 @@ export default {
 			});
 		},
 
-		subSectorSelect($event) {
+		onSubSectorSelect($event) {
 			this.formModel.selectedSubSectors = $event;
 			this.getSectorsWithoutSelectedSubSector();
-			this.validateTarget();
+			this.onValidateTarget();
 		},
 
 		filterSubSectors() {
@@ -895,19 +892,19 @@ export default {
 			this.filteredSubSectorsForTargets = filteredSubSectors;
 		},
 
-		editModalOpened(rowData) {
+		onEditModalOpened(rowData) {
 			this.getFilteredSubSectorForTargets(rowData.sector.code);
 			this.changeSubSectorForTargetModal(this.filteredSubSectorsForTargets);
 		},
 
-		async targetModalOpened() {
+		async onTargetModalOpened() {
 			this.changeSubSectorForTargetModal([]);
 			if (!this.editableTableColumns[OPTIONS_FOR_COLUMN_INDEX.MODALITY_TYPE].options?.length) {
 				await this.fetchModalityTypes();
 			}
 		},
 
-		async newTargetModalChanged({ formInput, data }) {
+		async onNewTargetModalChanged({ formInput, data }) {
 			if (formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.SINGLE_SELECT && formInput.key === "sector") {
 				const sectorCode = data[formInput.key]?.code;
 
@@ -926,7 +923,7 @@ export default {
 			 ${position + 1} ${this.$t(`doesn't match any selected ${type} for project.`)} ${sectorMessage}`);
 		},
 
-		validateTarget() {
+		onValidateTarget() {
 			this.targetTableValidateMessages = [];
 			this.isTargetTableValid = true;
 

@@ -324,7 +324,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -366,7 +366,7 @@ export default {
 	},
 
 	methods: {
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 	},

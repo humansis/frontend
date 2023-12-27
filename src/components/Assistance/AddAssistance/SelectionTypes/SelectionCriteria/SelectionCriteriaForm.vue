@@ -10,7 +10,7 @@
 			item-title="value"
 			item-value="code"
 			class="mb-6"
-			@update:modelValue="criteriaTargetSelect"
+			@update:modelValue="onCriteriaTargetSelect"
 		/>
 
 		<DataSelect
@@ -23,7 +23,7 @@
 			item-title="value"
 			item-value="code"
 			class="mb-6"
-			@update:modelValue="criteriaTarget"
+			@update:modelValue="onCriteriaSelect"
 		/>
 
 		<DataSelect
@@ -36,7 +36,7 @@
 			item-title="value"
 			item-value="code"
 			class="mb-6"
-			@update:modelValue="validate('condition')"
+			@update:modelValue="onValidate('condition')"
 		/>
 
 		<template v-if="fieldTypeToDisplay !== ASSISTANCE.FIELD_TYPE.LOCATION">
@@ -46,7 +46,7 @@
 				:error-messages="validationMsg('value')"
 				label="Value"
 				name="value"
-				@update:modelValue="validate('value')"
+				@update:modelValue="onValidate('value')"
 			/>
 
 			<DataSelect
@@ -60,7 +60,7 @@
 				name="value"
 				item-title="value"
 				item-value="code"
-				@update:modelValue="validate('value')"
+				@update:modelValue="onValidate('value')"
 			/>
 
 			<DataInput
@@ -69,7 +69,7 @@
 				:error-messages="validationMsg('value')"
 				label="Value"
 				name="value"
-				@blur="validate('value')"
+				@blur="onValidate('value')"
 			/>
 
 			<DataInput
@@ -80,7 +80,7 @@
 				label="Value"
 				name="value"
 				hide-spin-buttons
-				@blur="validate('value')"
+				@blur="onValidate('value')"
 			/>
 
 		</template>
@@ -100,7 +100,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -110,7 +110,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -226,45 +226,6 @@ export default {
 	},
 
 	methods: {
-		onCriteriaTargetSelect(target) {
-			this.formModel.criteria = "";
-			this.formModel.condition = "";
-
-			this.formModel.criteriaTarget = target;
-			this.fetchCriteriaFields(target);
-		},
-
-		onCriteriaSelect(criteria) {
-			this.formModel.condition = "";
-			this.formModel.value = null;
-
-			this.fieldTypeToDisplay = criteria.type;
-
-			switch (criteria.type) {
-				case ASSISTANCE.FIELD_TYPE.GENDER:
-					this.valueSelectOptions = this.options.gender;
-					break;
-				case ASSISTANCE.FIELD_TYPE.LOCATION_TYPE:
-					this.fetchLocationsTypes();
-					break;
-				case ASSISTANCE.FIELD_TYPE.BOOLEAN:
-					this.valueSelectOptions = this.options.boolean;
-					break;
-				case ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS:
-					this.fetchResidenceStatuses();
-					break;
-				case ASSISTANCE.FIELD_TYPE.LIVELIHOOD:
-					this.fetchLivelihoods();
-					break;
-				default:
-					this.valueSelectOptions = [];
-			}
-
-			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);
-
-			this.presetValueBasedOnCriteria(criteria);
-		},
-
 		async fetchCriteriaTargets() {
 			this.criteriaTargetLoading = true;
 
@@ -358,7 +319,7 @@ export default {
 			}
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -387,18 +348,51 @@ export default {
 			this.$emit("formSubmitted", this.formModel);
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 
-		criteriaTargetSelect(target) {
-			this.validate("criteriaTarget");
-			this.onCriteriaTargetSelect(target);
+		onCriteriaTargetSelect(target) {
+			this.onValidate("criteriaTarget");
+
+			this.formModel.criteria = "";
+			this.formModel.condition = "";
+
+			this.formModel.criteriaTarget = target;
+			this.fetchCriteriaFields(target);
 		},
 
-		criteriaTarget(criteria) {
-			this.validate("criteria");
-			this.onCriteriaSelect(criteria);
+		onCriteriaSelect(criteria) {
+			this.onValidate("criteria");
+
+			this.formModel.condition = "";
+			this.formModel.value = null;
+
+			this.fieldTypeToDisplay = criteria.type;
+
+			switch (criteria.type) {
+				case ASSISTANCE.FIELD_TYPE.GENDER:
+					this.valueSelectOptions = this.options.gender;
+					break;
+				case ASSISTANCE.FIELD_TYPE.LOCATION_TYPE:
+					this.fetchLocationsTypes();
+					break;
+				case ASSISTANCE.FIELD_TYPE.BOOLEAN:
+					this.valueSelectOptions = this.options.boolean;
+					break;
+				case ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS:
+					this.fetchResidenceStatuses();
+					break;
+				case ASSISTANCE.FIELD_TYPE.LIVELIHOOD:
+					this.fetchLivelihoods();
+					break;
+				default:
+					this.valueSelectOptions = [];
+			}
+
+			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);
+
+			this.presetValueBasedOnCriteria(criteria);
 		},
 	},
 };

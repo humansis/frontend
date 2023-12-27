@@ -11,7 +11,7 @@
 				<p class="text-overline">{{ $t('In assistance')}}</p>
 
 				<div
-					v-if="inAssistanceBeneficiariesCount || inAssistanceBeneficiariesCount === 0"
+					v-if="inAssistanceBeneficiariesCount >= 0"
 					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ inAssistanceBeneficiariesCount }}

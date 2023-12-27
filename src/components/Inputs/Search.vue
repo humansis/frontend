@@ -19,8 +19,8 @@
 			append-inner-icon="search"
 			class="search"
 			clearable
-			@click:append-inner="search"
-			@click:clear="search"
+			@click:appendInner="onSearch"
+			@click:clear="onSearch"
 		/>
 	</div>
 </template>
@@ -82,7 +82,7 @@ export default {
 	},
 
 	methods: {
-		search() {
+		onSearch() {
 			const searchBody = this.searchFields?.length
 				? { phrase: this.value, field: this.selectedSearchField }
 				: this.value;
@@ -93,7 +93,7 @@ export default {
 		clearSearch() {
 			if (this.value) {
 				this.value = "";
-				this.search();
+				this.onSearch();
 			}
 		},
 	},

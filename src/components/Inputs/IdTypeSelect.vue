@@ -10,7 +10,7 @@
 		item-value="code"
 		class="mb-6"
 		is-search-enabled
-		@update:modelValue="validate('idType')"
+		@update:modelValue="onValidate('idType')"
 	/>
 </template>
 
@@ -88,7 +88,7 @@ export default {
 			return BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
 				});
 		},
 

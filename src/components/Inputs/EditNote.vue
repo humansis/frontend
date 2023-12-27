@@ -29,29 +29,29 @@
 						<ButtonAction
 							v-if="!completed && !edit"
 							:icon="displayFull ? 'arrow-up' : 'arrow-down'"
-							:tooltipText="displayFull ? $t('Show less') : $t('Show full note')"
-							@actionConfirmed="toggleDisplayFull"
+							:tooltipText="displayFull ? 'Show less' : 'Show full note'"
+							@actionConfirmed="onToggleDisplayFull"
 						/>
 
 						<ButtonAction
 							v-if="!completed && !edit"
 							tooltipText="Edit note"
 							icon="pen"
-							@actionConfirmed="toggleEdit"
+							@actionConfirmed="onToggleEdit"
 						/>
 
 						<ButtonAction
 							v-if="!completed && edit"
 							tooltipText="Save note"
 							icon="save"
-							@actionConfirmed="saveNote"
+							@actionConfirmed="onSaveNote"
 						/>
 
 						<ButtonAction
 							v-if="!completed && edit"
 							tooltipText="Discard changes"
 							icon="times-circle"
-							@actionConfirmed="discardNoteChanges"
+							@actionConfirmed="onDiscardNoteChanges"
 						/>
 					</v-row>
 				</v-col>
@@ -90,8 +90,9 @@ export default {
 	computed: {
 		noteComputed: {
 			get() {
-				return (this.note !== undefined) ? this.note : this?.assistance?.note;
+				return this.note || this?.assistance?.note;
 			},
+
 			set(val) {
 				this.note = val;
 			},
@@ -113,7 +114,7 @@ export default {
 	},
 
 	methods: {
-		async saveNote() {
+		async onSaveNote() {
 			const updateData = {
 				assistanceId: this.assistance.id,
 				note: this.note,
@@ -133,16 +134,16 @@ export default {
 				});
 		},
 
-		discardNoteChanges() {
+		onDiscardNoteChanges() {
 			this.note = this?.assistance?.note;
 			this.edit = false;
 		},
 
-		toggleDisplayFull() {
+		onToggleDisplayFull() {
 			this.displayFull = !this.displayFull;
 		},
 
-		toggleEdit() {
+		onToggleEdit() {
 			this.edit = !this.edit;
 		},
 	},

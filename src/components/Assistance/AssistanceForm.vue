@@ -25,7 +25,7 @@
 			:influence-distribution-protocol="influenceDistributionProtocol"
 			:distribution-protocol-message="distributionProtocolMessage"
 			is-editing
-			@locationChanged="valuesForAssistanceName"
+			@locationChanged="onValuesForAssistanceName"
 		/>
 
 		<DatePicker
@@ -35,7 +35,7 @@
 			:disabled="!isAssistanceNew"
 			label="Date of Assistance"
 			name="date-of-assistance"
-			@blur="valuesForAssistanceName"
+			@blur="onValuesForAssistanceName"
 		/>
 
 		<DataSelect
@@ -87,7 +87,6 @@
 			v-model="formModel.target"
 			label="Target"
 			name="target"
-
 			class="mb-6"
 			disabled
 		/>
@@ -173,7 +172,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -190,7 +189,7 @@
 			prepend-icon="circle-exclamation"
 			prepend-icon-color="warning"
 			default-button
-			@actionConfirmed="submitForm"
+			@actionConfirmed="onSubmitForm"
 		/>
 	</v-card-actions>
 </template>
@@ -362,7 +361,7 @@ export default {
 	},
 
 	created() {
-		this.valuesForAssistanceName();
+		this.onValuesForAssistanceName();
 		this.fetchSubsectors();
 	},
 
@@ -385,9 +384,9 @@ export default {
 			return getCodeAndValueObject(value);
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
-			const isValid = !this.v$.$invalid && this.$refs.assistanceName.isValid();
+			const isValid = !this.v$.$invalid && this.$refs.assistanceName.onIsValid();
 
 			const data = {
 				id: this.formModel.id,
@@ -405,11 +404,11 @@ export default {
 
 			if (isValid) {
 				this.$emit("formSubmitted", data);
-				this.closeForm();
+				this.onCloseForm();
 			}
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 
@@ -428,12 +427,12 @@ export default {
 				hasIcon: true,
 				onConfirm: () => {
 					this.$emit("formSubmitted", data);
-					this.closeForm();
+					this.onCloseForm();
 				},
 			});
 		},
 
-		valuesForAssistanceName() {
+		onValuesForAssistanceName() {
 			const {
 				adm1,
 				adm2,

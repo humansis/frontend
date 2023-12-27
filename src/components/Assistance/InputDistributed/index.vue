@@ -3,8 +3,8 @@
 		<v-card-text>
 			<IdTypeSelect
 				v-if="isOperationAddOrRemoveBulk"
-				ref="idTypeSelect"
 				v-model="formModel.idType"
+				ref="idTypeSelect"
 				required
 			/>
 
@@ -27,7 +27,7 @@
 				density="compact"
 				hide-details="auto"
 				class="mb-6"
-				@blur="validate('idsList')"
+				@blur="onValidate('idsList')"
 			/>
 
 			<DataInput
@@ -36,7 +36,7 @@
 				:error-messages="validationMsg('justification')"
 				label="Justification"
 				name="justification"
-				@update:modelValue="validate('justification')"
+				@update:modelValue="onValidate('justification')"
 			/>
 
 		</v-card-text>
@@ -49,7 +49,7 @@
 				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
-				@click="close"
+				@click="onClose"
 			>
 				{{ $t('Close') }}
 			</v-btn>
@@ -59,7 +59,7 @@
 				size="small"
 				class="text-none ml-3"
 				variant="elevated"
-				@click="submit"
+				@click="onSubmit"
 			>
 				{{ $t(submitButtonLabel) }}
 			</v-btn>
@@ -269,7 +269,7 @@
 				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
-				@click="close"
+				@click="onClose"
 			>
 				{{ $t('Close') }}
 			</v-btn>
@@ -279,7 +279,7 @@
 				size="small"
 				class="text-none ml-3"
 				variant="elevated"
-				@click="openDistributedForm"
+				@click="onOpenDistributedForm"
 			>
 				{{ $t(nameOfSubmitButton) }}
 			</v-btn>
@@ -384,7 +384,7 @@ export default {
 	},
 
 	methods: {
-		async submit() {
+		async onSubmit() {
 			this.v$.$touch();
 
 			if (this.isOperationAddOrRemoveBulk) {
@@ -423,8 +423,8 @@ export default {
 							} else {
 								Notification(message, "warning");
 							}
-						}).catch((error) => {
-							Notification(error, "is-danger");
+						}).catch((e) => {
+							Notification(`${this.$t("Beneficiary remove")} ${e.message || e}`, "error");
 						}).finally(() => {
 							this.distributedButtonLoading = false;
 							this.$emit("submit");
@@ -470,7 +470,7 @@ export default {
 			}
 		},
 
-		openDistributedForm() {
+		onOpenDistributedForm() {
 			this.formModel = { ...ASSISTANCE.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
@@ -484,7 +484,7 @@ export default {
 			};
 		},
 
-		close() {
+		onClose() {
 			this.$emit("close");
 		},
 	},

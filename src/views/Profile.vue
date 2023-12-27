@@ -2,7 +2,7 @@
 	<v-container fluid>
 		<v-card class="mx-auto mt-16" max-width="800">
 			<v-card-text>
-				<form @submit.prevent="submitPasswordForm">
+				<form @submit.prevent="onSubmitPasswordForm">
 					<p class="text-h6">{{ $t('User Information') }}</p>
 
 					<DataInput
@@ -22,7 +22,7 @@
 						name="old-password"
 						type="password"
 						class="mt-4 mb-5"
-						@blur="validate('oldPassword', 'password')"
+						@blur="onValidate('oldPassword', 'password')"
 					/>
 
 					<DataInput
@@ -32,7 +32,7 @@
 						name="new-password"
 						type="password"
 						class="mt-4 mb-5"
-						@blur="validate('newPassword', 'password')"
+						@blur="onValidate('newPassword', 'password')"
 					/>
 
 					<DataInput
@@ -42,7 +42,7 @@
 						name="re-enter-new-password"
 						type="password"
 						class="mt-4 mb-5"
-						@blur="validate('reenteredPassword', 'password')"
+						@blur="onValidate('reenteredPassword', 'password')"
 					/>
 
 					<div class="text-end">
@@ -72,7 +72,7 @@
 								item-value="code"
 								is-search-enabled
 								clearable
-								@blur="validate('prefix', 'phone')"
+								@blur="onValidate('prefix', 'phone')"
 							/>
 						</v-col>
 
@@ -82,7 +82,7 @@
 								:error-messages="validationMsg('number', 'phone')"
 								label="Phone Number"
 								name="phone-number"
-								@blur="validate('number', 'phone')"
+								@blur="onValidate('number', 'phone')"
 							/>
 						</v-col>
 					</v-row>
@@ -189,7 +189,7 @@ export default {
 	},
 
 	methods: {
-		async submitPasswordForm() {
+		async onSubmitPasswordForm() {
 			this.v$.password.$touch();
 
 			if (this.v$.password.$invalid || !this.password.oldPassword.length) return;
@@ -275,7 +275,7 @@ export default {
 					this.mapUser(data);
 				})
 				.catch((e) => {
-					Notification(`${this.$t("User")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("User")} ${e.message || e}`, "error");
 				});
 		},
 

@@ -1,5 +1,6 @@
 import { mapActions, mapState } from "vuex";
 import { deepEqual } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 
 export default {
 	computed: {
@@ -120,8 +121,8 @@ export default {
 				this.$router.replace({
 					name,
 					query: newQuery,
-				}).catch((error) => {
-					console.error(error);
+				}).catch((e) => {
+					Notification(`${this.$t("Grid filters")} ${e.message || e}`, "error");
 				});
 			}
 
@@ -143,8 +144,8 @@ export default {
 				this.storeGridFilters({
 					...updatedGridFilters,
 				});
-			}).catch((error) => {
-				console.error(error);
+			}).catch((e) => {
+				Notification(`${this.$t("Grid filters")} ${e.message || e}`, "error");
 			});
 		},
 

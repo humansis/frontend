@@ -7,7 +7,7 @@
 			name="select-export-type"
 			label="Select type"
 			class="export-type"
-			@update:modelValue="inputChanged"
+			@update:modelValue="onInputChanged"
 		/>
 
 		<DataSelect
@@ -20,8 +20,8 @@
 			label="Select format"
 			class="export-format"
 			append-icon="download"
-			@update:modelValue="inputChanged"
-			@append-icon-clicked="startExport"
+			@update:modelValue="onInputChanged"
+			@appendIconClicked="onStartExport"
 		/>
 	</div>
 </template>
@@ -116,7 +116,7 @@ export default {
 			}
 		},
 
-		inputChanged() {
+		onInputChanged() {
 			this.setExportInputs(this.location, {
 				exportType: this.selectedExportType,
 				formatType: this.selectedExportFormat,
@@ -169,8 +169,8 @@ export default {
 			}
 		},
 
-		startExport() {
-			this.$emit("onExport", this.selectedExportType, this.selectedExportFormat);
+		onStartExport() {
+			this.$emit("export", this.selectedExportType, this.selectedExportFormat);
 		},
 	},
 };

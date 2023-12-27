@@ -16,7 +16,7 @@
 						{{ gitInfo.appVersion }}
 					</div>
 
-					<v-form @submit.prevent="submitForm">
+					<v-form @submit.prevent="onSubmitForm">
 						<v-text-field
 							v-model="v$.formModel.username.$model"
 							label="Email"
@@ -146,11 +146,11 @@ export default {
 					password,
 				};
 
-				this.submitForm();
+				this.onSubmitForm();
 			}
 		},
 
-		async submitForm() {
+		async onSubmitForm() {
 			const isFormCorrect = await this.v$.$validate();
 			if (!isFormCorrect) return;
 

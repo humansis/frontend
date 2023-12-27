@@ -36,7 +36,7 @@ export default {
 	data() {
 		return {
 			table: {
-				visibleColumns: generateColumns([
+				columns: generateColumns([
 					{ key: "id", sortable: false },
 					{ key: "householdId", sortable: false },
 					{ key: "localGivenName", sortable: false },

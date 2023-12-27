@@ -1,9 +1,7 @@
 <template>
 	<h2 class="text-h6 mt-5 font-weight-bold">{{ $t('Basic properties') }}</h2>
 
-	<v-card
-		class="mx-auto mt-5"
-	>
+	<v-card class="mx-auto mt-5">
 		<v-card-text>
 			<AssistanceName
 				v-model="formModel.name"
@@ -16,8 +14,8 @@
 			<LocationForm
 				ref="locationForm"
 				:form-model="formModel"
-				@mapped="updateData"
-				@locationChanged="valuesForAssistanceName"
+				@mapped="onUpdateData"
+				@locationChanged="onValuesForAssistanceName"
 			/>
 
 			<DatePicker
@@ -27,7 +25,7 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
-				@update:modelValue="valuesForAssistanceName"
+				@update:modelValue="onValuesForAssistanceName"
 			/>
 
 			<DataSelect
@@ -39,7 +37,7 @@
 				item-value="code"
 				class="mb-6"
 				is-search-enabled
-				@update:modelValue="valuesForAssistanceName"
+				@update:modelValue="onValuesForAssistanceName"
 			/>
 
 			<DataInput
@@ -97,9 +95,7 @@
 
 	<h2 class="text-h6 mt-5 font-weight-bold">{{ $t('Target') }}</h2>
 
-	<v-card
-		class="mx-auto mt-5"
-	>
+	<v-card class="mx-auto mt-5">
 		<v-card-text>
 			<DataSelect
 				v-model="formModel.sector"
@@ -158,9 +154,7 @@
 		</v-card-text>
 	</v-card>
 
-	<v-card
-		class="mx-auto mt-10"
-	>
+	<v-card class="mx-auto mt-10">
 		<v-card-text>
 			<v-textarea
 				v-model.trim="formModel.note"
@@ -384,14 +378,14 @@ export default {
 		submit() {
 			this.v$.$touch();
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
-			const invalidAssistanceName = this.$refs.assistanceName.isValid();
+			const invalidAssistanceName = this.$refs.assistanceName.onIsValid();
 			return !this.v$.$invalid
 				|| (!this.v$.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
-		updateData() {
+		onUpdateData() {
 			this.$emit("updatedData", this.formModel);
-			this.valuesForAssistanceName();
+			this.onValuesForAssistanceName();
 		},
 
 		normalizeText(text) {
@@ -410,7 +404,7 @@ export default {
 			this.formModel.subsector = [];
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
-			this.validate("sector");
+			this.onValidate("sector");
 			await this.fetchSubsectors(code);
 			this.sectorValidationMessage = "";
 		},
@@ -418,14 +412,14 @@ export default {
 		async onSubsectorSelect({ code }) {
 			this.formModel.assistanceType = [];
 			this.formModel.targetType = [];
-			this.validate("subsector");
+			this.onValidate("subsector");
 			await this.fetchAssistanceTypes(code);
 			this.subsectorValidationMessage = "";
 		},
 
 		onAssistanceTypeSelect({ code }) {
 			this.formModel.targetType = [];
-			this.validate("assistanceType");
+			this.onValidate("assistanceType");
 			this.fetchTargetTypes(code);
 		},
 
@@ -435,8 +429,8 @@ export default {
 			if (isLocationInvalid) {
 				this.formModel.targetType = [];
 			} else {
-				this.validate("targetType");
-				this.$emit("onTargetSelect", targetType);
+				this.onValidate("targetType");
+				this.$emit("targetSelect", targetType);
 				await this.showComponents();
 				this.$emit("updatedData", this.formModel);
 			}
@@ -564,7 +558,7 @@ export default {
 			this.loading.targetTypes = false;
 		},
 
-		valuesForAssistanceName() {
+		onValuesForAssistanceName() {
 			const {
 				adm1,
 				adm2,

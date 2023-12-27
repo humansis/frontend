@@ -4,16 +4,15 @@
 			v-model="addBeneficiaryModal.isOpened"
 			:header="addBeneficiaryModel.removingId
 				? 'Remove Beneficiary From This Assistance'
-				: 'Add Beneficiaries to This Assistance'
-			"
+				: 'Add Beneficiaries to This Assistance'"
 		>
 			<AddBeneficiaryForm
 				:formModel="addBeneficiaryModel"
 				:assistance="assistance"
 				submit-button-label="Confirm"
 				close-button
-				@addingOrRemovingSubmitted="addedOrRemovedBeneficiary"
-				@formClosed="closeAddBeneficiaryModal"
+				@addingOrRemovingSubmitted="onAddedOrRemovedBeneficiary"
+				@formClosed="onCloseAddBeneficiaryModal"
 			/>
 		</Modal>
 
@@ -25,8 +24,8 @@
 				class="modal-card"
 				deduplication
 				close-button
-				@submit="fetchDataAfterBeneficiaryChange"
-				@close="closeInputDistributedModal"
+				@submit="onFetchDataAfterBeneficiaryChange"
+				@close="onCloseInputDistributedModal"
 			/>
 		</Modal>
 
@@ -40,8 +39,8 @@
 				:project="project"
 				submit-button-label="Confirm"
 				close-button
-				@scannedCode="assignBookletToBeneficiary"
-				@formClosed="closeAssignVoucherModal"
+				@scannedCode="onAssignBookletToBeneficiary"
+				@formClosed="onCloseAssignVoucherModal"
 			/>
 		</Modal>
 
@@ -53,8 +52,8 @@
 				close-button
 				adding-to-assistance
 				class="modal-card"
-				@submit="fetchDataAfterBeneficiaryChange"
-				@close="closeAddBeneficiariesByIdsModal"
+				@submit="onFetchDataAfterBeneficiaryChange"
+				@close="onCloseAddBeneficiariesByIdsModal"
 			/>
 		</Modal>
 
@@ -63,7 +62,6 @@
 			:header="beneficiaryModal.isEditing
 				? 'Edit This Beneficiary'
 				: 'Detail of Beneficiary'"
-			@close="closeBeneficiaryModal"
 		>
 			<EditBeneficiaryForm
 				:formModel="beneficiaryModel"
@@ -71,8 +69,8 @@
 				submit-button-label="Save"
 				class="modal-card"
 				close-button
-				@formSubmitted="submitEditBeneficiaryForm"
-				@formClosed="closeBeneficiaryModal"
+				@formSubmitted="onSubmitEditBeneficiaryForm"
+				@formClosed="onCloseBeneficiaryModal"
 			/>
 		</Modal>
 
@@ -98,7 +96,7 @@
 				size="small"
 				prepend-icon="redo"
 				class="text-none ma-2"
-				@click="recalculate()"
+				@click="onRecalculate"
 			>
 				{{ $t('Recalculate') }}
 			</v-btn>
@@ -109,7 +107,7 @@
 				size="small"
 				prepend-icon="plus"
 				class="text-none ma-2"
-				@click="openAddBeneficiaryModal(null, true)"
+				@click="onOpenAddBeneficiaryModal(null, true)"
 			>
 				{{ $t('Add') }}
 			</v-btn>
@@ -120,7 +118,7 @@
 				size="small"
 				prepend-icon="plus"
 				class="text-none ma-2"
-				@click="openAddBeneficiariesByIdsModal"
+				@click="onOpenAddBeneficiariesByIdsModal"
 			>
 				{{ $t('Bulk add') }}
 			</v-btn>
@@ -131,7 +129,7 @@
 				size="small"
 				prepend-icon="minus"
 				class="text-none ma-2"
-				@click="openInputDistributedModal"
+				@click="onOpenInputDistributedModal"
 			>
 				{{ $t('Bulk remove') }}
 			</v-btn>
@@ -144,10 +142,10 @@
 				type="number"
 				min="1"
 				max="100"
-				prepend-icon="exchange-alt	"
+				prepend-icon="exchange-alt"
 				append-inner-icon="percent"
 				class="random-sample"
-				@click:prepend="randomSample"
+				@click:prepend="onRandomSample"
 			/>
 		</div>
 	</div>
@@ -164,7 +162,7 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:show-select="table.settings.checkableTable"
-		:isSearchVisible="!isAssistanceTargetInstitution"
+		:is-search-visible="!isAssistanceTargetInstitution"
 		:search-phrase="table.searchPhrase"
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
@@ -173,12 +171,12 @@
 		reset-sort-button
 		reset-filters-button
 		@update:modelValue="onRowsCheck"
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@search="onSearch"
 		@update:sortBy="onSort"
-		@resetFilters="resetFilters"
-		@resetSort="resetSort(defaultSortOptions)"
+		@resetFilters="onResetFilters"
+		@resetSort="onResetSort(defaultSortOptions)"
 	>
 		<template v-slot:actions="{ index, row }">
 			<ButtonAction
@@ -193,14 +191,14 @@
 				confirm-button-name="Set"
 				confirm-button-color="primary"
 				is-confirm-action
-				@actionConfirmed="setAsNotDistributed(index, row.id, row.reliefPackages)"
+				@actionConfirmed="onSetAsNotDistributed(index, row.id, row.reliefPackages)"
 			/>
 
 			<ButtonAction
 				v-if="userCan.editDistribution"
 				icon="search"
 				tooltip-text="View"
-				@actionConfirmed="openViewModal(row)"
+				@actionConfirmed="onOpenViewModal(row)"
 			/>
 
 			<ButtonAction
@@ -209,7 +207,7 @@
 				icon="trash"
 				icon-color="red"
 				tooltip-text="Delete"
-				@actionConfirmed="openAddBeneficiaryModal(getIdForDelete(row), !(row.removed
+				@actionConfirmed="onOpenAddBeneficiaryModal(getIdForDelete(row), !(row.removed
 					|| isAssistanceCompleted))"
 			/>
 
@@ -219,7 +217,7 @@
 				:disabled="!row.canAssignVoucher"
 				icon="qrcode"
 				tooltip-text="Assign Voucher"
-				@actionConfirmed="openAssignVoucherModal(row.id, row.canAssignVoucher)"
+				@actionConfirmed="onOpenAssignVoucherModal(row.id, row.canAssignVoucher)"
 			/>
 		</template>
 
@@ -231,7 +229,7 @@
 				size="small"
 				class="ml-0"
 				prepend-icon="sticky-note"
-				@click="statusFilter('toDistribute', 'To distribute')"
+				@click="onStatusFilter('toDistribute', 'To distribute')"
 				@keydown.enter.prevent
 			>
 				{{ $t('To distribute') }}
@@ -244,7 +242,7 @@
 				size="small"
 				class="ml-0"
 				prepend-icon="sticky-note"
-				@click="statusFilter('distributed')"
+				@click="onStatusFilter('distributed')"
 				@keydown.enter.prevent
 			>
 				{{ $t('Distributed') }}
@@ -257,7 +255,7 @@
 				variant="tonal"
 				size="small"
 				prepend-icon="sticky-note"
-				@click="statusFilter('expired')"
+				@click="onStatusFilter('expired')"
 				@keydown.enter.prevent
 			>
 				{{ $t('Expired') }}
@@ -270,7 +268,7 @@
 				variant="tonal"
 				size="small"
 				prepend-icon="sticky-note"
-				@click="statusFilter('canceled')"
+				@click="onStatusFilter('canceled')"
 				@keydown.enter.prevent
 			>
 				{{ $t('Canceled') }}
@@ -284,8 +282,8 @@
 				:available-export-types="availableExportTypes"
 				:is-export-loading="isExportLoading"
 				:location="exportControl.location"
-				@inputUpdated="exportValuesUpdated"
-				@onExport="exportDistribution"
+				@inputUpdated="onExportValuesUpdated"
+				@export="onExportDistribution"
 			/>
 
 			<template v-if="exportControl.isBnfFileTypeSelected && !isBnfFile3Exported">
@@ -754,7 +752,7 @@ export default {
 			}
 		},
 
-		async exportValuesUpdated(type) {
+		async onExportValuesUpdated(type) {
 			this.exportControl.isBnfFileTypeSelected = (type === EXPORT.BNF_FILE_3.OPTION_NAME);
 
 			if (this.exportControl.isBnfFileTypeSelected) {
@@ -773,33 +771,33 @@ export default {
 			}
 		},
 
-		addedOrRemovedBeneficiary() {
+		onAddedOrRemovedBeneficiary() {
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
 		},
 
-		fetchDataAfterBeneficiaryChange() {
+		onFetchDataAfterBeneficiaryChange() {
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
 		},
 
-		openInputDistributedModal() {
+		onOpenInputDistributedModal() {
 			this.inputDistributedModal.isOpened = true;
 		},
 
-		closeInputDistributedModal() {
+		onCloseInputDistributedModal() {
 			this.inputDistributedModal.isOpened = false;
 		},
 
-		openAddBeneficiariesByIdsModal() {
+		onOpenAddBeneficiariesByIdsModal() {
 			this.addBeneficiariesByIdsModal.isOpened = true;
 		},
 
-		closeAddBeneficiariesByIdsModal() {
+		onCloseAddBeneficiariesByIdsModal() {
 			this.addBeneficiariesByIdsModal.isOpened = false;
 		},
 
-		statusFilter(filter, queryValue = "") {
+		onStatusFilter(filter, queryValue = "") {
 			const filterValue = queryValue.length ? queryValue : filter;
 			this.statusActive[filter] = !this.statusActive[filter];
 
@@ -821,11 +819,7 @@ export default {
 			}
 		},
 
-		resetTableSort() {
-			this.$refs.beneficiariesList.onResetSort();
-		},
-
-		async resetFilters() {
+		async onResetFilters() {
 			this.statusActive = {
 				toDistribute: false,
 				distributed: false,
@@ -853,7 +847,7 @@ export default {
 				&& this.userCan.revertDistribution;
 		},
 
-		openViewModal(row) {
+		onOpenViewModal(row) {
 			if (this.isAssistanceTargetInstitution) {
 				this.showDetailModal(row);
 			} else {
@@ -1137,7 +1131,7 @@ export default {
 			}
 		},
 
-		async recalculate() {
+		async onRecalculate() {
 			try {
 				this.isRecalculationLoading = true;
 
@@ -1161,7 +1155,7 @@ export default {
 			}
 		},
 
-		async setAsNotDistributed(tableIndex, bnfId, reliefPackage) {
+		async onSetAsNotDistributed(tableIndex, bnfId, reliefPackage) {
 			try {
 				const { data, status, message } = await AssistancesService
 					.revertDistributionOfReliefPackage(reliefPackage[0].id);
@@ -1234,7 +1228,7 @@ export default {
 			}, 5000);
 		},
 
-		async exportDistribution(type, format) {
+		async onExportDistribution(type, format) {
 			this.exportControl.loading = true;
 
 			switch (type) {

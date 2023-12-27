@@ -14,7 +14,7 @@
 							tooltip="Delete"
 							icon="trash"
 							icon-color="red"
-							@actionConfirmed="remove(row.index)"
+							@actionConfirmed="onRemove(row.index)"
 						/>
 					</template>
 				</Table>
@@ -23,7 +23,7 @@
 					<v-col>
 						<v-btn
 							class="text-none"
-							@click="addCriteria"
+							@click="onAddCriteria"
 						>
 							{{ $t('Add') }}
 						</v-btn>
@@ -41,7 +41,7 @@
 					<v-col>
 						<v-btn
 							class="text-none"
-							@click="removeGroup"
+							@click="onRemoveGroup"
 						>
 							{{ $t('Remove') }}
 						</v-btn>
@@ -147,20 +147,20 @@ export default {
 					this.criteriaLocation = data?.code;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`Location ${e}`, "is-danger");
+					Notification(`Location ${e.message || e}`, "error");
 				});
 		},
 
-		remove(index) {
+		onRemove(index) {
 			this.data.splice(index, 1);
 			this.$emit("updatedCriteria", { groupKey: this.groupId });
 		},
 
-		addCriteria() {
+		onAddCriteria() {
 			this.$emit("addCriteria", this.groupId);
 		},
 
-		removeGroup() {
+		onRemoveGroup() {
 			this.$emit("removeGroup");
 		},
 

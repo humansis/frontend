@@ -51,7 +51,7 @@
 			v-bind="$attrs"
 			:cell-props="getCellProps"
 			:hide-default-footer="!showDefaultFooter"
-			@[rowClickEvent]="handleRowClick"
+			@[rowClickEvent]="onHandleRowClick"
 		>
 			<template v-if="!showDefaultFooter" v-slot:bottom>
 				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
@@ -63,7 +63,7 @@
 							name="per-page"
 							class="per-page mr-5"
 							label="Per page"
-							@update:modelValue="perPageChanged"
+							@update:modelValue="onPerPageChanged"
 						/>
 					</v-col>
 
@@ -106,7 +106,7 @@
 							hide-spin-buttons
 							hide-details
 							dense
-							@click:appendInner="goToPage"
+							@click:appendInner="onGoToPage"
 						/>
 					</v-col>
 				</v-row>
@@ -221,11 +221,11 @@ export default {
 	},
 
 	methods: {
-		handleRowClick(clickEvent, row) {
+		onHandleRowClick(clickEvent, row) {
 			this.$emit("rowClicked", row);
 		},
 
-		perPageChanged() {
+		onPerPageChanged() {
 			if (this.pageCount === 1 && this.page > 1) {
 				this.page = 1;
 				this.$emit("perPageChanged", { currentPerPage: this.perPage, currentPage: this.page });
@@ -234,7 +234,7 @@ export default {
 			this.$emit("perPageChanged", { currentPerPage: this.perPage });
 		},
 
-		goToPage() {
+		onGoToPage() {
 			if (this.page <= this.pageCount) {
 				this.$emit("pageChanged", this.page);
 				return;
@@ -245,11 +245,7 @@ export default {
 		},
 
 		getCellProps(data) {
-			if (data.item.removed) {
-				return { class: "removed-row" };
-			}
-
-			return { class: "" };
+			return { class: data.item.removed ? "removed-row" : "" };
 		},
 
 		resetSearch() {

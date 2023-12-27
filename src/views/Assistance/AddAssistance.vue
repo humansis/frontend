@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid="">
+	<v-container fluid>
 		<ConfirmAction
 			:is-dialog-opened="openConfirmModal"
 			confirm-title="Date of Assistance"
@@ -9,8 +9,8 @@
 			close-button-name="Cancel"
 			confirm-button-name="Yes and Continue"
 			confirm-button-color="warning"
-			@modalClosed="confirmModalClosed"
-			@actionConfirmed="submitAddingAssistance"
+			@modalClosed="onConfirmModalClosed"
+			@actionConfirmed="onSubmitAddingAssistance"
 		/>
 
 		<div class="new-assistance-title">
@@ -43,8 +43,8 @@
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
 					:validation-messages="validationMessages"
-					@updatedData="fetchNewAssistanceForm"
-					@onTargetSelect="targetSelected"
+					@updatedData="onFetchNewAssistanceForm"
+					@targetSelect="onTargetSelected"
 					@showComponent="onShowComponent"
 				/>
 			</v-col>
@@ -57,9 +57,9 @@
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
 						:is-assistance-duplicated="isDuplicated"
-						@updatedData="fetchSelectionCriteria"
+						@updatedData="onFetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
-						@onDeliveredCommodityValue="getDeliveredCommodityValue"
+						@deliveredCommodityValue="onGetDeliveredCommodityValue"
 					/>
 				</div>
 
@@ -69,7 +69,7 @@
 						:project-id="assistanceBody.projectId"
 						:visible="targetTypeSelectVisible"
 						:is-assistance-duplicated="isDuplicated"
-						@updatedData="fetchTargetType"
+						@updatedData="onFetchTargetType"
 					/>
 				</div>
 
@@ -85,8 +85,8 @@
 						:target-type="targetType"
 						:date-of-assistance="assistanceBody.dateDistribution"
 						:validation-messages="validationMessages"
-						@updatedData="fetchDistributedCommodity"
-						@onDeliveredCommodityValue="getDeliveredCommodityValue"
+						@updatedData="onFetchDistributedCommodity"
+						@deliveredCommodityValue="onGetDeliveredCommodityValue"
 					/>
 				</div>
 
@@ -99,7 +99,7 @@
 						ref="activityDetails"
 						:visible="visibleActivityDetails"
 						:data="componentsData.activityDetails"
-						@updatedData="fetchActivityDetails"
+						@updatedData="onFetchActivityDetails"
 					/>
 				</div>
 
@@ -123,12 +123,12 @@
 				color="primary"
 				size="small"
 				class="text-none"
-				@click="validateNewAssistance"
+				@click="onValidateNewAssistance"
 			>
 				{{ $t('Create') }}
 			</v-btn>
 		</div>
-	</v-container>
+	</v-container fluid>
 </template>
 
 <script>
@@ -310,8 +310,8 @@ export default {
 			}
 		},
 
-		async getDeliveredCommodityValue(updatedCommodities = null) {
-			await this.fetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
+		async onGetDeliveredCommodityValue(updatedCommodities = null) {
+			await this.onFetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 
 			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
 			const result = await AssistancesService.calculationCommodities(commoditiesBody);
@@ -321,7 +321,7 @@ export default {
 			this.calculatedCommodityValue = result.data.data;
 		},
 
-		validateNewAssistance() {
+		onValidateNewAssistance() {
 			if (this.$refs.newAssistanceForm.submit()) {
 				const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
 				const today = this.$moment().format("YYYY-MM-DD");
@@ -330,12 +330,12 @@ export default {
 				if (isBeforeToday) {
 					this.openConfirmModal = true;
 				} else {
-					this.submitAddingAssistance();
+					this.onSubmitAddingAssistance();
 				}
 			}
 		},
 
-		async submitAddingAssistance() {
+		async onSubmitAddingAssistance() {
 			if (!this.$refs.newAssistanceForm.submit()) return;
 			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
 
@@ -595,7 +595,7 @@ export default {
 				this.componentsData.distributedCommodity = null;
 			} else {
 				this.componentsData.distributedCommodity = preparedCommodities;
-				await this.getDeliveredCommodityValue(preparedCommodities);
+				await this.onGetDeliveredCommodityValue(preparedCommodities);
 			}
 
 			this.componentsData.activityDetails = {
@@ -647,7 +647,7 @@ export default {
 			return preparedSelectionCriteria;
 		},
 
-		targetSelected(targetType) {
+		onTargetSelected(targetType) {
 			this.targetType = targetType?.code;
 
 			if (this.$refs.selectionCriteria) {
@@ -698,7 +698,7 @@ export default {
 			}
 		},
 
-		async fetchNewAssistanceForm(data) {
+		async onFetchNewAssistanceForm(data) {
 			const {
 				name,
 				assistanceType,
@@ -743,7 +743,7 @@ export default {
 			}
 		},
 
-		fetchSelectionCriteria(
+		onFetchSelectionCriteria(
 			selectionCriteria,
 			minimumSelectionScore,
 			vulnerabilityScoreTouched,
@@ -759,7 +759,7 @@ export default {
 			};
 		},
 
-		fetchDistributedCommodity(commodities) {
+		onFetchDistributedCommodity(commodities) {
 			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
 			const date = this.isDateValid(dateExpiration)
 				? dateExpiration
@@ -787,7 +787,7 @@ export default {
 			return result;
 		},
 
-		fetchActivityDetails(data) {
+		onFetchActivityDetails(data) {
 			const {
 				activityDescription: description,
 				householdsTargeted,
@@ -815,7 +815,7 @@ export default {
 			return validCriteria;
 		},
 
-		fetchTargetType(data) {
+		onFetchTargetType(data) {
 			const { communities, institutions } = data;
 
 			this.assistanceBody = {
@@ -853,7 +853,7 @@ export default {
 			}
 		},
 
-		confirmModalClosed() {
+		onConfirmModalClosed() {
 			this.openConfirmModal = false;
 		},
 	},

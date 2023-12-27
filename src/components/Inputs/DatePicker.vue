@@ -30,7 +30,7 @@
 			width="350"
 			hide-header
 			no-title
-			@update:modelValue="datePickerValueChanged"
+			@update:modelValue="onDatePickerValueChanged"
 		/>
 	</v-menu>
 </template>
@@ -106,7 +106,7 @@ export default {
 	},
 
 	methods: {
-		datePickerValueChanged() {
+		onDatePickerValueChanged() {
 			this.isDatePickerOpened = false;
 			this.$emit("update:modelValue", this.selectedDate);
 		},

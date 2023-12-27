@@ -22,7 +22,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -32,7 +32,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t('Move') }}
 		</v-btn>
@@ -75,7 +75,7 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 
 			if (this.v$.$invalid) {
@@ -83,10 +83,10 @@ export default {
 			}
 
 			this.$emit("formSubmitted", this.newProject);
-			this.closeForm();
+			this.onCloseForm();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},

@@ -1,5 +1,5 @@
 <template>
-	<h2 class="mb-4">{{ upcoming ? $t('Assistances') : '' }}</h2>
+	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
 
 	<v-alert
 		v-if="showNoProjectError"
@@ -30,14 +30,14 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
-		:isSearchVisible="!upcoming"
+		:is-search-visible="!upcoming"
 		is-row-click-disabled
 		reset-sort-button
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
 		<template v-slot:table-header>
 			<v-btn
@@ -48,7 +48,7 @@
 				size="small"
 				class="ml-0"
 				prepend-icon="sticky-note"
-				@click="statusFilter('new')"
+				@click="onStatusFilter('new')"
 			>
 				{{ $t('New') }}
 			</v-btn>
@@ -61,7 +61,7 @@
 				variant="tonal"
 				size="small"
 				prepend-icon="spinner"
-				@click="statusFilter('validated')"
+				@click="onStatusFilter('validated')"
 			>
 				{{ $t('Validated') }}
 			</v-btn>
@@ -74,7 +74,7 @@
 				variant="tonal"
 				size="small"
 				prepend-icon="check"
-				@click="statusFilter('closed')"
+				@click="onStatusFilter('closed')"
 			>
 				{{ $t('Closed') }}
 			</v-btn>
@@ -85,21 +85,21 @@
 				v-if="!row.validated && userCan.editDistribution"
 				icon="edit"
 				tooltip-text="Update"
-				@actionConfirmed="goToUpdate(row.id)"
+				@actionConfirmed="onGoToUpdate(row.id)"
 			/>
 
 			<ButtonAction
 				v-if="(row.validated || row.completed) && isAssistanceDetailAllowed"
 				:icon="row.validated && row.completed ? 'eye' : 'edit'"
 				:tooltip-text="row.validated && row.completed ? 'View' : 'Update'"
-				@actionConfirmed="goToDetail(row.id)"
+				@actionConfirmed="onGoToDetail(row.id)"
 			/>
 
 			<ButtonAction
 				v-if="userCan.editDistribution"
 				icon="search"
 				tooltip-text="Details"
-				@actionConfirmed="showEdit(row)"
+				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<v-menu
@@ -119,25 +119,25 @@
 					<v-list-item class="dropdown-actions">
 						<ButtonAction
 							v-if="userCan.editDistribution"
-							:isOnlyIcon="false"
+							:is-only-icon="false"
 							icon="copy"
 							label="Duplicate"
 							button-size="small"
-							@actionConfirmed="duplicate(row.id)"
+							@actionConfirmed="onDuplicate(row.id)"
 						/>
 
 						<ButtonAction
 							v-if="userCan.editDistribution"
-							:isOnlyIcon="false"
+							:is-only-icon="false"
 							:disabled="isAssistanceMoveEnable(row)"
 							icon="share"
 							label="Move"
 							button-size="small"
-							@actionConfirmed="assistanceMove(row.id)"
+							@actionConfirmed="onAssistanceMove(row.id)"
 						/>
 
 						<ButtonAction
-							:isOnlyIcon="false"
+							:is-only-icon="false"
 							label="Delete"
 							icon="trash"
 							button-size="small"
@@ -162,7 +162,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportAssistances"
+				@export="onExportAssistances"
 			/>
 		</template>
 	</Table>
@@ -398,9 +398,6 @@ export default {
 			this.prepareCommodityForTable();
 			this.prepareStatisticsForTable();
 			this.prepareRowClickForTable();
-
-			// const maxThreeRows = this.table.data.length <= 3;
-			// this.$refs.assistanceTable.makeTableOverflow(maxThreeRows);
 		},
 
 		prepareStatisticsForTable() {
@@ -474,7 +471,7 @@ export default {
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
-		goToDetail(id) {
+		onGoToDetail(id) {
 			this.$router.push({
 				name: "AssistanceDetail",
 				params: {
@@ -483,7 +480,7 @@ export default {
 			});
 		},
 
-		goToUpdate(id) {
+		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
 			if (this.upcoming) {
@@ -498,7 +495,7 @@ export default {
 			}
 		},
 
-		statusFilter(filter) {
+		onStatusFilter(filter) {
 			this.statusActive[filter] = !this.statusActive[filter];
 
 			if (this.selectedFilters.includes(filter)) {
@@ -516,33 +513,15 @@ export default {
 			await this.fetchData();
 		},
 
-		duplicate(id) {
+		onDuplicate(id) {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
-		},
-
-		isOneOfLastThreeRows(rowId) {
-			let finalCountOfDisplayedRows = this.table.total;
-
-			if (this.perPage <= this.table.total) {
-				const countOfDisplayedRows = this.perPage - ((this.table.currentPage * this.perPage)
-					- this.table.total);
-
-				finalCountOfDisplayedRows = countOfDisplayedRows >= this.perPage
-					? this.perPage
-					: countOfDisplayedRows;
-			}
-
-			return (rowId === finalCountOfDisplayedRows - 1
-				|| rowId === finalCountOfDisplayedRows - 2
-				|| rowId === finalCountOfDisplayedRows - 3
-			);
 		},
 
 		isAssistanceMoveEnable(assistance) {
 			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
-		async exportAssistances(exportType, format) {
+		async onExportAssistances(exportType, format) {
 			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
 				try {
 					this.exportControl.loading = true;

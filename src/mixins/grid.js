@@ -25,7 +25,7 @@ export default {
 	methods: {
 		...mapActions(["storePerPage"]),
 
-		perPageChange({ currentPerPage, currentPage }) {
+		onPerPageChange({ currentPerPage, currentPage }) {
 			this.storePerPage(currentPerPage);
 
 			if (currentPage) {
@@ -35,7 +35,7 @@ export default {
 			this.fetchData();
 		},
 
-		pageChange(currentPage) {
+		onPageChange(currentPage) {
 			this.table.currentPage = currentPage || 1;
 			this.fetchData();
 		},
@@ -63,7 +63,7 @@ export default {
 			this.fetchData();
 		},
 
-		resetSort({ key, order }) {
+		onResetSort({ key, order }) {
 			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
 				this.table.sortColumn = key;
 				this.table.sortDirection = order;
@@ -72,7 +72,7 @@ export default {
 			}
 		},
 
-		search(value) {
+		onSearch(value) {
 			this.table.searchPhrase = value;
 			this.table.currentPage = 1;
 			this.fetchData();
@@ -88,7 +88,7 @@ export default {
 			this.table.data.splice(index, 1);
 		},
 
-		assistanceMove(id) {
+		onAssistanceMove(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			this.$emit("showMove", entity);
 		},
@@ -98,16 +98,16 @@ export default {
 			this.showDetail(entity);
 		},
 
-		showDetail(id) {
+		onShowDetail(id) {
 			this.$emit("showDetail", id);
 		},
 
-		showEdit(row) {
+		onShowEdit(row) {
 			this.$emit("showEdit", row);
 		},
 
-		remove(id) {
-			this.$emit("onDelete", id);
+		onRemove(id) {
+			this.$emit("delete", id);
 		},
 
 		download(scoring) {

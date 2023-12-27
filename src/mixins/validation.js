@@ -14,7 +14,7 @@ export default {
 				: console.error("First parameter must be name of the validated field");
 		},
 
-		validate(field, object) {
+		onValidate(field, object) {
 			const validation = this.getValidation(field, object);
 			validation.$touch();
 		},
