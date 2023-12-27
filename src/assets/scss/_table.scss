@@ -72,9 +72,9 @@
       margin-right: 0;
     }
 
-    .total-count-col {
-      max-width: 14rem;
-      margin-right: auto;
+    .total-count-col,
+    .item-selected-col {
+      max-width: 12rem;
     }
 
     .pagination-col {

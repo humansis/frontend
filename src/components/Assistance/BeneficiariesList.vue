@@ -179,6 +179,7 @@
 		:search-phrase="table.searchPhrase"
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
+		:selected-rows="selectedRows"
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
@@ -414,6 +415,7 @@ export default {
 			isLoadingList: false,
 			isRecalculationLoading: false,
 			advancedSearchVisible: false,
+			selectedRows: 0,
 			exportControl: {
 				loading: false,
 				location: "assistance",
@@ -1051,6 +1053,9 @@ export default {
 							const isDistributed = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
+							const isCanceled = reliefPackages.length && reliefPackages.every(
+								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
+							);
 
 							this.table.data[key] = {
 								...this.table.data[key],
@@ -1058,7 +1063,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed,
+								selectable: !isDistributed && !isCanceled,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1105,6 +1110,9 @@ export default {
 						const isDistributed = reliefPackages.length && reliefPackages.every(
 							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 						);
+						const isCanceled = reliefPackages.length && reliefPackages.every(
+							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
+						);
 
 						this.table.data[key] = {
 							...item,
@@ -1122,7 +1130,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed,
+							selectable: !isDistributed && !isCanceled,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1180,8 +1188,9 @@ export default {
 					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
 					selectable: true,
 				};
+
 				const unDistributedItemIndex = this.table.checkedRows.findIndex(
-					(row) => row.id === this.table.data[tableIndex].id,
+					(row) => row === this.table.data[tableIndex].id,
 				);
 
 				this.table.checkedRows.splice(unDistributedItemIndex, 1);
