@@ -31,7 +31,7 @@ import UsersService from "@/services/UsersService";
 // import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
 // import Modal from "@/components/Modal";
 // import validation from "@/mixins/validation";
-// import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import NavBar from "@/layout/NavBar";
 import SideMenu from "@/layout/SideMenu";
 
@@ -111,13 +111,10 @@ export default {
 			}).then(({ status }) => {
 				if (status === 200) {
 					this.storeUser({ ...this.user, changePassword: false });
-
-          // FIXME
-					// Toast(`${this.$t("Password Updated")}`, "is-success");
+					Notification(`${this.$t("Password Updated")}`, "success");
 				}
 			}).catch((e) => {
-        // FIXME
-				// Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
+				Notification(`${this.$t("Password Update")} ${e.message || e}`, "error");
 			}).finally(() => {
 				this.forcePasswordModal.isWaiting = false;
 				this.forcePasswordModal.isOpened = false;

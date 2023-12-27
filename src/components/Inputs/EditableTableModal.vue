@@ -1,209 +1,141 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<div v-for="formInput in formInputs" :key="formInput.key" class="mb-3">
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.CALENDAR"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput)"
-				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
+	<v-dialog
+		v-model="$attrs.modelValue"
+		width="960"
+		scrollable
+	>
+		<v-card>
+			<v-card-title class="text-h6 font-weight-bold">
+				{{ $t(header) }}
+			</v-card-title>
 
-					<b-datepicker
+			<v-card-text class="mt-4">
+				<div v-for="formInput in formInputs" :key="formInput.key" class="mb-3">
+					<DatePicker
+						v-if="isInputTypeCalendar(formInput)"
 						v-model="data[formInput.key]"
-						show-week-number
-						locale="en-CA"
-						icon="calendar-day"
-						trap-focus
-						:placeholder="$t('Click to select')"
+						:label="formInput.label"
+						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
-						@input="inputChanged(formInput, data)"
+						name="start-date"
+						@blur="onInputChanged(formInput, data)"
 					/>
-				</b-field>
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.SINGLE_SELECT"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput)"
-				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
 
-					<MultiSelect
+					<DataSelect
+						v-if="isInputTypeSingleSelect(formInput) || isInputTypeMultiSelect(formInput)"
 						v-model="data[formInput.key]"
-						searchable
-						label="value"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						:loading="formInput.isDataLoading"
-						:options="formInput.options"
+						:items="formInput.options"
+						:multiple="isInputTypeMultiSelect(formInput)"
+						:is-data-shown-as-tag="isInputTypeMultiSelect(formInput)"
+						:error-messages="validateRequiredMsg(formInput)"
+						:clearable="true"
 						:disabled="isFormDisabled"
-						:class="validateRequiredMultiselect(formInput)"
-						@input="inputChanged(formInput, data)"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-						<template #option="props">
-							<div class="option__desc">
-								<span class="option__title">{{ props.option.value }}</span>
-							</div>
-						</template>
-						<template #singleLabel="props">
-							<div class="option__desc">
-								<span class="option__title">{{ props.option.value }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput, data)"
-				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-
-					<MultiSelect
-						v-model="data[formInput.key]"
-						multiple
-						searchable
-						label="value"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						:loading="formInput.isDataLoading"
-						:options="formInput.options"
-						:disabled="isFormDisabled"
-						:class="validateRequiredMultiselect(formInput)"
-						@input="inputChanged(formInput, data)"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-						<template #option="props">
-							<div class="option__desc">
-								<span class="option__title">{{ props.option.value }}</span>
-							</div>
-						</template>
-						<template #singleLabel="props">
-							<div class="option__desc">
-								<span class="option__title">{{ props.option.value }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
-
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_INPUT"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput)"
-				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-
-					<b-input
-						v-model="data[formInput.key]"
-						:disabled="isFormDisabled"
-						@blur="inputChanged(formInput, data)"
+						:label="formInput.label"
+						name="subsectors"
+						item-title="value"
+						item-value="code"
+						is-search-enabled
+						optional
+						class="mb-6"
+						@update:modelValue="onInputChanged(formInput, data)"
 					/>
-				</b-field>
 
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput)"
-				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-
-					<b-numberinput
+					<DataInput
+						v-if="isInputTypeText(formInput)"
 						v-model="data[formInput.key]"
-						:controls="false"
+						:error-messages="validateRequiredMsg('name')"
 						:disabled="isFormDisabled"
-						@blur="inputChanged(formInput, data)"
+						:label="formInput.label"
+						name="project-name"
+						class="mb-6"
+						@blur="onInputChanged(formInput, data)"
 					/>
-				</b-field>
 
-				<b-field
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_AREA"
-					:type="validateRequiredType(formInput)"
-					:message="validateRequiredMsg(formInput)"
+					<DataInput
+						v-if="isInputTypeNumber(formInput)"
+						v-model.number="data[formInput.key]"
+						:label="formInput.label"
+						:error-messages="validateRequiredMsg(formInput)"
+						:hide-spin-buttons="true"
+						:disabled="isFormDisabled"
+						type="number"
+						step="any"
+						min="0"
+						dense
+						class="mb-6"
+						@blur="onInputChanged(formInput, data)"
+					/>
+
+					<v-textarea
+						v-if="isInputTypeTextArea(formInput)"
+						v-model="data[formInput.key]"
+						:label="formInput.label"
+						:error-messages="validateRequiredMsg(formInput)"
+						:disabled="isFormDisabled"
+						name="notes"
+						variant="outlined"
+						density="compact"
+						hide-details="auto"
+						class="mt-6"
+						auto-grow
+						@blur="onInputChanged(formInput, data)"
+					/>
+
+					<LocationForm
+						v-if="isInputTypeLocation(formInput) && isLocationTypeAdm1(formInput)"
+						ref="locationForm"
+						:form-model="data"
+						:form-disabled="isFormDisabled"
+						:is-editing="modalState.isEditing"
+						is-adm1-optional
+					/>
+				</div>
+			</v-card-text>
+
+			<v-card-actions>
+				<v-spacer />
+
+				<v-btn
+					class="text-none"
+					size="small"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					@click="onCloseForm"
 				>
-					<template #label>
-						{{ formInput.label }}
-						<span v-if="!formInput.required" class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
+					{{ $t('Close') }}
+				</v-btn>
 
-					<b-input
-						v-model.trim="data[formInput.key]"
-						type="textarea"
-						:disabled="isFormDisabled"
-						@blur="inputChanged(formInput, data)"
-					/>
-				</b-field>
-
-				<LocationForm
-					v-if="formInput.type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION
-						&& formInput.key === 'adm1'"
-					ref="locationForm"
-					is-adm1-optional
-					:form-model="data"
-					:form-disabled="isFormDisabled"
-					:is-editing="modalState.isEditing"
-				/>
-			</div>
-		</section>
-
-		<footer class="modal-card-foot">
-			<b-button @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!modalState.isDetail"
-				:disabled="isFormDisabled"
-				type="is-primary"
-				native-type="submit"
-			>
-				{{ buttonLabel }}
-			</b-button>
-		</footer>
-	</form>
+				<v-btn
+					v-if="!modalState.isDetail"
+					:disabled="isFormDisabled"
+					color="primary"
+					size="small"
+					class="text-none ml-3"
+					variant="elevated"
+					@click="onSubmitForm"
+				>
+					{{ buttonLabel }}
+				</v-btn>
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
 </template>
 
 <script>
-import { maxValue, minValue, requiredIf } from "vuelidate/lib/validators";
-import LocationForm from "@/components/LocationForm";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { GENERAL } from "@/consts";
+import { maxValue, minValue, requiredIf } from "@vuelidate/validators";
 
 export default {
 
 	components: {
+		DatePicker,
+		DataSelect,
+		DataInput,
 		LocationForm,
 	},
 
@@ -235,6 +167,11 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
+		header: {
+			type: String,
+			default: "",
+		},
 	},
 
 	data() {
@@ -256,10 +193,17 @@ export default {
 		},
 	},
 
-	created() {
-		if (this.modalState.isDetail || this.modalState.isEditing) {
-			this.data = { ...this.formData };
-		}
+	watch: {
+		formData: {
+			deep: true,
+			handler(value) {
+				if (this.modalState.isDetail || this.modalState.isEditing) {
+					this.data = { ...value };
+				} else {
+					this.data = {};
+				}
+			},
+		},
 	},
 
 	methods: {
@@ -271,7 +215,7 @@ export default {
 
 				validationsRules[input.key] = {
 					...((validations?.required || validations?.requiredIf)
-						&& { required: requiredIf((form) => form[validations?.requiredIf]
+						&& { required: requiredIf(() => this.data[validations?.requiredIf]
 								|| validations?.required) }
 					),
 					...(validations?.minValue && { minValue: minValue(validations.minValue) }),
@@ -282,10 +226,10 @@ export default {
 		},
 
 		isInputWithValidationsRules(key) {
-			return this.$v.data[key]
-				&& ("required" in this.$v.data[key]
-					|| "minValue" in this.$v.data[key]
-					|| "maxValue" in this.$v.data[key]
+			return this.v$.data[key]
+				&& ("required" in this.v$.data[key]
+					|| "minValue" in this.v$.data[key]
+					|| "maxValue" in this.v$.data[key]
 				);
 		},
 
@@ -297,38 +241,26 @@ export default {
 			}
 		},
 
-		validateRequiredType(formInput) {
-			return this.isInputWithValidationsRules(formInput.key)
-				? this.validateType(formInput.key, true, "data")
-				: "";
-		},
-
 		validateRequiredMsg(formInput) {
 			return this.isInputWithValidationsRules(formInput.key)
-				? this.validateMsg(formInput.key, "Required", "data")
-				: "";
-		},
-
-		validateRequiredMultiselect(formInput) {
-			return this.isInputWithValidationsRules(formInput.key)
-				? this.validateMultiselect(formInput.key, true, "data")
+				? this.validationMsg(formInput.key, "data")
 				: "";
 		},
 
 		validateAfterAction(formInput) {
 			return this.isInputWithValidationsRules(formInput.key)
-				? this.validate(formInput.key, "data")
+				? this.onValidate(formInput.key, "data")
 				: "";
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
@@ -337,7 +269,7 @@ export default {
 				isCreate: !this.modalState.isEditing && !this.modalState.isDetail,
 			});
 
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
 		createNewObject() {
@@ -350,10 +282,42 @@ export default {
 			return newObject;
 		},
 
-		inputChanged(formInput, data) {
+		onInputChanged(formInput, data) {
 			this.validateAfterAction(formInput);
 			this.checkDependencies(formInput);
 			this.$emit("modalInputChanged", { formInput, data });
+		},
+
+		isInputTypeSingleSelect({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.SINGLE_SELECT;
+		},
+
+		isInputTypeMultiSelect({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.MULTI_SELECT;
+		},
+
+		isInputTypeCalendar({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.CALENDAR;
+		},
+
+		isInputTypeText({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_INPUT;
+		},
+
+		isInputTypeNumber({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT;
+		},
+
+		isInputTypeTextArea({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.TEXT_AREA;
+		},
+
+		isInputTypeLocation({ type }) {
+			return type === GENERAL.EDITABLE_TABLE.COLUMN_TYPE.LOCATION;
+		},
+
+		isLocationTypeAdm1({ key }) {
+			return key === GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM1;
 		},
 	},
 };

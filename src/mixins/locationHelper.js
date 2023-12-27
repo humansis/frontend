@@ -1,6 +1,7 @@
 import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import { copyObject } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 
 export default {
 	computed: {
@@ -29,7 +30,7 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm1)} ${e.message || e}`, "error");
 				});
 		},
 
@@ -52,7 +53,7 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm2)} ${e.message || e}`, "error");
 				});
 		},
 
@@ -75,7 +76,7 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm3)} ${e.message || e}`, "error");
 				});
 		},
 
@@ -98,7 +99,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm4)} ${e.message || e}`, "error");
 				});
 		},
 

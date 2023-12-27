@@ -1,46 +1,61 @@
 <template>
-	<nav class="level level-center">
-		<div
+	<v-row
+		class="mt-2 mb-6 justify-center"
+		no-gutters
+	>
+		<v-col
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
-			class="level-item has-text-centered"
+			class="ma-2"
 		>
-			<div class="box">
-				<h2 class="heading">{{ $t('In assistance') }}</h2>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('In assistance')}}</p>
 
 				<div
-					v-if="inAssistanceBeneficiariesCount || inAssistanceBeneficiariesCount === 0"
-					class="has-text-weight-bold is-size-5"
+					v-if="inAssistanceBeneficiariesCount >= 0"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
 
-				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<v-progress-circular
+					v-else-if="isStatisticsLoading"
+					:size="25"
+					:indeterminate="isStatisticsLoading"
+					color="primary"
+				/>
 
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
 
-		<div
+		<v-col
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && !assistance.validated"
-			class="level-item has-text-centered"
+			class="ma-2"
 		>
-			<div class="box">
-				<h2 class="heading">{{ $t('To distribute') }}</h2>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('To distribute')}}</p>
 
 				<div
 					v-if="isToDistributeValid"
-					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
+					class="d-flex align-center justify-center font-weight-bold pa-2 text-subtitle-1"
 				>
-					<b-tooltip
+					<v-tooltip
 						v-if="commodity.length"
-						:label="$t(commodity.value)"
+						:text="$t(commodity.value || '')"
+						location="top"
 					>
-						<SvgIcon :items="commodity" />
-					</b-tooltip>
+						<template v-slot:activator="{ props }">
+							<SvgIcon v-bind="props" :items="commodity" />
+						</template>
+					</v-tooltip>
 
 					<span
 						v-if="assistanceRemote"
@@ -48,63 +63,87 @@
 					>
 						R
 					</span>
-					{{ amountTotal }}
-					{{ assistanceUnit }}
+
+					<span class="pb-2">
+						{{ amountTotal }}
+						{{ assistanceUnit }}
+					</span>
 				</div>
 
-				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<v-progress-circular
+					v-else-if="isStatisticsLoading"
+					:size="25"
+					:indeterminate="isStatisticsLoading"
+					color="primary"
+				/>
 
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
 
-		<div
+		<v-col
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
-			class="level-item has-text-centered"
+			class="ma-2"
 		>
-			<div class="box">
-				<h2 class="heading">{{ $t('Reached') }}</h2>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Reached')}}</p>
 
 				<div
 					v-if="isReachedValid"
-					class="is-flex is-justify-content-center has-text-weight-bold is-size-5"
+					class="d-flex align-center justify-center font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ beneficiariesReached }}
 					{{ $t("of") }}
 					{{ inAssistanceBeneficiariesCount }}
 				</div>
 
-				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<v-progress-circular
+					v-else-if="isStatisticsLoading"
+					:size="25"
+					:indeterminate="isStatisticsLoading"
+					color="primary"
+				/>
 
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
 
-		<div
+		<v-col
 			v-if="assistanceType === ASSISTANCE.TYPE.DISTRIBUTION && assistance.validated"
-			class="level-item has-text-centered"
+			class="ma-2"
 		>
-			<div class="box">
-				<h2 class="heading">{{ $t('Distributed') }}</h2>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Distributed')}}</p>
 
 				<div
-					v-if="isDistributedValid"
-					class="is-flex is-align-items-center has-text-weight-bold is-size-5"
+					v-if="isReachedValid"
+					class="d-flex align-center justify-center font-weight-bold pa-2 text-subtitle-1"
 				>
-					<b-tooltip
+					<v-tooltip
 						v-if="commodity.length"
-						:label="$t(commodity.value)"
+						:text="$t(commodity.value || '')"
+						location="top"
 					>
-						<SvgIcon :items="commodity" />
-					</b-tooltip>
+						<template v-slot:activator="{ props }">
+							<SvgIcon v-bind="props" :items="commodity" />
+						</template>
+					</v-tooltip>
 
 					<span
 						v-if="assistanceRemote"
@@ -112,34 +151,50 @@
 					>
 						R
 					</span>
-					{{ amountDistributed }}
-					{{ $t("of") }}
-					{{ amountTotal }}
-					{{ assistanceUnit }}
+
+					<span class="pb-2">
+						{{ amountDistributed }}
+						{{ $t("of") }}
+						{{ amountTotal }}
+						{{ assistanceUnit }}
+					</span>
 				</div>
 
-				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
+				<v-progress-circular
+					v-else-if="isStatisticsLoading"
+					:size="25"
+					:indeterminate="isStatisticsLoading"
+					color="primary"
+				/>
 
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+		<v-col
+			v-if="isCustomAmountEnabled && customFieldName"
+			class="ma-2"
+		>
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('By custom field')}}</p>
+
+				<div class="font-weight-bold pa-2 text-subtitle-1">
+					{{ customFieldName }}
 				</div>
-			</div>
-		</div>
-
-		<div v-if="isCustomAmountEnabled && customFieldName" class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('By custom field') }}</h2>
-
-				<p>{{ customFieldName }}</p>
-			</div>
-		</div>
-	</nav>
+			</v-sheet>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
-import Loading from "@/components/Loading";
 import SvgIcon from "@/components/SvgIcon";
 import assistanceHelper from "@/mixins/assistanceHelper";
 import { ASSISTANCE } from "@/consts";
@@ -149,7 +204,6 @@ export default {
 
 	components: {
 		SvgIcon,
-		Loading,
 	},
 
 	mixins: [assistanceHelper],
@@ -214,16 +268,16 @@ export default {
 			return "";
 		},
 
+		customFieldName() {
+			return this.commodities[0]?.division?.customFieldName;
+		},
+
 		assistanceType() {
 			return this.assistance?.type || "";
 		},
 
 		assistanceRemote() {
 			return !!this.assistance?.remoteDistributionAllowed;
-		},
-
-		customFieldName() {
-			return this.commodities[0]?.division?.customFieldName;
 		},
 
 		isToDistributeValid() {
@@ -240,8 +294,14 @@ export default {
 		isDistributedValid() {
 			return (this.amountDistributed || this.amountDistributed === 0)
 				&& (this.amountTotal || this.amountTotal === 0)
-					&& (this.assistanceUnit || this.assistanceUnit === "");
+				&& (this.assistanceUnit || this.assistanceUnit === "");
 		},
 	},
 };
 </script>
+
+<style lang="scss">
+.text-overline {
+	font-size: 0.65rem !important;
+}
+</style>

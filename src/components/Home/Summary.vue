@@ -6,9 +6,9 @@
 			v-for="{
 				id, code, value, icon,
 			} in summary"
-			cols="6"
 			:ref="code"
 			:key="id"
+			cols="6"
 		>
 			<v-card
 				:loading="!(value || value === 0)"
@@ -63,10 +63,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	mounted() {
 		this.fetchData();
 	},
@@ -95,7 +91,7 @@ export default {
 							this.summary[summaryIndex].value = response.data[0].value;
 						}
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Summaries")} ${e}`, "error");
+						Notification(`${this.$t("Summaries")} ${e.message || e}`, "error");
 					});
 			});
 		},

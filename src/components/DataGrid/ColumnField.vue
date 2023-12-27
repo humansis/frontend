@@ -1,6 +1,6 @@
 <template>
 	<template v-if="(!column.type || (column.type === 'text'))">
-		{{ cellData }}
+		<div v-html-secure="cellData" />
 	</template>
 
 	<template v-if="column.type === 'assistancesType'">
@@ -9,6 +9,10 @@
 
 	<template v-if="column.type === 'textOrNone'">
 		{{ cellData || this.$t("None") }}
+	</template>
+
+	<template v-if="column.type === 'customValue'">
+		{{ customValue }}
 	</template>
 
 	<template v-if="column.type === 'arrayTextBreak'">
@@ -28,6 +32,21 @@
 		>
 			{{ normalizeText($t(cellData)) }}
 		</v-chip>
+	</template>
+
+	<template v-if="column.type === 'tagArray'">
+		<div
+			v-for="(item, index) in cellData"
+			:key="`tags-array-item-${index}`"
+		>
+			<v-chip
+				:color="getTagTypeByItem(item)"
+				variant="flat"
+				size="small"
+			>
+				{{ normalizeText($t(cellData[index])) }}
+			</v-chip>
+		</div>
 	</template>
 
 	<template v-if="column.type === 'link'">
@@ -98,7 +117,24 @@ export default {
 				? this.cellData
 				: this.$t("N/A");
 		},
+
+		customValue() {
+			if (this.cellData.value) {
+				return this.cellData.value;
+			}
+
+			if (typeof this.cellData === "object") {
+				const newDate = this.$moment(this.cellData);
+
+				if (newDate.isValid()) {
+					return newDate.format("YYYY-MM-DD hh:mm");
+				}
+			}
+
+			return this.cellData;
+		},
 	},
+
 	methods: {
 		normalizeText,
 
@@ -107,11 +143,15 @@ export default {
 		},
 
 		getRouteName() {
-			return "Home";
+			return this.cellData.routeName || "Home";
 		},
 
 		getLinkName() {
 			return this.cellData.name || "";
+		},
+
+		getTagTypeByItem(item) {
+			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
 
 		isAssistanceRemote(data) {

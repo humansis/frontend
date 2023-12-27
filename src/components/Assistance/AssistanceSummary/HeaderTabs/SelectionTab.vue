@@ -1,72 +1,100 @@
 <template>
-	<nav class="level level-center">
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Target') }}</h2>
+	<v-row
+		class="mt-2 mb-6 justify-center"
+		no-gutters
+	>
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Target')}}</p>
 
 				<div
 					v-if="assistanceTarget"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ assistanceTarget }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Scoring') }}</h2>
+				<v-progress-circular
+					v-else-if="isAssistanceLoading"
+					:size="25"
+					:indeterminate="isAssistanceLoading"
+					color="primary"
+				/>
+
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Scoring')}}</p>
 
 				<div
 					v-if="assistanceTarget && assistanceScoringType"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ assistanceScoringType }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else>
-					<small>{{ $t("N/A") }}</small>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Selected') }}</h2>
+				<v-progress-circular
+					v-else-if="isAssistanceLoading"
+					:size="25"
+					:indeterminate="isAssistanceLoading"
+					color="primary"
+				/>
+
+				<div v-else class="pa-2 text-subtitle-1">
+					{{ $t("N/A") }}
+				</div>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Selected')}}</p>
 
 				<div
 					v-if="beneficiariesCount || beneficiariesCount === 0"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ beneficiariesCount }}
 				</div>
-				<Loading v-else-if="isStatisticsLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
-	</nav>
+
+				<v-progress-circular
+					v-else-if="isStatisticsLoading"
+					:size="25"
+					:indeterminate="isStatisticsLoading"
+					color="primary"
+				/>
+
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+	</v-row>
 </template>
 
 <script>
-import Loading from "@/components/Loading";
 import { normalizeText } from "@/utils/datagrid";
 
 export default {
 	name: "SelectionTab",
-
-	components: {
-		Loading,
-	},
 
 	props: {
 		assistance: {
@@ -109,10 +137,6 @@ export default {
 		},
 
 		beneficiariesCount() {
-			return this.statistics?.beneficiariesTotal;
-		},
-
-		beneficiariesDeleted() {
 			return this.statistics?.beneficiariesTotal;
 		},
 	},

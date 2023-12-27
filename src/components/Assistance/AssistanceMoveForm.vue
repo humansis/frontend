@@ -1,48 +1,64 @@
 <template>
-	<form>
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Target project')"
-				:type="validateType('newProject')"
-				:message="validateMsg('newProject')"
-			>
-				<MultiSelect
-					v-model="newProject"
-					searchable
-					label="name"
-					track-by="id"
-					:placeholder="$t('Click to select')"
-					:options="projects"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				class="is-primary"
-				@click="submitForm"
-			>
-				{{ $t('Move') }}
-			</b-button>
-		</footer>
-	</form>
+	<v-card-text>
+		<DataSelect
+			v-model="newProject"
+			:items="projects"
+			:error-messages="validationMsg('newProject')"
+			:clearable="true"
+			label="Target project"
+			name="target-project"
+			item-title="name"
+			item-value="id"
+			is-search-enabled
+			class="my-4"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t('Move') }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
+import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
+	components: {
+		DataSelect,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		newProject: { required },
+	validations() {
+		return {
+			newProject: { required },
+		};
 	},
 
 	props: {
@@ -59,20 +75,20 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
-			this.$v.$touch();
+		onSubmitForm() {
+			this.v$.$touch();
 
-			if (this.$v.$invalid) {
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.newProject);
-			this.closeForm();
+			this.onCloseForm();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };

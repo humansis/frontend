@@ -39,7 +39,7 @@
 			<b-step-item clickable step="3" :label="$t('Export Random Sample')">
 				<BeneficiariesList
 					ref="exportRandomSampleGrid"
-					changeButton
+					change-button
 					export-button
 					:add-button="false"
 					:assistance="assistance"
