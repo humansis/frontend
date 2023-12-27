@@ -28,6 +28,7 @@
     "vue-country-flag-next": "^2.3.2",
     "vue-i18n": "^9.7.1",
     "vue-multiselect": "^2.1.8",
+    "vue-qrcode-reader": "^5.4.1",
     "vue-router": "^4.2.5",
     "vue-swatches": "^2.1.1",
     "vuetify": "^3.4.3",

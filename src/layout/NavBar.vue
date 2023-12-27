@@ -12,7 +12,11 @@
 			<v-icon :icon="menuToggleIcon" class="expand-icon" />
 		</v-app-bar-nav-icon>
 
-		<v-breadcrumbs :items="breadcrumbs" />
+		<v-breadcrumbs :items="breadcrumbs">
+			<template v-slot:title="{ item }">
+				{{ $t(item.title) }}
+			</template>
+		</v-breadcrumbs>
 
 		<template v-slot:append>
 			<v-tooltip
@@ -191,7 +195,7 @@ export default {
 					await this.fetchAdmNames();
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "error");
+				Notification(`${this.$t("Translations")} ${e.message || e}`, "error");
 			});
 
 			this.$router.go();
@@ -199,7 +203,7 @@ export default {
 
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta?.description;
-			this.tooltip.label = this.$route.meta?.description;
+			this.tooltip.label = this.$t(this.$route.meta?.description);
 		},
 
 		async fetchIcons() {
@@ -207,7 +211,7 @@ export default {
 				.then(({ data }) => {
 					this.storeIcons(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Icons")} ${e}`, "error");
+					Notification(`${this.$t("Icons")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -216,7 +220,7 @@ export default {
 				.then(({ data }) => {
 					this.storeAdmNames(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "error");
+					Notification(`${this.$t("Location Names")} ${e.message || e}`, "error");
 				});
 		},
 
