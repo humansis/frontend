@@ -1,30 +1,13 @@
 <template>
-	<div>
-		<Table
-			class="distributed-table"
-			has-search
-			:data="data"
-			:total="data.length"
-			:columns="table.visibleColumns"
-			:backend-pagination="false"
-			:backend-searching="false"
-			:backend-sorting="false"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					v-slot="props"
-					:key="column.id"
-				>
-					<ColumnField :column="column" :data="props" />
-				</b-table-column>
-			</template>
-		</Table>
-	</div>
+	<Table
+		:headers="table.columns"
+		:items="data"
+		is-row-click-disabled
+		is-footer-disabled
+	/>
 </template>
 
 <script>
-import ColumnField from "@/components/DataGrid/ColumnField";
 import Table from "@/components/DataGrid/Table";
 import { generateColumns } from "@/utils/datagrid";
 
@@ -32,7 +15,6 @@ export default {
 	name: "BeneficiariesModalList",
 
 	components: {
-		ColumnField,
 		Table,
 	},
 
@@ -52,12 +34,11 @@ export default {
 		return {
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "idNumber", sortable: true, searchable: true },
-					{ key: "beneficiaryId", sortable: true, searchable: true },
-					{ key: "reliefPackageId", sortable: true, searchable: true },
-				],
+				columns: generateColumns([
+					{ key: "idNumber", sortable: false },
+					{ key: "beneficiaryId", sortable: false },
+					{ key: "reliefPackageId", sortable: false },
+				]),
 				total: 0,
 			},
 		};
@@ -65,16 +46,8 @@ export default {
 
 	mounted() {
 		if (this.showOnlyIdNumber) {
-			this.table.visibleColumns = [this.table.visibleColumns[0]];
+			this.table.columns = [this.table.columns[0]];
 		}
-
-		this.table.columns = generateColumns(this.table.visibleColumns);
 	},
 };
 </script>
-
-<style type="text/css">
-.distributed-table thead th:last-child .th-wrap {
-	justify-content: flex-start !important;
-}
-</style>

@@ -243,15 +243,17 @@ export default {
 
 	mixins: [validation, calendarHelper],
 
-	validations: {
-		formModel: {
-			name: { required },
-			dateOfAssistance: { required },
-			sector: { required },
-			subsector: { required },
-			targetType: { required },
-			assistanceType: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+				dateOfAssistance: { required },
+				sector: { required },
+				subsector: { required },
+				targetType: { required },
+				assistanceType: { required },
+			},
+		}
 	},
 
 	props: {

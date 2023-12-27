@@ -1,64 +1,81 @@
 <template>
-	<div class="modal-card">
-		<section class="modal-card-body">
-			<div class="level-left">
-				<div class="level-item has-text-centered-mobile mb-3">
-					<div>
-						<h2 class="heading">{{ $t('Project') }}</h2>
-						<p class="subtitle is-5">{{projectName}}</p>
-					</div>
-				</div>
-				<div class="level-item has-text-centered-mobile mb-3">
-					<div>
-						<h2 class="heading">{{ $t('Assistance') }}</h2>
-						<p class="subtitle is-5">{{ assistanceName }}</p>
-					</div>
-				</div>
-			</div>
-			<div class="level-left">
-				<div class="level-item has-text-centered-mobile mb-3">
-					<div>
-						<h2 class="heading">{{ $t('Beneficiary') }}</h2>
-						<p class="subtitle is-5">{{ beneficiaryName }}</p>
-					</div>
-				</div>
-			</div>
-			<hr>
-			<h3 class="subtitle is-5 has-text-centered mb-5 mt-5">
-				{{ $t('Scan Booklet QR Code') }}
-				<b-icon
-					v-if="scannedResult"
-					type="is-success" icon="check"
-				/>
-			</h3>
-			<b-message v-if="noStreamApiSupport" type="is-warning">
-				{{ $t('No Stream Api Support') }}.
-			</b-message>
+	<v-card-text>
+		<h6 class="text-subtitle-1 font-weight-bold">{{ $t('Project') }}</h6>
 
-			<b-message v-if="cameraMissingError" type="is-warning">
-				{{ $t('Camera is Missing') }}.
-			</b-message>
+		<p class="text-body-1 mb-5">{{ projectName }}</p>
 
-			<div class="scan-container">
-				<qrcode-drop-zone @decode="onDecode" @init="logErrors">
-					<qrcode-stream @decode="onDecode" @init="onInit" />
-				</qrcode-drop-zone>
-				<qrcode-capture v-if="noStreamApiSupport" @decode="onDecode" />
-			</div>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button v-if="closeButton" @click="close">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				class="is-primary"
-				:disabled="!scannedResult"
-				@click="submit"
-			>
-				{{ submitButtonLabel }}
-			</b-button>
-		</footer>
-	</div>
+		<h6 class="text-subtitle-1 font-weight-bold">{{ $t('Assistance') }}</h6>
+
+		<p class="text-body-1 mb-5">{{ assistanceName }}</p>
+
+		<h6 class="text-subtitle-1 font-weight-bold">{{ $t('Beneficiary') }}</h6>
+
+		<p class="text-body-1 mb-5">{{ beneficiaryName }}</p>
+
+		<h3 class="text-body-1 mb-5">
+			{{ $t('Scan Booklet QR Code') }}
+
+			<v-icon
+				v-if="scannedResult"
+				color="success"
+				icon="check"
+			/>
+		</h3>
+
+		<v-alert
+			v-if="noStreamApiSupport"
+			variant="outlined"
+			type="warning"
+			border="top"
+			class="mt-5"
+		>
+			{{ $t('No Stream Api Support') }}.
+		</v-alert>
+
+		<v-alert
+			v-if="cameraMissingError"
+			variant="outlined"
+			type="warning"
+			border="top"
+			class="mt-5"
+		>
+			{{ $t('Camera is Missing') }}.
+		</v-alert>
+
+		<div class="scan-container">
+			<qrcode-drop-zone @decode="onDecode" @init="onLogErrors">
+				<qrcode-stream @decode="onDecode" @init="onInit" />
+			</qrcode-drop-zone>
+
+			<qrcode-capture v-if="noStreamApiSupport" @decode="onDecode" />
+		</div>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			v-if="closeButton"
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="close"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			:disabled="!scannedResult"
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="submit"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
@@ -66,6 +83,8 @@ import { QrcodeCapture, QrcodeDropZone, QrcodeStream } from "vue-qrcode-reader";
 
 export default {
 	name: "AssignVoucherForm",
+
+	emits: ["scannedCode", "formClosed"],
 
 	components: {
 		QrcodeStream,
@@ -111,7 +130,7 @@ export default {
 			this.scannedResult = scannedResult;
 		},
 
-		logErrors(promise) {
+		onLogErrors(promise) {
 			promise.catch(console.error);
 		},
 
@@ -143,7 +162,7 @@ export default {
 
 <style scoped>
 .scan-container {
-	max-width: 600px;
+	max-width: 37.5rem;
 	margin: 0 auto;
 }
 </style>

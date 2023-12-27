@@ -25,7 +25,7 @@ export default {
 	methods: {
 		...mapActions(["storePerPage"]),
 
-		perPageChange({ currentPerPage, currentPage }) {
+		onPerPageChange({ currentPerPage, currentPage }) {
 			this.storePerPage(currentPerPage);
 
 			if (currentPage) {
@@ -35,7 +35,7 @@ export default {
 			this.fetchData();
 		},
 
-		pageChange(currentPage) {
+		onPageChange(currentPage) {
 			this.table.currentPage = currentPage || 1;
 			this.fetchData();
 		},
@@ -54,7 +54,7 @@ export default {
 				}];
 			}
 
-			const currentColumn = this.table.visibleColumns.find(({ key }) => key === sort[0].key);
+			const currentColumn = this.table.columns.find(({ key }) => key === sort[0].key);
 			const sortKey = currentColumn.sortKey || sort[0].key;
 
 			this.table.sortColumn = { key: currentColumn.key, sortKey };
@@ -63,7 +63,7 @@ export default {
 			this.fetchData();
 		},
 
-		resetSort({ key, order }) {
+		onResetSort({ key, order }) {
 			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
 				this.table.sortColumn = key;
 				this.table.sortDirection = order;
@@ -88,7 +88,7 @@ export default {
 			this.table.data.splice(index, 1);
 		},
 
-		assistanceMove(id) {
+		onAssistanceMove(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			this.$emit("showMove", entity);
 		},
@@ -98,17 +98,16 @@ export default {
 			this.showDetail(entity);
 		},
 
-		showDetail(entity) {
-			this.$emit("showDetail", entity);
+		onShowDetail(id) {
+			this.$emit("showDetail", id);
 		},
 
-		showEdit(id) {
-			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("showEdit", entity);
+		onShowEdit(row) {
+			this.$emit("showEdit", row);
 		},
 
-		remove(id) {
-			this.$emit("remove", id);
+		onRemove(id) {
+			this.$emit("delete", id);
 		},
 
 		download(scoring) {

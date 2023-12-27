@@ -34,7 +34,8 @@ export default {
 		secondUnit: null,
 		secondQuantity: null,
 		description: null,
-		divisionNwsFields: [
+		// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
+		payloadDivisionNwsFields: [
 			{
 				rangeFrom: 1,
 				rangeTo: 3,
@@ -56,7 +57,7 @@ export default {
 				value: null,
 			},
 		],
-		divisionNesFields: [
+		payloadDivisionNesFields: [
 			{
 				rangeFrom: 1,
 				rangeTo: 3,
@@ -78,6 +79,17 @@ export default {
 				value: null,
 			},
 		],
+		divisionNwsFields: {
+			firstNwsFields: null,
+			secondNwsFields: null,
+			thirdNwsFields: null,
+			fourthNwsFields: null,
+		},
+		divisionNesFields: {
+			firstNesFields: null,
+			secondNesFields: null,
+			thirdNesFields: null,
+		},
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: ["Food"],
 		cashbackLimit: null,

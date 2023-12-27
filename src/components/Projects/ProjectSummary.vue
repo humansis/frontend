@@ -1,11 +1,14 @@
 <template>
-	<div v-if="projectSummary" ref="projectSummary">
-		<h1 class="title has-text-centered">{{ projectSummary.name }}</h1>
+	<div v-if="projectSummary" class="d-flex justify-center flex-column mx-auto summary-container">
+		<h1 class="text-center">{{ projectSummary.name }}</h1>
 
-		<nav class="level level-center">
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading">{{ $t('Sectors') }}</h2>
+		<v-row
+			class="mt-2 mb-6"
+			no-gutters
+		>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box sectors" min-width="max-content">
+					<p class="text-overline">{{ $t('Sectors')}}</p>
 
 					<div>
 						<svg-icon
@@ -16,70 +19,76 @@
 							{{ $t("None") }}
 						</p>
 					</div>
-				</div>
-			</div>
+				</v-sheet>
+			</v-col>
 
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading">{{ $t('Start Date') }}</h2>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+					<p class="text-overline">{{ $t('Start Date')}}</p>
 
-					<div class="has-text-weight-bold is-size-5">
-						{{ $moment(projectSummary.startDate).format("YYYY-MM-DD") }}
-					</div>
-				</div>
-			</div>
+					<p class="text-h6 font-weight-bold">{{ projectSummary.startDate }}</p>
+				</v-sheet>
+			</v-col>
 
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<h2 class="heading">{{ $t('End Date') }}</h2>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+					<p class="text-overline">{{ $t('End Date')}}</p>
 
-					<div class="has-text-weight-bold is-size-5">
-						{{ $moment(projectSummary.endDate).format("YYYY-MM-DD") }}
-					</div>
-				</div>
-			</div>
+					<p class="text-h6 font-weight-bold">{{ projectSummary.endDate }}</p>
+				</v-sheet>
+			</v-col>
 
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<b-tooltip :label="$t('Number of donors.')">
-						<h2 class="heading">{{ $t('Donors') }}</h2>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+					<v-tooltip
+						:text="$t('Number of donors.')"
+						location="top"
+					>
+						<template v-slot:activator="{ props }">
+							<div v-bind="props">
+								<p class="text-overline">{{ $t('Donors') }}</p>
 
-						<div class="has-text-weight-bold is-size-5">
-							{{ projectSummary.donorIds.length }}
-						</div>
-					</b-tooltip>
+								<p class="text-h6 font-weight-bold">{{ projectSummary.donorIds.length }}</p>
+							</div>
+						</template>
+					</v-tooltip>
+				</v-sheet>
+			</v-col>
 
-				</div>
-			</div>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+					<v-tooltip
+						:text="$t('Number of households imported to project.')"
+						location="top"
+					>
+						<template v-slot:activator="{ props }">
+							<div v-bind="props">
+								<p class="text-overline">{{ $t('Registered Households')}}</p>
 
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<b-tooltip :label="$t('Number of households imported to project.')">
-						<h2 class="heading">{{ $t('Registered Households') }}</h2>
+								<p class="text-h6 font-weight-bold">{{ projectSummary.numberOfHouseholds }}</p>
+							</div>
+						</template>
+					</v-tooltip>
+				</v-sheet>
+			</v-col>
 
-						<div class="has-text-weight-bold is-size-5">
-							{{ projectSummary.numberOfHouseholds }}
-						</div>
-					</b-tooltip>
+			<v-col class="ma-2">
+				<v-sheet class="pa-1 text-center elevation-1 rounded-lg box" min-width="max-content">
+					<v-tooltip
+						:text="$t('Number of beneficiaries imported to project.')"
+						location="top"
+					>
+						<template v-slot:activator="{ props }">
+							<div v-bind="props">
+								<p class="text-overline">{{ $t('Registered Individuals')}}</p>
 
-				</div>
-			</div>
-
-			<div class="level-item has-text-centered">
-				<div class="box">
-					<b-tooltip :label="$t('Number of beneficiaries imported to project.')">
-						<h2 class="heading"> {{ $t('Registered Individuals') }}</h2>
-
-						<div class="has-text-weight-bold is-size-5">
-							{{ projectSummary.beneficiariesReached }}
-						</div>
-					</b-tooltip>
-
-				</div>
-			</div>
-
-		</nav>
-		<hr>
+								<p class="text-h6 font-weight-bold">{{ projectSummary.beneficiariesReached }}</p>
+							</div>
+						</template>
+					</v-tooltip>
+				</v-sheet>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -115,7 +124,7 @@ export default {
 
 				this.$emit("projectLoaded", dataCopy);
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Detail of Project")} ${e}`, "is-danger");
+				Notification(`${this.$t("Detail of Project")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -126,8 +135,23 @@ export default {
 };
 </script>
 
-<style scoped>
-.box {
-	height: 90px;
+<style lang="scss" scoped>
+.summary-container {
+	max-width: 90rem;
+
+	.text-overline {
+		font-size: 0.65rem !important;
+	}
+
+	.box {
+		height: 100%;
+
+		&.sectors {
+			@media (max-width: 768px) {
+				min-width: 15rem !important;
+			}
+		}
+	}
 }
+
 </style>

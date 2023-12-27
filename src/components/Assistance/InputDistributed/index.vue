@@ -1,193 +1,305 @@
 <template>
-	<div class="modal-card-body">
-		<form @submit.prevent="submit" v-if="distributedFormVisible">
-			<section>
-				<IdTypeSelect
-					v-if="isOperationAddOrRemoveBulk"
-					ref="idTypeSelect"
-					v-model="formModel.idType"
-					required
-				/>
-				<b-message type="is-info">
-					{{ $t('Split ID numbers with white space') }}.
-					{{ $t('Maximum 5000 IDs allowed') }}.
-				</b-message>
-				<b-field
-					:label="$t('ID Numbers')"
-					:type="validateType('idsList')"
-					:message="validateIdsListMsg()"
-				>
-					<b-input
-						v-model.trim="formModel.idsList"
-						type="textarea"
-						@input="onIdsListChange"
-						@blur="validate('idsList')"
-					/>
-				</b-field>
-				<b-field
-					v-if="isOperationAddOrRemoveBulk"
-					:label="$t('Justification')"
-					:type="validateType('justification')"
-					:message="validateMsg('justification')"
-				>
-					<b-input
-						v-model.trim="formModel.justification"
-					/>
-				</b-field>
-			</section>
-			<footer class="modal-card-foot pl-0 pr-0">
-				<b-button v-if="closeButton" @click="close">
-					{{ $t('Close') }}
-				</b-button>
-				<b-button
-					class="is-primary width-80"
-					native-type="submit"
-					:loading="distributedButtonLoading"
-					:disabled="distributedButtonLoading"
-				>
-					{{ $t(submitButtonLabel) }}
-				</b-button>
-			</footer>
-		</form>
-		<b-tabs v-if="!distributedFormVisible && distributeData">
-			<b-tab-item v-if="distributeData.notFound">
-				<template #header>
-					<span>{{ $t('Not Found') }}
-						<b-tag class="ml-1" type="is-danger is-light" rounded>
-							{{ distributeData.notFound.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDeduplicationTable
-						v-if="isOperationAddOrRemoveBulk"
-						:data="distributeData.notFound"
-					/>
-					<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.conflicts">
-				<template #header>
-					<span>{{ $t('Conflict IDs') }}
-						<b-tag class="ml-1" type="is-warning" rounded>
-							{{ distributeData.conflicts.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<DuplicityDistributedTable :data="distributeData.conflicts" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.successfullyDistributed">
-				<template #header>
-					<span>{{ $t('Set As Distributed') }}
-						<b-tag class="ml-1" type="is-success" rounded>
-							{{ distributeData.successfullyDistributed.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDistributedTable :data="distributeData.successfullyDistributed" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.success">
-				<template #header>
-					<span>{{ $t(successfulOperationTitle) }}
-						<b-tag class="ml-1" type="is-success" rounded>
-							{{ distributeData.success.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDeduplicationTable
-						v-if="isOperationAddOrRemoveBulk"
-						:data="distributeData.success"
-					/>
-					<BaseDistributedTable v-else :data="distributeData.success" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.alreadyProcessed">
-				<template #header>
-					<span>{{ $t(alreadyProcessedOperationTitle) }}
-						<b-tag class="ml-1" type="is-info" rounded>
-							{{ distributeData.alreadyProcessed.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDeduplicationTable
-						v-if="isOperationAddOrRemoveBulk"
-						:data="distributeData.alreadyProcessed"
-					/>
-					<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.alreadyDistributed">
-				<template #header>
-					<span>{{ $t('Distributed In Past') }}
-						<b-tag class="ml-1" type="is-info" rounded>
-							{{ distributeData.alreadyDistributed.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDistributedTable :data="distributeData.alreadyDistributed" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.partiallyDistributed">
-				<template #header>
-					<span>{{ $t('Partially Distributed') }}
-						<b-tag class="ml-1" type="is-link" rounded>
-							{{ distributeData.partiallyDistributed.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDistributedTable :data="distributeData.partiallyDistributed" />
-				</template>
-			</b-tab-item>
-			<b-tab-item v-if="distributeData.failed">
-				<template #header>
-					<span>{{ $t('Unknown Error') }}
-						<b-tag class="ml-1" type="is-danger" rounded>
-							{{ distributeData.failed.length }}
-						</b-tag>
-					</span>
-				</template>
-				<template>
-					<BaseDeduplicationTable
-						v-if="isOperationAddOrRemoveBulk"
-						:data="distributeData.failed"
-					/>
-					<BaseDistributedTable v-else :data="distributeData.failed" />
-				</template>
-			</b-tab-item>
-		</b-tabs>
-		<footer v-if="!distributedFormVisible && distributeData" class="modal-card-foot">
-			<b-button v-if="closeButton" @click="close">
+	<template v-if="distributedFormVisible">
+		<v-card-text>
+			<IdTypeSelect
+				v-if="isOperationAddOrRemoveBulk"
+				v-model="formModel.idType"
+				ref="idTypeSelect"
+				required
+			/>
+
+			<v-alert
+				variant="outlined"
+				type="info"
+				border="start"
+				class="mb-6"
+			>
+				{{ $t('Split ID numbers with white space') }}.
+				{{ $t('Maximum 5000 IDs allowed') }}.
+			</v-alert>
+
+			<v-textarea
+				v-model.trim="formModel.idsList"
+				:label="$t('ID Numbers')"
+				:error-messages="validationMsg('idsList')"
+				name="id-numbers"
+				variant="outlined"
+				density="compact"
+				hide-details="auto"
+				class="mb-6"
+				@blur="onValidate('idsList')"
+			/>
+
+			<DataInput
+				v-if="isOperationAddOrRemoveBulk"
+				v-model="formModel.justification"
+				:error-messages="validationMsg('justification')"
+				label="Justification"
+				name="justification"
+				@update:modelValue="onValidate('justification')"
+			/>
+
+		</v-card-text>
+
+		<v-card-actions>
+			<v-spacer />
+
+			<v-btn
+				class="text-none"
+				size="small"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				@click="onClose"
+			>
 				{{ $t('Close') }}
-			</b-button>
-			<b-button class="is-primary" @click="openDistributedForm">
-				<span>
-					{{ $t(nameOfSubmitButton) }}
-				</span>
-			</b-button>
-		</footer>
-	</div>
+			</v-btn>
+
+			<v-btn
+				color="primary"
+				size="small"
+				class="text-none ml-3"
+				variant="elevated"
+				@click="onSubmit"
+			>
+				{{ $t(submitButtonLabel) }}
+			</v-btn>
+		</v-card-actions>
+	</template>
+
+	<template v-if="!distributedFormVisible && distributeData">
+		<v-card-text>
+			<v-tabs
+				v-model="activeTab"
+				color="primary"
+				align-tabs="start"
+				class="mt-5"
+			>
+				<v-tab
+					v-if="distributeData.notFound"
+					:value="0"
+					class="text-none"
+				>
+					{{ $t('Not Found') }}
+					<v-chip
+						size="small"
+						label
+						color="red-lighten-1"
+						class="ml-2"
+					>
+						{{ distributeData.notFound.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.conflicts"
+					:value="1"
+					class="text-none"
+				>
+					{{ $t('Conflict IDs') }}
+					<v-chip
+						size="small"
+						label
+						color="warning"
+						class="ml-2"
+					>
+						{{ distributeData.conflicts.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.successfullyDistributed"
+					:value="2"
+					class="text-none"
+				>
+					{{ $t('Set As Distributed') }}
+					<v-chip
+						size="small"
+						label
+						color="success"
+						class="ml-2"
+					>
+						{{ distributeData.successfullyDistributed.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.success"
+					:value="3"
+					class="text-none"
+				>
+					{{ $t(successfulOperationTitle) }}
+					<v-chip
+						size="small"
+						label
+						color="success"
+						class="ml-2"
+					>
+						{{ distributeData.success.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.alreadyProcessed"
+					:value="4"
+					class="text-none"
+				>
+					{{ $t(alreadyProcessedOperationTitle) }}
+					<v-chip
+						size="small"
+						label
+						color="info"
+						class="ml-2"
+					>
+						{{ distributeData.alreadyProcessed.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.alreadyDistributed"
+					:value="5"
+					class="text-none"
+				>
+					{{ $t('Distributed In Past') }}
+					<v-chip
+						size="small"
+						label
+						color="info"
+						class="ml-2"
+					>
+						{{ distributeData.alreadyDistributed.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					v-if="distributeData.partiallyDistributed"
+					:value="6"
+					class="text-none"
+				>
+					{{ $t('Partially Distributed') }}
+					<v-chip
+						size="small"
+						label
+						color="deep-purple-lighten-1"
+						class="ml-2"
+					>
+						{{ distributeData.partiallyDistributed.length }}
+					</v-chip>
+				</v-tab>
+
+				<v-tab
+					if="distributeData.failed"
+					:value="7"
+					class="text-none"
+				>
+					{{ $t('Unknown Error') }}
+					<v-chip
+						size="small"
+						label
+						color="error"
+						class="ml-2"
+					>
+						{{ distributeData.failed.length }}
+					</v-chip>
+				</v-tab>
+			</v-tabs>
+
+			<v-window v-model="activeTab">
+				<v-window-item>
+					<div v-if="activeTab === 0">
+						<BaseDeduplicationTable
+							v-if="isOperationAddOrRemoveBulk"
+							:data="distributeData.notFound"
+						/>
+
+						<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
+					</div>
+
+					<div v-if="activeTab === 1">
+						<DuplicityDistributedTable :data="distributeData.conflicts" />
+					</div>
+
+					<div v-if="activeTab === 2">
+						<BaseDistributedTable :data="distributeData.successfullyDistributed" />
+					</div>
+
+					<div v-if="activeTab === 3">
+						<BaseDeduplicationTable
+							v-if="isOperationAddOrRemoveBulk"
+							:data="distributeData.success"
+						/>
+
+						<BaseDistributedTable v-else :data="distributeData.success" />
+					</div>
+
+					<div v-if="activeTab === 4">
+						<BaseDeduplicationTable
+							v-if="isOperationAddOrRemoveBulk"
+							:data="distributeData.alreadyProcessed"
+						/>
+
+						<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
+					</div>
+
+					<div v-if="activeTab === 5">
+						<BaseDistributedTable :data="distributeData.alreadyDistributed" />
+					</div>
+
+					<div v-if="activeTab === 6">
+						<BaseDistributedTable :data="distributeData.partiallyDistributed" />
+					</div>
+
+					<div v-if="activeTab === 7">
+						<BaseDeduplicationTable
+							v-if="isOperationAddOrRemoveBulk"
+							:data="distributeData.failed"
+						/>
+
+						<BaseDistributedTable v-else :data="distributeData.failed" />
+					</div>
+
+				</v-window-item>
+			</v-window>
+		</v-card-text>
+
+		<v-card-actions>
+			<v-spacer />
+
+			<v-btn
+				class="text-none"
+				size="small"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				@click="onClose"
+			>
+				{{ $t('Close') }}
+			</v-btn>
+
+			<v-btn
+				color="primary"
+				size="small"
+				class="text-none ml-3"
+				variant="elevated"
+				@click="onOpenDistributedForm"
+			>
+				{{ $t(nameOfSubmitButton) }}
+			</v-btn>
+		</v-card-actions>
+	</template>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/BaseDeduplicationTable";
 import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseDistributedTable";
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
-import IdTypeSelect from "@/components/Inputs/IdTypeSelect.vue";
+import DataInput from "@/components/Inputs/DataInput";
+import IdTypeSelect from "@/components/Inputs/IdTypeSelect";
 import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
+import { helpers, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "StartTransactionsForm",
@@ -197,6 +309,7 @@ export default {
 		BaseDistributedTable,
 		DuplicityDistributedTable,
 		IdTypeSelect,
+		DataInput,
 	},
 
 	mixins: [validation],
@@ -204,12 +317,15 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				idType: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
+				idType: { required: requiredIf(this.isOperationAddOrRemoveBulk) },
 				idsList: {
 					required,
-					isIdsListLengthValid,
+					isIdsListLengthValid: helpers.withMessage(
+						`You have entered more than ${ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`,
+						isIdsListLengthValid,
+					),
 				},
-				justification: { required: requiredIf(() => this.isOperationAddOrRemoveBulk) },
+				justification: { required: requiredIf(this.isOperationAddOrRemoveBulk) },
 			},
 		};
 	},
@@ -232,6 +348,7 @@ export default {
 
 	data() {
 		return {
+			activeTab: 0,
 			distributedFormVisible: true,
 			distributedButtonLoading: false,
 			distributeData: null,
@@ -254,7 +371,7 @@ export default {
 		nameOfSubmitButton() {
 			return (this.deduplication && "Bulk Remove Again")
 				|| (this.addingToAssistance && "Bulk Add Again")
-					|| "Input Distributed Again";
+				|| "Input Distributed Again";
 		},
 
 		isOperationAddOrRemoveBulk() {
@@ -267,14 +384,14 @@ export default {
 	},
 
 	methods: {
-		async submit() {
-			this.$v.$touch();
+		async onSubmit() {
+			this.v$.$touch();
 
 			if (this.isOperationAddOrRemoveBulk) {
 				this.$refs.idTypeSelect.onSubmit();
 			}
 
-			if (this.$v.$invalid) { return; }
+			if (this.v$.$invalid) { return; }
 
 			this.distributedButtonLoading = true;
 			let body;
@@ -282,7 +399,7 @@ export default {
 			const numberIds = this.formModel.idsList.split(/\s+/);
 
 			if (!numberIds.length) {
-				Notification(this.$t("Invalid Input"), "is-danger");
+				Notification(this.$t("Invalid Input"), "error");
 			}
 
 			if (this.isOperationAddOrRemoveBulk) {
@@ -294,43 +411,39 @@ export default {
 				};
 
 				if (this.deduplication) {
-					await BeneficiariesService.removeBeneficiaryFromAssistance(
-						this.$route.params.assistanceId, target, body,
-					)
+					await BeneficiariesService.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
 						.then(({ data, message }) => {
 							if (data) {
 								if (data.errors?.message) {
-									Notification(data.errors.message, "is-warning", "is-bottom");
+									Notification(data.errors.message, "error");
 								} else {
 									this.distributeData = data;
 									this.distributedFormVisible = false;
 								}
 							} else {
-								Notification(message, "is-warning");
+								Notification(message, "warning");
 							}
-						}).catch((error) => {
-							Notification(error, "is-danger");
+						}).catch((e) => {
+							Notification(`${this.$t("Beneficiary remove")} ${e.message || e}`, "error");
 						}).finally(() => {
 							this.distributedButtonLoading = false;
 							this.$emit("submit");
 						});
 				} else {
-					await BeneficiariesService.addBeneficiaryToAssistance(
-						this.$route.params.assistanceId, target, body,
-					)
+					await BeneficiariesService.addBeneficiaryToAssistance(this.$route.params.assistanceId, target, body)
 						.then(({ data, message }) => {
 							if (data) {
 								if (data.errors?.message) {
-									Notification(data.errors.message, "is-warning", "is-bottom");
+									Notification(data.errors.message, "warning");
 								} else {
 									this.distributeData = data;
 									this.distributedFormVisible = false;
 								}
 							} else {
-								Notification(message, "is-warning");
+								Notification(message, "warning");
 							}
 						}).catch((error) => {
-							Notification(error, "is-danger");
+							Notification(error, "error");
 						}).finally(() => {
 							this.distributedButtonLoading = false;
 							this.$emit("submit");
@@ -339,42 +452,25 @@ export default {
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
-				await AssistancesService.updateReliefPackagesWithNumberIds(
-					this.$route.params.assistanceId, body,
-				).then(({ data, status, message }) => {
+				await AssistancesService.updateReliefPackagesWithNumberIds(this.$route.params.assistanceId, body).then(({ data, status, message }) => {
 					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
 					} else {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				}).catch((error) => {
-					Notification(error, "is-danger");
+					Notification(error, "error");
 				}).finally(() => {
 					this.distributedButtonLoading = false;
 					this.$emit("submit");
 				});
 
-				this.$v.$reset();
+				this.v$.$reset();
 			}
 		},
 
-		onIdsListChange() {
-			if (isIdsListLengthValid(this.formModel.idsList)) {
-				this.idsListErrorMessage = "";
-			} else {
-				const msg = this.$t(`You have entered more than ${ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`);
-				this.idsListErrorMessage = this.$t(msg);
-			}
-		},
-
-		validateIdsListMsg() {
-			return this.idsListErrorMessage
-				? this.validateMsg("idsList", this.idsListErrorMessage)
-				: this.validateMsg("idsList");
-		},
-
-		openDistributedForm() {
+		onOpenDistributedForm() {
 			this.formModel = { ...ASSISTANCE.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL };
 			this.distributeData = null;
 			this.distributedFormVisible = true;
@@ -388,15 +484,9 @@ export default {
 			};
 		},
 
-		close() {
+		onClose() {
 			this.$emit("close");
 		},
 	},
 };
 </script>
-
-<style type="text/css">
-.width-80 {
-	width: 80px
-}
-</style>

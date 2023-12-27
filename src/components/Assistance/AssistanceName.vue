@@ -1,47 +1,51 @@
 <template>
-	<b-field
-		class="name-field"
-		:label="$t('Name of Assistance')"
-		:type="validateType('assistanceName')"
-		:message="validateMsg('assistanceName')"
-	>
-		<b-input
+	<div class="d-flex assistance-name">
+		<DataInput
 			v-model.trim="assistanceName"
-			class="name-input"
-			type="text"
-			maxlength="70"
-			:placeholder="$t('Will be generated')"
 			:disabled="!isCustom || isSwitchDisabled"
-			@input="isValid"
+			:error-messages="validationMsg('assistanceName')"
+			label="Name of Assistance"
+			name="name-of-assistance"
+			placeholder="Will be generated"
+			class="mt-4 mb-5"
+			maxlength="70"
+			persistent-placeholder
+			@input="onIsValid"
 		/>
-		<p class="control">
-			<b-field class="name-switch">
-				<b-switch
-					v-model="isCustom"
-					:disabled="isSwitchDisabled"
-				>
-					{{ $t("Custom") }}
-				</b-switch>
-			</b-field>
-		</p>
-	</b-field>
+
+		<v-switch
+			v-model="isCustom"
+			:label="$t('Custom')"
+			:disabled="isSwitchDisabled"
+			color="primary"
+			class="custom"
+			hide-details="auto"
+		/>
+	</div>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
+import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceName",
 
+	components: {
+		DataInput,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		assistanceName: { required },
+	validations() {
+		return {
+			assistanceName: { required },
+		};
 	},
 
 	props: {
-		value: {
+		modelValue: {
 			type: String,
 			required: true,
 		},
@@ -84,17 +88,17 @@ export default {
 	computed: {
 		assistanceName: {
 			get() {
-				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.modelValue) {
 					if (this.isCustomNameLoaded) {
 						return this.setCopyIntoAssistanceName();
 					}
-					return this.value;
+					return this.modelValue;
 				}
-				return this.value;
+				return this.modelValue;
 			},
 
 			set(value) {
-				this.$emit("input", value);
+				this.$emit("update:modelValue", value);
 			},
 		},
 
@@ -122,12 +126,12 @@ export default {
 					};
 
 					if (!this.customName
-						&& this.setupAssistanceName(assistanceBeforeDuplicated) === this.value) {
+						&& this.setupAssistanceName(assistanceBeforeDuplicated) === this.modelValue) {
 						this.firstLoad = true;
 					}
 
 					if (assistanceBeforeDuplicated && !this.firstLoad
-						&& this.setupAssistanceName(assistanceBeforeDuplicated) !== this.value) {
+						&& this.setupAssistanceName(assistanceBeforeDuplicated) !== this.modelValue) {
 						this.setDefaultValuesForCustomName();
 					}
 				}
@@ -152,31 +156,32 @@ export default {
 
 	mounted() {
 		if (this.assistanceDetail) {
-			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.value) {
+			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.modelValue) {
 				this.setDefaultValuesForCustomName();
 			}
 		}
 	},
 
 	methods: {
-		isValid() {
-			this.$v.assistanceName.$touch();
-			this.validate("assistanceName");
-			return !this.$v.$invalid;
+		onIsValid() {
+			this.v$.assistanceName.$touch();
+			this.onValidate("assistanceName");
+
+			return !this.v$.$invalid;
 		},
 
 		setDefaultValuesForCustomName() {
 			this.isCustom = true;
-			this.customName = this.value;
-			this.assistanceName = this.value;
+			this.customName = this.modelValue;
+			this.assistanceName = this.modelValue;
 		},
 
 		setCopyIntoAssistanceName() {
 			this.isCopyAdded = true;
 
-			return this.value.includes(`- ${this.$t("copy")}`)
-				? this.value
-				: `${this.value} - ${this.$t("copy")}`;
+			return this.modelValue.includes(`- ${this.$t("copy")}`)
+				? this.modelValue
+				: `${this.modelValue} - ${this.$t("copy")}`;
 		},
 
 		setupAssistanceName(assistance) {
@@ -201,20 +206,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.name-field {
-	.name-input {
-		width: 100%;
-	}
-	.name-switch {
-		margin-left: 10px;
-		margin-top: 5px;
-	}
-	.control {
-		.help.counter {
-			position: absolute;
-			right: 0;
-		}
-	}
+<style lang="scss" scoped>
+.assistance-name .custom {
+	max-width: 10rem;
+	padding: .2rem 0 0 2rem
 }
 </style>

@@ -4,10 +4,10 @@
 			<thead>
 				<tr>
 					<th v-for="column in preparedColumns" :key="column.key">
-						{{ column.label }}
+						{{ $t(column.label) }}
 						<span
 							v-if="!column.required && !column.isHidden"
-							class="optional-text has-text-weight-normal is-italic"
+							class="font-weight-light font-italic"
 						>
 							- {{ $t("Optional") }}
 						</span>
@@ -27,29 +27,29 @@
 						{{ prepareDataToDisplay(cellData[column.key], column.propertyName) }}
 					</td>
 
-					<td>
-						<ActionButton
+					<td class="table-actions">
+						<ButtonAction
 							v-if="tableAction.isDetail"
 							icon="search"
-							type="is-primary"
-							class="mr-3"
-							:tooltip="$t('Show Detail')"
-							@click="showDetailModal(index)"
+							tooltip-text="Show Detail"
+							@actionConfirmed="onShowDetailModal(index)"
 						/>
-						<ActionButton
+
+						<ButtonAction
 							v-if="tableAction.isEdit || tableAction.isCreate"
-							icon="edit"
-							class="mr-3"
-							:tooltip="$t('Edit')"
 							:disabled="!isUserAllowedUseTableAction"
-							@click="showEditModal(index)"
+							icon="edit"
+							tooltip-text="Edit"
+							@actionConfirmed="onShowEditModal(index)"
 						/>
-						<ActionButton
-							icon="trash"
-							type="is-danger"
+
+						<ButtonAction
+							v-if="tableAction.isEdit || tableAction.isCreate"
 							:disabled="tableAction.isDetail"
-							:tooltip="$t('Delete')"
-							@click="deleteRow(index)"
+							icon="trash"
+							iconColor="red"
+							tooltip-text="Delete"
+							@actionConfirmed="onDeleteRow(index)"
 						/>
 					</td>
 				</tr>
@@ -57,47 +57,40 @@
 
 			<tr class="last-row">
 				<td :colspan="preparedColumns.length + 1">
-					<b-button
-						type="is-light"
+					<v-btn
 						:disabled="tableAction.isDetail || !isUserAllowedUseTableAction"
-						@click="addNewRow"
+						class="text-none"
+						@click="onAddNewRow"
 					>
 						<span>
-							<b-icon :icon="newRowButtonIcon" />
-							<span>{{ $t(newRowButtonName) }}</span>
+							<v-icon :icon="newRowButtonIcon" />
+							<span class="new-row-title">{{ $t(newRowButtonName) }}</span>
 						</span>
-					</b-button>
+					</v-btn>
 				</td>
 			</tr>
 		</table>
 
-		<Modal
-			can-cancel
+		<EditableTableModal
+			v-model="editableTableModal.isOpened"
 			:header="editableTableModal.title"
-			:active="editableTableModal.isOpened"
-			@close="closeProjectTargetModal"
-		>
-			<EditableTableModal
-				close-button
-				class="modal-card"
-				create-button-label="Add Target"
-				:form-inputs="preparedInputs"
-				:modal-state="editableTableModal"
-				:form-data="formData"
-				@formClosed="closeProjectTargetModal"
-				@rowConfirmed="rowConfirmed"
-				@modalInputChanged="$emit('modalInputChanged', $event)"
-			/>
-		</Modal>
+			:form-inputs="preparedInputs"
+			:modal-state="editableTableModal"
+			:form-data="formData"
+			create-button-label="Add Target"
+			close-button
+			@formClosed="closeProjectTargetModal"
+			@rowConfirmed="rowConfirmed"
+			@modalInputChanged="$emit('modalInputChanged', $event)"
+		/>
 	</div>
 </template>
 
 <script>
-import ActionButton from "@/components/ActionButton";
+import ButtonAction from "@/components/ButtonAction";
 import EditableTableModal from "@/components/Inputs/EditableTableModal";
-import Modal from "@/components/Modal";
 import { normalizeText } from "@/utils/datagrid";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
 export default {
@@ -105,8 +98,7 @@ export default {
 
 	components: {
 		EditableTableModal,
-		ActionButton,
-		Modal,
+		ButtonAction,
 	},
 
 	props: {
@@ -184,8 +176,11 @@ export default {
 				this.prepareColumns();
 			},
 		},
-		tableData(value) {
-			this.table.data = value;
+		tableData: {
+			deep: true,
+			handler(value) {
+				this.table.data = value;
+			},
 		},
 	},
 
@@ -199,8 +194,8 @@ export default {
 				this.preparedInputs.push({
 					key: column.key,
 					label: column.label
-						? this.$t(column.label)
-						: this.$t(normalizeText(column.key)),
+						? column.label
+						: normalizeText(column.key),
 					type: column.type,
 					options: column.options,
 					isDataLoading: column.isDataLoading,
@@ -216,9 +211,10 @@ export default {
 
 		rowConfirmed(data) {
 			this.$emit("tableChanged", { ...data, index: this.table.index });
-			Toast(
+
+			Notification(
 				this.$t(`${this.contentName} Successfully ${data.isCreate ? "Created" : "Edited"}`),
-				"is-success",
+				"success",
 			);
 			this.editableTableModal.isOpened = false;
 		},
@@ -236,28 +232,29 @@ export default {
 			return data;
 		},
 
-		addNewRow() {
+		onAddNewRow() {
 			if (this.isModalOpenable) {
 				this.$emit("modalOpened");
 				this.showCreateModal();
 				this.formData = {};
 				this.editableTableModal.isOpened = true;
 			} else {
-				Notification(`${this.$t(this.noOpenableModalMessage)}`, "is-danger");
+				Notification(`${this.$t(this.noOpenableModalMessage)}`, "error");
 			}
 		},
 
-		deleteRow(index) {
+		onDeleteRow(index) {
 			this.table.data.splice(index, 1);
 			this.$emit("rowRemoved");
-			Toast(this.$t(`${this.contentName} Successfully Deleted`), "is-success");
+
+			Notification(this.$t(`${this.contentName} Successfully Deleted`), "success");
 		},
 
 		closeProjectTargetModal() {
 			this.editableTableModal.isOpened = false;
 		},
 
-		showDetailModal(index) {
+		onShowDetailModal(index) {
 			this.editableTableModal = {
 				isOpened: true,
 				isEditing: false,
@@ -277,7 +274,7 @@ export default {
 			};
 		},
 
-		showEditModal(index) {
+		onShowEditModal(index) {
 			this.editableTableModal = {
 				isOpened: true,
 				isEditing: true,
@@ -297,60 +294,73 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-container {
+	overflow: auto;
+
 	table, th, tr, td {
 		border: 1px solid #dbdbdb;
 	}
 
 	table {
 		text-align: center;
+		border-collapse: collapse;
+		border-spacing: 0;
 
 		th {
 			background-color: #f4f5f7;
 			text-align: center;
 			vertical-align: middle;
-			padding: 6px 15px;
+			padding: .375rem .9375rem;
 			width: fit-content;
 			white-space: nowrap;
 		}
 
 		td {
-			min-width: 150px;
+			min-width: 9.375rem;
 			text-align: center;
 			vertical-align: middle;
-			padding: 8px;
-		}
-
-		.last-row > td {
-			padding: 0;
+			padding: .5rem;
 		}
 	}
 
 	.note-cell {
-		min-width: 150px;
-		max-width: 700px;
+		min-width: 9.375rem;
+		max-width: 43.75rem;
 		white-space: normal;
 		word-break: break-word;
 	}
 
 	.last-row {
+		> td {
+			padding: 0;
+		}
+
+		.new-row-title {
+			padding-left: .3125rem;
+		}
+
 		button {
 			width: 100%;
 			border: none;
 			font-weight: bold;
-			justify-content: unset;
+			justify-content: flex-start;
+			background-color: #f4f5f7;
 
 			&:focus {
 				box-shadow: none;
 			}
 
-			&::v-deep {
-				&:first-child > span {
-					position: sticky;
-					left: 16px;
+			.v-btn__content {
+				position: sticky;
+				left: 1.25rem;
+
+				> span {
+					display: flex;
+					align-items: center;
 				}
 			}
+
 		}
 	}
 }

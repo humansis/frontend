@@ -30,6 +30,9 @@ module.exports = {
 		"vue/html-self-closing": "warn",
 		"vue/multi-word-component-names": "off",
 		"vue/no-multiple-template-root": "off",
+		"vue/valid-v-slot": ["error", {
+			allowModifiers: true,
+		}],
 		"vue/order-in-components": ["error", {
 			order: [
 				"el",

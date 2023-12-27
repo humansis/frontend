@@ -1,317 +1,354 @@
 <template>
-	<form>
-		<section class="modal-card-body">
-			<InputWithLabel
-				v-model="formModel.institutionName"
-				name="institution-name"
-				label="Institution name"
-				disabled
-			/>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.institutionName"
+			label="Institution name"
+			name="institution-name"
+			class="mb-6"
+			disabled
+		/>
 
-			<MultiSelectWithLabel
-				v-model="formModel.institutionType"
-				name="institution-type"
-				label="Institution type"
-				disabled
-				:options="options.institutionTypes"
-			/>
+		<DataSelect
+			v-model="formModel.institutionType"
+			:items="options.institutionTypes"
+			label="Institution type"
+			name="institution-type"
+			item-title="value"
+			item-value="code"
+			class="mb-6"
+			disabled
+		/>
 
-			<MultiSelectWithLabel
-				v-model="formModel.projectName"
-				name="project-name"
-				label="Project name"
-				variable-to-show="name"
-				track-by="id"
-				disabled
-				:options="options.projects"
-			/>
+		<DataSelect
+			v-model="formModel.projectName"
+			:items="options.projects"
+			label="Project name"
+			name="project-name"
+			item-title="name"
+			item-value="id"
+			class="mb-6"
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.firstInstitutionId"
-				name="first-institution-id"
-				optional
-				disabled
-				:label="firstInstitutionIdName"
-			/>
+		<DataInput
+			v-model="formModel.firstInstitutionId"
+			:label="firstInstitutionIdName"
+			name="first-institution-id"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.secondInstitutionId"
-				name="second-institution-id"
-				optional
-				disabled
-				:label="secondInstitutionIdName"
-			/>
+		<DataInput
+			v-model="formModel.secondInstitutionId"
+			:label="secondInstitutionIdName"
+			name="second-institution-id"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.thirdInstitutionId"
-				name="third-institution-id"
-				optional
-				disabled
-				:label="thirdInstitutionIdName"
-			/>
+		<DataInput
+			v-model="formModel.thirdInstitutionId"
+			:label="thirdInstitutionIdName"
+			name="third-institution-id"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.addressStreet"
-				name="address-street"
-				label="Address street"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.addressStreet"
+			label="Address street"
+			name="address-street"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.addressNumber"
-				name="address-number"
-				label="Address number"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.addressNumber"
+			label="Address number"
+			name="address-number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.addressPostCode"
-				name="address-post-code"
-				label="Address postcode"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.addressPostCode"
+			label="Address postcode"
+			name="address-post-code"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<LocationForm
-				ref="locationForm"
-				:form-model="formModel"
-				form-disabled
-			/>
+		<LocationForm
+			ref="locationForm"
+			:form-model="formModel"
+			form-disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.latitude"
-				name="latitude"
-				label="Latitude"
-				step="any"
-				input-type="Number"
-				field-class="mt-3"
-				optional
-				disabled
-				:controls="false"
-			/>
+		<DataInput
+			v-model="formModel.latitude"
+			name="latitude"
+			label="Latitude"
+			type="number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.longitude"
-				name="longitude"
-				label="Longitude"
-				step="any"
-				input-type="Number"
-				optional
-				disabled
-				:controls="false"
-			/>
+		<DataInput
+			v-model="formModel.longitude"
+			label="Longitude"
+			name="longitude"
+			type="number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.note"
-				name="note"
-				label="Note"
-				type="textarea"
-				optional
-				disabled
-				:placeholder="$t('Type…')"
-			/>
+		<v-textarea
+			v-model="formModel.note"
+			:label="$t('Note')"
+			name="note"
+			variant="outlined"
+			density="compact"
+			hide-details="auto"
+			class="mb-6"
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.eloNumber"
-				name="elo-number"
-				label="ELO number"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.eloNumber"
+			label="ELO number"
+			name="elo-number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.contractNumber"
-				name="contract-number"
-				label="Contract number"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.contractNumber"
+			label="Contract number"
+			name="contract-number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.contactGivenName"
-				name="contact-given-name"
-				label="Contact given name"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.contactGivenName"
+			label="Contact given name"
+			name="contact-given-name"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.contactParentsName"
-				name="contact-parents-name"
-				label="Contact parents name"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.contactParentsName"
+			label="Contact parents name"
+			name="contact-parents-name"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.contactFamilyName"
-				name="contact-family-name"
-				label="Contact family Name"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.contactFamilyName"
+			label="Contact family Name"
+			name="contact-family-name"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<MultiSelectWithLabel
-				v-model="formModel.nationalCardType"
-				name="national-card-type"
-				label="Contact ID type"
-				optional
-				disabled
-				:options="options.nationalCardTypes"
-			/>
+		<DataSelect
+			v-model="formModel.nationalCardType"
+			:items="options.nationalCardTypes"
+			label="Contact ID type"
+			name="national-card-type"
+			item-title="code"
+			item-value="value"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.nationalCardNumber"
-				name="national-card-number"
-				label="Contact ID number"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.nationalCardNumber"
+			label="Contact ID number"
+			name="national-card-number"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.otherContactInformation"
-				name="other-contact-information"
-				label="Other contact information"
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.otherContactInformation"
+			label="Other contact information"
+			name="other-contact-information"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-			<h4 class="title is-5 mb-3">
-				{{ $t('Phone') }} 1
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h4>
+		<h6 class="text-subtitle-1">
+			{{ $t('Phone') }} 1
+			<i class="optional-text">
+				- {{ $t('Optional') }}
+			</i>
+		</h6>
 
-			<MultiSelectWithLabel
-				v-model="formModel.phone1.type"
-				name="phone1-type"
-				disabled
-				:label="`${$t('Type phone')} 1`"
-				:options="options.phoneTypes"
-			>
-				<template #checkBox>
-					<b-checkbox
-						v-model="formModel.phone1.proxy"
-						class="contact-phone-checkbox ml-2"
-						disabled
-					>
-						{{ $t('Contact phone') }} 1
-					</b-checkbox>
-				</template>
-			</MultiSelectWithLabel>
+		<v-row class="d-flex align-center mb-2">
+			<v-col cols="7">
+				<DataSelect
+					v-model="formModel.phone1.type"
+					:items="options.phoneTypes"
+					:label="`${$t('Type phone')} 1`"
+					name="phone1-type"
+					disabled
+				/>
+			</v-col>
 
-			<MultiSelectWithLabel
-				v-model="formModel.phone1.ext"
-				name="phone1-ext"
-				disabled
-				:label="`${$t('Prefix phone')} 1`"
-				:options="options.phonePrefixes"
-			/>
+			<v-col cols="5" class="pb-2">
+				<v-checkbox
+					v-model="formModel.phone1.proxy"
+					:label="`${$t('Contact phone')} 1`"
+					hide-details
+					class="checkbox"
+					disabled
+				/>
+			</v-col>
+		</v-row>
 
-			<InputWithLabel
-				v-model="formModel.phone1.phoneNo"
-				name="phone1-phone-no"
-				disabled
-				:label="`${$t('Phone No.')} 1`"
-			/>
+		<DataSelect
+			v-model="formModel.phone1.ext"
+			:items="options.phonePrefixes"
+			:label="`${$t('Prefix phone')} 1`"
+			name="phone1-ext"
+			class="mb-6"
+			disabled
+		/>
 
-			<h4 class="title is-5 mb-3">
-				{{ $t('Phone') }} 2
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h4>
+		<DataInput
+			v-model="formModel.phone1.phoneNo"
+			:label="`${$t('Phone No.')} 1`"
+			name="phone1-phone-no"
+			class="mb-6"
+			disabled
+		/>
 
-			<MultiSelectWithLabel
-				v-model="formModel.phone2.type"
-				name="phone2-type"
-				disabled
-				:label="`${$t('Type phone')} 2`"
-				:options="options.phoneTypes"
-			>
-				<template #checkBox>
-					<b-checkbox
-						v-model="formModel.phone2.proxy"
-						class="contact-phone-checkbox ml-2"
-						disabled
-					>
-						{{ $t('Contact phone') }} 2
-					</b-checkbox>
-				</template>
-			</MultiSelectWithLabel>
+		<h6 class="text-subtitle-1">
+			{{ $t('Phone') }} 2
+			<i class="optional-text">
+				- {{ $t('Optional') }}
+			</i>
+		</h6>
 
-			<MultiSelectWithLabel
-				v-model="formModel.phone2.ext"
-				name="phone2-ext"
-				disabled
-				:label="`${$t('Prefix phone')} 2`"
-				:options="options.phonePrefixes"
-			/>
+		<v-row class="d-flex align-center mb-2">
+			<v-col cols="7">
+				<DataSelect
+					v-model="formModel.phone2.type"
+					:items="options.phoneTypes"
+					:label="`${$t('Type phone')} 2`"
+					name="phone2-type"
+					disabled
+				/>
+			</v-col>
 
-			<InputWithLabel
-				v-model="formModel.phone2.phoneNo"
-				name="phone2-phone-no"
-				disabled
-				:label="`${$t('Phone No.')} 2`"
-			/>
+			<v-col cols="5" class="pb-2">
+				<v-checkbox
+					v-model="formModel.phone2.proxy"
+					:label="`${$t('Contact phone')} 2`"
+					hide-details
+					class="checkbox"
+					disabled
+				/>
+			</v-col>
+		</v-row>
 
-			<MultiSelectWithLabel
-				v-model="formModel.externalReceivedTypes"
-				name="external-received-types"
-				label="Support received types"
-				optional
-				disabled
-				:options="options.externalReceivedTypes"
-			/>
+		<DataSelect
+			v-model="formModel.phone2.ext"
+			:items="options.phonePrefixes"
+			:label="`${$t('Prefix phone')} 2`"
+			name="phone2-ext"
+			class="mb-6"
+			disabled
+		/>
 
-			<DatePickerWithLabel
-				v-model="formModel.supportDateReceived"
-				name="support-date-received"
-				label="Support date received"
-				show-week-number
-				locale="en-CA"
-				icon="calendar-day"
-				trap-focus
-				optional
-				disabled
-			/>
+		<DataInput
+			v-model="formModel.phone2.phoneNo"
+			:label="`${$t('Phone No.')} 2`"
+			name="phone2-phone-no"
+			class="mb-6"
+			disabled
+		/>
 
-			<InputWithLabel
-				v-model="formModel.supportOrganization"
-				name="support-organization"
-				label="Support organisation"
-				optional
-				disabled
-			/>
-		</section>
+		<DataSelect
+			v-model="formModel.externalReceivedTypes"
+			:items="options.externalReceivedTypes"
+			label="Support received types"
+			name="external-received-types"
+			class="mb-6"
+			optional
+			disabled
+		/>
 
-		<footer class="modal-card-foot">
-			<b-button @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-		</footer>
-	</form>
+		<DatePicker
+			v-model="formModel.supportDateReceived"
+			label="Support date received"
+			name="support-date-received"
+			optional
+			disabled
+		/>
+
+		<DataInput
+			v-model="formModel.supportOrganization"
+			label="Support organisation"
+			name="support-organization"
+			class="mb-6"
+			optional
+			disabled
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
-import InputWithLabel from "@/components/Inputs/InputWithLabel";
-import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
-import LocationForm from "@/components/LocationForm";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
 import institutionHelper from "@/mixins/institutionHelper";
 import validation from "@/mixins/validation";
 
 export default {
 	name: "InstitutionForm",
 
+	emits: ["formClosed"],
+
 	components: {
 		LocationForm,
-		InputWithLabel,
-		MultiSelectWithLabel,
-		DatePickerWithLabel,
+		DataInput,
+		DataSelect,
+		DatePicker,
 	},
 
 	mixins: [validation, institutionHelper],
@@ -329,15 +366,9 @@ export default {
 	},
 
 	methods: {
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.contact-phone-checkbox {
-	white-space: nowrap;
-}
-</style>

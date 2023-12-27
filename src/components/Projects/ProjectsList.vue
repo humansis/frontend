@@ -1,70 +1,55 @@
 <template>
 	<Table
-		v-show="show"
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		default-sort-direction="desc"
-		default-sort-key="endDate"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="goToDetail"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
+		@rowClicked="onGoToDetail"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				:sortable="column.sortable"
-				v-bind="column"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row.id)"
+			/>
+
+			<ButtonAction
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row.id)"
+			/>
+
+			<ButtonAction
+				:disabled="!row.deletable"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Project"
+				confirm-message="Are you sure sure you want to delete Project?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="180"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					v-if="userCan.editProject"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.deleteProject"
-					icon="trash"
-					:entity="$t('Project')"
-					:tooltip="$t('Delete')"
-					:disabled="!props.row.deletable"
-					:id="props.row.id"
-					@submitted="onDelete"
-				/>
-			</div>
-		</b-table-column>
-		<template #export>
+
+		<template v-slot:export>
 			<ExportControl
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportProjects"
+				@export="onExportProjects"
 			/>
 		</template>
 	</Table>
@@ -74,34 +59,31 @@
 import { mapState } from "vuex";
 import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
+import ButtonAction from "@/components/ButtonAction";
 import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "ProjectList",
 
 	components: {
 		ExportControl,
-		SafeDelete,
 		Table,
-		ActionButton,
-		ColumnField,
+		ButtonAction,
 	},
 
 	mixins: [permissions, grid, baseHelper],
 
 	data() {
 		return {
+			TABLE,
 			exportControl: {
 				loading: false,
 				location: "projects",
@@ -110,21 +92,21 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "id", width: "90", sortable: true },
-					{ key: "name", width: "200", sortable: true },
-					{ key: "sectors", width: "150", type: "svgIcon" },
-					{ key: "startDate", type: "date", width: "120", sortable: true },
-					{ key: "endDate", type: "date", width: "120", sortable: true },
-					{ key: "donors", width: "150" },
-					{ key: "numberOfHouseholds", label: "Registered Households", width: "130", sortable: true },
-					{ key: "beneficiariesReached", label: "Registered Individuals", width: "130", sortable: true },
-				],
+				columns: generateColumns([
+					{ key: "id" },
+					{ key: "name" },
+					{ key: "sectors", type: "svgIcon", minWidth: "200", sortable: false },
+					{ key: "startDate", type: "date" },
+					{ key: "endDate", type: "date" },
+					{ key: "donors" },
+					{ key: "numberOfHouseholds", title: "Registered Households" },
+					{ key: "beneficiariesReached", title: "Registered Individuals" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "endDate",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.PROJECTS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.PROJECTS.key,
 				searchPhrase: "",
 			},
 		};
@@ -146,11 +128,12 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ProjectService.getListOfProjects(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = [];
@@ -159,7 +142,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 			});
 
 			this.isLoadingList = false;
@@ -208,29 +191,17 @@ export default {
 			return DonorService.getListOfDonors(null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Donors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
 				});
 		},
 
-		goToDetail(project) {
-			if (this.userCan.viewProject) this.$router.push({ name: "Project", params: { projectId: project.id } });
+		onGoToDetail({ item: { id } }) {
+			if (this.userCan.viewProject) {
+				this.$router.push({ name: "Project", params: { projectId: id } });
+			}
 		},
 
-		edit(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("onEdit", project);
-		},
-
-		onDelete(id) {
-			this.$emit("onDelete", id);
-		},
-
-		showDetailWithId(id) {
-			const project = this.table.data.find((item) => item.id === id);
-			this.$emit("showDetail", project);
-		},
-
-		async exportProjects(exportType, format) {
+		async onExportProjects(exportType, format) {
 			if (exportType === EXPORT.PROJECTS) {
 				try {
 					this.exportControl.loading = true;
@@ -244,7 +215,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Projects")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

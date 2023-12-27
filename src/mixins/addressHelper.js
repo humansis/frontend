@@ -4,7 +4,6 @@ import baseHelper from "@/mixins/baseHelper";
 import { getUniqueIds } from "@/utils/customValidators";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
-import i18n from "@/plugins/i18n";
 
 export default {
 	mixins: [baseHelper],
@@ -15,7 +14,7 @@ export default {
 			return AddressService.getAddresses(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${i18n.t("Addresses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Addresses")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -24,7 +23,7 @@ export default {
 			return LocationsService.getLocations(addresses)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${i18n.t("Locations")} ${e}`, "is-danger");
+					Notification(`${this.$t("Locations")} ${e.message || e}`, "error");
 				});
 		},
 

@@ -1,7 +1,4 @@
-import i18n from "@/plugins/i18n";
 import { useVuelidate } from "@vuelidate/core";
-
-const { global: { t } } = i18n;
 
 export default {
 	data() {
@@ -17,7 +14,7 @@ export default {
 				: console.error("First parameter must be name of the validated field");
 		},
 
-		validate(field, object) {
+		onValidate(field, object) {
 			const validation = this.getValidation(field, object);
 			validation.$touch();
 		},
@@ -53,22 +50,30 @@ export default {
 		validationMsg(field, object = "formModel") {
 			const validation = this.getValidation(field, object);
 
-			if (Object.keys(validation).includes("required") && validation.required.$invalid) {
-				return t("This value is required");
+			if (Object.keys(validation).includes("required")
+				&& validation.required.$invalid
+				&& validation.$errors[0]) {
+				return this.$t("This value is required");
+			}
+
+			if (Object.keys(validation).includes("minValue")
+				&& validation.minValue.$invalid
+				&& validation.$errors[0]) {
+				return this.$t(validation?.$errors[0]?.$message);
 			}
 
 			if (Object.keys(validation).includes("passwordValidation")
-				&& validation.passwordValidation.$invalid) {
-				return t("The Password Is Not Strong Enough… "
+				&& validation.passwordValidation.$invalid && validation.$errors[0]) {
+				return this.$t("The Password Is Not Strong Enough… "
 					+ "Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
 			}
 
 			if (Object.keys(validation).includes("sameAsPassword")
-				&& validation.sameAsPassword.$invalid) {
-				return t("Passwords must be same");
+				&& validation.sameAsPassword.$invalid && validation.$errors[0]) {
+				return this.$t("Passwords must be same");
 			}
 
-			return validation?.$error ? t(validation?.$errors[0]?.$message) : "";
+			return validation?.$error ? this.$t(validation?.$errors[0]?.$message) : "";
 		},
 	},
 };

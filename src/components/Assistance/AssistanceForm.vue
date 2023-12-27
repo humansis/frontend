@@ -1,218 +1,236 @@
 <template>
-	<form>
-		<section class="modal-card-body">
-			<h3 class="title is-4">{{ $t('Basic properties') }}</h3>
-			<AssistanceName
-				v-model="formModel.name"
-				ref="assistanceName"
-				:is-switch-disabled="isAssistanceValidated"
-				:data-for-assistance-name="dataForAssistanceName"
-				assistance-detail
-			/>
-			<p
-				v-if="influenceDistributionProtocol.assistanceName"
-				class="help is-danger"
-			>
-				{{ distributionProtocolMessage }}
-			</p>
+	<v-card-text>
+		<h3 class="text-h5">{{ $t('Basic properties') }}</h3>
 
-			<LocationForm
-				ref="locationForm"
-				is-editing
-				:form-model="formModel"
-				:disabled-adm="disabledAdmInput"
-				:influence-distribution-protocol="influenceDistributionProtocol"
-				:distribution-protocol-message="distributionProtocolMessage"
-				@locationChanged="valuesForAssistanceName"
-			/>
+		<AssistanceName
+			v-model="formModel.name"
+			ref="assistanceName"
+			:is-switch-disabled="isAssistanceValidated"
+			:data-for-assistance-name="dataForAssistanceName"
+			assistance-detail
+		/>
 
-			<b-field class="mt-2" :label="$t('Date of Assistance')">
-				<b-datepicker
-					v-model="formModel.dateDistribution"
-					show-week-number
-					locale="en-CA"
-					icon="calendar-day"
-					trap-focus
-					:min-date="minDateOfAssistance"
-					:max-date="maxDateOfAssistance"
-					:month-names="months()"
-					:placeholder="$t('Click to select')"
-					:disabled="!isAssistanceNew"
-					@input="valuesForAssistanceName"
+		<p
+			v-if="influenceDistributionProtocol.assistanceName"
+			class="text-caption text-red mb-3"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
+
+		<LocationForm
+			ref="locationForm"
+			:form-model="formModel"
+			:disabled-adm="disabledAdmInput"
+			:disabled-adm-clear="disabledAdmInput"
+			:influence-distribution-protocol="influenceDistributionProtocol"
+			:distribution-protocol-message="distributionProtocolMessage"
+			is-editing
+			@locationChanged="onValuesForAssistanceName"
+		/>
+
+		<DatePicker
+			v-model="formModel.dateDistribution"
+			:min-date="minDateOfAssistance"
+			:max-date="maxDateOfAssistance"
+			:disabled="!isAssistanceNew"
+			label="Date of Assistance"
+			name="date-of-assistance"
+			@blur="onValuesForAssistanceName"
+		/>
+
+		<DataSelect
+			v-model="formModel.round"
+			:items="options.rounds"
+			:disabled="isAssistanceValidated"
+			:is-clearable="false"
+			label="Round"
+			name="round"
+			item-title="value"
+			item-value="code"
+			is-search-enabled
+		/>
+
+		<p
+			v-if="influenceDistributionProtocol.round"
+			class="text-caption text-red mb-3"
+		>
+			{{ distributionProtocolMessage }}
+		</p>
+
+		<h3 class="text-h5 mt-4">{{ $t('Target') }}</h3>
+
+		<DataInput
+			v-model="formModel.sector"
+			label="Sector"
+			name="sector"
+			class="mt-4 mb-6"
+			disabled
+		/>
+
+		<DataInput
+			v-model="subSectorName"
+			label="Subsector"
+			name="subsector"
+			class="mb-6"
+			disabled
+		/>
+
+		<DataInput
+			v-model="formModel.type"
+			label="Assistance Type"
+			name="assistance-type"
+			class="mb-6"
+			disabled
+		/>
+
+		<DataInput
+			v-model="formModel.target"
+			label="Target"
+			name="target"
+			class="mb-6"
+			disabled
+		/>
+
+		<v-textarea
+			v-model.trim="formModel.note"
+			:label="$t('Note')"
+			name="note"
+			variant="outlined"
+			density="compact"
+			hide-details="auto"
+			class="mb-6"
+			auto-grow
+		/>
+
+		<h3 class="text-h5 mt-4">{{ $t('Selection Criteria') }}</h3>
+
+		<v-row class="mt-4">
+			<v-col cols="8">
+				<DataInput
+					v-model="scoringType"
+					label="Scoring"
+					name="scoring"
+					disabled
 				/>
-			</b-field>
+			</v-col>
 
-			<b-field
-				:label="$t('Round')"
+			<v-col>
+				<DataInput
+					v-model="minimumVulnerabilityScore"
+					label="Minimum Vulnerability Score"
+					name="minimum-vulnerability-score"
+					class="mb-6"
+					disabled
+				/>
+			</v-col>
+		</v-row>
+
+		<h3 v-if="isCommoditySmartCard" class="text-h5 mt-4">
+			{{ $t('Distributed Commodity') }}
+		</h3>
+
+		<div v-if="isCommoditySmartCard">
+			<div
+				v-for="(productCategoryType) of project.allowedProductCategoryTypes"
+				:key="`product-category-type-${productCategoryType}`"
+				class="category-types"
 			>
-				<MultiSelect
-					v-model="formModel.round"
-					searchable
-					label="value"
-					track-by="code"
-					:placeholder="$t('N/A')"
-					:disabled="isAssistanceValidated"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:options="options.rounds"
-					@input="valuesForAssistanceName"
+				<v-checkbox
+					v-model="formModel.allowedProductCategoryTypes"
+					:label="productCategoryType"
+					:value="productCategoryType"
+					hide-details="auto"
+					disabled
 				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-					<template #option="props">
-						<div class="option__desc">
-							<span class="option__title">{{ props.option.value }}</span>
-						</div>
+					<template v-slot:label>
+						{{ $t(productCategoryType) }}
+
+						<SvgIcon
+							:items="getCodeAndValueObject(productCategoryType)"
+							class="ml-2"
+						/>
 					</template>
-					<template #singleLabel="props">
-						<div class="option__desc">
-							<span class="option__title">{{ props.option.value }}</span>
-						</div>
-					</template>
-				</MultiSelect>
-			</b-field>
-
-			<p
-				v-if="influenceDistributionProtocol.round"
-				class="help is-danger"
-			>
-				{{ distributionProtocolMessage }}
-			</p>
-
-			<h3 class="title is-4 mt-5">{{ $t('Target') }}</h3>
-			<b-field :label="$t('Sector')">
-				<b-input v-model="formModel.sector" disabled />
-			</b-field>
-
-			<b-field :label="$t('Subsector')">
-				<b-input v-model="subSectorName" disabled />
-			</b-field>
-
-			<b-field :label="$t('Assistance Type')">
-				<b-input v-model="formModel.type" disabled />
-			</b-field>
-
-			<b-field :label="$t('Target')">
-				<b-input v-model="formModel.target" disabled />
-			</b-field>
-
-			<b-field
-				:label="$t('Note')"
-			>
-				<b-input
-					v-model.trim="formModel.note"
-					type="textarea"
-					:placeholder="$t('Type…')"
-				/>
-			</b-field>
-
-			<h3 class="title is-4 mt-5">{{ $t('Selection Criteria') }}</h3>
-			<div class="columns">
-				<div class="column is-8">
-					<b-field :label="$t('Scoring')">
-						<b-input v-model="scoringType" disabled />
-					</b-field>
-				</div>
-
-				<div class="column is-4 is-flex pl-0">
-					<div class="is-flex-grow-1">
-						<b-field :label="$t('Minimum Vulnerability Score')">
-							<b-input v-model="minimumVulnerabilityScore" disabled />
-						</b-field>
-					</div>
-				</div>
+				</v-checkbox>
 			</div>
+		</div>
 
-			<h3
-				v-if="isCommoditySmartCard"
-				class="title is-4 mt-5"
-			>
-				{{ $t('Distributed Commodity') }}
-			</h3>
-			<b-field v-if="isCommoditySmartCard" :label="$t('Expiration Date')">
-				<b-datepicker
-					v-model="formModel.dateExpiration"
-					show-week-number
-					locale="en-CA"
-					icon="calendar-day"
-					trap-focus
-					:min-date="formModel.dateDistribution"
-					:max-date="maxDateOfAssistance"
-					:month-names="months()"
-					:placeholder="$t('Click to select')"
-					:disabled="!isAssistanceNew"
-				/>
-			</b-field>
+		<DataInput
+			v-if="formModel.cashbackLimit && isCommoditySmartCard"
+			v-model="formModel.cashbackLimit"
+			label="Cashback Limit"
+			name="cashback-limit"
+			class="mb-6 mt-5"
+			disabled
+		/>
+	</v-card-text>
 
-			<b-field
-				v-if="isCommoditySmartCard"
-				:label="$t('Allowed Product Category Types')"
-				:addons="false"
-			>
-				<div
-					v-for="item of project.allowedProductCategoryTypes"
-					:key="`product-category-type-${item}`"
-				>
-					<b-checkbox
-						v-model="formModel.allowedProductCategoryTypes"
-						disabled
-						:native-value="item"
-					>
-						<div class="is-flex is-align-items-center">
-							{{ item }}
-							<SvgIcon class="ml-2" :items="[{code: item, value: item}]" />
-						</div>
-					</b-checkbox>
-				</div>
-			</b-field>
+	<v-card-actions>
+		<v-spacer />
 
-			<b-field
-				v-if="formModel.cashbackLimit && isCommoditySmartCard"
-				:label="$t('Cashback Limit')"
-			>
-				<b-input v-model="formModel.cashbackLimit" disabled />
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				class="is-primary"
-				@click="submitForm"
-			>
-				{{ $t('Update') }}
-			</b-button>
-		</footer>
-	</form>
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<ButtonAction
+			:is-confirm-action="isDataModifiedForDistributionProtocol"
+			:confirm-message="updateButtonMessage"
+			:is-only-icon="false"
+			label="Update"
+			confirm-title="Do you really want to apply the change?"
+			close-button-name="No"
+			confirm-button-name="Yes"
+			confirm-button-color="warning"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="warning"
+			default-button
+			@actionConfirmed="onSubmitForm"
+		/>
+	</v-card-actions>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
-import LocationForm from "@/components/LocationForm";
+import ButtonAction from "@/components/ButtonAction";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
-import calendarHelper from "@/mixins/calendarHelper";
+import validation from "@/mixins/validation";
+import { getCodeAndValueObject } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
+import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceForm",
 
 	components: {
 		AssistanceName,
+		DatePicker,
+		DataSelect,
+		DataInput,
 		LocationForm,
+		ButtonAction,
 		SvgIcon,
 	},
 
-	mixins: [calendarHelper],
+	mixins: [validation],
 
-	validations: {
-		formModel: {
-			name: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+			},
+		};
 	},
 
 	props: {
@@ -247,6 +265,10 @@ export default {
 				village: false,
 				round: false,
 			},
+			updateButtonMessage: "By changing data on a closed distribution, you may create"
+				+ " a discrepancy between data in Humansis and data in the signed distribution "
+				+ "protocol. Please check you gave your name and provided reasoning for the change "
+				+ "in the Note section of the distribution to serve for auditing purposes.",
 		};
 	},
 
@@ -339,7 +361,7 @@ export default {
 	},
 
 	created() {
-		this.valuesForAssistanceName();
+		this.onValuesForAssistanceName();
 		this.fetchSubsectors();
 	},
 
@@ -350,7 +372,7 @@ export default {
 					this.findSubsectorName(data);
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Subsectors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -358,9 +380,13 @@ export default {
 			this.subSectorName = data.find(({ code }) => code === this.formModel.subsector).value || "";
 		},
 
-		submitForm() {
-			this.$v.$touch();
-			const isValid = !this.$v.$invalid && this.$refs.assistanceName.isValid();
+		getCodeAndValueObject(value) {
+			return getCodeAndValueObject(value);
+		},
+
+		onSubmitForm() {
+			this.v$.$touch();
+			const isValid = !this.v$.$invalid && this.$refs.assistanceName.onIsValid();
 
 			const data = {
 				id: this.formModel.id,
@@ -377,16 +403,12 @@ export default {
 			};
 
 			if (isValid) {
-				if (this.isDataModifiedForDistributionProtocol) {
-					this.confirmUpdate(data);
-				} else {
-					this.$emit("formSubmitted", data);
-					this.closeForm();
-				}
+				this.$emit("formSubmitted", data);
+				this.onCloseForm();
 			}
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 
@@ -405,12 +427,12 @@ export default {
 				hasIcon: true,
 				onConfirm: () => {
 					this.$emit("formSubmitted", data);
-					this.closeForm();
+					this.onCloseForm();
 				},
 			});
 		},
 
-		valuesForAssistanceName() {
+		onValuesForAssistanceName() {
 			const {
 				adm1,
 				adm2,
