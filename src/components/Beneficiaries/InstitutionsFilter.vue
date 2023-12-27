@@ -44,7 +44,7 @@ export default {
 			filtersOptions: {
 				projects: {
 					name: "Project",
-					placeholder: this.$t("Select Projects"),
+					placeholder: "Select Projects",
 					trackBy: "id",
 					label: "name",
 					multiple: true,
