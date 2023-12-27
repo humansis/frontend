@@ -167,7 +167,7 @@ export default {
 				);
 
 				this.prepareDuplicatedInstitutions(data);
-				this.targetSelect();
+				this.onTargetSelect();
 			} catch (e) {
 				Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 			}
@@ -207,7 +207,7 @@ export default {
 
 		onTargetSelect(field) {
 			if (field) {
-				this.validate(field);
+				this.onValidate(field);
 			}
 
 			const communities = [];

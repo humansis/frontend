@@ -8,26 +8,26 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.INSTITUTIONS)"
-		@rowClicked="(row) => showDetail(row.item.id)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.INSTITUTIONS)"
+		@rowClicked="(row) => onShowDetail(row.item.id)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				v-if="userCan.viewBeneficiary"
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row.id)"
+				@actionConfirmed="onShowDetail(row.id)"
 			/>
 
 			<ButtonAction
 				v-if="userCan.editBeneficiary"
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row.id)"
+				@actionConfirmed="onShowEdit(row.id)"
 			/>
 
 			<ButtonAction
@@ -42,7 +42,7 @@
 				close-button-name="Cancel"
 				confirm-button-name="Delete"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 
@@ -53,7 +53,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportInstitutions"
+				@export="onExportInstitutions"
 			/>
 
 			<v-btn
@@ -62,7 +62,7 @@
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="ml-4 text-none"
-				@click="advancedSearchToggle"
+				@click="onAdvancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
 			</v-btn>
@@ -74,7 +74,7 @@
 					<v-expansion-panel-text>
 						<InstitutionsFilter
 							@filtersChanged="onFiltersChange"
-							@onSearch="search(table.searchPhrase)"
+							@search="onSearch(table.searchPhrase)"
 						/>
 					</v-expansion-panel-text>
 				</v-expansion-panel>
@@ -166,7 +166,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		advancedSearchToggle() {
+		onAdvancedSearchToggle() {
 			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
@@ -181,7 +181,7 @@ export default {
 			this.filters = filters;
 		},
 
-		async exportInstitutions(type, format) {
+		async onExportInstitutions(type, format) {
 			if (type === EXPORT.INSTITUTIONS) {
 				const filters = {
 					...(this.filters.projects?.length

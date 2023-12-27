@@ -17,9 +17,9 @@
 
 		<InstitutionsList
 			ref="institutionsList"
-			@onDelete="removeInstitution"
-			@showEdit="editInstitution"
-			@showDetail="showDetail"
+			@delete="onRemoveInstitution"
+			@showEdit="onEditInstitution"
+			@showDetail="onShowDetail"
 		/>
 	</v-container>
 </template>
@@ -40,21 +40,21 @@ export default {
 	mixins: [permissions],
 
 	methods: {
-		editInstitution(id) {
+		onEditInstitution(id) {
 			this.$router.push({
 				name: "InstitutionEdit",
 				params: { institutionId: id },
 			});
 		},
 
-		showDetail(id) {
+		onShowDetail(id) {
 			this.$router.push({
 				name: "InstitutionDetail",
 				params: { institutionId: id },
 			});
 		},
 
-		async removeInstitution(id) {
+		async onRemoveInstitution(id) {
 			try {
 				const { status } = await InstitutionService.deleteInstitution(id);
 

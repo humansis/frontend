@@ -79,7 +79,7 @@
 			header="Detail of Institution"
 		>
 			<InstitutionForm
-				:formModel="institutionModel"
+				:form-model="institutionModel"
 				:institution-modal="institutionModal"
 				close-button
 				class="modal-card"

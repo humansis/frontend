@@ -47,7 +47,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportAssistances"
+				@export="onExportAssistances"
 			/>
 
 			<v-btn

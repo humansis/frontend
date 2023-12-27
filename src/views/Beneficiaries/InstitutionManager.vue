@@ -1,9 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-card
-			max-width="2560"
-			class="mx-auto mt-5"
-		>
+		<v-card class="mx-auto mt-5">
 			<v-card-title class="text-h5 font-weight-bold">
 				{{ $t(pageTitle) }}
 			</v-card-title>
@@ -20,7 +17,7 @@
 							label="Institution name"
 							name="institution-name"
 							class="mb-6"
-							@blur="validate('institutionName')"
+							@blur="onValidate('institutionName')"
 						/>
 
 						<DataSelect
@@ -34,7 +31,7 @@
 							name="institution-type"
 							is-search-enabled
 							class="mb-6"
-							@update:modelValue="validate('institutionType')"
+							@update:modelValue="onValidate('institutionType')"
 						/>
 
 						<DataSelect
@@ -52,7 +49,7 @@
 							is-search-enabled
 							is-data-shown-as-tag
 							multiple
-							@update:modelValue="validate('projectName')"
+							@update:modelValue="onValidate('projectName')"
 						/>
 
 						<h6 class="text-subtitle-1 mb-2">
@@ -216,7 +213,7 @@
 							class="mb-6"
 							is-search-enabled
 							optional
-							@update:modelValue="validate('nationalCardType')"
+							@update:modelValue="onValidate('nationalCardType')"
 						/>
 
 						<DataInput
@@ -227,7 +224,7 @@
 							name="national-card-number"
 							class="mb-6"
 							optional
-							@blur="validate('nationalCardNumber')"
+							@blur="onValidate('nationalCardNumber')"
 						/>
 
 						<DataInput
@@ -255,7 +252,7 @@
 									:error-messages="validationMsg('phone1.type')"
 									:disabled="formDisabled"
 									name="phone1-type"
-									@update:modelValue="validate('phone1.type')"
+									@update:modelValue="onValidate('phone1.type')"
 								/>
 							</v-col>
 
@@ -286,7 +283,7 @@
 							:disabled="formDisabled"
 							name="phone1-phone-no"
 							class="mb-6"
-							@blur="validate('phone1.phoneNo')"
+							@blur="onValidate('phone1.phoneNo')"
 						/>
 
 						<h6 class="text-subtitle-1 mb-2">
@@ -305,7 +302,7 @@
 									:error-messages="validationMsg('phone2.type')"
 									:disabled="formDisabled"
 									name="phone2-type"
-									@update:modelValue="validate('phone2.type')"
+									@update:modelValue="onValidate('phone2.type')"
 								/>
 							</v-col>
 
@@ -336,7 +333,7 @@
 							:disabled="formDisabled"
 							name="phone2-phone-no"
 							class="mb-6"
-							@blur="validate('phone2.phoneNo')"
+							@blur="onValidate('phone2.phoneNo')"
 						/>
 
 						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('External Support') }}</h2>

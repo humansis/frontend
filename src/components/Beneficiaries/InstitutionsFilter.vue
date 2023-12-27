@@ -3,7 +3,7 @@
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -17,6 +17,11 @@ import { FILTER } from "@/consts";
 
 export default {
 	name: "InstitutionsFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -65,7 +70,7 @@ export default {
 					this.filtersOptions.projects.data = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 
 			this.filtersOptions.projects.loading = false;

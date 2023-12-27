@@ -17,10 +17,12 @@
 				:items="options.data"
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
+				:placeholder="$t(options.placeholder)"
 				name="filter-select"
 				is-data-shown-as-tag
 				is-search-enabled
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
@@ -28,8 +30,10 @@
 				v-else-if="options.type === 'text'"
 				v-model="selectedFiltersOptions[filter]"
 				:label="$t(options.name)"
+				:placeholder="$t(options.placeholder)"
 				name="filter-input"
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
@@ -37,8 +41,10 @@
 				v-else-if="options.type === 'date'"
 				v-model="selectedFiltersOptions[filter]"
 				:label="$t(options.name)"
+				:placeholder="$t(options.placeholder)"
 				name="filter-datepicker"
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
@@ -53,7 +59,7 @@
 				size="small"
 				prepend-icon="search"
 				class="text-none ml-3"
-				@click="$emit('onSearch')"
+				@click="$emit('search')"
 			>
 				{{ $t('Search') }}
 			</v-btn>
@@ -69,7 +75,10 @@ import DatePicker from "@/components/Inputs/DatePicker";
 export default {
 	name: "AdvancedFilter",
 
-	emits: ["filtersChanged"],
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		DataSelect,
