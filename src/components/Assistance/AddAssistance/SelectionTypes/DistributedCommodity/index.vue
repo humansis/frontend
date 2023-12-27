@@ -27,7 +27,7 @@
 	>
 		<DistributedCommodityForm
 			:project="project"
-			:formModel="formModel"
+			:form-model="formModel"
 			:target-type="targetType"
 			:date-of-assistance="dateOfAssistance"
 			:date-expiration="dateExpiration"

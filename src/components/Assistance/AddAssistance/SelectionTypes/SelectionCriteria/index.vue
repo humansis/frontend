@@ -40,8 +40,8 @@
 		header="Create New Criteria"
 	>
 		<SelectionCriteriaForm
-			:formModel="criteriaModel"
 			ref="criteriaForm"
+			:form-model="criteriaModel"
 			submit-button-label="'Create'"
 			class="modal-card"
 			close-button

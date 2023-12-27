@@ -7,7 +7,7 @@
 				: 'Add Beneficiaries to This Assistance'"
 		>
 			<AddBeneficiaryForm
-				:formModel="addBeneficiaryModel"
+				:form-model="addBeneficiaryModel"
 				:assistance="assistance"
 				submit-button-label="Confirm"
 				close-button
@@ -64,7 +64,7 @@
 				: 'Detail of Beneficiary'"
 		>
 			<EditBeneficiaryForm
-				:formModel="beneficiaryModel"
+				:form-model="beneficiaryModel"
 				:disabled="!beneficiaryModal.isEditing"
 				submit-button-label="Save"
 				class="modal-card"

@@ -50,7 +50,6 @@
 		<v-data-table
 			v-bind="$attrs"
 			:cell-props="getCellProps"
-			:hide-default-footer="!showDefaultFooter"
 			@[rowClickEvent]="onHandleRowClick"
 		>
 			<template v-if="!showDefaultFooter" v-slot:bottom>
