@@ -91,7 +91,7 @@
 		/>
 
 		<DataInput
-			v-model="formModel.latitude"
+			v-model.number="formModel.latitude"
 			name="latitude"
 			label="Latitude"
 			type="number"
@@ -101,7 +101,7 @@
 		/>
 
 		<DataInput
-			v-model="formModel.longitude"
+			v-model.number="formModel.longitude"
 			label="Longitude"
 			name="longitude"
 			type="number"

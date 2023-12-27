@@ -1,0 +1,497 @@
+<template>
+	<form>
+		<v-row>
+			<v-col cols="6">
+				<h4 class="mb-4">{{ $t('Current Location') }}</h4>
+
+				<LocationForm
+					ref="currentLocationForm"
+					:form-model="formModel.currentLocation"
+					:form-disabled="false"
+					class="mb-4"
+					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
+					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
+				/>
+
+				<DataInput
+					v-model.number="formModel.latitude"
+					type="number"
+					label="Latitude"
+					name="latitude"
+					class="mb-4"
+					hide-spin-buttons
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.longitude"
+					type="number"
+					label="Longitude"
+					name="longitude"
+					class="mb-4"
+					hide-spin-buttons
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="6">
+				<h4 class="mb-4">{{ $t('Type of Location') }}</h4>
+
+				<TypeOfLocationForm
+					ref="currentTypeOfLocationForm"
+					:form-model="formModel.currentLocation"
+					is-editing
+				/>
+			</v-col>
+		</v-row>
+
+		<v-row>
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('Livelihood') }}</h4>
+
+				<DataSelect
+					v-model="formModel.livelihood.livelihood"
+					:items="options.livelihood"
+					:loading="livelihoodLoading"
+					label="Livelihood"
+					name="livelihood"
+					item-title="value"
+					item-value="code"
+					class="mb-4"
+					is-search-enabled
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.livelihood.incomeLevel"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Income"
+					name="income"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.livelihood.incomeSpentOnFood"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Income spent on food"
+					name="income-spent-on-food"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.livelihood.debtLevel"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Debt level"
+					name="debt-level"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+
+				<DataSelect
+					v-model="formModel.livelihood.assets"
+					:items="options.assets"
+					:loading="assetsLoading"
+					label="Assets"
+					name="assets"
+					item-title="value"
+					item-value="code"
+					class="mb-4"
+					multiple
+					chips
+					is-search-enabled
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.livelihood.foodConsumptionScore"
+					type="number"
+					label="Food consumption score"
+					name="food-consumption-score"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+
+				<DataInput
+					v-model.number="formModel.livelihood.copingStrategiesIndex"
+					type="number"
+					label="Coping strategies index"
+					name="coping-strategies-index"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('External Support') }}</h4>
+
+				<DataSelect
+					v-model="formModel.externalSupport.externalSupportReceivedType"
+					:items="options.externalSupportReceivedType"
+					:loading="assetsLoading"
+					label="Support received types"
+					name="support-received-types"
+					item-title="value"
+					item-value="code"
+					class="mb-4"
+					multiple
+					chips
+					is-search-enabled
+					optional
+				/>
+
+				<DatePicker
+					v-model="formModel.externalSupport.supportDateReceived"
+					label="Support date received"
+					name="support-date-received"
+					class="mb-4"
+					optional
+				/>
+
+				<DataInput
+					v-model="formModel.externalSupport.supportOrganization"
+					label="Support organisation"
+					name="support-organisation"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('Custom Fields') }}</h4>
+
+				<DataInput
+					v-for="option in customFields"
+					v-model="formModel.customFields[option.id]"
+					:key="option.id"
+					:label="normalizeText(option.field)"
+					:name="normalizeName(option.field)"
+					:type="option.type"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+		</v-row>
+
+		<v-row>
+			<v-col>
+				<h4 class="mb-4">{{ $t('Household Status') }}</h4>
+
+				<DataSelect
+					v-model="formModel.shelterStatus"
+					:items="options.shelterStatuses"
+					:loading="shelterStatusLoading"
+					label="Shelter status"
+					name="shelter-status"
+					item-title="value"
+					item-value="code"
+					class="mb-4"
+					is-search-enabled
+					optional
+				/>
+
+				<DataTextarea
+					v-model="formModel.notes"
+					label="Notes"
+					name="notes"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+		</v-row>
+	</form>
+</template>
+
+<script>
+import AddressService from "@/services/AddressService";
+import BeneficiariesService from "@/services/BeneficiariesService";
+import CustomFieldsService from "@/services/CustomFieldsService";
+import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
+import addressHelper from "@/mixins/addressHelper";
+import validation from "@/mixins/validation";
+import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
+import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
+import getters from "@/store/getters";
+
+export default {
+	name: "HouseholdForm",
+
+	components: {
+		DataTextarea,
+		DatePicker,
+		DataSelect,
+		DataInput,
+		LocationForm,
+		TypeOfLocationForm,
+	},
+
+	mixins: [validation, addressHelper],
+
+	validations() {
+		return {
+			formModel: {
+				livelihood: {
+					livelihood: {},
+					incomeLevel: {},
+					incomeSpentOnFood: {},
+					debtLevel: {},
+					assets: {},
+					foodConsumptionScore: {},
+					copingStrategiesIndex: {},
+				},
+				externalSupport: {
+					externalSupportReceivedType: {},
+					supportDateReceived: {},
+					supportOrganization: {},
+				},
+				customFields: {},
+				shelterStatus: {},
+			},
+		};
+	},
+
+	props: {
+		detailOfHousehold: {
+			type: Object,
+			default: null,
+		},
+
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
+	},
+
+	data() {
+		return {
+			shelterStatusLoading: true,
+			assetsLoading: true,
+			livelihoodLoading: true,
+			customFields: [],
+			formModel: {
+				id: null,
+				latitude: null,
+				longitude: null,
+				currentLocation: {
+					typeOfLocation: null, // Must be defined, otherwise validation will not work properly
+				},
+				isCurrentLocationOtherThanAddress: false,
+				livelihood: {
+					livelihood: [],
+					incomeLevel: null,
+					incomeSpentOnFood: null,
+					debtLevel: null,
+					assets: [],
+					foodConsumptionScore: null,
+					copingStrategiesIndex: null,
+				},
+				externalSupport: {
+					externalSupportReceivedType: [],
+					supportDateReceived: null,
+					supportOrganization: "",
+				},
+				customFields: {},
+				shelterStatus: [],
+				notes: "",
+			},
+			options: {
+				livelihood: [],
+				assets: [],
+				externalSupportReceivedType: [],
+				shelterStatuses: [],
+			},
+		};
+	},
+
+	computed: {
+		countryCurrency() {
+			return getters.getCountryFromVuexStorage()?.currency;
+		},
+	},
+
+	async mounted() {
+		await Promise.all([
+			this.fetchLivelihoods(),
+			this.fetchAssets(),
+			this.fetchShelterStatuses(),
+			this.fetchSupportReceivedTypes(),
+			this.fetchCustomFields(),
+		]);
+
+		if (this.isEditing) {
+			await this.mapDetailOfHouseholdToFormModel();
+
+			await this.mapCurrentLocation().then((response) => {
+				this.formModel.currentLocation = { ...this.formModel.currentLocation, ...response };
+			});
+		}
+		this.$emit("loaded");
+	},
+
+	methods: {
+		normalizeText(text) {
+			return normalizeCustomFields(text);
+		},
+
+		normalizeName(text) {
+			return kebabize(text);
+		},
+
+		async mapCurrentLocation() {
+			if (this.detailOfHousehold) {
+				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
+
+				switch (typeOfLocation) {
+					case GENERAL.LOCATION_TYPE.camp.type:
+						return AddressService.getCampAddress(addressId).catch((e) => {
+							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+						});
+					case GENERAL.LOCATION_TYPE.residence.type:
+						return AddressService.getResidenceAddress(addressId).catch((e) => {
+							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+						});
+					case GENERAL.LOCATION_TYPE.temporarySettlement.type:
+						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
+							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+						});
+					default:
+						return null;
+				}
+			}
+			return null;
+		},
+
+		async mapDetailOfHouseholdToFormModel() {
+			const countryAnswers = await this
+				.prepareCustomFields(this.detailOfHousehold.countrySpecificAnswerIds);
+			this.formModel = {
+				...this.formModel,
+				id: this.detailOfHousehold.id,
+				latitude: this.detailOfHousehold.latitude,
+				longitude: this.detailOfHousehold.longitude,
+				currentLocation: {
+					typeOfLocation: null,
+					adm1: null,
+					adm2: null,
+					adm3: null,
+					adm4: null,
+				},
+				livelihood: {
+					...this.formModel.livelihood,
+					foodConsumptionScore: this.detailOfHousehold.foodConsumptionScore,
+					assets: getArrayOfCodeListByKey(this.detailOfHousehold.assets, this.options.assets, "code"),
+					livelihood: getArrayOfCodeListByKey([this.detailOfHousehold.livelihood], this.options.livelihood, "code"),
+					incomeLevel: this.detailOfHousehold.incomeLevel,
+					incomeSpentOnFood: this.detailOfHousehold.incomeSpentOnFood,
+					debtLevel: this.detailOfHousehold.debtLevel,
+					copingStrategiesIndex: this.detailOfHousehold.copingStrategiesIndex,
+				},
+				externalSupport: {
+					...this.formModel.externalSupport,
+					externalSupportReceivedType: getArrayOfCodeListByKey(this.detailOfHousehold.supportReceivedTypes, this.options.externalSupportReceivedType, "code"),
+					supportDateReceived: this.detailOfHousehold
+						.supportDateReceived ? new Date(this.detailOfHousehold.supportDateReceived) : null,
+					supportOrganization: this.detailOfHousehold.supportOrganizationName,
+				},
+				customFields: {
+					...this.formModel.customFields,
+					...countryAnswers,
+				},
+				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
+				notes: this.detailOfHousehold.notes,
+			};
+		},
+
+		async prepareCustomFields(answers) {
+			const preparedAnswer = {};
+			if (!answers) return preparedAnswer;
+			const promise = answers.map(async (item) => {
+				await CustomFieldsService.getCustomFieldAnswer(item)
+					.then(({ data: { answer, countrySpecificOptionId } }) => {
+						const temp = this.customFields
+							.find((option) => option.id === countrySpecificOptionId);
+						if (temp.type === "number") {
+							preparedAnswer[temp.id] = Number(answer);
+						} else {
+							preparedAnswer[temp.id] = answer;
+						}
+					});
+			});
+			await Promise.all(promise);
+			return preparedAnswer;
+		},
+
+		async fetchSupportReceivedTypes() {
+			await BeneficiariesService.getSupportReceivedTypes()
+				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+				});
+		},
+
+		async fetchLivelihoods() {
+			await BeneficiariesService.getListOfLivelihoods()
+				.then(({ data }) => { this.options.livelihood = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+				});
+			this.livelihoodLoading = false;
+		},
+
+		async fetchAssets() {
+			await BeneficiariesService.getListOfAssets()
+				.then(({ data }) => { this.options.assets = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+				});
+			this.assetsLoading = false;
+		},
+
+		async fetchShelterStatuses() {
+			await BeneficiariesService.getListOfShelterStatuses()
+				.then(({ data }) => { this.options.shelterStatuses = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
+				});
+			this.shelterStatusLoading = false;
+		},
+
+		async fetchCustomFields() {
+			await CustomFieldsService.getListOfCustomFields()
+				.then(({ data }) => { this.customFields = data; })
+				.catch((e) => {
+					if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
+				});
+		},
+
+		submit() {
+			const locationValid = this.$refs.currentLocationForm.submitLocationForm();
+			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
+
+			this.v$.$touch();
+			return !this.v$.$invalid && !locationValid && !typeOfLocationValid;
+		},
+	},
+};
+</script>

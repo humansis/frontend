@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		:headers="table.columns"
 		:items="table.data"
@@ -36,13 +36,13 @@
 				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
@@ -59,7 +59,7 @@ export default {
 
 	components: {
 		ButtonAction,
-		Table,
+		DataGrid,
 	},
 
 	mixins: [grid, permissions],

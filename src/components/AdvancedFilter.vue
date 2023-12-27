@@ -50,13 +50,10 @@
 
 			<!-- TODO dateTimePicker -->
 		</v-col>
-	</v-row>
 
-	<v-row class="mt-1">
-		<v-col class="d-flex justify-end">
+		<v-col cols="12" class="text-right">
 			<v-btn
 				color="primary"
-				size="small"
 				prepend-icon="search"
 				class="text-none ml-3"
 				@click="$emit('search')"
@@ -75,11 +72,6 @@ import DatePicker from "@/components/Inputs/DatePicker";
 export default {
 	name: "AdvancedFilter",
 
-	emits: [
-		"search",
-		"filtersChanged",
-	],
-
 	components: {
 		DataSelect,
 		DataInput,
@@ -89,8 +81,12 @@ export default {
 	props: {
 		selectedFiltersOptions: Object,
 		filtersOptions: Object,
-		multiline: Boolean,
 	},
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	data() {
 		return {

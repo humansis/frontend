@@ -87,6 +87,11 @@ import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
 	props: {
+		modelValue: {
+			type: [Object, Number, String],
+			default: null,
+		},
+
 		label: {
 			type: String,
 			default: "",
@@ -130,11 +135,6 @@ export default {
 		isClearable: {
 			type: Boolean,
 			default: true,
-		},
-
-		modelValue: {
-			type: Object,
-			default: () => {},
 		},
 
 		itemTitle: {

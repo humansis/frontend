@@ -1,12 +1,11 @@
 <template>
 	<AdvancedFilter
-		ref="advancedFilter"
 		v-if="admNames"
-		multiline
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@search="$emit('search')"
 	/>
 </template>
 

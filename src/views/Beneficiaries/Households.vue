@@ -10,6 +10,7 @@
 						v-bind="props"
 						color="primary"
 						prepend-icon="plus"
+						class="text-none ml-0"
 					>
 						{{ $t('Create') }}
 					</v-btn>
@@ -79,7 +80,7 @@
 			v-model="table.checkedRows"
 			v-model:page="table.currentPage"
 			:items-per-page="perPage"
-			:headers="table.visibleColumns"
+			:headers="table.columns"
 			:items="table.data"
 			:total-count="table.total"
 			:loading="isLoading.households"
@@ -90,12 +91,12 @@
 			reset-sort-button
 			is-search-visible
 			show-select
-			@page-changed="pageChange"
 			@update:sortBy="onSort"
-			@search="search"
-			@per-page-changed="perPageChange"
-			@resetFilters="resetFilters"
-			@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS)"
+			@search="onSearch"
+			@pageChanged="onPageChange"
+			@perPageChanged="onPerPageChange"
+			@resetFilters="onResetFilters"
+			@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS)"
 		>
 			<template v-slot:actions="{ row: { householdId } }">
 				<ButtonAction
@@ -137,13 +138,15 @@
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
-					@onExport="exportHouseholds"
+					@export="exportHouseholds"
 				/>
 
 				<v-btn
 					:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					variant="outlined"
-					class="ml-4"
+					size="small"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="ml-4 text-none"
 					@click="advancedSearchToggle"
 				>
 					{{ $t('Advanced Search') }}
@@ -151,11 +154,13 @@
 
 				<v-btn
 					:append-icon="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
-					variant="outlined"
-					class="ml-4"
+					size="small"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="ml-4 text-none"
 					@click="bulkSearchToggle"
 				>
-					{{ $t('Bulk search') }}
+					{{ $t('Bulk Search') }}
 				</v-btn>
 
 				<v-menu v-if="isActionsButtonVisible">
@@ -184,17 +189,17 @@
 
 			<template v-slot:advancedControls>
 				<v-expansion-panels v-model="visiblePanels">
-					<v-expansion-panel value="advancedSearch">
+					<v-expansion-panel value="advancedSearch" class="mt-0" eager>
 						<v-expansion-panel-text>
 							<HouseholdsFilter
 								ref="householdsFilter"
 								:defaultFilters="{ ...filters, ...locationsFilter }"
 								@filtersChanged="onFiltersChange"
-								@onSearch="clickedSearch()"
+								@search="clickedSearch"
 							/>
 						</v-expansion-panel-text>
 					</v-expansion-panel>
-					<v-expansion-panel value="bulkSearch">
+					<v-expansion-panel value="bulkSearch" class="mt-0" eager>
 						<v-expansion-panel-text>
 							<BulkSearch
 								ref="bulkSearch"
@@ -214,9 +219,9 @@ import { defineAsyncComponent } from "vue";
 import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
-import ButtonAction from "@/components/ButtonAction";
 import AddProjectToHousehold from "@/components/Beneficiaries/Household/AddProjectToHousehold";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
+import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
@@ -266,8 +271,7 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: generateColumns([
+				columns: generateColumns([
 					{ key: "id", title: "Household ID", type: "link", width: "30" },
 					{ key: "familyName", title: "Local family name", width: "30", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", width: "30", sortKey: "localFirstName" },
@@ -343,7 +347,6 @@ export default {
 		async fetchData() {
 			this.isLoading.households = true;
 			this.table.progress = null;
-			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			if (
 				this.bulkSearch.isBulkSearchUsed
@@ -477,7 +480,7 @@ export default {
 
 		clickedSearch() {
 			this.bulkSearch.isBulkSearchUsed = false;
-			this.search(this.table.searchPhrase);
+			this.onSearch(this.table.searchPhrase);
 		},
 
 		async addHouseholdsToProject(project) {
@@ -846,7 +849,7 @@ export default {
 			};
 		},
 
-		resetFilters() {
+		onResetFilters() {
 			this.resetSearch({
 				tableRef: "households",
 				filtersRef: "householdsFilter",

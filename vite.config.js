@@ -13,6 +13,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
+			fs: fileURLToPath(new URL("./src/.junk/builtins_placeholder.txt", import.meta.url)),
+			url: fileURLToPath(new URL("./src/.junk/builtins_placeholder.txt", import.meta.url)),
+			path: fileURLToPath(new URL("./src/.junk/builtins_placeholder.txt", import.meta.url)),
+			"source-map-js": fileURLToPath(new URL("./src/.junk/builtins_placeholder.txt", import.meta.url)),
 		},
 		extensions: [".js", ".vue"],
 	},

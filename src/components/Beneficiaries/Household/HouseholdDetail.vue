@@ -4,7 +4,7 @@
 			v-model="formModel.familyName"
 			label="Family Name"
 			name="family-name"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -12,7 +12,7 @@
 			v-model="formModel.givenName"
 			label="First Name"
 			name="given-name"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -20,7 +20,7 @@
 			v-model="formModel.members"
 			label="Members"
 			name="members"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -31,7 +31,7 @@
 			label="Vulnerabilities"
 			name="vulnerabilities"
 			item-value="code"
-			class="mb-6"
+			class="mb-4"
 			multiple
 			chips
 			disabled
@@ -41,7 +41,7 @@
 			v-model="formModel.projects"
 			label="Projects"
 			name="projects"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -49,7 +49,7 @@
 			v-model="formModel.incomeLevel"
 			label="Income"
 			name="income-level"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -60,7 +60,7 @@
 			label="Support received types"
 			name="support-received-types"
 			item-value="code"
-			class="mb-6"
+			class="mb-4"
 			multiple
 			chips
 			disabled
@@ -70,6 +70,7 @@
 			v-model="formModel.supportDateReceived"
 			label="Support date receive"
 			name="support-date-receive"
+			class="mb-4"
 			disabled
 		/>
 
@@ -80,7 +81,7 @@
 			label="Assets"
 			name="assets"
 			item-value="code"
-			class="mb-6"
+			class="mb-4"
 			multiple
 			chips
 			disabled
@@ -93,7 +94,7 @@
 			label="Shelter status"
 			name="shelter-status"
 			item-value="code"
-			class="mb-6"
+			class="mb-4"
 			multiple
 			chips
 			disabled
@@ -103,17 +104,15 @@
 			v-model="formModel.currentLocation"
 			label="Current Location"
 			name="current-location"
-			class="mb-6"
 			disabled
 		/>
 	</v-card-text>
 
-	<v-card-actions>
+	<v-card-actions class="mt-n2">
 		<v-spacer />
 
 		<v-btn
-			class="text-none"
-			size="small"
+			class="text-none mx-4"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="$emit('formClosed')"
@@ -142,6 +141,8 @@ export default {
 			required: true,
 		},
 	},
+
+	emits: ["formClosed"],
 
 	data() {
 		return {

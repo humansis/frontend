@@ -1,116 +1,105 @@
 <template>
-	<section>
-		<div class="px-5 columns">
-			<div class="column">
-				<b-field
-					:label="$t('Search by')"
-					:type="validateType('searchBy', false, 'bulkSearch')"
-					:message="validateMsg('searchBy', 'Required', 'bulkSearch')"
-					class="bulk-search-field"
-				>
-					<MultiSelect
+	<v-row class="mt-2">
+		<v-col cols="12" lg="6">
+			<v-row>
+				<v-col cols="6">
+					<DataSelect
 						v-model="bulkSearch.searchBy"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						:placeholder="$t('Click to select')"
-						:loading="false"
-						:options="options.idType"
-						:class="validateMultiselect('searchBy', false, 'bulkSearch')"
+						:items="options.idType"
+						:error-messages="validationMsg('searchBy', 'bulkSearch')"
 						class="search-by"
-						searchable
-						@input="bulkSearchChanged"
-					>
-						<span slot="noOptions">{{ $t("List is empty") }}</span>
-						<template #option="{ option }">
-							<div class="option__desc">
-								<span class="option__title">{{ $t(option) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-					<b-message type="is-info" class="bulk-search-info">
+						label="Search by"
+						name="filter-select"
+						is-search-enabled
+						@update:modelValue="bulkSearchChanged"
+					/>
+				</v-col>
+
+				<v-col cols="6">
+					<v-card color="info" class="pa-4">
 						{{ $t('Split ID Numbers with white space') }}.
 						{{ $t('Maximum 500 ID Numbers allowed') }}.
-					</b-message>
+					</v-card>
+				</v-col>
 
-				</b-field>
-				<b-field
-					:label="$t('ID Numbers')"
-					:type="validateType('ids', false, 'bulkSearch')"
-					:message="validateMsg('ids', 'Required', 'bulkSearch')"
-					class="mb-5"
-				>
-					<b-input
+				<v-col cols="12">
+					<DataTextarea
 						v-model.trim="bulkSearch.ids"
-						type="textarea"
+						:error-messages="validationMsg('ids', 'bulkSearch')"
+						label="ID Numbers"
+						name="filter-input"
 						@input="bulkSearchChanged"
 					/>
-				</b-field>
 
-				<div v-if="isMaximumIds || isDuplicityIds">
-					<p
-						v-if="isMaximumIds"
-						class="has-text-danger"
-					>
-						{{ $t('There are more than 500 ID Numbers') }}
-					</p>
-					<p
-						v-if="isDuplicityIds"
-						class="has-text-danger"
-					>
-						{{ $t('Info: There are duplicate ID Numbers') }}
-					</p>
-				</div>
-			</div>
+					<div v-if="isMaximumIds || isDuplicityIds">
+						<p
+							v-if="isMaximumIds"
+							class="text-red-lighten-1"
+						>
+							{{ $t('There are more than 500 ID Numbers') }}
+						</p>
+						<p
+							v-if="isDuplicityIds"
+							class="text-red-lighten-1"
+						>
+							{{ $t('Info: There are duplicate ID Numbers') }}
+						</p>
+					</div>
+				</v-col>
+			</v-row>
+		</v-col>
 
-			<div class="column ml-5">
-				<div v-if="bulkSearch.notFoundIds.length">
-					<b-field :label="$t('Following ID Numbers were not found:')">
-						<b-input
-							v-model="bulkSearch.notFoundIds"
-							type="textarea"
-							class="not-found-ids"
-							disabled
-						/>
-						<div class="control">
-							<b-tooltip :label="$t(`Copy`)">
-								<b-button icon-left="copy" @click="copyIds()" />
-							</b-tooltip>
-						</div>
-					</b-field>
-				</div>
-			</div>
-		</div>
+		<v-col v-if="bulkSearch.notFoundIds.length" cols="12" lg="6">
+			<DataTextarea
+				v-model="bulkSearch.notFoundIds"
+				label="Following ID Numbers were not found:"
+				name="not-found-ids"
+				class="not-found-ids"
+				disabled
+				has-copy-button
+				@copy="copyIds"
+			/>
+		</v-col>
 
-		<div class="has-text-right mr-5 mb-5">
-			<b-button
-				type="is-primary"
-				icon-left="search"
+		<v-col cols="12" class="text-right">
+			<v-btn
 				:disabled="isMaximumIds"
-				@click="startBulkSearch()"
+				color="primary"
+				prepend-icon="search"
+				class="text-none ml-0"
+				@click="startBulkSearch"
 			>
 				{{ $t('Search') }}
-			</b-button>
-		</div>
-	</section>
+			</v-btn>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
-import {required} from "vuelidate/lib/validators";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
-import {Toast} from "@/utils/UI";
-import {HOUSEHOLD} from "@/consts";
+import { Notification } from "@/utils/UI";
+import { HOUSEHOLD } from "@/consts";
+import { required } from "@vuelidate/validators";
 
 export default {
 	name: "BulkSearch",
+
+	components: {
+		DataTextarea,
+		DataInput,
+		DataSelect,
+	},
 
 	mixins: [validation],
 
 	validations() {
 		return {
 			bulkSearch: {
-				searchBy: {required},
-				ids: {required},
+				searchBy: { required },
+				ids: { required },
 			},
 		};
 	},
@@ -148,12 +137,12 @@ export default {
 	methods: {
 		copyIds() {
 			navigator.clipboard.writeText(this.bulkSearch.notFoundIds);
-			Toast(this.$t("Copied"), "is-success", 1500);
+			Notification(this.$t("Copied"), "success");
 		},
 
 		startBulkSearch() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
@@ -163,7 +152,7 @@ export default {
 			this.bulkSearch.isBulkSearchUsed = true;
 			this.$emit("clickedBulkSearch", this.bulkSearch);
 
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
 		bulkSearchChanged() {
@@ -188,23 +177,6 @@ export default {
 
 	@media only screen and (min-width: 1440px) {
 		width: 50%;
-	}
-}
-
-.bulk-search-field > .field-body > .field.has-addons {
-	flex-direction: column;
-
-	@media only screen and (min-width: 1200px) {
-		flex-direction: row;
-	}
-}
-
-.bulk-search-info {
-	margin-top: 1rem;
-
-	@media only screen and (min-width: 1200px) {
-		margin-top: 0;
-		margin-left: 1rem;
 	}
 }
 

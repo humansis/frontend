@@ -1,21 +1,30 @@
 <template>
-	<v-text-field
-		:variant="variant"
-		:density="density"
-		:hide-details="hideDetails"
+	<v-textarea
+		:label="$t(label)"
 		:placeholder="$t(placeholder)"
+		variant="outlined"
+		hide-details="auto"
 	>
-		<template v-slot:label>
-			<span>{{ $t(label) }}
-				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
-			</span>
+		<template v-if="hasCopyButton" v-slot:append-inner>
+			<v-tooltip
+				:text="$t('Copy')"
+				location="top"
+			>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						v-bind="props"
+						icon="copy"
+						@click="$emit('copy')"
+					/>
+				</template>
+			</v-tooltip>
 		</template>
-	</v-text-field>
+	</v-textarea>
 </template>
 
 <script>
 export default {
-	name: "DataInput",
+	name: "DataTextarea",
 
 	props: {
 		label: {
@@ -23,29 +32,14 @@ export default {
 			default: "",
 		},
 
-		optional: {
-			type: Boolean,
-			default: false,
-		},
-
-		variant: {
-			type: String,
-			default: "outlined",
-		},
-
-		density: {
-			type: String,
-			default: "compact",
-		},
-
-		hideDetails: {
-			type: String,
-			default: "auto",
-		},
-
 		placeholder: {
 			type: String,
 			default: "",
+		},
+
+		hasCopyButton: {
+			type: Boolean,
+			default: false,
 		},
 	},
 };

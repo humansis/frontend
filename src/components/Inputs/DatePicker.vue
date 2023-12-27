@@ -9,7 +9,7 @@
 		<template v-slot:activator="{ props }">
 			<DataInput
 				v-model="formattedDate"
-				v-bind="props"
+				v-bind="{ ...$attrs, ...props }"
 				:label="label"
 				:name="name"
 				:error-messages="$attrs['error-messages']"
@@ -18,7 +18,6 @@
 				:placeholder="placeholder"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
-				class="mb-6"
 			/>
 		</template>
 
@@ -46,15 +45,22 @@ export default {
 		DataInput,
 	},
 
+	inheritAttrs: false,
+
 	props: {
+		modelValue: {
+			type: Date,
+			default: "",
+		},
+
 		minDate: {
 			type: Date,
-			required: false,
+			default: null,
 		},
 
 		maxDate: {
 			type: Date,
-			required: false,
+			default: null,
 		},
 
 		label: {
@@ -63,11 +69,6 @@ export default {
 		},
 
 		name: {
-			type: String,
-			default: "",
-		},
-
-		modelValue: {
 			type: String,
 			default: "",
 		},

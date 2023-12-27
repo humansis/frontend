@@ -149,7 +149,7 @@
 
 			<DataInput
 				v-if="changeButton"
-				v-model="randomSampleSize"
+				v-model.number="randomSampleSize"
 				label="Random Sample"
 				name="random-sample"
 				type="number"

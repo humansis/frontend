@@ -59,7 +59,6 @@
 						:hide-spin-buttons="true"
 						:disabled="isFormDisabled"
 						type="number"
-						step="any"
 						min="0"
 						dense
 						class="mb-6"

@@ -119,20 +119,20 @@ export default {
 		},
 
 		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
-			const searchValue = this.$refs[tableRef].searchValue();
+			const searchValue = this.$refs[tableRef].searchValue || this.$refs[tableRef].searchPhrase;
 
-			if (Object.keys(this.filters).length) {
+			if (filtersRef && this.$refs[filtersRef] && Object.keys(this.filters).length) {
 				this.filters = {};
 				this.$refs[filtersRef].resetFilters();
 			}
 
-			if (bulkSearchRef) {
+			if (bulkSearchRef && this.$refs[bulkSearchRef]) {
 				this.bulkSearch = {};
 				this.$refs[bulkSearchRef].resetFilters();
 			}
 
 			if (searchValue) {
-				this.$refs[tableRef].onResetSearch();
+				this.$refs[tableRef].resetSearch();
 			} else {
 				this.fetchData();
 			}

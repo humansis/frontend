@@ -2,6 +2,10 @@ import i18n from "@/plugins/i18n";
 
 const { global: { t } } = i18n;
 
+export const kebabize = (text = "") => text
+	.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? "-" : "") + $.toLowerCase())
+	.replace(/( )/g, "-");
+
 export const normalizeText = (text = "") => text
 	.replace(/([A-Z])/g, " $1")
 	.replace(/(_)/g, " ")
@@ -54,6 +58,7 @@ export const generateColumns = ((visibleColumns) => {
 });
 
 export default {
+	kebabize,
 	normalizeText,
 	normalizeSelectorValue,
 	normalizeProjectName,

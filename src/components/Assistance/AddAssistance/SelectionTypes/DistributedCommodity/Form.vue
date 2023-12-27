@@ -113,7 +113,7 @@
 
 		<DataInput
 			v-if="displayedFields.quantity"
-			v-model="formModel.quantity"
+			v-model.number="formModel.quantity"
 			:error-messages="validationMsg('quantity')"
 			label="Quantity 1"
 			name="quantity-one"
@@ -127,7 +127,7 @@
 
 		<DataInput
 			v-if="displayedFields.value"
-			v-model="formModel.value"
+			v-model.number="formModel.value"
 			:error-messages="validationMsg('value')"
 			:label="isModalityVoucher ? 'Total Value of Booklet' : 'Value'"
 			:optional="isModalityInKind"
@@ -167,7 +167,7 @@
 
 		<DataInput
 			v-if="displayedFields.secondQuantity"
-			v-model="formModel.secondQuantity"
+			v-model.number="formModel.secondQuantity"
 			:error-messages="validationMsg('secondQuantity')"
 			label="Quantity 2"
 			name="quantity-two"
@@ -237,7 +237,7 @@
 
 		<DataInput
 			v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
-			v-model="formModel.cashbackLimit"
+			v-model.number="formModel.cashbackLimit"
 			:error-messages="validationMsg('cashbackLimit')"
 			:disabled="cashbackLimitDisabled"
 			label="Cashback Limit"

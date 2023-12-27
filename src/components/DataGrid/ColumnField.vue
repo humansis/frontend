@@ -3,6 +3,13 @@
 		<div v-html-secure="cellData" />
 	</template>
 
+	<template v-if="column.type === 'object'">
+		<p v-if="cellData.value">
+			{{ cellData.value }}
+		</p>
+		<pre v-else>{{ cellData }}</pre>
+	</template>
+
 	<template v-if="column.type === 'assistancesType'">
 		{{ normalizeText($t(cellData)) }}
 	</template>
@@ -77,11 +84,11 @@
 
 		<router-link
 			v-else
-			class="table-link"
 			:to="{
 				name: getRouteName(),
 				params: getParams(),
 			}"
+			class="table-link"
 		>
 			{{ getLinkName() }}
 		</router-link>
