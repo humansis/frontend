@@ -11,13 +11,13 @@
 			<DataSelect
 				v-if="!options.type || options.type === 'multiselect'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
+				:label="options.name"
 				:loading="options.loading"
 				:multiple="options.multiple"
 				:items="options.data"
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
-				:placeholder="$t(options.placeholder)"
+				:placeholder="options.placeholder"
 				name="filter-select"
 				is-data-shown-as-tag
 				is-search-enabled
@@ -29,8 +29,8 @@
 			<DataInput
 				v-else-if="options.type === 'text'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
-				:placeholder="$t(options.placeholder)"
+				:label="options.name"
+				:placeholder="options.placeholder"
 				name="filter-input"
 				clearable
 				persistent-placeholder
@@ -40,8 +40,8 @@
 			<DatePicker
 				v-else-if="options.type === 'date'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
-				:placeholder="$t(options.placeholder)"
+				:label="options.name"
+				:placeholder="options.placeholder"
 				name="filter-datepicker"
 				clearable
 				persistent-placeholder
