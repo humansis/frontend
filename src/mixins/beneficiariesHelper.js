@@ -340,9 +340,11 @@ export default {
 			const selectedData = this.table.data.filter(
 				(item) => this.table.checkedRows.includes(item.id)
 					&& (item.reliefPackages[0].state !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-							|| item.reliefPackages[0] !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED),
+							|| (item.status?.length === 1
+								&& item.status[0] !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED)),
 			);
 
+			this.selectedRows = selectedData.length;
 			this.$emit("rowsChecked", selectedData);
 		},
 

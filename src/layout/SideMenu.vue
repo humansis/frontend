@@ -26,6 +26,7 @@
 						v-if="!sideBarItem.subItems?.length"
 						:title="sideBarItem.title"
 						:to="sideBarItem.to"
+						exact
 					>
 						<template v-slot:prepend>
 							<v-tooltip :text="sideBarItem.title" :disabled="isAsideExpanded">
@@ -381,12 +382,7 @@ export default {
 						{
 							title: "Institutions",
 							prependIcon: "building",
-							// to: { name: "Institutions" },
-						},
-						{
-							title: "Communities",
-							prependIcon: "users",
-							// to: { name: "Communities" },
+							to: { name: "Institutions" },
 						},
 						{
 							title: "Vendors",

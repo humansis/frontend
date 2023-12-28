@@ -7,7 +7,7 @@
 			size="small"
 			prepend-icon="plus"
 			class="text-none"
-			@click="onAddCriteria"
+			@click="onAddCriteria()"
 		>
 			{{ $t('Add Group') }}
 		</v-btn>
@@ -42,7 +42,7 @@
 		<SelectionCriteriaForm
 			ref="criteriaForm"
 			:form-model="criteriaModel"
-			submit-button-label="'Create'"
+			submit-button-label="Create"
 			class="modal-card"
 			close-button
 			@formSubmitted="onSubmitCriteriaForm"
@@ -123,8 +123,6 @@
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
 				:disabled="isExportButtonDisabled"
-				type="is-primary"
-				field-class="is-pulled-right ml-3"
 				@export="onExportSelectedBeneficiaries"
 			/>
 		</v-col>
@@ -383,6 +381,7 @@ export default {
 		},
 
 		onSubmitCriteriaForm(criteriaForm) {
+			console.log(criteriaForm);
 			if (criteriaForm.groupId !== undefined) {
 				this.groups[criteriaForm.groupId].tableData = [];
 				this.groups[criteriaForm.groupId].data.push(criteriaForm);

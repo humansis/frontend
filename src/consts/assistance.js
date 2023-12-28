@@ -186,6 +186,7 @@ export default {
 		STATE: {
 			DISTRIBUTED: "Distributed",
 			TO_DISTRIBUTED: "To distributed",
+			CANCELED: "Canceled",
 		},
 	},
 };

@@ -7,7 +7,7 @@ import getters from "@/store/getters";
 import store from "@/store/index";
 
 let singleNotification = true;
-//const user = getters.getUserFromVuexStorage();
+// const user = getters.getUserFromVuexStorage();
 const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
 	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
@@ -284,65 +284,56 @@ const routes = [
 			//  					},
 			//  				],
 			//  			},
-			//  			{
-			//  				path: "communities",
-			//  				name: "Communities",
-			//  				component: () => import(/* webpackChunkName: "Communities" */ "@/views/Beneficiaries/Communities"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Communities"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  			{
-			//  				path: "institutions",
-			//  				component: { render(c) { return c("router-view"); } },
-			//  				meta: {
-			//  					breadcrumb: () => i18n.t("Institutions"),
-			//  					parent: "Beneficiaries",
-			//  				},
-			//  				children: [
-			//  					{
-			//  						path: "",
-			//  						name: "Institutions",
-			//  						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							breadcrumb: () => i18n.t("Institutions"),
-			//  							description: "",
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "add-institution",
-			//  						name: "AddInstitution",
-			//  						component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							breadcrumb: () => i18n.t("Add Institution"),
-			//  							description: i18n.t("This page is a form to add a new institution to a humansis."),
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "institution-detail/:institutionId",
-			//  						name: "InstitutionDetail",
-			//  						component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							breadcrumb: () => i18n.t("Institution Detail"),
-			//  							description: i18n.t("This page is a form to show detail of a institution in humansis."),
-			//  						},
-			//  					},
-			//  					{
-			//  						path: "institution-edit/:institutionId",
-			//  						name: "InstitutionEdit",
-			//  						component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							breadcrumb: () => i18n.t("Institution edit"),
-			//  							description: i18n.t("This page is a form to edit a institution in humansis."),
-			//  						},
-			//  					},
-			//  				],
+			{
+				path: "institutions",
+				component: RouterView,
+				meta: {
+					breadcrumb: "Institutions",
+					parent: "Beneficiaries",
+				},
+				children: [
+					{
+						path: "",
+						name: "Institutions",
+						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Institutions",
+							description: "",
+						},
+					},
+					{
+						path: "add-institution",
+						name: "AddInstitution",
+						component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Add Institution",
+							description: "This page is a form to add a new institution to a humansis.",
+						},
+					},
+					{
+						path: "institution-detail/:institutionId",
+						name: "InstitutionDetail",
+						component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Institution Detail",
+							description: "This page is a form to show detail of a institution in humansis.",
+						},
+					},
+					{
+						path: "institution-edit/:institutionId",
+						name: "InstitutionEdit",
+						component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Institution edit",
+							description: "This page is a form to edit a institution in humansis.",
+						},
+					},
+				],
+			},
 			//  			},
 			//  			{
 			//  				path: "vendors",
@@ -503,10 +494,10 @@ router.beforeEach((to, from, next) => {
 			? permissions.some((permission) => storedPermissions?.[permission])
 			: true;
 
-// 		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
-// 			return next({ name: "AccountCreated" });
-// 		}
-//
+		// 		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
+		// 			return next({ name: "AccountCreated" });
+		// 		}
+		//
 		if (!canGoNext) {
 			return next({ name: "NoPermission" });
 		}

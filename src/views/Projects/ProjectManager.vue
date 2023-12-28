@@ -1,7 +1,7 @@
 <template>
 	<v-container fluid>
 		<v-card class="mx-auto mt-5">
-			<v-card-title class="font-weight-bold">
+			<v-card-title class="text-h5 font-weight-bold">
 				{{ $t(pageTitle) }}
 			</v-card-title>
 

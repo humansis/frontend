@@ -15,6 +15,7 @@
 				:error-messages="$attrs['error-messages']"
 				:disabled="disabled"
 				:optional="optional"
+				:placeholder="placeholder"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
 				class="mb-6"
@@ -79,6 +80,11 @@ export default {
 		optional: {
 			type: Boolean,
 			default: false,
+		},
+
+		placeholder: {
+			type: String,
+			default: "",
 		},
 	},
 
