@@ -4,9 +4,8 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		multiline
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -21,7 +20,10 @@ import { FILTER } from "@/consts";
 export default {
 	name: "VendorsFilter",
 
-	emits: ["onSearch"],
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -122,7 +124,7 @@ export default {
 			}
 		},
 
-		async filterChanged(filters, filterName) {
+		async onFilterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 			const location = this.getLocation(filters);
 

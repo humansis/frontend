@@ -7,7 +7,7 @@
 			label="Username"
 			name="username"
 			class="mb-6"
-			@blur="validate('username')"
+			@blur="onValidate('username')"
 		/>
 
 		<DataInput
@@ -20,7 +20,7 @@
 			name="password"
 			class="mb-6"
 			@click:append-inner="passwordVisible = !passwordVisible"
-			@blur="validate('password')"
+			@blur="onValidate('password')"
 		/>
 
 		<DataInput
@@ -30,7 +30,7 @@
 			label="Name"
 			name="name"
 			class="mb-3"
-			@blur="validate('name')"
+			@blur="onValidate('name')"
 		/>
 
 		<div
@@ -44,7 +44,7 @@
 				:disabled="formDisabled"
 				:error-messages="isLastCategoryType(index) && validationMsg('categoryType')"
 				hide-details="auto"
-				@blur="validate('categoryType')"
+				@blur="onValidate('categoryType')"
 			>
 				<template v-slot:label>
 					{{ $t(value) }}
@@ -132,7 +132,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -145,7 +145,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -228,7 +228,7 @@ export default {
 			return index === (this.options.categoryTypes.length - 1);
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			this.$refs.locationForm.submitLocationForm();
 			if (this.v$.$invalid) {
@@ -239,7 +239,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},

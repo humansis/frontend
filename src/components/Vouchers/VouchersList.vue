@@ -13,27 +13,27 @@
 		reset-filters-button
 		is-search-visible
 		@update:modelValue="onRowsChecked"
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.VOUCHERS)"
-		@resetFilters="resetFilters"
-		@rowClicked="(row) => showDetail(row.item)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VOUCHERS)"
+		@resetFilters="onResetFilters"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				:disabled="!bookletsSelects"
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row)"
+				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
 				:disabled="!bookletsSelects"
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row)"
+				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
@@ -46,7 +46,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 
 			<ButtonAction
@@ -54,7 +54,7 @@
 				:disabled="!bookletsSelects"
 				icon="print"
 				tooltip-text="Print"
-				@actionConfirmed="printBooklets(row)"
+				@actionConfirmed="onPrintBooklets(row)"
 			/>
 		</template>
 
@@ -65,7 +65,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportBooklets"
+				@export="onExportBooklets"
 			/>
 
 			<v-btn
@@ -74,7 +74,7 @@
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="ml-4 text-none"
-				@click="advancedSearchToggle"
+				@click="onAdvancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
 			</v-btn>
@@ -86,7 +86,7 @@
 				color="primary"
 				variant="elevated"
 				class="ml-4 text-none"
-				@click="printSelection"
+				@click="onPrintSelection"
 			>
 				{{ $t('Print Selection') }}
 			</v-btn>
@@ -100,7 +100,7 @@
 							ref="vouchersFilter"
 							:defaultFilters="{ ...filters }"
 							@filtersChanged="onFiltersChange"
-							@onSearch="search(table.searchPhrase)"
+							@search="onSearch(table.searchPhrase)"
 						/>
 					</v-expansion-panel-text>
 				</v-expansion-panel>
@@ -214,7 +214,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		advancedSearchToggle() {
+		onAdvancedSearchToggle() {
 			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
@@ -222,7 +222,7 @@ export default {
 			return getBookletStatus(code).value;
 		},
 
-		async exportBooklets(exportType, format) {
+		async onExportBooklets(exportType, format) {
 			if (exportType === EXPORT.VOUCHERS) {
 				try {
 					this.exportControl.loading = true;
@@ -253,7 +253,7 @@ export default {
 			this.bookletsSelects = !rows?.length;
 		},
 
-		async printSelection() {
+		async onPrintSelection() {
 			this.printSelectionLoading = true;
 
 			const ids = this.table.checkedRows.map((id) => id);
@@ -275,7 +275,7 @@ export default {
 			this.printSelectionLoading = false;
 		},
 
-		async printBooklets({ code, id }) {
+		async onPrintBooklets({ code, id }) {
 			Notification(`${this.$t("Your Voucher Download is Starting")}`, "success");
 
 			await BookletsService.exportQRVouchers([id])
@@ -294,7 +294,7 @@ export default {
 				});
 		},
 
-		resetFilters() {
+		onResetFilters() {
 			this.resetSearch({ tableRef: "vouchersList", filtersRef: "vouchersFilter" });
 		},
 

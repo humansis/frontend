@@ -9,7 +9,7 @@
 				size="small"
 				prepend-icon="plus"
 				class="text-none ml-0"
-				@click="addNewVoucher"
+				@click="onAddNewVoucher"
 			>
 				{{ $t('Add') }}
 			</v-btn>
@@ -20,21 +20,21 @@
 			:header="modalHeader"
 		>
 			<VoucherForm
+				:form-model="voucherModel"
 				:submit-button-label="voucherModal.isEditing ? 'Update' : 'Create'"
-				:formModel="voucherModel"
 				:form-disabled="voucherModal.isDetail"
 				:is-editing="voucherModal.isEditing"
 				close-button
-				@formSubmitted="submitVoucherForm"
-				@formClosed="closeVoucherModal"
+				@formSubmitted="onSubmitVoucherForm"
+				@formClosed="onCloseVoucherModal"
 			/>
 		</Modal>
 
 		<VouchersList
 			ref="vouchersList"
-			@onDelete="removeVoucher"
-			@showDetail="showDetail"
-			@showEdit="showEdit"
+			@delete="onRemoveVoucher"
+			@showDetail="onShowDetail"
+			@showEdit="onShowEdit"
 		/>
 	</v-container>
 </template>
@@ -99,7 +99,7 @@ export default {
 	},
 
 	methods: {
-		showDetail(voucher) {
+		onShowDetail(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {
 				isOpened: true,
@@ -109,7 +109,7 @@ export default {
 			};
 		},
 
-		showEdit(voucher) {
+		onShowEdit(voucher) {
 			this.mapToFormModel(voucher);
 			this.voucherModal = {
 				isEditing: true,
@@ -148,11 +148,11 @@ export default {
 			};
 		},
 
-		closeVoucherModal() {
+		onCloseVoucherModal() {
 			this.voucherModal.isOpened = false;
 		},
 
-		addNewVoucher() {
+		onAddNewVoucher() {
 			this.voucherModal = {
 				isOpened: true,
 				isDetail: false,
@@ -174,7 +174,7 @@ export default {
 			};
 		},
 
-		submitVoucherForm(voucherForm) {
+		onSubmitVoucherForm(voucherForm) {
 			const {
 				id,
 				quantityOfBooklets,
@@ -220,7 +220,7 @@ export default {
 						} else {
 							this.$router.go();
 						}
-						this.closeVoucherModal();
+						this.onCloseVoucherModal();
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
@@ -245,7 +245,7 @@ export default {
 					} else {
 						this.$router.go();
 					}
-					this.closeVoucherModal();
+					this.onCloseVoucherModal();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
@@ -253,7 +253,7 @@ export default {
 			this.voucherModal.isWaiting = false;
 		},
 
-		async removeVoucher(id) {
+		async onRemoveVoucher(id) {
 			await BookletsService.removeBooklet(id).then((response) => {
 				if (response.status === 204) {
 					Notification(this.$t("Booklet successfully removed"), "success");

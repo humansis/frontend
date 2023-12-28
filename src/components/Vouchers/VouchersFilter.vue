@@ -3,8 +3,8 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -22,7 +22,7 @@ export default {
 	name: "VouchersFilter",
 
 	emits: [
-		"onSearch",
+		"search",
 		"filtersChanged",
 	],
 
@@ -106,7 +106,7 @@ export default {
 	},
 
 	methods: {
-		async filterChanged(filters, filtername) {
+		async onFilterChanged(filters, filtername) {
 			if (filtername === "assistances") {
 				this.fetchBeneficiaries(filters.distributions);
 			}

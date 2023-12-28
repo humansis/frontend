@@ -9,7 +9,7 @@
 				size="small"
 				prepend-icon="plus"
 				class="text-none ml-0"
-				@click="addNewVendor"
+				@click="onAddNewVendor"
 			>
 				{{ $t('Add') }}
 			</v-btn>
@@ -22,8 +22,8 @@
 			<VendorSummary
 				:vendor="selectedVendor"
 				@loaded="vendorSummary.isWaiting = false"
-				@close="closeVendorSummary"
-				@changedPage="changedSummaryPage"
+				@close="onCloseVendorSummary"
+				@changedPage="onChangedSummaryPage"
 			/>
 		</Modal>
 
@@ -32,23 +32,23 @@
 			:header="modalHeader"
 		>
 			<VendorForm
-				:formModel="vendorModel"
+				:form-model="vendorModel"
 				:submit-button-label="vendorModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="vendorModal.isDetail"
 				:form-loading="vendorModal.isWaiting"
 				:is-editing="vendorModal.isEditing"
 				close-button
-				@formSubmitted="submitVendorForm"
-				@formClosed="closeVendorModal"
+				@formSubmitted="onSubmitVendorForm"
+				@formClosed="onCloseVendorModal"
 			/>
 		</Modal>
 
 		<VendorsList
 			ref="vendorsList"
-			@onDelete="vendorRemove"
-			@showEdit="editVendor"
-			@showDetail="showDetail"
-			@onShowSummary="showVendorSummary"
+			@delete="onVendorRemove"
+			@showEdit="onEditVendor"
+			@showDetail="onShowDetail"
+			@showSummary="onShowVendorSummary"
 		/>
 	</v-container>
 </template>
@@ -128,11 +128,11 @@ export default {
 	},
 
 	methods: {
-		changedSummaryPage(title) {
+		onChangedSummaryPage(title) {
 			this.vendorSummary.header = title;
 		},
 
-		editVendor(vendor) {
+		onEditVendor(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: true,
@@ -142,11 +142,11 @@ export default {
 			};
 		},
 
-		closeVendorSummary() {
+		onCloseVendorSummary() {
 			this.vendorSummary.isOpened = false;
 		},
 
-		showVendorSummary(vendor) {
+		onShowVendorSummary(vendor) {
 			this.vendorSummary.isWaiting = true;
 			this.selectedVendor = vendor;
 			this.vendorSummary = {
@@ -179,7 +179,7 @@ export default {
 			};
 		},
 
-		addNewVendor() {
+		onAddNewVendor() {
 			this.vendorModal = {
 				isEditing: false,
 				isOpened: true,
@@ -190,12 +190,12 @@ export default {
 			this.eraseFormModel();
 		},
 
-		closeVendorModal() {
+		onCloseVendorModal() {
 			this.vendorModal.isOpened = false;
 			this.eraseFormModel();
 		},
 
-		showDetail(vendor) {
+		onShowDetail(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: false,
@@ -263,7 +263,7 @@ export default {
 			};
 		},
 
-		async submitVendorForm(vendorForm) {
+		async onSubmitVendorForm(vendorForm) {
 			this.vendorModal.isWaiting = true;
 			const {
 				id,
@@ -326,7 +326,7 @@ export default {
 								if (vendorResponse.status === 200) {
 									Notification(this.$t("Vendor Successfully Created"), "success");
 									this.$refs.vendorsList.fetchData();
-									this.closeVendorModal();
+									this.onCloseVendorModal();
 								}
 							}).catch((e) => {
 								Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
@@ -346,7 +346,7 @@ export default {
 							if (vendorResponse.status === 200) {
 								Notification(this.$t("Vendor Successfully Updated"), "success");
 								this.$refs.vendorsList.fetchData();
-								this.closeVendorModal();
+								this.onCloseVendorModal();
 							}
 						}).catch((e) => {
 							Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
@@ -357,7 +357,7 @@ export default {
 				});
 		},
 
-		async vendorRemove(id) {
+		async onVendorRemove(id) {
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
 					Notification(this.$t("Vendor Successfully Deleted"), "success");

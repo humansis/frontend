@@ -18,7 +18,7 @@
 					size="small"
 					variant="outlined"
 					class="text-none text-right"
-					@click="showHistory"
+					@click="onShowHistory"
 				>
 					{{ $t('See History') }}
 				</v-btn>
@@ -51,7 +51,7 @@
 							color="primary"
 							size="small"
 							class="text-none text-right"
-							@click="redeem(batch)"
+							@click="onRedeem(batch)"
 						>
 							{{ $t('Reedem') }}
 						</v-btn>
@@ -73,7 +73,7 @@
 			v-else-if="!redemptionSummary"
 			:projects="projects"
 			:vendor-id="vendor.id"
-			@showRedemptionSummary="showRedemptionSummary"
+			@showRedemptionSummary="onShowRedemptionSummary"
 		/>
 
 		<RedemptionSummary
@@ -91,7 +91,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="goBack"
+			@click="onGoBack"
 		>
 			{{ $t('Back') }}
 		</v-btn>
@@ -113,7 +113,7 @@
 			size="small"
 			color="primary"
 			variant="elevated"
-			@click="legacyPrint"
+			@click="onLegacyPrint"
 		>
 			{{ $t('Legacy Print') }}
 		</v-btn>
@@ -125,7 +125,7 @@
 			size="small"
 			color="primary"
 			variant="elevated"
-			@click="print"
+			@click="onPrint"
 		>
 			{{ $t('Print') }}
 		</v-btn>
@@ -181,7 +181,7 @@ export default {
 	},
 
 	methods: {
-		showRedemptionSummary(batch) {
+		onShowRedemptionSummary(batch) {
 			this.printButtonVisible = true;
 			this.redemptionBatch = batch;
 
@@ -197,7 +197,7 @@ export default {
 			return this.projects.find((project) => project.id === id)?.name;
 		},
 
-		goBack() {
+		onGoBack() {
 			this.fetchSmartcardRedemptions();
 
 			if (!this.redeemButtonPressed) {
@@ -216,7 +216,7 @@ export default {
 			}
 		},
 
-		showHistory() {
+		onShowHistory() {
 			this.history = true;
 			this.header = "Redeemed Batches";
 		},
@@ -269,7 +269,7 @@ export default {
 			}
 		},
 
-		async redeem(batch) {
+		async onRedeem(batch) {
 			this.redeemLoading = batch;
 			await SmartcardService.redeemBatch(this.vendor.id, batch.purchaseIds)
 				.then(({ data }) => {
@@ -284,7 +284,7 @@ export default {
 			this.redeemLoading = null;
 		},
 
-		async print() {
+		async onPrint() {
 			this.printLoading = true;
 			await SmartcardService.printSmartcardBatches(this.redemptionBatch.id)
 				.then(({ data, status, message }) => {
@@ -304,7 +304,7 @@ export default {
 			this.printLoading = false;
 		},
 
-		async legacyPrint() {
+		async onLegacyPrint() {
 			this.legacyPrintLoading = true;
 			await SmartcardService.legacyPrintSmartcardBatches(this.redemptionBatch.id)
 				.then(({ data, status, message }) => {

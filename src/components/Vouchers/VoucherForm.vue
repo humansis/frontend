@@ -10,7 +10,7 @@
 			item-title="name"
 			item-value="id"
 			class="mb-6"
-			@update:modelValue="validate('projectId')"
+			@update:modelValue="onValidate('projectId')"
 		/>
 
 		<DataInput
@@ -32,7 +32,7 @@
 			min="0"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('quantityOfBooklets')"
+			@blur="onValidate('quantityOfBooklets')"
 		/>
 
 		<DataInput
@@ -45,7 +45,7 @@
 			min="0"
 			class="mb-6"
 			hide-spin-buttons
-			@blur="validate('quantityOfVouchers')"
+			@blur="onValidate('quantityOfVouchers')"
 		/>
 
 		<TagInput
@@ -60,7 +60,7 @@
 			multiple
 			clearable
 			hide-spin-buttons
-			@update:modelValue="validate('values')"
+			@update:modelValue="onValidate('values')"
 		/>
 
 		<DataSelect
@@ -74,7 +74,7 @@
 			item-value="value"
 			class="mb-6"
 			searchable
-			@update:modelValue="validate('currency')"
+			@update:modelValue="onValidate('currency')"
 		/>
 
 		<DataSelect
@@ -107,7 +107,7 @@
 			label="Password"
 			name="password"
 			class="mb-6"
-			@blur="validate('password')"
+			@blur="onValidate('password')"
 			@click:append-inner="passwordVisible = !passwordVisible"
 		/>
 	</v-card-text>
@@ -121,7 +121,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -132,7 +132,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -213,7 +213,7 @@ export default {
 			}
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -223,7 +223,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.v$.$reset();
 			this.$emit("formClosed");
 		},

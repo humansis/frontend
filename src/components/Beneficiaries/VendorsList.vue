@@ -1,5 +1,6 @@
 <template>
 	<Table
+		ref="table"
 		v-show="show"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -7,36 +8,35 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
-		ref="table"
 		reset-sort-button
 		reset-filters-button
 		is-search-visible
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.VENDORS)"
-		@resetFilters="resetVendorsFilters"
-		@rowClicked="(row) => showDetail(row.item)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VENDORS)"
+		@resetFilters="onResetVendorsFilters"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="hand-holding-usd"
 				tooltip-text="Show Vendor Summary"
-				@actionConfirmed="showSummary(row)"
+				@actionConfirmed="onShowSummary(row)"
 			/>
 
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row)"
+				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
 				v-if="userCan.addEditVendors"
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row)"
+				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
@@ -49,7 +49,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 
@@ -60,7 +60,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportVendors"
+				@export="onExportVendors"
 			/>
 
 			<v-btn
@@ -69,7 +69,7 @@
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="ml-4 text-none"
-				@click="advancedSearchToggle"
+				@click="onAdvancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
 			</v-btn>
@@ -83,7 +83,7 @@
 							ref="vendorsFilter"
 							:defaultFilters="{ ...filters, ...locationsFilter }"
 							@filtersChanged="onFiltersChange"
-							@onSearch="search(table.searchPhrase)"
+							@search="onSearch(table.searchPhrase)"
 						/>
 					</v-expansion-panel-text>
 				</v-expansion-panel>
@@ -195,11 +195,11 @@ export default {
 			this.table.progress = 100;
 		},
 
-		advancedSearchToggle() {
+		onAdvancedSearchToggle() {
 			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
-		resetVendorsFilters() {
+		onResetVendorsFilters() {
 			this.resetSearch({ tableRef: "table", filtersRef: "vendorsFilter" });
 		},
 
@@ -253,8 +253,8 @@ export default {
 				});
 		},
 
-		showSummary(vendor) {
-			this.$emit("onShowSummary", vendor);
+		onShowSummary(vendor) {
+			this.$emit("showSummary", vendor);
 		},
 
 		async getLocations(locationIds) {
@@ -273,7 +273,7 @@ export default {
 				});
 		},
 
-		async exportVendors(exportType, format) {
+		async onExportVendors(exportType, format) {
 			if (exportType === EXPORT.VENDORS) {
 				try {
 					this.exportControl.loading = true;

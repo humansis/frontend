@@ -25,7 +25,7 @@
 				@click:close="chipClosed(item)"
 			>
 				<span class="pr-2">
-					{{ item.title }}
+					{{ $t(item.title) }}
 				</span>
 			</v-chip>
 		</template>
