@@ -4,11 +4,10 @@
 		header="Add new scoring"
 	>
 		<ScoringForm
+			:form-model="scoringModel"
 			close-button
-			class="modal-card"
-			:formModel="scoringModel"
-			@formSubmitted="submitScoringForm"
-			@formClosed="closeScoringModal"
+			@formSubmitted="onSubmitScoringForm"
+			@formClosed="onCloseScoringModal"
 		/>
 	</Modal>
 
@@ -19,7 +18,7 @@
 			color="primary"
 			size="small"
 			prepend-icon="plus"
-			@click="addNewScoringOption"
+			@click="onAddNewScoringOption"
 		>
 			{{ $t('New') }}
 		</v-btn>
@@ -27,9 +26,9 @@
 
 	<ScoringList
 		ref="scoringList"
-		@onDelete="removeScoring"
-		@download="downloadScoring"
-		@statusChange="statusChange"
+		@delete="onRemoveScoring"
+		@download="onDownloadScoring"
+		@statusChange="onStatusChange"
 	/>
 </template>
 
@@ -67,11 +66,11 @@ export default {
 	},
 
 	methods: {
-		closeScoringModal() {
+		onCloseScoringModal() {
 			this.scoringModal.isOpened = false;
 		},
 
-		addNewScoringOption() {
+		onAddNewScoringOption() {
 			this.scoringModal.isOpened = true;
 
 			this.scoringModel = {
@@ -83,7 +82,7 @@ export default {
 			};
 		},
 
-		submitScoringForm(scoringForm) {
+		onSubmitScoringForm(scoringForm) {
 			const {
 				name,
 				note,
@@ -103,7 +102,7 @@ export default {
 					if (response.status === 201) {
 						Notification(this.$t("Scoring Successfully Created"), "success");
 						this.$refs.scoringList.fetchData();
-						this.closeScoringModal();
+						this.onCloseScoringModal();
 					} else if (response.message) {
 						Notification(response.message, "error");
 					}
@@ -112,7 +111,7 @@ export default {
 				});
 		},
 
-		async removeScoring(id) {
+		async onRemoveScoring(id) {
 			await AssistancesService.removeScoring(id)
 				.then((response) => {
 					if (response.status === 204) {
@@ -126,7 +125,7 @@ export default {
 				});
 		},
 
-		async downloadScoring(scoring) {
+		async onDownloadScoring(scoring) {
 			await AssistancesService.downloadScoring(scoring.id)
 				.then(({ data, status, message }) => {
 					if (status === 200) {
@@ -144,7 +143,7 @@ export default {
 				});
 		},
 
-		async statusChange({ id, enabled }) {
+		async onStatusChange({ id, enabled }) {
 			await AssistancesService.updateScoring({ id, enabled })
 				.then((response) => {
 					if (response.status === 200) {

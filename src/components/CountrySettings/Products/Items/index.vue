@@ -4,15 +4,14 @@
 		:header="modalHeader"
 	>
 		<ProductForm
-			close-button
-			class="modal-card"
 			:categories="categories"
-			:formModel="productModel"
+			:form-model="productModel"
 			:editing="productModal.isEditing"
 			:form-disabled="productModal.isDetail"
 			:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
-			@formSubmitted="submitProductForm"
-			@formClosed="closeProductModal"
+			close-button
+			@formSubmitted="onSubmitProductForm"
+			@formClosed="onCloseProductModal"
 		/>
 	</Modal>
 
@@ -23,7 +22,7 @@
 			color="primary"
 			size="small"
 			prepend-icon="plus"
-			@click="addNewProduct"
+			@click="onAddNewProduct"
 		>
 			{{ $t('New') }}
 		</v-btn>
@@ -32,9 +31,9 @@
 	<ProductsList
 		ref="productsList"
 		:categories="categories"
-		@onDelete="removeProduct"
-		@showEdit="editProduct"
-		@showDetail="showDetail"
+		@delete="onRemoveProduct"
+		@showEdit="onEditProduct"
+		@showDetail="onShowDetail"
 	/>
 </template>
 
@@ -117,7 +116,7 @@ export default {
 			}
 		},
 
-		showDetail(product) {
+		onShowDetail(product) {
 			this.mapToFormModel(product);
 			this.productModal = {
 				isEditing: false,
@@ -157,11 +156,11 @@ export default {
 			};
 		},
 
-		closeProductModal() {
+		onCloseProductModal() {
 			this.productModal.isOpened = false;
 		},
 
-		editProduct(product) {
+		onEditProduct(product) {
 			this.productModal = {
 				isEditing: true,
 				isOpened: true,
@@ -171,7 +170,7 @@ export default {
 			this.mapToFormModel(product);
 		},
 
-		addNewProduct() {
+		onAddNewProduct() {
 			this.productModal = {
 				isEditing: false,
 				isOpened: true,
@@ -192,7 +191,7 @@ export default {
 			};
 		},
 
-		async submitProductForm(productForm) {
+		async onSubmitProductForm(productForm) {
 			const {
 				id,
 				iso3,
@@ -231,7 +230,7 @@ export default {
 				if (status === 200) {
 					Notification(this.$t("Product Successfully Created"), "success");
 					this.$refs.productsList.fetchData();
-					this.closeProductModal();
+					this.onCloseProductModal();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
@@ -246,7 +245,7 @@ export default {
 				if (status === 200) {
 					Notification(this.$t("Product Successfully Updated"), "success");
 					this.$refs.productsList.fetchData();
-					this.closeProductModal();
+					this.onCloseProductModal();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
@@ -262,7 +261,7 @@ export default {
 			return null;
 		},
 
-		async removeProduct(id) {
+		async onRemoveProduct(id) {
 			await ProductService.removeProduct(id).then(({ status }) => {
 				if (status === 204) {
 					Notification(this.$t("Product Successfully Removed"), "success");

@@ -8,25 +8,25 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES)"
-		@rowClicked="(row) => showDetail(row.item)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row)"
+				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
 				v-if="userCan.addEditProducts"
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row)"
+				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
@@ -39,7 +39,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 	</Table>

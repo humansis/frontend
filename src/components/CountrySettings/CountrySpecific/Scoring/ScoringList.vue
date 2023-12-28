@@ -6,21 +6,21 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		is-row-click-disabled
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				:disabled="!userCan.editScoring"
 				:icon="scoringStatusChangeButtonIcon(row)"
 				:tooltip-text="scoringStatusChangeButtonTooltip(row)"
-				@actionConfirmed="statusChange(row.id, !row.enabled)"
+				@actionConfirmed="onStatusChange(row.id, !row.enabled)"
 			/>
 
 			<ButtonAction
 				icon="download"
 				tooltip-text="Download"
-				@actionConfirmed="download(row)"
+				@actionConfirmed="onDownload(row)"
 			/>
 
 			<ButtonAction
@@ -33,7 +33,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 	</Table>

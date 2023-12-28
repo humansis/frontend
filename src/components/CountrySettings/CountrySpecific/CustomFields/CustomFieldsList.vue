@@ -8,24 +8,24 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
-		@per-page-changed="perPageChange"
-		@page-changed="pageChange"
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
-		@search="search"
-		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
-		@rowClicked="(row) => showDetail(row.item)"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
-				@actionConfirmed="showDetail(row)"
+				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
 				icon="edit"
 				tooltip-text="Edit"
-				@actionConfirmed="showEdit(row)"
+				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
@@ -37,7 +37,7 @@
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
-				@actionConfirmed="remove(row.id)"
+				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
 
@@ -48,7 +48,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportCustomFields"
+				@export="onExportCustomFields"
 			/>
 		</template>
 	</Table>
@@ -101,10 +101,6 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.fetchData();
 	},
@@ -130,7 +126,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		async exportCustomFields(exportType, format) {
+		async onExportCustomFields(exportType, format) {
 			if (exportType === EXPORT.CUSTOM_FIELDS) {
 				try {
 					this.exportControl.loading = true;
@@ -140,7 +136,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "errorr");
+					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

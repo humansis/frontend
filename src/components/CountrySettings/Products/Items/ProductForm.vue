@@ -7,7 +7,7 @@
 			label="Name"
 			name="name"
 			class="mb-6"
-			@update:modelValue="validate('name')"
+			@update:modelValue="onValidate('name')"
 		/>
 
 		<DataInput
@@ -30,7 +30,7 @@
 			item-title="name"
 			item-value="id"
 			class="mb-6"
-			@update:modelValue="validate('productCategoryId')"
+			@update:modelValue="onValidate('productCategoryId')"
 		/>
 
 		<template v-if="isCategoryTypeCashback">
@@ -43,7 +43,7 @@
 				type="number"
 				class="mb-6"
 				hide-spin-buttons
-				@blur="validate('unitPrice')"
+				@blur="onValidate('unitPrice')"
 			/>
 
 			<DataSelect
@@ -55,7 +55,7 @@
 				label="Currency"
 				name="currency"
 				class="mb-6"
-				@update:modelValue="validate('currency')"
+				@update:modelValue="onValidate('currency')"
 			/>
 		</template>
 
@@ -69,7 +69,7 @@
 			density="compact"
 			accept="image/*"
 			class="mt-5"
-			@update:modelValue="validate('uploadedImage')"
+			@update:modelValue="onValidate('uploadedImage')"
 		/>
 
 		<v-img
@@ -88,7 +88,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -99,7 +99,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -173,7 +173,7 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -183,7 +183,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},

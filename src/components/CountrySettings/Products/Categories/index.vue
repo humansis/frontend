@@ -4,14 +4,13 @@
 		:header="modalHeader"
 	>
 		<CategoryForm
-			close-button
-			class="modal-card"
-			:formModel="categoryModel"
+			:form-model="categoryModel"
 			:editing="categoryModal.isEditing"
 			:form-disabled="categoryModal.isDetail"
 			:submit-button-label="categoryModal.isEditing ? 'Update' : 'Create'"
-			@formSubmitted="submitCategoryForm"
-			@formClosed="closeCategoryModal"
+			close-button
+			@formSubmitted="onSubmitCategoryForm"
+			@formClosed="onCloseCategoryModal"
 		/>
 	</Modal>
 
@@ -22,7 +21,7 @@
 			color="primary"
 			size="small"
 			prepend-icon="plus"
-			@click="addNewCategory"
+			@click="onAddNewCategory"
 		>
 			{{ $t('New') }}
 		</v-btn>
@@ -30,9 +29,9 @@
 
 	<CategoriesList
 		ref="categoriesList"
-		@onDelete="removeCategory"
-		@showEdit="editCategory"
-		@showDetail="showDetail"
+		@delete="onRemoveCategory"
+		@showEdit="onEditCategory"
+		@showDetail="onShowDetail"
 	/>
 </template>
 
@@ -91,7 +90,7 @@ export default {
 	},
 
 	methods: {
-		showDetail(category) {
+		onShowDetail(category) {
 			this.mapToFormModel(category);
 			this.categoryModal = {
 				isEditing: false,
@@ -120,11 +119,11 @@ export default {
 			};
 		},
 
-		closeCategoryModal() {
+		onCloseCategoryModal() {
 			this.categoryModal.isOpened = false;
 		},
 
-		editCategory(category) {
+		onEditCategory(category) {
 			this.categoryModal = {
 				isEditing: true,
 				isOpened: true,
@@ -134,7 +133,7 @@ export default {
 			this.mapToFormModel(category);
 		},
 
-		addNewCategory() {
+		onAddNewCategory() {
 			this.categoryModal = {
 				isEditing: false,
 				isOpened: true,
@@ -151,7 +150,7 @@ export default {
 			};
 		},
 
-		async submitCategoryForm(categoryForm) {
+		async onSubmitCategoryForm(categoryForm) {
 			const {
 				id,
 				iso3,
@@ -183,7 +182,7 @@ export default {
 				if (status === 200) {
 					Notification(this.$t("Category Successfully Created"), "success");
 					this.$refs.categoriesList.fetchData();
-					this.closeCategoryModal();
+					this.onCloseCategoryModal();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Category")} ${e.message || e}`, "error");
@@ -198,7 +197,7 @@ export default {
 				if (status === 200) {
 					Notification(this.$t("Category Successfully Updated"), "success");
 					this.$refs.categoriesList.fetchData();
-					this.closeCategoryModal();
+					this.onCloseCategoryModal();
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Category")} ${e.message || e}`, "error");
@@ -214,7 +213,7 @@ export default {
 			return null;
 		},
 
-		async removeCategory(id) {
+		async onRemoveCategory(id) {
 			await ProductService.removeCategory(id).then(({ status }) => {
 				if (status === 204) {
 					Notification(this.$t("Category Successfully Removed"), "success");

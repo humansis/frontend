@@ -6,7 +6,7 @@
 			label="Name"
 			name="name"
 			class="mb-6"
-			@update:modelValue="validate('name')"
+			@update:modelValue="onValidate('name')"
 		/>
 
 		<p class="text-caption text-red mb-4">
@@ -32,7 +32,7 @@
 			variant="outlined"
 			density="compact"
 			class="mt-5"
-			@update:modelValue="validate('uploadedImage')"
+			@update:modelValue="onValidate('uploadedImage')"
 		/>
 	</v-card-text>
 
@@ -44,7 +44,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -55,7 +55,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t("Create") }}
 		</v-btn>
@@ -107,11 +107,7 @@ export default {
 	},
 
 	methods: {
-		deleteDropFile(index) {
-			this.formModel.dropFiles.splice(index, 1);
-		},
-
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 
 			if (this.v$.$invalid) {
@@ -122,7 +118,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},

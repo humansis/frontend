@@ -7,24 +7,24 @@
 			label="Name"
 			name="name"
 			class="mb-6"
-			@update:modelValue="validate('name')"
+			@update:modelValue="onValidate('name')"
 		/>
 
 		<v-radio-group
 			v-model="formModel.type"
 			:error-messages="validationMsg('type')"
 			class="category-types radio-group"
-			@update:modelValue="validate('type')"
+			@update:modelValue="onValidate('type')"
 		>
 			<div
 				v-for="({ code, value }) of options.categoryTypes"
-				class="mb-3"
 				:key="`category-type-${code}`"
+				class="mb-3"
 			>
 				<v-radio
 					:disabled="formDisabled"
 					:value="value"
-					@update:modelValue="validate('type')"
+					@update:modelValue="onValidate('type')"
 				>
 					<template v-slot:label>
 						{{ $t(value) }}
@@ -48,7 +48,7 @@
 			density="compact"
 			accept="image/*"
 			class="mt-1"
-			@update:modelValue="validate('uploadedImage')"
+			@update:modelValue="onValidate('uploadedImage')"
 		/>
 
 		<v-img
@@ -67,7 +67,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -78,7 +78,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -149,7 +149,7 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -159,7 +159,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},

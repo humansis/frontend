@@ -115,11 +115,11 @@ export default {
 			this.$emit("delete", id);
 		},
 
-		download(scoring) {
+		onDownload(scoring) {
 			this.$emit("download", scoring);
 		},
 
-		statusChange(id, enabled) {
+		onStatusChange(id, enabled) {
 			this.$emit("statusChange", { id, enabled });
 		},
 

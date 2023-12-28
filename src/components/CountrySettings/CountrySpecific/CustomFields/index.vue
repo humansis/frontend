@@ -4,13 +4,12 @@
 		:header="modalHeader"
 	>
 		<CustomFieldsForm
-			close-button
-			class="modal-card"
-			:formModel="customFieldModel"
+			:form-model="customFieldModel"
 			:submit-button-label="submitButtonLabel"
 			:form-disabled="customFieldModal.isDetail"
-			@formSubmitted="submitCustomFieldForm"
-			@formClosed="closeCustomFieldModal"
+			close-button
+			@formSubmitted="onSubmitCustomFieldForm"
+			@formClosed="onCloseCustomFieldModal"
 		/>
 	</Modal>
 
@@ -20,7 +19,7 @@
 			color="primary"
 			size="small"
 			prepend-icon="plus"
-			@click="addNewCustomField"
+			@click="onAddNewCustomField"
 		>
 			{{ $t('New') }}
 		</v-btn>
@@ -28,9 +27,9 @@
 
 	<CustomFieldsList
 		ref="customFieldsList"
-		@onDelete="removeCustomField"
-		@showDetail="showDetail"
-		@showEdit="editCustomField"
+		@delete="onRemoveCustomField"
+		@showDetail="onShowDetail"
+		@showEdit="onEditCustomField"
 	/>
 </template>
 
@@ -92,7 +91,7 @@ export default {
 	},
 
 	methods: {
-		showDetail(customField) {
+		onShowDetail(customField) {
 			this.mapToFormModel(customField);
 			this.customFieldModal = {
 				isOpened: true,
@@ -102,7 +101,7 @@ export default {
 			};
 		},
 
-		editCustomField(customField) {
+		onEditCustomField(customField) {
 			this.mapToFormModel(customField);
 			this.customFieldModal = {
 				isOpened: true,
@@ -131,11 +130,11 @@ export default {
 			};
 		},
 
-		closeCustomFieldModal() {
+		onCloseCustomFieldModal() {
 			this.customFieldModal.isOpened = false;
 		},
 
-		addNewCustomField() {
+		onAddNewCustomField() {
 			this.customFieldModal = {
 				isOpened: true,
 				isDetail: false,
@@ -152,7 +151,7 @@ export default {
 			};
 		},
 
-		submitCustomFieldForm(customFieldForm) {
+		onSubmitCustomFieldForm(customFieldForm) {
 			const {
 				id,
 				field,
@@ -183,7 +182,7 @@ export default {
 					if (response.status === 200) {
 						Notification(this.$t("Custom Field Successfully Created"), "success");
 						this.$refs.customFieldsList.fetchData();
-						this.closeCustomFieldModal();
+						this.onCloseCustomFieldModal();
 					} else if (response.message) {
 						Notification(response.message, "error");
 					}
@@ -202,7 +201,7 @@ export default {
 					if (response.status === 200) {
 						Notification(this.$t("Custom Field Successfully Updated"), "success");
 						this.$refs.customFieldsList.fetchData();
-						this.closeCustomFieldModal();
+						this.onCloseCustomFieldModal();
 					} else if (response.message) {
 						Notification(response.message, "error");
 					}
@@ -213,7 +212,7 @@ export default {
 				});
 		},
 
-		async removeCustomField(id) {
+		async onRemoveCustomField(id) {
 			await CustomFieldsService.deleteCustomField(id)
 				.then((response) => {
 					if (response.status === 204) {

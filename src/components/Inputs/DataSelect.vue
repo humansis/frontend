@@ -37,7 +37,7 @@
 			<v-icon
 				v-if="!iconLoading"
 				:icon="appendIcon"
-				color="primary"
+				:color="appendIconColor"
 				@click="$emit('append-icon-clicked')"
 			/>
 

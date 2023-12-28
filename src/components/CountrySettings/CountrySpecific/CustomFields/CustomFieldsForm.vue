@@ -7,7 +7,7 @@
 			label="Field"
 			name="field"
 			class="mb-6"
-			@update:modelValue="validate('field')"
+			@update:modelValue="onValidate('field')"
 		/>
 
 		<DataSelect
@@ -18,7 +18,7 @@
 			label="Type"
 			name="type"
 			class="mb-6"
-			@update:modelValue="validate('type')"
+			@update:modelValue="onValidate('type')"
 		/>
 	</v-card-text>
 
@@ -30,7 +30,7 @@
 			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="closeForm"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -41,7 +41,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="submitForm"
+			@click="onSubmitForm"
 		>
 			{{ $t(submitButtonLabel) }}
 		</v-btn>
@@ -112,7 +112,7 @@ export default {
 			this.formModel.type = this.options.types.find((item) => item.code === this.formModel.type);
 		},
 
-		submitForm() {
+		onSubmitForm() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -122,7 +122,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
 		},
