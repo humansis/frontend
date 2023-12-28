@@ -4,11 +4,19 @@
   > thead > tr > th {
     font-weight: bold !important;
     white-space: nowrap;
+
+    &:last-child > div {
+      justify-content: center;
+    }
   }
 
    > tbody > tr > td {
      padding-top: .3125rem;
      padding-bottom: .3125rem;
+
+     &:last-child > div {
+       text-align: center;
+     }
    }
 
   .table-actions > button {
@@ -64,9 +72,9 @@
       margin-right: 0;
     }
 
-    .total-count-col {
-      max-width: 14rem;
-      margin-right: auto;
+    .total-count-col,
+    .item-selected-col {
+      max-width: 12rem;
     }
 
     .pagination-col {

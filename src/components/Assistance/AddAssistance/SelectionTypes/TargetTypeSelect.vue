@@ -16,7 +16,7 @@
 				item-title="name"
 				item-value="id"
 				multiple
-				@update:modelValue="onValidate('communities')"
+				@update:modelValue="onTargetSelect('communities')"
 			/>
 
 			<DataSelect
@@ -30,7 +30,8 @@
 				item-title="name"
 				item-value="id"
 				multiple
-				@update:modelValue="onValidate('institutions')"
+				is-data-shown-as-tag
+				@update:modelValue="onTargetSelect('institutions')"
 			/>
 		</v-card-text>
 	</v-card>
@@ -120,21 +121,6 @@ export default {
 		this.fetchData();
 	},
 
-	updated() {
-		const communities = [];
-		const institutions = [];
-
-		if (this.formModel.communities.length) {
-			this.formModel.communities.forEach(({ id }) => communities.push(id));
-		}
-
-		if (this.formModel.institutions.length) {
-			this.formModel.institutions.forEach(({ id }) => institutions.push(id));
-		}
-
-		this.$emit("updatedData", { communities, institutions });
-	},
-
 	methods: {
 		submit() {
 			this.v$.$touch();
@@ -181,6 +167,7 @@ export default {
 				);
 
 				this.prepareDuplicatedInstitutions(data);
+				this.onTargetSelect();
 			} catch (e) {
 				Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 			}
@@ -216,6 +203,25 @@ export default {
 					id,
 				};
 			});
+		},
+
+		onTargetSelect(field) {
+			if (field) {
+				this.onValidate(field);
+			}
+
+			const communities = [];
+			const institutions = [];
+
+			if (this.formModel.communities.length) {
+				this.formModel.communities.forEach(({ id }) => communities.push(id));
+			}
+
+			if (this.formModel.institutions.length) {
+				this.formModel.institutions.forEach(({ id }) => institutions.push(id));
+			}
+
+			this.$emit("updatedData", { communities, institutions });
 		},
 	},
 };

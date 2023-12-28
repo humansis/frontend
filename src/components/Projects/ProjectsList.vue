@@ -42,7 +42,7 @@
 			/>
 		</template>
 
-		<template v-slot:export>
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"

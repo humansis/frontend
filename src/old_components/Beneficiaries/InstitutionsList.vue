@@ -67,7 +67,7 @@
 			<b-button
 				slot="trigger"
 				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				@click="filtersToggle"
+				@click="advancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
 			</b-button>
@@ -171,7 +171,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		filtersToggle() {
+		advancedSearchToggle() {
 			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 

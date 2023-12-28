@@ -74,6 +74,19 @@
 			/>
 		</Modal>
 
+		<Modal
+			v-model="institutionModal.isOpened"
+			header="Detail of Institution"
+		>
+			<InstitutionForm
+				:form-model="institutionModel"
+				:institution-modal="institutionModal"
+				close-button
+				class="modal-card"
+				@formClosed="closeInstitutionModal"
+			/>
+		</Modal>
+
 		<div>
 			<v-alert
 				v-if="isCustomAmountBoxVisible && isCustomAmountEnabled && customFieldName"
@@ -166,6 +179,7 @@
 		:search-phrase="table.searchPhrase"
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
+		:selected-rows="selectedRows"
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
@@ -221,61 +235,7 @@
 			/>
 		</template>
 
-		<template v-if="assistanceDetail" v-slot:table-header>
-			<v-btn
-				:class="toDistributeButtonClass"
-				color="gray-darken-4"
-				variant="tonal"
-				size="small"
-				class="ml-0"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('toDistribute', 'To distribute')"
-				@keydown.enter.prevent
-			>
-				{{ $t('To distribute') }}
-			</v-btn>
-
-			<v-btn
-				:class="distributedButtonClass"
-				color="green-darken-4"
-				variant="tonal"
-				size="small"
-				class="ml-0"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('distributed')"
-				@keydown.enter.prevent
-			>
-				{{ $t('Distributed') }}
-			</v-btn>
-
-			<v-btn
-				:class="expiredButtonClass"
-				class="ml-0"
-				color="red-darken-1"
-				variant="tonal"
-				size="small"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('expired')"
-				@keydown.enter.prevent
-			>
-				{{ $t('Expired') }}
-			</v-btn>
-
-			<v-btn
-				:class="canceledButtonClass"
-				class="ml-0"
-				color="amber-lighten-1"
-				variant="tonal"
-				size="small"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('canceled')"
-				@keydown.enter.prevent
-			>
-				{{ $t('Canceled') }}
-			</v-btn>
-		</template>
-
-		<template v-slot:export>
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="isExportButtonDisabled"
 				:available-export-formats="exportControl.formats"
@@ -286,12 +246,58 @@
 				@export="onExportDistribution"
 			/>
 
-			<template v-if="exportControl.isBnfFileTypeSelected && !isBnfFile3Exported">
-				<v-icon icon="exclamation" type="warning" class="pr-1" />
+			<template v-if="assistanceDetail">
+				<v-btn
+					:class="toDistributeButtonClass"
+					color="gray-darken-4"
+					variant="tonal"
+					size="small"
+					class="ml-0"
+					prepend-icon="sticky-note"
+					@click="onStatusFilter('toDistribute', 'To distribute')"
+					@keydown.enter.prevent
+				>
+					{{ $t('To distribute') }}
+				</v-btn>
 
-				<p class="text-red">
-					{{ $t("BNF File 3 is generated, please wait several minutes.") }}
-				</p>
+				<v-btn
+					:class="distributedButtonClass"
+					color="green-darken-4"
+					variant="tonal"
+					size="small"
+					class="ml-0"
+					prepend-icon="sticky-note"
+					@click="onStatusFilter('distributed')"
+					@keydown.enter.prevent
+				>
+					{{ $t('Distributed') }}
+				</v-btn>
+
+				<v-btn
+					:class="expiredButtonClass"
+					class="ml-0"
+					color="red-darken-1"
+					variant="tonal"
+					size="small"
+					prepend-icon="sticky-note"
+					@click="onStatusFilter('expired')"
+					@keydown.enter.prevent
+				>
+					{{ $t('Expired') }}
+				</v-btn>
+
+				<v-btn
+					:class="canceledButtonClass"
+					class="ml-0"
+					color="amber-lighten-1"
+					variant="tonal"
+					size="small"
+					prepend-icon="sticky-note"
+					@click="onStatusFilter('canceled')"
+					@keydown.enter.prevent
+				>
+					{{ $t('Canceled') }}
+				</v-btn>
 			</template>
 		</template>
 	</Table>
@@ -409,6 +415,7 @@ export default {
 			isLoadingList: false,
 			isRecalculationLoading: false,
 			advancedSearchVisible: false,
+			selectedRows: 0,
 			exportControl: {
 				loading: false,
 				location: "assistance",
@@ -1046,6 +1053,9 @@ export default {
 							const isDistributed = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
+							const isCanceled = reliefPackages.length && reliefPackages.every(
+								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
+							);
 
 							this.table.data[key] = {
 								...this.table.data[key],
@@ -1053,7 +1063,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed,
+								selectable: !isDistributed && !isCanceled,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1100,6 +1110,9 @@ export default {
 						const isDistributed = reliefPackages.length && reliefPackages.every(
 							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 						);
+						const isCanceled = reliefPackages.length && reliefPackages.every(
+							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
+						);
 
 						this.table.data[key] = {
 							...item,
@@ -1117,7 +1130,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed,
+							selectable: !isDistributed && !isCanceled,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1175,8 +1188,9 @@ export default {
 					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
 					selectable: true,
 				};
+
 				const unDistributedItemIndex = this.table.checkedRows.findIndex(
-					(row) => row.id === this.table.data[tableIndex].id,
+					(row) => row === this.table.data[tableIndex].id,
 				);
 
 				this.table.checkedRows.splice(unDistributedItemIndex, 1);

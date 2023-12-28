@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row class="mt-2">
 		<v-col
 			v-for="(options, filter) in filtersOptions"
 			:key="filter"
@@ -11,37 +11,58 @@
 			<DataSelect
 				v-if="!options.type || options.type === 'multiselect'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
+				:label="options.name"
 				:loading="options.loading"
+				:multiple="options.multiple"
 				:items="options.data"
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
+				:placeholder="options.placeholder"
 				name="filter-select"
+				is-data-shown-as-tag
 				is-search-enabled
-				multiple
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<DataInput
 				v-else-if="options.type === 'text'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
+				:label="options.name"
+				:placeholder="options.placeholder"
 				name="filter-input"
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<DatePicker
 				v-else-if="options.type === 'date'"
 				v-model="selectedFiltersOptions[filter]"
-				:label="$t(options.name)"
+				:label="options.name"
+				:placeholder="options.placeholder"
 				name="filter-datepicker"
 				clearable
+				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
 			/>
 
 			<!-- TODO dateTimePicker -->
+		</v-col>
+	</v-row>
+
+	<v-row class="mt-1">
+		<v-col class="d-flex justify-end">
+			<v-btn
+				color="primary"
+				size="small"
+				prepend-icon="search"
+				class="text-none ml-3"
+				@click="$emit('search')"
+			>
+				{{ $t('Search') }}
+			</v-btn>
 		</v-col>
 	</v-row>
 </template>
@@ -54,7 +75,10 @@ import DatePicker from "@/components/Inputs/DatePicker";
 export default {
 	name: "AdvancedFilter",
 
-	emits: ["filtersChanged"],
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		DataSelect,
@@ -103,12 +127,6 @@ export default {
 			});
 
 			this.$emit("filtersChanged", filters, filterName);
-			this.$forceUpdate();
-		},
-
-		removeFilterValue(filter) {
-			this.selectedFiltersOptions[filter] = null;
-			this.filterChanged(filter);
 		},
 	},
 };
