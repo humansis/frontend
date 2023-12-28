@@ -39,7 +39,17 @@
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
-		<template v-slot:table-header>
+		<template v-slot:tableControls>
+			<ExportControl
+				v-if="!upcoming"
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@export="onExportAssistances"
+			/>
+
 			<v-btn
 				:class="filterButtonNew"
 				color="gray-darken-4"
@@ -152,18 +162,6 @@
 					</v-list-item>
 				</v-list>
 			</v-menu>
-		</template>
-
-		<template v-slot:export>
-			<ExportControl
-				v-if="!upcoming"
-				:disabled="!table.data.length"
-				:available-export-formats="exportControl.formats"
-				:available-export-types="exportControl.types"
-				:is-export-loading="exportControl.loading"
-				:location="exportControl.location"
-				@export="onExportAssistances"
-			/>
 		</template>
 	</Table>
 </template>

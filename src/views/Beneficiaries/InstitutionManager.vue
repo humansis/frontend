@@ -1,383 +1,408 @@
 <template>
-	<div>
-		<section class="box">
-			<h1 class="title">{{ this.pageTitle }}</h1>
-			<div class="columns">
-				<div class="column">
-					<h2 class="title is-4">{{ $t('General') }}</h2>
+	<v-container fluid>
+		<v-card class="mx-auto mt-5">
+			<v-card-title class="text-h5 font-weight-bold">
+				{{ $t(pageTitle) }}
+			</v-card-title>
 
-					<InputWithLabel
-						v-model="formModel.institutionName"
-						name="institution-name"
-						label="Institution name"
-						validated-field-name="institutionName"
-						:validation="getValidations"
-						:disabled="formDisabled"
-					/>
+			<v-card-text>
+				<v-row class="mt-1">
+					<v-col>
+						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('General') }}</h2>
 
-					<MultiSelectWithLabel
-						v-model="formModel.institutionType"
-						name="institution-type"
-						label="Institution type"
-						validated-field-name="institutionType"
-						:validation="getValidations"
-						:disabled="formDisabled"
-						:loading="institutionTypesLoading"
-						:options="options.institutionTypes"
-					/>
+						<DataInput
+							v-model="formModel.institutionName"
+							:disabled="formDisabled"
+							:error-messages="validationMsg('institutionName')"
+							label="Institution name"
+							name="institution-name"
+							class="mb-6"
+							@blur="onValidate('institutionName')"
+						/>
 
-					<MultiSelectWithLabel
-						v-model="formModel.projectName"
-						name="project-name"
-						label="Project name"
-						validated-field-name="projectName"
-						variable-to-show="name"
-						track-by="id"
-						multiple
-						:validation="getValidations"
-						:disabled="formDisabled"
-						:loading="projectsLoading"
-						:options="options.projects"
-					/>
+						<DataSelect
+							v-model="formModel.institutionType"
+							:items="options.institutionTypes"
+							:loading="institutionTypesLoading"
+							:disabled="formDisabled"
+							:clearable="!formDisabled"
+							:error-messages="validationMsg('institutionType')"
+							label="Institution type"
+							name="institution-type"
+							is-search-enabled
+							class="mb-6"
+							@update:modelValue="onValidate('institutionType')"
+						/>
 
-					<div class="mt-4">
-						<h4 class="title is-5 mb-5">
+						<DataSelect
+							v-model="formModel.projectName"
+							:items="options.projects"
+							:loading="projectsLoading"
+							:disabled="formDisabled"
+							:clearable="!formDisabled"
+							:error-messages="validationMsg('projectName')"
+							label="Project name"
+							name="project-name"
+							item-title="name"
+							item-value="id"
+							class="mb-6"
+							is-search-enabled
+							is-data-shown-as-tag
+							multiple
+							@update:modelValue="onValidate('projectName')"
+						/>
+
+						<h6 class="text-subtitle-1 mb-2">
 							{{ $t('ID') }}
-							<span class="optional-text has-text-weight-normal is-italic">
+							<i class="optional-text">
 								- {{ $t('Optional') }}
-							</span>
-						</h4>
+							</i>
+						</h6>
 
-						<InputWithLabel
+						<DataInput
 							v-model="formModel.firstInstitutionId"
-							name="first-institution-id"
 							:label="firstInstitutionIdName"
 							:disabled="formDisabled"
+							name="first-institution-id"
+							class="mb-6"
 						/>
 
-						<InputWithLabel
+						<DataInput
 							v-model="formModel.secondInstitutionId"
-							name="second-institution-id"
 							:label="secondInstitutionIdName"
 							:disabled="formDisabled"
+							name="second-institution-id"
+							class="mb-6"
 						/>
 
-						<InputWithLabel
+						<DataInput
 							v-model="formModel.thirdInstitutionId"
-							name="third-institution-id"
 							:label="thirdInstitutionIdName"
 							:disabled="formDisabled"
+							name="third-institution-id"
+							class="mb-6"
 						/>
-					</div>
 
-					<h2 class="title is-4 mt-3">{{ $t('Location') }}</h2>
+						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Location') }}</h2>
 
-					<InputWithLabel
-						v-model="formModel.addressStreet"
-						name="address-street"
-						label="Address street"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.addressNumber"
-						name="address-number"
-						label="Address number"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.addressPostCode"
-						name="address-post-code"
-						label="Address postcode"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<LocationForm
-						ref="locationForm"
-						is-editing
-						:form-model="formModel"
-						:form-disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.latitude"
-						name="latitude"
-						label="Latitude"
-						step="any"
-						input-type="Number"
-						field-class="mt-3"
-						optional
-						:controls="false"
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.longitude"
-						name="longitude"
-						label="Longitude"
-						step="any"
-						input-type="Number"
-						field-class="mt-3"
-						optional
-						:controls="false"
-						:disabled="formDisabled"
-					/>
-
-					<h2 class="title is-4 mt-4">{{ $t('Other') }}</h2>
-
-					<InputWithLabel
-						v-model="formModel.note"
-						name="note"
-						label="Note"
-						type="textarea"
-						optional
-						:placeholder="$t('Type…')"
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.eloNumber"
-						name="elo-number"
-						label="ELO number"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.contractNumber"
-						name="contract-number"
-						label="Contract number"
-						optional
-						:disabled="formDisabled"
-					/>
-				</div>
-				<div class="column">
-					<h2 class="title is-4">{{ $t('Contact') }}</h2>
-
-					<InputWithLabel
-						v-model="formModel.contactGivenName"
-						name="contact-given-name"
-						label="Contact given name"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.contactParentsName"
-						name="contact-parents-name"
-						label="Contact parents name"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.contactFamilyName"
-						name="contact-family-name"
-						label="Contact family name"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<MultiSelectWithLabel
-						v-model="formModel.nationalCardType"
-						name="national-card-type"
-						label="Contact ID type"
-						validated-field-name="nationalCardType"
-						is-error-or-nothing
-						optional
-						:validation="getValidations"
-						:disabled="formDisabled"
-						:loading="nationalCardTypesLoading"
-						:options="options.nationalCardTypes"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.nationalCardNumber"
-						name="national-card-number"
-						label="Contact ID number"
-						validated-field-name="nationalCardNumber"
-						is-error-or-nothing
-						optional
-						:validation="getValidations"
-						:disabled="formDisabled"
-					/>
-
-					<InputWithLabel
-						v-model="formModel.otherContactInformation"
-						name="other-contact-information"
-						label="Other contact information"
-						optional
-						:disabled="formDisabled"
-					/>
-
-					<div>
-						<div class="mb-5 mt-4">
-							<span class="title is-5">{{ $t('Phone') }} 1</span>
-							<span class="optional-text has-text-weight-normal is-italic">
-								- {{ $t('Optional') }}
-							</span>
-						</div>
-
-						<MultiSelectWithLabel
-							v-model="formModel.phone1.type"
-							name="phone1-type"
-							validated-field-name="phone1.type"
-							is-error-or-nothing
-							:label="`${$t('Type phone')} 1`"
-							:validation="getValidations"
+						<DataInput
+							v-model="formModel.addressStreet"
 							:disabled="formDisabled"
-							:loading="phoneTypesLoading"
-							:options="options.phoneTypes"
-						>
-							<template #checkBox>
-								<b-checkbox
+							label="Address street"
+							name="address-street"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.addressNumber"
+							:disabled="formDisabled"
+							label="Address number"
+							name="address-number"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.addressPostCode"
+							:disabled="formDisabled"
+							label="Address postcode"
+							name="address-post-code"
+							class="mb-6"
+							optional
+						/>
+
+						<LocationForm
+							ref="locationForm"
+							:form-model="formModel"
+							:form-disabled="formDisabled"
+							is-editing
+						/>
+
+						<DataInput
+							v-model="formModel.latitude"
+							:disabled="formDisabled"
+							label="Latitude"
+							name="latitude"
+							type="number"
+							class="mb-6"
+							hide-spin-buttons
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.longitude"
+							:disabled="formDisabled"
+							label="Longitude"
+							name="longitude"
+							type="number"
+							class="mb-6"
+							hide-spin-buttons
+							optional
+						/>
+
+						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Other') }}</h2>
+
+						<TextAreaInput
+							v-model.trim="formModel.note"
+							:disabled="formDisabled"
+							label="Note"
+							name="note"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.eloNumber"
+							:disabled="formDisabled"
+							label="ELO number"
+							name="elo-number"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.contractNumber"
+							:disabled="formDisabled"
+							label="Contract number"
+							name="contract-number"
+							class="mb-6"
+							optional
+						/>
+					</v-col>
+
+					<v-col>
+						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Contact') }}</h2>
+
+						<DataInput
+							v-model="formModel.contactGivenName"
+							:disabled="formDisabled"
+							label="Contact given name"
+							name="contact-given-name"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.contactParentsName"
+							:disabled="formDisabled"
+							label="Contact parents name"
+							name="contact-parents-name"
+							class="mb-6"
+							optional
+						/>
+
+						<DataInput
+							v-model="formModel.contactFamilyName"
+							:disabled="formDisabled"
+							label="Contact family name"
+							name="contact-family-name"
+							class="mb-6"
+							optional
+						/>
+
+						<DataSelect
+							v-model="formModel.nationalCardType"
+							:items="options.nationalCardTypes"
+							:loading="nationalCardTypesLoading"
+							:disabled="formDisabled"
+							:clearable="!formDisabled"
+							:error-messages="validationMsg('nationalCardType')"
+							label="Contact ID type"
+							name="national-card-type"
+							class="mb-6"
+							is-search-enabled
+							optional
+							@update:modelValue="onValidate('nationalCardType')"
+						/>
+
+						<DataInput
+							v-model="formModel.nationalCardNumber"
+							:disabled="formDisabled"
+							:error-messages="validationMsg('nationalCardNumber')"
+							label="Contact ID number"
+							name="national-card-number"
+							class="mb-6"
+							optional
+							@blur="onValidate('nationalCardNumber')"
+						/>
+
+						<DataInput
+							v-model="formModel.otherContactInformation"
+							:disabled="formDisabled"
+							label="Other contact information"
+							name="other-contact-information"
+							class="mb-6"
+							optional
+						/>
+
+						<h6 class="text-subtitle-1 mb-2">
+							{{ $t('Phone') }} 1
+							<i class="optional-text">
+								- {{ $t('Optional') }}
+							</i>
+						</h6>
+
+						<v-row class="d-flex align-center mb-2">
+							<v-col cols="7">
+								<DataSelect
+									v-model="formModel.phone1.type"
+									:items="options.phoneTypes"
+									:label="`${$t('Type phone')} 1`"
+									:error-messages="validationMsg('phone1.type')"
+									:disabled="formDisabled"
+									name="phone1-type"
+									@update:modelValue="onValidate('phone1.type')"
+								/>
+							</v-col>
+
+							<v-col cols="5" class="pb-2">
+								<v-checkbox
 									v-model="formModel.phone1.proxy"
-									class="contact-phone-checkbox ml-2"
+									:label="`${$t('Contact phone')} 1`"
 									:disabled="formDisabled"
-								>
-									{{ $t('Contact phone') }} 1
-								</b-checkbox>
-							</template>
-						</MultiSelectWithLabel>
+									hide-details
+									class="checkbox"
+								/>
+							</v-col>
+						</v-row>
 
-						<MultiSelectWithLabel
+						<DataSelect
 							v-model="formModel.phone1.ext"
-							name="phone1-ext"
-							validated-field-name="phone1.ext"
-							is-error-or-nothing
+							:items="options.phonePrefixes"
 							:label="`${$t('Prefix phone')} 1`"
-							:validation="getValidations"
 							:disabled="formDisabled"
-							:options="options.phonePrefixes"
+							name="phone1-ext"
+							class="mb-6"
 						/>
 
-						<InputWithLabel
+						<DataInput
 							v-model="formModel.phone1.phoneNo"
-							name="phone1-phone-no"
-							validated-field-name="phone1.phoneNo"
-							is-error-or-nothing
 							:label="`${$t('Phone No.')} 1`"
-							:validation="getValidations"
+							:error-messages="validationMsg('phone1.phoneNo')"
 							:disabled="formDisabled"
+							name="phone1-phone-no"
+							class="mb-6"
+							@blur="onValidate('phone1.phoneNo')"
 						/>
-					</div>
 
-					<div>
-						<div class="mb-5 mt-4">
-							<span class="title is-5">{{ $t('Phone') }} 2</span>
-							<span class="optional-text has-text-weight-normal is-italic">
+						<h6 class="text-subtitle-1 mb-2">
+							{{ $t('Phone') }} 2
+							<i class="optional-text">
 								- {{ $t('Optional') }}
-							</span>
-						</div>
+							</i>
+						</h6>
 
-						<MultiSelectWithLabel
-							v-model="formModel.phone2.type"
-							name="phone2-type"
-							validated-field-name="phone2.type"
-							is-error-or-nothing
-							:label="`${$t('Type phone')} 2`"
-							:validation="getValidations"
-							:disabled="formDisabled"
-							:loading="phoneTypesLoading"
-							:options="options.phoneTypes"
-						>
-							<template #checkBox>
-								<b-checkbox
-									v-model="formModel.phone2.proxy"
-									class="contact-phone-checkbox ml-2"
+						<v-row class="d-flex align-center mb-2">
+							<v-col cols="7">
+								<DataSelect
+									v-model="formModel.phone2.type"
+									:items="options.phoneTypes"
+									:label="`${$t('Type phone')} 2`"
+									:error-messages="validationMsg('phone2.type')"
 									:disabled="formDisabled"
-								>
-									{{ $t('Contact phone') }} 2
-								</b-checkbox>
-							</template>
-						</MultiSelectWithLabel>
+									name="phone2-type"
+									@update:modelValue="onValidate('phone2.type')"
+								/>
+							</v-col>
 
-						<MultiSelectWithLabel
+							<v-col cols="5" class="pb-2">
+								<v-checkbox
+									v-model="formModel.phone2.proxy"
+									:label="`${$t('Contact phone')} 2`"
+									:disabled="formDisabled"
+									hide-details
+									class="checkbox"
+								/>
+							</v-col>
+						</v-row>
+
+						<DataSelect
 							v-model="formModel.phone2.ext"
-							name="phone2-ext"
-							validated-field-name="phone2.ext"
-							is-error-or-nothing
+							:items="options.phonePrefixes"
 							:label="`${$t('Prefix phone')} 2`"
-							:validation="getValidations"
 							:disabled="formDisabled"
-							:options="options.phonePrefixes"
+							name="phone2-ext"
+							class="mb-6"
 						/>
 
-						<InputWithLabel
+						<DataInput
 							v-model="formModel.phone2.phoneNo"
-							name="phone2-phone-no"
-							validated-field-name="phone2.phoneNo"
-							is-error-or-nothing
 							:label="`${$t('Phone No.')} 2`"
-							:validation="getValidations"
+							:error-messages="validationMsg('phone2.phoneNo')"
 							:disabled="formDisabled"
+							name="phone2-phone-no"
+							class="mb-6"
+							@blur="onValidate('phone2.phoneNo')"
 						/>
-					</div>
 
-					<h2 class="title is-4 mt-4">{{ $t('External Support') }}</h2>
+						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('External Support') }}</h2>
 
-					<MultiSelectWithLabel
-						v-model="formModel.externalReceivedTypes"
-						name="external-received-types"
-						label="Support received types"
-						optional
-						:disabled="formDisabled"
-						:loading="externalSupportReceivedLoading"
-						:options="options.externalReceivedTypes"
-					/>
+						<DataSelect
+							v-model="formModel.externalReceivedTypes"
+							:items="options.externalReceivedTypes"
+							:disabled="formDisabled"
+							:loading="externalSupportReceivedLoading"
+							label="Support received types"
+							name="external-received-types"
+							class="mb-6"
+							optional
+						/>
 
-					<DatePickerWithLabel
-						v-model="formModel.supportDateReceived"
-						name="support-date-received"
-						label="Support date received"
-						locale="en-CA"
-						icon="calendar-day"
-						show-week-number
-						trap-focus
-						optional
-						:disabled="formDisabled"
-					/>
+						<DatePicker
+							v-model="formModel.supportDateReceived"
+							:disabled="formDisabled"
+							label="Support date received"
+							name="support-date-received"
+							class="mb-6"
+							optional
+						/>
 
-					<InputWithLabel
-						v-model="formModel.supportOrganization"
-						name="support-organization"
-						label="Support organisation"
-						optional
-						:disabled="formDisabled"
-					/>
-				</div>
-			</div>
-		</section>
+						<DataInput
+							v-model="formModel.supportOrganization"
+							:disabled="formDisabled"
+							label="Support organisation"
+							name="support-organization"
+							class="mb-6"
+							optional
+						/>
+					</v-col>
+				</v-row>
+			</v-card-text>
+		</v-card>
 
-		<div v-if="institutionLoading && !institutionAction.isCreate">
-			<b-loading :is-full-page="false" :active="true" />
-		</div>
+		<v-row class="mt-5">
+			<v-col class="d-flex justify-end">
+				<v-btn
+					color="blue-grey-lighten-4"
+					size="small"
+					variant="elevated"
+					class="text-none"
+					@click="goBack"
+				>
+					{{ goBackButtonName }}
+				</v-btn>
 
-		<div class="buttons flex-end mt-5 pb-5">
-			<b-button @click="goBack">{{ goBackButtonName }}</b-button>
-
-			<b-button
-				v-if="!institutionAction.isDetail"
-				type="is-primary"
-				@click="validateNewInstitution"
-			>
-				{{ validateButtonName }}
-			</b-button>
-		</div>
-	</div>
+				<v-btn
+					v-if="!institutionAction.isDetail"
+					color="primary"
+					size="small"
+					class="text-none ml-3"
+					@click="validateNewInstitution"
+				>
+					{{ validateButtonName }}
+				</v-btn>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
-import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
-import DatePickerWithLabel from "@/components/Inputs/DatePickerWithLabel";
-import InputWithLabel from "@/components/Inputs/InputWithLabel";
-import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
-import LocationForm from "@/components/LocationForm";
-import calendarHelper from "@/mixins/calendarHelper";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
+import TextAreaInput from "@/components/Inputs/TextAreaInput";
 import idHelper from "@/mixins/idHelper";
 import institutionHelper from "@/mixins/institutionHelper";
 import validation from "@/mixins/validation";
@@ -385,41 +410,57 @@ import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { filterEmptyValues, replaceEmptyValuesWithNull } from "@/utils/helpers";
 import { INSTITUTION } from "@/consts";
+import { maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "InstitutionManager",
 
 	components: {
 		LocationForm,
-		InputWithLabel,
-		MultiSelectWithLabel,
-		DatePickerWithLabel,
+		DataInput,
+		DataSelect,
+		DatePicker,
+		TextAreaInput,
 	},
 
-	mixins: [validation, calendarHelper, idHelper, institutionHelper],
+	mixins: [validation, idHelper, institutionHelper],
 
-	validations: {
-		formModel: {
-			institutionName: { required },
-			institutionType: { required },
-			projectName: { required },
-			adm1: { required },
-			nationalCardNumber: {
-				maxLength: maxLength(255),
-				required: requiredIf((form) => form.nationalCardType),
+	validations() {
+		return {
+			formModel: {
+				institutionName: { required },
+				institutionType: { required },
+				projectName: { required },
+				adm1: { required },
+				nationalCardNumber: {
+					maxLength: maxLength(255),
+					required: requiredIf(this.formModel.nationalCardType),
+				},
+				nationalCardType: { required: requiredIf(this.formModel.nationalCardNumber) },
+				phone1: {
+					type: { required: requiredIf(this.formModel.phone1.phoneNo
+							|| this.formModel.phone1.ext),
+					},
+					phoneNo: { required: requiredIf(this.formModel.phone1.type
+							|| this.formModel.phone1.ext),
+					},
+					ext: { required: requiredIf(this.formModel.phone1.phoneNo
+							|| this.formModel.phone1.type),
+					},
+				},
+				phone2: {
+					type: { required: requiredIf(this.formModel.phone2.phoneNo
+							|| this.formModel.phone2.ext),
+					},
+					phoneNo: { required: requiredIf(this.formModel.phone2.type
+							|| this.formModel.phone2.ext),
+					},
+					ext: { required: requiredIf(this.formModel.phone2.phoneNo
+							|| this.formModel.phone2.type),
+					},
+				},
 			},
-			nationalCardType: { required: requiredIf((form) => form.nationalCardNumber) },
-			phone1: {
-				type: { required: requiredIf((form) => form.phoneNo || form.ext) },
-				phoneNo: { required: requiredIf((form) => form.type || form.ext) },
-				ext: { required: requiredIf((form) => form.phoneNo || form.type) },
-			},
-			phone2: {
-				type: { required: requiredIf((form) => form.phoneNo || form.ext) },
-				phoneNo: { required: requiredIf((form) => form.type || form.ext) },
-				ext: { required: requiredIf((form) => form.phoneNo || form.type) },
-			},
-		},
+		};
 	},
 
 	data() {
@@ -481,12 +522,13 @@ export default {
 		},
 
 		validateNewInstitution() {
-			this.$v.$touch();
+			this.v$.$touch();
 			this.$refs.locationForm.submitLocationForm();
-			if (this.$v.$invalid) return;
+
+			if (this.v$.$invalid) return;
 
 			this.submitInstitutionForm(this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
 		submitInstitutionForm(institutionForm) {
@@ -535,18 +577,18 @@ export default {
 				...phone1.phoneNo?.length && { number: phone1.phoneNo },
 				...phone1.type?.code && { type: phone1.type.code },
 				...phone1.ext?.code
-					&& phone1.phoneNo?.length
-					&& phone1.type?.code
-					&& { proxy: phone1.proxy },
+				&& phone1.phoneNo?.length
+				&& phone1.type?.code
+				&& { proxy: phone1.proxy },
 			};
 			const secondPhone = {
 				...phone2.ext?.code && { prefix: phone2.ext.code },
 				...phone2.phoneNo?.length && { number: phone2.phoneNo },
 				...phone2.type?.code && { type: phone2.type.code },
 				...phone2.ext?.code
-					&& phone2.phoneNo?.length
-					&& phone2.type?.code
-					&& { proxy: phone2.proxy },
+				&& phone2.phoneNo?.length
+				&& phone2.type?.code
+				&& { proxy: phone2.proxy },
 			};
 			const modifiedSupportDateReceived = supportDateReceived
 				? this.$moment(supportDateReceived).format("YYYY-MM-DD")
@@ -624,20 +666,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.contact-phone-checkbox {
-	white-space: nowrap;
-}
-
-.b-tabs ::v-deep {
-	.tab-content {
-		padding-left: 0;
-		padding-right: 0;
-	}
-
-	ul > li > a {
-		padding-left: 0;
-	}
-}
-</style>

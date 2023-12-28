@@ -13,9 +13,7 @@
 					@search="$emit('search', $event)"
 				/>
 
-				<slot name="export" />
-				<slot name="filterButton" />
-				<slot name="table-header" />
+				<slot name="tableControls" />
 			</v-col>
 
 			<v-col cols="5" lg="3">
@@ -45,7 +43,7 @@
 			</v-col>
 		</v-row>
 
-		<slot name="filter" />
+		<slot name="advancedControls" />
 
 		<v-data-table
 			v-bind="$attrs"
@@ -82,7 +80,24 @@
 						>
 							{{ totalCount }}
 						</v-chip>
+					</v-col>
 
+					<v-col v-if="selectedRows > 0" class="item-selected-col">
+						<v-chip
+							label=""
+							color="light-blue-darken-2"
+							class="rounded-s-lg rounded-be-0 rounded-te-0"
+						>
+							{{ $t('Items Selected') }}
+						</v-chip>
+
+						<v-chip
+							label=""
+							color="grey-darken-1"
+							class="rounded-e-lg rounded-bs-0 rounded-ts-0"
+						>
+							{{ selectedRows }}
+						</v-chip>
 					</v-col>
 
 					<v-col class="pagination-col">
@@ -201,6 +216,11 @@ export default {
 		showDefaultFooter: {
 			type: Boolean,
 			default: false,
+		},
+
+		selectedRows: {
+			type: Number,
+			default: 0,
 		},
 	},
 
