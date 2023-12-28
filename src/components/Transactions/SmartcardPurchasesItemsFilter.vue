@@ -4,8 +4,8 @@
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
 		multiline
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -22,7 +22,7 @@ export default {
 	name: "SmartcardPurchasesItemsFilter",
 
 	emits: [
-		"onSearch",
+		"search",
 		"filtersChanged",
 	],
 
@@ -185,7 +185,7 @@ export default {
 			}
 		},
 
-		async filterChanged(filters, filterName) {
+		async onFilterChanged(filters, filterName) {
 			const preparedFilters = { ...filters };
 
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);

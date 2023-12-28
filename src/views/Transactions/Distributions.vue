@@ -7,7 +7,7 @@
 			color="primary"
 			align-tabs="start"
 			class="mt-5 mb-5"
-			@update:modelValue="redirectToTab"
+			@update:modelValue="onRedirectToTab"
 		>
 			<v-tab :value="0" class="text-none">
 				<v-icon icon="hand-holding-water" class="mr-2" />
@@ -22,7 +22,7 @@
 			</v-tab>
 		</v-tabs>
 
-		<Table
+		<DataGrid
 			v-show="show"
 			v-model:items-per-page="perPage"
 			v-model:sort-by="sortValue"
@@ -34,12 +34,12 @@
 			reset-sort-button
 			reset-filters-button
 			is-search-visible
-			@per-page-changed="perPageChange"
-			@page-changed="pageChange"
+			@perPageChanged="onPerPageChange"
+			@pageChanged="onPageChange"
 			@update:sortBy="onSort"
-			@search="search"
-			@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS)"
-			@resetFilters="resetFilters"
+			@search="onSearch"
+			@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS)"
+			@resetFilters="onResetFilters"
 		>
 			<template v-slot:tableControls>
 				<ExportControl
@@ -48,7 +48,7 @@
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
-					@onExport="exportDistributions"
+					@export="onExportDistributions"
 				/>
 
 				<v-btn
@@ -57,7 +57,7 @@
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
-					@click="advancedSearchToggle"
+					@click="onAdvancedSearchToggle"
 				>
 					{{ $t('Advanced Search') }}
 				</v-btn>
@@ -71,19 +71,19 @@
 								ref="distributionFilter"
 								:defaultFilters="{ ...filters, ...locationsFilter }"
 								@filtersChanged="onFiltersChange"
-								@onSearch="search(table.searchPhrase)"
+								@search="onSearch(table.searchPhrase)"
 							/>
 						</v-expansion-panel-text>
 					</v-expansion-panel>
 				</v-expansion-panels>
 			</template>
-		</Table>
+		</DataGrid>
 	</v-container>
 </template>
 
 <script>
 import TransactionService from "@/services/TransactionService";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import DistributionsFilter from "@/components/Transactions/DistributionsFilter";
 import grid from "@/mixins/grid";
@@ -99,7 +99,7 @@ export default {
 
 	components: {
 		ExportControl,
-		Table,
+		DataGrid,
 		DistributionsFilter,
 	},
 
@@ -180,7 +180,7 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		redirectToTab(tab) {
+		onRedirectToTab(tab) {
 			if (tab) {
 				this.$router.push({ name: "TransactionsPurchases" });
 			}
@@ -217,11 +217,11 @@ export default {
 			this.table.progress = 100;
 		},
 
-		advancedSearchToggle() {
+		onAdvancedSearchToggle() {
 			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
-		resetFilters() {
+		onResetFilters() {
 			this.resetSearch({ tableRef: "table", filtersRef: "distributionFilter" });
 		},
 
@@ -229,7 +229,7 @@ export default {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportDistributions(exportType, format) {
+		async onExportDistributions(exportType, format) {
 			if (exportType === EXPORT.TRANSACTIONS) {
 				try {
 					this.exportControl.loading = true;
