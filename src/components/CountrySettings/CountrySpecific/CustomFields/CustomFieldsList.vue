@@ -1,0 +1,151 @@
+<template>
+	<Table
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@per-page-changed="perPageChange"
+		@page-changed="pageChange"
+		@update:sortBy="onSort"
+		@search="search"
+		@resetSort="resetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
+		@rowClicked="(row) => showDetail(row.item)"
+	>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="showDetail(row)"
+			/>
+
+			<ButtonAction
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="showEdit(row)"
+			/>
+
+			<ButtonAction
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Custom Field"
+				confirm-message="Are you sure sure you want to delete Custom Field?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="remove(row.id)"
+			/>
+		</template>
+
+		<template v-slot:tableControls>
+			<ExportControl
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@onExport="exportCustomFields"
+			/>
+		</template>
+	</Table>
+</template>
+
+<script>
+import CustomFieldsService from "@/services/CustomFieldsService";
+import ButtonAction from "@/components/ButtonAction";
+import Table from "@/components/DataGrid/Table";
+import ExportControl from "@/components/Inputs/ExportControl";
+import grid from "@/mixins/grid";
+import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { downloadFile } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
+import { EXPORT, TABLE } from "@/consts";
+
+export default {
+	name: "CustomFieldsList",
+
+	components: {
+		ExportControl,
+		ButtonAction,
+		Table,
+	},
+
+	mixins: [grid],
+
+	data() {
+		return {
+			TABLE,
+			exportControl: {
+				loading: false,
+				location: "customFields",
+				types: [EXPORT.CUSTOM_FIELDS],
+				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
+			},
+			table: {
+				data: [],
+				columns: generateColumns([
+					{ key: "field" },
+					{ key: "type" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
+				total: 0,
+				currentPage: 1,
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS.key,
+				searchPhrase: "",
+			},
+		};
+	},
+
+	watch: {
+		$route: "fetchData",
+	},
+
+	created() {
+		this.fetchData();
+	},
+
+	methods: {
+		async fetchData() {
+			this.isLoadingList = true;
+
+			await CustomFieldsService.getListOfCustomFields(
+				this.table.currentPage,
+				this.perPage,
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
+				this.table.searchPhrase,
+			).then((response) => {
+				this.table.data = response.data;
+				this.table.total = response.totalCount;
+			}).catch((e) => {
+				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
+			});
+
+			this.isLoadingList = false;
+		},
+
+		async exportCustomFields(exportType, format) {
+			if (exportType === EXPORT.CUSTOM_FIELDS) {
+				try {
+					this.exportControl.loading = true;
+
+					const filename = `Custom Fields ${normalizeExportDate()}`;
+					const { data, status, message } = await CustomFieldsService.exportCustomFields(format);
+
+					downloadFile(data, filename, status, format, message);
+				} catch (e) {
+					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "errorr");
+				} finally {
+					this.exportControl.loading = false;
+				}
+			}
+		},
+	},
+};
+</script>

@@ -37,6 +37,7 @@
 			<v-icon
 				v-if="!iconLoading"
 				:icon="appendIcon"
+				color="primary"
 				@click="$emit('append-icon-clicked')"
 			/>
 
@@ -148,6 +149,11 @@ export default {
 		isAppendIconEnabled: {
 			type: Boolean,
 			default: false,
+		},
+
+		appendIconColor: {
+			type: String,
+			default: "",
 		},
 
 		variant: {

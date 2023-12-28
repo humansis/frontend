@@ -410,10 +410,12 @@ export default {
 						{
 							title: "Products",
 							prependIcon: "shopping-cart",
+							to: { name: "Products" },
 						},
 						{
 							title: "Country specifics",
 							prependIcon: "map-marker-alt",
+							to: { name: "CountrySpecific" },
 						},
 					],
 				},

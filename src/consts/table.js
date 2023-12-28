@@ -8,5 +8,8 @@ export default {
 			INSTITUTION: { key: "id", order: "desc" },
 		},
 		INSTITUTIONS: { key: "id", order: "desc" },
+		PRODUCTS_ITEMS: { key: "id", order: "asc" },
+		PRODUCTS_CATEGORIES: { key: "id", order: "asc" },
+		CUSTOM_FIELDS: { key: "id", order: "asc" },
 	},
 };

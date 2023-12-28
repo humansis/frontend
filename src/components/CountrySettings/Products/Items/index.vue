@@ -1,0 +1,277 @@
+<template>
+	<Modal
+		v-model="productModal.isOpened"
+		:header="modalHeader"
+	>
+		<ProductForm
+			close-button
+			class="modal-card"
+			:categories="categories"
+			:formModel="productModel"
+			:editing="productModal.isEditing"
+			:form-disabled="productModal.isDetail"
+			:submit-button-label="productModal.isEditing ? 'Update' : 'Create'"
+			@formSubmitted="submitProductForm"
+			@formClosed="closeProductModal"
+		/>
+	</Modal>
+
+	<div class="d-flex justify-end">
+		<v-btn
+			v-if="userCan.addEditProducts"
+			class="text-none ml-0 mb-3"
+			color="primary"
+			size="small"
+			prepend-icon="plus"
+			@click="addNewProduct"
+		>
+			{{ $t('New') }}
+		</v-btn>
+	</div>
+
+	<ProductsList
+		ref="productsList"
+		:categories="categories"
+		@onDelete="removeProduct"
+		@showEdit="editProduct"
+		@showDetail="showDetail"
+	/>
+</template>
+
+<script>
+import { mapState } from "vuex";
+import ProductService from "@/services/ProductService";
+import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm";
+import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
+import Modal from "@/components/Inputs/Modal";
+import permissions from "@/mixins/permissions";
+import { Notification } from "@/utils/UI";
+import { CURRENCIES } from "@/consts";
+
+export default {
+	name: "Items",
+
+	components: {
+		ProductsList,
+		Modal,
+		ProductForm,
+	},
+
+	mixins: [permissions],
+
+	data() {
+		return {
+			productModal: {
+				isWaiting: false,
+				isOpened: false,
+				isEditing: false,
+				isDetail: false,
+			},
+			productModel: {
+				id: null,
+				iso3: "",
+				name: "",
+				productCategoryId: null,
+				unit: "",
+				unitPrice: 0,
+				currency: "",
+				image: [],
+				uploadedImage: null,
+			},
+			categories: [],
+			currencies: CURRENCIES,
+		};
+	},
+
+	computed: {
+		modalHeader() {
+			let result = "";
+			if (this.productModal.isDetail) {
+				result = "Detail of Product";
+			} else if (this.productModal.isEditing) {
+				result = "Edit Product";
+			} else {
+				result = "Create New Product";
+			}
+			return result;
+		},
+
+		...mapState(["country"]),
+	},
+
+	created() {
+		this.fetchCategories();
+	},
+
+	methods: {
+		async fetchCategories() {
+			try {
+				const { data: { data } } = await ProductService.getListOfCategories(
+					1,
+					1000,
+				);
+
+				this.categories = data;
+			} catch (e) {
+				Notification(`${this.$t("Categories")} ${e.message || e}`, "error");
+			}
+		},
+
+		showDetail(product) {
+			this.mapToFormModel(product);
+			this.productModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: true,
+				isWaiting: false,
+			};
+		},
+
+		mapToFormModel(
+			{
+				id,
+				iso3,
+				name,
+				productCategoryId,
+				image,
+				unit,
+				unitPrice,
+				currency,
+				uploadedImage,
+			},
+		) {
+			const productCategory = this.categories.find((item) => productCategoryId === item.id);
+			const productCurrency = this.currencies.find((item) => currency === item.value);
+
+			this.productModel = {
+				...this.productModel,
+				id,
+				iso3,
+				name,
+				productCategoryId: productCategory,
+				image,
+				unit,
+				unitPrice,
+				currency: productCurrency,
+				uploadedImage,
+			};
+		},
+
+		closeProductModal() {
+			this.productModal.isOpened = false;
+		},
+
+		editProduct(product) {
+			this.productModal = {
+				isEditing: true,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+			this.mapToFormModel(product);
+		},
+
+		addNewProduct() {
+			this.productModal = {
+				isEditing: false,
+				isOpened: true,
+				isDetail: false,
+				isWaiting: false,
+			};
+
+			this.productModel = {
+				...this.productModel,
+				id: null,
+				name: "",
+				productCategoryId: null,
+				image: null,
+				unit: "",
+				unitPrice: 0,
+				currency: "",
+				uploadedImage: null,
+			};
+		},
+
+		async submitProductForm(productForm) {
+			const {
+				id,
+				iso3,
+				name,
+				productCategoryId,
+				image,
+				unit,
+				unitPrice,
+				currency,
+				uploadedImage,
+			} = productForm;
+
+			const productBody = {
+				name,
+				productCategoryId: productCategoryId.id,
+				unit,
+				unitPrice,
+				currency: currency?.value || "",
+				iso3: iso3 || this.country.iso3,
+			};
+
+			const imageUrl = await this.uploadProductImage(uploadedImage);
+			productBody.image = imageUrl || image;
+
+			if (this.productModal.isEditing && id) {
+				await this.updateProduct(id, productBody);
+			} else {
+				await this.createProduct(productBody);
+			}
+		},
+
+		async createProduct(productBody) {
+			this.productModal.isWaiting = true;
+
+			await ProductService.createProduct(productBody).then(({ status }) => {
+				if (status === 200) {
+					Notification(this.$t("Product Successfully Created"), "success");
+					this.$refs.productsList.fetchData();
+					this.closeProductModal();
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
+				this.productModal.isWaiting = false;
+			});
+		},
+
+		async updateProduct(id, productBody) {
+			this.productModal.isWaiting = true;
+
+			await ProductService.updateProduct(id, productBody).then(({ status }) => {
+				if (status === 200) {
+					Notification(this.$t("Product Successfully Updated"), "success");
+					this.$refs.productsList.fetchData();
+					this.closeProductModal();
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
+				this.productModal.isWaiting = false;
+			});
+		},
+
+		async uploadProductImage(image) {
+			if (image) {
+				const { data: { url } } = await ProductService.uploadProductImage(image);
+				return url;
+			}
+			return null;
+		},
+
+		async removeProduct(id) {
+			await ProductService.removeProduct(id).then(({ status }) => {
+				if (status === 204) {
+					Notification(this.$t("Product Successfully Removed"), "success");
+					this.$refs.productsList.removeFromList(id);
+				}
+			}).catch((e) => {
+				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
+			});
+		},
+	},
+};
+</script>
