@@ -51,6 +51,16 @@
 		/>
 	</template>
 
+	<ColorPicker
+		v-if="column.type === 'color'"
+		:value="cellData"
+		disabled
+	/>
+
+	<p v-if="column.type === 'font'" :style="fontFamily">
+		{{ cellData }}
+	</p>
+
 	<template v-if="column.type === 'tag'">
 		<v-chip
 			variant="flat"
@@ -129,12 +139,16 @@
 </template>
 
 <script>
+import ColorPicker from "@/components/Inputs/ColorPicker";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
 
 export default {
+	name: "ColumnField",
+
 	components: {
 		SvgIcon,
+		ColorPicker,
 	},
 
 	props: {
@@ -179,6 +193,10 @@ export default {
 			}
 
 			return this.cellData;
+		},
+
+		fontFamily() {
+			return `font-family: ${this.cellData}, sans-serif;`;
 		},
 	},
 

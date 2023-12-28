@@ -422,6 +422,7 @@ export default {
 				{
 					title: "Administrative Settings",
 					prependIcon: "wrench",
+					to: { name: "Administrative Settings" },
 				},
 				{
 					title: "Transactions",
@@ -432,65 +433,6 @@ export default {
 			beneficiariesActive: false,
 			countrySettingsActive: false,
 			isSmallerMenuItem: false,
-			test: [
-				{
-					id: 1,
-					name: "Food",
-					slug: "food",
-					children: [
-						{
-							id: 2,
-							name: "Fruits & Vegetables",
-							slug: "fruits-vegetables",
-							children: [
-								{
-									id: 3,
-									name: "Fresh Fruits",
-									slug: "fresh-fruit",
-									children: [],
-								},
-								{
-									id: 4,
-									name: "Fresh Vegetables",
-									slug: "fresh-vegetable",
-									children: [],
-								},
-							],
-						},
-						{
-							id: 5,
-							name: "Breakfast",
-							slug: "breakfast",
-							children: [
-								{
-									id: 6,
-									name: "Local Breakfast",
-									slug: "local-breakfast",
-									children: [],
-								},
-							],
-						},
-					],
-				},
-				{
-					id: 7,
-					name: "Home & Cleaning",
-					slug: "home-cleaning",
-					children: [
-						{
-							id: 8,
-							name: "Air Fresheners",
-							slug: "air-freshners",
-							children: [],
-						},
-						{
-							id: 9,
-							name: "Cleaning Supplies",
-							slug: "cleaning-supplies",
-						},
-					],
-				},
-			],
 		};
 	},
 
