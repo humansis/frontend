@@ -37,6 +37,11 @@ export default {
 
 		onPageChange(currentPage) {
 			this.table.currentPage = currentPage || 1;
+
+			if (this.selectedRows) {
+				this.selectedRows = 0;
+			}
+
 			this.fetchData();
 		},
 

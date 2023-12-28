@@ -10,6 +10,7 @@
 		:variant="variant"
 		:density="density"
 		:hide-details="hideDetails"
+		:placeholder="$t(placeholder)"
 		:multiple="multiple"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
@@ -167,6 +168,11 @@ export default {
 		multiple: {
 			type: Boolean,
 			default: false,
+		},
+
+		placeholder: {
+			type: String,
+			default: "",
 		},
 	},
 
