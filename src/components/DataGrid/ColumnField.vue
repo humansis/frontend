@@ -24,6 +24,25 @@
 		</div>
 	</template>
 
+	<template v-if="column.type === 'productCategoryImage'">
+		<SvgIcon v-if="cellData.primary === 'icon' && cellData.icon" :items="cellData.icon" />
+
+		<v-img
+			v-else
+			:src="cellData.image"
+			alt="item-image"
+		/>
+	</template>
+
+	<template v-if="column.type === 'image' && typeof cellData === 'string'">
+		<v-img
+			:src="cellData"
+			height="35"
+			width="35"
+			alt="item-image"
+		/>
+	</template>
+
 	<template v-if="column.type === 'tag'">
 		<v-chip
 			variant="flat"
@@ -72,6 +91,10 @@
 		{{ formattedDate }}
 	</template>
 
+	<template v-if="column.type === 'datetime'">
+		{{ formattedDateTime }}
+	</template>
+
 	<template v-if="column.type === 'svgIcon'">
 		<span v-if="cellData.length">
 			<SvgIcon
@@ -115,6 +138,12 @@ export default {
 		formattedDate() {
 			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
 				? this.cellData
+				: this.$t("N/A");
+		},
+
+		formattedDateTime() {
+			return this.cellData && typeof this.cellData !== "object"
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD hh:mm")}`
 				: this.$t("N/A");
 		},
 

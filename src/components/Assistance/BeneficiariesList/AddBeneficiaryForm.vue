@@ -24,6 +24,8 @@
 			item-value="id"
 			class="mb-6"
 			is-search-enabled
+			is-data-shown-as-tag
+			multiple
 			@update:modelValue="onValidate('beneficiaries')"
 		/>
 

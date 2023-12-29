@@ -357,32 +357,32 @@ const routes = [
 			//  			description: i18n.t("This page is where you can create, edit, assign and print vouchers booklets"),
 			//  		},
 			//  	},
-			//  	{
-			//  		path: "country-settings",
-			//  		name: "Country Settings",
-			//  		component: { render(c) { return c("router-view"); } },
-			//  		children: [
-			//  			{
-			//  				path: "products",
-			//  				name: "Products",
-			//  				component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
-			//  				meta: {
-			//  					permissions: ["viewProducts"],
-			//  					breadcrumb: () => i18n.t("Products"),
-			//  					description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),
-			//  				},
-			//  			},
-			//  			{
-			//  				path: "country-specifics",
-			//  				name: "CountrySpecific",
-			//  				component: () => import(/* webpackChunkName: "CountrySpecific" */ "@/views/CountrySettings/CountrySpecific"),
-			//  				meta: {
-			//  					breadcrumb: () => i18n.t("Country specifics"),
-			//  					description: i18n.t("This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights"),
-			//  				},
-			//  			},
-			//  		],
-			//  	},
+			{
+				path: "country-settings",
+				name: "Country Settings",
+				component: RouterView,
+				children: [
+					{
+						path: "products",
+						name: "Products",
+						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
+						meta: {
+							permissions: ["viewProducts"],
+							breadcrumb: "Products",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+						},
+					},
+					{
+						path: "country-specifics",
+						name: "CountrySpecific",
+						component: () => import(/* webpackChunkName: "CountrySpecific" */ "@/views/CountrySettings/CountrySpecific"),
+						meta: {
+							breadcrumb: "Country specifics",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+						},
+					},
+				],
+			},
 			//  	{
 			//  		path: "administrative-settings",
 			//  		name: "Administrative Settings",
