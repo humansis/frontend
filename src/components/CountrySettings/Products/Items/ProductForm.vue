@@ -1,164 +1,148 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Name')"
-				:type="validateType('name')"
-				:message="validateMsg('name')"
-			>
-				<b-input
-					v-model="formModel.name"
-					:disabled="formDisabled || editing"
-					@blur="validate('name')"
-				/>
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.name"
+			:disabled="formDisabled || editing"
+			:error-messages="validationMsg('name')"
+			label="Name"
+			name="name"
+			class="mb-6"
+			@update:modelValue="onValidate('name')"
+		/>
 
-			<b-field>
-				<template #label>
-					{{ $t('Unit') }}
-					<span class="optional-text has-text-weight-normal is-italic">
-						- {{ $t('Optional') }}
-					</span>
-				</template>
-				<b-input
-					v-model="formModel.unit"
-					:disabled="formDisabled"
-				/>
-			</b-field>
+		<DataInput
+			v-model="formModel.unit"
+			:disabled="formDisabled"
+			label="Unit"
+			name="unit"
+			class="mb-6"
+			optional
+		/>
 
-			<b-field
-				:label="$t('Category')"
-				:type="validateType('productCategoryId')"
-				:message="validateMsg('productCategoryId')"
-			>
-				<MultiSelect
-					v-model="formModel.productCategoryId"
-					searchable
-					label="name"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="id"
-					:placeholder="$t('Click to select')"
-					:disabled="formDisabled"
-					:options="categories"
-					:class="validateMultiselect('productCategoryId')"
-					@select="validate('productCategoryId')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.productCategoryId"
+			:items="categories"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('productCategoryId')"
+			persistent-hint
+			label="Category"
+			name="category"
+			item-title="name"
+			item-value="id"
+			class="mb-6"
+			@update:modelValue="onValidate('productCategoryId')"
+		/>
 
-			<span v-if="isCategoryTypeCashback()">
-				<b-field
-					:label="$t('Price')"
-					:type="validateType('unitPrice')"
-					:message="validateMsg('unitPrice')"
-				>
-					<b-numberinput
-						v-model="formModel.unitPrice"
-						expanded
-						min="0.01"
-						step="0.01"
-						type="is-dark"
-						:disabled="formDisabled"
-						:controls="false"
-						@input="validate('unitPrice')"
-					/>
-				</b-field>
+		<template v-if="isCategoryTypeCashback">
+			<DataInput
+				v-model.number="formModel.unitPrice"
+				:disabled="formDisabled"
+				:error-messages="validationMsg('unitPrice')"
+				label="Price"
+				name="price"
+				type="number"
+				class="mb-6"
+				hide-spin-buttons
+				@blur="onValidate('unitPrice')"
+			/>
 
-				<b-field
-					:label="$t('Currency')"
-					:type="validateType('currency')"
-					:message="validateMsg('currency')"
-					class="mb-3"
-				>
-					<MultiSelect
-						v-model="formModel.currency"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						:placeholder="$t('Click to select')"
-						:disabled="formDisabled"
-						:options="options.currencies"
-						:class="validateMultiselect('currency')"
-						@select="validate('currency')"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-			</span>
+			<DataSelect
+				v-model="formModel.currency"
+				:items="options.currencies"
+				:disabled="formDisabled"
+				:error-messages="validationMsg('currency')"
+				persistent-hint
+				label="Currency"
+				name="currency"
+				class="mb-6"
+				@update:modelValue="onValidate('currency')"
+			/>
+		</template>
 
-			<b-field
-				:label="$t('Image')"
-				:type="validateType('uploadedImage')"
-				:message="validateMsg('uploadedImage')"
-			>
-				<b-field
-					v-if="!formDisabled"
-					class="file"
-				>
-					<b-upload v-model="formModel.uploadedImage" expanded>
-						<a class="button is-primary is-fullwidth">
-							<b-icon icon="upload" />
-							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
-							</span>
-						</a>
-					</b-upload>
-				</b-field>
-			</b-field>
+		<FileUpload
+			v-if="!formDisabled"
+			v-model="formModel.uploadedImage"
+			:error-messages="validationMsg('uploadedImage')"
+			prepend-icon=""
+			hide-details="auto"
+			variant="outlined"
+			density="compact"
+			accept="image/*"
+			class="mt-5"
+			@update:modelValue="onValidate('uploadedImage')"
+		/>
 
-			<b-field v-if="formDisabled && formModel.image">
-				<b-image
-					alt="Image"
-					ratio="601by235"
-					:src="formModel.image"
-				/>
+		<v-img
+			v-if="formDisabled && formModel.image"
+			:src="formModel.image"
+			alt="item-image"
+			height="125"
+		/>
+	</v-card-text>
 
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button
-				v-if="closeButton"
-				@click="closeForm"
-			>
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-			>
-				{{ $t(submitButtonLabel) }}
-			</b-button>
-		</footer>
-	</form>
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="!formDisabled"
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { minValue, required, requiredIf } from "vuelidate/lib/validators";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { CURRENCIES } from "@/consts";
+import { minValue, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "ProductForm",
 
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
+
+	components: {
+		DataInput,
+		DataSelect,
+		FileUpload,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			name: { required },
-			productCategoryId: { required },
-			currency: { required: requiredIf((form) => form.productCategoryId.name === "Cashback") },
-			unitPrice: {
-				required: requiredIf((form) => form.productCategoryId.name === "Cashback"),
-				minValue: minValue(0),
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+				productCategoryId: { required },
+				currency: { required: requiredIf(this.formModel.productCategoryId?.name === "Cashback") },
+				unitPrice: {
+					required: requiredIf(this.formModel.productCategoryId?.name === "Cashback"),
+					minValue: minValue(0),
+				},
+				uploadedImage: { required: requiredIf(!this.formModel?.image) },
 			},
-			uploadedImage: { required: requiredIf((form) => !form.image) },
-		},
+		};
 	},
 
 	props: {
@@ -182,24 +166,26 @@ export default {
 		};
 	},
 
+	computed: {
+		isCategoryTypeCashback() {
+			return this.formModel.productCategoryId?.type === "Cashback";
+		},
+	},
+
 	methods: {
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		isCategoryTypeCashback() {
-			return this.formModel.productCategoryId?.type === "Cashback";
-		},
-
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };
