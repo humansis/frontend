@@ -29,8 +29,6 @@ export default {
 
 <style lang="scss">
 .file-upload {
-	border: 1px dashed black;
-
 	.v-input__control > .v-field {
 		display: flex;
 		min-height: 8rem;
@@ -56,6 +54,11 @@ export default {
 			margin: auto auto;
 			padding-bottom: 1rem;
 			z-index: 999;
+		}
+
+		.v-field__outline {
+			border-style: dashed;
+			border-width: 1px;
 		}
 	}
 }

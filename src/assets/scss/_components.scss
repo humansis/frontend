@@ -9,6 +9,10 @@
 .category-types {
   height: 2.187rem;
 
+  &.radio-group {
+    height: unset;
+  }
+
   &.last-type {
     height: 4.375rem;
   }
