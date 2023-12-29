@@ -8,31 +8,31 @@
 			align-tabs="start"
 			class="mt-5 mb-5"
 		>
-			<v-tab :value="0" class="text-none">
+			<v-tab value="users" class="text-none">
 				<v-icon icon="user" class="mr-2" />
 
 				{{ $t('Users') }}
 			</v-tab>
 
-			<v-tab v-if="userCan.viewDonors" :value="1" class="text-none">
+			<v-tab v-if="userCan.viewDonors" value="donors" class="text-none">
 				<v-icon icon="dollar-sign" class="mr-2" />
 
 				{{ $t('Donors') }}
 			</v-tab>
 
-			<v-tab :value="2" class="text-none">
+			<v-tab value="myOrganizations" class="text-none">
 				<v-icon icon="child" class="mr-2" />
 
 				{{ $t('My Organizations') }}
 			</v-tab>
 
-			<v-tab :value="3" class="text-none">
+			<v-tab value="organizationServices" class="text-none">
 				<v-icon icon="th-large" class="mr-2" />
 
 				{{ $t('Organization Services') }}
 			</v-tab>
 
-			<v-tab :value="4" class="text-none">
+			<v-tab value="sync" class="text-none">
 				<v-icon icon="th-large" class="mr-2" />
 
 				{{ $t('Sync') }}
@@ -40,23 +40,23 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item v-show="selectedTab === 0">
+			<v-window-item value="users">
 				<Users />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 1">
+			<v-window-item value="donors">
 				<Donors />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 2">
+			<v-window-item value="myOrganizations">
 				<MyOrganizations />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 3">
+			<v-window-item value="organizationServices">
 				<OrganizationServices />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 4">
+			<v-window-item value="sync">
 				<Sync />
 			</v-window-item>
 		</v-window>
@@ -86,7 +86,7 @@ export default {
 
 	data() {
 		return {
-			selectedTab: 0,
+			selectedTab: "users",
 		};
 	},
 };

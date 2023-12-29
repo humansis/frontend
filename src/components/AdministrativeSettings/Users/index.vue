@@ -88,17 +88,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
-
 			if (this.userModal.isDetail) {
-				result = "Detail of User";
-			} else if (this.userModal.isEditing) {
-				result = "Edit User";
-			} else {
-				result = "Create New User";
+				return "Detail of User";
 			}
 
-			return result;
+			if (this.userModal.isEditing) {
+				return "Edit User";
+			}
+
+			return "Create New User";
 		},
 	},
 

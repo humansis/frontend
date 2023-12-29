@@ -5,7 +5,6 @@
 			:disabled="formDisabled"
 			:error-messages="validationMsg('fullname')"
 			label="Donor Name"
-			type="number"
 			name="donor-name"
 			class="mb-6"
 			@update:modelValue="onValidate('fullname')"

@@ -73,17 +73,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
-
 			if (this.donorModal.isDetail) {
-				result = "Detail of Donor";
-			} else if (this.donorModal.isEditing) {
-				result = "Edit Donor";
-			} else {
-				result = "Create New Donor";
+				return "Detail of Donor";
 			}
 
-			return result;
+			if (this.donorModal.isEditing) {
+				return "Edit Donor";
+			}
+
+			return "Create New Donor";
 		},
 	},
 

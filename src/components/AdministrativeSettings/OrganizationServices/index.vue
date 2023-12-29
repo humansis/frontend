@@ -55,13 +55,14 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
 			if (this.organizationServiceModal.isDetail) {
-				result = "Detail of Organization Service";
-			} else if (this.organizationServiceModal.isEditing) {
-				result = "Update Organization Service";
+				return "Detail of Organization Service";
 			}
-			return result;
+
+			if (this.organizationServiceModal.isEditing) {
+				return "Update Organization Service";
+			}
+			return "";
 		},
 	},
 

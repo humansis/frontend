@@ -60,15 +60,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
-
 			if (this.myOrganizationModal.isDetail) {
-				result = "Detail of My Organization";
-			} else if (this.myOrganizationModal.isEditing) {
-				result = "Edit My Organization";
+				return "Detail of My Organization";
 			}
 
-			return result;
+			if (this.myOrganizationModal.isEditing) {
+				return "Edit My Organization";
+			}
+
+			return "";
 		},
 	},
 
