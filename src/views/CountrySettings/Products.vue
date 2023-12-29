@@ -8,13 +8,13 @@
 			align-tabs="start"
 			class="mt-5 mb-5"
 		>
-			<v-tab :value="0" class="text-none">
+			<v-tab value="items" class="text-none">
 				<v-icon icon="list" class="mr-2" />
 
 				{{ $t('Items') }}
 			</v-tab>
 
-			<v-tab :value="1" class="text-none">
+			<v-tab value="categories" class="text-none">
 				<v-icon icon="list" class="mr-2" />
 
 				{{ $t('Categories') }}
@@ -22,11 +22,11 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item :value="0">
+			<v-window-item value="items">
 				<Items />
 			</v-window-item>
 
-			<v-window-item :value="1">
+			<v-window-item value="categories">
 				<Categories />
 			</v-window-item>
 		</v-window>
@@ -47,7 +47,7 @@ export default {
 
 	data() {
 		return {
-			selectedTab: 0,
+			selectedTab: "items",
 		};
 	},
 };

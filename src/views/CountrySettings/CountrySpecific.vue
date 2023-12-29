@@ -8,13 +8,13 @@
 			align-tabs="start"
 			class="mt-5 mb-5"
 		>
-			<v-tab :value="0" class="text-none">
+			<v-tab value="customFields" class="text-none">
 				<v-icon icon="user-edit" class="mr-2" />
 
 				{{ $t('Custom fields') }}
 			</v-tab>
 
-			<v-tab :value="1" class="text-none">
+			<v-tab value="scoring" class="text-none">
 				<v-icon icon="sort-amount-down" class="mr-2" />
 
 				{{ $t('Scoring') }}
@@ -22,11 +22,11 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item :value="0">
+			<v-window-item value="customFields">
 				<CustomField />
 			</v-window-item>
 
-			<v-window-item :value="1">
+			<v-window-item value="scoring">
 				<Scoring />
 			</v-window-item>
 		</v-window>
@@ -50,7 +50,7 @@ export default {
 
 	data() {
 		return {
-			selectedTab: 0,
+			selectedTab: "customFields",
 		};
 	},
 };
