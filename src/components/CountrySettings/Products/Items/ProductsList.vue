@@ -113,10 +113,8 @@ export default {
 		};
 	},
 
-	watch: {
-		categories() {
-			this.fetchData();
-		},
+	async mounted() {
+		await this.fetchData();
 	},
 
 	methods: {

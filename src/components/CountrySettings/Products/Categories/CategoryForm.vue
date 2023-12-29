@@ -16,26 +16,23 @@
 			class="category-types radio-group"
 			@update:modelValue="onValidate('type')"
 		>
-			<div
+			<v-radio
 				v-for="({ code, value }) of options.categoryTypes"
 				:key="`category-type-${code}`"
+				:value="value"
+				:disabled="formDisabled"
 				class="mb-3"
+				@update:modelValue="onValidate('type')"
 			>
-				<v-radio
-					:disabled="formDisabled"
-					:value="value"
-					@update:modelValue="onValidate('type')"
-				>
-					<template v-slot:label>
-						{{ $t(value) }}
+				<template v-slot:label>
+					{{ $t(value) }}
 
-						<SvgIcon
-							:items="[{ code, value }]"
-							class="ml-2"
-						/>
-					</template>
-				</v-radio>
-			</div>
+					<SvgIcon
+						:items="[{ code, value }]"
+						class="ml-2"
+					/>
+				</template>
+			</v-radio>
 		</v-radio-group>
 
 		<FileUpload

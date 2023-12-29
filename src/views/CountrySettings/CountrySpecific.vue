@@ -22,11 +22,11 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item v-show="selectedTab === 0">
+			<v-window-item :value="0">
 				<CustomField />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 1">
+			<v-window-item :value="1">
 				<Scoring />
 			</v-window-item>
 		</v-window>

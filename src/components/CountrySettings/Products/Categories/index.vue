@@ -75,15 +75,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
 			if (this.categoryModal.isDetail) {
-				result = "Detail of Category";
-			} else if (this.categoryModal.isEditing) {
-				result = "Edit Category";
-			} else {
-				result = "Create New Category";
+				return "Detail of Category";
 			}
-			return result;
+
+			if (this.categoryModal.isEditing) {
+				return "Edit Category";
+			}
+
+			return "Create New Category";
 		},
 
 		...mapState(["country"]),

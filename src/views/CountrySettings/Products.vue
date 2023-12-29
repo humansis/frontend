@@ -22,11 +22,11 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item v-show="selectedTab === 0">
+			<v-window-item :value="0">
 				<Items />
 			</v-window-item>
 
-			<v-window-item v-show="selectedTab === 1">
+			<v-window-item :value="1">
 				<Categories />
 			</v-window-item>
 		</v-window>

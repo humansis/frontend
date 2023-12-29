@@ -84,15 +84,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
 			if (this.productModal.isDetail) {
-				result = "Detail of Product";
-			} else if (this.productModal.isEditing) {
-				result = "Edit Product";
-			} else {
-				result = "Create New Product";
+				return "Detail of Product";
 			}
-			return result;
+
+			if (this.productModal.isEditing) {
+				return "Edit Product";
+			}
+
+			return "Create New Product";
 		},
 
 		...mapState(["country"]),

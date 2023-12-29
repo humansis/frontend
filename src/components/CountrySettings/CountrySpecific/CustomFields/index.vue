@@ -72,21 +72,21 @@ export default {
 		...mapState(["country"]),
 
 		modalHeader() {
-			let result = "";
 			if (this.customFieldModal.isDetail) {
-				result = "Detail of Custom Field";
-			} else if (this.customFieldModal.isEditing) {
-				result = "Edit Custom Field";
-			} else {
-				result = "Create New Custom Field";
+				return "Detail of Custom Field";
 			}
-			return result;
+
+			if (this.customFieldModal.isEditing) {
+				return "Edit Custom Field";
+			}
+
+			return "Create New Custom Field";
 		},
 
 		submitButtonLabel() {
 			return this.customFieldModal.isEditing
-				? this.$t("Update")
-				: this.$t("Create");
+				? "Update"
+				: "Create";
 		},
 	},
 
