@@ -1,5 +1,6 @@
 <template>
 	<Table
+		ref="vouchersList"
 		v-model="table.checkedRows"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -7,7 +8,6 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
-		ref="vouchersList"
 		show-select
 		reset-sort-button
 		reset-filters-button

@@ -146,7 +146,7 @@ export default {
 					this.filtersOptions.assistances.data = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 				});
 
 			this.filtersOptions.assistances.loading = false;

@@ -43,6 +43,7 @@
 				:value="value"
 				:disabled="formDisabled"
 				:error-messages="isLastCategoryType(index) && validationMsg('categoryType')"
+				:name="`category-type-${index}`"
 				hide-details="auto"
 				@blur="onValidate('categoryType')"
 			>
@@ -78,6 +79,7 @@
 		<v-checkbox
 			v-model="formModel.canDoRemoteDistributions"
 			:disabled="formDisabled"
+			name="remote-distribution-permission"
 			hide-details
 			class="checkbox"
 		>

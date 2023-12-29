@@ -53,7 +53,7 @@
 							class="text-none text-right"
 							@click="onRedeem(batch)"
 						>
-							{{ $t('Reedem') }}
+							{{ $t('Redeem') }}
 						</v-btn>
 					</v-col>
 				</v-row>

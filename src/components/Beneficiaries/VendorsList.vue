@@ -1,6 +1,6 @@
 <template>
 	<Table
-		ref="table"
+		ref="vendorsList"
 		v-show="show"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -200,11 +200,11 @@ export default {
 		},
 
 		onResetVendorsFilters() {
-			this.resetSearch({ tableRef: "table", filtersRef: "vendorsFilter" });
+			this.resetSearch({ tableRef: "vendorsList", filtersRef: "vendorsFilter" });
 		},
 
 		resetTableSort() {
-			this.$refs.table.onResetSort();
+			this.$refs.vendorsList.onResetSort();
 		},
 
 		async prepareDataForTable(data) {
