@@ -1,22 +1,41 @@
 <template>
-	<div>
-		<h1 class="title has-text-centered">{{ $t('Products') }}</h1>
+	<v-container fluid>
+		<h2 class="text-center mt-4">{{ $t('Products') }}</h2>
 
-		<b-tabs v-model="selectedTab">
-			<b-tab-item icon="list" :label="$t('Items')">
+		<v-tabs
+			v-model="selectedTab"
+			color="primary"
+			align-tabs="start"
+			class="mt-5 mb-5"
+		>
+			<v-tab value="items" class="text-none">
+				<v-icon icon="list" class="mr-2" />
+
+				{{ $t('Items') }}
+			</v-tab>
+
+			<v-tab value="categories" class="text-none">
+				<v-icon icon="list" class="mr-2" />
+
+				{{ $t('Categories') }}
+			</v-tab>
+		</v-tabs>
+
+		<v-window v-model="selectedTab">
+			<v-window-item value="items">
 				<Items />
-			</b-tab-item>
+			</v-window-item>
 
-			<b-tab-item icon="list" :label="$t('Categories')">
+			<v-window-item value="categories">
 				<Categories />
-			</b-tab-item>
-		</b-tabs>
-	</div>
+			</v-window-item>
+		</v-window>
+	</v-container>
 </template>
 
 <script>
-import Categories from "@/components/CountrySettings/Products/Categories/Categories";
-import Items from "@/components/CountrySettings/Products/Items/Items";
+import Categories from "@/components/CountrySettings/Products/Categories";
+import Items from "@/components/CountrySettings/Products/Items";
 
 export default {
 	name: "Products",
@@ -28,7 +47,7 @@ export default {
 
 	data() {
 		return {
-			selectedTab: 0,
+			selectedTab: "items",
 		};
 	},
 };

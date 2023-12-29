@@ -1,6 +1,6 @@
 <template>
 	<router-view />
-	<VSonner position="top-center" visibleToasts="4" />
+	<VSonner position="top-center" visibleToasts="4" expand />
 </template>
 
 <script>

@@ -1,111 +1,118 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Name')"
-				:type="validateType('name')"
-				:message="validateMsg('name')"
-			>
-				<b-input
-					v-model="formModel.name"
-					:disabled="formDisabled"
-					@blur="validate('name')"
-				/>
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.name"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('name')"
+			label="Name"
+			name="name"
+			class="mb-6"
+			@update:modelValue="onValidate('name')"
+		/>
 
-			<b-field
-				:label="$t('Type')"
-				:type="validateType('type')"
-				:message="validateMsg('type')"
-				:addons="false"
+		<v-radio-group
+			v-model="formModel.type"
+			:error-messages="validationMsg('type')"
+			class="category-types radio-group"
+			@update:modelValue="onValidate('type')"
+		>
+			<v-radio
+				v-for="({ code, value }) of options.categoryTypes"
+				:key="`category-type-${code}`"
+				:value="value"
+				:disabled="formDisabled"
+				class="mb-3"
+				@update:modelValue="onValidate('type')"
 			>
-				<div
-					v-for="({code, value}) of options.categoryTypes"
-					class="mb-3"
-					:key="`category-type-${code}`"
-				>
-					<b-radio
-						v-model="formModel.type"
-						:native-value="code"
-						:disabled="formDisabled"
-						@blur="validate('type')"
-					>
-						<div class="is-flex is-align-items-center">
-							{{ value }}
-							<SvgIcon class="ml-2" :items="[{code, value}]" />
-						</div>
+				<template v-slot:label>
+					{{ $t(value) }}
 
-					</b-radio>
+					<SvgIcon
+						:items="[{ code, value }]"
+						class="ml-2"
+					/>
+				</template>
+			</v-radio>
+		</v-radio-group>
 
-				</div>
-			</b-field>
+		<FileUpload
+			v-if="!formDisabled"
+			v-model="formModel.uploadedImage"
+			:error-messages="validationMsg('uploadedImage')"
+			prepend-icon=""
+			hide-details="auto"
+			variant="outlined"
+			density="compact"
+			accept="image/*"
+			class="mt-1"
+			@update:modelValue="onValidate('uploadedImage')"
+		/>
 
-			<b-field
-				:label="$t('Image')"
-				:type="validateType('uploadedImage')"
-				:message="validateMsg('uploadedImage')"
-			>
-				<b-field
-					v-if="!formDisabled"
-					class="file"
-				>
-					<b-upload v-model="formModel.uploadedImage" expanded>
-						<a class="button is-primary is-fullwidth">
-							<b-icon icon="upload" />
-							<span>
-								{{ formModel.uploadedImage ? formModel.uploadedImage.name : $t("Click to Upload")}}
-							</span>
-						</a>
-					</b-upload>
-				</b-field>
-			</b-field>
+		<v-img
+			v-if="formDisabled && formModel.image"
+			:src="formModel.image"
+			alt="item-image"
+			height="125"
+		/>
+	</v-card-text>
 
-			<b-field v-if="formDisabled && formModel.image">
-				<b-image
-					alt="Image"
-					ratio="601by235"
-					:src="formModel.image"
-				/>
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button
-				v-if="closeButton"
-				@click="closeForm"
-			>
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-			>
-				{{ $t(submitButtonLabel) }}
-			</b-button>
-		</footer>
-	</form>
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			size="small"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="!formDisabled"
+			color="primary"
+			size="small"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import DataInput from "@/components/Inputs/DataInput";
+import FileUpload from "@/components/Inputs/FileUpload";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
+import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "CategoryForm",
 
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
+
 	components: {
 		SvgIcon,
+		DataInput,
+		FileUpload,
 	},
 
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			name: { required },
-			type: { required },
-			uploadedImage: { required: requiredIf((form) => !form.image) },
-		},
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+				type: { required },
+				uploadedImage: { required: requiredIf(!this.formModel.image) },
+			},
+		};
 	},
 
 	props: {
@@ -139,19 +146,19 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };

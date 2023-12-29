@@ -20,6 +20,7 @@
 			label="Select format"
 			class="export-format"
 			append-icon="download"
+			append-icon-color="primary"
 			@update:modelValue="onInputChanged"
 			@appendIconClicked="onStartExport"
 		/>
