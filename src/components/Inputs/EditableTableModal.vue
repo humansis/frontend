@@ -32,8 +32,6 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="subsectors"
-						item-title="value"
-						item-value="code"
 						is-search-enabled
 						optional
 						class="mb-6"

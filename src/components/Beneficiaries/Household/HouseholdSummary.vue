@@ -39,6 +39,7 @@
 			<v-col v-if="livelihoodFilled" cols="4">
 				<v-card>
 					<v-card-subtitle class="pt-1 pb-0">{{ $t('Livelihood') }}</v-card-subtitle>
+
 					<v-card-title>{{ livelihood }}</v-card-title>
 				</v-card>
 			</v-col>
@@ -46,6 +47,7 @@
 			<v-col :cols="livelihoodFilled ? 4 : 6">
 				<v-card>
 					<v-card-subtitle class="pt-1 pb-0">{{ $t('Current Address') }}</v-card-subtitle>
+
 					<v-card-title>{{ address }}</v-card-title>
 				</v-card>
 			</v-col>
@@ -53,6 +55,7 @@
 			<v-col :cols="livelihoodFilled ? 4 : 6">
 				<v-card>
 					<v-card-subtitle class="pt-1 pb-0">{{ $t('Current Location') }}</v-card-subtitle>
+
 					<v-card-title>{{ location }}</v-card-title>
 				</v-card>
 			</v-col>
@@ -95,10 +98,12 @@ export default {
 
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			selectedProjects: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				selectedProjects: { required },
+			},
+		};
 	},
 
 	props: {
@@ -127,12 +132,12 @@ export default {
 			},
 			table: {
 				columns: generateColumns([
-					{ key: "firstName", title: "Local family name" },
-					{ key: "familyName", title: "Local given name" },
-					{ key: "gender", title: "Gender", type: "object" },
-					{ key: "dateBirth", title: "Date of birth", type: "date" },
-					{ key: "phone", title: "Phone" },
-					{ key: "nationalId", title: "ID Number" },
+					{ key: "familyName", title: "Local family name", sortable: false },
+					{ key: "firstName", title: "Local given name", sortable: false },
+					{ key: "gender", title: "Gender", type: "object", sortable: false },
+					{ key: "dateBirth", title: "Date of birth", type: "date", sortable: false },
+					{ key: "phone", title: "Phone", sortable: false },
+					{ key: "nationalId", title: "ID Number", sortable: false },
 				]),
 				total: 0,
 			},

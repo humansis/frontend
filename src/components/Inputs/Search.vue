@@ -6,8 +6,6 @@
 			:items="searchFields"
 			label="Select format"
 			name="select-format"
-			item-title="value"
-			item-value="code"
 			clearable
 			class="format"
 		/>

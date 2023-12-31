@@ -117,7 +117,11 @@ export default {
 
 	props: {
 		formModel: Object,
-		formDisabled: Boolean,
+
+		formDisabled: {
+			type: Boolean,
+			default: false,
+		},
 
 		disabledAdm: {
 			type: Object,

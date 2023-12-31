@@ -449,10 +449,10 @@ export default {
 				},
 				visibleColumns: [],
 				communityColumns: [
-					{ key: "id", title: "ID", sortable: true },
-					{ key: "name", sortable: true },
-					{ key: "contactGivenName", title: "Contact Name", sortable: true },
-					{ key: "contactFamilyName", sortable: true },
+					{ key: "id", title: "ID" },
+					{ key: "name" },
+					{ key: "contactGivenName", title: "Contact Name" },
+					{ key: "contactFamilyName" },
 				],
 				institutionEditColumns: [
 					{ key: "id", title: "ID" },
@@ -577,19 +577,19 @@ export default {
 
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
-				{ key: "id", title: "Beneficiary ID", sortable: true },
-				{ key: "givenName", title: "Local given name", sortable: true, sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", sortable: true, width: "190px", sortKey: "localFamilyName" },
-				{ key: "nationalId", title: "ID Number", sortable: true },
-				{ key: "status", type: "tagArray", customTags: statusTags },
+				{ key: "id", title: "Beneficiary ID" },
+				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
+				{ key: "familyName", title: "Local family name", width: "190px", sortKey: "localFamilyName" },
+				{ key: "nationalId", title: "ID Number" },
+				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
 				...!this.isAssistanceTypeActivity
 					? [
-						{ key: "toDistribute", type: "arrayTextBreak", sortable: true },
-						{ key: "distributed", type: "arrayTextBreak", sortable: true },
+						{ key: "toDistribute", type: "arrayTextBreak" },
+						{ key: "distributed", type: "arrayTextBreak" },
 					]
 					: [],
-				{ key: "spent", type: "arrayTextBreak", sortable: true },
-				{ key: "lastModified", type: "arrayTextBreak", sortable: true },
+				{ key: "spent", type: "arrayTextBreak" },
+				{ key: "lastModified", type: "arrayTextBreak" },
 				{ key: "actions", value: "actions", sortable: false },
 			];
 
@@ -603,16 +603,16 @@ export default {
 
 		institutionDetailColumns() {
 			return [
-				{ key: "id", title: "ID", sortable: true },
-				{ key: "name", sortable: true },
-				{ key: "type", sortable: true },
-				{ key: "contactGivenName", title: "Contact Name", sortable: true },
-				{ key: "contactFamilyName", sortable: true },
-				{ key: "phone", title: "Phone Number" },
-				{ key: "status", type: "tagArray", customTags: statusTags },
-				{ key: "toDistribute", type: "arrayTextBreak" },
-				{ key: "distributed", type: "arrayTextBreak" },
-				{ key: "lastModified", type: "arrayTextBreak" },
+				{ key: "id", title: "ID" },
+				{ key: "name" },
+				{ key: "type" },
+				{ key: "contactGivenName", title: "Contact Name" },
+				{ key: "contactFamilyName" },
+				{ key: "phone", title: "Phone Number", sortable: false },
+				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
+				{ key: "toDistribute", type: "arrayTextBreak", sortable: false },
+				{ key: "distributed", type: "arrayTextBreak", sortable: false },
+				{ key: "lastModified", type: "arrayTextBreak", sortable: false },
 				{ key: "actions", value: "actions", sortable: false },
 			];
 		},
@@ -872,7 +872,9 @@ export default {
 						this.$route.params.assistanceId,
 						page || this.table.currentPage,
 						size || this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "",
 						this.table.searchPhrase,
 					).then(async ({ data, totalCount }) => {
 						this.table.data = [];

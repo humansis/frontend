@@ -24,7 +24,11 @@
 				clearable
 				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
-			/>
+			>
+				<template v-slot:custom-item="{ props, item }">
+					<v-list-item v-bind="props" :subtitle="item.raw.parentLocationName" />
+				</template>
+			</DataSelect>
 
 			<DataInput
 				v-else-if="options.type === 'text'"

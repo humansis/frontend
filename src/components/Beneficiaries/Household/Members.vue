@@ -10,8 +10,9 @@
 				:key="index"
 				eager
 			>
-				<v-expansion-panel-title expand-icon="mdi-menu-down">
+				<v-expansion-panel-title>
 					<v-chip color="success" variant="flat" label>{{ index + 1 }}</v-chip>
+
 					<span class="ml-3">{{ memberTitle(member) }}</span>
 
 					<template v-slot:actions="{ expanded }">
@@ -22,7 +23,7 @@
 								variant="tonal"
 								size="x-small"
 								class="mr-4"
-								@click="removeMember(index)"
+								@click="onRemoveMember(index)"
 							/>
 
 							<v-icon :icon="expanded ? 'arrow-up' : 'arrow-down'" />
@@ -44,10 +45,10 @@
 		</v-expansion-panels>
 
 		<v-btn
-			class="mt-5"
+			class="my-4"
 			color="success"
 			prepend-icon="plus"
-			@click="addMember"
+			@click="onAddMember"
 		>
 			{{ $t('New') }}
 		</v-btn>
@@ -134,7 +135,7 @@ export default {
 			}
 		},
 
-		addMember() {
+		onAddMember() {
 			const countOfMembers = this.members.length;
 
 			if (countOfMembers && !this.$refs.member[countOfMembers - 1].submit()) {
@@ -171,7 +172,7 @@ export default {
 				: this.$t("Member");
 		},
 
-		removeMember(index) {
+		onRemoveMember(index) {
 			this.members.splice(index, 1);
 		},
 

@@ -9,7 +9,7 @@
 		<template v-slot:activator="{ props }">
 			<DataInput
 				v-model="formattedDate"
-				v-bind="{ ...$attrs, ...props }"
+				v-bind="{ ...props, ...$attrs }"
 				:label="label"
 				:name="name"
 				:error-messages="$attrs['error-messages']"
@@ -18,6 +18,8 @@
 				:placeholder="placeholder"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
+				clearable
+				readonly
 			/>
 		</template>
 

@@ -13,8 +13,6 @@
 			:items="options.institutionTypes"
 			label="Institution type"
 			name="institution-type"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			disabled
 		/>

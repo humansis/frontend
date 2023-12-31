@@ -6,10 +6,8 @@
 		:error-messages="validationMsg('typeOfLocation')"
 		label="Type of Location"
 		name="type-of-location"
-		item-title="value"
-		item-value="code"
 		class="mb-4"
-		@update:modelValue="selectTypeOfLocation"
+		@update:modelValue="onSelectTypeOfLocation"
 	/>
 
 	<template v-if="campSelected">
@@ -31,7 +29,7 @@
 			item-title="name"
 			item-value="id"
 			class="mb-4"
-			@update:modelValue="selectCamp"
+			@update:modelValue="onSelectCamp"
 		/>
 
 		<DataInput
@@ -100,6 +98,7 @@ import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "TypeOfLocationForm",
+
 	components: { DataInput, DataSelect },
 
 	mixins: [validation],
@@ -109,10 +108,10 @@ export default {
 			formModel: {
 				typeOfLocation: { required },
 				camp: {
-					required: requiredIf(this.campSelected && this.createCamp),
+					required: requiredIf(this.campSelected && !this.createCamp),
 				},
 				campName: {
-					required: requiredIf(this.campSelected && !this.createCamp),
+					required: requiredIf(this.campSelected && this.createCamp),
 				},
 				tentNumber: {
 					required: requiredIf(this.campSelected),
@@ -182,7 +181,7 @@ export default {
 					this.options.typeOfLocation = result.data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
 				});
 			this.locationTypesLoading = false;
 		},
@@ -195,7 +194,7 @@ export default {
 					this.options.camps = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+					Notification(`${this.$t("Camps")} ${e.message || e}`, "error");
 				})
 				.finally(() => {
 					this.campsLoading = false;
@@ -234,7 +233,7 @@ export default {
 			}
 		},
 
-		selectTypeOfLocation(selectedType) {
+		onSelectTypeOfLocation(selectedType) {
 			this.v$.$reset();
 			this.formModel.type = selectedType.value.toLowerCase();
 			this.onValidate("typeOfLocation");
@@ -245,7 +244,7 @@ export default {
 			return this.v$.$invalid;
 		},
 
-		selectCamp() {
+		onSelectCamp() {
 			this.onValidate("camp");
 		},
 	},

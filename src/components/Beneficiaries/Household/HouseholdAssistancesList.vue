@@ -26,11 +26,11 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: "To distribute", type: "is-light" },
-	{ code: "Distribution in progress", type: "is-info" },
-	{ code: "Distributed", type: "is-success" },
-	{ code: "Expired", type: "is-danger" },
-	{ code: "Canceled", type: "is-warning" },
+	{ code: "To distribute", type: "grey-lighten-2" },
+	{ code: "Distribution in progress", type: "info" },
+	{ code: "Distributed", type: "success" },
+	{ code: "Expired", type: "error" },
+	{ code: "Canceled", type: "warning" },
 ];
 
 export default {
@@ -49,25 +49,25 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "icon", type: "IconWithTooltip", withoutLabel: true },
-					{ key: "beneficiaryId", label: "Beneficiary Id" },
-					{ key: "beneficiaryLocalGivenName", label: "Local Given Name" },
-					{ key: "beneficiaryLocalFamilyName", label: "Local Family Name" },
-					{ key: "state", label: "Status", type: "tag", customTags: statusTags },
-					{ key: "projectName", label: "Project", type: "link" },
-					{ key: "assistanceName", label: "Assistance", type: "link" },
-					{ key: "fullLocationNames", label: "Location" },
-					{ key: "dateDistribution", label: "Assistance Date", type: "date", sortable: true },
-					{ key: "commodity" },
-					{ key: "carrierNumber", label: "Card No." },
-					{ key: "amount", label: "Distributed" },
-					{ key: "spent" },
-					{ key: "unit" },
+					{ key: "icon", type: "IconWithTooltip", sortable: false },
+					{ key: "beneficiaryId", title: "Beneficiary Id", sortable: false },
+					{ key: "beneficiaryLocalGivenName", title: "Local Given Name", sortable: false },
+					{ key: "beneficiaryLocalFamilyName", title: "Local Family Name", sortable: false },
+					{ key: "state", title: "Status", type: "tag", customTags: statusTags },
+					{ key: "projectName", title: "Project", type: "link", sortable: false },
+					{ key: "assistanceName", title: "Assistance", type: "link", sortable: false },
+					{ key: "fullLocationNames", title: "Location", sortable: false },
+					{ key: "dateDistribution", title: "Assistance Date", type: "date" },
+					{ key: "commodity", sortable: false },
+					{ key: "carrierNumber", title: "Card No.", sortable: false },
+					{ key: "amount", title: "Distributed", sortable: false },
+					{ key: "spent", sortable: false },
+					{ key: "unit", sortable: false },
 				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "dateDistribution",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_LIST.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_LIST.key,
 			},
 		};
 	},
@@ -84,7 +84,9 @@ export default {
 				this.$route.params.householdId,
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 			)
 				.then(async ({ data, totalCount }) => {
 					this.table.total = totalCount;
@@ -93,7 +95,7 @@ export default {
 						await this.prepareDataForTable(data);
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 				});
 
 			this.isLoadingList = false;

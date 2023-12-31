@@ -87,11 +87,11 @@ export default {
 		return {
 			table: {
 				columns: generateColumns([
-					{ key: "criteriaTarget", label: "Criteria Target", sortable: false },
-					{ key: "criteria", label: "Criteria", sortable: false },
-					{ key: "condition", label: "Condition", type: "textOrNone", sortable: false },
-					{ key: "value", label: "Value", type: "customValue", sortable: false },
-					{ key: "scoreWeight", label: "Score Weight", sortable: false },
+					{ key: "criteriaTarget", title: "Criteria Target", sortable: false },
+					{ key: "criteria", title: "Criteria", sortable: false },
+					{ key: "condition", title: "Condition", type: "textOrNone", sortable: false },
+					{ key: "value", title: "Value", type: "customValue", sortable: false },
+					{ key: "scoreWeight", title: "Score Weight", sortable: false },
 					{ key: "actions", value: "actions", sortable: false },
 				]),
 			},

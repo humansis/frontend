@@ -56,10 +56,9 @@
 				:loading="isLoading.projects"
 				:options="options.projects"
 				:confirm-button-loading="confirmButtonLoading"
-				class="modal-card"
 				close-button
-				@formSubmitted="addHouseholdsToProject"
-				@formClosed="closeAddToProjectModal"
+				@formSubmitted="onAddHouseholdsToProject"
+				@formClosed="onCloseAddToProjectModal"
 			/>
 		</Modal>
 
@@ -69,7 +68,6 @@
 		>
 			<HouseholdDetail
 				:household-model="householdModel"
-				class="modal-card"
 				close-button
 				@formClosed="closeHouseholdDetailModal"
 			/>
@@ -105,7 +103,7 @@
 					icon="search"
 					icon-color="primary"
 					label="Show Detail"
-					@actionConfirmed="showHouseholdDetail(householdId)"
+					@actionConfirmed="onShowHouseholdDetail(householdId)"
 				/>
 
 				<ButtonAction
@@ -127,7 +125,7 @@
 					prepend-icon="circle-exclamation"
 					prepend-icon-color="red"
 					is-confirm-action
-					@actionConfirmed="removeHousehold(householdId)"
+					@actionConfirmed="onRemoveHousehold(householdId)"
 				/>
 			</template>
 
@@ -138,7 +136,7 @@
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
-					@export="exportHouseholds"
+					@export="onExportHouseholds"
 				/>
 
 				<v-btn
@@ -147,7 +145,7 @@
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
-					@click="advancedSearchToggle"
+					@click="onAdvancedSearchToggle"
 				>
 					{{ $t('Advanced Search') }}
 				</v-btn>
@@ -158,7 +156,7 @@
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
-					@click="bulkSearchToggle"
+					@click="onBulkSearchToggle"
 				>
 					{{ $t('Bulk Search') }}
 				</v-btn>
@@ -175,11 +173,12 @@
 					</template>
 
 					<v-list>
-						<v-list-item @click="showAddToProjectModal">
+						<v-list-item @click="onShowAddToProjectModal">
 							<v-icon class="mr-1" icon="plus" />
 							{{ $t('Add to Project') }}
 						</v-list-item>
-						<v-list-item @click="saveDeleteOfMultipleHouseholds">
+
+						<v-list-item @click="onSaveDeleteOfMultipleHouseholds">
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -195,7 +194,7 @@
 								ref="householdsFilter"
 								:defaultFilters="{ ...filters, ...locationsFilter }"
 								@filtersChanged="onFiltersChange"
-								@search="clickedSearch"
+								@search="onClickedSearch"
 							/>
 						</v-expansion-panel-text>
 					</v-expansion-panel>
@@ -203,8 +202,8 @@
 						<v-expansion-panel-text>
 							<BulkSearch
 								ref="bulkSearch"
-								@clickedBulkSearch="clickedBulkSearch"
-								@bulkSearchChanged="bulkSearchChanged"
+								@clickedBulkSearch="onClickedBulkSearch"
+								@bulkSearchChanged="onBulkSearchChanged"
 							/>
 						</v-expansion-panel-text>
 					</v-expansion-panel>
@@ -365,7 +364,9 @@ export default {
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
@@ -388,7 +389,9 @@ export default {
 					.getListOfHouseholdByBulkSearch(
 						this.table.currentPage,
 						this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "",
 						{
 							searchBy: this.bulkSearch.searchBy,
 							searchIds: this.arrayIds,
@@ -411,7 +414,7 @@ export default {
 			}
 		},
 
-		async exportHouseholds(exportType, format) {
+		async onExportHouseholds(exportType, format) {
 			if (exportType === EXPORT.HOUSEHOLDS) {
 				let ids = [];
 				const filename = `BNF Households ${normalizeExportDate()}`;
@@ -469,21 +472,21 @@ export default {
 			this.householdsSelects = !rows?.length;
 		},
 
-		clickedBulkSearch(bulkSearchData) {
+		onClickedBulkSearch(bulkSearchData) {
 			this.bulkSearch = bulkSearchData;
 			this.fetchData();
 		},
 
-		bulkSearchChanged() {
+		onBulkSearchChanged() {
 			this.table.dataUpdated = false;
 		},
 
-		clickedSearch() {
+		onClickedSearch() {
 			this.bulkSearch.isBulkSearchUsed = false;
 			this.onSearch(this.table.searchPhrase);
 		},
 
-		async addHouseholdsToProject(project) {
+		async onAddHouseholdsToProject(project) {
 			this.selectedProject = project;
 			this.confirmButtonLoading = true;
 
@@ -502,7 +505,7 @@ export default {
 						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					});
 
-				this.closeAddToProjectModal();
+				this.onCloseAddToProjectModal();
 				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
 				this.onRowsChecked();
@@ -761,22 +764,22 @@ export default {
 			return normalizeText(text);
 		},
 
-		advancedSearchToggle() {
+		onAdvancedSearchToggle() {
 			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		bulkSearchToggle() {
+		onBulkSearchToggle() {
 			this.visiblePanels = this.isBulkSearchVisible ? [] : ["bulkSearch"];
 		},
 
 		async removeMultipleHouseholds() {
-			await this.removeHousehold(null, true);
+			await this.onRemoveHousehold(null, true);
 			this.isActionsButtonVisible = false;
 			await this.fetchData();
 			this.onRowsChecked();
 		},
 
-		saveDeleteOfMultipleHouseholds() {
+		onSaveDeleteOfMultipleHouseholds() {
 			// FIXME
 			this.$buefy.dialog.confirm({
 				title: this.$t("Deleting"),
@@ -791,7 +794,7 @@ export default {
 			});
 		},
 
-		async removeHousehold(id, multiple = false) {
+		async onRemoveHousehold(id, multiple = false) {
 			if (multiple) {
 				const { checkedRows } = this.table;
 				let error = "";
@@ -829,16 +832,16 @@ export default {
 			this.householdDetailModal.isOpened = false;
 		},
 
-		showHouseholdDetail(id) {
+		onShowHouseholdDetail(id) {
 			this.mapHouseholdDetail(this.table.data.find((item) => item.householdId === id));
 			this.householdDetailModal.isOpened = true;
 		},
 
-		closeAddToProjectModal() {
+		onCloseAddToProjectModal() {
 			this.addToProjectModal.isOpened = false;
 		},
 
-		showAddToProjectModal() {
+		onShowAddToProjectModal() {
 			this.fetchProjects();
 			this.addToProjectModal.isOpened = true;
 		},

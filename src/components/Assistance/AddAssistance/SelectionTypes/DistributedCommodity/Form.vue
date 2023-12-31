@@ -7,8 +7,6 @@
 			:error-messages="validationMsg('modality')"
 			label="Modality"
 			name="modality"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onModalitySelect"
 		/>
@@ -20,8 +18,6 @@
 			:error-messages="validationMsg('modalityType')"
 			label="Modality Type"
 			name="modality-type"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onModalityTypeSelect"
 		/>
@@ -34,8 +30,6 @@
 			:error-messages="validationMsg('division')"
 			label="Distribute"
 			name="division"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onDivisionSelect"
 		/>
@@ -48,8 +42,6 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
-			item-title="field"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onValidate('customField')"
 		/>
@@ -148,8 +140,6 @@
 			:optional="isModalityInKind"
 			label="Currency"
 			name="currency"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onValidate('currency')"
 		/>

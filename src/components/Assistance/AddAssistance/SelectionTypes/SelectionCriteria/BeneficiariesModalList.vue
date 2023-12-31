@@ -39,8 +39,8 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "id" },
-					{ key: "localFamilyName", label: "Local family name" },
-					{ key: "localGivenName", label: "Local given name" },
+					{ key: "localFamilyName", title: "Local family name" },
+					{ key: "localGivenName", title: "Local given name" },
 					{ key: "vulnerability" },
 				]),
 				total: 0,

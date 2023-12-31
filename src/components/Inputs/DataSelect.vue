@@ -23,7 +23,9 @@
 		</template>
 
 		<template v-if="!multiple" v-slot:item="{ props, item }">
-			<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+			<slot v-bind="props" name="custom-item" :props="props" :item="item">
+				<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+			</slot>
 		</template>
 
 		<template v-slot:selection="{ item }">

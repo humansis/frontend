@@ -37,7 +37,7 @@ export const generateColumns = ((visibleColumns) => {
 	const preparedColumns = [];
 
 	visibleColumns.forEach(
-		({ key, title, type, sortKey, customTags, sortable, minWidth, value, visible }) => {
+		({ key, title, type, sortKey, customTags, sortable, width, minWidth, value, visible }) => {
 			const preparedTitle = title ? t(title) : t(normalizeText(key));
 
 			preparedColumns.push({
@@ -47,6 +47,7 @@ export const generateColumns = ((visibleColumns) => {
 				sortKey,
 				customTags,
 				sortable,
+				width,
 				minWidth,
 				value,
 				visible,

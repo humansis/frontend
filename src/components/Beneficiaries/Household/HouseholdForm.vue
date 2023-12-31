@@ -7,7 +7,6 @@
 				<LocationForm
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
-					:form-disabled="false"
 					class="mb-4"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
@@ -55,8 +54,6 @@
 					:loading="livelihoodLoading"
 					label="Livelihood"
 					name="livelihood"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					optional
@@ -104,8 +101,6 @@
 					:loading="assetsLoading"
 					label="Assets"
 					name="assets"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					multiple
 					chips
@@ -145,8 +140,6 @@
 					:loading="assetsLoading"
 					label="Support received types"
 					name="support-received-types"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					multiple
 					chips
@@ -181,6 +174,7 @@
 					:label="normalizeText(option.field)"
 					:name="normalizeName(option.field)"
 					:type="option.type"
+					:hide-spin-buttons="option.type === 'number' ? true : null"
 					class="mb-4"
 					optional
 				/>
@@ -197,8 +191,6 @@
 					:loading="shelterStatusLoading"
 					label="Shelter status"
 					name="shelter-status"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					optional
@@ -247,29 +239,6 @@ export default {
 	},
 
 	mixins: [validation, addressHelper],
-
-	validations() {
-		return {
-			formModel: {
-				livelihood: {
-					livelihood: {},
-					incomeLevel: {},
-					incomeSpentOnFood: {},
-					debtLevel: {},
-					assets: {},
-					foodConsumptionScore: {},
-					copingStrategiesIndex: {},
-				},
-				externalSupport: {
-					externalSupportReceivedType: {},
-					supportDateReceived: {},
-					supportOrganization: {},
-				},
-				customFields: {},
-				shelterStatus: {},
-			},
-		};
-	},
 
 	props: {
 		detailOfHousehold: {
@@ -365,15 +334,15 @@ export default {
 				switch (typeOfLocation) {
 					case GENERAL.LOCATION_TYPE.camp.type:
 						return AddressService.getCampAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Camp Address")} ${e.message || e}`, "error");
 						});
 					case GENERAL.LOCATION_TYPE.residence.type:
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Residence Address")} ${e.message || e}`, "error");
 						});
 					case GENERAL.LOCATION_TYPE.temporarySettlement.type:
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Temporary Settlement Address")} ${e.message || e}`, "error");
 						});
 					default:
 						return null;
@@ -446,7 +415,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -454,7 +423,7 @@ export default {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
 				});
 			this.livelihoodLoading = false;
 		},
@@ -463,7 +432,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assets")} ${e.message || e}`, "error");
 				});
 			this.assetsLoading = false;
 		},
@@ -472,7 +441,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
+					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -481,7 +450,7 @@ export default {
 			await CustomFieldsService.getListOfCustomFields()
 				.then(({ data }) => { this.customFields = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
+					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -490,6 +459,11 @@ export default {
 			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
 
 			this.v$.$touch();
+
+			if (this.v$.$error) {
+				Notification(this.$t("Please fill all required fields in Household step"), "error");
+			}
+
 			return !this.v$.$invalid && !locationValid && !typeOfLocationValid;
 		},
 	},

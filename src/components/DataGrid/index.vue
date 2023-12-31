@@ -58,6 +58,7 @@
 					:indeterminate="progress ? null : true"
 					:model-value="progress ?? null"
 				/>
+
 				<v-skeleton-loader :type="`table-row@${perPage}`" />
 			</template>
 
@@ -295,6 +296,10 @@ export default {
 
 		resetSearch() {
 			this.$refs.search.clearSearch();
+		},
+
+		searchValue() {
+			return this.$refs.search.value;
 		},
 	},
 };

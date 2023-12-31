@@ -5,7 +5,7 @@
 		hide-actions
 		editable
 		alt-labels
-		@update:modelValue="stepsChanged"
+		@update:modelValue="onStepsChanged"
 	>
 		<template v-slot:icon="{ step }">
 			<v-icon :icon="`${step}`" />
@@ -49,7 +49,7 @@
 		<template v-slot:item.4>
 			<h3 class="mb-3">{{ $t('Summary') }}</h3>
 
-			<Summary
+			<HouseholdSummary
 				ref="householdSummary"
 				:detail-of-household="detailOfHousehold"
 				:members="summaryMembers"
@@ -85,9 +85,9 @@
 						variant="elevated"
 						prepend-icon="save"
 						class="text-none"
-						@click="save"
+						@click="onSave"
 					>
-						{{ isEditing ? $t('Update') : $t('Save') }}
+						{{ $t(isEditing ? 'Update' : 'Save') }}
 					</v-btn>
 
 					<v-btn
@@ -110,11 +110,10 @@
 <script>
 import { mapState } from "vuex";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import HouseholdSummary from "@/components/Beneficiaries/Household/HouseholdSummary";
 import Members from "@/components/Beneficiaries/Household/Members";
-import Summary from "@/components/Beneficiaries/Household/Summary";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
@@ -127,8 +126,7 @@ export default {
 		HouseholdHeadForm,
 		HouseholdForm,
 		Members,
-		Summary,
-		CustomSteps,
+		HouseholdSummary,
 	},
 
 	mixins: [permissions],
@@ -182,7 +180,7 @@ export default {
 	},
 
 	methods: {
-		stepsChanged(step) {
+		onStepsChanged(step) {
 			let lastAvailableStep = 1;
 
 			if (this.$refs.householdForm.submit()) {
@@ -264,7 +262,7 @@ export default {
 			}
 		},
 
-		save() {
+		onSave() {
 			if (
 				!this.$refs.householdSummary?.submit()
 				|| !this.$refs.householdMembers?.submit()

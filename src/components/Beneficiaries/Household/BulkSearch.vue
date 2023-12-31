@@ -11,7 +11,7 @@
 						label="Search by"
 						name="filter-select"
 						is-search-enabled
-						@update:modelValue="bulkSearchChanged"
+						@update:modelValue="onBulkSearchChanged"
 					/>
 				</v-col>
 
@@ -28,7 +28,7 @@
 						:error-messages="validationMsg('ids', 'bulkSearch')"
 						label="ID Numbers"
 						name="filter-input"
-						@input="bulkSearchChanged"
+						@input="onBulkSearchChanged"
 					/>
 
 					<div v-if="isMaximumIds || isDuplicityIds">
@@ -57,7 +57,7 @@
 				class="not-found-ids"
 				disabled
 				has-copy-button
-				@copy="copyIds"
+				@copy="onCopyIds"
 			/>
 		</v-col>
 
@@ -67,7 +67,7 @@
 				color="primary"
 				prepend-icon="search"
 				class="text-none ml-0"
-				@click="startBulkSearch"
+				@click="onStartBulkSearch"
 			>
 				{{ $t('Search') }}
 			</v-btn>
@@ -135,12 +135,12 @@ export default {
 	},
 
 	methods: {
-		copyIds() {
+		onCopyIds() {
 			navigator.clipboard.writeText(this.bulkSearch.notFoundIds);
 			Notification(this.$t("Copied"), "success");
 		},
 
-		startBulkSearch() {
+		onStartBulkSearch() {
 			this.v$.$touch();
 			if (this.v$.$invalid) {
 				return;
@@ -155,7 +155,7 @@ export default {
 			this.v$.$reset();
 		},
 
-		bulkSearchChanged() {
+		onBulkSearchChanged() {
 			this.$emit("bulkSearchChanged");
 		},
 

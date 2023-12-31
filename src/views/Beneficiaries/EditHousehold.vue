@@ -1,7 +1,7 @@
 <template>
 	<v-container fluid>
 		<div class="d-flex mb-4">
-			<h2 class="me-auto">{{ $t('EditHousehold') }}  (ID: {{ householdId }})</h2>
+			<h2 class="me-auto">{{ $t('Edit Household') }}  (ID: {{ householdId }})</h2>
 		</div>
 
 		<HouseholdTabs

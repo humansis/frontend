@@ -4,7 +4,7 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
+		@filtersChanged="onFilterChanged"
 		@search="$emit('search')"
 	/>
 </template>
@@ -199,7 +199,7 @@ export default {
 			}
 		},
 
-		async filterChanged(filters, filterName) {
+		async onFilterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 			const location = this.getLocation(filters);
 

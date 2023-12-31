@@ -14,6 +14,7 @@
 
 		<v-tabs v-model="activeTab">
 			<v-tab value="assistances">{{ $t('Assistances') }}</v-tab>
+
 			<v-tab value="purchases">{{ $t('Purchases') }}</v-tab>
 		</v-tabs>
 
@@ -54,7 +55,7 @@ export default {
 			household: {},
 			householdHead: null,
 			address: {},
-			activeTab: 0,
+			activeTab: "assistances",
 		};
 	},
 

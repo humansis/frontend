@@ -45,8 +45,6 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
-			item-title="value"
-			item-value="code"
 			is-search-enabled
 		/>
 

@@ -2,6 +2,7 @@
 	<form>
 		<div v-if="isHouseholdHead && isEditing" class="household-type">
 			<v-chip color="primary" variant="flat" label>H</v-chip>
+
 			<span v-if="isHouseholdHeadNameLoaded" class="detail">{{ householdHeadTitle }}</span>
 		</div>
 
@@ -73,8 +74,6 @@
 					:error-messages="validationMsg('personalInformation.gender')"
 					label="Gender"
 					name="gender"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					@update:modelValue="onValidate('personalInformation.gender')"
@@ -100,7 +99,9 @@
 
 				<v-tabs v-model="idTabs" density="compact">
 					<v-tab value="primary">{{ $t('Primary') }}</v-tab>
+
 					<v-tab value="secondary" :disabled="isSecondaryIdTabDisabled">{{ $t('Secondary') }}</v-tab>
+
 					<v-tab value="tertiary" :disabled="isTertiaryIdTabDisabled">{{ $t('Tertiary') }}</v-tab>
 				</v-tabs>
 
@@ -113,8 +114,6 @@
 							:error-messages="validationMsg('primaryId.idType')"
 							label="ID Type"
 							name="it-type"
-							item-title="value"
-							item-value="code"
 							class="mb-4"
 							is-search-enabled
 							@update:modelValue="onValidate('primaryId.idType'); onIdChange($event)"
@@ -138,8 +137,6 @@
 							:error-messages="validationMsg('secondaryId.idType')"
 							label="ID Type"
 							name="it-type"
-							item-title="value"
-							item-value="code"
 							class="mb-4"
 							is-search-enabled
 							@update:modelValue="onValidate('secondaryId.idType'); onIdChange($event)"
@@ -163,8 +160,6 @@
 							:error-messages="validationMsg('tertiaryId.idType')"
 							label="ID Type"
 							name="it-type"
-							item-title="value"
-							item-value="code"
 							class="mb-4"
 							is-search-enabled
 							@update:modelValue="onValidate('tertiaryId.idType'); onIdChange($event)"
@@ -192,8 +187,6 @@
 					:error-messages="validationMsg('residencyStatus')"
 					label="Residency status"
 					name="residency-status"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					@update:modelValue="onValidate('residencyStatus')"
@@ -238,14 +231,12 @@
 					v-model="formModel.referral.referralType"
 					:items="options.referralType"
 					:loading="referralTypeLoading"
-					:error-messages="validationMsg('residencyStatus')"
+					:error-messages="validationMsg('referral.referralType')"
 					label="Referral Type"
 					name="referral-type"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
-					@update:modelValue="onValidate('residencyStatus')"
+					@update:modelValue="onValidate('referral.referralType')"
 				/>
 
 				<DataInput
@@ -272,8 +263,6 @@
 						:loading="phoneTypesLoading"
 						label="Type phone 1"
 						name="phone1-type"
-						item-title="value"
-						item-value="code"
 						class="mb-4"
 						is-search-enabled
 					/>
@@ -294,8 +283,6 @@
 					:error-messages="validationMsg('phone1.ext')"
 					label="Prefix phone 1"
 					name="phone1-prefix"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					@update:modelValue="onValidate('phone1.ext')"
@@ -324,8 +311,6 @@
 						:loading="phoneTypesLoading"
 						label="Type phone 2"
 						name="phone2-type"
-						item-title="value"
-						item-value="code"
 						class="mb-4"
 						is-search-enabled
 					/>
@@ -346,8 +331,6 @@
 					:error-messages="validationMsg('phone2.ext')"
 					label="Prefix phone 2"
 					name="phone2-prefix"
-					item-title="value"
-					item-value="code"
 					class="mb-4"
 					is-search-enabled
 					@update:modelValue="onValidate('phone2.ext')"
@@ -402,7 +385,11 @@ import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators"
 export default {
 	name: "HouseholdHeadForm",
 
-	components: { DatePicker, DataSelect, DataInput },
+	components: {
+		DatePicker,
+		DataSelect,
+		DataInput,
+	},
 
 	mixins: [validation, idHelper],
 
@@ -412,12 +399,6 @@ export default {
 				nameLocal: {
 					familyName: { required },
 					firstName: { required },
-					parentsName: {},
-				},
-				nameEnglish: {
-					familyName: {},
-					firstName: {},
-					parentsName: {},
 				},
 				personalInformation: {
 					gender: { required },
@@ -853,6 +834,11 @@ export default {
 
 		submit() {
 			this.v$.$touch();
+
+			if (this.v$.$error) {
+				Notification(this.$t("Please fill all required fields in Household Head or Members step"), "error");
+			}
+
 			return !this.v$.$invalid;
 		},
 	},
@@ -868,7 +854,7 @@ export default {
 	.detail {
 		display: flex;
 		align-items: center;
-		padding-left: 0.5rem;
+		padding-left: .5rem;
 	}
  }
 </style>

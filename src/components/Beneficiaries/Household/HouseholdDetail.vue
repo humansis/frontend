@@ -27,10 +27,8 @@
 		<DataSelect
 			v-model="formModel.vulnerabilities"
 			:items="options.vulnerabilities"
-			item-title="value"
 			label="Vulnerabilities"
 			name="vulnerabilities"
-			item-value="code"
 			class="mb-4"
 			multiple
 			chips
@@ -56,10 +54,8 @@
 		<DataSelect
 			v-model="formModel.supportReceivedTypes"
 			:items="options.externalSupportReceivedType"
-			item-title="value"
 			label="Support received types"
 			name="support-received-types"
-			item-value="code"
 			class="mb-4"
 			multiple
 			chips
@@ -77,10 +73,8 @@
 		<DataSelect
 			v-model="formModel.assets"
 			:items="options.assets"
-			item-title="value"
 			label="Assets"
 			name="assets"
-			item-value="code"
 			class="mb-4"
 			multiple
 			chips
@@ -90,10 +84,8 @@
 		<DataSelect
 			v-model="formModel.shelterStatuses"
 			:items="options.shelterStatuses"
-			item-title="value"
 			label="Shelter status"
 			name="shelter-status"
-			item-value="code"
 			class="mb-4"
 			multiple
 			chips
@@ -133,7 +125,11 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "HouseholdDetail",
 
-	components: { DatePicker, DataSelect, DataInput },
+	components: {
+		DatePicker,
+		DataSelect,
+		DataInput,
+	},
 
 	props: {
 		householdModel: {

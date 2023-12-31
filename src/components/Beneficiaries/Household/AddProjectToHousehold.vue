@@ -32,7 +32,7 @@
 			size="small"
 			class="text-none ml-3"
 			variant="elevated"
-			@click="addHouseholdsToProject"
+			@click="onAddHouseholdsToProject"
 		>
 			{{ $t('Confirm') }}
 		</v-btn>
@@ -44,11 +44,13 @@ import DataSelect from "@/components/Inputs/DataSelect";
 
 export default {
 	name: "AddProjectToHouseholdModal",
+
 	components: { DataSelect },
 
 	props: {
 		confirmButtonLoading: Boolean,
 		loading: Boolean,
+
 		options: {
 			type: Array,
 			default: () => [],
@@ -62,7 +64,7 @@ export default {
 	},
 
 	methods: {
-		addHouseholdsToProject() {
+		onAddHouseholdsToProject() {
 			this.$emit("confirm", this.selectedProject);
 			this.selectedProject = null;
 		},
