@@ -1,235 +1,281 @@
 <template>
-	<div>
-		<div class="card">
-			<div class="card-content">
-				<div class="content">
-					<table>
-						<tbody>
-							<tr>
-								<td>{{ $t("Number of Households") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-light"
-										size="is-medium"
-									>
-										{{ totalEntries }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Corrected Errors") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-success"
-										size="is-medium"
-									>
-										{{ amountIntegrityCorrect }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Integrity Errors") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-danger"
-										size="is-medium"
-									>
-										{{ amountIntegrityFailed }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Duplicities Found") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-warning"
-										size="is-medium"
-									>
-										{{ amountIdentityDuplicities }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Duplicities Corrected/Merged") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-success"
-										size="is-medium"
-									>
-										{{ amountIdentityDuplicitiesResolved }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Similarities Found") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-warning"
-										size="is-medium"
-									>
-										{{ amountSimilarityDuplicities }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Similarities Corrected/Merged") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-success"
-										size="is-medium"
-									>
-										{{ amountSimilarityDuplicitiesResolved }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Households to Import") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-success"
-										size="is-medium"
-									>
-										{{ amountEntriesToImport }}
-									</b-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>{{ $t("Not Imported Rows") }}:</td>
-								<td class="has-text-right">
-									<b-tag
-										class="has-text-weight-bold"
-										type="is-warning"
-										size="is-medium"
-									>
-										{{ notImportedRows.length }}
-									</b-tag>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+	<v-card class="pa-5">
+		<table class="import-table">
+			<tbody>
+				<tr>
+					<td>{{ $t("Number of Households") }}:</td>
 
-				<hr>
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="blue-grey-lighten-4"
+							class="font-weight-bold"
+						>
+							{{ totalEntries }}
+						</v-chip>
+					</td>
+				</tr>
 
-				<div class="buttons mt-5 space-between">
-					<b-button
-						v-if="canCancelImport"
-						type="is-light is-danger"
-						icon-left="ban"
-						@click="cancelImport"
-					>
-						{{ $t('Cancel Import') }}
-					</b-button>
-					<div>
-						<b-button
-							v-if="finalisationStepActive"
-							type="is-primary"
-							icon-right="save"
-							:loading="changeStateButtonLoading"
-							@click="approveAndSave"
+				<tr>
+					<td>{{ $t("Corrected Errors") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="success"
+							class="font-weight-bold"
 						>
-							{{ $t('Approve and Save') }}
-						</b-button>
-						<b-button
-							v-if="finishedImport"
-							type="is-primary"
-							@click="$router.push({ name: 'Imports' })"
+							{{ amountIntegrityCorrect }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Integrity Errors") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="error"
+							class="font-weight-bold"
 						>
-							{{ $t('Back to Imports') }}
-						</b-button>
-						<b-button
-							v-if="finishedImport"
-							type="is-primary"
-							@click="$router.push({ name: 'Households' })"
+							{{ amountIntegrityFailed }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Duplicities Found") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="warning"
+							class="font-weight-bold"
 						>
-							{{ $t('Go to Beneficiaries') }}
-						</b-button>
-						<b-button
-							v-if="finishedImport && notImportedRows.length"
-							type="is-info is-light"
-							@click="showNotImportedRowsList"
+							{{ amountIdentityDuplicities }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Duplicities Corrected/Merged") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="success"
+							class="font-weight-bold"
 						>
-							{{ $t('Show Not Imported Rows') }} ({{ notImportedRows.length }})
-						</b-button>
-					</div>
-				</div>
-			</div>
+							{{ amountIdentityDuplicitiesResolved }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Similarities Found") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="warning"
+							class="font-weight-bold"
+						>
+							{{ amountSimilarityDuplicities }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Similarities Corrected/Merged") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="success"
+							class="font-weight-bold"
+						>
+							{{ amountSimilarityDuplicitiesResolved }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Households to Import") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="success"
+							class="font-weight-bold"
+						>
+							{{ amountEntriesToImport }}
+						</v-chip>
+					</td>
+				</tr>
+
+				<tr>
+					<td>{{ $t("Not Imported Rows") }}:</td>
+
+					<td class="text-right">
+						<v-chip
+							variant="flat"
+							color="warning"
+							class="font-weight-bold"
+						>
+							{{ notImportedRows.length }}
+						</v-chip>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="d-flex ga-2 flex-wrap mt-4">
+			<v-btn
+				v-if="canCancelImport"
+				color="warning"
+				prepend-icon="ban"
+				class="text-none"
+				@click="onCancelImport"
+			>
+				{{ $t('Cancel Import') }}
+			</v-btn>
+
+			<v-btn
+				v-if="finalisationStepActive"
+				:loading="changeStateButtonLoading"
+				color="primary"
+				prepend-icon="save"
+				class="text-none"
+				@click="onApproveAndSave"
+			>
+				{{ $t('Approve and Save') }}
+			</v-btn>
+
+			<v-btn
+				v-if="finishedImport"
+				:to="{ name: 'Imports' }"
+				color="primary"
+				class="text-none"
+			>
+				{{ $t('Back to Imports') }}
+			</v-btn>
+
+			<v-btn
+				v-if="finishedImport"
+				:to="{ name: 'Households' }"
+				color="primary"
+				class="text-none"
+			>
+				{{ $t('Go to Beneficiaries') }}
+			</v-btn>
+
+			<v-btn
+				v-if="finishedImport && notImportedRows.length"
+				color="info"
+				class="text-none"
+				@click="isNotImportedRowsVisible = true"
+			>
+				{{ $t('Show Not Imported Rows') }} ({{ notImportedRows.length }})
+			</v-btn>
 		</div>
-		<div v-if="notImportedRowsVisible" class="card">
-			<div class="card-content">
-				<div class="content">
-					<h3 class="subtitle">{{ $t('Not Imported Rows') }}</h3>
-					<table class="table">
-						<thead>
-							<tr>
-								<th>{{ $t('Household ID') }}</th>
-								<th>{{ $t('Beneficiary ID') }}</th>
-								<th>{{ $t('Failed Action') }}</th>
-								<th>{{ $t('Error Message') }}</th>
-								<th>{{ $t('Family Name') }}</th>
-								<th>{{ $t('Given Name') }}</th>
-								<th>{{ $t('Parents Name') }}</th>
-								<th>{{ $t('ID Number') }}</th>
-								<th>{{ $t('ID Type') }}</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="item of notImportedRows" :key="`item-${item.beneficiaryId}`">
-								<td>
-									<router-link
-										v-if="item.householdId"
-										class="table-link"
-										target="_blank"
-										:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
-									>
-										{{ item.householdId }}
-									</router-link>
-									<span v-else>{{ $t("None") }}</span>
-								</td>
-								<td>
-									<span v-if="item.beneficiaryId">{{ item.beneficiaryId }}</span>
-									<span v-else>{{ $t("None") }}</span>
-								</td>
-								<td>{{ item.failedAction }}</td>
-								<td>{{ item.errorMessage }}</td>
-								<td>
-									<b-tooltip
-										:label="item.enFamilyName || item.localFamilyName"
-									>
-										{{ item.localFamilyName || item.enFamilyName   }}
-									</b-tooltip>
-								</td>
-								<td>
-									<b-tooltip
-										:label="item.enGivenName || item.localGivenName"
-									>
-										{{ item.localGivenName || item.enGivenName   }}
-									</b-tooltip>
-								</td>
-								<td>
-									<b-tooltip
-										:label="item.enParentsName || item.localParentsName"
-									>
-										{{ item.localParentsName || item.enParentsName   }}
-									</b-tooltip>
-								</td>
-								<td>{{ getIdCard(item.primaryIdCard) }}</td>
-								<td>{{ getIdCardType(item.primaryIdCard) }}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+
+		<table v-if="isNotImportedRowsVisible" class="import-table mt-8">
+			<thead>
+				<tr>
+					<th>{{ $t('Household ID') }}</th>
+
+					<th>{{ $t('Beneficiary ID') }}</th>
+
+					<th>{{ $t('Failed Action') }}</th>
+
+					<th>{{ $t('Error Message') }}</th>
+
+					<th>{{ $t('Family Name') }}</th>
+
+					<th>{{ $t('Given Name') }}</th>
+
+					<th>{{ $t('Parents Name') }}</th>
+
+					<th>{{ $t('ID Number') }}</th>
+
+					<th>{{ $t('ID Type') }}</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr v-for="item of notImportedRows" :key="`item-${item.beneficiaryId}`">
+					<td>
+						<router-link
+							v-if="item.householdId"
+							:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
+							class="table-link"
+							target="_blank"
+						>
+							{{ item.householdId }}
+						</router-link>
+
+						<span v-else>{{ $t("None") }}</span>
+					</td>
+
+					<td>
+						<span v-if="item.beneficiaryId">
+							{{ item.beneficiaryId }}
+						</span>
+
+						<span v-else>{{ $t("None") }}</span>
+					</td>
+
+					<td>{{ item.failedAction }}</td>
+
+					<td>{{ item.errorMessage }}</td>
+
+					<td>
+						<v-tooltip
+							:text="item.enFamilyName || item.localFamilyName"
+							location="top"
+						>
+							<template v-slot:activator="{ props }">
+								<span v-bind="props">
+									{{ item.localFamilyName || item.enFamilyName }}
+								</span>
+							</template>
+						</v-tooltip>
+					</td>
+
+					<td>
+						<v-tooltip
+							:text="item.enGivenName || item.localGivenName"
+							location="top"
+						>
+							<template v-slot:activator="{ props }">
+								<span v-bind="props">
+									{{ item.localGivenName || item.enGivenName }}
+								</span>
+							</template>
+						</v-tooltip>
+					</td>
+
+					<td>
+						<v-tooltip
+							:text="item.enParentsName || item.localParentsName"
+							location="top"
+						>
+							<template v-slot:activator="{ props }">
+								<span v-bind="props">
+									{{ item.localParentsName || item.enParentsName }}
+								</span>
+							</template>
+						</v-tooltip>
+					</td>
+
+					<td>{{ getIdCard(item.primaryIdCard) }}</td>
+
+					<td>{{ getIdCardType(item.primaryIdCard) }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</v-card>
 </template>
 
 <script>
@@ -248,7 +294,6 @@ export default {
 
 		status: {
 			type: String,
-			required: false,
 			default: "",
 		},
 
@@ -264,7 +309,7 @@ export default {
 			importStatus: "",
 			changeStateButtonLoading: false,
 			notImportedRows: [],
-			notImportedRowsVisible: false,
+			isNotImportedRowsVisible: false,
 		};
 	},
 
@@ -342,16 +387,12 @@ export default {
 	},
 
 	methods: {
-		approveAndSave() {
+		onApproveAndSave() {
 			this.$emit("changeImportState", {
 				state: IMPORT.STATUS.IMPORTING,
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});
-		},
-
-		showNotImportedRowsList() {
-			this.notImportedRowsVisible = true;
 		},
 
 		fetchImportNotImportedRows() {
@@ -372,7 +413,7 @@ export default {
 			return item?.type ? this.$t(normalizeText(item.type)) : this.$t("None");
 		},
 
-		cancelImport() {
+		onCancelImport() {
 			this.$emit("canceledImport");
 		},
 	},

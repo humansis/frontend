@@ -1,64 +1,85 @@
 <template>
-	<div>
-		<div class="import-name mb-3">
-			<h1 class="title">
-				{{ importTitle }}
-			</h1>
-			<span class="title dot">•</span>
-			<h2 class="subtitle has-text-weight-bold mt-3">
-				{{ importProject }}
-			</h2>
+	<v-container fluid>
+		<ConfirmAction
+			:is-dialog-opened="confirmModal.isOpen"
+			:confirm-title="confirmModal.title"
+			:confirm-message="confirmModal.message"
+			prepend-icon="exclamation-circle"
+			:prepend-icon-color="confirmModal.iconColor"
+			:close-button-name="confirmModal.closeButtonName"
+			:confirm-button-name="confirmModal.confirmButtonName"
+			:confirm-button-color="confirmModal.confirmButtonColor"
+			@modalClosed="confirmModal.isOpen = false"
+			@actionConfirmed="confirmModal.onConfirm"
+		/>
+
+		<div class="d-flex justify-center align-center">
+			<h1 class="text-h4 font-weight-bold">{{ importTitle }}</h1>
+
+			<span class="text-h4 px-2">•</span>
+
+			<h2 class="text-h6">{{ importProject }}</h2>
 		</div>
-		<p
-			v-if="importDescription"
-			class="has-text-centered mb-4"
-		>
+
+		<p v-if="importDescription" class="text-center mt-4">
 			{{ importDescription }}
 		</p>
-		<div class="has-text-centered mb-3">
-			<b-tag
-				v-if="importStatus"
-				class="has-text-weight-bold"
-				size="is-medium"
-				:type="importStatusType"
-			>
-				<div class="import-status">
-					<p>{{ $t(importStatus) }}</p>
-					<Loading
-						v-if="isBusyIndicator"
-						type="bubbles"
-						is-small
-						class="subtitle"
-						color="#fff"
-					/>
-				</div>
-			</b-tag>
-		</div>
-		<b-field class="mb-5" grouped position="is-centered">
-			<b-icon v-if="stateTips" icon="info-circle" />
-			<p>{{ stateTips }}</p>
-		</b-field>
 
-		<b-steps
+		<div v-if="importStatus" class="text-center mt-4">
+			<v-chip
+				variant="flat"
+				:color="importStatusType"
+			>
+				<span>
+					{{ $t(importStatus) }}
+
+					<v-progress-linear
+						v-if="isBusyIndicator"
+						indeterminate
+						rounded
+						height="5"
+					/>
+				</span>
+			</v-chip>
+		</div>
+
+		<div v-if="stateTips" class="d-flex justify-center align-center mt-4">
+			<v-icon icon="info-circle" />
+
+			<p class="text-body-2 pl-2">
+				{{ stateTips }}
+			</p>
+		</div>
+
+		<v-stepper
 			v-model="activeStep"
-			ref="importSteps"
-			animated
-			rounded
-			:has-navigation="false"
+			:items="stepsTitle"
+			:alt-labels="!isMobile"
+			:class="['mt-6 import-stepper', { 'mobile-stepper': isMobile }]"
+			hide-actions
 		>
-			<b-step-item step="1" :label="$t('Start')" :clickable="false">
+
+			<template v-slot:title="{ title }">
+				<p>{{ $t(title) }}</p>
+			</template>
+
+			<template v-slot:icon="{ step }">
+				<v-icon :icon="`${step}`" />
+			</template>
+
+			<template v-slot:item.1>
 				<StartStep
 					:importFiles="importFiles"
 					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
-					@moveStepForward="changeTab(1)"
-					@fetchStatistics="fetchImportStatistics"
+					@moveStepForward="onChangeTab(2)"
+					@fetchStatistics="onFetchImportStatistics"
 				/>
-			</b-step-item>
+			</template>
 
-			<b-step-item step="2" :label="$t('Integrity Check')" :clickable="false">
+			<template v-slot:item.2>
 				<IntegrityStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -69,35 +90,21 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
-			</b-step-item>
+			</template>
 
-			<b-step-item step="3" :label="$t('Identity Check')" :clickable="false">
+			<template v-slot:item.3>
 				<IdentityStep
 					:statistics="statistics"
 					:status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
-					@updated="fetchImportStatistics"
-					@goToFinalStep="goToFinalStep"
+					@updated="onFetchImportStatistics"
+					@goToFinalStep="onGoToFinalStep"
 				/>
-			</b-step-item>
+			</template>
 
-			<!--
-			<b-step-item step="4" :label="$t('Similarity Check')" :clickable="false">
-				<SimilarityStep
-					:statistics="statistics"
-					:status="importStatus"
-					:loading-change-state-button="loadingChangeStateButton"
-					@canceledImport="onCancelImport"
-					@changeImportState="onChangeImportState"
-					@goToFinalStep="goToFinalStep"
-					@updated="fetchImportStatistics"
-				/>
-			</b-step-item>
-			-->
-
-			<b-step-item step="4" :label="$t('Finalisation')" :clickable="false">
+			<template v-slot:item.4>
 				<FinalisationStep
 					:statistics="statistics"
 					:status="importStatus"
@@ -105,19 +112,20 @@
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
-			</b-step-item>
-		</b-steps>
-	</div>
+			</template>
+		</v-stepper>
+	</v-container>
 </template>
 
 <script>
 import ImportService from "@/services/ImportService";
+import ConfirmAction from "@/components/ConfirmAction";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
 import IdentityStep from "@/components/Imports/IdentityStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import StartStep from "@/components/Imports/StartStep";
-import Loading from "@/components/Loading";
-import { Notification, Toast } from "@/utils/UI";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
@@ -128,8 +136,10 @@ export default {
 		IntegrityStep,
 		IdentityStep,
 		FinalisationStep,
-		Loading,
+		ConfirmAction,
 	},
+
+	mixins: [vuetifyHelper],
 
 	data() {
 		return {
@@ -141,12 +151,28 @@ export default {
 			importFiles: [],
 			activeStep: 0,
 			columnsError: 0,
-			steps: [
-				{ code: 0, slug: "start-import" },
-				{ code: 1, slug: "integrity-check" },
-				{ code: 2, slug: "identity-check" },
-				{ code: 3, slug: "finalisation" },
+			stepsTitle: [
+				"Start",
+				"Integrity Check",
+				"Identity Check",
+				"Finalisation",
 			],
+			steps: [
+				{ code: 1, slug: "start-import" },
+				{ code: 2, slug: "integrity-check" },
+				{ code: 3, slug: "identity-check" },
+				{ code: 4, slug: "finalisation" },
+			],
+			confirmModal: {
+				isOpen: false,
+				title: "",
+				message: "",
+				iconColor: "",
+				closeButtonName: "",
+				confirmButtonName: "",
+				confirmButtonColor: "",
+				onConfirm: null,
+			},
 		};
 	},
 
@@ -178,25 +204,25 @@ export default {
 				case IMPORT.STATUS.CANCEL:
 				case IMPORT.STATUS.IMPORTING:
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
-					result = "is-warning";
+					result = "warning";
 					break;
 				case IMPORT.STATUS.FINISH:
 				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
-					result = "is-success";
+					result = "success";
 					break;
 				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
-					result = "is-danger";
+					result = "error";
 					break;
 				case IMPORT.STATUS.NEW:
 				case IMPORT.STATUS.INTEGRITY_CHECK:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 				case IMPORT.STATUS.SIMILARITY_CHECK:
 				default:
-					result = "is-info";
+					result = "info";
 			}
 
 			return result;
@@ -285,19 +311,19 @@ export default {
 	async created() {
 		this.fetchData();
 		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
-		this.activeStep = currentStep?.code || 0;
+		this.activeStep = currentStep?.code || 1;
 	},
 
 	mounted() {
 		this.isImportAutomaticallyCanceled(this.importStatus);
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		clearInterval(this.statisticsInterval);
 	},
 
 	methods: {
-		changeTab(data) {
+		onChangeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
 			if (this.$route.query.step !== slug) {
@@ -317,7 +343,7 @@ export default {
 			if (importId) {
 				this.fetchImport(importId);
 				this.fetchImportFiles(importId);
-				this.fetchImportStatistics();
+				this.onFetchImportStatistics();
 				this.setCheckingInterval();
 			} else {
 				clearInterval(this.statisticsInterval);
@@ -331,7 +357,7 @@ export default {
 				&& this.importDetail?.status !== IMPORT.STATUS.FINISH
 			) {
 				this.statisticsInterval = setInterval(() => {
-					this.fetchImportStatistics();
+					this.onFetchImportStatistics();
 					this.fetchImportFiles();
 				}, 5000);
 			}
@@ -346,12 +372,7 @@ export default {
 						this.importFiles = data;
 						this.checkImportFiles(data);
 					}).catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Import Files")} ${e}`,
-								"is-danger",
-							);
-						}
+						Notification(`${this.$t("Import Files")} ${e.message || e}`, "error");
 					});
 			}
 		},
@@ -373,11 +394,11 @@ export default {
 				this.importDetail = data;
 				this.stepsRedirect(data.status);
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+				Notification(`${this.$t("Import")} ${e.message || e}`, "error");
 			});
 		},
 
-		fetchImportStatistics() {
+		onFetchImportStatistics() {
 			const { importId } = this.$route.params;
 
 			if (importId) {
@@ -393,45 +414,44 @@ export default {
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
 				case IMPORT.STATUS.IMPORTING:
 				case IMPORT.STATUS.FINISH:
-					this.changeTab(3);
+					this.onChangeTab(4);
 					break;
 
 				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
 				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
 				case IMPORT.STATUS.SIMILARITY_CHECK:
-					this.changeTab(3);
+					this.onChangeTab(4);
 					break;
 
 				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 				case IMPORT.STATUS.IDENTITY_CHECK:
-					this.changeTab(2);
+					this.onChangeTab(3);
 					break;
 
 				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 				case IMPORT.STATUS.INTEGRITY_CHECK:
-					this.changeTab(1);
+					this.onChangeTab(2);
 					break;
 
 				case IMPORT.STATUS.NEW:
 				default:
-					this.changeTab(0);
+					this.onChangeTab(1);
 			}
 		},
 
 		onCancelImport() {
-			this.$buefy.dialog.confirm({
-				title: this.$t("Cancel Import"),
-				message: this.$t("Are you sure you want to cancel this import?"),
-				confirmText: this.$t("Confirm"),
-				cancelText: this.$t("Cancel"),
-				type: "is-danger",
-				hasIcon: true,
-				onConfirm: () => {
-					this.cancelImport();
-				},
-			});
+			this.confirmModal = {
+				isOpen: true,
+				title: "Cancel Import",
+				message: "Are you sure you want to cancel this import?",
+				iconColor: "warning",
+				closeButtonName: "Cancel",
+				confirmButtonName: "Confirm",
+				confirmButtonColor: "warning",
+				onConfirm: this.cancelImport,
+			};
 		},
 
 		onChangeImportState({
@@ -441,21 +461,24 @@ export default {
 			withConfirm = true,
 		}) {
 			if ((this.integrityStepHasError || this.identityStepHasError) && withConfirm) {
-				this.$buefy.dialog.confirm({
-					title: this.$t("Continue"),
-					message: this.$t("Are you sure you want to ignore errors and proceed?"),
-					confirmText: this.$t("Confirm"),
-					cancelText: this.$t("Cancel"),
-					type: "is-warning",
-					hasIcon: true,
-					onConfirm: () => {
-						this.changeImportState(state, successMessage, goNext);
-						this.columnsError = 0;
-					},
-				});
+				this.confirmModal = {
+					isOpen: true,
+					title: "Continue",
+					message: "Are you sure you want to ignore errors and proceed?",
+					iconColor: "warning",
+					closeButtonName: "Cancel",
+					confirmButtonName: "Confirm",
+					confirmButtonColor: "warning",
+					onConfirm: () => this.confirmedChangeImportState(state, successMessage, goNext),
+				};
 			} else {
 				this.changeImportState(state, successMessage, goNext);
 			}
+		},
+
+		confirmedChangeImportState(state, successMessage, goNext) {
+			this.changeImportState(state, successMessage, goNext);
+			this.columnsError = 0;
 		},
 
 		changeImportState(state, successMessage, goNext) {
@@ -466,49 +489,46 @@ export default {
 				.then(({ status, message }) => {
 					if (status === 202) {
 						if (state === IMPORT.STATUS.CANCEL) {
-							Toast(this.$t("Import Canceled"), "is-success");
-							this.changeTab(3);
+							Notification(this.$t("Import Canceled"), "success");
+							this.onChangeTab(4);
 						}
 
 						if (this.$route.name === "Import") {
-							Toast(this.$t(successMessage), "is-success");
+							Notification(this.$t(successMessage), "success");
 
 							if (state !== IMPORT.STATUS.FINISH
-							&& state !== IMPORT.STATUS.IMPORTING
-							&& state !== IMPORT.STATUS.CANCEL) {
-								if (goNext) this.changeTab(this.activeStep + 1);
+								&& state !== IMPORT.STATUS.IMPORTING
+								&& state !== IMPORT.STATUS.CANCEL) {
+								if (goNext) this.onChangeTab(this.activeStep + 1);
 							}
 						}
 					} else if (status >= 400 && status <= 500) {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				}).catch((e) => {
-					if (e.message) {
-						const type = state === IMPORT.STATUS.IMPORTING ? "is-warning" : "is-danger";
-						Notification(`${this.$t("Import")} ${e}`, type);
-					}
+					const type = state === IMPORT.STATUS.IMPORTING ? "warning" : "error";
+					Notification(`${this.$t("Import")} ${e.message || e}`, type);
 				}).finally(() => {
 					this.loadingChangeStateButton = false;
-					this.fetchImportStatistics();
+					this.onFetchImportStatistics();
 					this.fetchImportFiles();
 				});
 		},
 
-		goToFinalStep() {
+		onGoToFinalStep() {
 			if (this.statistics.amountDuplicities) {
-				this.$buefy.dialog.confirm({
-					title: this.$t("Continue"),
-					message: this.$t("Are you sure you want to ignore errors and proceed?"),
-					confirmText: this.$t("Confirm"),
-					cancelText: this.$t("Cancel"),
-					type: "is-warning",
-					hasIcon: true,
-					onConfirm: () => {
-						this.changeTab(3);
-					},
-				});
+				this.confirmModal = {
+					isOpen: true,
+					title: "Continue",
+					message: "Are you sure you want to ignore errors and proceed?",
+					iconColor: "warning",
+					closeButtonName: "Cancel",
+					confirmButtonName: "Confirm",
+					confirmButtonColor: "warning",
+					onConfirm: () => this.onChangeTab(4),
+				};
 			} else {
-				this.changeTab(3);
+				this.onChangeTab(4);
 			}
 		},
 
@@ -530,29 +550,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.description-edit-button {
-	margin-top: -.2rem;
-}
-
-.description-edit-area textarea {
-	text-align: center;
-}
-
-.import-status {
-	display: flex;
-	align-items: center;
-}
-
-.import-name {
-	display: flex;
-	justify-content: center;
-	gap: 0.5rem;
-
-	.dot {
-		display: flex;
-		align-items: center;
-	}
-}
-</style>

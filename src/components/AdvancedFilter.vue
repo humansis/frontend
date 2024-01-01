@@ -18,10 +18,10 @@
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
 				:placeholder="options.placeholder"
-				:is-search-enabled="options.multiple"
+				name="filter-select"
 				:chips="options.multiple"
 				:closable-chips="options.multiple"
-				name="filter-select"
+				is-search-enabled
 				clearable
 				persistent-placeholder
 				@update:modelValue="onFilterChanged(filter)"
