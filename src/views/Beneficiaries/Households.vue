@@ -1,5 +1,18 @@
 <template>
 	<v-container fluid>
+		<ConfirmAction
+			:is-dialog-opened="confirmModal.isOpened"
+			confirm-title="Deleting"
+			confirm-message="Are you sure you want to delete this Households?"
+			prepend-icon="exclamation-circle"
+			prepend-icon-color="error"
+			close-button-name="Cancel"
+			confirm-button-name="Delete"
+			confirm-button-color="error"
+			@modalClosed="confirmModal.isOpened = false"
+			@actionConfirmed="removeMultipleHouseholds"
+		/>
+
 		<div class="d-flex mb-4">
 			<h2 class="me-auto">{{ $t('Households') }}</h2>
 
@@ -58,7 +71,7 @@
 				:confirm-button-loading="confirmButtonLoading"
 				close-button
 				@formSubmitted="onAddHouseholdsToProject"
-				@formClosed="onCloseAddToProjectModal"
+				@formClosed="addToProjectModal.isOpened = false"
 			/>
 		</Modal>
 
@@ -69,7 +82,7 @@
 			<HouseholdDetail
 				:household-model="householdModel"
 				close-button
-				@formClosed="closeHouseholdDetailModal"
+				@formClosed="householdDetailModal.isOpened = false"
 			/>
 		</Modal>
 
@@ -166,7 +179,9 @@
 						<v-btn
 							v-bind="props"
 							:append-icon="props.open ? 'arrow-up' : 'arrow-down'"
-							color="primary ml-4"
+							size="small"
+							color="primary"
+							class="ml-4 text-none"
 						>
 							{{ $t('Actions') }}
 						</v-btn>
@@ -178,7 +193,7 @@
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item @click="onSaveDeleteOfMultipleHouseholds">
+						<v-list-item @click="confirmModal.isOpened = true">
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -221,6 +236,7 @@ import ProjectService from "@/services/ProjectService";
 import AddProjectToHousehold from "@/components/Beneficiaries/Household/AddProjectToHousehold";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
 import ButtonAction from "@/components/ButtonAction";
+import ConfirmAction from "@/components/ConfirmAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
@@ -242,6 +258,7 @@ export default {
 		AddProjectToHousehold,
 		BulkSearch: defineAsyncComponent(() => import("@/components/Beneficiaries/Household/BulkSearch")),
 		ButtonAction,
+		ConfirmAction,
 		DataGrid,
 		ExportControl,
 		HouseholdDetail,
@@ -294,6 +311,9 @@ export default {
 			bulkSearch: {},
 			locationsFilter: {},
 			householdDetailModal: {
+				isOpened: false,
+			},
+			confirmModal: {
 				isOpened: false,
 			},
 			addToProjectModal: {
@@ -505,7 +525,7 @@ export default {
 						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					});
 
-				this.onCloseAddToProjectModal();
+				this.addToProjectModal.isOpened = false;
 				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
 				this.onRowsChecked();
@@ -773,25 +793,11 @@ export default {
 		},
 
 		async removeMultipleHouseholds() {
+			this.confirmModal.isOpened = false;
 			await this.onRemoveHousehold(null, true);
 			this.isActionsButtonVisible = false;
 			await this.fetchData();
 			this.onRowsChecked();
-		},
-
-		onSaveDeleteOfMultipleHouseholds() {
-			// FIXME
-			this.$buefy.dialog.confirm({
-				title: this.$t("Deleting"),
-				message: this.$t("Are you sure you want to delete this Households?"),
-				confirmText: this.$t("Delete"),
-				cancelText: this.$t("Cancel"),
-				type: "error",
-				hasIcon: true,
-				onConfirm: () => {
-					this.removeMultipleHouseholds();
-				},
-			});
 		},
 
 		async onRemoveHousehold(id, multiple = false) {
@@ -828,17 +834,9 @@ export default {
 			this.table.checkedRows = [];
 		},
 
-		closeHouseholdDetailModal() {
-			this.householdDetailModal.isOpened = false;
-		},
-
 		onShowHouseholdDetail(id) {
 			this.mapHouseholdDetail(this.table.data.find((item) => item.householdId === id));
 			this.householdDetailModal.isOpened = true;
-		},
-
-		onCloseAddToProjectModal() {
-			this.addToProjectModal.isOpened = false;
 		},
 
 		onShowAddToProjectModal() {

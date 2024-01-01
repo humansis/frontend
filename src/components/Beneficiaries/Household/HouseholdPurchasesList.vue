@@ -41,7 +41,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "icon", type: "IconWithTooltip", sortable: false },
+					{ key: "icon", type: "IconWithTooltip", sortable: false, withoutLabel: true },
 					{ key: "beneficiaryId", title: "Beneficiary", sortable: false },
 					{ key: "beneficiaryLocalGivenName", title: "Local Given Name", sortable: false },
 					{ key: "beneficiaryLocalFamilyName", title: "Local Family Name", sortable: false },

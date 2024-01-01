@@ -33,29 +33,24 @@ export const normalizeExportDate = (date = new Date()) => date
 
 export const normalizeFirstLetter = (text = "") => text.replace(/^.| ./g, (str) => str.toUpperCase());
 
-export const generateColumns = ((visibleColumns) => {
+export const generateColumns = ((columns) => {
 	const preparedColumns = [];
 
-	visibleColumns.forEach(
-		({ key, title, type, sortKey, customTags, sortable, width, minWidth, value, visible }) => {
-			const preparedTitle = title ? t(title) : t(normalizeText(key));
+	columns.forEach(({ key, title, withoutLabel, ...rest }) => {
+		let preparedTitle = "";
 
-			preparedColumns.push({
-				key,
-				title: preparedTitle,
-				type,
-				sortKey,
-				customTags,
-				sortable,
-				width,
-				minWidth,
-				value,
-				visible,
-			});
-		},
-	);
+		if (!withoutLabel) {
+			preparedTitle = t(title || normalizeText(key));
+		}
 
-	return preparedColumns.filter((column) => column.visible !== false);
+		preparedColumns.push({
+			...rest,
+			key,
+			title: preparedTitle,
+		});
+	});
+
+	return preparedColumns.filter(({ visible }) => visible !== false);
 });
 
 export default {
