@@ -1,4 +1,5 @@
 <template>
+	{{ vendor }}
 	<v-card-title class="text-h6 font-weight-bold">
 		{{ $t(header) }}
 
@@ -46,7 +47,6 @@
 
 					<v-col class="d-flex justify-end align-center">
 						<v-btn
-							:disabled="isProjectsLoading"
 							:loading="redeemLoading === batch"
 							color="primary"
 							size="small"

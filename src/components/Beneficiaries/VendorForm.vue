@@ -121,6 +121,7 @@
 			ref="locationForm"
 			:form-model="formModel"
 			:form-disabled="formDisabled"
+			:disabled-adm-clear="disabledAdmInput"
 			@mapped="mapping = false"
 		/>
 	</v-card-text>
@@ -223,6 +224,17 @@ export default {
 				],
 			},
 		};
+	},
+
+	computed: {
+		disabledAdmInput() {
+			return {
+				adm1: this.formDisabled,
+				adm2: this.formDisabled,
+				adm3: this.formDisabled,
+				adm4: this.formDisabled,
+			};
+		},
 	},
 
 	methods: {
