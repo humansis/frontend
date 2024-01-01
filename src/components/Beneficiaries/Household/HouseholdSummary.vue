@@ -18,6 +18,7 @@
 					is-search-enabled
 					multiple
 					chips
+					closable-chips
 					@update:modelValue="onValidate('selectedProjects')"
 				/>
 

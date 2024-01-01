@@ -28,8 +28,6 @@
 			:min="minDate"
 			:max="maxDate"
 			locale="en-in"
-			height="350"
-			width="350"
 			hide-header
 			no-title
 			@update:modelValue="onDatePickerValueChanged"
@@ -124,17 +122,7 @@ export default {
 </script>
 
 <style lang="scss">
-.v-date-picker-month__day {
-	height: 2.25rem;
-	width: 2.5rem;
-}
-
 .v-date-picker-month__weekday {
 	font-weight: bold;
-}
-
-.v-date-picker-months,
-.v-date-picker-years {
-	overflow-y: hidden;
 }
 </style>

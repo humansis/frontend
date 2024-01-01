@@ -231,12 +231,10 @@
 					v-model="formModel.referral.referralType"
 					:items="options.referralType"
 					:loading="referralTypeLoading"
-					:error-messages="validationMsg('referral.referralType')"
 					label="Referral Type"
 					name="referral-type"
 					class="mb-4"
 					is-search-enabled
-					@update:modelValue="onValidate('referral.referralType')"
 				/>
 
 				<DataInput
@@ -711,7 +709,7 @@ export default {
 				},
 				personalInformation: {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
-					dateOfBirth: new Date(dateOfBirth),
+					dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
 				},
 				primaryId: primaryCardId,
 				secondaryId: secondaryCardId,
