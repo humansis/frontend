@@ -57,6 +57,8 @@ export default {
 		},
 	},
 
+	emits: ["actionConfirmed", "formClosed"],
+
 	data() {
 		return {
 			selectedProject: null,
@@ -65,7 +67,7 @@ export default {
 
 	methods: {
 		onAddHouseholdsToProject() {
-			this.$emit("confirm", this.selectedProject);
+			this.$emit("actionConfirmed", this.selectedProject);
 			this.selectedProject = null;
 		},
 	},

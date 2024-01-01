@@ -4,7 +4,7 @@
 			:is-dialog-opened="openConfirmModal"
 			confirm-title="Date of Assistance"
 			confirm-message="You picked date from the past. Is it ok?"
-			prepend-icon="exclamation-circle"
+			prepend-icon="circle-exclamation"
 			prepend-icon-color="warning"
 			close-button-name="Cancel"
 			confirm-button-name="Yes and Continue"

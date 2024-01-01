@@ -1,16 +1,16 @@
 <template>
 	<v-container fluid>
 		<ConfirmAction
-			:is-dialog-opened="confirmModal.isOpened"
+			:is-dialog-opened="removeHouseholdModal.isOpened"
 			confirm-title="Deleting"
 			confirm-message="Are you sure you want to delete this Households?"
-			prepend-icon="exclamation-circle"
-			prepend-icon-color="error"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="red"
 			close-button-name="Cancel"
 			confirm-button-name="Delete"
-			confirm-button-color="error"
-			@modalClosed="confirmModal.isOpened = false"
+			confirm-button-color="red"
 			@actionConfirmed="removeMultipleHouseholds"
+			@modalClosed="removeHouseholdModal.isOpened = false"
 		/>
 
 		<div class="d-flex mb-4">
@@ -69,8 +69,7 @@
 				:loading="isLoading.projects"
 				:options="options.projects"
 				:confirm-button-loading="confirmButtonLoading"
-				close-button
-				@formSubmitted="onAddHouseholdsToProject"
+				@actionConfirmed="onAddHouseholdsToProject"
 				@formClosed="addToProjectModal.isOpened = false"
 			/>
 		</Modal>
@@ -81,7 +80,6 @@
 		>
 			<HouseholdDetail
 				:household-model="householdModel"
-				close-button
 				@formClosed="householdDetailModal.isOpened = false"
 			/>
 		</Modal>
@@ -193,7 +191,10 @@
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item @click="confirmModal.isOpened = true">
+						<v-list-item
+							v-if="userCan.deleteBeneficiary"
+							@click="removeHouseholdModal.isOpened = true"
+						>
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -313,7 +314,7 @@ export default {
 			householdDetailModal: {
 				isOpened: false,
 			},
-			confirmModal: {
+			removeHouseholdModal: {
 				isOpened: false,
 			},
 			addToProjectModal: {
@@ -511,7 +512,9 @@ export default {
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
-				const householdsIds = this.table.checkedRows.map((household) => household.householdId);
+				const householdsIds = this.table.checkedRows.map(
+					(household) => household.routeParams.householdId,
+				);
 
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
@@ -740,6 +743,7 @@ export default {
 
 		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
+
 			this.table.data[tableIndex].loading = true;
 			const result = {
 				nationalIds: [],
@@ -793,7 +797,7 @@ export default {
 		},
 
 		async removeMultipleHouseholds() {
-			this.confirmModal.isOpened = false;
+			this.removeHouseholdModal.isOpened = false;
 			await this.onRemoveHousehold(null, true);
 			this.isActionsButtonVisible = false;
 			await this.fetchData();
@@ -808,12 +812,14 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.householdId).then((response) => {
+						const { householdId } = household.routeParams;
+
+						await BeneficiariesService.removeHousehold(householdId).then((response) => {
 							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${household.householdId}. `;
+								success += `${this.$t("Success for Household")} ${householdId}. `;
 							}
 						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${household.householdId} ${e.message || e}. `;
+							error += `${this.$t("Error for Household")} ${householdId} ${e.message || e}. `;
 						});
 					}));
 
