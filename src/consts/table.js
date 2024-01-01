@@ -12,6 +12,7 @@ export default {
 		DONORS: { key: "fullname", order: "asc" },
 		HOUSEHOLDS: { key: "id", order: "asc" },
 		INSTITUTIONS: { key: "id", order: "desc" },
+		IMPORTS: { key: "createdAt", order: "desc" },
 		PROJECTS: { key: "endDate", order: "desc" },
 		PRODUCTS_ITEMS: { key: "id", order: "asc" },
 		PRODUCTS_CATEGORIES: { key: "id", order: "asc" },

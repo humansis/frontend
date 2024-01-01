@@ -22,6 +22,7 @@
 		/>
 	</v-container>
 </template>
+
 <script>
 import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";

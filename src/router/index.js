@@ -192,48 +192,9 @@ const routes = [
 					},
 				],
 			},
-			//  		],
-			//  	},
-			//  	{
-			//  		path: "imports",
-			//  		component: { render(c) { return c("router-view"); } },
-			//  		children: [
-			//  			{
-			//  				path: "",
-			//  				name: "Imports",
-			//  				component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
-			//  				meta: {
-			//  					permissions: [],
-			//  					breadcrumb: () => i18n.t("Imports"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  			{
-			//  				path: "/:countryCode/import/:importId",
-			//  				component: { render(c) { return c("router-view"); } },
-			//  				meta: {
-			//  					breadcrumb: () => i18n.t("Import"),
-			//  				},
-			//  				children: [
-			//  					{
-			//  						path: "",
-			//  						name: "Import",
-			//  						component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
-			//  						meta: {
-			//  							permissions: [],
-			//  							description: "",
-			//  						},
-			//  					},
-			//  				],
-			//  			},
-			//  		],
-			//  	},
 			{
 				path: "imports",
 				component: RouterView,
-				meta: {
-					permissions: [],
-				},
 				children: [
 					{
 						path: "",
@@ -241,7 +202,27 @@ const routes = [
 						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
 						meta: {
 							permissions: [],
+							breadcrumb: "Imports",
+							description: "",
 						},
+					},
+					{
+						path: "/:countryCode/import/:importId",
+						component: RouterView,
+						meta: {
+							breadcrumb: "Import",
+						},
+						children: [
+							{
+								path: "",
+								name: "Import",
+								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
+								meta: {
+									permissions: [],
+									description: "",
+								},
+							},
+						],
 					},
 				],
 			},
