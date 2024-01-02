@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-show="show"
 		:headers="table.columns"
 		:loading="isLoadingList"
@@ -15,13 +15,13 @@
 				@actionConfirmed="$emit('showRedemptionSummary', row)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import SmartcardService from "@/services/SmartcardService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -39,7 +39,7 @@ export default {
 	name: "RedeemedBatches",
 
 	components: {
-		Table,
+		DataGrid,
 		ButtonAction,
 	},
 

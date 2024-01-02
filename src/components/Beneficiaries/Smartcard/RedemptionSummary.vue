@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-show="show"
 		:headers="table.columns"
 		:loading="isLoadingList"
@@ -17,7 +17,7 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import SmartcardService from "@/services/SmartcardService";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
@@ -35,7 +35,7 @@ const customSort = {
 export default {
 	name: "RedemptionSummary",
 
-	components: { Table },
+	components: { DataGrid },
 
 	mixins: [grid, baseHelper],
 

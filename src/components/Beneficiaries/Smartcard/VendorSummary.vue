@@ -46,6 +46,7 @@
 
 					<v-col class="d-flex justify-end align-center">
 						<v-btn
+							:disabled="!batch.canRedeem"
 							:loading="redeemLoading === batch"
 							color="primary"
 							size="small"

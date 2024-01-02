@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		ref="vouchersList"
 		v-model="table.checkedRows"
 		v-model:items-per-page="perPage"
@@ -8,6 +8,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:current-page="table.currentPage"
 		show-select
 		reset-sort-button
 		reset-filters-button
@@ -106,13 +107,13 @@
 				</v-expansion-panel>
 			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import BookletsService from "@/services/BookletsService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import grid from "@/mixins/grid";
@@ -131,7 +132,7 @@ export default {
 		ButtonAction,
 		ExportControl,
 		VouchersFilter,
-		Table,
+		DataGrid,
 	},
 
 	mixins: [permissions, grid, voucherHelper, urlFiltersHelper],
@@ -192,7 +193,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.setGridFiltersToUrl("vouchers", false);
 			await BookletsService.getListOfBooklets(
 				this.table.currentPage,
 				this.perPage,
@@ -211,6 +211,7 @@ export default {
 				}
 			});
 
+			this.setGridFiltersToUrl("vouchers", false);
 			this.isLoadingList = false;
 		},
 

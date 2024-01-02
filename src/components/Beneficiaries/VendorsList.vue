@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		ref="vendorsList"
 		v-show="show"
 		v-model:items-per-page="perPage"
@@ -89,7 +89,7 @@
 				</v-expansion-panel>
 			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
@@ -98,7 +98,7 @@ import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
@@ -115,7 +115,7 @@ export default {
 
 	components: {
 		ExportControl,
-		Table,
+		DataGrid,
 		VendorsFilter,
 		ButtonAction,
 	},
