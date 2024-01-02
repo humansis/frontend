@@ -6,16 +6,16 @@
 			v-model="selectedTab"
 			color="primary"
 			align-tabs="start"
-			class="mt-5 mb-5"
+			class="my-5"
 			@update:modelValue="onRedirectToTab"
 		>
-			<v-tab :value="0" class="text-none">
+			<v-tab value="assistances" class="text-none">
 				<v-icon icon="hand-holding-water" class="mr-2" />
 
 				{{ $t('Assistances') }}
 			</v-tab>
 
-			<v-tab :value="1" class="text-none">
+			<v-tab value="smartCardPurchasedItems" class="text-none">
 				<v-icon icon="shopping-cart" class="mr-2" />
 
 				{{ $t('Smartcard Purchased Items') }}
@@ -24,13 +24,13 @@
 
 		<DataGrid
 			v-show="show"
+			ref="distributionsList"
 			v-model:items-per-page="perPage"
 			v-model:sort-by="sortValue"
 			:headers="table.columns"
 			:items="table.data"
 			:total-count="table.total"
 			:loading="isLoadingList"
-			ref="table"
 			reset-sort-button
 			reset-filters-button
 			is-search-visible
@@ -64,8 +64,8 @@
 			</template>
 
 			<template v-slot:advancedControls>
-				<v-expansion-panels v-model="isAdvancedSearchVisible">
-					<v-expansion-panel :value="true" eager>
+				<v-expansion-panels v-model="visiblePanels">
+					<v-expansion-panel value="advancedSearch" eager>
 						<v-expansion-panel-text>
 							<DistributionsFilter
 								ref="distributionFilter"
@@ -103,13 +103,18 @@ export default {
 		DistributionsFilter,
 	},
 
-	mixins: [grid, urlFiltersHelper, transactionHelper],
+	mixins: [
+		grid,
+		urlFiltersHelper,
+		transactionHelper,
+	],
 
 	data() {
 		return {
 			TABLE,
-			selectedTab: 0,
-			isAdvancedSearchVisible: false,
+			selectedTab: "assistances",
+			visiblePanels: [],
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "transactionsAssistances",
@@ -143,6 +148,12 @@ export default {
 			filters: {},
 			locationsFilter: {},
 		};
+	},
+
+	computed: {
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
+		},
 	},
 
 	created() {
@@ -181,7 +192,7 @@ export default {
 		},
 
 		onRedirectToTab(tab) {
-			if (tab) {
+			if (tab === "smartCardPurchasedItems") {
 				this.$router.push({ name: "TransactionsPurchases" });
 			}
 		},
@@ -218,11 +229,11 @@ export default {
 		},
 
 		onAdvancedSearchToggle() {
-			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
 		onResetFilters() {
-			this.resetSearch({ tableRef: "table", filtersRef: "distributionFilter" });
+			this.resetSearch({ tableRef: "distributionsList", filtersRef: "distributionFilter" });
 		},
 
 		resetTableSort() {

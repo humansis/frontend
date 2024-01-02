@@ -142,7 +142,7 @@ export default {
 				this.$refs[bulkSearchRef].resetFilters();
 			}
 
-			if (searchValue) {
+			if (searchValue.length) {
 				this.$refs[tableRef].resetSearch();
 			} else {
 				this.fetchData();

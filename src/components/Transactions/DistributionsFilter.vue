@@ -28,7 +28,12 @@ export default {
 
 	components: { AdvancedFilter },
 
-	mixins: [filtersHelper, locationHelper, transactionHelper, urlFiltersHelper],
+	mixins: [
+		filtersHelper,
+		locationHelper,
+		transactionHelper,
+		urlFiltersHelper,
+	],
 
 	props: {
 		defaultFilters: {
@@ -167,13 +172,13 @@ export default {
 			}
 
 			if (this.defaultFilters.beneficiaryTypes?.length) {
-				this.selectedFiltersOptions.beneficiaryType	= this.filtersOptions
+				this.selectedFiltersOptions.beneficiaryType = this.filtersOptions
 					.beneficiaryType.data
 					.find((item) => item.code === this.defaultFilters.beneficiaryTypes[0]);
 			}
 
 			if (this.defaultFilters.projects?.length) {
-				this.selectedFiltersOptions.project	= this.filtersOptions
+				this.selectedFiltersOptions.project = this.filtersOptions
 					.project.data
 					.find((item) => item.id === this.defaultFilters.projects[0]);
 			}
