@@ -276,8 +276,12 @@ export default {
 			const {
 				shelterStatus,
 				livelihood: {
-					livelihood, assets, incomeLevel, debtLevel,
-					foodConsumptionScore, copingStrategiesIndex,
+					livelihood,
+					assets,
+					incomeLevel,
+					debtLevel,
+					foodConsumptionScore,
+					copingStrategiesIndex,
 					incomeSpentOnFood,
 				},
 				externalSupport: {
@@ -302,14 +306,14 @@ export default {
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel,
-				foodConsumptionScore,
-				copingStrategiesIndex,
-				debtLevel,
+				incomeLevel: incomeLevel || null,
+				foodConsumptionScore: foodConsumptionScore || null,
+				copingStrategiesIndex: copingStrategiesIndex || null,
+				debtLevel: debtLevel || null,
 				supportDateReceived: supportDateReceived ? supportDateReceived.toISOString() : null,
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
-				incomeSpentOnFood,
+				incomeSpentOnFood: incomeSpentOnFood || null,
 				houseIncome: 0,
 				countrySpecificAnswers:
 					this.prepareCountrySpecificsForHousehold(this.household.customFields),
@@ -330,7 +334,7 @@ export default {
 			Object.keys(countrySpecificAnswers).forEach((key) => {
 				preparedAnswers.push({
 					countrySpecificId: Number(key),
-					answer: `${countrySpecificAnswers[key]}`,
+					answer: `${countrySpecificAnswers[key]}` || null,
 				});
 			});
 			return preparedAnswers;
@@ -399,14 +403,17 @@ export default {
 			const {
 				typeOfLocation,
 				campName,
+				camp,
 				tentNumber,
 				number,
 				street,
 				postcode,
 			} = this.household.currentLocation;
+
 			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
-				return `${campName}, ${tentNumber}`;
+				return `${campName || camp.name}, ${tentNumber}`;
 			}
+
 			return `${number}, ${street}, ${postcode}`;
 		},
 

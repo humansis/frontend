@@ -16,9 +16,9 @@
 				:disabled="disabled"
 				:optional="optional"
 				:placeholder="placeholder"
+				:clearable="clearable"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
-				clearable
 				readonly
 			/>
 		</template>
@@ -71,6 +71,11 @@ export default {
 		name: {
 			type: String,
 			default: "",
+		},
+
+		clearable: {
+			type: Boolean,
+			default: true,
 		},
 
 		disabled: {

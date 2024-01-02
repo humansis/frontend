@@ -95,6 +95,7 @@
 			:loading="isLoading.households"
 			:progress="table.progress"
 			:search-phrase="table.searchPhrase"
+			:selected-rows="table.checkedRows.length"
 			:is-search-disabled="bulkSearch.isBulkSearchUsed"
 			reset-filters-button
 			reset-sort-button

@@ -64,6 +64,7 @@
 
 		<DatePicker
 			v-model="formModel.supportDateReceived"
+			:clearable="false"
 			label="Support date receive"
 			name="support-date-receive"
 			class="mb-4"
@@ -82,7 +83,7 @@
 		/>
 
 		<DataSelect
-			v-model="formModel.shelterStatuses"
+			v-model="formModel.shelterStatus"
 			:items="options.shelterStatuses"
 			label="Shelter status"
 			name="shelter-status"
@@ -171,16 +172,19 @@ export default {
 				this.options.assets,
 				"code",
 			);
+
 			this.formModel.shelterStatus = getArrayOfCodeListByKey(
 				[this.formModel.shelterStatus],
 				this.options.shelterStatuses,
 				"code",
 			);
+
 			this.formModel.supportReceivedTypes = getArrayOfCodeListByKey(
 				this.formModel.supportReceivedTypes,
 				this.options.externalSupportReceivedType,
 				"code",
 			);
+
 			this.formModel.vulnerabilities = getArrayOfCodeListByKey(
 				this.formModel.vulnerabilities,
 				this.options.vulnerabilities,

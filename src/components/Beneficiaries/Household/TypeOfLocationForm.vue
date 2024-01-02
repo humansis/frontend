@@ -162,6 +162,11 @@ export default {
 
 	watch: {
 		formModel: "mapLocations",
+
+		createCamp() {
+			this.formModel.camp = "";
+			this.formModel.campName = null;
+		},
 	},
 
 	async mounted() {
