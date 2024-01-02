@@ -22,7 +22,8 @@
 			item-value="id"
 			class="mb-4"
 			multiple
-			is-data-shown-as-tag
+			chips
+			closable-chips
 			@update:modelValue="onValidate('projects')"
 		/>
 
@@ -69,6 +70,11 @@ import { required } from "@vuelidate/validators";
 
 export default {
 	name: "importForm",
+
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
 
 	components: {
 		DataInput,

@@ -172,7 +172,6 @@
 
 			<v-btn
 				v-if="finishedImport && notImportedRows.length"
-				:to="{ name: 'Imports' }"
 				color="info"
 				class="text-none"
 				@click="onShowNotImportedRowsList"
@@ -295,7 +294,6 @@ export default {
 
 		status: {
 			type: String,
-			required: false,
 			default: "",
 		},
 

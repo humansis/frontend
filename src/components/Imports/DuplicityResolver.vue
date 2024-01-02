@@ -1,5 +1,5 @@
 <template>
-	<div v-if="!duplicitiesLoading && !this.isTotalCountLoading">
+	<div v-if="!isDuplicitiesLoading && !this.isTotalCountLoading">
 		<h2 class="text-h6 mb-4">
 			{{ header }} ({{ totalCountOfDuplicities }})
 		</h2>
@@ -83,9 +83,7 @@
 		</DataGrid>
 	</div>
 
-	<div v-else>
-		<Loading is-large />
-	</div>
+	<Loading v-else is-large />
 </template>
 
 <script>
@@ -113,12 +111,14 @@ export default {
 			required: true,
 		},
 
-		duplicitiesLoading: {
+		isDuplicitiesLoading: {
 			type: Boolean,
+			default: false,
 		},
 
-		formChangesLoading: {
+		isFormChangesLoading: {
 			type: Boolean,
+			default: false,
 		},
 
 	},
@@ -146,52 +146,47 @@ export default {
 				columns: generateColumns([
 					{
 						key: "familyName",
-						label: "Local family name",
+						title: "Local family name",
 						type: "arrayTextBreakForDuplicities",
 						boldText: true,
 						sortable: false,
 					},
 					{
 						key: "firstName",
-						label: "Local given name",
+						title: "Local given name",
 						type: "arrayTextBreakForDuplicities",
 						boldText: true,
 						sortable: false,
 					},
 					{
 						key: "idType",
+						title: "ID Type",
 						type: "arrayTextBreakForDuplicities",
-						label: "ID Type",
-						sortable: false },
-					{
-						key: "idNumber",
-						type: "arrayTextBreakForDuplicities",
-						label: "ID Number",
-						sortable: false },
-					{
-						key: "recordFrom",
-						type: "arrayTextBreakForDuplicitiesRecords",
-						label: "Records From File / Humansis",
 						sortable: false,
 					},
-					{ key: "actions", value: "actions", title: "Records From File / Humansis", sortable: false },
+					{
+						key: "idNumber",
+						title: "ID Number",
+						type: "arrayTextBreakForDuplicities",
+						sortable: false,
+					},
+					{
+						key: "recordFrom",
+						title: "Records From File / Humansis",
+						type: "arrayTextBreakForDuplicitiesRecords",
+						sortable: false,
+					},
+					{
+						key: "actions",
+						value: "actions",
+						title: "Records From File / Humansis",
+						sortable: false,
+					},
 				]),
 				total: 0,
 				currentPage: 1,
 			},
 		};
-	},
-
-	computed: {
-		duplicities() {
-			return this.table.data;
-		},
-	},
-
-	watch: {
-		duplicites(value) {
-			this.$emit("duplicitiesChange", value);
-		},
 	},
 
 	created() {
@@ -426,6 +421,8 @@ export default {
 						}
 
 						this.table.data[duplicityKey].disabled = false;
+
+						Notification(`${this.$t("Duplicity resolve")} ${e.message}`, "error");
 					}
 				});
 
@@ -448,14 +445,14 @@ export default {
 		isDataForTableLoading(item) {
 			return this.table.data[item].toUpdateLoading
 				|| this.table.data[item].toLinkLoading
-				|| this.formChangesLoading;
+				|| this.isFormChangesLoading;
 		},
 	},
 
 };
 </script>
 
-<style>
+<style scoped>
 .duplicity-button {
 	width: max-content !important;
 }

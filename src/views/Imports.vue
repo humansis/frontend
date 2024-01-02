@@ -12,7 +12,7 @@
 				:options="options"
 				close-button
 				@formSubmitted="onSubmitImportForm"
-				@formClosed="onCloseImportModal"
+				@formClosed="importModal.isOpened = false"
 			/>
 		</Modal>
 
@@ -22,7 +22,7 @@
 			<ExportControl
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
-				:is-export-loading="exportControl.loading"
+				:is-export-loading="exportControl.isLoading"
 				:location="exportControl.location"
 				class="export-template"
 				@export="onDownloadTemplate"
@@ -83,7 +83,7 @@ export default {
 	data() {
 		return {
 			exportControl: {
-				loading: false,
+				isLoading: false,
 				location: "imports",
 				types: [EXPORT.IMPORTS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
@@ -107,17 +107,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
-
 			if (this.importModal.isDetail) {
-				result = "Detail of Import";
-			} else if (this.importModal.isEditing) {
-				result = "Edit Import";
-			} else {
-				result = "Create New Import";
+				return "Detail of Import";
 			}
 
-			return result;
+			if (this.importModal.isEditing) {
+				return "Edit Import";
+			}
+
+			return "Create New Import";
 		},
 	},
 
@@ -148,10 +146,6 @@ export default {
 				projectId: null,
 				description: null,
 			};
-		},
-
-		onCloseImportModal() {
-			this.importModal.isOpened = false;
 		},
 
 		onShowDetail(importItem) {
@@ -264,7 +258,7 @@ export default {
 		async onDownloadTemplate(exportType, format) {
 			if (exportType === EXPORT.IMPORTS) {
 				try {
-					this.exportControl.loading = true;
+					this.exportControl.isLoading = true;
 
 					const { data, status, message } = await ImportService.exportTemplate(format);
 
@@ -272,7 +266,7 @@ export default {
 				} catch (e) {
 					Notification(`${this.$t("Downloading Template")} ${e.message || e}`, "error");
 				} finally {
-					this.exportControl.loading = false;
+					this.exportControl.isLoading = false;
 				}
 			}
 		},

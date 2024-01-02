@@ -93,8 +93,8 @@
 		</template>
 
 		<template v-slot:advancedControls>
-			<v-expansion-panels v-model="isAdvancedSearchVisible">
-				<v-expansion-panel :value="true" eager>
+			<v-expansion-panels v-model="visiblePanels">
+				<v-expansion-panel value="advancedSearch" eager>
 					<v-expansion-panel-text>
 						<ImportsFilter
 							ref="importFilter"
@@ -157,14 +157,14 @@ export default {
 				canceled: false,
 			},
 			isLoadingList: false,
-			isAdvancedSearchVisible: false,
+			visiblePanels: [],
 			filters: [],
 			table: {
 				data: [],
 				columns: generateColumns([
 					{ key: "id" },
 					{ key: "title" },
-					{ key: "project", label: "Project", sortKey: "project" },
+					{ key: "project", sortKey: "project" },
 					{ key: "status", type: "tag", customTags: statusTags },
 					{ key: "createdBy" },
 					{ key: "createdAt", type: "datetime" },
@@ -205,23 +205,27 @@ export default {
 
 		inProgressButtonClass() {
 			return [
-				"btn ml-3",
+				"ml-3",
 				{ "is-selected": this.statusActive.inProgress },
 			];
 		},
 
 		finishedButtonClass() {
 			return [
-				"btn ml-3",
+				"ml-3",
 				{ "is-selected": this.statusActive.finished },
 			];
 		},
 
 		canceledButtonClass() {
 			return [
-				"btn ml-3",
+				"ml-3",
 				{ "is-selected": this.statusActive.canceled },
 			];
+		},
+
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
 		},
 	},
 
@@ -315,7 +319,7 @@ export default {
 		},
 
 		onAdvancedSearchToggle() {
-			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
 		onResetFilters() {
@@ -360,11 +364,6 @@ export default {
 				params: { importId: importItem.id },
 				query: { step: slug },
 			});
-		},
-
-		showDetailWithId(id) {
-			const importItem = this.table.data.find((item) => item.id === id);
-			this.$emit("showDetail", importItem);
 		},
 	},
 };

@@ -135,8 +135,8 @@
 			<DuplicityResolver
 				ref="duplicityResolver"
 				:header="$t('Duplicity Cases')"
-				:duplicities-loading="resolveDuplicitiesLoading"
-				:form-changes-loading="allRecordsFormLoading"
+				:is-duplicities-loading="resolveDuplicitiesLoading"
+				:is-form-changes-loading="allRecordsFormLoading"
 				@loaded="onDuplicityLoaded"
 				@updated="onUpdate"
 				@duplicitiesChange="onLoadDuplicities"
@@ -176,7 +176,6 @@ export default {
 
 		status: {
 			type: String,
-			required: false,
 			default: "",
 		},
 	},

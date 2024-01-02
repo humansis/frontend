@@ -9,7 +9,7 @@
 			:close-button-name="confirmModal.closeButtonName"
 			:confirm-button-name="confirmModal.confirmButtonName"
 			:confirm-button-color="confirmModal.confirmButtonColor"
-			@modalClosed="onConfirmModalClosed"
+			@modalClosed="confirmModal.isOpen = false"
 			@actionConfirmed="confirmModal.onConfirm"
 		/>
 
@@ -55,9 +55,8 @@
 			v-model="activeStep"
 			:items="stepsTitle"
 			:alt-labels="!isMobile"
-			show-actions
-			hide-actions
 			:class="['mt-6 import-stepper', { 'mobile-stepper': isMobile }]"
+			hide-actions
 		>
 
 			<template v-slot:title="{ title }">
@@ -547,10 +546,6 @@ export default {
 			if (importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED) {
 				this.stepsRedirect(importStatus);
 			}
-		},
-
-		onConfirmModalClosed() {
-			this.confirmModal.isOpen = false;
 		},
 	},
 };
