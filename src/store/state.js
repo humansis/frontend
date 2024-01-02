@@ -71,6 +71,8 @@ export default {
 		{ name: "Khmer", key: "km", direction: "ltr" },
 		{ name: "Armenian", key: "hy", direction: "ltr" },
 		{ name: "Mongolian", key: "mn", direction: "ltr" },
+		{ name: "Pashto", key: "ps", direction: "ltr" },
+		{ name: "Dari", key: "fa", direction: "ltr" },
 	],
 	permissions: {
 		addProject: false,
