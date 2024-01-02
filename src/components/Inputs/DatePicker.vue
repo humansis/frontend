@@ -9,16 +9,17 @@
 		<template v-slot:activator="{ props }">
 			<DataInput
 				v-model="formattedDate"
-				v-bind="props"
+				v-bind="{ ...props, ...$attrs }"
 				:label="label"
 				:name="name"
 				:error-messages="$attrs['error-messages']"
 				:disabled="disabled"
 				:optional="optional"
 				:placeholder="placeholder"
+				:clearable="clearable"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
-				class="mb-6"
+				readonly
 			/>
 		</template>
 
@@ -27,8 +28,6 @@
 			:min="minDate"
 			:max="maxDate"
 			locale="en-in"
-			height="350"
-			width="350"
 			hide-header
 			no-title
 			@update:modelValue="onDatePickerValueChanged"
@@ -46,15 +45,22 @@ export default {
 		DataInput,
 	},
 
+	inheritAttrs: false,
+
 	props: {
+		modelValue: {
+			type: Date,
+			default: "",
+		},
+
 		minDate: {
 			type: Date,
-			required: false,
+			default: null,
 		},
 
 		maxDate: {
 			type: Date,
-			required: false,
+			default: null,
 		},
 
 		label: {
@@ -67,9 +73,9 @@ export default {
 			default: "",
 		},
 
-		modelValue: {
-			type: String,
-			default: "",
+		clearable: {
+			type: Boolean,
+			default: true,
 		},
 
 		disabled: {
@@ -121,17 +127,7 @@ export default {
 </script>
 
 <style lang="scss">
-.v-date-picker-month__day {
-	height: 2.25rem;
-	width: 2.5rem;
-}
-
 .v-date-picker-month__weekday {
 	font-weight: bold;
-}
-
-.v-date-picker-months,
-.v-date-picker-years {
-	overflow-y: hidden;
 }
 </style>

@@ -1,292 +1,210 @@
 <template>
-	<form ref="householdFormComponent">
-		<div class="columns is-multiline">
-			<div class="column is-half">
-				<h4 class="title is-4">{{ $t('Current Location') }}</h4>
+	<form>
+		<v-row>
+			<v-col cols="6">
+				<h4 class="mb-4">{{ $t('Current Location') }}</h4>
+
 				<LocationForm
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
-					:form-disabled="false"
+					class="mb-4"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
 				/>
 
-				<b-field class="mt-3">
-					<template #label>
-						{{ $t('Latitude') }}
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput v-model="formModel.latitude" step="any" :controls="false" />
-				</b-field>
+				<DataInput
+					v-model.number="formModel.latitude"
+					type="number"
+					label="Latitude"
+					name="latitude"
+					class="mb-4"
+					hide-spin-buttons
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						{{ $t('Longitude') }}
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput v-model="formModel.longitude" step="any" :controls="false" />
-				</b-field>
-			</div>
-			<div class="column is-half">
-				<h4 class="title is-4">{{ $t('Type of Location') }}</h4>
+				<DataInput
+					v-model.number="formModel.longitude"
+					type="number"
+					label="Longitude"
+					name="longitude"
+					class="mb-4"
+					hide-spin-buttons
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="6">
+				<h4 class="mb-4">{{ $t('Type of Location') }}</h4>
+
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
-					is-editing
 					:form-model="formModel.currentLocation"
+					is-editing
 				/>
-			</div>
-		</div>
-		<div class="columns is-multiline">
-			<div class="column is-one-third">
-				<h4 class="title is-4">{{ $t('Livelihood') }}</h4>
-				<b-field>
-					<template #label>
-						<span>{{ $t('Livelihood') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<MultiSelect
-						v-model="formModel.livelihood.livelihood"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:loading="livelihoodLoading"
-						:options="options.livelihood"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
+			</v-col>
+		</v-row>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Income') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput
-						v-model="formModel.livelihood.incomeLevel"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-						:placeholder="countryCurrency"
-					/>
-				</b-field>
+		<v-row>
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('Livelihood') }}</h4>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Income spent on food') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput
-						v-model="formModel.livelihood.incomeSpentOnFood"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-						:placeholder="countryCurrency"
-					/>
-				</b-field>
+				<DataSelect
+					v-model="formModel.livelihood.livelihood"
+					:items="options.livelihood"
+					:loading="livelihoodLoading"
+					label="Livelihood"
+					name="livelihood"
+					class="mb-4"
+					is-search-enabled
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Debt level') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput
-						v-model="formModel.livelihood.debtLevel"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-						:placeholder="countryCurrency"
-					/>
-				</b-field>
+				<DataInput
+					v-model.number="formModel.livelihood.incomeLevel"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Income"
+					name="income"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Assets') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<MultiSelect
-						v-model="formModel.livelihood.assets"
-						searchable
-						multiple
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:loading="assetsLoading"
-						:options="options.assets"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
+				<DataInput
+					v-model.number="formModel.livelihood.incomeSpentOnFood"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Income spent on food"
+					name="income-spent-on-food"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Food consumption score') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput
-						v-model="formModel.livelihood.foodConsumptionScore"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-					/>
-				</b-field>
+				<DataInput
+					v-model.number="formModel.livelihood.debtLevel"
+					:placeholder="countryCurrency"
+					type="number"
+					label="Debt level"
+					name="debt-level"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Coping strategies index') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-numberinput
-						v-model="formModel.livelihood.copingStrategiesIndex"
-						expanded
-						min="0"
-						type="is-dark"
-						:controls="false"
-					/>
-				</b-field>
-			</div>
-			<div class="column is-one-third">
-				<h4 class="title is-4">{{ $t('External Support') }}</h4>
-				<b-field>
-					<template #label>
-						<span>{{ $t('Support received types') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<MultiSelect
-						v-model="formModel.externalSupport.externalSupportReceivedType"
-						searchable
-						multiple
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:options="options.externalSupportReceivedType"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
+				<DataSelect
+					v-model="formModel.livelihood.assets"
+					:items="options.assets"
+					:loading="assetsLoading"
+					label="Assets"
+					name="assets"
+					class="mb-4"
+					multiple
+					chips
+					is-search-enabled
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Support date received') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-datepicker
-						v-model="formModel.externalSupport.supportDateReceived"
-						show-week-number
-						locale="en-CA"
-						icon="calendar-day"
-						trap-focus
-						:placeholder="$t('Click to select')"
-						:month-names="months()"
-					/>
-				</b-field>
+				<DataInput
+					v-model.number="formModel.livelihood.foodConsumptionScore"
+					type="number"
+					label="Food consumption score"
+					name="food-consumption-score"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
 
-				<b-field>
-					<template #label>
-						<span>{{ $t('Support organisation') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input v-model="formModel.externalSupport.supportOrganization" />
-				</b-field>
-			</div>
-			<div class="column is-one-third">
-				<h4 class="title is-4">{{ $t('Custom Fields') }}</h4>
-				<b-field
+				<DataInput
+					v-model.number="formModel.livelihood.copingStrategiesIndex"
+					type="number"
+					label="Coping strategies index"
+					name="coping-strategies-index"
+					class="mb-4"
+					min="0"
+					hide-spin-buttons
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('External Support') }}</h4>
+
+				<DataSelect
+					v-model="formModel.externalSupport.externalSupportReceivedType"
+					:items="options.externalSupportReceivedType"
+					:loading="assetsLoading"
+					label="Support received types"
+					name="support-received-types"
+					class="mb-4"
+					multiple
+					chips
+					is-search-enabled
+					optional
+				/>
+
+				<DatePicker
+					v-model="formModel.externalSupport.supportDateReceived"
+					label="Support date received"
+					name="support-date-received"
+					class="mb-4"
+					optional
+				/>
+
+				<DataInput
+					v-model="formModel.externalSupport.supportOrganization"
+					label="Support organisation"
+					name="support-organisation"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="4">
+				<h4 class="mb-4">{{ $t('Custom Fields') }}</h4>
+
+				<DataInput
 					v-for="option in customFields"
+					v-model="formModel.customFields[option.id]"
 					:key="option.id"
-				>
-					<template #label>
-						<span>{{ normalizeText(option.field) }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input
-						v-if="option.type === 'text'"
-						v-model="formModel.customFields[option.id]"
-					/>
+					:label="normalizeText(option.field)"
+					:name="normalizeName(option.field)"
+					:type="option.type"
+					:hide-spin-buttons="option.type === 'number' ? true : null"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+		</v-row>
 
-					<div v-if="option.type === 'number'" class="b-numberinput field is-grouped is-expanded">
-						<div class="control is-expanded is-clearfix">
-							<input
-								v-model.number="formModel.customFields[option.id]"
-								type="number"
-								class="input"
-							>
-						</div>
-					</div>
-				</b-field>
-			</div>
-		</div>
-		<h4 class="title is-4">{{ $t('Household Status') }}</h4>
-		<b-field>
-			<template #label>
-				<span>{{ $t('Shelter status') }}</span>
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</template>
-			<MultiSelect
-				v-model="formModel.shelterStatus"
-				searchable
-				label="value"
-				:select-label="$t('Press enter to select')"
-				:selected-label="$t('Selected')"
-				:deselect-label="$t('Press enter to remove')"
-				track-by="code"
-				:placeholder="$t('Click to select')"
-				:loading="shelterStatusLoading"
-				:options="options.shelterStatuses"
-			>
-				<span slot="noOptions">{{ $t("List is empty")}}</span>
-			</MultiSelect>
-		</b-field>
-		<b-field>
-			<template #label>
-				<span>{{ $t('Notes') }}</span>
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</template>
-			<b-input v-model="formModel.notes" type="textarea" />
-		</b-field>
+		<v-row>
+			<v-col>
+				<h4 class="mb-4">{{ $t('Household Status') }}</h4>
+
+				<DataSelect
+					v-model="formModel.shelterStatus"
+					:items="options.shelterStatuses"
+					:loading="shelterStatusLoading"
+					label="Shelter status"
+					name="shelter-status"
+					class="mb-4"
+					is-search-enabled
+					optional
+				/>
+
+				<DataTextarea
+					v-model="formModel.notes"
+					label="Notes"
+					name="notes"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+		</v-row>
 	</form>
 </template>
 
@@ -295,12 +213,15 @@ import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
-import LocationForm from "@/components/LocationForm";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
+import DatePicker from "@/components/Inputs/DatePicker";
+import LocationForm from "@/components/Inputs/LocationForm";
 import addressHelper from "@/mixins/addressHelper";
-import calendarHelper from "@/mixins/calendarHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { normalizeCustomFields } from "@/utils/datagrid";
+import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 import getters from "@/store/getters";
@@ -309,35 +230,21 @@ export default {
 	name: "HouseholdForm",
 
 	components: {
+		DataTextarea,
+		DatePicker,
+		DataSelect,
+		DataInput,
 		LocationForm,
 		TypeOfLocationForm,
 	},
 
-	mixins: [validation, addressHelper, calendarHelper],
-
-	validations: {
-		formModel: {
-			livelihood: {
-				livelihood: {},
-				incomeLevel: {},
-				incomeSpentOnFood: {},
-				debtLevel: {},
-				assets: {},
-				foodConsumptionScore: {},
-				copingStrategiesIndex: {},
-			},
-			externalSupport: {
-				externalSupportReceivedType: {},
-				supportDateReceived: {},
-				supportOrganization: {},
-			},
-			customFields: {},
-			shelterStatus: {},
-		},
-	},
+	mixins: [validation, addressHelper],
 
 	props: {
-		detailOfHousehold: Object,
+		detailOfHousehold: {
+			type: Object,
+			default: null,
+		},
 
 		isEditing: {
 			type: Boolean,
@@ -347,7 +254,6 @@ export default {
 
 	data() {
 		return {
-			loadingComponent: null,
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
@@ -394,11 +300,6 @@ export default {
 	},
 
 	async mounted() {
-		if (this.isEditing) {
-			this.loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.householdFormComponent,
-			});
-		}
 		await Promise.all([
 			this.fetchLivelihoods(),
 			this.fetchAssets(),
@@ -409,8 +310,6 @@ export default {
 
 		if (this.isEditing) {
 			await this.mapDetailOfHouseholdToFormModel();
-
-			this.loadingComponent.close();
 
 			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = { ...this.formModel.currentLocation, ...response };
@@ -424,6 +323,10 @@ export default {
 			return normalizeCustomFields(text);
 		},
 
+		normalizeName(text) {
+			return kebabize(text);
+		},
+
 		async mapCurrentLocation() {
 			if (this.detailOfHousehold) {
 				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
@@ -431,15 +334,15 @@ export default {
 				switch (typeOfLocation) {
 					case GENERAL.LOCATION_TYPE.camp.type:
 						return AddressService.getCampAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Camp Address")} ${e.message || e}`, "error");
 						});
 					case GENERAL.LOCATION_TYPE.residence.type:
 						return AddressService.getResidenceAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Residence Address")} ${e.message || e}`, "error");
 						});
 					case GENERAL.LOCATION_TYPE.temporarySettlement.type:
 						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							if (e.message) Notification(`${this.$t("Temporary Settlement Address")} ${e}`, "is-danger");
+							Notification(`${this.$t("Temporary Settlement Address")} ${e.message || e}`, "error");
 						});
 					default:
 						return null;
@@ -512,7 +415,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -520,7 +423,7 @@ export default {
 			await BeneficiariesService.getListOfLivelihoods()
 				.then(({ data }) => { this.options.livelihood = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Livelihoods")} ${e}`, "is-danger");
+					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
 				});
 			this.livelihoodLoading = false;
 		},
@@ -529,7 +432,7 @@ export default {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assets")} ${e.message || e}`, "error");
 				});
 			this.assetsLoading = false;
 		},
@@ -538,7 +441,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
+					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -547,7 +450,7 @@ export default {
 			await CustomFieldsService.getListOfCustomFields()
 				.then(({ data }) => { this.customFields = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
+					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -555,8 +458,13 @@ export default {
 			const locationValid = this.$refs.currentLocationForm.submitLocationForm();
 			const typeOfLocationValid = this.$refs.currentTypeOfLocationForm.submitTypeOfLocationForm();
 
-			this.$v.$touch();
-			return !this.$v.$invalid && !locationValid && !typeOfLocationValid;
+			this.v$.$touch();
+
+			if (this.v$.$error) {
+				Notification(this.$t("Please fill all required fields in Household step"), "error");
+			}
+
+			return !this.v$.$invalid && !locationValid && !typeOfLocationValid;
 		},
 	},
 };

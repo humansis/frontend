@@ -1,12 +1,26 @@
 <template>
-	<div>
-		<h2 class="title">{{ householdTitle }}</h2>
+	<v-container fluid>
+		<div class="d-flex mb-4">
+			<h2 class="me-auto">{{ $t('Edit Household') }}  (ID: {{ householdId }})</h2>
+		</div>
+
 		<HouseholdTabs
+			v-if="isDetailOfHouseholdLoaded"
 			:detail-of-household="detailOfHousehold"
-			:is-loaded="isDetailOfHouseholdLoaded"
 			is-editing
 		/>
-	</div>
+
+		<v-card
+			v-else
+			class="text-center pa-16"
+		>
+			<v-progress-circular
+				:size="128"
+				model-value="20"
+				indeterminate
+			/>
+		</v-card>
+	</v-container>
 </template>
 
 <script>
@@ -23,20 +37,14 @@ export default {
 
 	data() {
 		return {
-			detailOfHousehold: {},
+			householdId: this.$route.params.householdId,
+			detailOfHousehold: null,
 			isDetailOfHouseholdLoaded: false,
 		};
 	},
 
-	computed: {
-		householdTitle() {
-			const id = this.detailOfHousehold.id ? `(ID: ${this.detailOfHousehold.id})` : "";
-			return `${this.$t("Edit Household")} ${id}`;
-		},
-	},
-
 	async mounted() {
-		await this.fetchHouseholdDetail(this.$route.params.householdId);
+		await this.fetchHouseholdDetail(this.householdId);
 	},
 
 	methods: {
@@ -44,12 +52,11 @@ export default {
 			try {
 				this.detailOfHousehold = await BeneficiariesService.getDetailOfHousehold(id);
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
 			} finally {
 				this.isDetailOfHouseholdLoaded = true;
 			}
 		},
 	},
-
 };
 </script>

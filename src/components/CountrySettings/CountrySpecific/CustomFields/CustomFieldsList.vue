@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -51,13 +51,13 @@
 				@export="onExportCustomFields"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import CustomFieldsService from "@/services/CustomFieldsService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
@@ -71,7 +71,7 @@ export default {
 	components: {
 		ExportControl,
 		ButtonAction,
-		Table,
+		DataGrid,
 	},
 
 	mixins: [grid],
@@ -79,6 +79,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "customFields",

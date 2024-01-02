@@ -6,8 +6,6 @@
 		:loading="idTypeLoading"
 		:error-messages="validationMsg('idType')"
 		name="id-type"
-		item-title="value"
-		item-value="code"
 		class="mb-6"
 		is-search-enabled
 		@update:modelValue="onValidate('idType')"

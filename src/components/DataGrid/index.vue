@@ -1,14 +1,14 @@
 <template>
 	<v-card>
-		<v-row class="mt-1 mb-1">
+		<v-row v-if="!isHeaderDisabled" class="mt-1 mb-1">
 			<v-col cols="7" lg="9" class="d-flex flex-wrap gr-3 align-center">
 				<Search
 					v-if="isSearchVisible"
+					ref="search"
 					:search-phrase="searchPhrase"
 					:search-fields="searchFields"
 					:default-search-field="defaultSearchField"
-					:is-disabled="isSearchVisible"
-					ref="search"
+					:is-disabled="isSearchDisabled"
 					class="ml-4"
 					@search="$emit('search', $event)"
 				/>
@@ -17,28 +17,31 @@
 			</v-col>
 
 			<v-col cols="5" lg="3">
-				<div v-if="resetSortButton || resetFiltersButton" class="text-end mr-5">
-					<v-btn
-						v-if="resetFiltersButton"
-						color="grey-lighten-2"
-						prepend-icon="eraser"
-						size="x-small"
-						class="mt-2"
-						@click="$emit('resetFilters')"
-					>
-						{{ $t('Reset Filters') }}
-					</v-btn>
+				<div v-if="resetSortButton || resetFiltersButton" class="text-end mr-4 ml-2">
+					<div>
+						<v-btn
+							v-if="resetFiltersButton"
+							color="grey-lighten-2"
+							prepend-icon="eraser"
+							size="x-small"
+							@click="$emit('resetFilters')"
+						>
+							{{ $t('Reset Filters') }}
+						</v-btn>
+					</div>
 
-					<v-btn
-						v-if="resetSortButton"
-						color="grey-lighten-2"
-						prepend-icon="eraser"
-						size="x-small"
-						class="ml-4 mt-2"
-						@click="$emit('resetSort')"
-					>
-						{{ $t('Reset Table Sort') }}
-					</v-btn>
+					<div>
+						<v-btn
+							v-if="resetSortButton"
+							color="grey-lighten-2"
+							prepend-icon="eraser"
+							size="x-small"
+							class="mt-2"
+							@click="$emit('resetSort')"
+						>
+							{{ $t('Reset Table Sort') }}
+						</v-btn>
+					</div>
 				</div>
 			</v-col>
 		</v-row>
@@ -50,6 +53,15 @@
 			:cell-props="getCellProps"
 			@[rowClickEvent]="onHandleRowClick"
 		>
+			<template v-slot:loader>
+				<v-progress-linear
+					:indeterminate="progress ? null : true"
+					:model-value="progress ?? null"
+				/>
+
+				<v-skeleton-loader :type="`table-row@${perPage}`" />
+			</template>
+
 			<template v-if="!showDefaultFooter" v-slot:bottom>
 				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
@@ -128,7 +140,7 @@
 
 			<template
 				v-for="(column, index) in $attrs.headers"
-				v-slot:[`item.${column.key}`]="{ item, index }"
+				v-slot:[`item.${column.key}`]="{ item }"
 				:key="index"
 			>
 				<template v-if="column.key === 'actions'">
@@ -154,7 +166,7 @@ import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
 export default {
-	name: "Table",
+	name: "DataGrid",
 
 	components: {
 		ColumnField,
@@ -198,12 +210,27 @@ export default {
 			default: () => ({}),
 		},
 
+		progress: {
+			type: Number,
+			default: null,
+		},
+
+		isSearchDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
 		isSearchVisible: {
 			type: Boolean,
 			default: false,
 		},
 
 		isRowClickDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		isHeaderDisabled: {
 			type: Boolean,
 			default: false,
 		},

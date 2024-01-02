@@ -33,8 +33,6 @@
 				:items="options.rounds"
 				label="Round"
 				name="round"
-				item-title="value"
-				item-value="code"
 				class="mb-6"
 				is-search-enabled
 				@update:modelValue="onValuesForAssistanceName"
@@ -62,8 +60,6 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
-					item-title="value"
-					item-value="code"
 					is-search-enabled
 					optional
 				/>
@@ -84,8 +80,6 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
-					item-title="value"
-					item-value="code"
 					is-search-enabled
 					optional
 				/>
@@ -106,8 +100,6 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				item-title="value"
-				item-value="code"
 				class="mb-6 warning-message"
 				@update:modelValue="onSectorSelect"
 			/>
@@ -121,8 +113,6 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				item-title="value"
-				item-value="code"
 				class="mb-6 warning-message"
 				@update:modelValue="onSubsectorSelect"
 			/>
@@ -134,8 +124,6 @@
 				:error-messages="validationMsg('assistanceType')"
 				label="Assistance Type"
 				name="assistance-type"
-				item-title="value"
-				item-value="code"
 				class="mb-6"
 				@update:modelValue="onAssistanceTypeSelect"
 			/>
@@ -147,8 +135,6 @@
 				:error-messages="validationMsg('targetType')"
 				label="Target Type"
 				name="target-type"
-				item-title="value"
-				item-value="code"
 				@update:modelValue="onTargetTypeSelect"
 			/>
 		</v-card-text>
@@ -205,15 +191,17 @@ export default {
 
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			name: { required },
-			dateOfAssistance: { required },
-			sector: { required },
-			subsector: { required },
-			targetType: { required },
-			assistanceType: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+				dateOfAssistance: { required },
+				sector: { required },
+				subsector: { required },
+				targetType: { required },
+				assistanceType: { required },
+			},
+		};
 	},
 
 	props: {

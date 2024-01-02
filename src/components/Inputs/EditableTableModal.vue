@@ -32,8 +32,6 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="subsectors"
-						item-title="value"
-						item-value="code"
 						is-search-enabled
 						optional
 						class="mb-6"
@@ -59,7 +57,6 @@
 						:hide-spin-buttons="true"
 						:disabled="isFormDisabled"
 						type="number"
-						step="any"
 						min="0"
 						dense
 						class="mb-6"

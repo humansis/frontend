@@ -5,7 +5,7 @@
 			location="top"
 			color="red"
 			:key="key"
-			:text="$t(icon.value)"
+			:text="$t(icon.value || '')"
 		>
 			<template v-slot:activator="{ props }">
 				<svg

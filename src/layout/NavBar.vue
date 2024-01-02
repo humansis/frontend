@@ -139,7 +139,7 @@ export default {
 
 				return {
 					title: item.meta?.breadcrumb || item.name,
-					href: item.path,
+					href: item.path.replace(":countryCode", this.country.iso3),
 				};
 			}).filter((r) => r);
 		},
@@ -203,7 +203,7 @@ export default {
 
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta?.description;
-			this.tooltip.label = this.$t(this.$route.meta?.description);
+			this.tooltip.label = this.$t(this.$route.meta?.description || "");
 		},
 
 		async fetchIcons() {
