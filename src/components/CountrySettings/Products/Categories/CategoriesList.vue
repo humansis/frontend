@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -42,13 +42,13 @@
 				@actionConfirmed="onRemove(row.id)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import ProductService from "@/services/ProductService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
@@ -59,7 +59,7 @@ export default {
 	name: "CategoriesList",
 
 	components: {
-		Table,
+		DataGrid,
 		ButtonAction,
 	},
 
@@ -68,6 +68,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			isLoadingList: false,
 			table: {
 				data: [],
 				columns: generateColumns([

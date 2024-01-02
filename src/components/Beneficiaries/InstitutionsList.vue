@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -80,14 +80,14 @@
 				</v-expansion-panel>
 			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import InstitutionService from "@/services/InstitutionService";
 import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
@@ -101,7 +101,7 @@ export default {
 
 	components: {
 		InstitutionsFilter,
-		Table,
+		DataGrid,
 		ExportControl,
 		ButtonAction,
 	},
@@ -111,6 +111,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			isLoadingList: false,
 			isAdvancedSearchVisible: false,
 			exportControl: {
 				loading: false,

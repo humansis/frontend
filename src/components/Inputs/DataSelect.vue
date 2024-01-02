@@ -12,6 +12,7 @@
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
 		:multiple="multiple"
+		:no-data-text="$t('List is empty')"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
@@ -22,7 +23,9 @@
 		</template>
 
 		<template v-if="!multiple" v-slot:item="{ props, item }">
-			<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+			<slot v-bind="props" name="custom-item" :props="props" :item="item">
+				<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+			</slot>
 		</template>
 
 		<template v-slot:selection="{ item }">
@@ -86,6 +89,11 @@ import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
 	props: {
+		modelValue: {
+			type: [Object, Number, String],
+			default: null,
+		},
+
 		label: {
 			type: String,
 			default: "",
@@ -129,11 +137,6 @@ export default {
 		isClearable: {
 			type: Boolean,
 			default: true,
-		},
-
-		modelValue: {
-			type: Object,
-			default: () => {},
 		},
 
 		itemTitle: {

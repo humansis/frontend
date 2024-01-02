@@ -153,6 +153,10 @@ export default {
 			this.locationsFilter = locationsFilter;
 			this.table.dataUpdated = false;
 
+			if (!filters) {
+				return;
+			}
+
 			Object.keys(filters).forEach((key) => {
 				if (Array.isArray(filters[key])) {
 					this.filters[key] = [];

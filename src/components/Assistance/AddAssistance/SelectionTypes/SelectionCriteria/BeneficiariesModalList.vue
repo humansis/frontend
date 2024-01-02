@@ -1,6 +1,6 @@
 <template>
 	<v-card-text>
-		<Table
+		<DataGrid
 			v-if="table.data.length"
 			:headers="table.columns"
 			:items="table.data"
@@ -11,14 +11,14 @@
 </template>
 
 <script>
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
 
 export default {
 	name: "BeneficiariesModalList",
 
 	components: {
-		Table,
+		DataGrid,
 	},
 
 	props: {
@@ -39,8 +39,8 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "id" },
-					{ key: "localFamilyName", label: "Local family name" },
-					{ key: "localGivenName", label: "Local given name" },
+					{ key: "localFamilyName", title: "Local family name" },
+					{ key: "localGivenName", title: "Local given name" },
 					{ key: "vulnerability" },
 				]),
 				total: 0,

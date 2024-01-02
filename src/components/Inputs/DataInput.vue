@@ -15,6 +15,8 @@
 
 <script>
 export default {
+	name: "DataInput",
+
 	props: {
 		label: {
 			type: String,
