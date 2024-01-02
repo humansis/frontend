@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		ref="importsList"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -105,13 +105,13 @@
 				</v-expansion-panel>
 			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import ImportService from "@/services/ImportService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
@@ -139,7 +139,7 @@ export default {
 	name: "ProjectList",
 
 	components: {
-		Table,
+		DataGrid,
 		ImportsFilter,
 		ButtonAction,
 	},
@@ -156,6 +156,7 @@ export default {
 				finished: false,
 				canceled: false,
 			},
+			isLoadingList: false,
 			isAdvancedSearchVisible: false,
 			filters: [],
 			table: {
@@ -231,7 +232,6 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-			this.table.progress = null;
 
 			await ImportService.getListOfImports(
 				this.table.currentPage,

@@ -4,7 +4,7 @@
 			{{ header }} ({{ totalCountOfDuplicities }})
 		</h2>
 
-		<Table
+		<DataGrid
 			v-model:items-per-page="perPage"
 			:headers="table.columns"
 			:items="table.data"
@@ -80,7 +80,7 @@
 					{{ $t('Humansis') }}
 				</v-btn>
 			</template>
-		</Table>
+		</DataGrid>
 	</div>
 
 	<div v-else>
@@ -90,7 +90,7 @@
 
 <script>
 import ImportService from "@/services/ImportService";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import Loading from "@/components/Loading";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
@@ -101,7 +101,7 @@ export default {
 	name: "DuplicityResolver",
 
 	components: {
-		Table,
+		DataGrid,
 		Loading,
 	},
 
