@@ -17,7 +17,7 @@
 
 			<DataInput
 				v-if="visible.householdsTargeted"
-				v-model="formModel.householdsTargeted"
+				v-model.number="formModel.householdsTargeted"
 				:error-messages="validationMsg('householdsTargeted')"
 				label="Households Targeted"
 				name="households-targeted"
@@ -30,7 +30,7 @@
 
 			<DataInput
 				v-if="visible.individualsTargeted"
-				v-model="formModel.individualsTargeted"
+				v-model.number="formModel.individualsTargeted"
 				:error-messages="validationMsg('individualsTargeted')"
 				label="Individuals Targeted"
 				name="individuals-targeted"

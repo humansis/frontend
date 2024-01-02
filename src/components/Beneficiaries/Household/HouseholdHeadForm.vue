@@ -1,262 +1,204 @@
 <template>
-	<form ref="householdHeadForm">
+	<form>
 		<div v-if="isHouseholdHead && isEditing" class="household-type">
-			<b-tag type="is-primary" size="is-medium">H</b-tag>
+			<v-chip color="primary" variant="flat" label>H</v-chip>
+
 			<span v-if="isHouseholdHeadNameLoaded" class="detail">{{ householdHeadTitle }}</span>
 		</div>
-		<div class="columns is-multiline">
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('Name') }}</h4>
-				<b-field
-					:label="$t('Local family name')"
-					:type="validateType('nameLocal.familyName')"
-					:message="validateMsg('nameLocal.familyName')"
-				>
-					<b-input
-						v-model="formModel.nameLocal.familyName"
-						@blur="validate('nameLocal.familyName')"
-					/>
-				</b-field>
-				<b-field
-					:label="$t('Local given name')"
-					:type="validateType('nameLocal.firstName')"
-					:message="validateMsg('nameLocal.firstName')"
-				>
-					<b-input
-						v-model="formModel.nameLocal.firstName"
-						@blur="validate('nameLocal.firstName')"
-					/>
-				</b-field>
-				<b-field>
-					<template #label>
-						<span>{{ $t("Local parent's name") }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input v-model="formModel.nameLocal.parentsName" />
-				</b-field>
-			</div>
 
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('Name (English)') }}</h4>
-				<b-field>
-					<template #label>
-						<span>{{ $t('English family name') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input v-model="formModel.nameEnglish.familyName" />
-				</b-field>
-				<b-field>
-					<template #label>
-						<span>{{ $t('English given name') }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input v-model="formModel.nameEnglish.firstName" />
-				</b-field>
-				<b-field>
-					<template #label>
-						<span>{{ $t("English parent's name") }}</span>
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</template>
-					<b-input v-model="formModel.nameEnglish.parentsName" />
-				</b-field>
-			</div>
+		<v-row>
+			<v-col cols="3">
+				<h4 class="mb-4">{{ $t('Name') }}</h4>
 
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('Personal Information') }}</h4>
-				<b-field
-					:label="$t('Gender')"
-					:type="validateType('personalInformation.gender')"
-					:message="validateMsg('personalInformation.gender')"
-				>
-					<MultiSelect
-						v-model="formModel.personalInformation.gender"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:options="options.gender"
-						:class="validateMultiselect('personalInformation.gender')"
-						@select="validate('personalInformation.gender')"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-				<b-field
-					:label="$t('Date of birth')"
-					:type="validateType('personalInformation.dateOfBirth')"
-					:message="validateMsg('personalInformation.dateOfBirth')"
-				>
-					<b-datepicker
-						v-model="formModel.personalInformation.dateOfBirth"
-						show-week-number
-						locale="en-CA"
-						icon="calendar-day"
-						trap-focus
-						:month-names="months()"
-						:placeholder="$t('Click to select')"
-						@blur="validate('personalInformation.dateOfBirth')"
-					/>
-				</b-field>
-			</div>
+				<DataInput
+					v-model="formModel.nameLocal.familyName"
+					:error-messages="validationMsg('nameLocal.familyName')"
+					label="Local family name"
+					name="local-family-name"
+					class="mb-4"
+					@update:modelValue="onValidate('nameLocal.familyName')"
+				/>
 
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">
+				<DataInput
+					v-model="formModel.nameLocal.firstName"
+					:error-messages="validationMsg('nameLocal.firstName')"
+					label="Local given name"
+					name="local-given-name"
+					class="mb-4"
+					@update:modelValue="onValidate('nameLocal.firstName')"
+				/>
+
+				<DataInput
+					v-model="formModel.nameLocal.parentsName"
+					label="Local parent's name"
+					name="local-parents-name"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">{{ $t('Name (English)') }}</h4>
+
+				<DataInput
+					v-model="formModel.nameEnglish.familyName"
+					label="English family name"
+					name="english-family-name"
+					class="mb-4"
+					optional
+				/>
+
+				<DataInput
+					v-model="formModel.nameEnglish.firstName"
+					label="English given name"
+					name="english-given-name"
+					class="mb-4"
+					optional
+				/>
+
+				<DataInput
+					v-model="formModel.nameEnglish.parentsName"
+					label="English parent's name"
+					name="english-parents-name"
+					class="mb-4"
+					optional
+				/>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">{{ $t('Personal Information') }}</h4>
+
+				<DataSelect
+					v-model="formModel.personalInformation.gender"
+					:items="options.gender"
+					:error-messages="validationMsg('personalInformation.gender')"
+					label="Gender"
+					name="gender"
+					class="mb-4"
+					is-search-enabled
+					@update:modelValue="onValidate('personalInformation.gender')"
+				/>
+
+				<DatePicker
+					v-model="formModel.personalInformation.dateOfBirth"
+					:error-messages="validationMsg('personalInformation.dateOfBirth')"
+					label="Date of birth"
+					name="date-of-birth"
+					class="mb-4"
+					@update:modelValue="onValidate('personalInformation.dateOfBirth')"
+				/>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">
 					{{ $t('ID') }}
-					<span class="optional-text has-text-weight-normal is-italic">
+					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
-					</span>
+					</i>
 				</h4>
-				<b-tabs>
-					<b-tab-item :label="$t('Primary')">
-						<b-field
-							:label="$t('ID Type')"
-							:type="validateType('primaryId.idType', true)"
-							:message="validateMsg('primaryId.idType', primaryIdValidationMessage)"
-						>
-							<MultiSelect
-								v-model="formModel.primaryId.idType"
-								label="value"
-								:select-label="$t('Press enter to select')"
-								:selected-label="$t('Selected')"
-								:deselect-label="$t('Press enter to remove')"
-								track-by="code"
-								searchable
-								:placeholder="$t('Click to select')"
-								:loading="idTypeLoading"
-								:options="options.idType"
-								:class="validateMultiselect('primaryId.idType', true)"
-								@input="validate('primaryId.idType'); onIdChange($event)"
-							/>
-						</b-field>
-						<b-field
-							:label="$t('ID Number')"
-							:type="validateType('primaryId.idNumber', true)"
-							:message="validateMsg('primaryId.idNumber')"
-						>
-							<b-input
-								v-model.trim="formModel.primaryId.idNumber"
-								@blur="validate('primaryId.idNumber', true)"
-							/>
-						</b-field>
-					</b-tab-item>
-					<b-tab-item :label="$t('Secondary')" :disabled="isSecondaryIdTabDisabled">
-						<b-field
-							:label="$t('ID Type')"
-							:type="validateType('secondaryId.idType', true)"
-							:message="validateMsg('secondaryId.idType', secondaryIdValidationMessage)"
-						>
-							<MultiSelect
-								v-model="formModel.secondaryId.idType"
-								label="value"
-								:select-label="$t('Press enter to select')"
-								:selected-label="$t('Selected')"
-								:deselect-label="$t('Press enter to remove')"
-								track-by="code"
-								searchable
-								:placeholder="$t('Click to select')"
-								:loading="idTypeLoading"
-								:options="options.idType"
-								:class="validateMultiselect('secondaryId.idType', true)"
-								@input="validate('secondaryId.idType'); onIdChange($event)"
-							/>
-						</b-field>
-						<b-field
-							:label="$t('ID Number')"
-							:type="validateType('secondaryId.idNumber', true)"
-							:message="validateMsg('secondaryId.idNumber')"
-						>
-							<b-input
-								v-model.trim="formModel.secondaryId.idNumber"
-								@blur="validate('secondaryId.idNumber', true)"
-							/>
-						</b-field>
-					</b-tab-item>
-					<b-tab-item :label="$t('Tertiary')" :disabled="isTertiaryIdTabDisabled">
-						<b-field
-							:label="$t('ID Type')"
-							:type="validateType('tertiaryId.idType', true)"
-							:message="validateMsg('tertiaryId.idType', tertiaryIdValidationMessage)"
-						>
-							<MultiSelect
-								v-model="formModel.tertiaryId.idType"
-								label="value"
-								:select-label="$t('Press enter to select')"
-								:selected-label="$t('Selected')"
-								:deselect-label="$t('Press enter to remove')"
-								track-by="code"
-								searchable
-								:placeholder="$t('Click to select')"
-								:loading="idTypeLoading"
-								:options="options.idType"
-								:class="validateMultiselect('tertiaryId.idType', true)"
-								@input="validate('tertiaryId.idType'); onIdChange($event)"
-							/>
-						</b-field>
-						<b-field
-							:label="$t('ID Number')"
-							:type="validateType('tertiaryId.idNumber', true)"
-							:message="validateMsg('tertiaryId.idNumber')"
-						>
-							<b-input
-								v-model.trim="formModel.tertiaryId.idNumber"
-								@blur="validate('tertiaryId.idNumber', true)"
-							/>
-						</b-field>
-					</b-tab-item>
-				</b-tabs>
-			</div>
 
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">{{ $t('Residency') }}</h4>
-				<b-field
-					:label="$t('Residency status')"
-					:type="validateType('residencyStatus')"
-					:message="validateMsg('residencyStatus')"
-				>
-					<MultiSelect
-						v-model="formModel.residencyStatus"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:loading="residenceStatusesLoading"
-						:options="options.residencyStatus"
-						:class="validateMultiselect('residencyStatus')"
-						@select="validate('residencyStatus')"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-						<template slot="singleLabel" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-						<template slot="option" slot-scope="props">
-							<div class="option__desc">
-								<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-							</div>
-						</template>
-					</MultiSelect>
-				</b-field>
+				<v-tabs v-model="idTabs" density="compact">
+					<v-tab value="primary">{{ $t('Primary') }}</v-tab>
 
-				<b-field
+					<v-tab value="secondary" :disabled="isSecondaryIdTabDisabled">{{ $t('Secondary') }}</v-tab>
+
+					<v-tab value="tertiary" :disabled="isTertiaryIdTabDisabled">{{ $t('Tertiary') }}</v-tab>
+				</v-tabs>
+
+				<v-window v-model="idTabs" class="pt-4">
+					<v-window-item value="primary">
+						<DataSelect
+							v-model="formModel.primaryId.idType"
+							:items="options.idType"
+							:loading="idTypeLoading"
+							:error-messages="validationMsg('primaryId.idType')"
+							label="ID Type"
+							name="it-type"
+							class="mb-4"
+							is-search-enabled
+							@update:modelValue="onValidate('primaryId.idType'); onIdChange($event)"
+						/>
+
+						<DataInput
+							v-model.trim="formModel.primaryId.idNumber"
+							:error-messages="validationMsg('primaryId.idNumber')"
+							label="ID Number"
+							name="id-number"
+							class="mb-4"
+							@update:modelValue="onValidate('primaryId.idNumber')"
+						/>
+					</v-window-item>
+
+					<v-window-item value="secondary">
+						<DataSelect
+							v-model="formModel.secondaryId.idType"
+							:items="options.idType"
+							:loading="idTypeLoading"
+							:error-messages="validationMsg('secondaryId.idType')"
+							label="ID Type"
+							name="it-type"
+							class="mb-4"
+							is-search-enabled
+							@update:modelValue="onValidate('secondaryId.idType'); onIdChange($event)"
+						/>
+
+						<DataInput
+							v-model.trim="formModel.secondaryId.idNumber"
+							:error-messages="validationMsg('secondaryId.idNumber')"
+							label="ID Number"
+							name="id-number"
+							class="mb-4"
+							@update:modelValue="onValidate('secondaryId.idNumber')"
+						/>
+					</v-window-item>
+
+					<v-window-item value="tertiary">
+						<DataSelect
+							v-model="formModel.tertiaryId.idType"
+							:items="options.idType"
+							:loading="idTypeLoading"
+							:error-messages="validationMsg('tertiaryId.idType')"
+							label="ID Type"
+							name="it-type"
+							class="mb-4"
+							is-search-enabled
+							@update:modelValue="onValidate('tertiaryId.idType'); onIdChange($event)"
+						/>
+
+						<DataInput
+							v-model.trim="formModel.tertiaryId.idNumber"
+							:error-messages="validationMsg('tertiaryId.idNumber')"
+							label="ID Number"
+							name="id-number"
+							class="mb-4"
+							@update:modelValue="onValidate('tertiaryId.idNumber')"
+						/>
+					</v-window-item>
+				</v-window>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">{{ $t('Residency') }}</h4>
+
+				<DataSelect
+					v-model="formModel.residencyStatus"
+					:items="options.residencyStatus"
+					:loading="residenceStatusesLoading"
+					:error-messages="validationMsg('residencyStatus')"
+					label="Residency status"
+					name="residency-status"
+					class="mb-4"
+					is-search-enabled
+					@update:modelValue="onValidate('residencyStatus')"
+				/>
+
+				<v-card
 					v-if="isEditing && smartCardNumbersList.length"
-					:label="$t('Smartcard number')"
-					grouped
+					class="mb-4 pa-3"
+					variant="outlined"
 				>
+					<h5>{{ $t('Smartcard number') }}</h5>
+
 					<ul>
 						<li
 							v-for="smartCardNumber in smartCardNumbersList"
@@ -265,224 +207,277 @@
 							{{ smartCardNumber.serialNumber }} ({{ smartCardNumber.state }})
 						</li>
 					</ul>
-				</b-field>
-			</div>
+				</v-card>
+			</v-col>
 
-			<div class="column is-one-quarter">
-				<h4 class="title is-5">
+			<v-col cols="3">
+				<h4 class="mb-4">
 					{{ $t('Referral') }}
-					<span class="optional-text has-text-weight-normal is-italic">
+					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
-					</span>
+					</i>
 				</h4>
-				<div class="field">
-					<b-checkbox v-model="formModel.addAReferral">
-						{{ $t('Add a Referral') }}
-					</b-checkbox>
-				</div>
-				<b-field v-if="formModel.addAReferral" :label="$t('Referral Type')">
-					<MultiSelect
-						v-model="formModel.referral.referralType"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:loading="referralTypeLoading"
-						:options="options.referralType"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-				<b-field v-if="formModel.addAReferral" :label="$t('Comment')">
-					<b-input v-model="formModel.referral.comment" />
-				</b-field>
-			</div>
 
-			<div class="column is-one-quarter">
-				<div class="mb-5">
-					<span class="title is-5">{{ $t('Phone') }} 1</span>
-					<span class="optional-text has-text-weight-normal is-italic">
+				<v-checkbox
+					v-model="formModel.addAReferral"
+					:label="$t('Add a Referral')"
+					name="add-a-referral"
+					density="compact"
+					hide-details
+				/>
+
+				<DataSelect
+					v-if="formModel.addAReferral"
+					v-model="formModel.referral.referralType"
+					:items="options.referralType"
+					:loading="referralTypeLoading"
+					label="Referral Type"
+					name="referral-type"
+					class="mb-4"
+					is-search-enabled
+				/>
+
+				<DataInput
+					v-if="formModel.addAReferral"
+					v-model="formModel.referral.comment"
+					label="Comment"
+					name="Comment"
+					class="mb-4"
+				/>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">
+					{{ $t('Phone') }}
+					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
-					</span>
-				</div>
-				<b-field :label="$t('Type phone') + ' 1'" grouped>
-					<MultiSelect
-						v-model="formModel.phone1.type"
-						searchable
-						selectLabel=""
-						deselectLabel=""
-						label="value"
-						:selected-label="$t('Selected')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:loading="phoneTypesLoading"
-						:options="options.phoneType"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-					<b-checkbox class="ml-2" v-model="formModel.phone1.proxy">
-						{{ $t('Proxy') }}
-					</b-checkbox>
-				</b-field>
-				<b-field :label="$t('Prefix phone') + ' 1'" grouped>
-					<MultiSelect
-						v-model="formModel.phone1.ext"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:options="options.phonePrefixes"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-				<b-field :label="$t('Phone No.') + ' 1'">
-					<b-input v-model="formModel.phone1.phoneNo" />
-				</b-field>
-			</div>
+					</i>
+				</h4>
 
-			<div class="column is-one-quarter">
-				<div class="mb-5">
-					<span class="title is-5">
-						{{ $t('Phone') }} 2
-						<span class="optional-text has-text-weight-normal is-italic">
-							- {{ $t('Optional') }}
-						</span>
-					</span>
-				</div>
-				<b-field :label="$t('Type phone') + ' 2'" grouped>
-					<MultiSelect
-						v-model="formModel.phone2.type"
-						searchable
-						selectLabel=""
-						deselectLabel=""
-						label="value"
-						:selected-label="$t('Selected')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
+				<div class="d-flex align-end">
+					<DataSelect
+						v-model="formModel.phone1.type"
+						:items="options.phoneType"
 						:loading="phoneTypesLoading"
-						:options="options.phoneType"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-					<b-checkbox v-model="formModel.phone2.proxy" class="ml-2">
-						{{ $t('Proxy') }}
-					</b-checkbox>
-				</b-field>
-				<b-field :label="$t('Prefix phone') + ' 2'" grouped>
-					<MultiSelect
-						v-model="formModel.phone2.ext"
-						searchable
-						label="value"
-						:select-label="$t('Press enter to select')"
-						:selected-label="$t('Selected')"
-						:deselect-label="$t('Press enter to remove')"
-						track-by="code"
-						:placeholder="$t('Click to select')"
-						:options="options.phonePrefixes"
-					>
-						<span slot="noOptions">{{ $t("List is empty")}}</span>
-					</MultiSelect>
-				</b-field>
-				<b-field :label="$t('Phone No.') + ' 2'">
-					<b-input v-model="formModel.phone2.phoneNo" />
-				</b-field>
-			</div>
-		</div>
-		<div class="field">
-			<h6 class="title is-6">{{ $t('Vulnerability criteria') }}
-				<span class="optional-text has-text-weight-normal is-italic">
-					- {{ $t('Optional') }}
-				</span>
-			</h6>
-			<b-checkbox
-				v-for="vulnerability of options.vulnerabilities"
-				v-model="formModel.vulnerabilities[vulnerability.code]"
-				:native-value="vulnerability.code"
-				:key="vulnerability.code"
-			>
-				{{ $t(normalizeText(vulnerability.value)) }}
-			</b-checkbox>
-		</div>
+						label="Type phone 1"
+						name="phone1-type"
+						class="mb-4"
+						is-search-enabled
+					/>
+
+					<v-checkbox
+						v-model="formModel.phone1.proxy"
+						:label="$t('Proxy')"
+						name="phone1-proxy"
+						density="compact"
+						class="ml-2 mb-4"
+						hide-details
+					/>
+				</div>
+
+				<DataSelect
+					v-model="formModel.phone1.ext"
+					:items="options.phonePrefixes"
+					:error-messages="validationMsg('phone1.ext')"
+					label="Prefix phone 1"
+					name="phone1-prefix"
+					class="mb-4"
+					is-search-enabled
+					@update:modelValue="onValidate('phone1.ext')"
+				/>
+
+				<DataInput
+					v-model="formModel.phone1.phoneNo"
+					label="Phone No. 1"
+					name="phone1-no"
+					class="mb-4"
+				/>
+			</v-col>
+
+			<v-col cols="3">
+				<h4 class="mb-4">
+					{{ $t('Phone 2') }}
+					<i class="optional-text font-weight-regular">
+						- {{ $t('Optional') }}
+					</i>
+				</h4>
+
+				<div class="d-flex align-end">
+					<DataSelect
+						v-model="formModel.phone2.type"
+						:items="options.phoneType"
+						:loading="phoneTypesLoading"
+						label="Type phone 2"
+						name="phone2-type"
+						class="mb-4"
+						is-search-enabled
+					/>
+
+					<v-checkbox
+						v-model="formModel.phone2.proxy"
+						:label="$t('Proxy')"
+						name="phone2-proxy"
+						density="compact"
+						class="ml-2 mb-4"
+						hide-details
+					/>
+				</div>
+
+				<DataSelect
+					v-model="formModel.phone2.ext"
+					:items="options.phonePrefixes"
+					:error-messages="validationMsg('phone2.ext')"
+					label="Prefix phone 2"
+					name="phone2-prefix"
+					class="mb-4"
+					is-search-enabled
+					@update:modelValue="onValidate('phone2.ext')"
+				/>
+
+				<DataInput
+					v-model="formModel.phone2.phoneNo"
+					label="Phone No. 2"
+					name="phone2-no"
+					class="mb-4"
+				/>
+			</v-col>
+
+			<v-col cols="12">
+				<h4 class="mb-4">
+					{{ $t('Vulnerability criteria') }}
+					<i class="optional-text font-weight-regular">
+						- {{ $t('Optional') }}
+					</i>
+				</h4>
+
+				<div class="d-flex flex-wrap">
+					<v-checkbox
+						v-for="vulnerability of options.vulnerabilities"
+						v-model="formModel.vulnerabilities[vulnerability.code]"
+						:key="vulnerability.code"
+						:label="$t(normalizeText(vulnerability.value))"
+						name="phone2-proxy"
+						density="compact"
+						class="flex-0-0 ml-2"
+						hide-details
+					/>
+				</div>
+			</v-col>
+		</v-row>
 	</form>
 </template>
 
 <script>
-import { maxLength, required, requiredIf } from "vuelidate/lib/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import calendarHelper from "@/mixins/calendarHelper";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
 import idHelper from "@/mixins/idHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
+import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "HouseholdHeadForm",
 
-	mixins: [validation, calendarHelper, idHelper],
+	components: {
+		DatePicker,
+		DataSelect,
+		DataInput,
+	},
 
-	validations: {
-		formModel: {
-			nameLocal: {
-				familyName: { required },
-				firstName: { required },
-				parentsName: {},
-			},
-			nameEnglish: {
-				familyName: {},
-				firstName: {},
-				parentsName: {},
-			},
-			personalInformation: {
-				gender: { required },
-				dateOfBirth: { required },
-			},
-			primaryId: {
-				idType: {
-					required: requiredIf((form) => form.idNumber),
-					function() { return this.isPrimaryIdValid; },
+	mixins: [validation, idHelper],
+
+	validations() {
+		return {
+			formModel: {
+				nameLocal: {
+					familyName: { required },
+					firstName: { required },
 				},
-				idNumber: {
-					maxLength: maxLength(255),
-					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
+				personalInformation: {
+					gender: { required },
+					dateOfBirth: { required },
+				},
+				primaryId: {
+					idType: {
+						required: requiredIf(this.formModel.primaryId.idNumber),
+						isPrimaryIdValid: helpers.withMessage(
+							this.primaryIdValidationMessage,
+							function () { return this.isPrimaryIdValid; },
+						),
+					},
+					idNumber: {
+						maxLength: maxLength(255),
+						required: requiredIf(
+							this.formModel.primaryId.idType
+								|| (this.formModel.primaryId.idType && !this.formModel.primaryId.idNumber.trim()),
+						),
+					},
+				},
+				secondaryId: {
+					idType: {
+						required: requiredIf(this.formModel.secondaryId.idNumber),
+						isSecondaryIdValid: helpers.withMessage(
+							this.secondaryIdValidationMessage,
+							function () { return this.isSecondaryIdValid; },
+						),
+					},
+					idNumber: {
+						maxLength: maxLength(255),
+						required: requiredIf(
+							this.formModel.secondaryId.idType
+								|| (this.formModel.secondaryId.idType
+										&& !this.formModel.secondaryId.idNumber.trim()),
+						),
+					},
+				},
+				tertiaryId: {
+					idType: {
+						required: requiredIf(this.formModel.tertiaryId.idNumber),
+						isTertiaryIdValid: helpers.withMessage(
+							this.tertiaryIdValidationMessage,
+							function () { return this.isTertiaryIdValid; },
+						),
+					},
+					idNumber: {
+						maxLength: maxLength(255),
+						required: requiredIf(
+							this.formModel.tertiaryId.idType
+								|| (this.formModel.tertiaryId.idType && !this.formModel.tertiaryId.idNumber.trim()),
+						),
+					},
+				},
+				residencyStatus: { required },
+				phone1: {
+					ext: {
+						required: requiredIf(this.formModel.phone1.phoneNo),
+					},
+				},
+				phone2: {
+					ext: {
+						required: requiredIf(this.formModel.phone2.phoneNo),
+					},
 				},
 			},
-			secondaryId: {
-				idType: {
-					required: requiredIf((form) => form.idNumber),
-					function() { return this.isSecondaryIdValid; },
-				},
-				idNumber: {
-					maxLength: maxLength(255),
-					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
-				},
-			},
-			tertiaryId: {
-				idType: {
-					required: requiredIf((form) => form.idNumber),
-					function() { return this.isTertiaryIdValid; },
-				},
-				idNumber: {
-					maxLength: maxLength(255),
-					required: requiredIf((form) => form.idType || (form.idType && !form.idNumber.trim())),
-				},
-			},
-			residencyStatus: { required },
-		},
+		};
 	},
 
 	props: {
 		showTypeOfBeneficiary: Boolean,
-		detailOfHousehold: Object,
-		beneficiary: Object,
+
+		detailOfHousehold: {
+			type: Object,
+			default: null,
+		},
+
+		beneficiary: {
+			type: Object,
+			default: null,
+		},
 
 		isEditing: {
 			type: Boolean,
@@ -500,9 +495,11 @@ export default {
 		},
 	},
 
+	emits: ["loaded"],
+
 	data() {
 		return {
-			loadingComponent: null,
+			idTabs: "primary",
 			isPrimaryIdValid: true,
 			isSecondaryIdValid: true,
 			isTertiaryIdValid: true,
@@ -524,7 +521,7 @@ export default {
 					parentsName: "",
 				},
 				personalInformation: {
-					gender: "",
+					gender: null,
 					dateOfBirth: null,
 				},
 				primaryId: {
@@ -542,22 +539,22 @@ export default {
 					idNumber: "",
 					priority: 3,
 				},
-				residencyStatus: "",
+				residencyStatus: null,
 				addAReferral: false,
 				referral: {
-					referralType: "",
+					referralType: null,
 					comment: "",
 				},
 				phone1: {
-					type: "",
+					type: null,
 					proxy: false,
-					ext: "",
+					ext: null,
 					phoneNo: "",
 				},
 				phone2: {
-					type: "",
+					type: null,
 					proxy: false,
-					ext: "",
+					ext: null,
 					phoneNo: "",
 				},
 				vulnerabilities: [],
@@ -619,10 +616,6 @@ export default {
 			if (this.isHouseholdHead) {
 				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
 			}
-
-			this.loadingComponent = this.$buefy.loading.open({
-				container: this.$refs.householdHeadForm,
-			});
 		}
 		await Promise.all([
 			this.fetchNationalCardTypes(),
@@ -645,10 +638,6 @@ export default {
 
 					this.detailOfHouseholdHead = data;
 					await this.mapDetailOfHouseholdToFormModel(data);
-				}
-
-				if (this.loadingComponent) {
-					this.loadingComponent.close();
 				}
 			}
 			this.$emit("loaded");
@@ -677,6 +666,7 @@ export default {
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
+
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
 
 			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
@@ -719,7 +709,7 @@ export default {
 				},
 				personalInformation: {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
-					dateOfBirth: new Date(dateOfBirth),
+					dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
 				},
 				primaryId: primaryCardId,
 				secondaryId: secondaryCardId,
@@ -756,7 +746,7 @@ export default {
 							phoneNo: number,
 						};
 					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Phone")} ${key + 1} ${e}`, "is-danger");
+						Notification(`${this.$t("Phone")} ${key + 1} ${e.message || e}`, "error");
 					});
 				promises.push(promise);
 			});
@@ -770,7 +760,7 @@ export default {
 
 				this.householdHeadSmartCardNumbers = data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Smartcard")} ${e}`, "is-danger");
+				Notification(`${this.$t("Smartcard")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -785,7 +775,7 @@ export default {
 					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
 					nationalIdCard.idNumber = number;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("National ID")} ${e}`, "is-danger");
+					Notification(`${this.$t("National ID")} ${e.message || e}`, "error");
 				});
 			}
 
@@ -796,7 +786,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfNationalIds()
 				.then(({ data }) => { this.options.idType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
+					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
 				});
 
 			this.idTypeLoading = false;
@@ -806,7 +796,7 @@ export default {
 			await BeneficiariesService.getListOfTypesOfPhones()
 				.then(({ data }) => { this.options.phoneType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Phone Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Phone Types")} ${e.message || e}`, "error");
 				});
 
 			this.phoneTypesLoading = false;
@@ -816,7 +806,7 @@ export default {
 			await BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -824,7 +814,7 @@ export default {
 			await BeneficiariesService.getListOfResidenceStatuses()
 				.then(({ data }) => { this.options.residencyStatus = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Residency Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
 				});
 
 			this.residenceStatusesLoading = false;
@@ -834,15 +824,20 @@ export default {
 			await BeneficiariesService.getListOfReferralTypes()
 				.then(({ data }) => { this.options.referralType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Referral Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
 				});
 
 			this.referralTypeLoading = false;
 		},
 
 		submit() {
-			this.$v.$touch();
-			return !this.$v.$invalid;
+			this.v$.$touch();
+
+			if (this.v$.$error) {
+				Notification(this.$t("Please fill all required fields in Household Head or Members step"), "error");
+			}
+
+			return !this.v$.$invalid;
 		},
 	},
 };
@@ -857,7 +852,7 @@ export default {
 	.detail {
 		display: flex;
 		align-items: center;
-		padding-left: 0.5rem;
+		padding-left: .5rem;
 	}
  }
 </style>

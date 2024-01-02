@@ -7,8 +7,6 @@
 			:error-messages="validationMsg('modality')"
 			label="Modality"
 			name="modality"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onModalitySelect"
 		/>
@@ -20,8 +18,6 @@
 			:error-messages="validationMsg('modalityType')"
 			label="Modality Type"
 			name="modality-type"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onModalityTypeSelect"
 		/>
@@ -34,8 +30,6 @@
 			:error-messages="validationMsg('division')"
 			label="Distribute"
 			name="division"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onDivisionSelect"
 		/>
@@ -48,8 +42,6 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
-			item-title="field"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onValidate('customField')"
 		/>
@@ -113,7 +105,7 @@
 
 		<DataInput
 			v-if="displayedFields.quantity"
-			v-model="formModel.quantity"
+			v-model.number="formModel.quantity"
 			:error-messages="validationMsg('quantity')"
 			label="Quantity 1"
 			name="quantity-one"
@@ -127,7 +119,7 @@
 
 		<DataInput
 			v-if="displayedFields.value"
-			v-model="formModel.value"
+			v-model.number="formModel.value"
 			:error-messages="validationMsg('value')"
 			:label="isModalityVoucher ? 'Total Value of Booklet' : 'Value'"
 			:optional="isModalityInKind"
@@ -148,8 +140,6 @@
 			:optional="isModalityInKind"
 			label="Currency"
 			name="currency"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onValidate('currency')"
 		/>
@@ -167,7 +157,7 @@
 
 		<DataInput
 			v-if="displayedFields.secondQuantity"
-			v-model="formModel.secondQuantity"
+			v-model.number="formModel.secondQuantity"
 			:error-messages="validationMsg('secondQuantity')"
 			label="Quantity 2"
 			name="quantity-two"
@@ -237,7 +227,7 @@
 
 		<DataInput
 			v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
-			v-model="formModel.cashbackLimit"
+			v-model.number="formModel.cashbackLimit"
 			:error-messages="validationMsg('cashbackLimit')"
 			:disabled="cashbackLimitDisabled"
 			label="Cashback Limit"

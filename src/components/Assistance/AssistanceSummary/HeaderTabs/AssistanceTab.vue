@@ -27,7 +27,7 @@
 					location="top"
 				>
 					<template v-slot:activator="{ props }">
-						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
 					</template>
 				</v-tooltip>
 			</v-sheet>
@@ -57,7 +57,7 @@
 					location="top"
 				>
 					<template v-slot:activator="{ props }">
-						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
 					</template>
 				</v-tooltip>
 			</v-sheet>
@@ -111,7 +111,7 @@
 					location="top"
 				>
 					<template v-slot:activator="{ props }">
-						<v-icon v-bind="props" icon="exclamation-circle" size="x-large" />
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
 					</template>
 				</v-tooltip>
 			</v-sheet>

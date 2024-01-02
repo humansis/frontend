@@ -35,8 +35,6 @@
 							:error-messages="validationMsg('selectedSectors')"
 							label="Sectors"
 							name="sectors"
-							item-title="value"
-							item-value="code"
 							is-search-enabled
 							is-data-shown-as-tag
 							multiple
@@ -52,8 +50,6 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							item-title="value"
-							item-value="code"
 							is-search-enabled
 							class="mb-6 warning-message"
 							persistent-hint

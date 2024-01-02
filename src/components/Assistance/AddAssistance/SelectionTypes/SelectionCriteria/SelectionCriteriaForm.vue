@@ -7,8 +7,6 @@
 			:error-messages="validationMsg('criteriaTarget')"
 			label="Criteria Target"
 			name="criteria-target"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onCriteriaTargetSelect"
 		/>
@@ -20,8 +18,6 @@
 			:error-messages="validationMsg('criteria')"
 			label="Criteria"
 			name="criteria"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onCriteriaSelect"
 		/>
@@ -33,8 +29,6 @@
 			:error-messages="validationMsg('condition')"
 			label="Condition"
 			name="condition"
-			item-title="value"
-			item-value="code"
 			class="mb-6"
 			@update:modelValue="onValidate('condition')"
 		/>
@@ -58,8 +52,6 @@
 				:error-messages="validationMsg('value')"
 				label="Value"
 				name="value"
-				item-title="value"
-				item-value="code"
 				@update:modelValue="onValidate('value')"
 			/>
 

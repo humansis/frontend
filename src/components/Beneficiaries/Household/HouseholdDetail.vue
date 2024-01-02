@@ -1,132 +1,149 @@
 <template>
-	<form>
-		<section class="modal-card-body">
-			<b-field :label="$t('Family Name')">
-				<b-input v-model="formModel.familyName" disabled />
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.familyName"
+			label="Family Name"
+			name="family-name"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('First Name')">
-				<b-input v-model="formModel.givenName" disabled />
-			</b-field>
+		<DataInput
+			v-model="formModel.givenName"
+			label="First Name"
+			name="given-name"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('Members')">
-				<b-input v-model="formModel.members" disabled />
-			</b-field>
+		<DataInput
+			v-model="formModel.members"
+			label="Members"
+			name="members"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('Vulnerabilities')">
-				<MultiSelect
-					v-model="formModel.vulnerabilities"
-					multiple
-					disabled
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:options="options.vulnerabilities"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.vulnerabilities"
+			:items="options.vulnerabilities"
+			label="Vulnerabilities"
+			name="vulnerabilities"
+			class="mb-4"
+			multiple
+			chips
+			disabled
+		/>
 
-			<b-field :label="$t('Projects')">
-				<b-input v-model="formModel.projects" disabled />
-			</b-field>
+		<DataInput
+			v-model="formModel.projects"
+			label="Projects"
+			name="projects"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('Income')">
-				<b-input v-model="formModel.incomeLevel" disabled />
-			</b-field>
+		<DataInput
+			v-model="formModel.incomeLevel"
+			label="Income"
+			name="income-level"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('Support received types')">
-				<MultiSelect
-					v-model="formModel.supportReceivedTypes"
-					multiple
-					disabled
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:options="options.externalSupportReceivedType"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.supportReceivedTypes"
+			:items="options.externalSupportReceivedType"
+			label="Support received types"
+			name="support-received-types"
+			class="mb-4"
+			multiple
+			chips
+			disabled
+		/>
 
-			<b-field :label="$t('Support date receive')">
-				<b-datepicker
-					v-model="formModel.supportDateReceived"
-					show-week-number
-					locale="en-CA"
-					icon="calendar-day"
-					trap-focus
-					disabled
-					:month-names="months()"
-				/>
-			</b-field>
+		<DatePicker
+			v-model="formModel.supportDateReceived"
+			:clearable="false"
+			label="Support date receive"
+			name="support-date-receive"
+			class="mb-4"
+			disabled
+		/>
 
-			<b-field :label="$t('Assets')">
-				<MultiSelect
-					v-model="formModel.assets"
-					searchable
-					multiple
-					disabled
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:options="options.assets"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.assets"
+			:items="options.assets"
+			label="Assets"
+			name="assets"
+			class="mb-4"
+			multiple
+			chips
+			disabled
+		/>
 
-			<b-field :label="$t('Shelter status')">
-				<MultiSelect
-					v-model="formModel.shelterStatus"
-					searchable
-					disabled
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:options="options.shelterStatuses"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.shelterStatus"
+			:items="options.shelterStatuses"
+			label="Shelter status"
+			name="shelter-status"
+			class="mb-4"
+			multiple
+			chips
+			disabled
+		/>
 
-			<b-field :label="$t('Current Location')">
-				<b-input v-model="formModel.currentLocation" disabled />
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-		</footer>
-	</form>
+		<DataInput
+			v-model="formModel.currentLocation"
+			label="Current Location"
+			name="current-location"
+			disabled
+		/>
+	</v-card-text>
+
+	<v-card-actions class="mt-n2">
+		<v-spacer />
+
+		<v-btn
+			class="text-none mx-4"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="$emit('formClosed')"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
-import calendarHelper from "@/mixins/calendarHelper";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DatePicker from "@/components/Inputs/DatePicker";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 
 export default {
 	name: "HouseholdDetail",
 
-	mixins: [calendarHelper],
+	components: {
+		DatePicker,
+		DataSelect,
+		DataInput,
+	},
 
 	props: {
-		formModel: Object,
+		householdModel: {
+			type: Object,
+			required: true,
+		},
 	},
+
+	emits: ["formClosed"],
 
 	data() {
 		return {
+			formModel: this.householdModel,
 			options: {
 				assets: [],
 				vulnerabilities: [],
@@ -155,16 +172,19 @@ export default {
 				this.options.assets,
 				"code",
 			);
+
 			this.formModel.shelterStatus = getArrayOfCodeListByKey(
 				[this.formModel.shelterStatus],
 				this.options.shelterStatuses,
 				"code",
 			);
+
 			this.formModel.supportReceivedTypes = getArrayOfCodeListByKey(
 				this.formModel.supportReceivedTypes,
 				this.options.externalSupportReceivedType,
 				"code",
 			);
+
 			this.formModel.vulnerabilities = getArrayOfCodeListByKey(
 				this.formModel.vulnerabilities,
 				this.options.vulnerabilities,
@@ -174,15 +194,11 @@ export default {
 			);
 		},
 
-		closeForm() {
-			this.$emit("formClosed");
-		},
-
 		async fetchAssets() {
 			await BeneficiariesService.getListOfAssets()
 				.then(({ data }) => { this.options.assets = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assets")} ${e.message || e}`, "error");
 				});
 			this.assetsLoading = false;
 		},
@@ -191,7 +207,7 @@ export default {
 			await BeneficiariesService.getListOfShelterStatuses()
 				.then(({ data }) => { this.options.shelterStatuses = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Shelter Status")} ${e}`, "is-danger");
+					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
 				});
 			this.shelterStatusLoading = false;
 		},
@@ -200,7 +216,7 @@ export default {
 			await BeneficiariesService.getSupportReceivedTypes()
 				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Support Received Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -208,7 +224,7 @@ export default {
 			await BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => { this.options.vulnerabilities = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
 				});
 		},
 	},

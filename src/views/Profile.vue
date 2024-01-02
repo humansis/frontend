@@ -68,8 +68,6 @@
 								:error-messages="validationMsg('prefix', 'phone')"
 								label="Phone Ext"
 								name="phone-ext"
-								item-title="value"
-								item-value="code"
 								is-search-enabled
 								clearable
 								@blur="onValidate('prefix', 'phone')"

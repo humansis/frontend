@@ -1,37 +1,37 @@
 <template>
-	<div>
-		<b-collapse
-			v-for="(member, index) of members"
+	<form>
+		<v-expansion-panels
 			ref="members"
-			class="card has-multiselect"
-			animation="slide"
-			:key="index"
-			:open="isOpen === index"
-			@open="isOpen = index"
-			@close="isOpen = -1"
+			v-model="isOpen"
+			variant="accordion"
 		>
-			<div
-				slot="trigger"
-				class="card-header"
-				role="button"
+			<v-expansion-panel
+				v-for="(member, index) of members"
+				:key="index"
+				eager
 			>
-				<p class="card-header-title">
-					<b-tag type="is-success" size="is-medium">{{ index + 1 }}</b-tag>
+				<v-expansion-panel-title>
+					<v-chip color="success" variant="flat" label>{{ index + 1 }}</v-chip>
+
 					<span class="ml-3">{{ memberTitle(member) }}</span>
-				</p>
-				<a class="card-header-icon">
-					<b-button
-						type="is-danger"
-						class="is-light mr-4"
-						@click="removeMember(index)"
-					>
-						<b-icon icon="trash" />
-					</b-button>
-					<b-icon :icon="isOpen === index ? 'arrow-up' : 'arrow-down'" />
-				</a>
-			</div>
-			<div class="card-content">
-				<div class="content">
+
+					<template v-slot:actions="{ expanded }">
+						<div class="d-flex align-center">
+							<v-btn
+								icon="trash"
+								color="error"
+								variant="tonal"
+								size="x-small"
+								class="mr-4"
+								@click="onRemoveMember(index)"
+							/>
+
+							<v-icon :icon="expanded ? 'arrow-up' : 'arrow-down'" />
+						</div>
+					</template>
+				</v-expansion-panel-title>
+
+				<v-expansion-panel-text class="pt-4">
 					<HouseholdHeadForm
 						ref="member"
 						:show-type-of-beneficiary="false"
@@ -40,19 +40,19 @@
 						:beneficiary="member"
 						:members-smart-card-numbers="smartCardNumbers[index]"
 					/>
-				</div>
-			</div>
-		</b-collapse>
-		<b-button
-			class="mt-5"
-			type="is-danger"
-			icon-left="plus"
-			@click="addMember"
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+		</v-expansion-panels>
+
+		<v-btn
+			class="my-4"
+			color="success"
+			prepend-icon="plus"
+			@click="onAddMember"
 		>
 			{{ $t('New') }}
-		</b-button>
-		<hr>
-	</div>
+		</v-btn>
+	</form>
 </template>
 
 <script>
@@ -68,13 +68,18 @@ export default {
 	},
 
 	props: {
-		detailOfHousehold: Object,
+		detailOfHousehold: {
+			type: Object,
+			default: null,
+		},
 
 		isEditing: {
 			type: Boolean,
 			default: false,
 		},
 	},
+
+	emits: ["loaded"],
 
 	data() {
 		return {
@@ -118,7 +123,7 @@ export default {
 				await Promise.all(promises);
 				this.reloadMemberForm();
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Members")} ${e}`, "is-danger");
+				Notification(`${this.$t("Members")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -130,7 +135,7 @@ export default {
 			}
 		},
 
-		addMember() {
+		onAddMember() {
 			const countOfMembers = this.members.length;
 
 			if (countOfMembers && !this.$refs.member[countOfMembers - 1].submit()) {
@@ -167,7 +172,7 @@ export default {
 				: this.$t("Member");
 		},
 
-		removeMember(index) {
+		onRemoveMember(index) {
 			this.members.splice(index, 1);
 		},
 
