@@ -3,6 +3,14 @@
 		<div v-html-secure="cellData" />
 	</template>
 
+	<template v-if="column.type === 'object'">
+		<p v-if="cellData.value">
+			{{ cellData.value }}
+		</p>
+
+		<pre v-else>{{ cellData }}</pre>
+	</template>
+
 	<template v-if="column.type === 'assistancesType'">
 		{{ normalizeText($t(cellData)) }}
 	</template>
@@ -77,11 +85,11 @@
 
 		<router-link
 			v-else
-			class="table-link"
 			:to="{
 				name: getRouteName(),
 				params: getParams(),
 			}"
+			class="table-link"
 		>
 			{{ getLinkName() }}
 		</router-link>
@@ -94,6 +102,16 @@
 	<template v-if="column.type === 'datetime'">
 		{{ formattedDateTime }}
 	</template>
+
+	<v-tooltip v-if="column.type === 'IconWithTooltip'" :text="$t(cellData.tooltip)" location="top">
+		<template v-slot:activator="{ props }">
+			<v-icon
+				v-bind="props"
+				:icon="cellData.type"
+				:size="cellData.size || 'is-small'"
+			/>
+		</template>
+	</v-tooltip>
 
 	<template v-if="column.type === 'svgIcon'">
 		<span v-if="cellData.length">
@@ -137,7 +155,7 @@ export default {
 
 		formattedDate() {
 			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
-				? this.cellData
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD")}`
 				: this.$t("N/A");
 		},
 

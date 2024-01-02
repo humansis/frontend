@@ -45,8 +45,6 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
-			item-title="value"
-			item-value="code"
 			is-search-enabled
 		/>
 
@@ -418,6 +416,7 @@ export default {
 				+ "protocol. Please check you gave your name and provided reasoning for the change "
 				+ "in the Note section of the distribution to serve for auditing purposes.");
 
+			// FIXME
 			this.$buefy.dialog.confirm({
 				title: this.$t("Do you really want to apply the change?"),
 				message,

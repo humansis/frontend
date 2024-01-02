@@ -16,7 +16,7 @@
 
 <script>
 import DistributionMap from "@/components/Home/DistributionMap";
-import Summary from "@/components/Home/Summary";
+import HomeSummary from "@/components/Home/HomeSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 
@@ -25,7 +25,7 @@ export default {
 
 	components: {
 		DistributionMap,
-		HomeSummary: Summary,
+		HomeSummary,
 		UpcomingAssistances,
 	},
 

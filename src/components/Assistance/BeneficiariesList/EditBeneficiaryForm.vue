@@ -54,8 +54,6 @@
 			:disabled="disabled"
 			label="Referral Type"
 			name="referral-type"
-			item-title="value"
-			item-value="code"
 			is-search-enabled
 			class="mb-6"
 		/>

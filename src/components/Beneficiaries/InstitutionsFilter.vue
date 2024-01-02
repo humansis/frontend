@@ -2,7 +2,7 @@
 	<AdvancedFilter
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
+		@filtersChanged="onFilterChanged"
 		@search="$emit('search')"
 	/>
 </template>
@@ -60,7 +60,7 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filters) {
+		onFilterChanged(filters) {
 			this.$emit("filtersChanged", { filters });
 		},
 

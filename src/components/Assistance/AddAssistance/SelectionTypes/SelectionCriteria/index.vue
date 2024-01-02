@@ -381,7 +381,6 @@ export default {
 		},
 
 		onSubmitCriteriaForm(criteriaForm) {
-			console.log(criteriaForm);
 			if (criteriaForm.groupId !== undefined) {
 				this.groups[criteriaForm.groupId].tableData = [];
 				this.groups[criteriaForm.groupId].data.push(criteriaForm);

@@ -23,7 +23,7 @@
 		<p>{{ $t("Then you will be able to manage some assistances") }}</p>
 	</v-alert>
 
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -163,13 +163,13 @@
 				</v-list>
 			</v-menu>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
@@ -190,8 +190,8 @@ export default {
 	name: "AssistancesList",
 
 	components: {
-		Table,
 		ButtonAction,
+		DataGrid,
 		ExportControl,
 	},
 
