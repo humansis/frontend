@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		:headers="table.columns"
 		:items="table.data"
@@ -20,13 +20,13 @@
 				@actionConfirmed="onShowEdit(row)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import OrganizationServiceService from "@/services/OrganizationServiceService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -35,7 +35,7 @@ export default {
 	name: "OrganizationServicesList",
 
 	components: {
-		Table,
+		DataGrid,
 		ButtonAction,
 	},
 

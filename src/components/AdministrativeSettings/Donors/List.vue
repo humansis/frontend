@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -53,13 +53,13 @@
 				@export="onExportDonors"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import DonorService from "@/services/DonorService";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
@@ -74,7 +74,7 @@ export default {
 	components: {
 		ExportControl,
 		ButtonAction,
-		Table,
+		DataGrid,
 	},
 
 	mixins: [grid, permissions],

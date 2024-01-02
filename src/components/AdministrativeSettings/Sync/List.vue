@@ -1,5 +1,5 @@
 <template>
-	<Table
+	<DataGrid
 		v-model:items-per-page="perPage"
 		:headers="table.columns"
 		:items="table.data"
@@ -18,7 +18,7 @@
 				@actionConfirmed="onShowDetail(row)"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
@@ -27,7 +27,7 @@ import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import SyncFilter from "@/components/AdministrativeSettings/Sync/Filter";
 import ButtonAction from "@/components/ButtonAction";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
@@ -37,7 +37,7 @@ export default {
 	name: "SyncList",
 
 	components: {
-		Table,
+		DataGrid,
 		SyncFilter,
 		ButtonAction,
 	},

@@ -86,6 +86,7 @@ export default {
 			const entity = this.table.data.find((item) => item.id === id);
 			const index = this.table.data.indexOf(entity);
 			this.table.data.splice(index, 1);
+			this.table.total -= 1;
 		},
 
 		onAssistanceMove(id) {
