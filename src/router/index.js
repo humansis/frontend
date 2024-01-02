@@ -1,13 +1,16 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { getCookie } from "@/utils/cookie";
+import { Notification } from "@/utils/UI";
+import { ROLE } from "@/consts";
+import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
-// import { Notification } from "@/utils/UI";
-// import { ROLE } from "@/consts";
 import getters from "@/store/getters";
 import store from "@/store/index";
 
 let singleNotification = true;
-// const user = getters.getUserFromVuexStorage();
+
+const { global: { t } } = i18n;
+const user = getters.getUserFromVuexStorage();
 const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
 	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
@@ -18,22 +21,22 @@ const routes = [
 		name: "Login",
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
 	},
-	// {
-	// 	path: "/account-created",
-	// 	name: "AccountCreated",
-	// 	component: () => import(/* webpackChunkName: "AccountCreated" */ "@/views/AccountCreated"),
-	// 	meta: {
-	// 		permissions: [],
-	// 		breadcrumb: () => i18n.t("Account created"),
-	// 	},
-	// },
+	{
+		path: "/account-created",
+		name: "AccountCreated",
+		component: () => import(/* webpackChunkName: "AccountCreated" */ "@/views/AccountCreated"),
+		meta: {
+			permissions: [],
+			breadcrumb: "Account created",
+		},
+	},
 	{
 		path: "/logout",
 		name: "Logout",
 		beforeEnter: (to, from, next) => {
 			store.dispatch("logoutUser");
 			if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
-				// Notification(i18n.t("You need to login to continue"), "is-warning");
+				Notification(t("You need to login to continue"), "warning");
 				singleNotification = false;
 			}
 
@@ -487,10 +490,10 @@ router.beforeEach((to, from, next) => {
 			? permissions.some((permission) => storedPermissions?.[permission])
 			: true;
 
-		// 		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
-		// 			return next({ name: "AccountCreated" });
-		// 		}
-		//
+		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
+			return next({ name: "AccountCreated" });
+		}
+
 		if (!canGoNext) {
 			return next({ name: "NoPermission" });
 		}

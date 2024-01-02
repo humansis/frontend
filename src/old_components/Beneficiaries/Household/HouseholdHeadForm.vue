@@ -422,7 +422,9 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { PHONE } from "@/consts";
+import {ASSISTANCE, PHONE} from "@/consts";
+import {helpers} from "@vuelidate/validators";
+import {isIdsListLengthValid} from "@/utils/customValidators";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -449,6 +451,10 @@ export default {
 				idType: {
 					required: requiredIf((form) => form.idNumber),
 					function() { return this.isPrimaryIdValid; },
+					isIdsListLengthValid: helpers.withMessage(
+						`You have entered more than ${ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH} IDs`,
+						this.isIdsListLengthValid,
+					),
 				},
 				idNumber: {
 					maxLength: maxLength(255),
