@@ -1,21 +1,21 @@
 <template>
-	<div class="has-text-centered has-redirect-message">
-		<h1 class="subtitle is-size-4-mobile is-size-1 pb-5">{{ $t("Account created") }}</h1>
+	<div class="text-center has-redirect-message mt-16">
+		<h1 class="text-h4 text-grey-darken-2 my-10">{{ $t("Account created") }}</h1>
 
-		<h2 class="subtitle is-size-4-mobile is-size-3">
+		<h2 class="text-h5 text-grey-darken-2 my-10">
 			{{ $t(`Your account was created and login was successful,
 			please contact support (georgios.petrou@peopleinneed.net) to assign a role in Humansis.`) }}
 		</h2>
 
-		<b-button
-			class="mt-4 is-size-5-mobile"
-			icon-left="home"
-			outlined
-			type="is-info is-light is-large"
-			@click="$router.push({ name: 'Logout' })"
+		<v-btn
+			:to="{ name: 'Logout'}"
+			size="x-large"
+			color="light-blue-lighten-4"
+			prepend-icon="home"
+			class="text-none"
 		>
-			<span class="button-text">{{ $t("Go to Login page") }}</span>
-		</b-button>
+			{{ $t('Go to Login page') }}
+		</v-btn>
 	</div>
 </template>
 
