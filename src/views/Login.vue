@@ -218,6 +218,8 @@ export default {
 			if (this.keyCloakAuthenticationUrl.length) {
 				window.location.href = `${this.keyCloakAuthenticationUrl}
 					&redirect_uri=${encodeURIComponent(window.location)}`;
+			} else {
+				Notification(`${this.$t("Address for keycloak not found")}`, "error");
 			}
 		},
 
