@@ -1,5 +1,4 @@
 <template>
-	{{ vendor }}
 	<v-card-title class="text-h6 font-weight-bold">
 		{{ $t(header) }}
 
