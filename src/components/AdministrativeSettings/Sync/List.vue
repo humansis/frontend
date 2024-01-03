@@ -46,6 +46,7 @@ export default {
 
 	data() {
 		return {
+			isLoadingList: false,
 			advancedSearchVisible: false,
 			exportLoading: false,
 			filters: [],

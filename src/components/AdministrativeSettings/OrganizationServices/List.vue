@@ -43,6 +43,7 @@ export default {
 
 	data() {
 		return {
+			isLoadingList: false,
 			table: {
 				data: [],
 				columns: generateColumns([

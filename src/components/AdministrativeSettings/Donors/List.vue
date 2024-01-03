@@ -82,6 +82,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "donors",
