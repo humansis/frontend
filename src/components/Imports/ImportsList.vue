@@ -2,11 +2,12 @@
 	<DataGrid
 		ref="importsList"
 		v-model:items-per-page="perPage"
-		:custom-key-sort="sortValue"
+		v-model:sort-by="sortValue"
 		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:custom-key-sort="customSort"
 		reset-sort-button
 		reset-filters-button
 		is-search-visible
@@ -118,6 +119,7 @@ import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { IMPORT, TABLE } from "@/consts";
 
+const customSort = { status: () => {} };
 const statusTags = [
 	{ code: IMPORT.STATUS.NEW, type: "grey-lighten-2" },
 	{ code: IMPORT.STATUS.INTEGRITY_CHECK, type: "info" },
@@ -150,6 +152,7 @@ export default {
 		return {
 			IMPORT,
 			TABLE,
+			customSort,
 			statusActive: {
 				new: false,
 				inProgress: false,
@@ -293,8 +296,12 @@ export default {
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+				this.table.data[key].test = item.status;
 			});
 
+			const test = this.table.data;
+			this.table.data = [];
+			this.table.data = [...test];
 			this.table.progress = 50;
 
 			this.prepareProjectsForTable();
