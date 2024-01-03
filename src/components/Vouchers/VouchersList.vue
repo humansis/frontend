@@ -9,6 +9,7 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:current-page="table.currentPage"
+		:custom-key-sort="customSort"
 		show-select
 		reset-sort-button
 		reset-filters-button
@@ -125,6 +126,8 @@ import { downloadFile, getBookletStatus } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
 
+const customSort = { status: () => {} };
+
 export default {
 	name: "VouchersList",
 
@@ -140,6 +143,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			customSort,
 			isAdvancedSearchVisible: false,
 			filters: {},
 			printLoading: false,
