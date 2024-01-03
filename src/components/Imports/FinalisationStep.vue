@@ -174,7 +174,7 @@
 				v-if="finishedImport && notImportedRows.length"
 				color="info"
 				class="text-none"
-				@click="onShowNotImportedRowsList"
+				@click="notImportedRowsVisible = true"
 			>
 				{{ $t('Show Not Imported Rows') }} ({{ notImportedRows.length }})
 			</v-btn>
@@ -393,10 +393,6 @@ export default {
 				successMessage: "Approved and Saved",
 				goNext: false,
 			});
-		},
-
-		onShowNotImportedRowsList() {
-			this.notImportedRowsVisible = true;
 		},
 
 		fetchImportNotImportedRows() {

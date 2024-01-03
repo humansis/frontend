@@ -71,11 +71,6 @@ import { required } from "@vuelidate/validators";
 export default {
 	name: "importForm",
 
-	emits: [
-		"formSubmitted",
-		"formClosed",
-	],
-
 	components: {
 		DataInput,
 		DataSelect,
@@ -105,6 +100,11 @@ export default {
 			default: () => {},
 		},
 	},
+
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
 
 	data() {
 		return {
