@@ -1,4 +1,5 @@
 <template>
+	<!-- TODO Implement else -->
 	<div v-if="identityStepActive && status">
 		<v-card class="pa-5">
 			<div>

@@ -174,13 +174,13 @@
 				v-if="finishedImport && notImportedRows.length"
 				color="info"
 				class="text-none"
-				@click="notImportedRowsVisible = true"
+				@click="isNotImportedRowsVisible = true"
 			>
 				{{ $t('Show Not Imported Rows') }} ({{ notImportedRows.length }})
 			</v-btn>
 		</div>
 
-		<table v-if="notImportedRowsVisible" class="import-table mt-8">
+		<table v-if="isNotImportedRowsVisible" class="import-table mt-8">
 			<thead>
 				<tr>
 					<th>{{ $t('Household ID') }}</th>
@@ -309,7 +309,7 @@ export default {
 			importStatus: "",
 			changeStateButtonLoading: false,
 			notImportedRows: [],
-			notImportedRowsVisible: false,
+			isNotImportedRowsVisible: false,
 		};
 	},
 

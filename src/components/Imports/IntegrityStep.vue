@@ -1,4 +1,5 @@
 <template>
+	<!-- TODO Implement else -->
 	<v-card v-if="integrityStepActive && status" class="pa-5">
 		<div>
 			<Loading v-if="isCheckingIntegrity" is-large />
