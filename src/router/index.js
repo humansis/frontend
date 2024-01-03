@@ -401,16 +401,16 @@ const routes = [
 					},
 				],
 			},
-			//  	{
-			//  		path: "administrative-settings",
-			//  		name: "Administrative Settings",
-			//  		component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
-			//  		meta: {
-			//  			permissions: ["adminSettings"],
-			//  			breadcrumb: () => i18n.t("Administrative Settings"),
-			//  			description: i18n.t("This page is where you can manage users, donors and your organization's specifics"),
-			//  		},
-			//  	},
+			{
+				path: "administrative-settings",
+				name: "Administrative Settings",
+				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+				meta: {
+					permissions: ["adminSettings"],
+					breadcrumb: "Administrative Settings",
+					description: "This page is where you can manage users, donors and your organization's specifics",
+				},
+			},
 			//  	{
 			//  		path: "transactions",
 			//  		name: "Transactions",
