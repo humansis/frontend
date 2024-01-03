@@ -160,7 +160,7 @@ export default {
 		},
 
 		onCloseForm() {
-			this.$.$reset();
+			this.v$.$reset();
 			this.$emit("formClosed");
 		},
 	},

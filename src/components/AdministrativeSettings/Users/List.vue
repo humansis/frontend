@@ -31,6 +31,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditUsers"
+				:disabled="isLoggedUser(row.id)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"

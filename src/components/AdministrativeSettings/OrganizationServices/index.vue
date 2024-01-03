@@ -110,11 +110,13 @@ export default {
 			this.organizationServiceModal.isWaiting = true;
 
 			await OrganizationServiceService.updateOrganizationService(id, organizationServiceBody)
-				.then((response) => {
-					if (response.status === 200) {
+				.then(({ status, message }) => {
+					if (status === 200) {
 						Notification(this.$t("Organization Service Successfully Updated"), "success");
 						this.$refs.organizationServicesList.fetchData();
 						this.onCloseOrganizationServiceModal();
+					} else {
+						Notification(message, "error");
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Organization Service")} ${e.message || e}`, "error");
