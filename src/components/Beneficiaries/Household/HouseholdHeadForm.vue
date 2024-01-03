@@ -669,30 +669,15 @@ export default {
 
 			const { phone1, phone2 } = await this.getPhones(phoneIds);
 
-			const primaryCardId = await this.getNationalIdCard(nationalIds[0]);
+			const validNationalIdNames = ["isPrimaryIdValid", "isSecondaryIdValid", "isTertiaryIdValid"];
 
-			if (primaryCardId) {
-				this.isPrimaryIdValid = (primaryCardId.idType && primaryCardId.idNumber)
-					|| (!primaryCardId.idType && !primaryCardId.idNumber);
-			}
+			const nationalIdsData = await this.getNationalIds(nationalIds);
+			nationalIdsData.sort((a, b) => a.idPriority - b.idPriority);
 
-			const secondaryCardId = nationalIds[1]
-				? await this.getNationalIdCard(nationalIds[1])
-				: { idNumber: "", idType: null };
-
-			if (secondaryCardId) {
-				this.isSecondaryIdValid = (secondaryCardId.idType && secondaryCardId.idNumber)
-					|| (!secondaryCardId.idType && !secondaryCardId.idNumber);
-			}
-
-			const tertiaryCardId = nationalIds[2]
-				? await this.getNationalIdCard(nationalIds[2])
-				: { idNumber: "", idType: null };
-
-			if (tertiaryCardId) {
-				this.isTertiaryIdValid = (tertiaryCardId.idType && tertiaryCardId.idNumber)
-					|| (!tertiaryCardId.idType && !tertiaryCardId.idNumber);
-			}
+			nationalIdsData.forEach(({ idType, idNumber }, index) => {
+				this[validNationalIdNames[index]] = !!((idType && idNumber)
+            || (!idType && !idNumber));
+			});
 
 			this.formModel = {
 				...this.formModel,
@@ -711,9 +696,9 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
 				},
-				primaryId: primaryCardId,
-				secondaryId: secondaryCardId,
-				tertiaryId: tertiaryCardId,
+				primaryId: nationalIdsData[0] || { idNumber: "", idType: null, idPriority: 1 },
+				secondaryId: nationalIdsData[1] || { idNumber: "", idType: null, idPriority: 2 },
+				tertiaryId: nationalIdsData[2] || { idNumber: "", idType: null, idPriority: 3 },
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
@@ -764,22 +749,19 @@ export default {
 			}
 		},
 
-		async getNationalIdCard(id) {
-			const nationalIdCard = {
-				idType: this.formModel.primaryId.idType,
-				idNumber: this.formModel.primaryId.idNumber,
-			};
+		async getNationalIds(ids) {
+			try {
+				const { data } = await BeneficiariesService.getNationalIds(ids);
 
-			if (id) {
-				await BeneficiariesService.getNationalId(id).then(({ number, type }) => {
-					nationalIdCard.idType = getArrayOfCodeListByKey([type], this.options.idType, "code");
-					nationalIdCard.idNumber = number;
-				}).catch((e) => {
-					Notification(`${this.$t("National ID")} ${e.message || e}`, "error");
-				});
+				return data.map((nationalId) => ({
+					idType: getArrayOfCodeListByKey([nationalId.type], this.options.idType, "code"),
+					idNumber: nationalId.number,
+					idPriority: nationalId.priority,
+				}));
+			} catch (e) {
+				Notification(`${this.$t("National ID")} ${e.message || e}`, "error");
+				return null;
 			}
-
-			return nationalIdCard;
 		},
 
 		async fetchNationalCardTypes() {
