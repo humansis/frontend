@@ -42,7 +42,7 @@ export default {
 
 	async uploadImage(id, image) {
 		const formData = new FormData();
-		formData.append("file", image);
+		formData.append("file", image[0]);
 
 		const { data, status } = await upload({
 			uri: `donors/${id}/images`,
