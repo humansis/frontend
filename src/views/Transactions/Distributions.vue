@@ -31,6 +31,8 @@
 			:items="table.data"
 			:total-count="table.total"
 			:loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
+			:current-page="table.currentPage"
 			reset-sort-button
 			reset-filters-button
 			is-search-visible

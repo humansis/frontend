@@ -130,7 +130,7 @@ export default {
 		},
 
 		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
-			const searchValue = this.$refs[tableRef].searchValue || this.$refs[tableRef].searchPhrase;
+			const searchValue = this.$refs[tableRef].searchValue() || this.$refs[tableRef].searchPhrase;
 
 			if (filtersRef && this.$refs[filtersRef] && Object.keys(this.filters).length) {
 				this.filters = {};

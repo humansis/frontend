@@ -100,6 +100,9 @@ const routes = [
 			{
 				path: "projects",
 				component: RouterView,
+				meta: {
+					breadcrumb: "Projects",
+				},
 				children: [
 					{
 						path: "",
@@ -107,7 +110,6 @@ const routes = [
 						component: () => import("@/views/Projects/Projects"),
 						meta: {
 							permissions: [],
-							breadcrumb: "Projects",
 							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
 						},
 					},
@@ -306,7 +308,6 @@ const routes = [
 				component: RouterView,
 				meta: {
 					breadcrumb: "Institutions",
-					parent: "Beneficiaries",
 				},
 				children: [
 					{
@@ -315,7 +316,6 @@ const routes = [
 						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
 							permissions: [],
-							breadcrumb: "Institutions",
 							description: "",
 						},
 					},
@@ -413,7 +413,6 @@ const routes = [
 				component: RouterView,
 				meta: {
 					permissions: [],
-					breadcrumb: "Transactions",
 					description: "",
 				},
 				children: [
