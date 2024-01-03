@@ -195,6 +195,10 @@ const routes = [
 			{
 				path: "imports",
 				component: RouterView,
+				meta: {
+					permissions: [],
+					breadcrumb: "Imports",
+				},
 				children: [
 					{
 						path: "",
@@ -202,16 +206,11 @@ const routes = [
 						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
 						meta: {
 							permissions: [],
-							breadcrumb: "Imports",
-							description: "",
 						},
 					},
 					{
 						path: "/:countryCode/import/:importId",
 						component: RouterView,
-						meta: {
-							breadcrumb: "Import",
-						},
 						children: [
 							{
 								path: "",

@@ -228,7 +228,6 @@ export default {
 				if (status === 200) {
 					Notification(this.$t("Import Successfully Created"), "success");
 					this.$refs.importList.fetchData();
-					this.onCloseImportModal();
 
 					this.$router.push({ name: "Import", params: { importId: data.id } });
 				}
@@ -246,8 +245,6 @@ export default {
 					if (status === 202) {
 						Notification(this.$t("Import Successfully Updated"), "success");
 						this.$refs.importList.fetchData();
-
-						this.onCloseImportModal();
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Import")} ${e.message || e}`, "error");

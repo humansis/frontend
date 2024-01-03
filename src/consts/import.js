@@ -33,7 +33,7 @@ export default {
 		FINISHED: "Finished",
 		CANCELED: "Canceled",
 	},
-	SUPPORT_CSV_XLSX_XLS_FILES: ".csv,"
+	SUPPORT_CSV_XLSX_XLS_FILES: "text/csv,"
 		+ " application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
 		+ " application/vnd.ms-excel",
 	FAIL_REASON: {

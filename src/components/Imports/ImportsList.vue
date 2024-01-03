@@ -2,7 +2,7 @@
 	<DataGrid
 		ref="importsList"
 		v-model:items-per-page="perPage"
-		v-model:sort-by="sortValue"
+		:custom-key-sort="sortValue"
 		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
@@ -57,7 +57,7 @@
 
 			<v-btn
 				:class="inProgressButtonClass"
-				color="green-darken-4"
+				color="info"
 				variant="tonal"
 				class="ml-0"
 				prepend-icon="sticky-note"
@@ -70,7 +70,7 @@
 			<v-btn
 				:class="finishedButtonClass"
 				class="ml-0"
-				color="red-darken-1"
+				color="success"
 				variant="tonal"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter(IMPORT.FILTERS.FINISHED, 'finished')"
@@ -164,7 +164,7 @@ export default {
 				columns: generateColumns([
 					{ key: "id" },
 					{ key: "title" },
-					{ key: "project", sortKey: "project" },
+					{ key: "project", sortKey: "project", width: "400" },
 					{ key: "status", type: "tag", customTags: statusTags },
 					{ key: "createdBy" },
 					{ key: "createdAt", type: "datetime" },

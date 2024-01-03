@@ -9,6 +9,7 @@
 			variant="outlined"
 			density="compact"
 			class="mt-5"
+			@update:modelValue="onFileUploadChange"
 		/>
 
 		<v-alert
@@ -84,6 +85,7 @@ export default {
 	data() {
 		return {
 			dropFiles: [],
+			isFileValid: false,
 			changeStateButtonLoading: false,
 			startLoading: false,
 			importStatus: "",
@@ -94,7 +96,8 @@ export default {
 	computed: {
 		disabledStartImport() {
 			return this.importStatus === IMPORT.STATUS.NEW
-				&& (this.dropFiles.length === 1 || this.importFiles.length);
+				&& (this.dropFiles.length === 1 || this.importFiles.length)
+				&& this.isFileValid;
 		},
 
 		isStatusNew() {
@@ -174,6 +177,13 @@ export default {
 
 		onCancelImport() {
 			this.$emit("canceledImport");
+		},
+
+		onFileUploadChange() {
+			const file = this.dropFiles[0];
+
+			this.isFileValid = file instanceof File
+				&& this.allowedFileExtensions.includes(file.type);
 		},
 	},
 };
