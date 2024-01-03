@@ -10,13 +10,6 @@
 				class="d-flex my-4 rounded-xl overflow-hidden import-progress-bar"
 			>
 				<v-sheet
-					color="grey-lighten-2"
-					:width="`${entriesLeft / totalEntries * 100}%`"
-				>
-					{{ entriesLeft }}
-				</v-sheet>
-
-				<v-sheet
 					v-if="amountIntegrityFailed"
 					color="error"
 					:width="`${amountIntegrityFailedIncrement / totalEntries * 100}%`"
@@ -348,7 +341,6 @@
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
 import Loading from "@/components/Loading";
-import graduallyIncrement from "@/mixins/graduallyIncrement";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
@@ -361,7 +353,7 @@ export default {
 		FileUpload,
 	},
 
-	mixins: [graduallyIncrement, vuetifyHelper],
+	mixins: [vuetifyHelper],
 
 	props: {
 		statistics: {
@@ -491,19 +483,11 @@ export default {
 		},
 
 		amountIntegrityCorrect(newValue) {
-			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityCorrectIncrement", newValue, this.totalEntries, 60);
-			} else {
-				this.amountIntegrityCorrectIncrement = newValue;
-			}
+			this.amountIntegrityCorrectIncrement = newValue;
 		},
 
 		amountIntegrityFailed(newValue) {
-			if (this.isCheckingIntegrity) {
-				this.graduallyIncrement("amountIntegrityFailedIncrement", newValue, this.totalEntries, 120);
-			} else {
-				this.amountIntegrityFailedIncrement = newValue;
-			}
+			this.amountIntegrityFailedIncrement = newValue;
 		},
 	},
 

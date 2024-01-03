@@ -155,6 +155,7 @@
 			<v-btn
 				v-if="finishedImport"
 				:to="{ name: 'Imports' }"
+				:active="false"
 				color="primary"
 				class="text-none"
 			>

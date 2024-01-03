@@ -6,7 +6,7 @@
 				<Loading v-if="isCheckingIdentity" is-large />
 
 				<v-sheet
-					v-if="amountIdentityDuplicitiesIncrement"
+					v-if="amountIdentityDuplicitiesIncrement || amountIdentityDuplicitiesResolved"
 					color="grey-lighten-2"
 					class="d-flex my-4 rounded-xl overflow-hidden import-progress-bar"
 				>
@@ -150,7 +150,6 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
-import graduallyIncrement from "@/mixins/graduallyIncrement";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -161,8 +160,6 @@ export default {
 		DuplicityResolver,
 		Loading,
 	},
-
-	mixins: [graduallyIncrement],
 
 	props: {
 		statistics: {
@@ -252,7 +249,7 @@ export default {
 		},
 
 		amountIdentityDuplicitiesResolved() {
-			return this.importStatistics?.amountIdentityDuplicitiesResolved || 0;
+			return this.importStatistics?.amountEntriesToImport || 0;
 		},
 
 		canStartSimilarityCheck() {
@@ -279,13 +276,13 @@ export default {
 
 		amountIdentityDuplicitiesResolvedWidth() {
 			return `${(this.amountIdentityDuplicitiesResolvedIncrement
-				/ this.amountIdentityDuplicitiesIncrement) * 100}%`;
+				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
 		},
 
 		amountIdentityDuplicitiesWidth() {
 			return `${((this.amountIdentityDuplicitiesIncrement
 				- this.amountIdentityDuplicitiesResolvedIncrement)
-				/ this.amountIdentityDuplicitiesIncrement) * 100}%`;
+				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
 		},
 	},
 
@@ -307,19 +304,11 @@ export default {
 		},
 
 		amountIdentityDuplicities(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
-			} else {
-				this.amountIdentityDuplicitiesIncrement = newValue;
-			}
+			this.amountIdentityDuplicitiesIncrement = newValue;
 		},
 
 		amountIdentityDuplicitiesResolved(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
-			} else {
-				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
-			}
+			this.amountIdentityDuplicitiesResolvedIncrement = newValue;
 		},
 	},
 
