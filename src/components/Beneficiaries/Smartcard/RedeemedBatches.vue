@@ -53,6 +53,7 @@ export default {
 	data() {
 		return {
 			customSort,
+			isLoadingList: false,
 			table: {
 				data: [],
 				columns: generateColumns([

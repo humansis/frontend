@@ -126,6 +126,7 @@ export default {
 		return {
 			TABLE,
 			isAdvancedSearchVisible: false,
+			isLoadingList: false,
 			filters: {},
 			locationsFilter: {},
 			exportControl: {

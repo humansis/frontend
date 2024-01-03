@@ -48,6 +48,7 @@ export default {
 	data() {
 		return {
 			totalAmount: 0,
+			isLoadingList: false,
 			customSort,
 			table: {
 				data: [],

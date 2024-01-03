@@ -143,6 +143,7 @@ export default {
 			isAdvancedSearchVisible: false,
 			filters: {},
 			printLoading: false,
+			isLoadingList: false,
 			printSelectionLoading: false,
 			bookletsSelects: true,
 			exportControl: {
