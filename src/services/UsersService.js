@@ -36,9 +36,10 @@ export default {
 		return this.initializeUser(body.username)
 			.then(({ data: { salt, userId }, status, message }) => {
 				const userBody = body;
-				userBody.password = userBody.password
-					? this.saltPassword(salt, userBody.password)
-					: null;
+
+				if (userBody.password) {
+					userBody.password = this.saltPassword(salt, userBody.password);
+				}
 
 				if (status === 400) {
 					throw new Error(message);

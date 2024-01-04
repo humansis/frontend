@@ -2,7 +2,7 @@
 	<v-container fluid>
 		<v-card class="mx-auto mt-16" max-width="800">
 			<v-card-text>
-				<form @submit.prevent="onSubmitPasswordForm">
+				<div>
 					<p class="text-h6">{{ $t('User Information') }}</p>
 
 					<DataInput
@@ -12,50 +12,7 @@
 						class="mt-4 mb-4"
 						disabled
 					/>
-
-					<p class="text-h6"> {{ $t('Change Password') }}</p>
-
-					<DataInput
-						v-model="password.oldPassword"
-						:error-messages="validationMsg('oldPassword', 'password')"
-						label="Old Password"
-						name="old-password"
-						type="password"
-						class="mt-4 mb-5"
-						@blur="onValidate('oldPassword', 'password')"
-					/>
-
-					<DataInput
-						v-model="password.newPassword"
-						:error-messages="validationMsg('newPassword', 'password')"
-						label="New Password"
-						name="new-password"
-						type="password"
-						class="mt-4 mb-5"
-						@blur="onValidate('newPassword', 'password')"
-					/>
-
-					<DataInput
-						v-model="password.reenteredPassword"
-						:error-messages="validationMsg('reenteredPassword', 'password')"
-						label="Re-Enter New Password"
-						name="re-enter-new-password"
-						type="password"
-						class="mt-4 mb-5"
-						@blur="onValidate('reenteredPassword', 'password')"
-					/>
-
-					<div class="text-end">
-						<v-btn
-							class="text-none ml-0"
-							color="primary"
-							size="small"
-							type="submit"
-						>
-							{{ $t('Save') }}
-						</v-btn>
-					</div>
-				</form>
+				</div>
 
 				<form @submit.prevent="submitTelephoneForm">
 					<p class="text-h6"> {{ $t('Change Phone Number') }}</p>
@@ -112,10 +69,7 @@ import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
-import { requiredIf, sameAs } from "@vuelidate/validators";
-
-const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
-const passwordValidation = (value) => (!value || passwordRegexp.test(value));
+import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "Profile",
@@ -129,19 +83,6 @@ export default {
 
 	validations() {
 		return {
-			password: {
-				oldPassword: { required: requiredIf(this.password.newPassword
-						|| this.password.reenteredPassword) },
-				newPassword: {
-					required: requiredIf(this.password.oldPassword || this.password.reenteredPassword),
-					passwordValidation,
-				},
-				reenteredPassword: {
-					required: requiredIf(this.password.oldPassword || this.password.newPassword),
-					...((this.password.oldPassword || this.password.newPassword)
-						&& { sameAsPassword: sameAs(this.password.newPassword) }),
-				},
-			},
 			phone: {
 				prefix: { required: requiredIf(this.phone.number) },
 				number: { required: requiredIf(this.phone.prefix?.value || this.phone.prefix?.length) },
@@ -152,11 +93,6 @@ export default {
 	data() {
 		return {
 			userProfile: null,
-			password: {
-				oldPassword: "",
-				newPassword: "",
-				reenteredPassword: "",
-			},
 			phone: {
 				prefix: null,
 				number: "",
@@ -168,7 +104,6 @@ export default {
 			options: {
 				phonePrefixes: PHONE.CODES,
 			},
-			changePasswordLoading: false,
 			changePhoneLoading: false,
 			twoFactorLoading: false,
 		};
@@ -187,37 +122,6 @@ export default {
 	},
 
 	methods: {
-		async onSubmitPasswordForm() {
-			this.v$.password.$touch();
-
-			if (this.v$.password.$invalid || !this.password.oldPassword.length) return;
-			this.changePasswordLoading = true;
-
-			const { id } = this.userProfile;
-			const { data: { salt } } = await UsersService.requestSalt(this.userProfile.username);
-			await LoginService.tryLogin({
-				username: this.userProfile.username,
-				password: this.password.oldPassword,
-			}).then(async () => {
-				await UsersService.patchUser(id, {
-					password: UsersService.saltPassword(salt, this.password.newPassword),
-				}).then(({ data }) => {
-					this.mapUser(data);
-					Notification(
-						`${this.$t("Password Updated")}`,
-						"success",
-					);
-				}).catch((e) => {
-					Notification(`${this.$t("Password Update")} ${e.message || e}`, "error");
-				});
-			}).catch((e) => {
-				Notification(`${this.$t("Invalid Password")} ${e.message || e}`, "error");
-			});
-			this.v$.password.$reset();
-
-			this.changePasswordLoading = false;
-		},
-
 		async submitTelephoneForm() {
 			this.v$.phone.$touch();
 
