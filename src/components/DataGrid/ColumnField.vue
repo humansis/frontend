@@ -87,11 +87,17 @@
 	</template>
 
 	<template v-if="column.type === 'link'">
-		<v-tooltip v-if="cellData.isArchived" :text="$t(cellData.tooltip)">
-			<p>{{ cellData.name }}</p>
+		<v-tooltip
+			v-if="cellData?.isArchived"
+			:text="$t(cellData.tooltip)"
+			location="top"
+		>
+			<template v-slot:activator="{ props }">
+				<p v-bind="props">{{ cellData.name }}</p>
+			</template>
 		</v-tooltip>
 
-		<p v-else-if="!cellData.routeName">{{ cellData }}</p>
+		<p v-else-if="!cellData?.routeName">{{ cellData }}</p>
 
 		<router-link
 			v-else

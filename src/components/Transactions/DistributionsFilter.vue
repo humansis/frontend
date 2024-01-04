@@ -1,11 +1,11 @@
 <template>
 	<AdvancedFilter
-		multiline
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		multiline
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -21,9 +21,19 @@ import { FILTER } from "@/consts";
 export default {
 	name: "DistributionsFilter",
 
+	emits: [
+		"search",
+		"filtersChanged",
+	],
+
 	components: { AdvancedFilter },
 
-	mixins: [filtersHelper, locationHelper, transactionHelper, urlFiltersHelper],
+	mixins: [
+		filtersHelper,
+		locationHelper,
+		transactionHelper,
+		urlFiltersHelper,
+	],
 
 	props: {
 		defaultFilters: {
@@ -162,13 +172,13 @@ export default {
 			}
 
 			if (this.defaultFilters.beneficiaryTypes?.length) {
-				this.selectedFiltersOptions.beneficiaryType	= this.filtersOptions
+				this.selectedFiltersOptions.beneficiaryType = this.filtersOptions
 					.beneficiaryType.data
 					.find((item) => item.code === this.defaultFilters.beneficiaryTypes[0]);
 			}
 
 			if (this.defaultFilters.projects?.length) {
-				this.selectedFiltersOptions.project	= this.filtersOptions
+				this.selectedFiltersOptions.project = this.filtersOptions
 					.project.data
 					.find((item) => item.id === this.defaultFilters.projects[0]);
 			}
@@ -192,7 +202,7 @@ export default {
 			}
 		},
 
-		async filterChanged(filters, filterName) {
+		async onFilterChanged(filters, filterName) {
 			const preparedFilters = { ...filters };
 
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);

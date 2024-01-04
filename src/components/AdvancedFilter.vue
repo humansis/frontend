@@ -19,7 +19,8 @@
 				:item-value="options.trackBy || 'code'"
 				:placeholder="options.placeholder"
 				:is-search-enabled="options.multiple"
-				:is-data-shown-as-tag="options.multiple"
+				:chips="options.multiple"
+				:closable-chips="options.multiple"
 				name="filter-select"
 				clearable
 				persistent-placeholder

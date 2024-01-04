@@ -438,6 +438,7 @@ export default {
 				{
 					title: "Transactions",
 					prependIcon: "exchange-alt",
+					to: { name: "TransactionsAssistances" },
 				},
 			],
 			gitInfo,
