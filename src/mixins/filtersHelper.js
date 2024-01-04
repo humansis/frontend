@@ -31,7 +31,7 @@ export default {
 			}
 
 			this.$nextTick(() => {
-				this.$refs.advancedFilter.filterChanged();
+				this.$refs.advancedFilter.onFilterChanged();
 			});
 		},
 	},

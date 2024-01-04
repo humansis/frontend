@@ -4,6 +4,16 @@ import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 export default {
 	mixins: [urlFiltersHelper],
 
+	emits: [
+		"showMove",
+		"showDetail",
+		"showDetail",
+		"showEdit",
+		"onDelete",
+		"download",
+		"statusChange",
+	],
+
 	data() {
 		return {
 			show: true,
@@ -120,7 +130,7 @@ export default {
 		},
 
 		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
-			const searchValue = this.$refs[tableRef].searchValue || this.$refs[tableRef].searchPhrase;
+			const searchValue = this.$refs[tableRef].searchValue() || this.$refs[tableRef].searchPhrase;
 
 			if (filtersRef && this.$refs[filtersRef] && Object.keys(this.filters).length) {
 				this.filters = {};
@@ -132,7 +142,7 @@ export default {
 				this.$refs[bulkSearchRef].resetFilters();
 			}
 
-			if (searchValue) {
+			if (searchValue.length) {
 				this.$refs[tableRef].resetSearch();
 			} else {
 				this.fetchData();
