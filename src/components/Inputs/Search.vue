@@ -19,6 +19,7 @@
 			clearable
 			@click:appendInner="onSearch"
 			@click:clear="onSearch"
+			@keyup.enter="onSearch"
 		/>
 	</div>
 </template>

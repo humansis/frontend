@@ -1,5 +1,5 @@
 <template>
-	<v-card>
+	<v-card :variant="variant">
 		<v-row v-if="!isHeaderDisabled" class="mt-1 mb-1">
 			<v-col cols="7" lg="9" class="d-flex flex-wrap gr-3 align-center">
 				<Search
@@ -253,6 +253,11 @@ export default {
 		selectedRows: {
 			type: Number,
 			default: 0,
+		},
+
+		variant: {
+			type: String,
+			default: "elevated",
 		},
 	},
 

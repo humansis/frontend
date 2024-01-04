@@ -1,0 +1,604 @@
+<template>
+	<!-- TODO Implement else -->
+	<v-card v-if="integrityStepActive && status" class="pa-5">
+		<div>
+			<Loading v-if="isCheckingIntegrity" is-large />
+
+			<v-sheet
+				v-if="totalEntries"
+				color="grey-lighten-2"
+				class="d-flex my-4 rounded-xl overflow-hidden import-progress-bar"
+			>
+				<v-sheet
+					v-if="amountIntegrityFailed"
+					color="error"
+					:width="`${amountIntegrityFailedIncrement / totalEntries * 100}%`"
+				>
+					{{ amountIntegrityFailedIncrement }}
+				</v-sheet>
+
+				<v-sheet
+					v-if="amountIntegrityCorrect"
+					color="success"
+					:width="`${amountIntegrityCorrectIncrement / totalEntries * 100}%`"
+				>
+					{{ amountIntegrityCorrectIncrement }}
+				</v-sheet>
+			</v-sheet>
+
+			<table class="import-table">
+				<tbody>
+					<tr>
+						<td>{{ $t('Number of Households') }}:</td>
+
+						<td class="text-right">
+							<v-chip
+								variant="flat"
+								color="blue-grey-lighten-4"
+								class="font-weight-bold"
+							>
+								{{ totalEntries }}
+							</v-chip>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ $t('Correct Households') }}:</td>
+
+						<td class="text-right">
+							<v-chip
+								variant="flat"
+								color="success"
+								class="font-weight-bold"
+							>
+								{{ amountIntegrityCorrect }}
+							</v-chip>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ $t('Households with Integrity Errors') }}:</td>
+
+						<td class="text-right">
+							<v-chip
+								variant="flat"
+								color="error"
+								class="font-weight-bold"
+							>
+								{{ amountIntegrityFailed }}
+							</v-chip>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
+				<v-btn
+					v-if="canCancelImport"
+					color="error"
+					prepend-icon="ban"
+					class="text-none"
+					@click="onCancelImport"
+				>
+					{{ $t('Cancel Import') }}
+				</v-btn>
+
+				<div class="d-flex flex-wrap ga-2">
+					<v-btn
+						v-if="canUploadAndDownloadAffectedRecords"
+						color="primary"
+						append-icon="file-upload"
+						class="text-none"
+						@click="filesUpload = !filesUpload"
+					>
+						{{ $t("Upload Corrected Records") }}
+					</v-btn>
+
+					<v-btn
+						v-if="canStartIntegrityCheckAgain"
+						:loading="startIntegrityCheckAgainLoading"
+						color="primary"
+						append-icon="play-circle"
+						class="text-none"
+						@click="onStartIntegrityCheckAgain"
+					>
+						{{ $t('Start Integrity Check Again') }}
+					</v-btn>
+
+					<v-btn
+						v-if="canStartIdentityCheck"
+						:loading="changeStateButtonLoading"
+						:disabled="!isImportLoaded"
+						color="primary"
+						append-icon="play-circle"
+						class="text-none"
+						@click="onStartIdentityCheck"
+					>
+						{{ $t('Start Identity Check') }}
+					</v-btn>
+				</div>
+			</div>
+
+			<FileUpload
+				v-if="filesUpload"
+				v-model="dropFiles"
+				:accept="allowedFileExtensions"
+				prepend-icon=""
+				hide-details="auto"
+				variant="outlined"
+				density="compact"
+				class="mt-5"
+			/>
+
+			<v-alert
+				v-if="dropFiles.length > 1"
+				variant="outlined"
+				type="warning"
+				border="top"
+				class="mt-5"
+			>
+				{{ $t('You can upload only one file.') }}
+			</v-alert>
+		</div>
+	</v-card>
+
+	<v-card v-if="importFiles.length" class="pa-5 my-10">
+		<v-alert
+			v-if="canUploadAndDownloadAffectedRecords && isImportLoaded"
+			variant="outlined"
+			type="info"
+			border="start"
+			class="mt-2"
+		>
+			{{ $t('Do not repair your original file.') }}
+			{{ $t('Repair only the file with Affected Records.') }}
+		</v-alert>
+
+		<v-alert
+			v-else-if="isBadFileVersion"
+			variant="outlined"
+			type="info"
+			border="start"
+			class="mt-2"
+		>
+			{{ $t('Please, upload a new file compatible with import template.') }}
+		</v-alert>
+
+		<v-alert
+			v-else-if="!isViolationMessageHide"
+			variant="outlined"
+			type="info"
+			border="start"
+			class="mt-2"
+		>
+			{{ $t('Please, check Violation for missing columns and '
+				+ 'upload a new file compatible with import template.') }}
+		</v-alert>
+
+		<div
+			v-for="({
+				id,
+				expectedColumns,
+				missingColumns,
+				name,
+				unexpectedColumns,
+				uploadedDate,
+				violations,
+			}, index) of importFiles"
+			:key="`import-file-${id}`"
+		>
+			<div v-if="invalidFiles.length">
+				<table class="my-4 integrity-check-table">
+					<tbody>
+						<tr
+							v-for="({ id, name: invalidFileName, uploadedDate }, key) of invalidFiles"
+							v-show="key === 0"
+							:key="key"
+							:class="{ 'flex-column': isMobile }"
+						>
+							<td>
+								<div class="mb-2">
+									<h2 class="text-h6">
+										<strong>{{name}}</strong>
+									</h2>
+
+									<small>Upload date:
+										{{ $moment(uploadedDate).format("YYYY-MM-DD hh:mm") }}
+									</small>
+								</div>
+							</td>
+
+							<td
+								v-if="index === 0 && isIntegrityCheckFailed"
+								:class="affectedRecordsClass"
+							>
+								<v-btn
+									:disabled="!isImportLoaded"
+									color="info"
+									append-icon="file-download"
+									class="text-none"
+									@click="onDownloadAffectedFile(id, invalidFileName)"
+								>
+									{{ $t('Get Affected Records') }}
+								</v-btn>
+
+								<small class="d-block mt-2">{{invalidFileName}}</small>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div>
+				<div>
+					<v-chip
+						color="warning"
+						class="rounded-s-lg rounded-be-0 rounded-te-0"
+					>
+						{{ $t('Expected Columns') }}
+					</v-chip>
+
+					<v-chip
+						color="grey-darken-1"
+						class="rounded-e-lg rounded-bs-0 rounded-ts-0"
+					>
+						{{ expectedColumns.length }}
+					</v-chip>
+				</div>
+
+				<div class="mt-2">
+					<v-chip
+						color="info"
+						class="rounded-s-lg rounded-be-0 rounded-te-0"
+					>
+						{{ $t('Upload Date') }}
+					</v-chip>
+
+					<v-chip
+						color="grey-darken-1"
+						class="rounded-e-lg rounded-bs-0 rounded-ts-0"
+					>
+						{{ getDateAndTime(uploadedDate) }}
+					</v-chip>
+				</div>
+			</div>
+
+			<div class="content">
+				<table class="import-table">
+					<tbody>
+						<tr>
+							<td class="first-column">
+								<strong>{{ $t('Violations') }}</strong>
+							</td>
+
+							<td>
+								<div
+									v-for="({
+										columns,
+										message,
+									}, key) of getParsedArray(violations)"
+									:key="`violations-${id}-${key}`"
+									class="mb-3"
+								>
+									<v-chip
+										v-for="(column, key) of columns"
+										:key="`missing-column-${id}-${key}`"
+										variant="flat"
+										color="error"
+										class="font-weight-bold mr-2 mb-2"
+									>
+										{{ column }}
+									</v-chip>
+
+									<br>
+
+									<span class="text-body-2">
+										{{ message }}
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>{{ $t('Missing Columns') }}</strong>
+							</td>
+
+							<td>
+								<v-chip
+									v-for="(column, key) of missingColumns"
+									:key="`missing-column-${id}-${key}`"
+									variant="flat"
+									color="warning"
+									class="font-weight-bold mr-2 mb-2"
+								>
+									{{ column }}
+								</v-chip>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>{{ $t('Unexpected Columns') }}</strong>
+							</td>
+
+							<td>
+								<v-chip
+									v-for="(column, key) of unexpectedColumns"
+									:key="`missing-column-${id}-${key}`"
+									variant="flat"
+									color="grey-darken-1"
+									class="font-weight-bold mr-2 mb-2"
+								>
+									{{ column }}
+								</v-chip>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</v-card>
+</template>
+
+<script>
+import ImportService from "@/services/ImportService";
+import FileUpload from "@/components/Inputs/FileUpload";
+import Loading from "@/components/Loading";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { Notification } from "@/utils/UI";
+import { IMPORT } from "@/consts";
+
+export default {
+	name: "IntegrityStep",
+
+	components: {
+		Loading,
+		FileUpload,
+	},
+
+	mixins: [vuetifyHelper],
+
+	props: {
+		statistics: {
+			type: Object,
+			required: true,
+		},
+
+		loadingChangeStateButton: {
+			type: Boolean,
+			required: true,
+		},
+
+		status: {
+			type: String,
+			default: "",
+		},
+
+		importFiles: {
+			type: Array,
+			default: () => [],
+		},
+
+		isImportLoaded: {
+			type: Boolean,
+			default: true,
+		},
+
+		isBadFileVersion: {
+			type: Boolean,
+			default: false,
+		},
+	},
+
+	data() {
+		return {
+			amountIntegrityCorrectIncrement: 0,
+			amountIntegrityFailedIncrement: 0,
+			importStatistics: {},
+			dropFiles: [],
+			startIntegrityCheckAgainLoading: false,
+			downloadAffectedRecordsLoading: false,
+			changeStateButtonLoading: false,
+			importStatus: "",
+			invalidFiles: [],
+			filesUpload: false,
+			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
+		};
+	},
+
+	computed: {
+		integrityStepActive() {
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		isCheckingIntegrity() {
+			return this.status === IMPORT.STATUS.INTEGRITY_CHECK;
+		},
+
+		totalEntries() {
+			return this.importStatistics?.totalEntries || 0;
+		},
+
+		entriesLeft() {
+			if (this.amountIntegrityFailed) {
+				return this.totalEntries - this.amountIntegrityFailedIncrement
+					- this.amountIntegrityCorrectIncrement;
+			}
+			return this.totalEntries - this.amountIntegrityCorrectIncrement;
+		},
+
+		amountIntegrityCorrect() {
+			return this.importStatistics?.amountIntegrityCorrect || 0;
+		},
+
+		amountIntegrityFailed() {
+			return this.importStatistics?.amountIntegrityFailed || 0;
+		},
+
+		canStartIntegrityCheckAgain() {
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
+				&& this.dropFiles.length === 1;
+		},
+
+		canStartIdentityCheck() {
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		canUploadAndDownloadAffectedRecords() {
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		canCancelImport() {
+			return this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
+		},
+
+		isIntegrityCheckFailed() {
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+		},
+
+		isViolationMessageHide() {
+			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
+		},
+
+		affectedRecordsClass() {
+			return this.isMobile ? "text-left" : "text-right";
+		},
+	},
+
+	watch: {
+		statistics(value) {
+			this.importStatistics = value;
+		},
+
+		loadingChangeStateButton(value) {
+			this.changeStateButtonLoading = value;
+		},
+
+		status(value) {
+			this.getAffectedRecords();
+			this.importStatus = value;
+		},
+
+		amountIntegrityCorrect(newValue) {
+			this.amountIntegrityCorrectIncrement = newValue;
+		},
+
+		amountIntegrityFailed(newValue) {
+			this.amountIntegrityFailedIncrement = newValue;
+		},
+	},
+
+	mounted() {
+		this.getAffectedRecords();
+	},
+
+	methods: {
+		getAffectedRecords() {
+			const { importId } = this.$route.params;
+
+			this.downloadAffectedRecordsLoading = true;
+			this.dropFiles = [];
+
+			ImportService.getFilesWithInvalidEntriesFromImport(importId)
+				.then(({ data: { data } }) => {
+					this.invalidFiles = data;
+				}).catch((e) => {
+					Notification(`${this.$t("Invalid Files")} ${e.message || e}`, "error");
+				}).finally(() => {
+					this.downloadAffectedRecordsLoading = false;
+				});
+		},
+
+		onDownloadAffectedFile(id, file) {
+			ImportService.downloadFileWithInvalidEntriesFromImport(id)
+				.then(({ data, status, message }) => {
+					if (status === 200) {
+						const blob = new Blob([data], { type: data.type });
+						const link = document.createElement("a");
+						link.href = window.URL.createObjectURL(blob);
+						link.download = `${file}`;
+						link.click();
+					} else {
+						Notification(message, "warning");
+					}
+				}).catch((e) => {
+					Notification(`${this.$t("Downloaded File")} ${e.message || e}`, "error");
+				});
+		},
+
+		onStartIdentityCheck() {
+			this.$emit("changeImportState", {
+				state: IMPORT.STATUS.IDENTITY_CHECK,
+				successMessage: "Identity Check Started Successfully",
+				goNext: true,
+			});
+		},
+
+		onStartIntegrityCheckAgain() {
+			const { importId } = this.$route.params;
+
+			if (this.dropFiles.length === 1) {
+				this.startIntegrityCheckAgainLoading = true;
+
+				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
+					.then(({ status, message }) => {
+						if (status === 200) {
+							Notification(this.$t("Uploaded Successfully"), "success");
+
+							this.filesUpload = false;
+							this.invalidFiles = [];
+						} else {
+							Notification(message, "warning");
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Upload")} ${e.message}`, "error");
+					}).finally(() => {
+						this.startIntegrityCheckAgainLoading = false;
+						setTimeout(() => {
+							this.getAffectedRecords();
+						}, 1500);
+					});
+			}
+		},
+
+		deleteDropFile(index) {
+			this.dropFiles.splice(index, 1);
+		},
+
+		getDateAndTime(date) {
+			return this.$moment(date).format("YYYY-MM-DD hh:mm");
+		},
+
+		getParsedArray(violations) {
+			return violations || [];
+		},
+
+		onCancelImport() {
+			this.$emit("canceledImport");
+		},
+	},
+};
+</script>
+
+<style lang="scss">
+.import-progress-bar {
+	width: 100%;
+	height: 1.4rem;
+
+	> div {
+		text-align: center;
+	}
+}
+
+.integrity-check-table {
+	width: 100%;
+
+	tr {
+		display: flex;
+		justify-content: space-between;
+	}
+}
+</style>

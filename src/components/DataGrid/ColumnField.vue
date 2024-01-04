@@ -142,6 +142,42 @@
 			</span>
 		</p>
 	</template>
+
+	<template v-if="column.type === 'arrayTextBreakForDuplicitiesRecords'">
+		<div
+			v-for="(item, index) in cellData"
+			:key="`array-text-break-${index}`"
+			:class="{ 'mb-4': isMembersLastRecord(item) }"
+		>
+			<v-chip
+				v-if="item === 'hasNoDuplicityDifferences'"
+				type="grey-lighten-2"
+			>
+				{{ $t('No Difference') }}
+			</v-chip>
+
+			<span
+				v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
+				:class="{ 'font-weight-bold': column.boldText }"
+				v-html-secure="item"
+			/>
+		</div>
+	</template>
+
+	<template v-if="column.type === 'arrayTextBreakForDuplicities'">
+		<div
+			v-for="(item, index) in cellData"
+			:key="`array-text-break-${index}`"
+			:class="{
+				'font-weight-bold': column.boldText,
+				'mb-4': isMembersLastRecord(item),
+			}"
+		>
+			<span v-if="!isMembersLastRecord(item)">
+				{{ item }}
+			</span>
+		</div>
+	</template>
 </template>
 
 <script>
@@ -227,6 +263,10 @@ export default {
 
 		isAssistanceRemote(data) {
 			return !!data.remoteDistributionAllowed;
+		},
+
+		isMembersLastRecord(item) {
+			return item === "memberDuplicitiesLastItem";
 		},
 	},
 };
