@@ -1,163 +1,149 @@
 <template>
-	<Table
-		v-show="show"
-		has-reset-sort
-		has-search
-		ref="table"
-		default-sort-direction="desc"
-		default-sort-key="createdAt"
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="goToDetail"
+	<DataGrid
+		ref="importsList"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		:custom-key-sort="customSort"
+		reset-sort-button
+		reset-filters-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.IMPORTS)"
+		@resetFilters="onResetFilters"
+		@rowClicked="(row) => onGoToDetail(row.item)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				:sortable="column.sortable"
-				v-bind="column"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<ButtonAction
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="180"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-			</div>
-		</b-table-column>
-		<template #filterButton>
-			<b-button
-				slot="trigger"
-				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				@click="filtersToggle"
+
+		<template v-slot:tableControls>
+			<v-btn
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
-			</b-button>
-			<b-button
-				class="ml-3 is-light"
-				slot="trigger"
-				icon-right="sticky-note"
-				@click="statusFilter(IMPORT.FILTERS.NEW)"
+			</v-btn>
+
+			<v-btn
+				:class="newButtonClass"
+				color="gray-darken-4"
+				variant="tonal"
+				class="ml-0"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter(IMPORT.FILTERS.NEW, 'new')"
+				@keydown.enter.prevent
 			>
 				{{ $t('New') }}
-			</b-button>
-			<b-button
-				class="ml-3 is-info is-light"
-				slot="trigger"
-				icon-right="spinner"
-				@click="statusFilter(IMPORT.FILTERS.IN_PROGRESS)"
+			</v-btn>
+
+			<v-btn
+				:class="inProgressButtonClass"
+				color="info"
+				variant="tonal"
+				class="ml-0"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter(IMPORT.FILTERS.IN_PROGRESS, 'inProgress')"
+				@keydown.enter.prevent
 			>
 				{{ $t('In Progress') }}
-			</b-button>
-			<b-button
-				class="ml-3 is-success is-light"
-				slot="trigger"
-				icon-right="check"
-				@click="statusFilter(IMPORT.FILTERS.FINISHED)"
+			</v-btn>
+
+			<v-btn
+				:class="finishedButtonClass"
+				class="ml-0"
+				color="success"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter(IMPORT.FILTERS.FINISHED, 'finished')"
+				@keydown.enter.prevent
 			>
 				{{ $t('Finished') }}
-			</b-button>
-			<b-button
-				class="ml-3 is-warning is-light"
-				slot="trigger"
-				icon-right="ban"
-				@click="statusFilter(IMPORT.FILTERS.CANCELED)"
+			</v-btn>
+
+			<v-btn
+				:class="canceledButtonClass"
+				class="ml-0"
+				color="amber-lighten-1"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter(IMPORT.FILTERS.CANCELED, 'canceled')"
+				@keydown.enter.prevent
 			>
 				{{ $t('Canceled') }}
-			</b-button>
+			</v-btn>
 		</template>
-		<template #filter>
-			<b-collapse v-model="advancedSearchVisible">
-				<ImportsFilter
-					ref="importFilter"
-					@filtersChanged="onFiltersChange"
-					@onSearch="onSearch(table.searchPhrase)"
-				/>
-			</b-collapse>
+
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="visiblePanels">
+				<v-expansion-panel value="advancedSearch" eager>
+					<v-expansion-panel-text>
+						<ImportsFilter
+							ref="importFilter"
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
 		</template>
-		<template #progress>
-			<b-progress :value="table.progress" format="percent" />
-		</template>
-		<template slot="resetSort">
-			<div class="level-right">
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small mr-2"
-					@click="resetFilters"
-				>
-					{{ $t('Reset Filters') }}
-				</b-button>
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small"
-					@click="resetTableSort"
-				>
-					{{ $t('Reset Table Sort') }}
-				</b-button>
-			</div>
-		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import ImportService from "@/services/ImportService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
-import { IMPORT } from "@/consts";
+import { IMPORT, TABLE } from "@/consts";
 
+const customSort = { status: () => {} };
 const statusTags = [
-	{ code: IMPORT.STATUS.NEW, type: "is-light" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK, type: "is-info" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, type: "is-success" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, type: "is-danger" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK, type: "is-info" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, type: "is-success" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, type: "is-danger" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK, type: "is-info" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, type: "is-success" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, type: "is-danger" },
-	{ code: IMPORT.STATUS.FINISH, type: "is-success" },
-	{ code: IMPORT.STATUS.CANCEL, type: "is-warning" },
-	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, type: "is-warning" },
-	{ code: IMPORT.STATUS.IMPORTING, type: "is-warning" },
+	{ code: IMPORT.STATUS.NEW, type: "grey-lighten-2" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK, type: "info" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, type: "success" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, type: "error" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK, type: "info" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, type: "success" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, type: "error" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK, type: "info" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, type: "success" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, type: "error" },
+	{ code: IMPORT.STATUS.FINISH, type: "success" },
+	{ code: IMPORT.STATUS.CANCEL, type: "warning" },
+	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, type: "warning" },
+	{ code: IMPORT.STATUS.IMPORTING, type: "warning" },
 ];
 
 export default {
 	name: "ProjectList",
 
 	components: {
-		Table,
-		ActionButton,
-		ColumnField,
+		DataGrid,
 		ImportsFilter,
+		ButtonAction,
 	},
 
 	mixins: [grid, baseHelper],
@@ -165,23 +151,32 @@ export default {
 	data() {
 		return {
 			IMPORT,
-			advancedSearchVisible: false,
+			TABLE,
+			customSort,
+			statusActive: {
+				new: false,
+				inProgress: false,
+				finished: false,
+				canceled: false,
+			},
+			isLoadingList: false,
+			visiblePanels: [],
 			filters: [],
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "id", width: "30", sortable: true },
-					{ key: "title", width: "120", sortable: true },
-					{ key: "project", width: "120", label: "Project", sortable: true, sortKey: "project" },
-					{ key: "status", width: "100", type: "tag", customTags: statusTags, sortable: true },
-					{ key: "createdBy", width: "140", sortable: true },
-					{ key: "createdAt", type: "datetime", width: "120", sortable: true },
-				],
+				columns: generateColumns([
+					{ key: "id" },
+					{ key: "title" },
+					{ key: "project", sortKey: "project", width: "400" },
+					{ key: "status", type: "tag", customTags: statusTags },
+					{ key: "createdBy" },
+					{ key: "createdAt", type: "datetime" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "createdAt",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.IMPORTS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.IMPORTS.key,
 				searchPhrase: "",
 				filtersInProgress: [
 					IMPORT.STATUS.INTEGRITY_CHECK,
@@ -203,8 +198,38 @@ export default {
 		};
 	},
 
-	watch: {
-		$route: "fetchData",
+	computed: {
+		newButtonClass() {
+			return [
+				"btn ml-3",
+				{ "is-selected": this.statusActive.new },
+			];
+		},
+
+		inProgressButtonClass() {
+			return [
+				"ml-3",
+				{ "is-selected": this.statusActive.inProgress },
+			];
+		},
+
+		finishedButtonClass() {
+			return [
+				"ml-3",
+				{ "is-selected": this.statusActive.finished },
+			];
+		},
+
+		canceledButtonClass() {
+			return [
+				"ml-3",
+				{ "is-selected": this.statusActive.canceled },
+			];
+		},
+
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
+		},
 	},
 
 	created() {
@@ -214,14 +239,13 @@ export default {
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
-			this.table.progress = null;
-
-			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			await ImportService.getListOfImports(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
@@ -237,8 +261,18 @@ export default {
 			this.isLoadingList = false;
 		},
 
-		statusFilter(filter) {
+		onStatusFilter(filter, propName) {
 			let newStatusFilter = [];
+
+			this.statusActive[propName] = true;
+
+			if (this.statusActive[propName]) {
+				Object.keys(this.statusActive).forEach((key) => {
+					if (key !== propName) {
+						this.statusActive[key] = false;
+					}
+				});
+			}
 
 			switch (filter) {
 				case IMPORT.FILTERS.IN_PROGRESS:
@@ -262,8 +296,12 @@ export default {
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+				this.table.data[key].test = item.status;
 			});
 
+			const test = this.table.data;
+			this.table.data = [];
+			this.table.data = [...test];
 			this.table.progress = 50;
 
 			this.prepareProjectsForTable();
@@ -287,19 +325,19 @@ export default {
 			this.reload();
 		},
 
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		resetFilters() {
-			this.resetSearch({ tableRef: "table", filtersRef: "importFilter" });
+		onResetFilters() {
+			Object.keys(this.statusActive).forEach((key) => {
+				this.statusActive[key] = false;
+			});
+
+			this.resetSearch({ tableRef: "importsList", filtersRef: "importFilter" });
 		},
 
-		resetTableSort() {
-			this.$refs.table.onResetSort();
-		},
-
-		goToDetail(importItem) {
+		onGoToDetail(importItem) {
 			let slug = "";
 
 			switch (importItem.status) {
@@ -333,11 +371,6 @@ export default {
 				params: { importId: importItem.id },
 				query: { step: slug },
 			});
-		},
-
-		showDetailWithId(id) {
-			const importItem = this.table.data.find((item) => item.id === id);
-			this.$emit("showDetail", importItem);
 		},
 	},
 };

@@ -1,152 +1,148 @@
 <template>
-	<div class="card">
-		<div
-			v-if="identityStepActive && status"
-			class="card-content"
-		>
-			<div class="content loading-ref">
-				<Loading v-if="isCheckingIdentity" b-loading />
-				<b-progress
-					v-if="totalEntries"
-					size="is-large"
-					:max="totalEntries"
+	<!-- TODO Implement else -->
+	<div v-if="identityStepActive && status">
+		<v-card class="pa-5">
+			<div>
+				<Loading v-if="isCheckingIdentity" is-large />
+
+				<v-sheet
+					v-if="amountIdentityDuplicitiesIncrement || amountIdentityDuplicitiesResolved"
+					color="grey-lighten-2"
+					class="d-flex my-4 rounded-xl overflow-hidden import-progress-bar"
 				>
-					<template #bar>
-						<b-progress-bar
-							type="is-light"
-							show-value
-							:value="entriesLeft"
-						/>
-						<b-progress-bar
-							v-if="amountIdentityDuplicities"
-							type="is-warning"
-							show-value
-							:value="amountIdentityDuplicitiesIncrement"
-						/>
-						<b-progress-bar
-							v-if="amountIdentityDuplicitiesResolved"
-							type="is-success"
-							show-value
-							:value="amountIdentityDuplicitiesResolvedIncrement"
-						/>
-					</template>
-				</b-progress>
-				<table>
+					<v-sheet
+						v-if="amountIdentityDuplicitiesResolved"
+						color="success"
+						:width="amountIdentityDuplicitiesResolvedWidth"
+					>
+						{{ amountIdentityDuplicitiesResolvedIncrement }}
+					</v-sheet>
+
+					<v-sheet
+						v-if="amountIdentityDuplicities"
+						color="warning"
+						:width="amountIdentityDuplicitiesWidth"
+					>
+						{{ (amountIdentityDuplicitiesIncrement - amountIdentityDuplicitiesResolvedIncrement) }}
+					</v-sheet>
+				</v-sheet>
+
+				<table class="import-table">
 					<tbody>
 						<tr>
 							<td>{{ $t('Number of Households')}}:</td>
-							<td class="has-text-right">
-								<b-tag
-									class="has-text-weight-bold"
-									type="is-light"
-									size="is-medium"
+
+							<td class="text-right">
+								<v-chip
+									variant="flat"
+									color="blue-grey-lighten-4"
+									class="font-weight-bold"
 								>
 									{{ totalEntries }}
-								</b-tag>
+								</v-chip>
 							</td>
 						</tr>
 						<tr>
 							<td>{{ $t('Duplicities Found')}}:</td>
-							<td class="has-text-right">
-								<b-tag
-									class="has-text-weight-bold"
-									type="is-warning"
-									size="is-medium"
+
+							<td class="text-right">
+								<v-chip
+									variant="flat"
+									color="warning"
+									class="font-weight-bold"
 								>
 									{{ amountIdentityDuplicities }}
-								</b-tag>
+								</v-chip>
 							</td>
 						</tr>
 						<tr>
 							<td>{{ $t('Resolved Duplicities')}}:</td>
-							<td class="has-text-right">
-								<b-tag
-									class="has-text-weight-bold"
-									type="is-success"
-									size="is-medium"
+
+							<td class="text-right">
+								<v-chip
+									variant="flat"
+									color="success"
+									class="font-weight-bold"
 								>
 									{{ amountIdentityDuplicitiesResolved }}
-								</b-tag>
+								</v-chip>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-			</div>
 
-			<div class="buttons mt-5 space-between">
-				<b-button
-					v-if="canCancelImport"
-					type="is-light is-danger"
-					icon-left="ban"
-					@click="cancelImport"
-				>
-					{{ $t('Cancel Import') }}
-				</b-button>
-				<div>
-					<b-button
-						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="allFromFileClasses"
-						:disabled="allRecordsFormLoading"
-						@click="changeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_UPDATE)"
+				<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
+					<v-btn
+						v-if="canCancelImport"
+						color="error"
+						prepend-icon="ban"
+						class="text-none"
+						@click="onCancelImport"
 					>
-						{{ $t('All From File') }}
-					</b-button>
-					<b-button
-						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="allFromHumansisClasses"
-						@click="changeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
-					>
-						{{ $t('All From Humansis') }}
-					</b-button>
-					<b-button
-						v-if="amountIdentityDuplicities && canResolveDuplicities"
-						:class="['is-link' , { 'is-outlined': !duplicitiesContentOpened }]"
-						icon-left="tasks"
-						:icon-right="!duplicitiesContentOpened ? 'arrow-down' : null"
-						:loading="resolveDuplicitiesLoading"
-						:disabled="duplicitiesContentOpened"
-						@click="resolveDuplicities"
-					>
-						{{ $t('Manage Duplicities') }}
-					</b-button>
-					<!--
-					<b-button
-						v-if="canStartSimilarityCheck"
-						type="is-primary"
-						icon-right="play-circle"
-						:loading="changeStateButtonLoading"
-						@click="startSimilarityCheck"
-					>
-						{{ $t('Start Similarity Check') }}
-					</b-button>
-					-->
-				</div>
-				<div>
-					<b-button
-						v-if="canGoToFinalisation"
-						type="is-primary"
-						icon-left="play-circle"
-						:loading="changeStateButtonLoading"
-						:disabled="!canGoToFinalisation"
-						@click="goToFinalisation"
-					>
-						{{ $t('Go to Finalisation') }}
-					</b-button>
+						{{ $t('Cancel Import') }}
+					</v-btn>
+
+					<div class="d-flex flex-wrap ga-2">
+						<v-btn
+							v-if="amountIdentityDuplicities && canResolveDuplicities"
+							:disabled="allRecordsFormLoading"
+							:variant="isAllFromFileUnselected ? 'outlined' : 'elevated'"
+							color="info"
+							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_UPDATE)"
+						>
+							{{ $t('All From File') }}
+						</v-btn>
+
+						<v-btn
+							v-if="amountIdentityDuplicities && canResolveDuplicities"
+							:variant="isAllFromHumansisUnselected ? 'outlined' : 'elevated'"
+							color="info"
+							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
+						>
+							{{ $t('All From Humansis') }}
+						</v-btn>
+
+						<v-btn
+							v-if="amountIdentityDuplicities && canResolveDuplicities"
+							:loading="resolveDuplicitiesLoading"
+							:disabled="duplicitiesContentOpened"
+							:append-icon="!duplicitiesContentOpened ? 'arrow-down' : null"
+							prepend-icon="tasks"
+							variant="outlined"
+							@click="onResolveDuplicities"
+						>
+							{{ $t('Manage Duplicities') }}
+						</v-btn>
+					</div>
+
+					<div>
+						<v-btn
+							v-if="canGoToFinalisation"
+							:loading="changeStateButtonLoading"
+							:disabled="!canGoToFinalisation"
+							color="primary"
+							append-icon="play-circle"
+							class="text-none"
+							@click="onGoToFinalisation"
+						>
+							{{ $t('Go to Finalisation') }}
+						</v-btn>
+					</div>
 				</div>
 			</div>
+		</v-card>
 
-			<div v-if="duplicitiesContentOpened">
-				<DuplicityResolver
-					ref="duplicityResolver"
-					:header="$t('Duplicity Cases')"
-					:duplicities-loading="resolveDuplicitiesLoading"
-					:form-changes-loading="allRecordsFormLoading"
-					@loaded="onDuplicityLoaded"
-					@updated="update"
-					@duplicitiesChange="loadDuplicities"
-				/>
-			</div>
-		</div>
+		<v-card v-if="duplicitiesContentOpened" class="pa-5 my-10">
+			<DuplicityResolver
+				ref="duplicityResolver"
+				:header="$t('Duplicity Cases')"
+				:is-duplicities-loading="resolveDuplicitiesLoading"
+				:is-form-changes-loading="allRecordsFormLoading"
+				@loaded="onDuplicityLoaded"
+				@updated="onUpdate"
+				@duplicitiesChange="onLoadDuplicities"
+			/>
+		</v-card>
 	</div>
 </template>
 
@@ -154,8 +150,7 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
-import graduallyIncrement from "@/mixins/graduallyIncrement";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
@@ -165,8 +160,6 @@ export default {
 		DuplicityResolver,
 		Loading,
 	},
-
-	mixins: [graduallyIncrement],
 
 	props: {
 		statistics: {
@@ -181,7 +174,6 @@ export default {
 
 		status: {
 			type: String,
-			required: false,
 			default: "",
 		},
 	},
@@ -246,7 +238,7 @@ export default {
 
 		entriesLeft() {
 			if (this.amountIdentityDuplicities) {
-				return this.totalEntries - this.amountIdentityDuplicitiesIncrement
+				return this.amountIdentityDuplicitiesIncrement
 					- this.amountIdentityDuplicitiesResolvedIncrement;
 			}
 			return this.totalEntries - this.amountIdentityDuplicitiesResolvedIncrement;
@@ -282,20 +274,16 @@ export default {
 			return this.resolversAllActive !== IMPORT.ITEM_STATUS.TO_LINK;
 		},
 
-		allFromFileClasses() {
-			return [
-				"is-info",
-				{ "is-outlined": this.isAllFromFileUnselected },
-			];
+		amountIdentityDuplicitiesResolvedWidth() {
+			return `${(this.amountIdentityDuplicitiesResolvedIncrement
+				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
 		},
 
-		allFromHumansisClasses() {
-			return [
-				"is-info",
-				{ "is-outlined": this.isAllFromHumansisUnselected },
-			];
+		amountIdentityDuplicitiesWidth() {
+			return `${((this.amountIdentityDuplicitiesIncrement
+				- this.amountIdentityDuplicitiesResolvedIncrement)
+				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
 		},
-
 	},
 
 	watch: {
@@ -316,28 +304,20 @@ export default {
 		},
 
 		amountIdentityDuplicities(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesIncrement", newValue, 60);
-			} else {
-				this.amountIdentityDuplicitiesIncrement = newValue;
-			}
+			this.amountIdentityDuplicitiesIncrement = newValue;
 		},
 
 		amountIdentityDuplicitiesResolved(newValue) {
-			if (this.isCheckingIdentity) {
-				this.graduallyIncrement("amountIdentityDuplicitiesResolvedIncrement", newValue, 120);
-			} else {
-				this.amountIdentityDuplicitiesResolvedIncrement = newValue;
-			}
+			this.amountIdentityDuplicitiesResolvedIncrement = newValue;
 		},
 	},
 
 	methods: {
-		loadDuplicities(value) {
+		onLoadDuplicities(value) {
 			this.duplicities = value;
 		},
 
-		changeBulkDuplicitiesStatus(status) {
+		onChangeBulkDuplicitiesStatus(status) {
 			const { importId } = this.$route.params;
 			this.resolversAllLoading = true;
 			this.allFromSolved = false;
@@ -350,7 +330,7 @@ export default {
 						if (this.duplicitiesContentOpened) {
 							this.$refs.duplicityResolver.fetchData();
 						}
-						Toast(this.$t("Duplicities were resolved"), "is-success");
+						Notification(this.$t("Duplicities were resolved"), "success");
 					}
 				}).finally(() => {
 					this.resolversAllLoading = false;
@@ -358,7 +338,7 @@ export default {
 				});
 		},
 
-		resolveDuplicities() {
+		onResolveDuplicities() {
 			if (!this.duplicitiesContentOpened) this.resolveDuplicitiesLoading = true;
 			this.duplicitiesContentOpened = true;
 		},
@@ -375,15 +355,15 @@ export default {
 			});
 		},
 
-		goToFinalisation() {
+		onGoToFinalisation() {
 			this.$emit("goToFinalStep");
 		},
 
-		update() {
+		onUpdate() {
 			this.$emit("updated");
 		},
 
-		cancelImport() {
+		onCancelImport() {
 			this.$emit("canceledImport");
 		},
 	},

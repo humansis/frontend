@@ -1,120 +1,106 @@
 <template>
-	<div v-if="!duplicitiesLoading && !this.isTotalCountLoading">
-		<hr class="content-separator">
-
-		<h2 class="subtitle is-5 mb-4">
-			{{ header }} ({{ totalCountOfDuplicities  }})
+	<div v-if="!isDuplicitiesLoading && !this.isTotalCountLoading">
+		<h2 class="text-h6 mb-4">
+			{{ header }} ({{ totalCountOfDuplicities }})
 		</h2>
 
-		<hr>
-
-		<div class="level p-3 has-border-bottom">
-			<div class="level-left">
-				<div class="mr-3">
-					<b-icon icon="filter" />
+		<DataGrid
+			v-model:items-per-page="perPage"
+			:headers="table.columns"
+			:items="table.data"
+			:total-count="table.total"
+			:loading="isExportLoading"
+			:no-data-text="$t('No data for these filters')"
+			variant="text"
+			@perPageChanged="onPerPageChange"
+			@pageChanged="onPageChange"
+		>
+			<template v-slot:tableControls>
+				<div class="mr-3 ml-3">
+					<v-icon icon="filter" />
 					Filter
 				</div>
 
-				<b-button
-					:class="filterButtonNotSolved"
-					@click="stateFilter('notSolved')"
+				<v-btn
+					:variant="statusActive.notSolved ? 'elevated' : 'outlined'"
+					color="info"
+					class="ml-2"
+					@click="onStateFilter('notSolved')"
 				>
 					{{ $t('Not resolved') }}
-				</b-button>
+				</v-btn>
 
-				<b-button
-					:class="filterButtonFromFile"
-					@click="stateFilter('fromFile')"
+				<v-btn
+					:variant="statusActive.fromFile ? 'elevated' : 'outlined'"
+					color="info"
+					class="ml-2"
+					@click="onStateFilter('fromFile')"
 				>
 					{{ $t('From file') }}
-				</b-button>
+				</v-btn>
 
-				<b-button
-					:class="filterButtonFromHumansis"
-					@click="stateFilter('fromHumansis')"
+				<v-btn
+					:variant="statusActive.fromHumansis ? 'elevated' : 'outlined'"
+					color="info"
+					class="ml-2"
+					@click="onStateFilter('fromHumansis')"
 				>
 					{{ $t('From humansis') }}
-				</b-button>
-			</div>
-		</div>
-
-		<Table
-			default-sort-key="dateDistribution"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isExportLoading"
-			:show-table-header="false"
-			no-data-message="No data for these filters"
-			@pageChanged="onPageChange"
-			@changePerPage="onChangePerPage"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
+				</v-btn>
 			</template>
-			<b-table-column
-				v-slot="props"
-				width="230"
-				field="actions"
-				:label="$t('Use Record From')"
-			>
-				<b-field grouped class="action-row">
-					<b-button
-						:class="fromFileClasses(props.index)"
-						:disabled="isDataForTableLoading(props.index)"
-						:loading="table.data[props.index].toUpdateLoading"
-						@click="resolveToUpdate(
-							table.data[props.index].itemId,
-							table.data[props.index].duplicityCandidateId,
-							props.index
-						)"
-					>
-						{{ $t('File') }}
-					</b-button>
 
-					<b-button
-						:class="fromHumansisClasses(props.index)"
-						:disabled="isDataForTableLoading(props.index)"
-						:loading="table.data[props.index].toLinkLoading"
-						@click="resolveToLink(
-							table.data[props.index].itemId,
-							table.data[props.index].duplicityCandidateId,
-							props.index
-						)"
-					>
-						{{ $t('Humansis') }}
-					</b-button>
-				</b-field>
-			</b-table-column>
-		</Table>
+			<template v-slot:actions="{ index }">
+				<v-btn
+					:disabled="isDataForTableLoading(index)"
+					:loading="table.data[index].toUpdateLoading"
+					:variant="isFromFileSelected(index) ? 'elevated' : 'outlined'"
+					color="info"
+					class="duplicity-button rounded-be-0 rounded-te-0"
+					@click="onResolveToUpdate(
+						table.data[index].itemId,
+						table.data[index].duplicityCandidateId,
+						index,
+					)"
+				>
+					{{ $t('File') }}
+				</v-btn>
+
+				<v-btn
+					:disabled="isDataForTableLoading(index)"
+					:loading="table.data[index].toLinkLoading"
+					:variant="isFromHumansisSelected(index) ? 'elevated' : 'outlined'"
+					color="info"
+					class="duplicity-button rounded-bs-0 rounded-ts-0"
+					@click="onResolveToLink(
+						table.data[index].itemId,
+						table.data[index].duplicityCandidateId,
+						index,
+					)"
+				>
+					{{ $t('Humansis') }}
+				</v-btn>
+			</template>
+		</DataGrid>
 	</div>
-	<div v-else>
-		<b-loading :is-full-page="false" :active="true" />
-	</div>
+
+	<Loading v-else is-large />
 </template>
 
 <script>
 import ImportService from "@/services/ImportService";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
+import Loading from "@/components/Loading";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
 	name: "DuplicityResolver",
 
 	components: {
-		ColumnField,
-		Table,
+		DataGrid,
+		Loading,
 	},
 
 	mixins: [grid],
@@ -125,12 +111,14 @@ export default {
 			required: true,
 		},
 
-		duplicitiesLoading: {
+		isDuplicitiesLoading: {
 			type: Boolean,
+			default: false,
 		},
 
-		formChangesLoading: {
+		isFormChangesLoading: {
 			type: Boolean,
+			default: false,
 		},
 
 	},
@@ -156,56 +144,49 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "familyName", label: "Local family name", type: "arrayTextBreakForDuplicities", bold: true },
-					{ key: "firstName", label: "Local given name", type: "arrayTextBreakForDuplicities", bold: true },
-					{ key: "idType", type: "arrayTextBreakForDuplicities", label: "ID Type" },
-					{ key: "idNumber", type: "arrayTextBreakForDuplicities", label: "ID Number" },
+					{
+						key: "familyName",
+						title: "Local family name",
+						type: "arrayTextBreakForDuplicities",
+						boldText: true,
+						sortable: false,
+					},
+					{
+						key: "firstName",
+						title: "Local given name",
+						type: "arrayTextBreakForDuplicities",
+						boldText: true,
+						sortable: false,
+					},
+					{
+						key: "idType",
+						title: "ID Type",
+						type: "arrayTextBreakForDuplicities",
+						sortable: false,
+					},
+					{
+						key: "idNumber",
+						title: "ID Number",
+						type: "arrayTextBreakForDuplicities",
+						sortable: false,
+					},
 					{
 						key: "recordFrom",
+						title: "Records From File / Humansis",
 						type: "arrayTextBreakForDuplicitiesRecords",
-						label: "Records From File / Humansis",
+						sortable: false,
+					},
+					{
+						key: "actions",
+						value: "actions",
+						title: "Records From File / Humansis",
+						sortable: false,
 					},
 				]),
 				total: 0,
 				currentPage: 1,
 			},
 		};
-	},
-
-	computed: {
-		filterButtonNotSolved() {
-			return [
-				"btn",
-				"mr-1",
-				{ "is-selected": this.statusActive.notSolved },
-			];
-		},
-
-		filterButtonFromFile() {
-			return [
-				"btn",
-				"mr-1",
-				{ "is-selected": this.statusActive.fromFile },
-			];
-		},
-
-		filterButtonFromHumansis() {
-			return [
-				"btn",
-				"mr-1",
-				{ "is-selected": this.statusActive.fromHumansis },
-			];
-		},
-
-		duplicities() {
-			return this.table.data;
-		},
-	},
-
-	watch: {
-		duplicites(value) {
-			this.$emit("duplicitiesChange", value);
-		},
 	},
 
 	created() {
@@ -225,7 +206,7 @@ export default {
 			).then(({ data: { totalCount } }) => {
 				this.totalCountOfDuplicities = totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
+				Notification(`${this.$t("Duplicities")} ${e.message || e}`, "error");
 			});
 			this.isTotalCountLoading = false;
 		},
@@ -246,7 +227,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Duplicities")} ${e}`, "is-danger");
+				Notification(`${this.$t("Duplicities")} ${e.message || e}`, "error");
 			});
 			this.isExportLoading = false;
 
@@ -315,7 +296,7 @@ export default {
 			}
 		},
 
-		stateFilter(filter) {
+		onStateFilter(filter) {
 			const backendFilterName = this.statusFilterConvention[filter];
 
 			this.statusActive[filter] = !this.statusActive[filter];
@@ -389,7 +370,7 @@ export default {
 			return !Object.values(differences).every((item) => item === null);
 		},
 
-		async resolveToUpdate(queueId, acceptedDuplicityId, duplicityKey) {
+		async onResolveToUpdate(queueId, acceptedDuplicityId, duplicityKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
 				IMPORT.ITEM_STATUS.TO_UPDATE,
@@ -399,7 +380,7 @@ export default {
 			);
 		},
 
-		async resolveToLink(queueId, acceptedDuplicityId, duplicityKey) {
+		async onResolveToLink(queueId, acceptedDuplicityId, duplicityKey) {
 			await this.resolveImportItemDuplicity(
 				queueId,
 				IMPORT.ITEM_STATUS.TO_LINK,
@@ -409,9 +390,7 @@ export default {
 			);
 		},
 
-		async resolveImportItemDuplicity(
-			queueId, state, acceptedDuplicityId, duplicityKey, button,
-		) {
+		async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId, duplicityKey, button) {
 			if (duplicityKey !== null) {
 				this.table.data[duplicityKey][button] = true;
 			}
@@ -429,11 +408,11 @@ export default {
 							this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 						}
 
-						Toast(this.$t("Solved"), "is-success");
+						Notification(this.$t("Solved"), "success");
 					}
 
 					if (status === 400) {
-						Notification(`${this.$t("Not Solved")}`, "is-warning");
+						Notification(`${this.$t("Not Solved")}`, "warning");
 					}
 				}).catch((e) => {
 					if (e.message) {
@@ -443,6 +422,7 @@ export default {
 
 						this.table.data[duplicityKey].disabled = false;
 					}
+					Notification(`${this.$t("Duplicity resolve")} ${e.message || e}}`, "error");
 				});
 
 			this.table.data = this.table.data.map((item) => ({
@@ -453,71 +433,26 @@ export default {
 			this.$emit("updated");
 		},
 
-		fromFileClasses(item) {
-			const isOutlined = this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
-
-			return [
-				"is-info",
-				"button-to-update",
-				{ "is-outlined": !isOutlined },
-			];
+		isFromFileSelected(item) {
+			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 		},
 
-		fromHumansisClasses(item) {
-			const isOutlined = this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
-
-			return [
-				"is-info",
-				"button-to-link",
-				{ "is-outlined": !isOutlined },
-			];
+		isFromHumansisSelected(item) {
+			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
 		},
 
 		isDataForTableLoading(item) {
 			return this.table.data[item].toUpdateLoading
 				|| this.table.data[item].toLinkLoading
-				|| this.formChangesLoading;
+				|| this.isFormChangesLoading;
 		},
 	},
 
 };
 </script>
 
-<style lang="scss" scoped>
-.btn {
-	outline: none !important;
-	box-shadow: none !important;
-	color: #0f77ea;
-	border-color: #0f77ea;
-
-	&.is-selected,
-	&.is-selected:focus,
-	&:hover	{
-		background-color: #0f77ea;
-		border-color: transparent;
-		color: #fff;
-	}
-}
-
-.content-separator {
-	height: 3px;
-	background: #074f60;
-}
-</style>
-
-<style>
-.button-to-update {
-	border-bottom-right-radius: 0;
-	border-top-right-radius: 0;
-}
-
-.button-to-link {
-	border-bottom-left-radius: 0;
-	border-top-left-radius: 0;
-	border-left: none;
-}
-
-.action-row .is-grouped {
-	justify-content: right;
+<style scoped>
+.duplicity-button {
+	width: max-content !important;
 }
 </style>

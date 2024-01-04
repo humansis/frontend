@@ -404,6 +404,7 @@ export default {
 				{
 					title: "Imports",
 					prependIcon: "file-import",
+					to: { name: "Imports" },
 				},
 				{
 					title: "Reports",

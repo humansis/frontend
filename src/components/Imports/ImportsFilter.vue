@@ -3,8 +3,8 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -18,6 +18,11 @@ import { FILTER, IMPORT } from "@/consts";
 
 export default {
 	name: "ImportsFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -62,7 +67,7 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filters) {
+		onFilterChanged(filters) {
 			this.$emit("filtersChanged", { filters });
 		},
 
@@ -73,7 +78,7 @@ export default {
 					this.filtersOptions.projects.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
