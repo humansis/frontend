@@ -18,7 +18,7 @@ export default {
 	methods: {
 		renameAdms() {
 			const adms = [...Object.keys(this.admNames)];
-			this.table.visibleColumns = this.table.visibleColumns.map((item) => {
+			this.table.columns = this.table.columns.map((item) => {
 				const column = { ...item };
 				if (adms.includes(column.key)) {
 					column.label = this.admNames[column.key];

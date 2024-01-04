@@ -133,13 +133,16 @@ export default {
 
 		breadcrumbs() {
 			return this.$route.matched.map((item) => {
-				if (!item.meta?.breadcrumb && !item.name) {
+				if (!item.meta?.breadcrumb) {
 					return null;
 				}
 
+				const currentParams = this.$route.params;
+				const href = item.path.replace(/:(\w+)/g, (match, paramName) => currentParams[paramName] || "");
+
 				return {
-					title: item.meta?.breadcrumb || item.name,
-					href: item.path.replace(":countryCode", this.country.iso3),
+					title: item.meta?.breadcrumb,
+					href,
 				};
 			}).filter((r) => r);
 		},
