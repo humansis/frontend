@@ -353,28 +353,26 @@ const routes = [
 				],
 			},
 			//  			},
-			//  			{
-			//  				path: "vendors",
-			//  				name: "Vendors",
-			//  				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
-			//  				meta: {
-			//  					permissions: ["viewVendors"],
-			//  					breadcrumb: () => i18n.t("Vendors"),
-			//  					description: "",
-			//  				},
-			//  			},
-			//  		],
-			//  	},
-			//  	{
-			//  		path: "vouchers",
-			//  		name: "Vouchers",
-			//  		component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
-			//  		meta: {
-			//  			permissions: ["viewVouchers"],
-			//  			breadcrumb: () => i18n.t("Vouchers"),
-			//  			description: i18n.t("This page is where you can create, edit, assign and print vouchers booklets"),
-			//  		},
-			//  	},
+			{
+				path: "vendors",
+				name: "Vendors",
+				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
+				meta: {
+					permissions: ["viewVendors"],
+					breadcrumb: "Vendors",
+					description: "",
+				},
+			},
+			{
+				path: "vouchers",
+				name: "Vouchers",
+				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
+				meta: {
+					permissions: ["viewVouchers"],
+					breadcrumb: "Vouchers",
+					description: "This page is where you can create, edit, assign and print vouchers booklets",
+				},
+			},
 			{
 				path: "country-settings",
 				name: "Country Settings",

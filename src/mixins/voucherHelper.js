@@ -16,12 +16,16 @@ export default {
 				this.table.data[key] = item;
 				this.table.data[key].beneficiary = this.$t("None");
 				this.table.data[key].assistance = this.$t("None");
+				this.table.data[key].status = this.getStatus(item.status);
+
 				if (item.projectId) {
 					projectIds.push(item.projectId);
 				}
+
 				if (item.assistanceId) {
 					assistanceIds.push(item.assistanceId);
 				}
+
 				if (item.beneficiaryId) {
 					beneficiaryIds.push(item.beneficiaryId);
 				}

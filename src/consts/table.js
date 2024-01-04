@@ -16,5 +16,7 @@ export default {
 		PRODUCTS_CATEGORIES: { key: "id", order: "asc" },
 		PURCHASE_LIST: { key: "datePurchase", order: "desc" },
 		USERS: { key: "id", order: "desc" },
+		VENDORS: { key: "id", order: "desc" },
+		VOUCHERS: { key: "code", order: "desc" },
 	},
 };
