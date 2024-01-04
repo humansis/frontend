@@ -5,11 +5,13 @@
 		scrollable
 	>
 		<v-card>
-			<v-card-title class="text-h6 font-weight-bold">
-				{{ $t(header) }}
-			</v-card-title>
+			<template v-if="!customHeader">
+				<v-card-title class="text-h6 font-weight-bold">
+					{{ $t(header) }}
+				</v-card-title>
 
-			<v-divider />
+				<v-divider />
+			</template>
 
 			<slot />
 		</v-card>
@@ -24,6 +26,11 @@ export default {
 		header: {
 			type: String,
 			default: "",
+		},
+
+		customHeader: {
+			type: Boolean,
+			default: false,
 		},
 	},
 };

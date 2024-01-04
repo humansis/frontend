@@ -195,6 +195,11 @@ export default {
 			default: 0,
 		},
 
+		currentPage: {
+			type: Number,
+			default: 1,
+		},
+
 		searchPhrase: {
 			type: String,
 			default: "",
@@ -255,7 +260,7 @@ export default {
 		return {
 			TABLE,
 			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
-			page: 1,
+			page: this.currentPage,
 			perPage: this.$attrs["items-per-page"],
 		};
 	},
@@ -272,7 +277,7 @@ export default {
 		},
 
 		onPerPageChanged() {
-			if (this.pageCount === 1 && this.page > 1) {
+			if (this.pageCount < this.page) {
 				this.page = 1;
 				this.$emit("perPageChanged", { currentPerPage: this.perPage, currentPage: this.page });
 			}

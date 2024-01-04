@@ -1,50 +1,47 @@
 <template>
-	<section class="modal-card-body">
-		<Table
-			v-show="show"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:backend-sorting="false"
-			:is-loading="isLoadingList"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				:label="$t('Actions')"
-				width="50"
-			>
-				<div class="buttons is-right">
-					<ActionButton
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Vendor Redemption Summary')"
-						@click="$emit('showRedemptionSummary', props.row)"
-					/>
-				</div>
-			</b-table-column>
-		</Table>
-	</section>
+	<DataGrid
+		v-show="show"
+		:headers="table.columns"
+		:loading="isLoadingList"
+		:items="table.data"
+		:custom-key-sort="customSort"
+		is-row-click-disabled
+		show-default-footer
+	>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Vendor Redemption Summary"
+				@actionConfirmed="$emit('showRedemptionSummary', row)"
+			/>
+		</template>
+	</DataGrid>
 </template>
 
 <script>
 import SmartcardService from "@/services/SmartcardService";
-import ActionButton from "@/components/ActionButton";
-import Table from "@/components/DataGrid/Table";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
+const customSort = {
+	total: (a, b) => {
+		const amountA = a.match(/\d+\.\d+/);
+		const amountB = b.match(/\d+\.\d+/);
+
+		return amountA - amountB;
+	},
+};
+
 export default {
 	name: "RedeemedBatches",
 
-	components: { Table, ActionButton },
+	components: {
+		DataGrid,
+		ButtonAction,
+	},
 
 	mixins: [grid],
 
@@ -55,15 +52,17 @@ export default {
 
 	data() {
 		return {
+			customSort,
+			isLoadingList: false,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
+				columns: generateColumns([
 					{ key: "date" },
 					{ key: "project" },
 					{ key: "quantity" },
-					{ key: "total", label: "Total", customSort: this.sortAmount },
-				],
+					{ key: "total", title: "Total" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
 				sortDirection: "",
@@ -78,23 +77,15 @@ export default {
 	},
 
 	methods: {
-		sortAmount(a, b, c) {
-			if (!c) {
-				return a.value - b.value;
-			}
-			return b.value - a.value;
-		},
-
 		async fetchBatches() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await SmartcardService.getSmartcardRedemptionBatches([this.vendorId])
 				.then(({ data, totalCount }) => {
 					this.table.total = totalCount;
 					this.prepareDataForTable(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Batches")} ${e}`, "is-danger");
+					Notification(`${this.$t("Batches")} ${e.message || e}`, "error");
 				});
 
 			this.isLoadingList = false;

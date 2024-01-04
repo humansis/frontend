@@ -153,7 +153,7 @@ export default {
 			this.locationsFilter = locationsFilter;
 			this.table.dataUpdated = false;
 
-			if (!filters) {
+			if (!filters || typeof filters !== "object") {
 				return;
 			}
 
