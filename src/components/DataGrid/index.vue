@@ -139,9 +139,9 @@
 			</template>
 
 			<template
-				v-for="(column, index) in $attrs.headers"
-				v-slot:[`item.${column.key}`]="{ item }"
-				:key="index"
+				v-for="(column, headerIndex) in $attrs.headers"
+				v-slot:[`item.${column.key}`]="{ item, index }"
+				:key="headerIndex"
 			>
 				<template v-if="column.key === 'actions'">
 					<div :class="['table-actions', { 'removed-row': item.removed }]">
