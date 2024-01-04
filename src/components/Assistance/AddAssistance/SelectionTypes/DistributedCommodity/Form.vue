@@ -346,6 +346,9 @@ export default {
 					fourthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
 					},
+					fifthNwsFields: {
+						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+					},
 				},
 				divisionNesFields: {
 					firstNesFields: {
@@ -547,10 +550,11 @@ export default {
 
 		divisionNwsFields() {
 			return [
-				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNwsField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 5 members)`), fieldName: "quantityNwsField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (6 - 8 members)`), fieldName: "quantityNwsField3" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNwsField4" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 member)`), fieldName: "quantityNwsField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (2 member)`), fieldName: "quantityNwsField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (3 member)`), fieldName: "quantityNwsField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 member)`), fieldName: "quantityNwsField4" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (5+ members)`), fieldName: "quantityNwsField5" },
 			];
 		},
 
@@ -823,6 +827,8 @@ export default {
 					.divisionNwsFields.thirdNwsFields;
 				this.formModel.payloadDivisionNwsFields[3].value = this.formModel
 					.divisionNwsFields.fourthNwsFields;
+				this.formModel.payloadDivisionNwsFields[4].value = this.formModel
+					.divisionNwsFields.fifthNwsFields;
 			} else {
 				this.formModel.payloadDivisionNesFields[0].value = this.formModel
 					.divisionNesFields.firstNesFields;
