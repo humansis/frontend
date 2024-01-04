@@ -36,6 +36,7 @@
 			reset-sort-button
 			reset-filters-button
 			is-search-visible
+			is-row-click-disabled
 			@perPageChanged="onPerPageChange"
 			@pageChanged="onPageChange"
 			@update:sortBy="onSort"

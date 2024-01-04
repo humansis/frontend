@@ -9,6 +9,7 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		reset-sort-button
+		is-row-click-disabled
 		@update:sortBy="onSort"
 		@pageChanged="onPageChange"
 		@perPageChanged="onPerPageChange"

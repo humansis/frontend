@@ -53,7 +53,7 @@ export default {
 			} = query;
 
 			if (filters && Object.keys(JSON.parse(filters)).length !== 0) {
-				this.advancedSearchVisible = true;
+				this.visiblePanels = ["advancedSearch"];
 			}
 
 			if (!Object.keys(query).length) {
