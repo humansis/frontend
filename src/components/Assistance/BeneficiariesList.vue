@@ -1171,6 +1171,7 @@ export default {
 		},
 
 		async onSetAsNotDistributed(tableIndex, bnfId, reliefPackage) {
+			console.log(tableIndex, bnfId, reliefPackage);
 			try {
 				const { data, status, message } = await AssistancesService
 					.revertDistributionOfReliefPackage(reliefPackage[0].id);
