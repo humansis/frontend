@@ -1,5 +1,5 @@
 <template>
-	<aside>
+	<aside v-if="isAsideVisible">
 		<v-navigation-drawer
 			width="250"
 			rail-width="50"

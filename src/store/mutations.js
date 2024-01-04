@@ -81,6 +81,7 @@ export default {
 	},
 
 	[CONST.LOGOUT]: (state) => {
+		state.isAsideVisible = false;
 		state.lastUsername = state.user.username;
 
 		state.user = {
