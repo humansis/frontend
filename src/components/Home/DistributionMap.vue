@@ -65,6 +65,30 @@ export default {
 					lng: 44.6736646,
 					zoom: 7,
 				},
+				{
+					country: "AFG",
+					lat: 34.543896,
+					lng: 69.160652,
+					zoom: 6,
+				},
+				{
+					country: "ZMB",
+					lat: -13.1403507,
+					lng: 27.8493049,
+					zoom: 6,
+				},
+				{
+					country: "YEM",
+					lat: 15.369445,
+					lng: 44.191006,
+					zoom: 6,
+				},
+				{
+					country: "COD",
+					lat: -1,
+					lng: 15,
+					zoom: 6,
+				},
 			],
 
 		};
