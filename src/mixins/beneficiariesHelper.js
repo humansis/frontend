@@ -1,4 +1,3 @@
-import AddressService from "@/services/AddressService";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
@@ -139,15 +138,6 @@ export default {
 			return idNumbers;
 		},
 
-		async getNationalIds(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
-				});
-		},
-
 		async getAssistanceCommodities() {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
@@ -180,9 +170,6 @@ export default {
 
 		showDetailModal(beneficiary) {
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					this.showCommunityDetail(beneficiary);
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
 					break;
@@ -195,9 +182,6 @@ export default {
 
 		showEditModal({ id }) {
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					this.showCommunityEdit(id);
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
@@ -248,24 +232,6 @@ export default {
 			}
 		},
 
-		async showCommunityDetail(community) {
-			this.communityModal = {
-				isOpened: true,
-				isEditing: false,
-				isWaiting: true,
-			};
-
-			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
-
-			this.communityModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.communityModal.isWaiting = false;
-		},
-
 		showBeneficiaryEdit(id) {
 			const beneficiary = this.table.data.find((item) => item.id === id);
 			this.beneficiaryModel = {
@@ -276,44 +242,6 @@ export default {
 				isOpened: true,
 				isEditing: true,
 			};
-		},
-
-		async showInstitutionEdit(id) {
-			this.institutionModal = {
-				isOpened: true,
-				isEditing: true,
-				isWaiting: true,
-			};
-
-			const institution = this.table.data.find((item) => item.id === id);
-			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
-
-			this.institutionModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.institutionModal.isWaiting = false;
-		},
-
-		async showCommunityEdit(id) {
-			this.communityModal = {
-				isOpened: true,
-				isEditing: true,
-				isWaiting: true,
-			};
-
-			const community = this.table.data.find((item) => item.id === id);
-			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
-
-			this.communityModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.communityModal.isWaiting = false;
 		},
 
 		onCloseBeneficiaryModal() {
@@ -367,22 +295,6 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async submitEditInstitutionForm() {
-			this.institutionModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			await this.reloadBeneficiariesList();
-		},
-
-		async submitEditCommunityForm() {
-			this.communityModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			await this.reloadBeneficiariesList();
-		},
-
 		async onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
 			await this.reloadBeneficiariesList();
@@ -430,11 +342,6 @@ export default {
 					await this.reloadBeneficiariesList();
 				}
 			}
-		},
-
-		getAddress(id) {
-			return AddressService.getAddress(id)
-				.then((response) => response);
 		},
 	},
 };

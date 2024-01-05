@@ -31,14 +31,12 @@
 </template>
 
 <script>
-import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdInformationSummary",
@@ -83,44 +81,8 @@ export default {
 				.then((data) => {
 					this.householdHead = data;
 				});
-			const { typeOfLocation, addressId } = this.getAddressTypeAndId(household);
 
-			this.address = await this.getAddresses(addressId, typeOfLocation);
-		},
-
-		async getAddresses(id, type) {
-			let address = null;
-			if (type === GENERAL.LOCATION_TYPE.camp.type) {
-				await AddressService.getCampAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Camp Address")} ${e.message || e}`, "error");
-					});
-			}
-			if (type === GENERAL.LOCATION_TYPE.residence.type) {
-				await AddressService.getResidenceAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Residence Address")} ${e.message || e}`, "error");
-					});
-			}
-			if (type === GENERAL.LOCATION_TYPE.temporarySettlement.type) {
-				await AddressService.getTemporarySettlementAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Temporary Settlement Address")} ${e.message || e}`, "error");
-					});
-			}
-			return address;
+			this.address = this.getAddressTypeAndId(household);
 		},
 	},
 };

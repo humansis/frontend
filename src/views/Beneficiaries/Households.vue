@@ -232,7 +232,6 @@
 
 <script>
 import { defineAsyncComponent } from "vue";
-import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
 import AddProjectToHousehold from "@/components/Beneficiaries/Household/AddProjectToHousehold";
@@ -247,7 +246,6 @@ import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
-import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
@@ -553,31 +551,27 @@ export default {
 			this.table.progress = 5;
 			const projectIds = [];
 			const beneficiaryIds = [];
-			const addressIds = {
-				camp: [],
-				residence: [],
-				temporary_settlement: [],
-			};
+			const addresses = [];
+
 			data.forEach((item, key) => {
 				const { id } = item;
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+				const address = this.getAddressTypeAndId(item);
 
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 
 				this.table.data[key] = item;
 				this.table.data[key].householdId = id;
+				this.table.data[key].address = address;
 				this.table.data[key].id = {
 					routeParams: { householdId: id },
 					routeName: "HouseholdInformationSummary",
 					name: id,
 				};
-				this.table.data[key].addressId = addressId;
 				this.table.data[key].members = item.beneficiaryIds.length;
 
-				// TODO Fix bug with Informal Settlement (Location Type)
-				if (typeOfLocation && addressId) {
-					addressIds[typeOfLocation].push(addressId);
+				if (address) {
+					addresses.push(address);
 				}
 			});
 
@@ -585,7 +579,7 @@ export default {
 
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
 
-			this.prepareAddressForTable(addressIds);
+			this.prepareAddressForTable(addresses);
 
 			this.table.progress = 100;
 		},
@@ -595,7 +589,6 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			const allNationalIdIds = [];
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
@@ -615,35 +608,32 @@ export default {
 				this.table.data[key].supportDateReceived = item.supportDateReceived
 					? new Date(item.supportDateReceived)
 					: null;
-				allNationalIdIds.push(...nationalIds);
 			});
 			this.table.progress += 5;
-			this.getNationalIds(allNationalIdIds)
-				.then((nationalIdResult) => {
-					this.table.progress += 5;
-					this.table.data.forEach((item, key) => {
-						let idsText = "";
-						if (item.nationalIds) {
-							item.nationalIds.forEach((nationalId, index) => {
-								if (index !== 0) {
-									idsText += "<br />";
-								}
-								const idEntity = nationalIdResult.find((idItem) => idItem.id === nationalId);
-								if (idEntity) {
-									idsText += `${idEntity.type}: <b>${idEntity.number}</b>`;
-								}
-							});
+			this.table.data.forEach((item, key) => {
+				let idsText = "";
+
+				if (item.nationalIds) {
+					item.nationalIds.forEach((nationalId, index) => {
+						if (index !== 0) {
+							idsText += "<br />";
 						}
-						this.table.data[key].idNumbers = idsText || this.$t("None");
+
+						if (nationalId) {
+							idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
+						}
 					});
-				});
+				}
+				this.table.data[key].idNumbers = idsText || this.$t("None");
+			});
 		},
 
-		async prepareAddressForTable(addressIds) {
-			const mappedLocations = await this.getPreparedLocations(addressIds);
+		async prepareAddressForTable(address) {
+			await this.getPreparedLocations(address);
+
 			this.table.data.map(async (item, key) => {
 				this.table.data[key]
-					.currentLocation = (this.prepareEntityForTable(item.addressId, mappedLocations, "locationName"));
+					.currentLocation = item.address.locationName;
 			});
 			this.table.progress += 5;
 		},
@@ -662,65 +652,6 @@ export default {
 				.catch((e) => {
 					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
 				});
-		},
-
-		async getNationalIds(ids) {
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
-				});
-		},
-
-		// Replaces method from addressHelper
-		async getAddresses(ids) {
-			const addresses = [];
-			if (ids.camp.length) {
-				let camps = [];
-				await AddressService.getCampAddresses(ids.camp)
-					.then(({ data }) => {
-						camps = data;
-					}).catch((e) => {
-						Notification(`${this.$t("Camp Address")} ${e.message || e}`, "error");
-					});
-				const uniqueCampIds = getUniqueIds(camps, "campId");
-
-				await AddressService.getCampsByIds(uniqueCampIds)
-					.then(({ data }) => {
-						data.forEach((item) => {
-							const address = camps.find(({ campId }) => campId === item.id);
-							if (address) {
-								addresses.push({
-									locationId: item.locationId,
-									id: address.id,
-									type: "camp",
-								});
-							}
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Camps")} ${e.message || e}`, "error");
-					});
-			}
-			if (ids.residence.length) {
-				await AddressService.getResidenceAddresses(ids.residence)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "residence" });
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Residency Address")} ${e.message || e}`, "error");
-					});
-			}
-			if (ids.temporary_settlement.length) {
-				await AddressService.getTemporarySettlementAddresses(ids.temporary_settlement)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "temporary_settlement" });
-						});
-					}).catch((e) => {
-						Notification(`${this.$t("Temporary Settlement Address")} ${e.message || e}`, "error");
-					});
-			}
-			return addresses;
 		},
 
 		async getProjects(ids) {
