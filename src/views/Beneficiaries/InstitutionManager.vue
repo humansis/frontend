@@ -271,9 +271,11 @@
 							v-model="formModel.phone1.ext"
 							:items="options.phonePrefixes"
 							:label="`${$t('Prefix phone')} 1`"
+							:error-messages="validationMsg('phone1.ext')"
 							:disabled="formDisabled"
 							name="phone1-ext"
 							class="mb-6"
+							@update:modelValue="onValidate('phone1.ext')"
 						/>
 
 						<DataInput
@@ -321,9 +323,11 @@
 							v-model="formModel.phone2.ext"
 							:items="options.phonePrefixes"
 							:label="`${$t('Prefix phone')} 2`"
+							:error-messages="validationMsg('phone2.ext')"
 							:disabled="formDisabled"
 							name="phone2-ext"
 							class="mb-6"
+							@update:modelValue="onValidate('phone2.ext')"
 						/>
 
 						<DataInput

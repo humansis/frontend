@@ -309,7 +309,7 @@ export default {
 		]);
 
 		if (this.isEditing) {
-			await this.mapDetailOfHouseholdToFormModel();
+			this.mapDetailOfHouseholdToFormModel();
 
 			await this.mapCurrentLocation().then((response) => {
 				this.formModel.currentLocation = { ...this.formModel.currentLocation, ...response };
@@ -329,31 +329,16 @@ export default {
 
 		async mapCurrentLocation() {
 			if (this.detailOfHousehold) {
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId(this.detailOfHousehold);
-
-				switch (typeOfLocation) {
-					case GENERAL.LOCATION_TYPE.camp.type:
-						return AddressService.getCampAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Camp Address")} ${e.message || e}`, "error");
-						});
-					case GENERAL.LOCATION_TYPE.residence.type:
-						return AddressService.getResidenceAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Residence Address")} ${e.message || e}`, "error");
-						});
-					case GENERAL.LOCATION_TYPE.temporarySettlement.type:
-						return AddressService.getTemporarySettlementAddress(addressId).catch((e) => {
-							Notification(`${this.$t("Temporary Settlement Address")} ${e.message || e}`, "error");
-						});
-					default:
-						return null;
-				}
+				return this.getAddressTypeAndId(this.detailOfHousehold);
 			}
 			return null;
 		},
 
-		async mapDetailOfHouseholdToFormModel() {
-			const countryAnswers = await this
-				.prepareCustomFields(this.detailOfHousehold.countrySpecificAnswerIds);
+		mapDetailOfHouseholdToFormModel() {
+			const countryAnswers = this.prepareCustomFields(
+				this.detailOfHousehold.countrySpecificAnswers,
+			);
+
 			this.formModel = {
 				...this.formModel,
 				id: this.detailOfHousehold.id,
@@ -392,22 +377,15 @@ export default {
 			};
 		},
 
-		async prepareCustomFields(answers) {
+		prepareCustomFields(answers) {
 			const preparedAnswer = {};
+
 			if (!answers) return preparedAnswer;
-			const promise = answers.map(async (item) => {
-				await CustomFieldsService.getCustomFieldAnswer(item)
-					.then(({ data: { answer, countrySpecificOptionId } }) => {
-						const temp = this.customFields
-							.find((option) => option.id === countrySpecificOptionId);
-						if (temp.type === "number") {
-							preparedAnswer[temp.id] = Number(answer);
-						} else {
-							preparedAnswer[temp.id] = answer;
-						}
-					});
+
+			answers.forEach(({ answer, countrySpecificId }) => {
+				preparedAnswer[countrySpecificId] = answer;
 			});
-			await Promise.all(promise);
+
 			return preparedAnswer;
 		},
 
