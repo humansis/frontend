@@ -108,13 +108,10 @@
 			disabled
 		/>
 
-		<v-textarea
-			v-model="formModel.note"
-			:label="$t('Note')"
+		<DataTextarea
+			v-model.trim="formModel.note"
+			label="Note"
 			name="note"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			disabled
 		/>
@@ -331,6 +328,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import institutionHelper from "@/mixins/institutionHelper";
@@ -346,6 +344,7 @@ export default {
 		DataInput,
 		DataSelect,
 		DatePicker,
+		DataTextarea,
 	},
 
 	mixins: [validation, institutionHelper],

@@ -18,14 +18,11 @@
 				{{ $t('Maximum 5000 IDs allowed') }}.
 			</v-alert>
 
-			<v-textarea
+			<DataTextarea
 				v-model.trim="formModel.idsList"
-				:label="$t('ID Numbers')"
 				:error-messages="validationMsg('idsList')"
+				label="ID Numbers"
 				name="id-numbers"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				class="mb-6"
 				@blur="onValidate('idsList')"
 			/>
@@ -290,6 +287,7 @@ import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/Bas
 import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseDistributedTable";
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import DataInput from "@/components/Inputs/DataInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect";
 import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
@@ -305,6 +303,7 @@ export default {
 		BaseDistributedTable,
 		DuplicityDistributedTable,
 		IdTypeSelect,
+		DataTextarea,
 		DataInput,
 	},
 

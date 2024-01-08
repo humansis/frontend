@@ -10,7 +10,7 @@
 			</v-card-title>
 
 			<v-card-text class="mt-4">
-				<div v-for="formInput in formInputs" :key="formInput.key" class="mb-3">
+				<div v-for="(formInput, index) in formInputs" :key="formInput.key" class="mb-3">
 					<DatePicker
 						v-if="isInputTypeCalendar(formInput)"
 						v-model="data[formInput.key]"
@@ -63,16 +63,13 @@
 						@blur="onInputChanged(formInput, data)"
 					/>
 
-					<v-textarea
+					<DataTextarea
 						v-if="isInputTypeTextArea(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
-						name="notes"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
+						:name="`note-${index}`"
 						class="mt-6"
 						auto-grow
 						@blur="onInputChanged(formInput, data)"
@@ -119,6 +116,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
@@ -132,6 +130,7 @@ export default {
 		DataSelect,
 		DataInput,
 		LocationForm,
+		DataTextarea,
 	},
 
 	mixins: [validation],

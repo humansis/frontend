@@ -143,13 +143,13 @@
 
 						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Other') }}</h2>
 
-						<TextAreaInput
+						<DataTextarea
 							v-model.trim="formModel.note"
 							:disabled="formDisabled"
 							label="Note"
 							name="note"
-							class="mb-6"
-							optional
+							class="mb-4"
+							is-optional
 						/>
 
 						<DataInput
@@ -402,9 +402,9 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
-import TextAreaInput from "@/components/Inputs/TextAreaInput";
 import idHelper from "@/mixins/idHelper";
 import institutionHelper from "@/mixins/institutionHelper";
 import validation from "@/mixins/validation";
@@ -422,7 +422,7 @@ export default {
 		DataInput,
 		DataSelect,
 		DatePicker,
-		TextAreaInput,
+		DataTextarea,
 	},
 
 	mixins: [validation, idHelper, institutionHelper],

@@ -142,13 +142,10 @@
 
 	<v-card class="mx-auto mt-10">
 		<v-card-text>
-			<v-textarea
+			<DataTextarea
 				v-model.trim="formModel.note"
-				:label="$t('Note')"
+				label="Note"
 				name="note"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				auto-grow
 			/>
 		</v-card-text>
@@ -162,6 +159,7 @@ import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
@@ -181,6 +179,7 @@ export default {
 		DatePicker,
 		DataSelect,
 		DataInput,
+		DataTextarea,
 	},
 
 	emits: [

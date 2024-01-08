@@ -27,13 +27,13 @@
 			@update:modelValue="onValidate('projects')"
 		/>
 
-		<TextAreaInput
+		<DataTextarea
 			v-model.trim="formModel.description"
 			:disabled="formDisabled"
 			label="Description"
 			name="description"
 			class="mb-4"
-			optional
+			is-optional
 		/>
 	</v-card-text>
 
@@ -64,7 +64,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
-import TextAreaInput from "@/components/Inputs/TextAreaInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
 import { required } from "@vuelidate/validators";
 
@@ -74,7 +74,7 @@ export default {
 	components: {
 		DataInput,
 		DataSelect,
-		TextAreaInput,
+		DataTextarea,
 	},
 
 	mixins: [validation],

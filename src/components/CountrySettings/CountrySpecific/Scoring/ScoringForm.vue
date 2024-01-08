@@ -13,13 +13,10 @@
 			{{ $t("Name cannot be changed afterwards.") }}
 		</p>
 
-		<v-textarea
+		<DataTextarea
 			v-model.trim="formModel.note"
-			:label="$t('Note')"
+			label="Note"
 			name="note"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			auto-grow
 		/>
 
@@ -62,6 +59,7 @@
 
 <script>
 import DataInput from "@/components/Inputs/DataInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
@@ -73,6 +71,7 @@ export default {
 	components: {
 		FileUpload,
 		DataInput,
+		DataTextarea,
 	},
 
 	mixins: [validation],

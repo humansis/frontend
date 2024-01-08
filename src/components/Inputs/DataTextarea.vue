@@ -1,10 +1,16 @@
 <template>
 	<v-textarea
-		:label="$t(label)"
 		:placeholder="$t(placeholder)"
 		variant="outlined"
+		density="compact"
 		hide-details="auto"
 	>
+		<template v-slot:label>
+			<span>{{ $t(label) }}
+				<i v-if="isOptional" class="optional-text">- {{ $t('Optional') }}</i>
+			</span>
+		</template>
+
 		<template v-if="hasCopyButton" v-slot:append-inner>
 			<v-tooltip
 				:text="$t('Copy')"
@@ -38,6 +44,11 @@ export default {
 		},
 
 		hasCopyButton: {
+			type: Boolean,
+			default: false,
+		},
+
+		isOptional: {
 			type: Boolean,
 			default: false,
 		},

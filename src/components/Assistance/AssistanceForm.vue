@@ -89,13 +89,10 @@
 			disabled
 		/>
 
-		<v-textarea
+		<DataTextarea
 			v-model.trim="formModel.note"
-			:label="$t('Note')"
+			label="Note"
 			name="note"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
 			class="mb-6"
 			auto-grow
 		/>
@@ -198,6 +195,7 @@ import AssistanceName from "@/components/Assistance/AssistanceName";
 import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
@@ -211,6 +209,7 @@ export default {
 	name: "AssistanceForm",
 
 	components: {
+		DataTextarea,
 		AssistanceName,
 		DatePicker,
 		DataSelect,

@@ -139,14 +139,11 @@
 							</v-checkbox>
 						</div>
 
-						<v-textarea
+						<DataTextarea
 							v-model="formModel.notes"
 							:disabled="formDisabled"
 							label="Notes"
 							name="notes"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							class="mt-6"
 							auto-grow
 						/>
@@ -217,6 +214,7 @@ import SectorsService from "@/services/SectorsService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
 import permissions from "@/mixins/permissions";
@@ -250,6 +248,7 @@ export default {
 		EditableTable,
 		SvgIcon,
 		DatePicker,
+		DataTextarea,
 		DataSelect,
 		DataInput,
 	},
