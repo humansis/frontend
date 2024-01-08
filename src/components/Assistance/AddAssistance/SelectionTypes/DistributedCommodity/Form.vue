@@ -191,8 +191,9 @@
 			v-if="displayedFields.remoteDistributionAllowed"
 			v-model="formModel.remoteDistributionAllowed"
 			:label="$t('Remote Distribution Enabled')"
-			hide-details
+			name="remote-distribution"
 			class="checkbox"
+			hide-details
 		/>
 
 		<template v-if="displayedFields.allowedProductCategoryTypes">
@@ -210,6 +211,7 @@
 					:error-messages="isLastCategoryType(index)
 						&& validationMsg('allowedProductCategoryTypes')"
 					:disabled="formDisabled"
+					:name="`product-category-${index}`"
 					hide-details="auto"
 					@blur="onValidate('allowedProductCategoryTypes')"
 				>

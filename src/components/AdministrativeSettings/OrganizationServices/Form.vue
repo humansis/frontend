@@ -56,8 +56,9 @@
 			v-model="formModel.enabled"
 			:disabled="formDisabled"
 			:label="$t('Enabled')"
-			hide-details
+			name="enabled"
 			class="checkbox"
+			hide-details
 		/>
 
 		<v-checkbox
@@ -65,8 +66,9 @@
 			v-model="formModel.parameters.production"
 			:disabled="formDisabled"
 			:label="$t('Production')"
-			hide-details
+			name="production"
 			class="checkbox"
+			hide-details
 		/>
 	</v-card-text>
 

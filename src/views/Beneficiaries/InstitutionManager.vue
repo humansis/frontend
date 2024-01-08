@@ -261,6 +261,7 @@
 									v-model="formModel.phone1.proxy"
 									:label="`${$t('Contact phone')} 1`"
 									:disabled="formDisabled"
+									name="contact-phone-1"
 									hide-details
 									class="checkbox"
 								/>
@@ -313,6 +314,7 @@
 									v-model="formModel.phone2.proxy"
 									:label="`${$t('Contact phone')} 2`"
 									:disabled="formDisabled"
+									name="contact-phone-2"
 									hide-details
 									class="checkbox"
 								/>

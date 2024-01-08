@@ -126,7 +126,7 @@
 
 		<div v-if="isCommoditySmartCard">
 			<div
-				v-for="(productCategoryType) of project.allowedProductCategoryTypes"
+				v-for="(productCategoryType, index) of project.allowedProductCategoryTypes"
 				:key="`product-category-type-${productCategoryType}`"
 				class="category-types"
 			>
@@ -134,6 +134,7 @@
 					v-model="formModel.allowedProductCategoryTypes"
 					:label="productCategoryType"
 					:value="productCategoryType"
+					:name="`product-category-${index}`"
 					hide-details="auto"
 					disabled
 				>

@@ -213,8 +213,9 @@
 				<v-checkbox
 					v-model="formModel.phone1.proxy"
 					:label="`${$t('Contact phone')} 1`"
-					hide-details
+					name="contact-phone-1"
 					class="checkbox"
+					hide-details
 					disabled
 				/>
 			</v-col>
@@ -259,8 +260,9 @@
 				<v-checkbox
 					v-model="formModel.phone2.proxy"
 					:label="`${$t('Contact phone')} 2`"
-					hide-details
+					name="contact-phone-2"
 					class="checkbox"
+					hide-details
 					disabled
 				/>
 			</v-col>

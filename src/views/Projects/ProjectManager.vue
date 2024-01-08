@@ -125,6 +125,7 @@
 								:error-messages="index === (options.allowedProductCategoryTypes.length - 1)
 									&& validationMsg('allowedProductCategoryTypes')"
 								:disabled="formDisabled"
+								:name="`product-category-${index}`"
 								hide-details="auto"
 								@blur="onValidate('allowedProductCategoryTypes')"
 							>

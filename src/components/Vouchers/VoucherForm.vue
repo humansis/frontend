@@ -93,8 +93,9 @@
 			v-if="!formDisabled"
 			v-model="formModel.defineAPassword"
 			:label="$t('Define a Password')"
-			hide-details
+			name="define-password"
 			class="checkbox"
+			hide-details
 		/>
 
 		<DataInput

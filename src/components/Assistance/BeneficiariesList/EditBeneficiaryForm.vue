@@ -42,8 +42,9 @@
 			v-model="addAReferral"
 			:label="$t('Add a Referral Type')"
 			:disabled="disabled"
-			hide-details
+			name="add-referral-type"
 			class="checkbox"
+			hide-details
 		/>
 
 		<DataSelect
