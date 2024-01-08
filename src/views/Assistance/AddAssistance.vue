@@ -109,7 +109,6 @@
 		<div class="d-flex justify-end mt-5">
 			<v-btn
 				:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
-				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="text-none mr-3"
@@ -121,7 +120,6 @@
 				:disabled="createAssistanceButtonDisabled"
 				:loading="loading"
 				color="primary"
-				size="small"
 				class="text-none"
 				@click="onValidateNewAssistance"
 			>

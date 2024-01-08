@@ -19,7 +19,6 @@
 			v-if="userCan.addEditUsers"
 			class="text-none ml-0 mb-3"
 			color="primary"
-			size="small"
 			prepend-icon="plus"
 			@click="onAddNewUser"
 		>

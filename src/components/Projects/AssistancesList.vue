@@ -55,7 +55,6 @@
 				color="gray-darken-4"
 				icon-left="sticky-note"
 				variant="tonal"
-				size="small"
 				class="ml-0"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter('new')"
@@ -69,7 +68,6 @@
 				icon-left="spinner"
 				color="green-darken-4"
 				variant="tonal"
-				size="small"
 				prepend-icon="spinner"
 				@click="onStatusFilter('validated')"
 			>
@@ -82,7 +80,6 @@
 				icon-left="check"
 				color="blue-darken-4"
 				variant="tonal"
-				size="small"
 				prepend-icon="check"
 				@click="onStatusFilter('closed')"
 			>

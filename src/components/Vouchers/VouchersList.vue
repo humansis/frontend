@@ -72,7 +72,6 @@
 
 			<v-btn
 				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="ml-4 text-none"
@@ -84,7 +83,6 @@
 			<v-btn
 				v-show="!bookletsSelects"
 				:loading="printSelectionLoading"
-				size="small"
 				color="primary"
 				variant="elevated"
 				class="ml-4 text-none"

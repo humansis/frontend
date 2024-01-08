@@ -8,7 +8,6 @@
 			<v-btn
 				class="text-none ml-0"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				@click="onGoToAddAssistance"
 			>

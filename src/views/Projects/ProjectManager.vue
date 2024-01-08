@@ -187,7 +187,6 @@
 			<v-col class="d-flex justify-end">
 				<v-btn
 					:to="{ name: 'Projects' }"
-					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="text-none"
@@ -199,7 +198,6 @@
 					v-if="!projectAction.isDetail"
 					:disabled="!isTargetTableValid"
 					color="primary"
-					size="small"
 					class="text-none ml-3"
 					@click="onValidateNewProject"
 				>

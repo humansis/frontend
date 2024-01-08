@@ -153,7 +153,6 @@
 
 				<v-btn
 					:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
@@ -164,7 +163,6 @@
 
 				<v-btn
 					:append-icon="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
-					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
@@ -178,7 +176,6 @@
 						<v-btn
 							v-bind="props"
 							:append-icon="props.open ? 'arrow-up' : 'arrow-down'"
-							size="small"
 							color="primary"
 							class="ml-4 text-none"
 						>

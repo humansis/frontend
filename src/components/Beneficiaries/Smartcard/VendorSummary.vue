@@ -15,7 +15,6 @@
 
 				<v-btn
 					:disabled="isProjectsLoading"
-					size="small"
 					variant="outlined"
 					class="text-none text-right"
 					@click="onShowHistory"
@@ -49,7 +48,6 @@
 							:disabled="!batch.canRedeem"
 							:loading="redeemLoading === batch"
 							color="primary"
-							size="small"
 							class="text-none text-right"
 							@click="onRedeem(batch)"
 						>
@@ -88,7 +86,6 @@
 		<v-btn
 			v-if="history"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onGoBack"
@@ -98,7 +95,6 @@
 
 		<v-btn
 			class="text-none ml-2"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="$emit('close')"
@@ -110,7 +106,6 @@
 			v-if="redemptionSummary"
 			:loading="legacyPrintLoading"
 			class="text-none ml-2"
-			size="small"
 			color="primary"
 			variant="elevated"
 			@click="onLegacyPrint"
@@ -122,7 +117,6 @@
 			v-if="redemptionSummary && printButtonVisible"
 			:loading="printLoading"
 			class="text-none ml-2"
-			size="small"
 			color="primary"
 			variant="elevated"
 			@click="onPrint"

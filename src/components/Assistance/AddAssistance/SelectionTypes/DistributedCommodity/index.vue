@@ -5,7 +5,6 @@
 		<v-btn
 			:disabled="isAlreadyCreatedDistributedCommodity"
 			color="primary"
-			size="small"
 			prepend-icon="plus"
 			class="text-none"
 			@click="onAddNewCommodity"

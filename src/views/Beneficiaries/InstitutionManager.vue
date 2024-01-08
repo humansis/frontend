@@ -379,7 +379,6 @@
 			<v-col class="d-flex justify-end">
 				<v-btn
 					color="blue-grey-lighten-4"
-					size="small"
 					variant="elevated"
 					class="text-none"
 					@click="goBack"
@@ -390,7 +389,6 @@
 				<v-btn
 					v-if="!institutionAction.isDetail"
 					color="primary"
-					size="small"
 					class="text-none ml-3"
 					@click="validateNewInstitution"
 				>

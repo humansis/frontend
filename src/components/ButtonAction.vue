@@ -20,7 +20,6 @@
 				v-else-if="defaultButton"
 				:prepend-icon="icon"
 				color="primary"
-				size="small"
 				variant="elevated"
 				class="text-none"
 				@click.stop="onButtonClicked"

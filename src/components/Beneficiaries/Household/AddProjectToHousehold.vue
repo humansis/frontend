@@ -18,7 +18,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="$emit('formClosed')"
@@ -29,7 +28,6 @@
 		<v-btn
 			:loading="confirmButtonLoading"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onAddHouseholdsToProject"

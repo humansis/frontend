@@ -86,7 +86,6 @@
 		<div class="d-flex justify-end mt-5">
 			<v-btn
 				v-if="isBackButtonVisible"
-				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				prepend-icon="arrow-left"
@@ -99,7 +98,6 @@
 			<v-btn
 				v-if="isNextButtonVisible"
 				color="primary"
-				size="small"
 				append-icon="arrow-right"
 				class="text-none"
 				@click="onNextStep"
@@ -111,7 +109,6 @@
 				v-if="isValidateAndLockButtonVisible"
 				:loading="validateAssistanceButtonLoading"
 				color="primary"
-				size="small"
 				append-icon="lock"
 				class="text-none"
 				@click="onValidateAssistance"

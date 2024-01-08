@@ -6,7 +6,6 @@
 			<v-btn
 				v-if="userCan.addEditVendors"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				class="text-none ml-0"
 				@click="onAddNewVendor"

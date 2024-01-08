@@ -82,7 +82,6 @@
 		<v-btn
 			v-if="closeButton"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -93,7 +92,6 @@
 		<v-btn
 			v-if="!disabled"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"
