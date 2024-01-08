@@ -97,8 +97,11 @@ export const fetcher = async ({
 	body,
 	contentType,
 	tryRequest = false,
+	ignoreBaseUrl = false,
 }) => {
-	const url = `${CONFIG.API}/v${version}/${uri}`;
+	const url = ignoreBaseUrl
+		? `${CONFIG.API_HOST}/${uri}`
+		: `${CONFIG.API}/v${version}/${uri}`;
 
 	let headers = {};
 
