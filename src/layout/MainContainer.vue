@@ -1,6 +1,6 @@
 <template>
 	<v-layout class="rounded rounded-md">
-		<SideMenu />
+		<SideMenu v-if="isAsideVisible" />
 
 		<NavBar />
 

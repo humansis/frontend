@@ -1,5 +1,5 @@
 <template>
-	<aside v-if="isAsideVisible">
+	<aside>
 		<v-navigation-drawer
 			width="250"
 			rail-width="50"
@@ -451,7 +451,6 @@ export default {
 
 	computed: {
 		...mapState([
-			"isAsideVisible",
 			"isAsideExpanded",
 		]),
 
