@@ -560,15 +560,17 @@ export default {
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 
-				this.table.data[key] = item;
-				this.table.data[key].householdId = id;
-				this.table.data[key].address = address;
-				this.table.data[key].id = {
-					routeParams: { householdId: id },
-					routeName: "HouseholdInformationSummary",
-					name: id,
+				this.table.data[key] = {
+					...item,
+					householdId: id,
+					address,
+					members: item.beneficiaryIds.length,
+					id: {
+						routeParams: { householdId: id },
+						routeName: "HouseholdInformationSummary",
+						name: id,
+					},
 				};
-				this.table.data[key].members = item.beneficiaryIds.length;
 
 				if (address) {
 					addresses.push(address);

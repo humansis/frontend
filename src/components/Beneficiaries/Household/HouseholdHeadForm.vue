@@ -696,7 +696,7 @@ export default {
 					gender: getArrayOfCodeListByKey([gender], this.options.gender, "code"),
 					dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
 				},
-				primaryId: nationalIdsData[0] || { primaryIdidNumber: "", idType: null, idPriority: 1 },
+				primaryId: nationalIdsData[0] || { idNumber: "", idType: null, idPriority: 1 },
 				secondaryId: nationalIdsData[1] || { idNumber: "", idType: null, idPriority: 2 },
 				tertiaryId: nationalIdsData[2] || { idNumber: "", idType: null, idPriority: 3 },
 				residencyStatus: getArrayOfCodeListByKey([residencyStatus], this.options.residencyStatus, "code"),
@@ -723,8 +723,8 @@ export default {
 
 			if (!phones?.length) { return preparedPhones; }
 
-			phones.forEach((phone, key) => {
-				preparedPhones[`phone${key + 1}`] = {
+			phones.forEach((phone, index) => {
+				preparedPhones[`phone${index + 1}`] = {
 					type: getArrayOfCodeListByKey([phone.type], this.options.phoneType, "code"),
 					proxy: phone.proxy,
 					ext: getArrayOfCodeListByKey([phone.prefix], this.options.phonePrefixes, "code"),
