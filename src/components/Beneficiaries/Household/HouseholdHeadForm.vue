@@ -655,7 +655,7 @@ export default {
 				localGivenName,
 				localParentsName,
 				nationalIds,
-				phoneIds,
+				phones,
 				referralComment,
 				referralType,
 				vulnerabilityCriteria,
@@ -667,16 +667,16 @@ export default {
 				this.formModel.addAReferral = true;
 			}
 
-			const { phone1, phone2 } = await this.getPhones(phoneIds);
+			const { phone1, phone2 } = this.preparePhones(phones);
 
 			const validNationalIdNames = ["isPrimaryIdValid", "isSecondaryIdValid", "isTertiaryIdValid"];
 
-			const nationalIdsData = await this.getNationalIds(nationalIds);
+			const nationalIdsData = this.prepareNationalIds(nationalIds);
 			nationalIdsData.sort((a, b) => a.idPriority - b.idPriority);
 
 			nationalIdsData.forEach(({ idType, idNumber }, index) => {
 				this[validNationalIdNames[index]] = !!((idType && idNumber)
-            || (!idType && !idNumber));
+					|| (!idType && !idNumber));
 			});
 
 			this.formModel = {
@@ -715,28 +715,24 @@ export default {
 			return normalizeText(text);
 		},
 
-		async getPhones(ids) {
-			const phones = {
+		preparePhones(phones) {
+			const preparedPhones = {
 				phone1: this.formModel.phone1,
 				phone2: this.formModel.phone2,
 			};
-			const promises = [];
-			await ids.forEach((id, key) => {
-				const promise = BeneficiariesService.getPhone(id)
-					.then(({ type, proxy, prefix, number }) => {
-						phones[`phone${key + 1}`] = {
-							type: getArrayOfCodeListByKey([type], this.options.phoneType, "code"),
-							proxy,
-							ext: getArrayOfCodeListByKey([prefix], this.options.phonePrefixes, "code"),
-							phoneNo: number,
-						};
-					}).catch((e) => {
-						Notification(`${this.$t("Phone")} ${key + 1} ${e.message || e}`, "error");
-					});
-				promises.push(promise);
+
+			if (!phones?.length) { return preparedPhones; }
+
+			phones.forEach((phone, index) => {
+				preparedPhones[`phone${index + 1}`] = {
+					type: getArrayOfCodeListByKey([phone.type], this.options.phoneType, "code"),
+					proxy: phone.proxy,
+					ext: getArrayOfCodeListByKey([phone.prefix], this.options.phonePrefixes, "code"),
+					phoneNo: phone.number,
+				};
 			});
-			await Promise.all(promises);
-			return phones;
+
+			return preparedPhones;
 		},
 
 		async fetchSmartCard(beneficiaryId) {
@@ -749,19 +745,12 @@ export default {
 			}
 		},
 
-		async getNationalIds(ids) {
-			try {
-				const { data } = await BeneficiariesService.getNationalIds(ids);
-
-				return data.map((nationalId) => ({
-					idType: getArrayOfCodeListByKey([nationalId.type], this.options.idType, "code"),
-					idNumber: nationalId.number,
-					idPriority: nationalId.priority,
-				}));
-			} catch (e) {
-				Notification(`${this.$t("National ID")} ${e.message || e}`, "error");
-				return null;
-			}
+		prepareNationalIds(nationalIds) {
+			return nationalIds.map((nationalId) => ({
+				idType: getArrayOfCodeListByKey([nationalId.type], this.options.idType, "code"),
+				idNumber: nationalId.number,
+				idPriority: nationalId.priority,
+			}));
 		},
 
 		async fetchNationalCardTypes() {

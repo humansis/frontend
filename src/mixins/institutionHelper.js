@@ -47,7 +47,7 @@ export default {
 				idNumber1,
 				idNumber2,
 				idNumber3,
-				projects,
+				projectIds,
 				address,
 				adm1,
 				adm2,
@@ -113,6 +113,12 @@ export default {
 			const modifiedSupportDateReceived = supportDateReceived
 				? new Date(supportDateReceived)
 				: null;
+
+			const projects = getArrayOfCodeListByKey(
+				projectIds,
+				this.options.projects,
+				"id",
+			);
 
 			return {
 				...this.formModel || this.institutionModel,

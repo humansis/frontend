@@ -152,14 +152,6 @@ export default {
 		return data;
 	},
 
-	async getPhone(id) {
-		if (!id) return null;
-		const { data } = await fetcher({
-			uri: `beneficiaries/phones/${id}`,
-		});
-		return data;
-	},
-
 	async getNationalId(id) {
 		if (!id) return null;
 		const { data } = await fetcher({
@@ -175,15 +167,6 @@ export default {
 
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids?${idsText}`,
-		});
-		return data;
-	},
-
-	async getPhones(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({
-			uri: `beneficiaries/phones?${idsText}`,
 		});
 		return data;
 	},
