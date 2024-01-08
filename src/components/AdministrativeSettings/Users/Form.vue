@@ -7,19 +7,8 @@
 			label="Email"
 			name="email"
 			type="email"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('email')"
-		/>
-
-		<DataInput
-			v-model="formModel.password"
-			:disabled="formDisabled"
-			:error-messages="validationMsg('password')"
-			label="Password"
-			name="password"
-			type="password"
-			class="mb-6"
-			@blur="onValidate('password')"
 		/>
 
 		<DataInput
@@ -28,7 +17,7 @@
 			:error-messages="validationMsg('firstName')"
 			label="First name"
 			name="first-name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('firstName')"
 		/>
 
@@ -38,7 +27,7 @@
 			:error-messages="validationMsg('lastName')"
 			label="Surname"
 			name="surname"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('lastName')"
 		/>
 
@@ -48,7 +37,7 @@
 			:error-messages="validationMsg('position')"
 			label="Position"
 			name="position"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('position')"
 		/>
 
@@ -61,7 +50,7 @@
 			label="Rights"
 			name="rights"
 			item-title="name"
-			class="mb-6"
+			class="mb-4"
 			is-search-enabled
 			@update:modelValue="onRightsSelect"
 		/>
@@ -77,7 +66,7 @@
 			name="project"
 			item-title="name"
 			item-value="id"
-			class="mb-6"
+			class="mb-4"
 			is-search-enabled
 			is-data-shown-as-tag
 			multiple
@@ -98,7 +87,7 @@
 			name="country"
 			item-title="name"
 			item-value="iso3"
-			class="mb-6"
+			class="mb-4"
 			is-search-enabled
 			@update:modelValue="onValidate('countries')"
 		/>
@@ -107,21 +96,13 @@
 			v-model="formModel.language"
 			:items="options.languages"
 			:disabled="formDisabled"
-			:class="{ 'mb-6': formDisabled }"
 			label="Language"
 			name="language"
 			item-title="name"
 			item-value="key"
+			class="mb-4"
 			is-search-enabled
 			optional
-		/>
-
-		<v-checkbox
-			v-if="!formDisabled"
-			v-model="formModel.updatePasswordOnNextLogin"
-			:label="$t('Update password on next login')"
-			hide-details
-			class="checkbox"
 		/>
 
 		<DataSelect
@@ -130,7 +111,7 @@
 			:disabled="formDisabled"
 			label="Prefix"
 			name="prefix"
-			class="mb-6"
+			class="mb-4"
 			is-search-enabled
 			optional
 		/>
@@ -140,7 +121,7 @@
 			:disabled="formDisabled"
 			label="Phone Number"
 			name="phone-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 	</v-card-text>
@@ -187,9 +168,6 @@ import { Notification } from "@/utils/UI";
 import { PHONE, ROLE } from "@/consts";
 import { email, required, requiredIf } from "@vuelidate/validators";
 
-const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
-const passwordValidation = (value) => (!value || passwordRegexp.test(value));
-
 export default {
 	name: "userForm",
 
@@ -207,10 +185,6 @@ export default {
 				firstName: { required },
 				lastName: { required },
 				position: { required },
-				password: {
-					required: requiredIf(!this.isEditing),
-					passwordValidation,
-				},
 				rights: { required },
 				projectIds: { required: requiredIf(!this.formModel.disabledProject) },
 				countries: { required: requiredIf(!this.formModel.disabledCountry) },
@@ -353,18 +327,6 @@ export default {
 		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
-		},
-
-		passwordMessage() {
-			if (this.v$.formModel.password.$dirty) {
-				if (!this.v$.formModel.password.required) {
-					return this.$t("Required");
-				}
-				if (!this.v$.formModel.password.passwordValidation) {
-					return this.$t("The Password Is Not Strong Enough... Minimum Required = 8 Characters, 1 Lowercase, 1 Uppercase, 1 Numeric");
-				}
-			}
-			return "";
 		},
 	},
 };

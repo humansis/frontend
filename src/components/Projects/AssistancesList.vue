@@ -147,6 +147,7 @@
 						/>
 
 						<ButtonAction
+							:disabled="!row.deletable || !userCan.deleteDistribution"
 							:is-only-icon="false"
 							label="Delete"
 							icon="trash"
