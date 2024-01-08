@@ -16,41 +16,17 @@
 						{{ gitInfo.appVersion }}
 					</div>
 
-					<v-form @submit.prevent="onSubmitForm">
-						<v-text-field
-							v-model="v$.formModel.username.$model"
-							label="Email"
-							name="email"
-							type="email"
-							placeholder="Enter your email"
-							bg-color="white"
-							class="mx-12"
-							:error-messages="v$.formModel.username.$errors.map(e => e.$message)"
-						/>
-
-						<v-text-field
-							v-model="v$.formModel.password.$model"
-							label="Password"
-							name="password"
-							placeholder="Enter your password"
-							bg-color="white"
-							class="mx-12"
-							:append-inner-icon="passwordVisible ? 'eye-slash' : 'eye'"
-							:type="passwordVisible ? 'text' : 'password'"
-							:error-messages="v$.formModel.password.$errors.map(e => e.$message)"
-							@click:append-inner="passwordVisible = !passwordVisible"
-						/>
-
-						<div class="text-center">
-							<v-btn
-								color="primary"
-								type="submit"
-								class="text-center"
-							>
-								{{ $t("login") }}
-							</v-btn>
-						</div>
-					</v-form>
+					<div class="text-center">
+						<v-btn
+							:loading="loginButtonLoading"
+							color="primary"
+							type="submit"
+							class="text-center"
+							@click="redirectToKeycloak"
+						>
+							{{ $t("login with keycloak") }}
+						</v-btn>
+					</div>
 				</v-card>
 			</v-col>
 		</v-row>
@@ -67,35 +43,18 @@ import { setCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
 import { GENERAL, ROLE } from "@/consts";
 import gitInfo from "@/gitInfo";
-import { useVuelidate } from "@vuelidate/core";
-import { email, required } from "@vuelidate/validators";
 import { jwtDecode } from "jwt-decode";
 
 export default {
 	name: "LoginPage",
 
-	validations() {
-		return {
-			formModel: {
-				username: { required, email },
-				password: { required },
-			},
-		};
-	},
-
 	data() {
 		return {
 			gitInfo,
-			passwordVisible: false,
-			formModel: {
-				username: "",
-				password: "",
-			},
+			keyCloakAuthenticationUrl: "",
 			loginButtonLoading: false,
 		};
 	},
-
-	setup: () => ({ v$: useVuelidate() }),
 
 	computed: {
 		...mapState([
@@ -113,8 +72,9 @@ export default {
 		document.documentElement.classList.add("layout-center");
 	},
 
-	mounted() {
-		this.urlLogin();
+	async mounted() {
+		await this.getKeycloakLoginUrl();
+		await this.checkForLoginToken();
 
 		this.$store.commit("fullPage", true);
 	},
@@ -126,7 +86,6 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
-			"updateStoredUser",
 			"storePermissions",
 			"storeLanguage",
 			"storeTranslations",
@@ -135,31 +94,13 @@ export default {
 			"storeAvailableProjects",
 		]),
 
-		urlLogin() {
-			if (import.meta.env.VITE_APP_ENV === "prod") return;
-
-			const { username, password } = this.$route.query;
-
-			if (username && password) {
-				this.formModel = {
-					username,
-					password,
-				};
-
-				this.onSubmitForm();
-			}
-		},
-
-		async onSubmitForm() {
-			const isFormCorrect = await this.v$.$validate();
-			if (!isFormCorrect) return;
-
+		async login(accessToken) {
 			try {
 				this.loginButtonLoading = true;
 
 				const lastLoggedUsername = this.user.username || this.lastUsername;
 
-				const { data, status, message } = await LoginService.logUserIn(this.formModel);
+				const { data, status, message } = await LoginService.keycloakLogin({ token: accessToken });
 
 				if (status !== 200) {
 					throw new Error(message);
@@ -180,11 +121,6 @@ export default {
 				}
 
 				const { data: userDetail } = await UsersService.getDetailOfUser(userId);
-
-				this.updateStoredUser({
-					attribute: "changePassword",
-					value: userDetail.changePassword,
-				});
 
 				await this.storeAvailableProjects(userDetail.projectIds);
 
@@ -229,7 +165,7 @@ export default {
 						this.$router.push(this.$route.query.redirect.toString());
 					} else {
 						this.$router.push({
-							name: "Home",
+							name: "Projects",
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},
@@ -265,6 +201,35 @@ export default {
 				this.$i18n.locale = languageKey;
 				this.$i18n.fallbackLocale = languageKey;
 				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
+			}
+		},
+
+		async getKeycloakLoginUrl() {
+			try {
+				const { data: { authenticationUrl } } = await LoginService.getKeycloakLoginUrl();
+
+				this.keyCloakAuthenticationUrl = authenticationUrl;
+			} catch (e) {
+				Notification(`${this.$t("Keycloak url")} ${e.message || e}`, "error");
+			}
+		},
+
+		redirectToKeycloak() {
+			if (this.keyCloakAuthenticationUrl.length) {
+				window.location.href = `${this.keyCloakAuthenticationUrl}
+					&redirect_uri=${encodeURIComponent(window.location)}`;
+			} else {
+				Notification(`${this.$t("Address for keycloak not found")}`, "error");
+			}
+		},
+
+		async checkForLoginToken() {
+			const query = this.$route.fullPath;
+			const params = new URLSearchParams(query);
+			const accessToken = params.get("access_token");
+
+			if (accessToken) {
+				await this.login(accessToken);
 			}
 		},
 	},

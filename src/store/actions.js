@@ -17,6 +17,10 @@ export default {
 		commit(CONST.LOGOUT);
 	},
 
+	showSideMenu: ({ commit }, isVisible) => {
+		commit(CONST.SHOW_SIDE_MENU, isVisible);
+	},
+
 	storeCountry: ({ commit }, country) => {
 		if (country) {
 			commit(CONST.STORE_COUNTRY, country);

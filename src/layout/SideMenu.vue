@@ -451,7 +451,6 @@ export default {
 
 	computed: {
 		...mapState([
-			"isAsideVisible",
 			"isAsideExpanded",
 		]),
 
