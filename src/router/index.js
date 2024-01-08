@@ -495,7 +495,13 @@ router.beforeEach((to, from, next) => {
 		}
 
 		if (!canGoNext) {
+			store.dispatch("showSideMenu", false);
+
 			return next({ name: "NoPermission" });
+		}
+
+		if (to.name !== "NoPermission") {
+			store.dispatch("showSideMenu", true);
 		}
 	}
 

@@ -33,6 +33,10 @@ export default {
 		state.isAsideExpanded = isExpand;
 	},
 
+	[CONST.SHOW_SIDE_MENU]: (state, isVisible) => {
+		state.isAsideVisible = isVisible;
+	},
+
 	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
 		const permissionsCopy = { ...state.permissions };
 
