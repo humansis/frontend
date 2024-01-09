@@ -327,6 +327,7 @@ export default {
 
 .environment-info {
 	position: absolute;
+	width: 100%;
 	bottom: 1.75rem;
 }
 </style>
