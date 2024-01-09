@@ -30,7 +30,6 @@
 				item-title="name"
 				item-value="id"
 				multiple
-				is-data-shown-as-tag
 				@update:modelValue="onTargetSelect('institutions')"
 			/>
 		</v-card-text>

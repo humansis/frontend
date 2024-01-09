@@ -15,7 +15,6 @@
 					item-title="name"
 					item-value="id"
 					class="mb-4"
-					is-search-enabled
 					multiple
 					chips
 					closable-chips

@@ -29,7 +29,6 @@
 							:error-messages="validationMsg('institutionType')"
 							label="Institution type"
 							name="institution-type"
-							is-search-enabled
 							class="mb-4"
 							@update:modelValue="onValidate('institutionType')"
 						/>
@@ -46,8 +45,6 @@
 							item-title="name"
 							item-value="id"
 							class="mb-4"
-							is-search-enabled
-							is-data-shown-as-tag
 							multiple
 							@update:modelValue="onValidate('projectName')"
 						/>
@@ -211,7 +208,6 @@
 							label="Contact ID type"
 							name="national-card-type"
 							class="mb-4"
-							is-search-enabled
 							optional
 							@update:modelValue="onValidate('nationalCardType')"
 						/>

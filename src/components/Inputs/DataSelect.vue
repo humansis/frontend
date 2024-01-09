@@ -1,5 +1,5 @@
 <template>
-	<v-select
+	<v-autocomplete
 		v-model="data"
 		:items="options"
 		:readonly="disabled"
@@ -12,7 +12,10 @@
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
 		:multiple="multiple"
+		:chips="multiple"
+		:closable-chips="multiple"
 		:no-data-text="$t('List is empty')"
+		autocomplete="off"
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
@@ -26,14 +29,6 @@
 			<slot v-bind="props" name="custom-item" :props="props" :item="item">
 				<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
 			</slot>
-		</template>
-
-		<template v-slot:selection="{ item }">
-			<v-chip v-if="isDataShownAsTag" :closable="!disabled" @click:close="onChipClosed(item)">
-				<span>{{ $t(item.title) }}</span>
-			</v-chip>
-
-			<span v-else>{{ $t(normalizeFirstLetter(item.title)) }}</span>
 		</template>
 
 		<template v-if="isAppendIconEnabled" v-slot:append>
@@ -53,17 +48,7 @@
 		</template>
 
 		<template v-slot:prepend-item>
-			<v-list v-if="isSearchEnabled || multiple">
-				<v-list-item v-if="isSearchEnabled">
-					<v-text-field
-						v-model="searchValue"
-						placeholder="Search"
-						density="compact"
-						hide-details="auto"
-						@input="onSearch"
-					/>
-				</v-list-item>
-
+			<v-list v-if="multiple">
 				<v-list-item
 					v-if="multiple"
 					:title="$t('Select All')"
@@ -81,7 +66,7 @@
 				<v-divider class="mt-2" />
 			</v-list>
 		</template>
-	</v-select>
+	</v-autocomplete>
 </template>
 
 <script>
@@ -97,11 +82,6 @@ export default {
 		label: {
 			type: String,
 			default: "",
-		},
-
-		isSearchEnabled: {
-			type: Boolean,
-			default: false,
 		},
 
 		appendIcon: {
@@ -122,11 +102,6 @@ export default {
 		items: {
 			type: Array,
 			default: () => [],
-		},
-
-		isDataShownAsTag: {
-			type: Boolean,
-			default: false,
 		},
 
 		disabled: {
@@ -224,14 +199,6 @@ export default {
 		onSelectAll() {
 			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
-		},
-
-		onChipClosed(item) {
-			const updatedModel = this.modelValue?.filter(
-				(removedItem) => removedItem[this.itemValue] !== item.value,
-			);
-
-			this.$emit("update:modelValue", updatedModel);
 		},
 
 		normalizeFirstLetter(value) {

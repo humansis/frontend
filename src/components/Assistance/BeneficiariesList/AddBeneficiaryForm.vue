@@ -23,8 +23,6 @@
 			name="beneficiaries"
 			item-value="id"
 			class="mb-4"
-			is-search-enabled
-			is-data-shown-as-tag
 			multiple
 			@update:modelValue="onValidate('beneficiaries')"
 		/>

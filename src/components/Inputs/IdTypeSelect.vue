@@ -7,7 +7,6 @@
 		:error-messages="validationMsg('idType')"
 		name="id-type"
 		class="mb-4"
-		is-search-enabled
 		@update:modelValue="onValidate('idType')"
 	/>
 </template>

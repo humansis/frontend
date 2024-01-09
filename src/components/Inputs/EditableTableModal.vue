@@ -27,13 +27,11 @@
 						v-model="data[formInput.key]"
 						:items="formInput.options"
 						:multiple="isInputTypeMultiSelect(formInput)"
-						:is-data-shown-as-tag="isInputTypeMultiSelect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:clearable="true"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="subsectors"
-						is-search-enabled
 						optional
 						class="mb-4"
 						@update:modelValue="onInputChanged(formInput, data)"

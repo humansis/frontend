@@ -35,7 +35,6 @@
 				label="Round"
 				name="round"
 				class="mb-4"
-				is-search-enabled
 				@update:modelValue="onValuesForAssistanceName"
 			/>
 
@@ -61,7 +60,6 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
-					is-search-enabled
 					optional
 				/>
 			</div>
@@ -81,7 +79,6 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
-					is-search-enabled
 					optional
 				/>
 			</div>

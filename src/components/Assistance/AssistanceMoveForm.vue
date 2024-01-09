@@ -9,7 +9,6 @@
 			name="target-project"
 			item-title="name"
 			item-value="id"
-			is-search-enabled
 			class="my-4"
 		/>
 	</v-card-text>

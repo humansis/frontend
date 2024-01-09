@@ -75,7 +75,6 @@
 					label="Gender"
 					name="gender"
 					class="mb-4"
-					is-search-enabled
 					@update:modelValue="onValidate('personalInformation.gender')"
 				/>
 
@@ -115,7 +114,6 @@
 							label="ID Type"
 							name="it-type"
 							class="mb-4"
-							is-search-enabled
 							@update:modelValue="onValidate('primaryId.idType'); onIdChange($event)"
 						/>
 
@@ -138,7 +136,6 @@
 							label="ID Type"
 							name="it-type"
 							class="mb-4"
-							is-search-enabled
 							@update:modelValue="onValidate('secondaryId.idType'); onIdChange($event)"
 						/>
 
@@ -161,7 +158,6 @@
 							label="ID Type"
 							name="it-type"
 							class="mb-4"
-							is-search-enabled
 							@update:modelValue="onValidate('tertiaryId.idType'); onIdChange($event)"
 						/>
 
@@ -188,7 +184,6 @@
 					label="Residency status"
 					name="residency-status"
 					class="mb-4"
-					is-search-enabled
 					@update:modelValue="onValidate('residencyStatus')"
 				/>
 
@@ -234,7 +229,6 @@
 					label="Referral Type"
 					name="referral-type"
 					class="mb-4"
-					is-search-enabled
 				/>
 
 				<DataInput
@@ -262,7 +256,6 @@
 						label="Type phone 1"
 						name="phone1-type"
 						class="mb-4"
-						is-search-enabled
 					/>
 
 					<v-checkbox
@@ -282,7 +275,6 @@
 					label="Prefix phone 1"
 					name="phone1-prefix"
 					class="mb-4"
-					is-search-enabled
 					@update:modelValue="onValidate('phone1.ext')"
 				/>
 
@@ -310,7 +302,6 @@
 						label="Type phone 2"
 						name="phone2-type"
 						class="mb-4"
-						is-search-enabled
 					/>
 
 					<v-checkbox
@@ -330,7 +321,6 @@
 					label="Prefix phone 2"
 					name="phone2-prefix"
 					class="mb-4"
-					is-search-enabled
 					@update:modelValue="onValidate('phone2.ext')"
 				/>
 

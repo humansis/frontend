@@ -55,7 +55,6 @@
 					label="Livelihood"
 					name="livelihood"
 					class="mb-4"
-					is-search-enabled
 					optional
 				/>
 
@@ -104,7 +103,6 @@
 					class="mb-4"
 					multiple
 					chips
-					is-search-enabled
 					optional
 				/>
 
@@ -143,7 +141,6 @@
 					class="mb-4"
 					multiple
 					chips
-					is-search-enabled
 					optional
 				/>
 
@@ -192,7 +189,6 @@
 					label="Shelter status"
 					name="shelter-status"
 					class="mb-4"
-					is-search-enabled
 					optional
 				/>
 

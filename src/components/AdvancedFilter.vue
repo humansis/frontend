@@ -18,7 +18,6 @@
 				:item-title="options.label || 'value'"
 				:item-value="options.trackBy || 'code'"
 				:placeholder="options.placeholder"
-				:is-search-enabled="options.multiple"
 				:chips="options.multiple"
 				:closable-chips="options.multiple"
 				name="filter-select"

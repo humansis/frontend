@@ -9,7 +9,6 @@
 			name="project"
 			item-value="id"
 			class="mb-4"
-			is-search-enabled
 		/>
 	</v-card-text>
 

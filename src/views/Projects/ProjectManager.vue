@@ -35,8 +35,6 @@
 							:error-messages="validationMsg('selectedSectors')"
 							label="Sectors"
 							name="sectors"
-							is-search-enabled
-							is-data-shown-as-tag
 							multiple
 							class="mb-4"
 							@blur="onValidate('selectedSectors')"
@@ -50,10 +48,8 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							is-search-enabled
 							class="mb-4 warning-message"
 							persistent-hint
-							is-data-shown-as-tag
 							multiple
 							optional
 							@update:modelValue="onSubSectorSelect"
@@ -87,8 +83,6 @@
 							name="donors"
 							item-title="fullname"
 							item-value="id"
-							is-search-enabled
-							is-data-shown-as-tag
 							class="mb-4"
 							optional
 							multiple

@@ -45,7 +45,6 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
-			is-search-enabled
 		/>
 
 		<p
