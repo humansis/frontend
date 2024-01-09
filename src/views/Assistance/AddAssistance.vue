@@ -25,6 +25,7 @@
 					<v-tooltip
 						:text="$t('No household head')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<v-icon v-bind=props icon="users" />

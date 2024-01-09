@@ -30,7 +30,11 @@
 						exact
 					>
 						<template v-slot:prepend>
-							<v-tooltip :text="sideBarItem.title" :disabled="isAsideExpanded">
+							<v-tooltip
+								:text="sideBarItem.title"
+								:disabled="isAsideExpanded"
+								content-class="tooltip-right"
+							>
 								<template v-slot:activator="{ props }">
 									<v-icon
 										v-bind="props"
@@ -57,6 +61,7 @@
 									<v-tooltip
 										:text="sideBarItem.title"
 										:disabled="isAsideExpanded"
+										content-class="tooltip-right"
 									>
 										<template v-slot:activator="{ props }">
 											<v-icon
@@ -80,6 +85,7 @@
 								<v-tooltip
 									:text="subItem.title"
 									:disabled="isAsideExpanded"
+									content-class="tooltip-right"
 								>
 									<template v-slot:activator="{ props }">
 										<v-icon

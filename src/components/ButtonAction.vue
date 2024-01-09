@@ -3,6 +3,7 @@
 		:disabled="!tooltipText.length"
 		:text="$t(tooltipText)"
 		location="top"
+		content-class="tooltip-top"
 	>
 		<template v-slot:activator="{ props }">
 			<v-btn

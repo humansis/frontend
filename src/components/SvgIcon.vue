@@ -2,10 +2,11 @@
 	<span>
 		<v-tooltip
 			v-for="(icon, key) in filteredIcons"
-			location="top"
-			color="red"
 			:key="key"
 			:text="$t(icon.value || '')"
+			location="top"
+			color="red"
+			content-class="tooltip-top"
 		>
 			<template v-slot:activator="{ props }">
 				<svg
