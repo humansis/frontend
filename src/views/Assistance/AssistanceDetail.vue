@@ -54,8 +54,8 @@
 				height="20"
 				rounded
 			>
-				<template v-slot:default="{ value }">
-					<strong>{{ value }}%</strong>
+				<template v-slot:default>
+					<strong>{{ assistanceProgress }}%</strong>
 				</template>
 			</v-progress-linear>
 		</div>
