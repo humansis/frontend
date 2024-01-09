@@ -18,6 +18,7 @@
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						name="start-date"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
@@ -34,7 +35,7 @@
 						name="subsectors"
 						is-search-enabled
 						optional
-						class="mb-6"
+						class="mb-4"
 						@update:modelValue="onInputChanged(formInput, data)"
 					/>
 
@@ -45,7 +46,7 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="project-name"
-						class="mb-6"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
@@ -59,7 +60,7 @@
 						type="number"
 						min="0"
 						dense
-						class="mb-6"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
@@ -70,7 +71,7 @@
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						:name="`note-${index}`"
-						class="mt-6"
+						class="mt-4"
 						auto-grow
 						@blur="onInputChanged(formInput, data)"
 					/>

@@ -6,7 +6,7 @@
 			:error-messages="validationMsg('name')"
 			label="Name"
 			name="name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('name')"
 		/>
 
@@ -15,7 +15,7 @@
 			:disabled="formDisabled"
 			label="Unit"
 			name="unit"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 
@@ -29,7 +29,7 @@
 			name="category"
 			item-title="name"
 			item-value="id"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('productCategoryId')"
 		/>
 
@@ -41,7 +41,7 @@
 				label="Price"
 				name="price"
 				type="number"
-				class="mb-6"
+				class="mb-4"
 				hide-spin-buttons
 				@blur="onValidate('unitPrice')"
 			/>
@@ -54,7 +54,7 @@
 				persistent-hint
 				label="Currency"
 				name="currency"
-				class="mb-6"
+				class="mb-4"
 				@update:modelValue="onValidate('currency')"
 			/>
 		</template>
@@ -68,7 +68,7 @@
 			variant="outlined"
 			density="compact"
 			accept="image/*"
-			class="mt-5"
+			class="mt-4"
 			@update:modelValue="onValidate('uploadedImage')"
 		/>
 

@@ -14,7 +14,7 @@
 							:error-messages="validationMsg('name')"
 							label="Project name"
 							name="project-name"
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('name')"
 						/>
 
@@ -23,7 +23,7 @@
 							:disabled="formDisabled"
 							label="Internal ID"
 							name="project-name"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -38,7 +38,7 @@
 							is-search-enabled
 							is-data-shown-as-tag
 							multiple
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('selectedSectors')"
 							@update:modelValue="onSelectorsSelect"
 						/>
@@ -51,7 +51,7 @@
 							label="Subsectors"
 							name="subsectors"
 							is-search-enabled
-							class="mb-6 warning-message"
+							class="mb-4 warning-message"
 							persistent-hint
 							is-data-shown-as-tag
 							multiple
@@ -65,6 +65,7 @@
 							:disabled="formDisabled"
 							label="Start Date"
 							name="start-date"
+							class="mb-4"
 							@blur="onValidate('startDate')"
 						/>
 
@@ -74,6 +75,7 @@
 							:disabled="formDisabled"
 							label="End Date"
 							name="end-date"
+							class="mb-4"
 							@blur="onValidate('endDate')"
 						/>
 
@@ -87,7 +89,7 @@
 							item-value="id"
 							is-search-enabled
 							is-data-shown-as-tag
-							class="mb-6"
+							class="mb-4"
 							optional
 							multiple
 							:disabled="formDisabled"
@@ -100,7 +102,7 @@
 							:disabled="formDisabled"
 							label="Local Invoice Address"
 							name="local-invoice-address"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -145,7 +147,7 @@
 							:disabled="formDisabled"
 							label="Notes"
 							name="notes"
-							class="mt-6"
+							class="mt-4"
 							auto-grow
 						/>
 					</v-col>

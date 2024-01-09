@@ -5,7 +5,7 @@
 			:error-messages="validationMsg('name')"
 			label="Name"
 			name="name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('name')"
 		/>
 
@@ -17,6 +17,7 @@
 			v-model.trim="formModel.note"
 			label="Note"
 			name="note"
+			class="mb-4"
 			auto-grow
 		/>
 
@@ -28,7 +29,6 @@
 			hide-details="auto"
 			variant="outlined"
 			density="compact"
-			class="mt-5"
 			@update:modelValue="onValidate('uploadedImage')"
 		/>
 	</v-card-text>

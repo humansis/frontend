@@ -61,7 +61,7 @@
 			v-model="formModel.sector"
 			label="Sector"
 			name="sector"
-			class="mt-4 mb-6"
+			class="my-4"
 			disabled
 		/>
 
@@ -69,7 +69,7 @@
 			v-model="subSectorName"
 			label="Subsector"
 			name="subsector"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -77,7 +77,7 @@
 			v-model="formModel.type"
 			label="Assistance Type"
 			name="assistance-type"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -85,7 +85,7 @@
 			v-model="formModel.target"
 			label="Target"
 			name="target"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -93,7 +93,7 @@
 			v-model.trim="formModel.note"
 			label="Note"
 			name="note"
-			class="mb-6"
+			class="mb-4"
 			auto-grow
 		/>
 
@@ -114,7 +114,7 @@
 					v-model="minimumVulnerabilityScore"
 					label="Minimum Vulnerability Score"
 					name="minimum-vulnerability-score"
-					class="mb-6"
+					class="mb-4"
 					disabled
 				/>
 			</v-col>
@@ -155,7 +155,7 @@
 			v-model="formModel.cashbackLimit"
 			label="Cashback Limit"
 			name="cashback-limit"
-			class="mb-6 mt-5"
+			class="my-4"
 			disabled
 		/>
 	</v-card-text>

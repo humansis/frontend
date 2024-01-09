@@ -9,7 +9,7 @@
 			name="project"
 			item-title="name"
 			item-value="id"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('projectId')"
 		/>
 
@@ -18,7 +18,7 @@
 			v-model="formModel.code"
 			label="Code"
 			name="code"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -30,7 +30,7 @@
 			name="quantity-of-booklets"
 			type="number"
 			min="0"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('quantityOfBooklets')"
 		/>
@@ -43,7 +43,7 @@
 			name="quantity-of-vouchers"
 			type="number"
 			min="0"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('quantityOfVouchers')"
 		/>
@@ -56,7 +56,7 @@
 			label="Individual Value"
 			type="number"
 			hint="Use enter to add value"
-			class="mb-6"
+			class="mb-4"
 			multiple
 			clearable
 			hide-spin-buttons
@@ -72,7 +72,7 @@
 			name="currency"
 			item-title="value"
 			item-value="value"
-			class="mb-6"
+			class="mb-4"
 			searchable
 			@update:modelValue="onValidate('currency')"
 		/>
@@ -86,7 +86,7 @@
 			name="status"
 			item-title="value"
 			item-value="value"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<v-checkbox
@@ -107,7 +107,7 @@
 			:type="passwordVisible ? 'text' : 'password'"
 			label="Password"
 			name="password"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('password')"
 			@click:append-inner="passwordVisible = !passwordVisible"
 		/>

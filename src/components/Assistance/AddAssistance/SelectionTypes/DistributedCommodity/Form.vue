@@ -7,7 +7,7 @@
 			:error-messages="validationMsg('modality')"
 			label="Modality"
 			name="modality"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onModalitySelect"
 		/>
 
@@ -18,7 +18,7 @@
 			:error-messages="validationMsg('modalityType')"
 			label="Modality Type"
 			name="modality-type"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onModalityTypeSelect"
 		/>
 
@@ -30,7 +30,7 @@
 			:error-messages="validationMsg('division')"
 			label="Distribute"
 			name="division"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onDivisionSelect"
 		/>
 
@@ -42,7 +42,7 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('customField')"
 		/>
 
@@ -55,7 +55,7 @@
 			type="number"
 			min="0.01"
 			step="0.01"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('amountMultiplier')"
 			@input="onCheckQuantityOrValue"
@@ -83,7 +83,7 @@
 			:error-messages="validationMsg('unit')"
 			label="Unit 1"
 			name="unit"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('unit')"
 		/>
 
@@ -97,7 +97,7 @@
 					:label="divisionFields[divisionFieldsValidationString][i].label"
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
 					name="division"
-					class="mb-6"
+					class="mb-4"
 					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
@@ -111,7 +111,7 @@
 			name="quantity-one"
 			type="number"
 			min="1"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('quantity')"
 			@input="onCheckQuantityOrValue"
@@ -126,7 +126,7 @@
 			name="value"
 			type="number"
 			min="1"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('value')"
 			@input="onCheckQuantityOrValue"
@@ -140,7 +140,7 @@
 			:optional="isModalityInKind"
 			label="Currency"
 			name="currency"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('currency')"
 		/>
 
@@ -150,7 +150,7 @@
 			:error-messages="validationMsg('secondUnit')"
 			label="Unit 2"
 			name="unit"
-			class="mb-6"
+			class="mb-4"
 			optional
 			@blur="onValidate('secondUnit')"
 		/>
@@ -163,7 +163,7 @@
 			name="quantity-two"
 			type="number"
 			min="1"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('secondQuantity')"
 		/>
@@ -171,10 +171,11 @@
 		<DatePicker
 			v-if="displayedFields.dateExpiration"
 			v-model="formModel.dateExpiration"
-			label="Expiration Date"
-			name="expiration-date"
 			:min-date="minDateOfDistribution"
 			:max-date="maxDateOfAssistance"
+			label="Expiration Date"
+			name="expiration-date"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -183,7 +184,7 @@
 			:error-messages="validationMsg('description')"
 			label="Description"
 			name="description"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('description')"
 		/>
 
@@ -235,7 +236,7 @@
 			label="Cashback Limit"
 			name="cashback-limit"
 			type="number"
-			class="mb-6"
+			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('cashbackLimit')"
 		/>

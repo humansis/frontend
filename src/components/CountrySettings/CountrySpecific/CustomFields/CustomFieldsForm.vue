@@ -6,7 +6,7 @@
 			:error-messages="validationMsg('field')"
 			label="Field"
 			name="field"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('field')"
 		/>
 
@@ -17,7 +17,7 @@
 			:error-messages="validationMsg('type')"
 			label="Type"
 			name="type"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('type')"
 		/>
 	</v-card-text>

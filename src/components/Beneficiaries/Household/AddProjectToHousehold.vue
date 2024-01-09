@@ -8,7 +8,7 @@
 			label="Project"
 			name="project"
 			item-value="id"
-			class="mb-6"
+			class="mb-4"
 			is-search-enabled
 		/>
 	</v-card-text>

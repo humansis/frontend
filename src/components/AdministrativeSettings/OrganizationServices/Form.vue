@@ -4,7 +4,7 @@
 			v-model="formModel.name"
 			label="Service Name"
 			name="service-name"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -12,7 +12,7 @@
 			v-model="formModel.iso3"
 			label="Country"
 			name="country"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -22,7 +22,7 @@
 			:disabled="formDisabled"
 			label="Token"
 			name="token"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -31,7 +31,7 @@
 			:disabled="formDisabled"
 			label="Username"
 			name="username"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -40,7 +40,7 @@
 			:disabled="formDisabled"
 			label="Email"
 			name="email"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput

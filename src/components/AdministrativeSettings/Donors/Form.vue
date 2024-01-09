@@ -6,7 +6,7 @@
 			:error-messages="validationMsg('fullname')"
 			label="Donor Name"
 			name="donor-name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('fullname')"
 		/>
 
@@ -16,7 +16,7 @@
 			:error-messages="validationMsg('shortname')"
 			label="Short Name"
 			name="short-name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('shortname')"
 		/>
 
@@ -32,7 +32,7 @@
 			variant="outlined"
 			density="compact"
 			accept="image/*"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<v-img
@@ -40,7 +40,7 @@
 			:src="formModel.logo"
 			alt="donor-image"
 			height="125"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -48,7 +48,7 @@
 			:disabled="formDisabled"
 			label="Notes"
 			name="notes"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 	</v-card-text>
@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import ColorPicker from "@/components/Inputs/ColorPicker";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
@@ -91,7 +90,6 @@ export default {
 	components: {
 		DataInput,
 		FileUpload,
-		ColorPicker,
 	},
 
 	mixins: [validation],

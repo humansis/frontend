@@ -14,7 +14,7 @@
 			:error-messages="validationMsg('code')"
 			label="code"
 			name="code"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('code')"
 		/>
 	</v-card-text>

@@ -5,7 +5,7 @@
 			label="First Name"
 			name="first-name"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -13,7 +13,7 @@
 			label="Family Name"
 			name="family-name"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -21,13 +21,14 @@
 			label="Gender"
 			name="gender"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DatePicker
 			v-model="formModel.dateOfBirth"
 			label="Date of Birth"
 			name="date-of-birth"
+			class="mb-4"
 			disabled
 		/>
 
@@ -35,6 +36,7 @@
 			v-model="formModel.residencyStatus"
 			label="Residency Status"
 			name="residency-status"
+			class="mb-4"
 			disabled
 		/>
 
@@ -56,7 +58,7 @@
 			label="Referral Type"
 			name="referral-type"
 			is-search-enabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -65,14 +67,14 @@
 			:disabled="disabled"
 			label="Comment"
 			name="comment"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
 			v-model="formModel.justification"
 			label="Justification for Adding"
 			name="justification-for-adding"
-			class="mb-6"
+			class="mb-44"
 			disabled
 		/>
 	</v-card-text>

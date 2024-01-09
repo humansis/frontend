@@ -25,6 +25,7 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
+				class="mb-4"
 				@update:modelValue="onValuesForAssistanceName"
 			/>
 
@@ -33,7 +34,7 @@
 				:items="options.rounds"
 				label="Round"
 				name="round"
-				class="mb-6"
+				class="mb-4"
 				is-search-enabled
 				@update:modelValue="onValuesForAssistanceName"
 			/>
@@ -42,10 +43,10 @@
 				v-model="formModel.eloNumber"
 				label="Elo number"
 				name="elo-number"
-				class="mb-6"
+				class="mb-4"
 			/>
 
-			<div class="mb-6">
+			<div class="mb-4">
 				<DataInput
 					v-if="!options.activities.length"
 					v-model="formModel.activity"
@@ -65,7 +66,7 @@
 				/>
 			</div>
 
-			<div class="mb-6">
+			<div class="mb-4">
 				<DataInput
 					v-if="!options.budgetLines.length"
 					v-model="formModel.budgetLine"
@@ -100,7 +101,7 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				class="mb-6 warning-message"
+				class="mb-4 warning-message"
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -113,7 +114,7 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				class="mb-6 warning-message"
+				class="mb-4 warning-message"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -124,7 +125,7 @@
 				:error-messages="validationMsg('assistanceType')"
 				label="Assistance Type"
 				name="assistance-type"
-				class="mb-6"
+				class="mb-4"
 				@update:modelValue="onAssistanceTypeSelect"
 			/>
 

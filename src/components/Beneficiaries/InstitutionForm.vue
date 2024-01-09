@@ -4,7 +4,7 @@
 			v-model="formModel.institutionName"
 			label="Institution name"
 			name="institution-name"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -13,7 +13,7 @@
 			:items="options.institutionTypes"
 			label="Institution type"
 			name="institution-type"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -24,7 +24,7 @@
 			name="project-name"
 			item-title="name"
 			item-value="id"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -32,7 +32,7 @@
 			v-model="formModel.firstInstitutionId"
 			:label="firstInstitutionIdName"
 			name="first-institution-id"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -41,7 +41,7 @@
 			v-model="formModel.secondInstitutionId"
 			:label="secondInstitutionIdName"
 			name="second-institution-id"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -50,7 +50,7 @@
 			v-model="formModel.thirdInstitutionId"
 			:label="thirdInstitutionIdName"
 			name="third-institution-id"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -59,7 +59,7 @@
 			v-model="formModel.addressStreet"
 			label="Address street"
 			name="address-street"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -68,7 +68,7 @@
 			v-model="formModel.addressNumber"
 			label="Address number"
 			name="address-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -77,7 +77,7 @@
 			v-model="formModel.addressPostCode"
 			label="Address postcode"
 			name="address-post-code"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -93,7 +93,7 @@
 			name="latitude"
 			label="Latitude"
 			type="number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -103,7 +103,7 @@
 			label="Longitude"
 			name="longitude"
 			type="number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -112,7 +112,7 @@
 			v-model.trim="formModel.note"
 			label="Note"
 			name="note"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -120,7 +120,7 @@
 			v-model="formModel.eloNumber"
 			label="ELO number"
 			name="elo-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -129,7 +129,7 @@
 			v-model="formModel.contractNumber"
 			label="Contract number"
 			name="contract-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -138,7 +138,7 @@
 			v-model="formModel.contactGivenName"
 			label="Contact given name"
 			name="contact-given-name"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -147,7 +147,7 @@
 			v-model="formModel.contactParentsName"
 			label="Contact parents name"
 			name="contact-parents-name"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -156,7 +156,7 @@
 			v-model="formModel.contactFamilyName"
 			label="Contact family Name"
 			name="contact-family-name"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -168,7 +168,7 @@
 			name="national-card-type"
 			item-title="code"
 			item-value="value"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -177,7 +177,7 @@
 			v-model="formModel.nationalCardNumber"
 			label="Contact ID number"
 			name="national-card-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -186,7 +186,7 @@
 			v-model="formModel.otherContactInformation"
 			label="Other contact information"
 			name="other-contact-information"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -226,7 +226,7 @@
 			:items="options.phonePrefixes"
 			:label="`${$t('Prefix phone')} 1`"
 			name="phone1-ext"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -234,7 +234,7 @@
 			v-model="formModel.phone1.phoneNo"
 			:label="`${$t('Phone No.')} 1`"
 			name="phone1-phone-no"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -273,7 +273,7 @@
 			:items="options.phonePrefixes"
 			:label="`${$t('Prefix phone')} 2`"
 			name="phone2-ext"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -281,7 +281,7 @@
 			v-model="formModel.phone2.phoneNo"
 			:label="`${$t('Phone No.')} 2`"
 			name="phone2-phone-no"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -290,7 +290,7 @@
 			:items="options.externalReceivedTypes"
 			label="Support received types"
 			name="external-received-types"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -299,6 +299,7 @@
 			v-model="formModel.supportDateReceived"
 			label="Support date received"
 			name="support-date-received"
+			class="mb-4"
 			optional
 			disabled
 		/>
@@ -307,7 +308,7 @@
 			v-model="formModel.supportOrganization"
 			label="Support organisation"
 			name="support-organization"
-			class="mb-6"
+			class="mb-4"
 			optional
 			disabled
 		/>

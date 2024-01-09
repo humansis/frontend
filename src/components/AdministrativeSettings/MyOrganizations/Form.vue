@@ -6,12 +6,12 @@
 			:error-messages="validationMsg('name')"
 			label="Organization Name"
 			name="organization-name"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('name')"
 		/>
 
 		<template v-if="!formDisabled">
-			<span v-if="!formDisabled">{{ $t('Organization Logo') }}
+			<span>{{ $t('Organization Logo') }}
 				<i class="optional-text">- {{ $t('Optional') }}</i>
 			</span>
 
@@ -22,7 +22,7 @@
 				variant="outlined"
 				density="compact"
 				accept="image/*"
-				class="mb-6"
+				class="mb-4"
 			/>
 		</template>
 
@@ -31,7 +31,7 @@
 			:src="formModel.logo"
 			alt="my-organization-logo"
 			height="125"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataSelect
@@ -40,7 +40,7 @@
 			:disabled="formDisabled"
 			label="Font To Apply To The Pdf"
 			name="font-in-pdf"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 
@@ -72,7 +72,7 @@
 			:error-messages="validationMsg('footerContent')"
 			label="PDF Footer Content"
 			name="pdf-footer-content"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('footerContent')"
 		/>
 	</v-card-text>

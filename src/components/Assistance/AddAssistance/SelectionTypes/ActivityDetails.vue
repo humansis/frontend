@@ -11,7 +11,7 @@
 				:error-messages="validationMsg('activityDescription')"
 				label="Activity Description"
 				name="activity-description"
-				class="mb-6"
+				class="mb-4"
 				@blur="onValidate('activityDescription')"
 			/>
 
@@ -23,7 +23,7 @@
 				name="households-targeted"
 				type="number"
 				min="0"
-				class="mb-6"
+				class="mb-4"
 				hide-spin-buttons
 				@blur="onValidate('householdsTargeted')"
 			/>
@@ -36,7 +36,7 @@
 				name="individuals-targeted"
 				type="number"
 				min="0"
-				class="mb-6"
+				class="mb-4"
 				hide-spin-buttons
 				@blur="onValidate('individualsTargeted')"
 			/>

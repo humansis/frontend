@@ -8,7 +8,7 @@
 			hide-details="auto"
 			variant="outlined"
 			density="compact"
-			class="mt-5"
+			class="mt-4"
 			@update:modelValue="onFileUploadChange"
 		/>
 
@@ -17,7 +17,7 @@
 			variant="outlined"
 			type="warning"
 			border="top"
-			class="mt-5"
+			class="mt-4"
 		>
 			{{ $t('You can upload only one file.') }}
 		</v-alert>

@@ -12,7 +12,7 @@
 				variant="outlined"
 				type="info"
 				border="start"
-				class="mb-6"
+				class="mb-4"
 			>
 				{{ $t('Split ID numbers with white space') }}.
 				{{ $t('Maximum 5000 IDs allowed') }}.
@@ -23,7 +23,7 @@
 				:error-messages="validationMsg('idsList')"
 				label="ID Numbers"
 				name="id-numbers"
-				class="mb-6"
+				class="mb-4"
 				@blur="onValidate('idsList')"
 			/>
 

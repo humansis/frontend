@@ -6,7 +6,7 @@
 			:error-messages="validationMsg('name')"
 			label="Name"
 			name="name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('name')"
 		/>
 
