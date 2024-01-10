@@ -38,21 +38,26 @@ export default {
 		payloadDivisionNwsFields: [
 			{
 				rangeFrom: 1,
+				rangeTo: 1,
+				value: null,
+			},
+			{
+				rangeFrom: 2,
+				rangeTo: 2,
+				value: null,
+			},
+			{
+				rangeFrom: 3,
 				rangeTo: 3,
 				value: null,
 			},
 			{
 				rangeFrom: 4,
-				rangeTo: 5,
+				rangeTo: 4,
 				value: null,
 			},
 			{
-				rangeFrom: 6,
-				rangeTo: 8,
-				value: null,
-			},
-			{
-				rangeFrom: 9,
+				rangeFrom: 5,
 				rangeTo: null,
 				value: null,
 			},
@@ -84,6 +89,7 @@ export default {
 			secondNwsFields: null,
 			thirdNwsFields: null,
 			fourthNwsFields: null,
+			fifthNwsFields: null,
 		},
 		divisionNesFields: {
 			firstNesFields: null,
@@ -145,7 +151,7 @@ export default {
 			PER_MEMBERS_CODE: "Per Household Members",
 			PER_MEMBERS_NWS_CODE: "Per Members NWS",
 			PER_MEMBERS_NES_CODE: "Per Members NES",
-			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1-3, 4-5, 6-8, 9+)",
+			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1, 2, 3, 4, 5+)",
 			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
 			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
 		},
