@@ -8,11 +8,12 @@ module.exports = {
 		"@vue/airbnb",
 	],
 	parserOptions: {
-		parser: "babel-eslint",
+		parser: "@babel/eslint-parser",
 	},
 	plugins: ["simple-import-sort"],
 	rules: {
 		"import/extensions": ["warn", "ignorePackages"],
+		"import/order": "off",
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
 		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",

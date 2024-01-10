@@ -1,26 +1,14 @@
-import Vue from "vue";
-import "@/plugins/buefy";
-import "@/plugins/vuelidate";
-import "@/plugins/breadcrumbs";
-import "@/plugins/vueselect";
-import "@/plugins/vueswatches";
-import "@/plugins/vuecountryflag";
-import "@/plugins/vuemoment";
-import "@/plugins/vueloading";
-import "@/plugins/vuehtmlsecure";
-import App from "@/App.vue";
-import i18n from "@/plugins/i18n";
+import { createApp } from "vue";
+import App from "./App.vue";
 import router from "@/router";
 import store from "@/store";
+import i18n from "@/plugins/i18n";
 
-Vue.config.productionTip = false;
+const app = createApp(App);
 
-new Vue({
-	router,
-	store,
-	i18n,
-	mounted() {
-		document.documentElement.classList.remove("has-spinner-active");
-	},
-	render: (h) => h(App),
-}).$mount("#app");
+app.config.productionTip = false;
+
+app.use(router);
+app.use(store);
+app.use(i18n);
+app.mount("#app");

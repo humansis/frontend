@@ -107,7 +107,7 @@ import { mapActions, mapState } from "vuex";
 import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
-import { Notification } from "@/utils/UI";
+// import { Notification } from "@/utils/UI";
 
 export default {
 	name: "NavBar",
@@ -184,7 +184,8 @@ export default {
 					await this.fetchAdmNames();
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
+        // FIXME
+				// if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
 			});
 
 			this.$router.go();
@@ -200,7 +201,8 @@ export default {
 				.then(({ data }) => {
 					this.storeIcons(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Icons")} ${e}`, "is-danger");
+          // FIXME
+					// if (e.message) Notification(`${this.$t("Icons")} ${e}`, "is-danger");
 				});
 		},
 
@@ -209,7 +211,8 @@ export default {
 				.then(({ data }) => {
 					this.storeAdmNames(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
+          // FIXME
+					// if (e.message) Notification(`${this.$t("Location Names")} ${e}`, "is-danger");
 				});
 		},
 
