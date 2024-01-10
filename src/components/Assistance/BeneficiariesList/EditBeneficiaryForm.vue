@@ -73,7 +73,7 @@
 			v-model="formModel.justification"
 			label="Justification for Adding"
 			name="justification-for-adding"
-			class="mb-44"
+			class="mb-4"
 			disabled
 		/>
 	</v-card-text>
