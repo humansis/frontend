@@ -10,7 +10,6 @@
 						class="search-by"
 						label="Search by"
 						name="filter-select"
-						is-search-enabled
 						@update:modelValue="onBulkSearchChanged"
 					/>
 				</v-col>

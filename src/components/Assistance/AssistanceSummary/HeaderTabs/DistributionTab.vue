@@ -28,6 +28,7 @@
 					v-else
 					:text="$t('Data not loaded')"
 					location="top"
+					content-class="tooltip-top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
@@ -51,6 +52,7 @@
 						v-if="commodity.length"
 						:text="$t(commodity.value || '')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<SvgIcon v-bind="props" :items="commodity" />
@@ -81,6 +83,7 @@
 					v-else
 					:text="$t('Data not loaded')"
 					location="top"
+					content-class="tooltip-top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
@@ -116,6 +119,7 @@
 					v-else
 					:text="$t('Data not loaded')"
 					location="top"
+					content-class="tooltip-top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
@@ -139,6 +143,7 @@
 						v-if="commodity.length"
 						:text="$t(commodity.value || '')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<SvgIcon v-bind="props" :items="commodity" />
@@ -171,6 +176,7 @@
 					v-else
 					:text="$t('Data not loaded')"
 					location="top"
+					content-class="tooltip-top"
 				>
 					<template v-slot:activator="{ props }">
 						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />

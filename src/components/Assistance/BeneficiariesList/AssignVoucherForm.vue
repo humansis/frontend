@@ -57,7 +57,6 @@
 		<v-btn
 			v-if="closeButton"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="close"
@@ -68,7 +67,6 @@
 		<v-btn
 			:disabled="!scannedResult"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="submit"

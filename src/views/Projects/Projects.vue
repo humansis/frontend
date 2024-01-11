@@ -6,7 +6,6 @@
 			<v-btn
 				:to="{ name: 'AddProject' }"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				class="text-none ml-0"
 			>

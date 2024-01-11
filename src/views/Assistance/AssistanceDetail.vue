@@ -54,8 +54,8 @@
 				height="20"
 				rounded
 			>
-				<template v-slot:default="{ value }">
-					<strong>{{ value }}%</strong>
+				<template v-slot:default>
+					<strong>{{ assistanceProgress }}%</strong>
 				</template>
 			</v-progress-linear>
 		</div>
@@ -96,7 +96,6 @@
 				v-if="isDistributedButtonVisible"
 				:loading="setAtDistributedButtonLoading"
 				color="primary"
-				size="small"
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"
@@ -108,7 +107,6 @@
 			<v-btn
 				v-if="isInputDistributedButtonVisible"
 				color="primary"
-				size="small"
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"
@@ -121,7 +119,6 @@
 				v-if="isStartTransactionButtonVisible"
 				:loading="startTransactionButtonLoading"
 				color="primary"
-				size="small"
 				variant="elevated"
 				prepend-icon="parachute-box"
 				class="text-none ml-3"

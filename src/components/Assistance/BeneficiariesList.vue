@@ -106,7 +106,6 @@
 			<v-btn
 				v-if="isRecalculationButtonVisible && isCustomAmountEnabled && customFieldName"
 				color="primary"
-				size="small"
 				prepend-icon="redo"
 				class="text-none ma-2"
 				@click="onRecalculate"
@@ -117,7 +116,6 @@
 			<v-btn
 				v-if="isAddBeneficiaryAllowed"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				class="text-none ma-2"
 				@click="onOpenAddBeneficiaryModal(null, true)"
@@ -128,7 +126,6 @@
 			<v-btn
 				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				class="text-none ma-2"
 				@click="onOpenAddBeneficiariesByIdsModal"
@@ -139,7 +136,6 @@
 			<v-btn
 				v-if="isBulkAddOrRemoveBeneficiaryAllowed"
 				color="primary"
-				size="small"
 				prepend-icon="minus"
 				class="text-none ma-2"
 				@click="onOpenInputDistributedModal"
@@ -251,7 +247,6 @@
 					:class="toDistributeButtonClass"
 					color="gray-darken-4"
 					variant="tonal"
-					size="small"
 					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('toDistribute', 'To distribute')"
@@ -264,7 +259,6 @@
 					:class="distributedButtonClass"
 					color="green-darken-4"
 					variant="tonal"
-					size="small"
 					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('distributed')"
@@ -278,7 +272,6 @@
 					class="ml-0"
 					color="red-darken-1"
 					variant="tonal"
-					size="small"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('expired')"
 					@keydown.enter.prevent
@@ -291,7 +284,6 @@
 					class="ml-0"
 					color="amber-lighten-1"
 					variant="tonal"
-					size="small"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('canceled')"
 					@keydown.enter.prevent

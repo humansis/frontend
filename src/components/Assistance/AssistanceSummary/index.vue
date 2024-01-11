@@ -29,19 +29,19 @@
 			align-tabs="center"
 			class="mt-5"
 		>
-			<v-tab :value="0" class="text-none">
+			<v-tab value="toDistribute" class="text-none">
 				<v-icon icon="user" class="mr-2" />
 
 				{{ $t('To Distribute') }}
 			</v-tab>
 
-			<v-tab :value="1" class="text-none">
+			<v-tab value="assistance" class="text-none">
 				<v-icon icon="bullseye" class="mr-2" />
 
 				{{ $t('Assistance') }}
 			</v-tab>
 
-			<v-tab :value="2" class="text-none">
+			<v-tab value="selection" class="text-none">
 				<v-icon icon="home" class="mr-2" />
 
 				{{ $t('Selection') }}
@@ -49,9 +49,9 @@
 		</v-tabs>
 
 		<v-window v-model="activeTab">
-			<v-window-item class="d-flex justify-center">
+			<v-window-item value="toDistribute" class="d-flex justify-center">
 				<DistributionTab
-					v-if="activeTab === 0"
+					v-if="activeTab === 'toDistribute'"
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
 					:statistics="statistics"
@@ -59,9 +59,11 @@
 					:commodity="commodity"
 					:commodities="commodities"
 				/>
+			</v-window-item>
 
+			<v-window-item value="assistance" class="d-flex justify-center">
 				<AssistanceTab
-					v-if="activeTab === 1"
+					v-if="activeTab === 'assistance'"
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
 					:project="project"
@@ -69,9 +71,11 @@
 					:province="province"
 					:commodity="commodity"
 				/>
+			</v-window-item>
 
+			<v-window-item value="selection" class="d-flex justify-center">
 				<SelectionTab
-					v-if="activeTab === 2"
+					v-if="activeTab === 'selection'"
 					:assistance="assistance"
 					:is-assistance-loading="isAssistanceLoading"
 					:statistics="statistics"
@@ -85,8 +89,8 @@
 <script>
 import AssistanceTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/AssistanceTab";
 import DistributionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/DistributionTab";
-import vuetifyHelper from "@/mixins/vuetifyHelper";
 import SelectionTab from "@/components/Assistance/AssistanceSummary/HeaderTabs/SelectionTab";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { normalizeText } from "@/utils/datagrid";
 import { ASSISTANCE } from "@/consts";
 
@@ -146,7 +150,7 @@ export default {
 	data() {
 		return {
 			province: null,
-			activeTab: 0,
+			activeTab: "toDistribute",
 			commodity: [],
 			isCommodityLoading: false,
 		};
@@ -193,7 +197,7 @@ export default {
 				this.setCommodity();
 
 				if (this.isAssistanceTypeActivity) {
-					this.activeTab = 1;
+					this.activeTab = "assistance";
 				}
 			}
 		},

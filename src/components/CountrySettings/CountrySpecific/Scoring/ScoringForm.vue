@@ -5,7 +5,7 @@
 			:error-messages="validationMsg('name')"
 			label="Name"
 			name="name"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('name')"
 		/>
 
@@ -13,13 +13,11 @@
 			{{ $t("Name cannot be changed afterwards.") }}
 		</p>
 
-		<v-textarea
+		<DataTextarea
 			v-model.trim="formModel.note"
-			:label="$t('Note')"
+			label="Note"
 			name="note"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
+			class="mb-4"
 			auto-grow
 		/>
 
@@ -31,7 +29,6 @@
 			hide-details="auto"
 			variant="outlined"
 			density="compact"
-			class="mt-5"
 			@update:modelValue="onValidate('uploadedImage')"
 		/>
 	</v-card-text>
@@ -41,7 +38,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -52,7 +48,6 @@
 		<v-btn
 			:disabled="formModel.dropFiles.length > 1"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"
@@ -64,6 +59,7 @@
 
 <script>
 import DataInput from "@/components/Inputs/DataInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
@@ -75,6 +71,7 @@ export default {
 	components: {
 		FileUpload,
 		DataInput,
+		DataTextarea,
 	},
 
 	mixins: [validation],

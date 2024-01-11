@@ -16,7 +16,7 @@
 							:error-messages="validationMsg('institutionName')"
 							label="Institution name"
 							name="institution-name"
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('institutionName')"
 						/>
 
@@ -29,8 +29,7 @@
 							:error-messages="validationMsg('institutionType')"
 							label="Institution type"
 							name="institution-type"
-							is-search-enabled
-							class="mb-6"
+							class="mb-4"
 							@update:modelValue="onValidate('institutionType')"
 						/>
 
@@ -45,9 +44,7 @@
 							name="project-name"
 							item-title="name"
 							item-value="id"
-							class="mb-6"
-							is-search-enabled
-							is-data-shown-as-tag
+							class="mb-4"
 							multiple
 							@update:modelValue="onValidate('projectName')"
 						/>
@@ -64,7 +61,7 @@
 							:label="firstInstitutionIdName"
 							:disabled="formDisabled"
 							name="first-institution-id"
-							class="mb-6"
+							class="mb-4"
 						/>
 
 						<DataInput
@@ -72,7 +69,7 @@
 							:label="secondInstitutionIdName"
 							:disabled="formDisabled"
 							name="second-institution-id"
-							class="mb-6"
+							class="mb-4"
 						/>
 
 						<DataInput
@@ -80,7 +77,7 @@
 							:label="thirdInstitutionIdName"
 							:disabled="formDisabled"
 							name="third-institution-id"
-							class="mb-6"
+							class="mb-4"
 						/>
 
 						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Location') }}</h2>
@@ -90,7 +87,7 @@
 							:disabled="formDisabled"
 							label="Address street"
 							name="address-street"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -99,7 +96,7 @@
 							:disabled="formDisabled"
 							label="Address number"
 							name="address-number"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -108,7 +105,7 @@
 							:disabled="formDisabled"
 							label="Address postcode"
 							name="address-post-code"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -125,7 +122,7 @@
 							label="Latitude"
 							name="latitude"
 							type="number"
-							class="mb-6"
+							class="mb-4"
 							hide-spin-buttons
 							optional
 						/>
@@ -136,20 +133,20 @@
 							label="Longitude"
 							name="longitude"
 							type="number"
-							class="mb-6"
+							class="mb-4"
 							hide-spin-buttons
 							optional
 						/>
 
 						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Other') }}</h2>
 
-						<TextAreaInput
+						<DataTextarea
 							v-model.trim="formModel.note"
 							:disabled="formDisabled"
 							label="Note"
 							name="note"
-							class="mb-6"
-							optional
+							class="mb-4"
+							is-optional
 						/>
 
 						<DataInput
@@ -157,7 +154,7 @@
 							:disabled="formDisabled"
 							label="ELO number"
 							name="elo-number"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -166,7 +163,7 @@
 							:disabled="formDisabled"
 							label="Contract number"
 							name="contract-number"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 					</v-col>
@@ -179,7 +176,7 @@
 							:disabled="formDisabled"
 							label="Contact given name"
 							name="contact-given-name"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -188,7 +185,7 @@
 							:disabled="formDisabled"
 							label="Contact parents name"
 							name="contact-parents-name"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -197,7 +194,7 @@
 							:disabled="formDisabled"
 							label="Contact family name"
 							name="contact-family-name"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -210,8 +207,7 @@
 							:error-messages="validationMsg('nationalCardType')"
 							label="Contact ID type"
 							name="national-card-type"
-							class="mb-6"
-							is-search-enabled
+							class="mb-4"
 							optional
 							@update:modelValue="onValidate('nationalCardType')"
 						/>
@@ -222,7 +218,7 @@
 							:error-messages="validationMsg('nationalCardNumber')"
 							label="Contact ID number"
 							name="national-card-number"
-							class="mb-6"
+							class="mb-4"
 							optional
 							@blur="onValidate('nationalCardNumber')"
 						/>
@@ -232,7 +228,7 @@
 							:disabled="formDisabled"
 							label="Other contact information"
 							name="other-contact-information"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -261,6 +257,7 @@
 									v-model="formModel.phone1.proxy"
 									:label="`${$t('Contact phone')} 1`"
 									:disabled="formDisabled"
+									name="contact-phone-1"
 									hide-details
 									class="checkbox"
 								/>
@@ -274,7 +271,7 @@
 							:error-messages="validationMsg('phone1.ext')"
 							:disabled="formDisabled"
 							name="phone1-ext"
-							class="mb-6"
+							class="mb-4"
 							@update:modelValue="onValidate('phone1.ext')"
 						/>
 
@@ -284,7 +281,7 @@
 							:error-messages="validationMsg('phone1.phoneNo')"
 							:disabled="formDisabled"
 							name="phone1-phone-no"
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('phone1.phoneNo')"
 						/>
 
@@ -313,6 +310,7 @@
 									v-model="formModel.phone2.proxy"
 									:label="`${$t('Contact phone')} 2`"
 									:disabled="formDisabled"
+									name="contact-phone-2"
 									hide-details
 									class="checkbox"
 								/>
@@ -326,7 +324,7 @@
 							:error-messages="validationMsg('phone2.ext')"
 							:disabled="formDisabled"
 							name="phone2-ext"
-							class="mb-6"
+							class="mb-4"
 							@update:modelValue="onValidate('phone2.ext')"
 						/>
 
@@ -336,7 +334,7 @@
 							:error-messages="validationMsg('phone2.phoneNo')"
 							:disabled="formDisabled"
 							name="phone2-phone-no"
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('phone2.phoneNo')"
 						/>
 
@@ -349,7 +347,7 @@
 							:loading="externalSupportReceivedLoading"
 							label="Support received types"
 							name="external-received-types"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -358,7 +356,7 @@
 							:disabled="formDisabled"
 							label="Support date received"
 							name="support-date-received"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -367,7 +365,7 @@
 							:disabled="formDisabled"
 							label="Support organisation"
 							name="support-organization"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 					</v-col>
@@ -379,7 +377,6 @@
 			<v-col class="d-flex justify-end">
 				<v-btn
 					color="blue-grey-lighten-4"
-					size="small"
 					variant="elevated"
 					class="text-none"
 					@click="goBack"
@@ -390,7 +387,6 @@
 				<v-btn
 					v-if="!institutionAction.isDetail"
 					color="primary"
-					size="small"
 					class="text-none ml-3"
 					@click="validateNewInstitution"
 				>
@@ -404,9 +400,9 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
-import TextAreaInput from "@/components/Inputs/TextAreaInput";
 import idHelper from "@/mixins/idHelper";
 import institutionHelper from "@/mixins/institutionHelper";
 import validation from "@/mixins/validation";
@@ -424,7 +420,7 @@ export default {
 		DataInput,
 		DataSelect,
 		DatePicker,
-		TextAreaInput,
+		DataTextarea,
 	},
 
 	mixins: [validation, idHelper, institutionHelper],

@@ -51,7 +51,6 @@
 			name="rights"
 			item-title="name"
 			class="mb-4"
-			is-search-enabled
 			@update:modelValue="onRightsSelect"
 		/>
 
@@ -67,8 +66,6 @@
 			item-title="name"
 			item-value="id"
 			class="mb-4"
-			is-search-enabled
-			is-data-shown-as-tag
 			multiple
 			@update:modelValue="onValidate('projectIds')"
 		/>
@@ -88,7 +85,6 @@
 			item-title="name"
 			item-value="iso3"
 			class="mb-4"
-			is-search-enabled
 			@update:modelValue="onValidate('countries')"
 		/>
 
@@ -101,7 +97,6 @@
 			item-title="name"
 			item-value="key"
 			class="mb-4"
-			is-search-enabled
 			optional
 		/>
 
@@ -112,7 +107,6 @@
 			label="Prefix"
 			name="prefix"
 			class="mb-4"
-			is-search-enabled
 			optional
 		/>
 
@@ -132,7 +126,6 @@
 		<v-btn
 			v-if="closeButton"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -144,7 +137,6 @@
 			v-if="!formDisabled"
 			:disabled="mapping"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"

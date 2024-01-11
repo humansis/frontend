@@ -45,7 +45,6 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
-			is-search-enabled
 		/>
 
 		<p
@@ -61,7 +60,7 @@
 			v-model="formModel.sector"
 			label="Sector"
 			name="sector"
-			class="mt-4 mb-6"
+			class="my-4"
 			disabled
 		/>
 
@@ -69,7 +68,7 @@
 			v-model="subSectorName"
 			label="Subsector"
 			name="subsector"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -77,7 +76,7 @@
 			v-model="formModel.type"
 			label="Assistance Type"
 			name="assistance-type"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
@@ -85,18 +84,15 @@
 			v-model="formModel.target"
 			label="Target"
 			name="target"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 
-		<v-textarea
+		<DataTextarea
 			v-model.trim="formModel.note"
-			:label="$t('Note')"
+			label="Note"
 			name="note"
-			variant="outlined"
-			density="compact"
-			hide-details="auto"
-			class="mb-6"
+			class="mb-4"
 			auto-grow
 		/>
 
@@ -117,7 +113,7 @@
 					v-model="minimumVulnerabilityScore"
 					label="Minimum Vulnerability Score"
 					name="minimum-vulnerability-score"
-					class="mb-6"
+					class="mb-4"
 					disabled
 				/>
 			</v-col>
@@ -129,7 +125,7 @@
 
 		<div v-if="isCommoditySmartCard">
 			<div
-				v-for="(productCategoryType) of project.allowedProductCategoryTypes"
+				v-for="(productCategoryType, index) of project.allowedProductCategoryTypes"
 				:key="`product-category-type-${productCategoryType}`"
 				class="category-types"
 			>
@@ -137,6 +133,7 @@
 					v-model="formModel.allowedProductCategoryTypes"
 					:label="productCategoryType"
 					:value="productCategoryType"
+					:name="`product-category-${index}`"
 					hide-details="auto"
 					disabled
 				>
@@ -157,7 +154,7 @@
 			v-model="formModel.cashbackLimit"
 			label="Cashback Limit"
 			name="cashback-limit"
-			class="mb-6 mt-5"
+			class="my-4"
 			disabled
 		/>
 	</v-card-text>
@@ -167,7 +164,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -199,6 +195,7 @@ import AssistanceName from "@/components/Assistance/AssistanceName";
 import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
@@ -212,6 +209,7 @@ export default {
 	name: "AssistanceForm",
 
 	components: {
+		DataTextarea,
 		AssistanceName,
 		DatePicker,
 		DataSelect,

@@ -8,8 +8,7 @@
 			label="Project"
 			name="project"
 			item-value="id"
-			class="mb-6"
-			is-search-enabled
+			class="mb-4"
 		/>
 	</v-card-text>
 
@@ -18,7 +17,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="$emit('formClosed')"
@@ -29,7 +27,6 @@
 		<v-btn
 			:loading="confirmButtonLoading"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onAddHouseholdsToProject"

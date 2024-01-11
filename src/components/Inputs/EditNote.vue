@@ -12,13 +12,10 @@
 					</div>
 
 					<div v-else>
-						<v-textarea
+						<DataTextarea
 							v-model.trim="noteComputed"
-							:label="$t('Note')"
+							label="Note"
 							name="note"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
 							auto-grow
 						/>
 					</div>
@@ -27,7 +24,7 @@
 				<v-col cols="1">
 					<v-row class="d-flex align-center justify-end">
 						<ButtonAction
-							v-if="!completed && !edit"
+							v-if="isDisplayFullIconVisible"
 							:icon="displayFull ? 'arrow-up' : 'arrow-down'"
 							:tooltipText="displayFull ? 'Show less' : 'Show full note'"
 							@actionConfirmed="onToggleDisplayFull"
@@ -63,6 +60,7 @@
 <script>
 import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -70,6 +68,7 @@ export default {
 
 	components: {
 		ButtonAction,
+		DataTextarea,
 	},
 
 	props: {
@@ -100,6 +99,10 @@ export default {
 
 		completed() {
 			return this.assistance?.completed || false;
+		},
+
+		isDisplayFullIconVisible() {
+			return !this.completed && !this.edit && this.noteComputed?.length;
 		},
 	},
 

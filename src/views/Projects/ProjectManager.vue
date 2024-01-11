@@ -14,7 +14,7 @@
 							:error-messages="validationMsg('name')"
 							label="Project name"
 							name="project-name"
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('name')"
 						/>
 
@@ -23,7 +23,7 @@
 							:disabled="formDisabled"
 							label="Internal ID"
 							name="project-name"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -35,10 +35,8 @@
 							:error-messages="validationMsg('selectedSectors')"
 							label="Sectors"
 							name="sectors"
-							is-search-enabled
-							is-data-shown-as-tag
 							multiple
-							class="mb-6"
+							class="mb-4"
 							@blur="onValidate('selectedSectors')"
 							@update:modelValue="onSelectorsSelect"
 						/>
@@ -50,10 +48,8 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							is-search-enabled
-							class="mb-6 warning-message"
+							class="mb-4 warning-message"
 							persistent-hint
-							is-data-shown-as-tag
 							multiple
 							optional
 							@update:modelValue="onSubSectorSelect"
@@ -65,6 +61,7 @@
 							:disabled="formDisabled"
 							label="Start Date"
 							name="start-date"
+							class="mb-4"
 							@blur="onValidate('startDate')"
 						/>
 
@@ -74,6 +71,7 @@
 							:disabled="formDisabled"
 							label="End Date"
 							name="end-date"
+							class="mb-4"
 							@blur="onValidate('endDate')"
 						/>
 
@@ -85,9 +83,7 @@
 							name="donors"
 							item-title="fullname"
 							item-value="id"
-							is-search-enabled
-							is-data-shown-as-tag
-							class="mb-6"
+							class="mb-4"
 							optional
 							multiple
 							:disabled="formDisabled"
@@ -100,7 +96,7 @@
 							:disabled="formDisabled"
 							label="Local Invoice Address"
 							name="local-invoice-address"
-							class="mb-6"
+							class="mb-4"
 							optional
 						/>
 
@@ -125,6 +121,7 @@
 								:error-messages="index === (options.allowedProductCategoryTypes.length - 1)
 									&& validationMsg('allowedProductCategoryTypes')"
 								:disabled="formDisabled"
+								:name="`product-category-${index}`"
 								hide-details="auto"
 								@blur="onValidate('allowedProductCategoryTypes')"
 							>
@@ -139,15 +136,12 @@
 							</v-checkbox>
 						</div>
 
-						<v-textarea
+						<DataTextarea
 							v-model="formModel.notes"
 							:disabled="formDisabled"
 							label="Notes"
 							name="notes"
-							variant="outlined"
-							density="compact"
-							hide-details="auto"
-							class="mt-6"
+							class="mt-4"
 							auto-grow
 						/>
 					</v-col>
@@ -187,7 +181,6 @@
 			<v-col class="d-flex justify-end">
 				<v-btn
 					:to="{ name: 'Projects' }"
-					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="text-none"
@@ -199,7 +192,6 @@
 					v-if="!projectAction.isDetail"
 					:disabled="!isTargetTableValid"
 					color="primary"
-					size="small"
 					class="text-none ml-3"
 					@click="onValidateNewProject"
 				>
@@ -219,6 +211,7 @@ import SectorsService from "@/services/SectorsService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
 import permissions from "@/mixins/permissions";
@@ -252,6 +245,7 @@ export default {
 		EditableTable,
 		SvgIcon,
 		DatePicker,
+		DataTextarea,
 		DataSelect,
 		DataInput,
 	},

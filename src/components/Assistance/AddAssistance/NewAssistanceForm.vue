@@ -25,6 +25,7 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
+				class="mb-4"
 				@update:modelValue="onValuesForAssistanceName"
 			/>
 
@@ -33,8 +34,7 @@
 				:items="options.rounds"
 				label="Round"
 				name="round"
-				class="mb-6"
-				is-search-enabled
+				class="mb-4"
 				@update:modelValue="onValuesForAssistanceName"
 			/>
 
@@ -42,10 +42,10 @@
 				v-model="formModel.eloNumber"
 				label="Elo number"
 				name="elo-number"
-				class="mb-6"
+				class="mb-4"
 			/>
 
-			<div class="mb-6">
+			<div class="mb-4">
 				<DataInput
 					v-if="!options.activities.length"
 					v-model="formModel.activity"
@@ -60,12 +60,11 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
-					is-search-enabled
 					optional
 				/>
 			</div>
 
-			<div class="mb-6">
+			<div class="mb-4">
 				<DataInput
 					v-if="!options.budgetLines.length"
 					v-model="formModel.budgetLine"
@@ -80,7 +79,6 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
-					is-search-enabled
 					optional
 				/>
 			</div>
@@ -100,7 +98,7 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				class="mb-6 warning-message"
+				class="mb-4 warning-message"
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -113,7 +111,7 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				class="mb-6 warning-message"
+				class="mb-4 warning-message"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -124,7 +122,7 @@
 				:error-messages="validationMsg('assistanceType')"
 				label="Assistance Type"
 				name="assistance-type"
-				class="mb-6"
+				class="mb-4"
 				@update:modelValue="onAssistanceTypeSelect"
 			/>
 
@@ -142,13 +140,10 @@
 
 	<v-card class="mx-auto mt-10">
 		<v-card-text>
-			<v-textarea
+			<DataTextarea
 				v-model.trim="formModel.note"
-				:label="$t('Note')"
+				label="Note"
 				name="note"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
 				auto-grow
 			/>
 		</v-card-text>
@@ -162,6 +157,7 @@ import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
@@ -181,6 +177,7 @@ export default {
 		DatePicker,
 		DataSelect,
 		DataInput,
+		DataTextarea,
 	},
 
 	emits: [

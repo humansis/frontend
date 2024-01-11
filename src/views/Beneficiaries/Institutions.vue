@@ -7,7 +7,6 @@
 				v-if="userCan.addBeneficiary"
 				:to="{ name: 'AddInstitution' }"
 				color="primary"
-				size="small"
 				prepend-icon="plus"
 				class="text-none ml-0"
 			>

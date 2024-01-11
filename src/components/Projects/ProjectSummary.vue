@@ -43,6 +43,7 @@
 					<v-tooltip
 						:text="$t('Number of donors.')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">
@@ -60,6 +61,7 @@
 					<v-tooltip
 						:text="$t('Number of households imported to project.')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">
@@ -77,6 +79,7 @@
 					<v-tooltip
 						:text="$t('Number of beneficiaries imported to project.')"
 						location="top"
+						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
 							<div v-bind="props">

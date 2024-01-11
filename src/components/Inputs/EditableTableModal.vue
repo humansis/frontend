@@ -10,7 +10,7 @@
 			</v-card-title>
 
 			<v-card-text class="mt-4">
-				<div v-for="formInput in formInputs" :key="formInput.key" class="mb-3">
+				<div v-for="(formInput, index) in formInputs" :key="formInput.key" class="mb-3">
 					<DatePicker
 						v-if="isInputTypeCalendar(formInput)"
 						v-model="data[formInput.key]"
@@ -18,6 +18,7 @@
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						name="start-date"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
@@ -26,15 +27,13 @@
 						v-model="data[formInput.key]"
 						:items="formInput.options"
 						:multiple="isInputTypeMultiSelect(formInput)"
-						:is-data-shown-as-tag="isInputTypeMultiSelect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:clearable="true"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="subsectors"
-						is-search-enabled
 						optional
-						class="mb-6"
+						class="mb-4"
 						@update:modelValue="onInputChanged(formInput, data)"
 					/>
 
@@ -45,7 +44,7 @@
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						name="project-name"
-						class="mb-6"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
@@ -59,21 +58,18 @@
 						type="number"
 						min="0"
 						dense
-						class="mb-6"
+						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
 
-					<v-textarea
+					<DataTextarea
 						v-if="isInputTypeTextArea(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
-						name="notes"
-						variant="outlined"
-						density="compact"
-						hide-details="auto"
-						class="mt-6"
+						:name="`note-${index}`"
+						class="mt-4"
 						auto-grow
 						@blur="onInputChanged(formInput, data)"
 					/>
@@ -94,7 +90,6 @@
 
 				<v-btn
 					class="text-none"
-					size="small"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					@click="onCloseForm"
@@ -106,7 +101,6 @@
 					v-if="!modalState.isDetail"
 					:disabled="isFormDisabled"
 					color="primary"
-					size="small"
 					class="text-none ml-3"
 					variant="elevated"
 					@click="onSubmitForm"
@@ -121,6 +115,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
@@ -134,6 +129,7 @@ export default {
 		DataSelect,
 		DataInput,
 		LocationForm,
+		DataTextarea,
 	},
 
 	mixins: [validation],

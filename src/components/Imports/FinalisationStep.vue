@@ -235,6 +235,7 @@
 						<v-tooltip
 							:text="item.enFamilyName || item.localFamilyName"
 							location="top"
+							content-class="tooltip-top"
 						>
 							<template v-slot:activator="{ props }">
 								<span v-bind="props">
@@ -248,6 +249,7 @@
 						<v-tooltip
 							:text="item.enGivenName || item.localGivenName"
 							location="top"
+							content-class="tooltip-top"
 						>
 							<template v-slot:activator="{ props }">
 								<span v-bind="props">
@@ -261,6 +263,7 @@
 						<v-tooltip
 							:text="item.enParentsName || item.localParentsName"
 							location="top"
+							content-class="tooltip-top"
 						>
 							<template v-slot:activator="{ props }">
 								<span v-bind="props">

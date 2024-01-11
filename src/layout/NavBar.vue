@@ -21,9 +21,10 @@
 		<template v-slot:append>
 			<v-tooltip
 				:text="tooltip.label"
-				location="bottom"
 				:disabled="!tooltip.active"
+				location="bottom"
 				max-width="240"
+				content-class="tooltip-bottom"
 			>
 				<template v-slot:activator="{ props }">
 					<v-btn

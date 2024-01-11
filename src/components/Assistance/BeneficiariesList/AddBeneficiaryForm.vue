@@ -22,9 +22,7 @@
 			label="Beneficiaries"
 			name="beneficiaries"
 			item-value="id"
-			class="mb-6"
-			is-search-enabled
-			is-data-shown-as-tag
+			class="mb-4"
 			multiple
 			@update:modelValue="onValidate('beneficiaries')"
 		/>
@@ -44,7 +42,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -54,7 +51,6 @@
 
 		<v-btn
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"

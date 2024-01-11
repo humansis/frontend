@@ -14,6 +14,7 @@
 		<v-checkbox
 			v-model="createCamp"
 			:label="$t('Create a new Camp')"
+			name="create-new-camp"
 			density="compact"
 			class="mb-4"
 			hide-details="auto"

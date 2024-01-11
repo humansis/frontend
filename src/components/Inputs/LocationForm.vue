@@ -12,7 +12,6 @@
 			name="province"
 			item-title="name"
 			item-value="id"
-			is-search-enabled
 			class="mb-4"
 			@update:modelValue="onProvinceSelect"
 		/>
@@ -27,7 +26,6 @@
 			name="district"
 			item-title="name"
 			item-value="id"
-			is-search-enabled
 			class="mb-4"
 			optional
 			@update:modelValue="onDistrictSelect"
@@ -43,7 +41,6 @@
 			name="commune"
 			item-title="name"
 			item-value="id"
-			is-search-enabled
 			class="mb-4"
 			optional
 			@update:modelValue="onCommuneSelect"
@@ -66,7 +63,6 @@
 			name="village"
 			item-title="name"
 			item-value="id"
-			is-search-enabled
 			class="mb-4"
 			optional
 			@update:modelValue="onVillageSelect"

@@ -46,7 +46,6 @@
 						<v-btn
 							class="text-none ml-0"
 							color="primary"
-							size="small"
 							type="submit"
 						>
 							{{ $t('Save') }}

@@ -3,6 +3,7 @@
 		:disabled="!tooltipText.length"
 		:text="$t(tooltipText)"
 		location="top"
+		content-class="tooltip-top"
 	>
 		<template v-slot:activator="{ props }">
 			<v-btn
@@ -20,7 +21,6 @@
 				v-else-if="defaultButton"
 				:prepend-icon="icon"
 				color="primary"
-				size="small"
 				variant="elevated"
 				class="text-none"
 				@click.stop="onButtonClicked"

@@ -12,21 +12,18 @@
 				variant="outlined"
 				type="info"
 				border="start"
-				class="mb-6"
+				class="mb-4"
 			>
 				{{ $t('Split ID numbers with white space') }}.
 				{{ $t('Maximum 5000 IDs allowed') }}.
 			</v-alert>
 
-			<v-textarea
+			<DataTextarea
 				v-model.trim="formModel.idsList"
-				:label="$t('ID Numbers')"
 				:error-messages="validationMsg('idsList')"
+				label="ID Numbers"
 				name="id-numbers"
-				variant="outlined"
-				density="compact"
-				hide-details="auto"
-				class="mb-6"
+				class="mb-4"
 				@blur="onValidate('idsList')"
 			/>
 
@@ -46,7 +43,6 @@
 
 			<v-btn
 				class="text-none"
-				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				@click="onClose"
@@ -56,7 +52,6 @@
 
 			<v-btn
 				color="primary"
-				size="small"
 				class="text-none ml-3"
 				variant="elevated"
 				@click="onSubmit"
@@ -266,7 +261,6 @@
 
 			<v-btn
 				class="text-none"
-				size="small"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				@click="onClose"
@@ -276,7 +270,6 @@
 
 			<v-btn
 				color="primary"
-				size="small"
 				class="text-none ml-3"
 				variant="elevated"
 				@click="onOpenDistributedForm"
@@ -294,6 +287,7 @@ import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/Bas
 import BaseDistributedTable from "@/components/Assistance/InputDistributed/BaseDistributedTable";
 import DuplicityDistributedTable from "@/components/Assistance/InputDistributed/DuplicityDistributedTable";
 import DataInput from "@/components/Inputs/DataInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect";
 import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
@@ -309,6 +303,7 @@ export default {
 		BaseDistributedTable,
 		DuplicityDistributedTable,
 		IdTypeSelect,
+		DataTextarea,
 		DataInput,
 	},
 

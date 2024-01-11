@@ -91,6 +91,7 @@
 			v-if="cellData?.isArchived"
 			:text="$t(cellData.tooltip)"
 			location="top"
+			content-class="tooltip-top"
 		>
 			<template v-slot:activator="{ props }">
 				<p v-bind="props">{{ cellData.name }}</p>
@@ -119,7 +120,12 @@
 		{{ formattedDateTime }}
 	</template>
 
-	<v-tooltip v-if="column.type === 'IconWithTooltip'" :text="$t(cellData.tooltip)" location="top">
+	<v-tooltip
+		v-if="column.type === 'IconWithTooltip'"
+		:text="$t(cellData.tooltip)"
+		location="top"
+		content-class="tooltip-top"
+	>
 		<template v-slot:activator="{ props }">
 			<v-icon
 				v-bind="props"

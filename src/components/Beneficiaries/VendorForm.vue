@@ -6,7 +6,7 @@
 			:error-messages="validationMsg('username')"
 			label="Username"
 			name="username"
-			class="mb-6"
+			class="mb-4"
 			@blur="onValidate('username')"
 		/>
 
@@ -18,7 +18,7 @@
 			:type="passwordVisible ? 'text' : 'password'"
 			label="Password"
 			name="password"
-			class="mb-6"
+			class="mb-4"
 			@click:append-inner="passwordVisible = !passwordVisible"
 			@blur="onValidate('password')"
 		/>
@@ -29,7 +29,7 @@
 			:error-messages="validationMsg('name')"
 			label="Name"
 			name="name"
-			class="mb-3"
+			class="mb-4"
 			@blur="onValidate('name')"
 		/>
 
@@ -63,7 +63,7 @@
 			:disabled="formDisabled"
 			label="Vendor No."
 			name="vendor-no"
-			class="mt-6 mb-6"
+			class="my-4"
 			optional
 		/>
 
@@ -95,7 +95,7 @@
 			:disabled="formDisabled"
 			label="Address Street"
 			name="address-street"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 
@@ -104,7 +104,7 @@
 			:disabled="formDisabled"
 			label="Address Number"
 			name="address-number"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 
@@ -113,7 +113,7 @@
 			:disabled="formDisabled"
 			label="Address Postcode"
 			name="address-postcode"
-			class="mb-6"
+			class="mb-4"
 			optional
 		/>
 
@@ -132,7 +132,6 @@
 		<v-btn
 			v-if="closeButton"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -145,7 +144,6 @@
 			:disabled="mapping || formLoading"
 			:loading="formLoading"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"

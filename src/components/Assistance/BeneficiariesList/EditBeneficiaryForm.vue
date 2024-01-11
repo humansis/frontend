@@ -5,7 +5,7 @@
 			label="First Name"
 			name="first-name"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -13,7 +13,7 @@
 			label="Family Name"
 			name="family-name"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -21,13 +21,14 @@
 			label="Gender"
 			name="gender"
 			disabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DatePicker
 			v-model="formModel.dateOfBirth"
 			label="Date of Birth"
 			name="date-of-birth"
+			class="mb-4"
 			disabled
 		/>
 
@@ -35,6 +36,7 @@
 			v-model="formModel.residencyStatus"
 			label="Residency Status"
 			name="residency-status"
+			class="mb-4"
 			disabled
 		/>
 
@@ -42,8 +44,9 @@
 			v-model="addAReferral"
 			:label="$t('Add a Referral Type')"
 			:disabled="disabled"
-			hide-details
+			name="add-referral-type"
 			class="checkbox"
+			hide-details
 		/>
 
 		<DataSelect
@@ -54,8 +57,7 @@
 			:disabled="disabled"
 			label="Referral Type"
 			name="referral-type"
-			is-search-enabled
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
@@ -64,14 +66,14 @@
 			:disabled="disabled"
 			label="Comment"
 			name="comment"
-			class="mb-6"
+			class="mb-4"
 		/>
 
 		<DataInput
 			v-model="formModel.justification"
 			label="Justification for Adding"
 			name="justification-for-adding"
-			class="mb-6"
+			class="mb-4"
 			disabled
 		/>
 	</v-card-text>
@@ -82,7 +84,6 @@
 		<v-btn
 			v-if="closeButton"
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -93,7 +94,6 @@
 		<v-btn
 			v-if="!disabled"
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"

@@ -4,7 +4,6 @@
 
 		<v-btn
 			color="primary"
-			size="small"
 			prepend-icon="plus"
 			class="text-none"
 			@click="onAddCriteria()"
@@ -94,7 +93,6 @@
 			<v-btn
 				:disabled="isUpdateButtonEnabled"
 				color="primary"
-				size="small"
 				class="text-none"
 				variant="elevated"
 				@click="onUpdateVulnerabilityScores"
@@ -109,7 +107,6 @@
 			<v-btn
 				:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
 				color="primary"
-				size="small"
 				class="text-none mr-3"
 				variant="elevated"
 				@click="onShowTotalBeneficiaries"

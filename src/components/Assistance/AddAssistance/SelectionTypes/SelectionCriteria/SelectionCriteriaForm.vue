@@ -7,7 +7,7 @@
 			:error-messages="validationMsg('criteriaTarget')"
 			label="Criteria Target"
 			name="criteria-target"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onCriteriaTargetSelect"
 		/>
 
@@ -18,7 +18,7 @@
 			:error-messages="validationMsg('criteria')"
 			label="Criteria"
 			name="criteria"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onCriteriaSelect"
 		/>
 
@@ -29,7 +29,7 @@
 			:error-messages="validationMsg('condition')"
 			label="Condition"
 			name="condition"
-			class="mb-6"
+			class="mb-4"
 			@update:modelValue="onValidate('condition')"
 		/>
 
@@ -89,7 +89,6 @@
 
 		<v-btn
 			class="text-none"
-			size="small"
 			color="blue-grey-lighten-4"
 			variant="elevated"
 			@click="onCloseForm"
@@ -99,7 +98,6 @@
 
 		<v-btn
 			color="primary"
-			size="small"
 			class="text-none ml-3"
 			variant="elevated"
 			@click="onSubmitForm"
