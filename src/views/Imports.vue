@@ -245,6 +245,7 @@ export default {
 					if (status === 202) {
 						Notification(this.$t("Import Successfully Updated"), "success");
 						this.$refs.importList.fetchData();
+						this.importModal.isOpened = false;
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Import")} ${e.message || e}`, "error");
