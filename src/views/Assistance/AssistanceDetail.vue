@@ -461,35 +461,6 @@ export default {
 			this.onCloseTransactionModal();
 		},
 
-		unvalidateAssistance() {
-			// FIXME
-			this.$buefy.dialog.confirm({
-				title: this.$t("Unvalidate Assistance"),
-				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
-				confirmText: this.$t("Confirm"),
-				cancelText: this.$t("Cancel"),
-				type: "is-primary",
-				onConfirm: async () => {
-					const { assistanceId, projectId } = this.$route.params;
-
-					await AssistancesService.updateAssistanceStatusValidated(
-						{ assistanceId, validated: false },
-					).then(({ status }) => {
-						if (status === 200) {
-							Notification(this.$t("Assistance Successfully Unvalidated"), "success");
-
-							this.$router.push({
-								name: "AssistanceEdit",
-								params: { assistanceId, projectId },
-							});
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-					});
-				},
-			});
-		},
-
 		async onCloseAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
 

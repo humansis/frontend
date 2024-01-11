@@ -151,7 +151,7 @@
 							icon="trash"
 							button-size="small"
 							icon-color="red"
-							confirm-action
+							is-confirm-action
 							confirm-title="Deleting Assistance"
 							confirm-message="All distribution data will be deleted. Do you wish to continue?"
 							prepend-icon="circle-exclamation"

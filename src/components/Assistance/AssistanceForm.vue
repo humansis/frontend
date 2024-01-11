@@ -408,27 +408,6 @@ export default {
 			this.$emit("formClosed");
 		},
 
-		confirmUpdate(data) {
-			const message = this.$t("By changing data on a closed distribution, you may create"
-				+ " a discrepancy between data in Humansis and data in the signed distribution "
-				+ "protocol. Please check you gave your name and provided reasoning for the change "
-				+ "in the Note section of the distribution to serve for auditing purposes.");
-
-			// FIXME
-			this.$buefy.dialog.confirm({
-				title: this.$t("Do you really want to apply the change?"),
-				message,
-				confirmText: this.$t("Yes"),
-				cancelText: this.$t("No"),
-				type: "is-warning",
-				hasIcon: true,
-				onConfirm: () => {
-					this.$emit("formSubmitted", data);
-					this.onCloseForm();
-				},
-			});
-		},
-
 		onValuesForAssistanceName() {
 			const {
 				adm1,
