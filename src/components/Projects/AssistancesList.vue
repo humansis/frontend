@@ -24,6 +24,7 @@
 	</v-alert>
 
 	<DataGrid
+		v-show="beneficiariesCount || upcoming"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
