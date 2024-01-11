@@ -285,7 +285,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id", title: "Household ID", type: "link" },
+					{ key: "id", title: "Household ID", type: "link", sortable: false },
 					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
 					{ key: "members", sortKey: "dependents" },
