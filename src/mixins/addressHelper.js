@@ -39,9 +39,9 @@ export default {
 				temporarySettlementAddress,
 			},
 		) {
-			if (campAddress) {
+			if (campAddress?.address?.camp) {
 				return {
-					...campAddress,
+					...campAddress.address.camp,
 					type: GENERAL.LOCATION_TYPE.camp.type,
 				};
 			}
