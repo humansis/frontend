@@ -164,6 +164,7 @@
 			type="number"
 			min="1"
 			class="mb-4"
+			optional
 			hide-spin-buttons
 			@blur="onValidate('secondQuantity')"
 		/>

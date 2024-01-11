@@ -105,9 +105,11 @@
 							:disabled="formDisabled"
 							label="English Invoice Address"
 							name="english-invoice-address"
-							class="mb-2"
+							class="mb-4"
 							optional
 						/>
+
+						<h4>{{ $t('Allowed Product Category Types') }}</h4>
 
 						<div
 							v-for="(productCategoryType, index) of options.allowedProductCategoryTypes"
@@ -210,8 +212,8 @@ import ProjectService from "@/services/ProjectService";
 import SectorsService from "@/services/SectorsService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
-import DatePicker from "@/components/Inputs/DatePicker";
 import DataTextarea from "@/components/Inputs/DataTextarea";
+import DatePicker from "@/components/Inputs/DatePicker";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
 import permissions from "@/mixins/permissions";
