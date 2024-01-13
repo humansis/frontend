@@ -100,7 +100,7 @@ export default {
 	},
 
 	emits: [
-		"onDeliveredCommodityValue",
+		"deliveredCommodityValue",
 		"updatedData",
 	],
 

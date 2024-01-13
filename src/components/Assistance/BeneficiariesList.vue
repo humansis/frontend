@@ -332,6 +332,12 @@ const statusTags = [
 export default {
 	name: "BeneficiariesList",
 
+	emits: [
+		"assistanceUpdated",
+		"beneficiariesCounted",
+		"fetchAssistanceStatistics",
+	],
+
 	components: {
 		AssignVoucherForm,
 		AddBeneficiaryForm,

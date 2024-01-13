@@ -183,7 +183,7 @@ export default {
 
 	emits: [
 		"updatedData",
-		"onTargetSelect",
+		"targetSelect",
 		"showComponent",
 	],
 

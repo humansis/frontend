@@ -12,7 +12,7 @@
 				label="Activity Description"
 				name="activity-description"
 				class="mb-4"
-				@blur="onValidate('activityDescription')"
+				@blur="onDataInput('activityDescription')"
 			/>
 
 			<DataInput
@@ -25,7 +25,7 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onValidate('householdsTargeted')"
+				@blur="onDataInput('householdsTargeted')"
 			/>
 
 			<DataInput
@@ -38,7 +38,7 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onValidate('individualsTargeted')"
+				@blur="onDataInput('individualsTargeted')"
 			/>
 		</v-card-text>
 	</v-card>
@@ -97,11 +97,12 @@ export default {
 		},
 	},
 
-	updated() {
-		this.$emit("updatedData", this.formModel);
-	},
-
 	methods: {
+		onDataInput(field) {
+			this.onValidate(field);
+			this.$emit("updatedData", this.formModel);
+		},
+
 		submit() {
 			this.v$.$touch();
 			return !this.v$.$invalid;

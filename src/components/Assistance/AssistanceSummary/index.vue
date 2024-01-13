@@ -29,7 +29,11 @@
 			align-tabs="center"
 			class="mt-5"
 		>
-			<v-tab value="toDistribute" class="text-none">
+			<v-tab
+				v-if="!isAssistanceTypeActivity"
+				value="toDistribute"
+				class="text-none"
+			>
 				<v-icon icon="user" class="mr-2" />
 
 				{{ $t('To Distribute') }}
