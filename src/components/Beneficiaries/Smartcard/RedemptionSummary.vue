@@ -6,7 +6,7 @@
 		:items="table.data"
 		:custom-key-sort="customSort"
 		is-row-click-disabled
-		show-default-footer
+		is-default-footer-visible
 	/>
 
 	<p class="text-right font-weight-bold mt-2">

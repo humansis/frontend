@@ -5,7 +5,7 @@
 			:headers="table.columns"
 			:items="table.data"
 			is-row-click-disabled
-			show-default-footer
+			is-default-footer-visible
 		/>
 	</v-card-text>
 </template>

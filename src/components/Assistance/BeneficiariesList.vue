@@ -18,7 +18,7 @@
 
 		<Modal
 			v-model="inputDistributedModal.isOpened"
-			header="'Input Deduplication"
+			header="Input Deduplication"
 		>
 			<InputDistributed
 				class="modal-card"

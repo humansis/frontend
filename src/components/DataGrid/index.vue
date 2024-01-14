@@ -62,7 +62,7 @@
 				<v-skeleton-loader :type="`table-row@${perPage}`" />
 			</template>
 
-			<template v-if="!showDefaultFooter" v-slot:bottom>
+			<template v-if="!isDefaultFooterVisible" v-slot:bottom>
 				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
@@ -245,7 +245,7 @@ export default {
 			default: false,
 		},
 
-		showDefaultFooter: {
+		isDefaultFooterVisible: {
 			type: Boolean,
 			default: false,
 		},
