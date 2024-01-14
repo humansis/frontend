@@ -145,6 +145,7 @@
 				label="Note"
 				name="note"
 				auto-grow
+				@blur="onNoteChanged"
 			/>
 		</v-card-text>
 	</v-card>
@@ -424,6 +425,10 @@ export default {
 		async showComponents() {
 			const components = await this.getComponentsToShow();
 			this.$emit("showComponent", components);
+		},
+
+		onNoteChanged() {
+			this.$emit("updatedData", this.formModel);
 		},
 
 		async getComponentsToShow() {
