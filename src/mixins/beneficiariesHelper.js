@@ -317,7 +317,7 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async onSearch(search) {
+		async onBeneficiariesSearch(search) {
 			this.table.searchPhrase = this.assistanceDetail
 				? search.phrase
 				: search;

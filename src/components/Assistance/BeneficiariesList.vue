@@ -183,7 +183,7 @@
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@search="onSearch"
+		@search="onBeneficiariesSearch"
 		@update:sortBy="onSort"
 		@resetFilters="onResetFilters"
 		@resetSort="onResetSort(defaultSortOptions)"

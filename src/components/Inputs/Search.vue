@@ -4,8 +4,8 @@
 			v-if="searchFields.length"
 			v-model="selectedSearchField"
 			:items="searchFields"
-			label="Select format"
-			name="select-format"
+			label="Select field"
+			name="select-field"
 			clearable
 			class="format"
 		/>
