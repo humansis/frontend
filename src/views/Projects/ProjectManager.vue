@@ -144,6 +144,7 @@
 							label="Notes"
 							name="notes"
 							class="mt-4"
+							is-optional
 							auto-grow
 						/>
 					</v-col>
