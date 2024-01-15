@@ -176,10 +176,10 @@
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
 		:selected-rows="selectedRows"
+		:reset-filters-button="assistanceDetail"
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
-		reset-filters-button
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
