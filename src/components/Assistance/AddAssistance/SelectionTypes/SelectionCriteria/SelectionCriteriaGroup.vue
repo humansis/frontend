@@ -153,7 +153,6 @@ export default {
 		},
 
 		onRemove(index) {
-			console.log(index);
 			this.data.splice(index, 1);
 			this.$emit("updatedCriteria", { groupKey: this.groupId });
 		},
