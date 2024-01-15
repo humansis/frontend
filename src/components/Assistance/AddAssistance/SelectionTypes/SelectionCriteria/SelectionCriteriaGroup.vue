@@ -9,12 +9,12 @@
 					is-row-click-disabled
 					is-footer-disabled
 				>
-					<template v-slot:actions="{ row }">
+					<template v-slot:actions="{ index }">
 						<ButtonAction
 							tooltip="Delete"
 							icon="trash"
 							icon-color="red"
-							@actionConfirmed="onRemove(row.index)"
+							@actionConfirmed="onRemove(index)"
 						/>
 					</template>
 				</DataGrid>
@@ -33,6 +33,7 @@
 						<v-btn
 							v-if="countOfCriteriaBeneficiaries"
 							class="text-none"
+							@click="onShowDetail"
 						>
 							{{ countOfCriteriaBeneficiaries }} {{ $t(targetType) }}
 						</v-btn>
@@ -164,7 +165,7 @@ export default {
 			this.$emit("removeGroup");
 		},
 
-		showDetail() {
+		onShowDetail() {
 			if (this.countOfCriteriaBeneficiaries) {
 				this.$emit("showDetail", this.data);
 			}
