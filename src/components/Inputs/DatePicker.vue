@@ -16,7 +16,7 @@
 				:disabled="disabled"
 				:optional="optional"
 				:placeholder="placeholder"
-				:clearable="clearable"
+				:clearable="clearable && !disabled"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
 				readonly

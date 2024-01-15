@@ -1,3 +1,33 @@
+.v-label {
+  opacity: .65;
+
+  > span {
+    font-size: .9rem;
+  }
+}
+
+.v-field--disabled {
+  opacity: .8;
+  background-color: #f5f5f5;
+}
+
+.v-selection-control--disabled,
+.v-field--disabled,
+.v-input--disabled {
+  pointer-events: unset;
+
+  .v-selection-control div,
+  .v-selection-control label,
+  .v-field__field,
+  .v-field__append-inner {
+    &, * {
+      cursor: not-allowed !important;
+    }
+  }
+}
+
+
+
 .v-field__clearable {
   margin-right: .625rem;
 }
