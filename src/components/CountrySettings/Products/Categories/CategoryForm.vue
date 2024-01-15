@@ -10,6 +10,8 @@
 			@update:modelValue="onValidate('name')"
 		/>
 
+		<h4>{{ $t('Type') }}</h4>
+
 		<v-radio-group
 			v-model="formModel.type"
 			:error-messages="validationMsg('type')"
@@ -34,6 +36,8 @@
 				</template>
 			</v-radio>
 		</v-radio-group>
+
+		<h4>{{ $t('Image') }}</h4>
 
 		<FileUpload
 			v-if="!formDisabled"
