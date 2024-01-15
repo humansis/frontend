@@ -44,6 +44,16 @@ const routes = [
 		},
 	},
 	{
+		path: "/no-permission",
+		name: "NoPermission",
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
+	},
+	{
+		path: "/not-found",
+		name: "NotFound",
+		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+	},
+	{
 		path: "/",
 		name: "Dashboard",
 		redirect: () => ({
@@ -444,20 +454,6 @@ const routes = [
 		],
 	},
 	{
-		path: "/no-permission",
-		name: "NoPermission",
-		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
-		meta: {
-			permissions: [],
-			breadcrumb: "No permission",
-		},
-	},
-	{
-		path: "/not-found",
-		name: "NotFound",
-		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
-	},
-	{
 		path: "/:pathMatch(.*)*",
 		redirect: { name: "NotFound" },
 	},
@@ -494,14 +490,14 @@ router.beforeEach((to, from, next) => {
 			return next({ name: "AccountCreated" });
 		}
 
-		if (!canGoNext) {
+		if (to.name !== "NoPermission" && to.name !== "NotFound") {
+			store.dispatch("showSideMenu", true);
+		} else {
 			store.dispatch("showSideMenu", false);
-
-			return next({ name: "NoPermission" });
 		}
 
-		if (to.name !== "NoPermission") {
-			store.dispatch("showSideMenu", true);
+		if (!canGoNext) {
+			return next({ name: "NoPermission" });
 		}
 	}
 
