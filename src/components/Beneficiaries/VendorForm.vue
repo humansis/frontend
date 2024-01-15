@@ -33,6 +33,8 @@
 			@blur="onValidate('name')"
 		/>
 
+		<h4>{{ $t('Allowed Category Types') }}</h4>
+
 		<div
 			v-for="({ code, value }, index) of options.categoryTypes"
 			:key="`category-type-${code}`"
@@ -72,9 +74,15 @@
 			:disabled="formDisabled"
 			label="Contract No."
 			name="contract-no"
-			class="mb-2"
+			class="mb-4"
 			optional
 		/>
+
+		<h4 class="mb-n2">
+			{{ $t('Remote Distribution Permission') }}
+
+			<i class="optional-text font-weight-medium">- {{ $t('Optional') }}</i>
+		</h4>
 
 		<v-checkbox
 			v-model="formModel.canDoRemoteDistributions"
@@ -84,9 +92,7 @@
 			class="checkbox"
 		>
 			<template v-slot:label>
-				<span>{{ $t('Remote Distribution Permission') }}
-					<i class="optional-text">- {{ $t('Optional') }}</i>
-				</span>
+				<span>{{ $t('Allowed') }}</span>
 			</template>
 		</v-checkbox>
 
