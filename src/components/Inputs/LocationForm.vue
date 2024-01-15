@@ -365,13 +365,19 @@ export default {
 					this.formModel.adm2 = null;
 					this.formModel.adm3 = null;
 					this.formModel.adm4 = null;
+					this.options.districts = [];
+					this.options.communes = [];
+					this.options.villages = [];
 					break;
 				case "adm2":
 					this.formModel.adm3 = null;
 					this.formModel.adm4 = null;
+					this.options.communes = [];
+					this.options.villages = [];
 					break;
 				case "adm3":
 					this.formModel.adm4 = null;
+					this.options.villages = [];
 					break;
 				default:
 					break;
