@@ -35,6 +35,7 @@
 			:disabled="!isAssistanceNew"
 			label="Date of Assistance"
 			name="date-of-assistance"
+			class="mb-4"
 			@blur="onValuesForAssistanceName"
 		/>
 
@@ -119,9 +120,22 @@
 			</v-col>
 		</v-row>
 
-		<h3 v-if="isCommoditySmartCard" class="text-h5 mt-4">
+		<h3 v-if="isCommoditySmartCard" class="text-h5 my-4">
 			{{ $t('Distributed Commodity') }}
 		</h3>
+
+		<DatePicker
+			v-model="formModel.dateDistribution"
+			:min-date="formModel.dateDistribution"
+			:max-date="maxDateOfAssistance"
+			:disabled="!isAssistanceNew"
+			label="Expiration Date"
+			name="expiration-date"
+			class="mb-4"
+			@blur="onValuesForAssistanceName"
+		/>
+
+		<h4>{{ $t('Allowed Product Category Types') }}</h4>
 
 		<div v-if="isCommoditySmartCard">
 			<div
