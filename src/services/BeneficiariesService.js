@@ -248,12 +248,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	exportHouseholds(format, ids, filters) {
-		const idsText = ids ? idsToUri(ids) : "";
-		const formatText = format ? `type=${format}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
-		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
+	exportHouseholds(format, ids, filters, sort) {
+		return download({
+			uri: `households/exports${queryBuilder({ format, ids, filters, sort })}`,
+		});
 	},
 
 	exportBulkSearchHouseholds(format, ids, body) {

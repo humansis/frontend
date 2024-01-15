@@ -437,7 +437,9 @@ export default {
 				const filename = `BNF Households ${normalizeExportDate()}`;
 
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.householdId);
+					ids = this.table.checkedRows.map(
+						(household) => household.routeParams.householdId,
+					);
 				}
 
 				if (this.bulkSearch.isBulkSearchUsed) {
@@ -465,10 +467,15 @@ export default {
 					}
 				} else {
 					try {
+						this.exportControl.loading = true;
+
+						const sort = `${this.table.sortColumn?.sortKey
+							|| this.table.sortColumn}.${this.table.sortDirection}`;
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
 							this.filters,
+							sort,
 						);
 
 						downloadFile(data, filename, status, format, message);
