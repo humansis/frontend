@@ -558,8 +558,18 @@ export default {
 		householdsAndIndividualEditColumns() {
 			return [
 				{ key: "id", title: "Beneficiary ID" },
-				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
+				{
+					key: "givenName",
+					title: "Local given name",
+					sortKey: "localGivenName",
+					sortable: false,
+				},
+				{
+					key: "familyName",
+					title: "Local family name",
+					sortKey: "localFamilyName",
+					sortable: false,
+				},
 				{ key: "gender", sortable: false },
 				{ key: "dateOfBirth", title: "Date of Birth", type: "date", sortable: false },
 				{ key: "residencyStatus", sortable: false },
@@ -576,9 +586,20 @@ export default {
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
 				{ key: "id", title: "Beneficiary ID" },
-				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", width: "190px", sortKey: "localFamilyName" },
-				{ key: "nationalId", title: "ID Number" },
+				{
+					key: "givenName",
+					title: "Local given name",
+					sortKey: "localGivenName",
+					sortable: false,
+				},
+				{
+					key: "familyName",
+					title: "Local family name",
+					width: "190px",
+					sortKey: "localFamilyName",
+					sortable: false,
+				},
+				{ key: "nationalId", title: "ID Number", sortable: false },
 				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
 				...!this.isAssistanceTypeActivity
 					? [
