@@ -13,7 +13,7 @@
 		:placeholder="$t(placeholder)"
 		:multiple="multiple"
 		:chips="multiple"
-		:closable-chips="multiple"
+		:closable-chips="multiple && !disabled"
 		:no-data-text="$t('List is empty')"
 		autocomplete="off"
 		return-object
