@@ -8,6 +8,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:search-phrase="table.searchPhrase"
 		reset-sort-button
 		reset-filters-button
 		is-search-visible
