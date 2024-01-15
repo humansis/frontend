@@ -59,6 +59,8 @@
 			/>
 		</template>
 
+		<h4>{{ $t("Image") }}</h4>
+
 		<FileUpload
 			v-if="!formDisabled"
 			v-model="formModel.uploadedImage"
@@ -68,7 +70,6 @@
 			variant="outlined"
 			density="compact"
 			accept="image/*"
-			class="mt-4"
 			@update:modelValue="onValidate('uploadedImage')"
 		/>
 
@@ -133,10 +134,10 @@ export default {
 			formModel: {
 				name: { required },
 				productCategoryId: { required },
-				currency: { required: requiredIf(this.formModel.productCategoryId?.name === "Cashback") },
+				currency: { required: requiredIf(this.formModel.productCategoryId?.type === "Cashback") },
 				unitPrice: {
-					required: requiredIf(this.formModel.productCategoryId?.name === "Cashback"),
-					minValue: minValue(0),
+					required: requiredIf(this.formModel.productCategoryId?.type === "Cashback"),
+					minValue: minValue(0.01),
 				},
 				uploadedImage: { required: requiredIf(!this.formModel?.image) },
 			},
