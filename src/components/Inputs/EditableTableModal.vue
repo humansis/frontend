@@ -9,6 +9,7 @@
 				{{ $t(header) }}
 			</v-card-title>
 
+			<!-- TODO in future unite isOptional and optional -->
 			<v-card-text class="mt-4">
 				<div v-for="(formInput, index) in formInputs" :key="formInput.key" class="mb-3">
 					<DatePicker
@@ -17,6 +18,7 @@
 						:label="formInput.label"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
+						:optional="!formInput.required"
 						name="start-date"
 						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
@@ -31,8 +33,8 @@
 						:clearable="true"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
+						:optional="!formInput.required"
 						name="subsectors"
-						optional
 						class="mb-4"
 						@update:modelValue="onInputChanged(formInput, data)"
 					/>
@@ -43,6 +45,7 @@
 						:error-messages="validateRequiredMsg('name')"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
+						:optional="!formInput.required"
 						name="project-name"
 						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
@@ -55,6 +58,7 @@
 						:error-messages="validateRequiredMsg(formInput)"
 						:hide-spin-buttons="true"
 						:disabled="isFormDisabled"
+						:optional="!formInput.required"
 						type="number"
 						min="0"
 						dense
@@ -69,6 +73,7 @@
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						:name="`note-${index}`"
+						:is-optional="!formInput.required"
 						class="mt-4"
 						auto-grow
 						@blur="onInputChanged(formInput, data)"
