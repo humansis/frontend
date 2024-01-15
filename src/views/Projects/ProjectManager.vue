@@ -120,7 +120,7 @@
 								v-model="formModel.allowedProductCategoryTypes"
 								:label="productCategoryType"
 								:value="productCategoryType"
-								:error-messages="showErrorMessageForCategory(index)"
+								:error-messages="errorMessageForCategory(index)"
 								:disabled="formDisabled"
 								:name="`product-category-${index}`"
 								hide-details="auto"
@@ -591,7 +591,7 @@ export default {
 			this.onValidateTarget();
 		},
 
-		showErrorMessageForCategory(index) {
+		errorMessageForCategory(index) {
 			return index === (this.options.allowedProductCategoryTypes.length - 1)
 				? this.validationMsg("allowedProductCategoryTypes")
 				: "";
