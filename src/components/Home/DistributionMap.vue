@@ -90,6 +90,18 @@ export default {
 					lng: 15,
 					zoom: 6,
 				},
+				{
+					country: "MDA",
+					lat: 47.411631,
+					lng: 28.369885,
+					zoom: 6,
+				},
+				{
+					country: "CZE",
+					lat: 49.4350483,
+					lng: 16.6761388,
+					zoom: 6,
+				},
 			],
 		};
 	},
