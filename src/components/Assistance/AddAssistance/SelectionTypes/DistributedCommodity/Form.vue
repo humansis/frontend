@@ -374,7 +374,6 @@ export default {
 						this.CASHBACK,
 					)),
 					minValue: minValue(1),
-					maxValue: maxValue(this.maxCashback),
 					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
 				},
 			},
