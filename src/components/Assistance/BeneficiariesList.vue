@@ -625,7 +625,7 @@ export default {
 				{ key: "id", title: "ID" },
 				{ key: "name" },
 				{ key: "type" },
-				{ key: "contactGivenName", title: "Contact Name" },
+				{ key: "contactGivenName" },
 				{ key: "contactFamilyName" },
 				{ key: "phone", title: "Phone Number", sortable: false },
 				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
