@@ -290,6 +290,11 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "FinalisationStep",
 
+	emits: [
+		"changeImportState",
+		"canceledImport",
+	],
+
 	props: {
 		statistics: {
 			type: Object,
