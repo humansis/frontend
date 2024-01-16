@@ -78,7 +78,6 @@
 						<DataSelect
 							v-model="formModel.selectedDonors"
 							:items="options.donors"
-							:clearable="true"
 							label="Donors"
 							name="donors"
 							item-title="fullname"

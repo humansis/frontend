@@ -30,7 +30,6 @@
 						:items="formInput.options"
 						:multiple="isInputTypeMultiSelect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
-						:clearable="true"
 						:disabled="isFormDisabled"
 						:label="formInput.label"
 						:optional="!formInput.required"
@@ -187,7 +186,7 @@ export default {
 		},
 
 		isFormDisabled() {
-			return this.modalState.isDetail;
+			return !!this.modalState.isDetail;
 		},
 	},
 
