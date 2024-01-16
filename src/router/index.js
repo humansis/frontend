@@ -10,9 +10,6 @@ import store from "@/store/index";
 let singleNotification = true;
 
 const { global: { t } } = i18n;
-const user = getters.getUserFromVuexStorage();
-const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
-	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
 /* eslint-disable vue/max-len */
 const routes = [
@@ -56,14 +53,19 @@ const routes = [
 	{
 		path: "/",
 		name: "Dashboard",
-		redirect: () => ({
-			name: storedCountryCode ? "Projects" : "Login",
-			...(storedCountryCode && {
-				params: {
-					countryCode: storedCountryCode,
-				},
-			}),
-		}),
+		redirect: () => {
+			const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
+				|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
+
+			return {
+				name: storedCountryCode ? "Projects" : "Login",
+				...(storedCountryCode && {
+					params: {
+						countryCode: storedCountryCode,
+					},
+				}),
+			};
+		},
 	},
 	{
 		path: "/:countryCode",
@@ -466,6 +468,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+	const user = getters.getUserFromVuexStorage();
+
 	window.document.title = to.meta && to.meta.breadcrumb
 		? `${to.meta.breadcrumb} | Humansis` : "Humansis";
 
