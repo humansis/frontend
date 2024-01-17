@@ -4,6 +4,7 @@
 			v-if="searchFields.length"
 			v-model="selectedSearchField"
 			:items="searchFields"
+			:disabled="isDisabled"
 			label="Select field"
 			name="select-field"
 			clearable
@@ -12,6 +13,7 @@
 
 		<DataInput
 			v-model="value"
+			:disabled="isDisabled"
 			label="Search"
 			name="search"
 			append-inner-icon="search"

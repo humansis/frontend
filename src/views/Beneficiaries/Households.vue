@@ -96,7 +96,7 @@
 			:progress="table.progress"
 			:search-phrase="table.searchPhrase"
 			:selected-rows="table.checkedRows.length"
-			:is-search-disabled="bulkSearch.isBulkSearchUsed"
+			:is-search-disabled="isBulkSearchVisible"
 			reset-filters-button
 			reset-sort-button
 			is-search-visible
