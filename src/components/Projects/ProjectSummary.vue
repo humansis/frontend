@@ -49,7 +49,7 @@
 							<div v-bind="props">
 								<p class="text-overline">{{ $t('Donors') }}</p>
 
-								<p class="text-h6 font-weight-bold">{{ projectSummary.donorIds.length }}</p>
+								<p class="text-h6 font-weight-bold">{{ projectSummary.donors.length }}</p>
 							</div>
 						</template>
 					</v-tooltip>

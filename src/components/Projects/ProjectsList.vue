@@ -57,7 +57,6 @@
 
 <script>
 import { mapState } from "vuex";
-import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
@@ -150,50 +149,18 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const donorIds = [];
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
+				this.table.data[key].donors = this.prepareDonors(item);
 				this.table.data[key].sectors = item.sectors
 					.map((sector) => ({ code: sector, value: sector }));
-
-				donorIds.push(...item.donorIds);
 			});
-			this.prepareDonorsForTable([...new Set(donorIds)]);
 		},
 
-		async prepareDonorsForTable(ids) {
-			const donors = await this.getDonors(ids);
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].donors = this.prepareDonors(item, donors);
-			});
-			this.reload();
-		},
+		prepareDonors(item) {
+			if (!item.donors.length) return this.$t("None");
 
-		prepareDonors(item, donors) {
-			if (!donors?.length || !item.donorIds?.length) return this.$t("None");
-			let result = "";
-
-			item.donorIds.forEach((id) => {
-				const foundDonor = donors.find((donor) => donor.id === id);
-
-				if (foundDonor) {
-					if (result === "") {
-						result = foundDonor.shortname;
-					} else {
-						result += `, ${foundDonor.shortname}`;
-					}
-				}
-			});
-
-			return result;
-		},
-
-		async getDonors(ids) {
-			return DonorService.getListOfDonors(null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
-				});
+			return item.donors.map((donor) => donor.shortname).join(", ");
 		},
 
 		onGoToDetail({ item: { id } }) {
