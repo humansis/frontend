@@ -36,7 +36,7 @@
 			label="Date of Assistance"
 			name="date-of-assistance"
 			class="mb-4"
-			@blur="onValuesForAssistanceName"
+			@update:modelValue="onValuesForAssistanceName"
 		/>
 
 		<DataSelect
@@ -46,6 +46,7 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
+			@update:modelValue="onValuesForAssistanceName"
 		/>
 
 		<p
@@ -120,24 +121,22 @@
 			</v-col>
 		</v-row>
 
-		<h3 v-if="isCommoditySmartCard" class="text-h5 my-4">
-			{{ $t('Distributed Commodity') }}
-		</h3>
+		<template v-if="isCommoditySmartCard">
+			<h3 class="text-h5 my-4">{{ $t('Distributed Commodity') }}</h3>
 
-		<DatePicker
-			v-model="formModel.dateDistribution"
-			:min-date="formModel.dateDistribution"
-			:max-date="maxDateOfAssistance"
-			:disabled="!isAssistanceNew"
-			label="Expiration Date"
-			name="expiration-date"
-			class="mb-4"
-			@blur="onValuesForAssistanceName"
-		/>
+			<DatePicker
+				v-model="formModel.dateExpiration"
+				:min-date="formModel.dateDistribution"
+				:max-date="maxDateOfAssistance"
+				:disabled="!isAssistanceNew"
+				label="Expiration Date"
+				name="expiration-date"
+				class="mb-4"
+				@blur="onValuesForAssistanceName"
+			/>
 
-		<h4>{{ $t('Allowed Product Category Types') }}</h4>
+			<h4>{{ $t('Allowed Product Category Types') }}</h4>
 
-		<div v-if="isCommoditySmartCard">
 			<div
 				v-for="(productCategoryType, index) of project.allowedProductCategoryTypes"
 				:key="`product-category-type-${productCategoryType}`"
@@ -161,16 +160,16 @@
 					</template>
 				</v-checkbox>
 			</div>
-		</div>
 
-		<DataInput
-			v-if="formModel.cashbackLimit && isCommoditySmartCard"
-			v-model="formModel.cashbackLimit"
-			label="Cashback Limit"
-			name="cashback-limit"
-			class="my-4"
-			disabled
-		/>
+			<DataInput
+				v-if="formModel.cashbackLimit"
+				v-model="formModel.cashbackLimit"
+				label="Cashback Limit"
+				name="cashback-limit"
+				class="my-4"
+				disabled
+			/>
+		</template>
 	</v-card-text>
 
 	<v-card-actions>
