@@ -471,10 +471,14 @@ export default {
 
 						const sort = `${this.table.sortColumn?.sortKey
 							|| this.table.sortColumn}.${this.table.sortDirection}`;
+						const filters = {
+							...this.filters,
+							...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+						};
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
-							this.filters,
+							filters,
 							sort,
 						);
 
