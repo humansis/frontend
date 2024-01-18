@@ -5,6 +5,8 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {
+	emits: ["rowsChecked"],
+
 	mixins: [institutionHelper],
 
 	methods: {

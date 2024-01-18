@@ -525,7 +525,7 @@ export default {
 		availableExportTypes() {
 			const availableTypes = [];
 
-			if (this.exportButton && this.userCan.exportBeneficiaries) {
+			if (this.exportButton && this.userCan.exportBeneficiaries && this.assistance?.target) {
 				if (!this.isAssistanceTargetInstitution) {
 					availableTypes.push(
 						EXPORT.LIST_OF_BENEFICIARIES,
@@ -537,10 +537,13 @@ export default {
 				}
 
 				if (this.isAssistanceValidated) {
-					if (this.isDistributionExportVisible) {
+					if (this.isDistributionExportVisible && !this.isAssistanceTargetInstitution) {
 						availableTypes.push(EXPORT.BANK_DISTRIBUTION_LIST);
 					}
-					availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+
+					if (this.assistance.bnfFile3ExportId) {
+						availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+					}
 				}
 			}
 
