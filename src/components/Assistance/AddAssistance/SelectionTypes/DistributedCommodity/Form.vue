@@ -96,7 +96,8 @@
 					v-model.number="formModel[divisionFieldsValidationString][key]"
 					:label="divisionFields[divisionFieldsValidationString][i].label"
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
-					name="division"
+					:name="`division-${key}`"
+					type="number"
 					class="mb-4"
 					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
@@ -360,6 +361,9 @@ export default {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 					},
 					thirdNesFields: {
+						required: requiredIf(this.displayedFields.householdMembersNesFields),
+					},
+					fourthNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 					},
 				},
@@ -838,6 +842,8 @@ export default {
 					.divisionNesFields.secondNesFields;
 				this.formModel.payloadDivisionNesFields[2].value = this.formModel
 					.divisionNesFields.thirdNesFields;
+				this.formModel.payloadDivisionNesFields[3].value = this.formModel
+					.divisionNesFields.fourthNesFields;
 			}
 
 			this.$emit("formSubmitted", {

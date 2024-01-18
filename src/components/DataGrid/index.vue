@@ -150,7 +150,9 @@
 				</template>
 
 				<template v-else>
-					<ColumnField :column="column" :cell-data="item[column.key]" />
+					<slot :name="`custom-${column.key}`" :row="item" :index="index">
+						<ColumnField :column="column" :cell-data="item[column.key]" />
+					</slot>
 				</template>
 			</template>
 		</v-data-table>
