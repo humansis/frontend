@@ -7,7 +7,7 @@
 					:items="criteriaGroups"
 					:loading="loading"
 					is-row-click-disabled
-					is-footer-disabled
+					is-custom-footer-disabled
 				>
 					<template v-slot:actions="{ index }">
 						<ButtonAction

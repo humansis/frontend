@@ -71,7 +71,7 @@
 			:total-count="table.total"
 			class="mb-4"
 			is-header-disabled
-			is-footer-disabled
+			is-custom-footer-disabled
 		/>
 	</div>
 </template>

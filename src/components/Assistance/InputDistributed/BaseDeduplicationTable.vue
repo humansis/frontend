@@ -3,7 +3,7 @@
 		:headers="table.columns"
 		:items="data"
 		is-row-click-disabled
-		is-footer-disabled
+		is-custom-footer-disabled
 		is-default-footer-visible
 	/>
 </template>

@@ -44,7 +44,7 @@
 		:headers="preparedTableColumns"
 		:items="modifiedTableData"
 		is-row-click-disabled
-		is-footer-disabled
+		is-custom-footer-disabled
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction

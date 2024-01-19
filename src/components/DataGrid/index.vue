@@ -63,7 +63,7 @@
 			</template>
 
 			<template v-if="!isDefaultFooterVisible" v-slot:bottom>
-				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
+				<v-row v-if="!isCustomFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
 							v-model="perPage"
@@ -240,7 +240,7 @@ export default {
 			default: false,
 		},
 
-		isFooterDisabled: {
+		isCustomFooterDisabled: {
 			type: Boolean,
 			default: false,
 		},
