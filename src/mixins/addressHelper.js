@@ -42,6 +42,8 @@ export default {
 			if (campAddress?.address?.camp) {
 				return {
 					...campAddress.address.camp,
+					camp: campAddress.address.camp_id,
+					tentNumber: campAddress.address.tent_number,
 					type: GENERAL.LOCATION_TYPE.camp.type,
 				};
 			}
