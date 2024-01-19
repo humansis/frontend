@@ -126,7 +126,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "beneficiaryId", title: "Beneficiary", type: "link" },
+					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false},
 					{ key: "localGivenName", sortable: false },
 					{ key: "localFamilyName", sortable: false },
 					{ key: "project", type: "link", sortable: false },

@@ -122,7 +122,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id" },
+					{ key: "id", sortable: false },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },

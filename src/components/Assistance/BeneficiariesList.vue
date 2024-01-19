@@ -453,7 +453,7 @@ export default {
 					{ key: "contactFamilyName" },
 				],
 				institutionEditColumns: [
-					{ key: "id", title: "ID" },
+					{ key: "id", title: "ID", sortable: false },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },
@@ -557,7 +557,7 @@ export default {
 
 		householdsAndIndividualEditColumns() {
 			return [
-				{ key: "id", title: "Beneficiary ID" },
+				{ key: "id", title: "Beneficiary ID", sortable: false },
 				{
 					key: "givenName",
 					title: "Local given name",
@@ -585,7 +585,7 @@ export default {
 
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
-				{ key: "id", title: "Beneficiary ID" },
+				{ key: "id", title: "Beneficiary ID", sortable: false },
 				{
 					key: "givenName",
 					title: "Local given name",
@@ -622,7 +622,7 @@ export default {
 
 		institutionDetailColumns() {
 			return [
-				{ key: "id", title: "ID" },
+				{ key: "id", title: "ID", sortable: false },
 				{ key: "name" },
 				{ key: "type" },
 				{ key: "contactGivenName" },
