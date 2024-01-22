@@ -528,7 +528,10 @@ export default {
 			this.loading.assistanceTypes = true;
 			await AssistancesService.getAssistanceTypes(code)
 				.then(({ data }) => {
-					this.options.assistanceTypes = data;
+					this.options.assistanceTypes = data.map((type) => ({
+						...type,
+						value: type.value.replace(/^\w/, (value) => value.toUpperCase()),
+					}));
 				})
 				.catch((e) => {
 					Notification(`${this.$t("Assistance Types")} ${e.message || e}`, "error");
