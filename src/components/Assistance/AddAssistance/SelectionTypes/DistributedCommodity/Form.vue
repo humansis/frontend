@@ -42,6 +42,7 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
+			item-title="field"
 			class="mb-4"
 			@update:modelValue="onValidate('customField')"
 		/>
