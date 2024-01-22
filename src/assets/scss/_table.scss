@@ -55,7 +55,7 @@
   flex-direction: column;
   text-align: center;
 
-  .total-count-col,
+  .total-selected-col,
   .total-count-col {
     min-width: fit-content;
   }
@@ -78,7 +78,7 @@
     }
 
     .total-count-col,
-    .item-selected-col {
+    .total-selected-col {
       max-width: 12rem;
     }
 
