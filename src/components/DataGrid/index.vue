@@ -94,7 +94,7 @@
 						</v-chip>
 					</v-col>
 
-					<v-col v-if="selectedRows > 0" class="item-selected-col">
+					<v-col v-if="selectedRows > 0" class="total-selected-col">
 						<v-chip
 							label=""
 							color="light-blue-darken-2"
