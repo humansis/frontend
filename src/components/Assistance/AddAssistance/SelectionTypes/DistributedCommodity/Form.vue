@@ -96,7 +96,8 @@
 					v-model.number="formModel[divisionFieldsValidationString][key]"
 					:label="divisionFields[divisionFieldsValidationString][i].label"
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
-					name="division"
+					:name="`division-${key}`"
+					type="number"
 					class="mb-4"
 					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
@@ -362,6 +363,9 @@ export default {
 					thirdNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 					},
+					fourthNesFields: {
+						required: requiredIf(this.displayedFields.householdMembersNesFields),
+					},
 				},
 				description: {
 					required: requiredIf(this.displayedFields.description),
@@ -562,8 +566,9 @@ export default {
 		divisionNesFields() {
 			return [
 				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNesField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 8 members)`), fieldName: "quantityNesField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 6 members)`), fieldName: "quantityNesField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (7 - 9 members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (10+ members)`), fieldName: "quantityNesField4" },
 			];
 		},
 
@@ -837,6 +842,8 @@ export default {
 					.divisionNesFields.secondNesFields;
 				this.formModel.payloadDivisionNesFields[2].value = this.formModel
 					.divisionNesFields.thirdNesFields;
+				this.formModel.payloadDivisionNesFields[3].value = this.formModel
+					.divisionNesFields.fourthNesFields;
 			}
 
 			this.$emit("formSubmitted", {
