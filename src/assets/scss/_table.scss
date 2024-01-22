@@ -55,6 +55,11 @@
   flex-direction: column;
   text-align: center;
 
+  .total-count-col,
+  .total-count-col {
+    min-width: fit-content;
+  }
+
   .per-page-col,
   .go-page-col {
     max-width: 8.125rem;
@@ -78,7 +83,8 @@
     }
 
     .pagination-col {
-      max-width: 28rem;
+      min-width: 14rem;
+      max-width: 35rem;
       margin-left: auto;
 
       > nav > ul {
