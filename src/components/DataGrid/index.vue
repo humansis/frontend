@@ -51,6 +51,7 @@
 		<v-data-table
 			v-bind="$attrs"
 			:cell-props="getCellProps"
+			:items-per-page-options="TABLE.PER_PAGE_OPTIONS"
 			@[rowClickEvent]="onHandleRowClick"
 		>
 			<template v-slot:loader>
