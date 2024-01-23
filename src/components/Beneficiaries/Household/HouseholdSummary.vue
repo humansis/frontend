@@ -178,10 +178,6 @@ export default {
 		submit() {
 			this.v$.$touch();
 
-			if (this.v$.$error) {
-				Notification(this.$t("Please fill all required fields"), "error");
-			}
-
 			return !this.v$.$invalid;
 		},
 	},
