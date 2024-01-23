@@ -349,6 +349,7 @@
 							name="external-received-types"
 							class="mb-4"
 							optional
+							multiple
 						/>
 
 						<DatePicker
@@ -614,7 +615,7 @@ export default {
 				otherContactInformation,
 				phone,
 				secondPhone,
-				supportReceivedTypes: externalReceivedTypes?.code,
+				supportReceivedTypes: getArrayOfIdsByParam(externalReceivedTypes, "code"),
 				supportDateReceived: modifiedSupportDateReceived,
 				supportOrganizationName: supportOrganization,
 			};
