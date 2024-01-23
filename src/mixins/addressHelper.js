@@ -43,6 +43,7 @@ export default {
 				return {
 					...campAddress.address.camp,
 					camp: campAddress.address.camp_id,
+					campName: campAddress.address.camp?.name,
 					tentNumber: campAddress.address.tent_number,
 					type: GENERAL.LOCATION_TYPE.camp.type,
 				};
