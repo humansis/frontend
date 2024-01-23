@@ -110,7 +110,7 @@ export default {
 			},
 			bulkSearch: {
 				isBulkSearchUsed: false,
-				searchBy: "",
+				searchBy: null,
 				ids: "",
 				notFoundIds: "",
 			},
