@@ -60,7 +60,7 @@ export default {
 				this.setGridFiltersToUrl(entity, hasLocationsFilter);
 			} else {
 				this.table.currentPage = Number(page) || 1;
-				this.table.searchPhrase = search || "";
+				this.table.searchPhrase = search.trim() || "";
 				this.table.sortColumn = sortColumn || "";
 				this.table.sortDirection = sortDirection || "desc";
 				this.filters = filters ? JSON.parse(filters) : {};
@@ -101,7 +101,7 @@ export default {
 
 			const newQuery = {
 				...(this.table.currentPage > 1 && page && { page: this.table.currentPage.toString() }),
-				...(this.table.searchPhrase && searchPhrase && { search: this.table.searchPhrase }),
+				...(this.table.searchPhrase && searchPhrase && { search: this.table.searchPhrase.trim() }),
 				...(this.table.sortColumn
 					&& sortColumn
 					&& { sortColumn: this.table.sortColumn.sortKey || this.table.sortColumn }),
