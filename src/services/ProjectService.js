@@ -32,9 +32,10 @@ export default {
 		return { data };
 	},
 
-	async updateProject(id, body) {
-		const { data, status } = await fetcher({ uri: `projects/${id}`, method: "PUT", body });
-		return { data, status };
+	updateProject(id, body) {
+		return fetcher({
+			uri: `projects/${id}`, method: "PUT", body,
+		});
 	},
 
 	async deleteProject(id) {

@@ -548,14 +548,18 @@ export default {
 		},
 
 		async updateProject(id, projectBody) {
-			await ProjectService.updateProject(id, projectBody).then((response) => {
-				if (response.status === 200) {
+			try {
+				const { status, message } = await ProjectService.updateProject(id, projectBody);
+
+				if (status === 200) {
 					Notification(this.$t("Project Successfully Updated"), "success");
 					this.$router.push({ name: "Projects" });
+				} else {
+					Notification(message, "error");
 				}
-			}).catch((e) => {
+			} catch (e) {
 				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
-			});
+			}
 		},
 
 		async fetchModalityTypes() {
