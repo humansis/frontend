@@ -128,6 +128,8 @@ export default {
 				const [option] = this.availableExportFormats;
 				this.selectedExportFormat = option;
 			}
+
+			this.onInputChanged();
 		},
 
 		onInputChanged() {
