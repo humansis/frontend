@@ -12,11 +12,11 @@
 </template>
 
 <script>
+import { requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "IdTypeSelect",

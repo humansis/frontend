@@ -103,12 +103,12 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import ColorPicker from "@/components/Inputs/ColorPicker";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "MyOrganizationForm",

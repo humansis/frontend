@@ -62,11 +62,11 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "importForm",

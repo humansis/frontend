@@ -280,6 +280,7 @@
 </template>
 
 <script>
+import { helpers, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/BaseDeduplicationTable";
@@ -292,7 +293,6 @@ import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { helpers, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "StartTransactionsForm",

@@ -139,6 +139,7 @@
 </template>
 
 <script>
+import { maxLength, required, requiredIf } from "@vuelidate/validators";
 import ProjectService from "@/services/ProjectService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -148,7 +149,6 @@ import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { BookletStatusArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { CURRENCIES } from "@/consts";
-import { maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "VoucherForm",

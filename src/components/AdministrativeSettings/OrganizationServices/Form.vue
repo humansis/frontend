@@ -98,9 +98,9 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "OrganizationServiceForm",

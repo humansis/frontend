@@ -79,10 +79,10 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "DonorForm",

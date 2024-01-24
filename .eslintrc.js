@@ -74,7 +74,7 @@ module.exports = {
 			"error",
 			{
 				groups: [
-					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
+					["^vue", "^@vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
 					["^.+\\.css$"],
 				],
 			},

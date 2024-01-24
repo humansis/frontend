@@ -202,6 +202,7 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
@@ -216,7 +217,6 @@ import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceForm",

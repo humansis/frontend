@@ -358,6 +358,7 @@
 </template>
 
 <script>
+import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -368,7 +369,6 @@ import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeLis
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
-import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "HouseholdHeadForm",

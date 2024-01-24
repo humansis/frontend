@@ -268,6 +268,7 @@
 </template>
 
 <script>
+import { maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -280,7 +281,6 @@ import { getCodeAndValueObject } from "@/utils/codeList";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
-import { maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "DistributedCommodityForm",
