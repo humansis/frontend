@@ -85,11 +85,11 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "CategoryForm",

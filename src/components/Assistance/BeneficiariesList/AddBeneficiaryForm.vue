@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -68,7 +69,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "AddBeneficiaryForm",

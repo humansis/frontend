@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import CommunityService from "@/services/CommunityService";
 import InstitutionService from "@/services/InstitutionService";
@@ -44,7 +45,6 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import addressHelper from "@/mixins/addressHelper";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "TargetTypeSelect",

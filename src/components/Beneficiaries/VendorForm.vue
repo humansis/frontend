@@ -160,11 +160,11 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "VendorForm",

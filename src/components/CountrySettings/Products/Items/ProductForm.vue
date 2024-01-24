@@ -106,12 +106,12 @@
 </template>
 
 <script>
+import { minValue, required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { CURRENCIES } from "@/consts";
-import { minValue, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "ProductForm",

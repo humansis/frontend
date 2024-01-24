@@ -148,6 +148,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { email, required, requiredIf } from "@vuelidate/validators";
 import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
 import SystemService from "@/services/SystemService";
@@ -158,7 +159,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { PHONE, ROLE } from "@/consts";
-import { email, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "userForm",

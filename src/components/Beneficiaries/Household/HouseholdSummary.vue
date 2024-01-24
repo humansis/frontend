@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import ProjectService from "@/services/ProjectService";
 import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
@@ -85,7 +86,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "HouseholdSummary",

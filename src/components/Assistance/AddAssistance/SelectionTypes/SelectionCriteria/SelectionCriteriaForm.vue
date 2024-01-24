@@ -108,6 +108,7 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -117,7 +118,6 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "SelectionCriteriaForm",

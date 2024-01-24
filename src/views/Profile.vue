@@ -59,7 +59,7 @@
 
 <script>
 import { mapState } from "vuex";
-import LoginService from "@/services/LoginService";
+import { requiredIf } from "@vuelidate/validators";
 import UsersService from "@/services/UsersService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -68,7 +68,6 @@ import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "Profile",

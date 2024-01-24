@@ -399,6 +399,7 @@
 </template>
 
 <script>
+import { maxLength, required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
@@ -411,7 +412,6 @@ import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { filterEmptyValues, replaceEmptyValuesWithNull } from "@/utils/helpers";
 import { INSTITUTION } from "@/consts";
-import { maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "InstitutionManager",

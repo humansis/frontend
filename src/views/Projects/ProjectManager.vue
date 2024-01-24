@@ -205,6 +205,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
@@ -222,7 +223,6 @@ import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 const todayDate = new Date();

@@ -45,9 +45,9 @@
 </template>
 
 <script>
+import { requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "ActivityDetails",

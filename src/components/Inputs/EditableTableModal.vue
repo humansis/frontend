@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { maxValue, minValue, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
@@ -124,7 +125,6 @@ import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { GENERAL } from "@/consts";
-import { maxValue, minValue, requiredIf } from "@vuelidate/validators";
 
 export default {
 

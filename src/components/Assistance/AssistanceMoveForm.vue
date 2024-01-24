@@ -37,9 +37,9 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceForm",
