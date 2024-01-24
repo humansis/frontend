@@ -219,6 +219,7 @@ import permissions from "@/mixins/permissions";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 import { required } from "@vuelidate/validators";
@@ -548,14 +549,16 @@ export default {
 		},
 
 		async updateProject(id, projectBody) {
-			await ProjectService.updateProject(id, projectBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Project Successfully Updated"), "success");
-					this.$router.push({ name: "Projects" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
-			});
+			try {
+				const { status, message } = await ProjectService.updateProject(id, projectBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Project Successfully Updated"), "success");
+				this.$router.push({ name: "Projects" });
+			} catch (e) {
+				Notification(`${this.$t("Project:")} ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchModalityTypes() {

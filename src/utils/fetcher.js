@@ -236,3 +236,19 @@ export const idsToUri = (ids, param = null) => {
 
 	return query;
 };
+
+export const checkResponseStatus = (status, message) => {
+	if (status !== 200) {
+		throw new Error(message);
+	}
+};
+
+export default {
+	getResponseJSON,
+	fetcher,
+	upload,
+	download,
+	filtersToUri,
+	idsToUri,
+	checkResponseStatus,
+};
