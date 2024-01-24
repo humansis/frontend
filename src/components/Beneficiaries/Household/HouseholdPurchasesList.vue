@@ -3,6 +3,7 @@
 		v-show="show"
 		ref="purchaseList"
 		v-model:page="table.currentPage"
+		v-model:sort-by="sortValue"
 		:items-per-page="perPage"
 		:headers="table.columns"
 		:items="table.data"
