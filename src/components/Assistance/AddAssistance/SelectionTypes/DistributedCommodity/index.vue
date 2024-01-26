@@ -15,7 +15,7 @@
 
 	<span
 		v-if="validationMessages.modalityType?.length"
-		class="error"
+		class="text-red"
 	>
 		{{ validationMessages.modalityType }}
 	</span>

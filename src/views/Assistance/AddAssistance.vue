@@ -310,6 +310,10 @@ export default {
 		},
 
 		async onGetDeliveredCommodityValue(updatedCommodities = null) {
+			if (this.assistanceBody.commodities[0]?.modalityType) {
+				this.validationMessages.modalityType = "";
+			}
+
 			await this.onFetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 
 			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
