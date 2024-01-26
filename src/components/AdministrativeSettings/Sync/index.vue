@@ -5,7 +5,6 @@
 	>
 		<SyncForm
 			:form-model="syncModel"
-			:submit-button-label="syncModal.isEditing ? 'Update' : 'Create'"
 			:form-disabled="syncModal.isDetail"
 			close-button
 			@formClosed="onCloseSyncModal"

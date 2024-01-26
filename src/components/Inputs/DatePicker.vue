@@ -50,7 +50,7 @@ export default {
 	props: {
 		modelValue: {
 			type: Date,
-			default: "",
+			default: null,
 		},
 
 		minDate: {

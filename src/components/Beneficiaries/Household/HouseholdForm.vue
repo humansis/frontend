@@ -205,7 +205,6 @@
 </template>
 
 <script>
-import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
@@ -219,7 +218,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
 import getters from "@/store/getters";
 
 export default {

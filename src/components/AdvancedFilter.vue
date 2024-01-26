@@ -83,8 +83,15 @@ export default {
 	},
 
 	props: {
-		selectedFiltersOptions: Object,
-		filtersOptions: Object,
+		selectedFiltersOptions: {
+			type: Object,
+			required: true,
+		},
+
+		filtersOptions: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	emits: [

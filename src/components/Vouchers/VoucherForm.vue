@@ -153,6 +153,8 @@ import { CURRENCIES } from "@/consts";
 export default {
 	name: "VoucherForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		TagInput,
 		DataSelect,
@@ -179,11 +181,19 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		isEditing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

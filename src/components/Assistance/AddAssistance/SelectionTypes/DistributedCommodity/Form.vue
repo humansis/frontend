@@ -386,9 +386,17 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 
 		project: {
 			type: Object,
@@ -412,6 +420,7 @@ export default {
 
 		dateExpiration: {
 			type: String,
+			required: true,
 		},
 	},
 

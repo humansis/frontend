@@ -44,7 +44,7 @@
 				v-model="formModel.categoryType"
 				:value="value"
 				:disabled="formDisabled"
-				:error-messages="isLastCategoryType(index) && validationMsg('categoryType')"
+				:error-messages="errorMessageForCategory(index)"
 				:name="`category-type-${index}`"
 				hide-details="auto"
 				@blur="onValidate('categoryType')"
@@ -169,6 +169,8 @@ import validation from "@/mixins/validation";
 export default {
 	name: "VendorForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		LocationForm,
 		DataInput,
@@ -199,12 +201,20 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		formLoading: Boolean,
 		isEditing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -244,6 +254,12 @@ export default {
 	methods: {
 		isLastCategoryType(index) {
 			return index === (this.options.categoryTypes.length - 1);
+		},
+
+		errorMessageForCategory(index) {
+			return this.isLastCategoryType(index)
+				? this.validationMsg("categoryType")
+				: "";
 		},
 
 		onSubmitForm() {

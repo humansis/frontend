@@ -113,6 +113,8 @@ import validation from "@/mixins/validation";
 export default {
 	name: "MyOrganizationForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		ColorPicker,
 		DataSelect,
@@ -132,10 +134,18 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

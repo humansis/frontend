@@ -6,7 +6,6 @@
 		>
 			<InputDistributed
 				close-button
-				class="modal-card"
 				@submit="onFetchBeneficiariesAndStatistics"
 				@close="onCloseInputDistributedModal"
 			/>
@@ -19,7 +18,6 @@
 			<StartTransactionForm
 				close-button
 				submit-button-label="Confirm"
-				class="modal-card"
 				@formSubmitted="onConfirmTransaction"
 				@formClosed="onCloseTransactionModal"
 			/>
@@ -259,7 +257,9 @@ export default {
 		},
 
 		assistanceProgress() {
-			return Math.trunc(this.statistics?.progress * 100);
+			const progress = this.statistics?.progress || 0;
+
+			return Math.trunc(progress * 100);
 		},
 
 		amountDistributed() {

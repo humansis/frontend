@@ -87,6 +87,8 @@ import validation from "@/mixins/validation";
 export default {
 	name: "DonorForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		DataInput,
 		FileUpload,
@@ -104,10 +106,18 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	methods: {

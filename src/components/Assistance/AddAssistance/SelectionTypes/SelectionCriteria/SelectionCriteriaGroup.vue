@@ -69,9 +69,20 @@ export default {
 	},
 
 	props: {
-		groupId: Number,
-		targetType: String,
-		count: Number,
+		groupId: {
+			type: Number,
+			default: 0,
+		},
+
+		targetType: {
+			type: String,
+			required: true,
+		},
+
+		count: {
+			type: Number,
+			default: 0,
+		},
 
 		data: {
 			type: Array,

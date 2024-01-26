@@ -177,7 +177,6 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
-import getters from "@/store/getters";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
@@ -187,6 +186,8 @@ const statusTags = [
 
 export default {
 	name: "AssistancesList",
+
+	emits: ["remove"],
 
 	components: {
 		ButtonAction,

@@ -397,7 +397,7 @@ export default {
 						required: requiredIf(this.formModel.primaryId.idNumber),
 						isPrimaryIdValid: helpers.withMessage(
 							this.primaryIdValidationMessage,
-							function () { return this.isPrimaryIdValid; },
+							function isPrimaryIdValid() { return this.isPrimaryIdValid; },
 						),
 					},
 					idNumber: {
@@ -413,7 +413,7 @@ export default {
 						required: requiredIf(this.formModel.secondaryId.idNumber),
 						isSecondaryIdValid: helpers.withMessage(
 							this.secondaryIdValidationMessage,
-							function () { return this.isSecondaryIdValid; },
+							function isSecondaryIdValid() { return this.isSecondaryIdValid; },
 						),
 					},
 					idNumber: {
@@ -430,7 +430,7 @@ export default {
 						required: requiredIf(this.formModel.tertiaryId.idNumber),
 						isTertiaryIdValid: helpers.withMessage(
 							this.tertiaryIdValidationMessage,
-							function () { return this.isTertiaryIdValid; },
+							function isTertiaryIdValid() { return this.isTertiaryIdValid; },
 						),
 					},
 					idNumber: {

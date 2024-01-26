@@ -2521,7 +2521,7 @@ vue-multiselect@^2.1.8:
   resolved "https://registry.npmjs.org/vue-multiselect/-/vue-multiselect-2.1.8.tgz"
   integrity sha512-bgpvWZlT4EiUUCcwLAR655LdiifeqF62BDL2TLVddKfS/NcdIYVlvOr456N7GQIlBFNbb7vHfq+qOl8mpGAOJw==
 
-vue-qrcode-reader@^5.5.1:
+vue-qrcode-reader@^5.3.6:
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/vue-qrcode-reader/-/vue-qrcode-reader-5.5.1.tgz#700bfede4b1fc98dba24c435035e83ec82434ad2"
   integrity sha512-O7YwhJSMLUA6jVvYoKOtGcgJ53cuH/7M65VgmluzDPlsyQnbOpu4/bqcR03tnMRNebm50dh4pZtSKOXjDNUGjw==

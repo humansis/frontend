@@ -40,9 +40,10 @@ export default {
 	mixins: [grid, baseHelper],
 
 	props: {
-		projects: Array,
-		purchaseIds: Array,
-		redemptionBatchId: Number,
+		redemptionBatchId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {

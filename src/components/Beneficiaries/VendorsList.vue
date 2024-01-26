@@ -179,9 +179,8 @@ export default {
 				this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
 					: "",
-				this.table.searchPhrase,
-				null,
 				this.filters,
+				this.table.searchPhrase,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;

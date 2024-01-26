@@ -66,8 +66,12 @@ export default {
 	},
 
 	props: {
-		submitButtonLabel: String,
 		closeButton: Boolean,
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

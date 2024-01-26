@@ -57,6 +57,8 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "CustomFieldForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		DataInput,
 		DataSelect,
@@ -75,10 +77,18 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

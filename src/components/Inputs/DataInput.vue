@@ -4,6 +4,7 @@
 		:density="density"
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
+		autocomplete="off"
 	>
 		<template v-slot:label>
 			<span>{{ $t(label) }}

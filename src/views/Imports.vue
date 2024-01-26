@@ -43,6 +43,7 @@
 				class="text-none ml-2"
 				href="https://docs.pinf.cz/x/RwBf"
 				target="_blank"
+				rel="noopener noreferrer"
 			>
 				{{ $t('Help') }}
 			</v-btn>

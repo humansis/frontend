@@ -46,8 +46,15 @@ export default {
 	mixins: [grid],
 
 	props: {
-		projects: Array,
-		vendorId: Number,
+		projects: {
+			type: Array,
+			required: true,
+		},
+
+		vendorId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {

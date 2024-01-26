@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { mapState } from "vuex";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";

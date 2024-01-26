@@ -112,7 +112,10 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		formDisabled: {
 			type: Boolean,

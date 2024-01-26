@@ -9,6 +9,7 @@
 				:duplicate-assistance="newAssistanceForm !== null"
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
+				@input="onUpdateData(false)"
 			/>
 
 			<LocationForm
@@ -26,7 +27,7 @@
 				label="Date of Assistance"
 				name="date-of-assistance"
 				class="mb-4"
-				@update:modelValue="onValuesForAssistanceName"
+				@update:modelValue="onUpdateData"
 			/>
 
 			<DataSelect
@@ -35,7 +36,7 @@
 				label="Round"
 				name="round"
 				class="mb-4"
-				@update:modelValue="onValuesForAssistanceName"
+				@update:modelValue="onUpdateData(false)"
 			/>
 
 			<DataInput
@@ -43,6 +44,7 @@
 				label="Elo number"
 				name="elo-number"
 				class="mb-4"
+				@input="onUpdateData(false)"
 			/>
 
 			<div class="mb-4">
@@ -51,6 +53,7 @@
 					v-model="formModel.activity"
 					label="Activity"
 					name="activity"
+					@input="onUpdateData(false)"
 				/>
 
 				<DataSelect
@@ -61,6 +64,7 @@
 					label="Activity"
 					name="activity"
 					optional
+					@update:modelValue="onUpdateData(false)"
 				/>
 			</div>
 
@@ -70,6 +74,7 @@
 					v-model="formModel.budgetLine"
 					label="Budget line"
 					name="budget-line"
+					@input="onUpdateData(false)"
 				/>
 
 				<DataSelect
@@ -80,6 +85,7 @@
 					label="Budget line"
 					name="budget-line"
 					optional
+					@update:modelValue="onUpdateData(false)"
 				/>
 			</div>
 		</v-card-text>
@@ -145,7 +151,7 @@
 				label="Note"
 				name="note"
 				auto-grow
-				@blur="onNoteChanged"
+				@blur="onUpdateData(false)"
 			/>
 		</v-card-text>
 	</v-card>
@@ -325,7 +331,7 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", this.formModel);
+		this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 	},
 
 	methods: {
@@ -358,7 +364,7 @@ export default {
 				await this.showComponents();
 			}
 
-			this.$emit("updatedData", this.formModel);
+			this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 		},
 
 		submit() {
@@ -369,9 +375,10 @@ export default {
 				|| (!this.v$.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
-		onUpdateData() {
-			this.$emit("updatedData", this.formModel);
+		async onUpdateData(isFetchForced = true) {
 			this.onValuesForAssistanceName();
+			await this.$nextTick();
+			this.$emit("updatedData", { data: this.formModel, isFetchForced });
 		},
 
 		normalizeText(text) {
@@ -418,17 +425,13 @@ export default {
 				this.onValidate("targetType");
 				this.$emit("targetSelect", targetType);
 				await this.showComponents();
-				this.$emit("updatedData", this.formModel);
+				this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 			}
 		},
 
 		async showComponents() {
 			const components = await this.getComponentsToShow();
 			this.$emit("showComponent", components);
-		},
-
-		onNoteChanged() {
-			this.$emit("updatedData", this.formModel);
 		},
 
 		async getComponentsToShow() {

@@ -77,7 +77,7 @@
 			:loading="countriesLoading"
 			:disabled="formDisabled || formModel.disabledCountry"
 			:multiple="!isOnlyOneCountry"
-			:hint="isOnlyOneCountry && 'You can select only one country'"
+			:hint="countryHint"
 			:persistent-hint="isOnlyOneCountry"
 			:error-messages="validationMsg('countries')"
 			label="Country"
@@ -163,6 +163,8 @@ import { PHONE, ROLE } from "@/consts";
 export default {
 	name: "userForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		DataInput,
 		DataSelect,
@@ -185,11 +187,19 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		isEditing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -211,6 +221,12 @@ export default {
 
 	computed: {
 		...mapState(["languages"]),
+
+		countryHint() {
+			return this.isOnlyOneCountry
+				? "You can select only one country"
+				: "";
+		},
 	},
 
 	async mounted() {

@@ -32,7 +32,6 @@
 			:date-expiration="dateExpiration"
 			:commodity="commodity"
 			submit-button-label="Create"
-			class="modal-card"
 			close-button
 			@formSubmitted="onSubmitCommodityForm"
 			@formClosed="onCloseCommodityModal"
@@ -375,7 +374,7 @@ export default {
 
 		getDivisionName(division) {
 			if (division?.quantities) {
-				if (division.quantities?.length === 4) {
+				if (division.quantities?.length === 5) {
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
 				}
 

@@ -69,7 +69,10 @@ export default {
 	},
 
 	props: {
-		visible: Object,
+		visible: {
+			type: Object,
+			required: true,
+		},
 
 		projectId: {
 			type: Number,

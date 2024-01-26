@@ -469,9 +469,6 @@ export default {
 				const selectableActivities = [];
 				const selectableBudgetLines = [];
 				const selectableModalityTypes = [];
-				const isProjectTargetsWithModalityType = this.project.targets.every(
-					(target) => target.modalityType,
-				);
 				const matchedModalityType = this.project.targets.some(
 					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
 				);
@@ -498,7 +495,7 @@ export default {
 						selectableBudgetLines.push(target.budgetLine);
 					}
 
-					if (isProjectTargetsWithModalityType && !matchedModalityType) {
+					if (isAllTargetsWithModality && !matchedModalityType) {
 						selectableModalityTypes.push(target.modalityType.value);
 					}
 				});
@@ -698,7 +695,7 @@ export default {
 			}
 		},
 
-		async onFetchNewAssistanceForm(data) {
+		async onFetchNewAssistanceForm({ data, isFetchForced }) {
 			const {
 				name,
 				assistanceType,
@@ -739,7 +736,9 @@ export default {
 					this.validationMessages.modalityType = "";
 				}
 
-				await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
+				if (isFetchForced) {
+					await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
+				}
 			}
 		},
 

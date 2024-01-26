@@ -68,6 +68,8 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "ScoringForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		FileUpload,
 		DataInput,

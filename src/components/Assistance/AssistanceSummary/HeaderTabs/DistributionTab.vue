@@ -249,7 +249,8 @@ export default {
 
 	computed: {
 		inAssistanceBeneficiariesCount() {
-			return this.statistics?.beneficiariesTotal - this.statistics?.beneficiariesDeleted;
+			return (this.statistics?.beneficiariesTotal || 0)
+				- (this.statistics?.beneficiariesDeleted || 0);
 		},
 
 		beneficiariesReached() {

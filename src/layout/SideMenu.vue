@@ -23,15 +23,48 @@
 					:key="index"
 				>
 					<v-list-item
-						v-if="!sideBarItem.subItems?.length && sideMenuItemsVisibility(sideBarItem)"
-						:title="sideBarItem.title"
+						v-if="sideBarItem?.href"
+						:title="$t(sideBarItem.title)"
+						:href="sideBarItem.href"
+						:active="isRouteActive(sideBarItem)"
+						target="_blank"
+						rel="noopener noreferrer"
+						exact
+					>
+						<template v-slot:prepend>
+							<v-tooltip
+								:disabled="isAsideExpanded"
+								content-class="tooltip-right side-menu-tooltip"
+							>
+								<template v-slot:default>
+									<div class="d-flex align-center gc-2">
+										<span>{{ $t(sideBarItem.title) }}</span>
+
+										<v-icon :icon="sideBarItem?.tooltipIcon" size="small" />
+									</div>
+								</template>
+
+								<template v-slot:activator="{ props }">
+									<v-icon
+										v-bind="props"
+										:icon="sideBarItem.prependIcon"
+										size="small"
+									/>
+								</template>
+							</v-tooltip>
+						</template>
+					</v-list-item>
+
+					<v-list-item
+						v-if="isItemWithoutSubItems(sideBarItem)"
+						:title="$t(sideBarItem.title)"
 						:to="sideBarItem.to"
 						:active="isRouteActive(sideBarItem)"
 						exact
 					>
 						<template v-slot:prepend>
 							<v-tooltip
-								:text="sideBarItem.title"
+								:text="$t(sideBarItem.title)"
 								:disabled="isAsideExpanded"
 								content-class="tooltip-right side-menu-tooltip"
 							>
@@ -47,19 +80,19 @@
 					</v-list-item>
 
 					<v-list-group
-						v-else-if="sideBarItem.subItems?.length && sideMenuItemsVisibility(sideBarItem)"
+						v-else-if="isItemWithSubItems(sideBarItem)"
 						:value="sideBarItem.title"
 						fluid
 					>
 						<template v-slot:activator="{ props }">
 							<v-list-item
 								v-bind="props"
-								:title="sideBarItem.title"
+								:title="$t(sideBarItem.title)"
 								:to="sideBarItem.to"
 							>
 								<template v-slot:prepend>
 									<v-tooltip
-										:text="sideBarItem.title"
+										:text="$t(sideBarItem.title)"
 										:disabled="isAsideExpanded"
 										content-class="tooltip-right side-menu-tooltip"
 									>
@@ -78,12 +111,12 @@
 						<template v-for="(subItem, index) in sideBarItem.subItems" :key="index">
 							<v-list-item
 								v-if="sideMenuItemsVisibility(subItem)"
-								:title="subItem.title"
+								:title="$t(subItem.title)"
 								:to="subItem.to"
 							>
 								<template v-slot:prepend>
 									<v-tooltip
-										:text="subItem.title"
+										:text="$t(subItem.title)"
 										:disabled="isAsideExpanded"
 										content-class="tooltip-right side-menu-tooltip"
 									>
@@ -176,6 +209,8 @@ export default {
 				{
 					title: "Reports",
 					prependIcon: "chart-line",
+					href: "https://app.powerbi.com/reportEmbed?reportId=d5a81245-560f-4114-bd05-525ddf55ceea&appId=92536ae3-49e4-4156-92a1-ba70dee78455&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9",
+					tooltipIcon: "external-link-alt",
 				},
 				{
 					title: "Vouchers",
@@ -278,6 +313,18 @@ export default {
 			const actualRoute = this.$route.name;
 
 			return actualRoute === item.to?.name || item.alias?.includes(actualRoute);
+		},
+
+		isItemWithoutSubItems(sideBarItem) {
+			return !sideBarItem.subItems?.length
+				&& this.sideMenuItemsVisibility(sideBarItem)
+				&& !sideBarItem?.href;
+		},
+
+		isItemWithSubItems(sideBarItem) {
+			return sideBarItem.subItems?.length
+				&& this.sideMenuItemsVisibility(sideBarItem)
+				&& !sideBarItem?.href;
 		},
 
 		sideMenuItemsVisibility({ title }) {

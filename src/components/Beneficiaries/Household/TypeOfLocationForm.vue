@@ -131,7 +131,10 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		isEditing: {
 			type: Boolean,

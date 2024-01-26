@@ -11,6 +11,7 @@
 		:density="density"
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder) || $t('Click to select')"
+		:hint="$t(hint)"
 		:multiple="multiple"
 		:chips="multiple"
 		:closable-chips="multiple && !disabled"
@@ -156,6 +157,11 @@ export default {
 		},
 
 		placeholder: {
+			type: String,
+			default: "",
+		},
+
+		hint: {
 			type: String,
 			default: "",
 		},

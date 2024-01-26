@@ -2,7 +2,7 @@ import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfProjects(page, size, sort, search = null, ids) {
+	async getListOfProjects(page, size, sort, ids, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";

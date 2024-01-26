@@ -122,6 +122,8 @@ import { ASSISTANCE } from "@/consts";
 export default {
 	name: "SelectionCriteriaForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		LocationForm,
 		DataSelect,
@@ -145,11 +147,14 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		submitButtonLabel: {
 			type: String,
-			default: "",
+			required: true,
 		},
 
 		closeButton: {

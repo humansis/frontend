@@ -243,8 +243,12 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
 		editing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		assistance: {
 			type: Object,

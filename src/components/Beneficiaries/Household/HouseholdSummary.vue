@@ -107,11 +107,30 @@ export default {
 	},
 
 	props: {
-		members: Array,
-		detailOfHousehold: Object,
-		livelihood: String,
-		location: String,
-		address: String,
+		members: {
+			type: Array,
+			required: true,
+		},
+
+		detailOfHousehold: {
+			type: Object,
+			required: true,
+		},
+
+		livelihood: {
+			type: String,
+			required: true,
+		},
+
+		location: {
+			type: String,
+			required: true,
+		},
+
+		address: {
+			type: String,
+			required: true,
+		},
 
 		isEditing: {
 			type: Boolean,

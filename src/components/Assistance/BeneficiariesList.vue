@@ -21,7 +21,6 @@
 			header="Input Deduplication"
 		>
 			<InputDistributed
-				class="modal-card"
 				deduplication
 				close-button
 				@submit="onFetchDataAfterBeneficiaryChange"
@@ -51,7 +50,6 @@
 			<InputDistributed
 				close-button
 				adding-to-assistance
-				class="modal-card"
 				@submit="onFetchDataAfterBeneficiaryChange"
 				@close="onCloseAddBeneficiariesByIdsModal"
 			/>
@@ -67,7 +65,6 @@
 				:form-model="beneficiaryModel"
 				:disabled="!beneficiaryModal.isEditing"
 				submit-button-label="Save"
-				class="modal-card"
 				close-button
 				@formSubmitted="onSubmitEditBeneficiaryForm"
 				@formClosed="onCloseBeneficiaryModal"
@@ -82,7 +79,6 @@
 				:form-model="institutionModel"
 				:institution-modal="institutionModal"
 				close-button
-				class="modal-card"
 				@formClosed="closeInstitutionModal"
 			/>
 		</Modal>
@@ -362,10 +358,18 @@ export default {
 	],
 
 	props: {
-		assistance: Object,
-		project: Object,
 		addButton: Boolean,
 		exportButton: Boolean,
+
+		assistance: {
+			type: Object,
+			required: true,
+		},
+
+		project: {
+			type: Object,
+			required: true,
+		},
 
 		changeButton: {
 			type: Boolean,
@@ -1102,8 +1106,14 @@ export default {
 					data.forEach((item, key) => {
 						const { beneficiary, reliefPackages } = item;
 						const { id, residencyStatus } = beneficiary;
-						const givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
-						const familyName = this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
+						const givenName = this.prepareName(
+							beneficiary.localGivenName,
+							beneficiary.enGivenName,
+						);
+						const familyName = this.prepareName(
+							beneficiary.localFamilyName,
+							beneficiary.enFamilyName,
+						);
 						const dateOfBirth = beneficiary.birthDate;
 						const gender = this.$t(normalizeText(beneficiary.gender));
 						const vulnerabilities = beneficiary.vulnerabilityCriteria;

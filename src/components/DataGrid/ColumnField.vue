@@ -205,7 +205,9 @@ export default {
 			required: true,
 		},
 
-		cellData: {},
+		cellData: {
+			required: true,
+		},
 	},
 
 	computed: {

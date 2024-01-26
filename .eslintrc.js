@@ -16,6 +16,7 @@ module.exports = {
 		"import/extensions": ["error", "always", {
 			js: "never",
 			vue: "never",
+			mjs: "never",
 		}],
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
@@ -75,7 +76,7 @@ module.exports = {
 			{
 				groups: [
 					["^vue", "^@vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
-					["^.+\\.css$"],
+					["^.+\\.s?(css|sass)$"],
 				],
 			},
 		],
@@ -85,6 +86,7 @@ module.exports = {
 			alias: {
 				map: [
 					["@", "./src"],
+					["vue-qrcode-reader", "./node_modules"],
 				],
 				extensions: [".js", ".vue"],
 			},

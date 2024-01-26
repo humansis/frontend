@@ -71,7 +71,10 @@ export default {
 	},
 
 	props: {
-		visible: Object,
+		visible: {
+			type: Object,
+			required: true,
+		},
 
 		data: {
 			type: Object,
