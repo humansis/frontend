@@ -60,7 +60,7 @@ export default {
 				this.setGridFiltersToUrl(entity, hasLocationsFilter);
 			} else {
 				this.table.currentPage = Number(page) || 1;
-				this.table.searchPhrase = search.trim() || "";
+				this.table.searchPhrase = search?.trim() || "";
 				this.table.sortColumn = sortColumn || "";
 				this.table.sortDirection = sortDirection || "desc";
 				this.filters = filters ? JSON.parse(filters) : {};

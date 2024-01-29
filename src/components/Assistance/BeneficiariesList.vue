@@ -1091,7 +1091,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed && !isCanceled,
+								selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1164,7 +1164,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed && !isCanceled,
+							selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
