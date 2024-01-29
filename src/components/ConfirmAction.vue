@@ -35,6 +35,7 @@
 				<v-spacer />
 
 				<v-btn
+					v-if="isCloseButtonVisible"
 					:color="closeButtonColor"
 					variant="elevated"
 					class="text-none"
@@ -44,6 +45,7 @@
 				</v-btn>
 
 				<v-btn
+					v-if="isConfirmButtonVisible"
 					:color="confirmButtonColor"
 					variant="elevated"
 					class="text-none"
@@ -76,6 +78,16 @@ export default {
 		confirmMessage: {
 			type: String,
 			default: "",
+		},
+
+		isCloseButtonVisible: {
+			type: Boolean,
+			default: true,
+		},
+
+		isConfirmButtonVisible: {
+			type: Boolean,
+			default: true,
 		},
 
 		closeButtonName: {
