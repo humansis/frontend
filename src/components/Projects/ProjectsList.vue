@@ -134,6 +134,7 @@ export default {
 				this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
 					: "",
+				null,
 				this.table.searchPhrase,
 			).then(async ({ data, totalCount }) => {
 				this.table.data = [];
