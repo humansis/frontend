@@ -173,6 +173,7 @@
 		:default-search-field="defaultSearchField"
 		:selected-rows="selectedRows"
 		:reset-filters-button="assistanceDetail"
+		:class="{ 'completed-assistance': isAssistanceCompleted }"
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
