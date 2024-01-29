@@ -134,10 +134,10 @@ export default {
 			formModel: {
 				name: { required },
 				productCategoryId: { required },
-				currency: { required: requiredIf(this.formModel.productCategoryId?.type === "Cashback") },
+				currency: { required: requiredIf(this.isCategoryTypeCashback) },
 				unitPrice: {
-					required: requiredIf(this.formModel.productCategoryId?.type === "Cashback"),
-					minValue: minValue(0.01),
+					required: requiredIf(this.isCategoryTypeCashback),
+					...(this.isCategoryTypeCashback && { minValue: minValue(0.01) }),
 				},
 				uploadedImage: { required: requiredIf(!this.formModel?.image) },
 			},
