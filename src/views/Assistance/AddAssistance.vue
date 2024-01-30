@@ -1,7 +1,7 @@
 <template>
 	<v-container fluid>
 		<ConfirmAction
-			:is-dialog-opened="openConfirmModal"
+			:is-dialog-opened="isConfirmModalOpen"
 			confirm-title="Date of Assistance"
 			confirm-message="You picked date from the past. Is it ok?"
 			prepend-icon="circle-exclamation"
@@ -9,8 +9,20 @@
 			close-button-name="Cancel"
 			confirm-button-name="Yes and Continue"
 			confirm-button-color="warning"
-			@modalClosed="onConfirmModalClosed"
+			@modalClosed="isConfirmModalOpen = false"
 			@actionConfirmed="onSubmitAddingAssistance"
+		/>
+
+		<ConfirmAction
+			:is-dialog-opened="isUnValidCardModalOpen"
+			:confirm-message="unValidCardMessage"
+			:is-close-button-visible="false"
+			confirm-title="Warning"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="warning"
+			confirm-button-name="OK"
+			confirm-button-color="warning"
+			@actionConfirmed="isUnValidCardModalOpen = false"
 		/>
 
 		<div class="new-assistance-title">
@@ -166,7 +178,8 @@ export default {
 			},
 			project: {},
 			isProjectReady: false,
-			openConfirmModal: false,
+			isConfirmModalOpen: false,
+			isUnValidCardModalOpen: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -218,6 +231,7 @@ export default {
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
 			createAssistanceButtonDisabled: false,
+			unValidCardMessage: `Please add "Has valid card = true" criterion for each group`,
 		};
 	},
 
@@ -331,7 +345,7 @@ export default {
 				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
 
 				if (isBeforeToday) {
-					this.openConfirmModal = true;
+					this.isConfirmModalOpen = true;
 				} else {
 					this.onSubmitAddingAssistance();
 				}
@@ -415,13 +429,7 @@ export default {
 					return true;
 				}
 
-				// FIXME
-				this.$buefy.dialog.alert({
-					title: this.$t("Warning"),
-					message: this.$t(`Please add "Has valid card = true" criterion for each group`),
-					type: "is-warning",
-					hasIcon: true,
-				});
+				this.isUnValidCardModalOpen = true;
 
 				return false;
 			}
@@ -854,10 +862,6 @@ export default {
 				default:
 					return "";
 			}
-		},
-
-		onConfirmModalClosed() {
-			this.openConfirmModal = false;
 		},
 	},
 };
