@@ -289,7 +289,7 @@ export default {
 					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
 					{ key: "members", sortKey: "dependents" },
-					{ key: "vulnerabilities", type: "svgIcon" },
+					{ key: "vulnerabilities", title: "Vulnerability criteria", type: "svgIcon" },
 					{ key: "idNumbers", title: "ID Numbers", sortKey: "nationalId" },
 					{ key: "projects", title: "Projects" },
 					{ key: "currentLocation", title: "Current Location", sortKey: "currentHouseholdLocation" },
