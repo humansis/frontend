@@ -231,7 +231,7 @@ export default {
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
 			createAssistanceButtonDisabled: false,
-			unValidCardMessage: "Please add \"Has valid card = true\" criterion for each group",
+			unValidCardMessage: `Please add "Has valid card = true" criterion for each group`,
 		};
 	},
 
