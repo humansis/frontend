@@ -223,12 +223,6 @@ export default {
 
 <style lang="scss">
 .assistance-summary {
-	.remote-disribution-flag {
-		position: relative;
-		top: -.625rem;
-		left: -.3125rem;
-	}
-
 	.v-col {
 		max-width: fit-content;
 	}

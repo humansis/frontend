@@ -419,7 +419,13 @@ export default {
 					? dateExpiration : this.$t("N/A");
 
 				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
-					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
+					.map(({ modalityType }) => (
+						{
+							code: modalityType,
+							value: modalityType,
+							remoteDistributionAllowed: item.remoteDistributionAllowed,
+						}))
+					: [];
 			});
 			this.table.progress += 10;
 		},

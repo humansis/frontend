@@ -61,7 +61,7 @@
 
 					<span
 						v-if="assistanceRemote"
-						class="remote-disribution-flag"
+						class="remote-distribution-flag"
 					>
 						R
 					</span>
@@ -152,7 +152,7 @@
 
 					<span
 						v-if="assistanceRemote"
-						class="remote-disribution-flag"
+						class="remote-distribution-flag"
 					>
 						R
 					</span>
