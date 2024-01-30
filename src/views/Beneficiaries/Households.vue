@@ -501,6 +501,7 @@ export default {
 		},
 
 		onClickedBulkSearch(bulkSearchData) {
+			this.table.checkedRows = [];
 			this.bulkSearch = bulkSearchData;
 			this.fetchData();
 		},
@@ -510,6 +511,7 @@ export default {
 		},
 
 		onClickedSearch() {
+			this.table.checkedRows = [];
 			this.bulkSearch.isBulkSearchUsed = false;
 			this.onSearch(this.table.searchPhrase);
 		},
