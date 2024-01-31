@@ -180,6 +180,10 @@ export default {
 .not-found-ids {
 	width: 45vw;
 
+	.v-field--disabled {
+		pointer-events: auto;
+	}
+
 	textarea {
 		min-height: 5.5rem !important;
 	}
