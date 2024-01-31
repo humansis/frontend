@@ -66,11 +66,12 @@
 
 			<DataInput
 				v-else-if="isValueDefaultInput"
-				v-model="formModel.value"
+				v-model.number="formModel.value"
 				:error-messages="validationMsg('value')"
 				:step="(fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
 				label="Value"
 				name="value"
+				type="number"
 				hide-spin-buttons
 				@blur="onValidate('value')"
 			/>
