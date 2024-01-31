@@ -100,7 +100,7 @@
 					:name="`division-${key}`"
 					type="number"
 					class="mb-4"
-					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
+					@update:modelValue="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
 		</template>
@@ -268,7 +268,7 @@
 </template>
 
 <script>
-import { maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
+import { helpers, maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -278,6 +278,7 @@ import SvgIcon from "@/components/SvgIcon";
 import assistanceHelper from "@/mixins/assistanceHelper";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { isDecimalPartLengthValid } from "@/utils/customValidators";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
@@ -339,32 +340,86 @@ export default {
 				divisionNwsFields: {
 					firstNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...(this.displayedFields.householdMembersNwsFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					secondNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...(this.displayedFields.householdMembersNwsFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					thirdNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...(this.displayedFields.householdMembersNwsFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					fourthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...(this.displayedFields.householdMembersNwsFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					fifthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...(this.displayedFields.householdMembersNwsFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 				},
 				divisionNesFields: {
 					firstNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...(this.displayedFields.householdMembersNesFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					secondNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...(this.displayedFields.householdMembersNesFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					thirdNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...(this.displayedFields.householdMembersNesFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 					fourthNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...(this.displayedFields.householdMembersNesFields && {
+							isDecimalPartLengthValid: helpers.withMessage(
+								this.decimalValidationMessage,
+								isDecimalPartLengthValid,
+							),
+						}),
 					},
 				},
 				description: {
@@ -438,6 +493,7 @@ export default {
 				types: false,
 				customFields: false,
 			},
+			decimalValidationMessage: "The value has more than two decimal places.",
 		};
 	},
 
