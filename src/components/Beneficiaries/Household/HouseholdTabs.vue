@@ -439,7 +439,6 @@ export default {
 				number,
 				postcode,
 				street,
-				name,
 				campName,
 				tentNumber,
 				camp,
@@ -451,7 +450,7 @@ export default {
 				address.campAddress = {
 					tentNumber,
 					camp: {
-						name: campName || name,
+						name: campName || camp?.name,
 						locationId: locationId || camp?.locationId,
 					},
 				};
