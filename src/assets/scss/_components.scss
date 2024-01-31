@@ -71,8 +71,12 @@
 }
 
 .warning-message {
+  .v-messages {
+    opacity: 1;
+  }
+
   .v-messages__message {
-    color: red;
+    color: rgb(176, 0, 32);
   }
 }
 
