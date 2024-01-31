@@ -36,7 +36,7 @@
 			:hint="isDateOfAssistanceInvalidMsg"
 			label="Date of Assistance"
 			name="date-of-assistance"
-			class="mb-4 warning-message"
+			class="has-warning-message mb-4"
 			persistent-hint
 			@update:modelValue="onValuesForAssistanceName"
 		/>

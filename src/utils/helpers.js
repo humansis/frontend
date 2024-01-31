@@ -107,9 +107,9 @@ export const getUniqueObjectsInArray = (filterData, filterBy) => filterData.filt
 	),
 );
 
-export const isDateBeforeOrEqual = (firstDate, secondDate) => moment(firstDate)
-	.format("YYYY-MM-DD") <= moment(secondDate)
-	.format("YYYY-MM-DD");
+export const isDateBeforeOrEqual = (firstDate, secondDate) => (
+	moment(firstDate) <= moment(secondDate)
+);
 
 export default {
 	BookletStatusArray,

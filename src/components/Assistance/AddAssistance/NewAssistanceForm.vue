@@ -26,7 +26,7 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
-				class="warning-message mb-4"
+				class="has-warning-message mb-4"
 				persistent-hint
 				@update:modelValue="onUpdateData"
 			/>
@@ -105,7 +105,7 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4 "
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -118,7 +118,7 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4"
 				@update:modelValue="onSubsectorSelect"
 			/>
 

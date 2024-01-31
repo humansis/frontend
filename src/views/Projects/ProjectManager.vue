@@ -48,7 +48,7 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							class="mb-4 warning-message"
+							class="has-warning-message mb-4"
 							persistent-hint
 							multiple
 							optional
