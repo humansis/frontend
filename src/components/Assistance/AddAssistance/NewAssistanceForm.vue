@@ -26,7 +26,8 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
-				class="mb-4"
+				class="has-warning-message mb-4"
+				persistent-hint
 				@update:modelValue="onUpdateData"
 			/>
 
@@ -104,7 +105,7 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4 "
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -117,7 +118,7 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -171,7 +172,7 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
-import { getUniqueObjectsInArray } from "@/utils/helpers";
+import { getUniqueObjectsInArray, isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -238,7 +239,6 @@ export default {
 	data() {
 		return {
 			dataForAssistanceName: {},
-			isDateOfAssistanceValid: true,
 			formModel: {
 				name: "",
 				adm1: null,
@@ -256,6 +256,7 @@ export default {
 				eloNumber: "",
 				activity: null,
 				budgetLine: null,
+				isDateOfAssistanceValid: true,
 			},
 			options: {
 				rounds: ASSISTANCE.ROUNDS_OPTIONS,
@@ -293,7 +294,7 @@ export default {
 		},
 
 		isDateOfAssistanceInvalidMsg() {
-			return !this.isDateOfAssistanceValid
+			return !this.formModel.isDateOfAssistanceValid
 				? this.$t("Date is after Expiration date of the commodity")
 				: "";
 		},
@@ -318,9 +319,10 @@ export default {
 
 		assistanceDates() {
 			if (this.dateExpiration) {
-				this.isDateOfAssistanceValid = this.$moment(this.formModel.dateOfAssistance)
-					.format("YYYY-MM-DD") <= this.dateExpiration;
-				this.formModel.isDateOfAssistanceValid = this.isDateOfAssistanceValid;
+				this.formModel.isDateOfAssistanceValid = isDateBeforeOrEqual(
+					this.formModel.dateOfAssistance,
+					this.dateExpiration,
+				);
 			}
 		},
 	},

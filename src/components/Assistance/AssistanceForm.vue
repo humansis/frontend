@@ -33,9 +33,11 @@
 			:min-date="minDateOfAssistance"
 			:max-date="maxDateOfAssistance"
 			:disabled="!isAssistanceNew"
+			:hint="isDateOfAssistanceInvalidMsg"
 			label="Date of Assistance"
 			name="date-of-assistance"
-			class="mb-4"
+			class="has-warning-message mb-4"
+			persistent-hint
 			@update:modelValue="onValuesForAssistanceName"
 		/>
 
@@ -215,6 +217,7 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -346,6 +349,19 @@ export default {
 
 		isAssistanceTargetInstitution() {
 			return this.assistance.target.toLowerCase() === ASSISTANCE.TARGET.INSTITUTION;
+		},
+
+		isDateOfAssistanceInvalidMsg() {
+			if (this.formModel.dateExpiration) {
+				return !isDateBeforeOrEqual(
+					this.formModel.dateDistribution,
+					this.formModel.dateExpiration,
+				)
+					? this.$t("Date is after Expiration date of the commodity")
+					: "";
+			}
+
+			return "";
 		},
 	},
 

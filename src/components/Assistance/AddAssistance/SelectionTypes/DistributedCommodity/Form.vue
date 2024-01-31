@@ -212,8 +212,7 @@
 					v-model="formModel.allowedProductCategoryTypes"
 					:label="productCategoryType"
 					:value="productCategoryType"
-					:error-messages="isLastCategoryType(index)
-						&& validationMsg('allowedProductCategoryTypes')"
+					:error-messages="errorMessageForCategory(index)"
 					:disabled="formDisabled"
 					:name="`product-category-${index}`"
 					hide-details="auto"
@@ -646,6 +645,12 @@ export default {
 
 		isLastCategoryType(index) {
 			return index === (this.project.allowedProductCategoryTypes.length - 1);
+		},
+
+		errorMessageForCategory(index) {
+			return this.isLastCategoryType(index)
+				? this.validationMsg("allowedProductCategoryTypes")
+				: "";
 		},
 
 		async onModalitySelect({ code }) {

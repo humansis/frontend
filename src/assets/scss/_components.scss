@@ -70,9 +70,13 @@
   font-size: .8125rem;
 }
 
-.warning-message {
+.has-warning-message {
+  .v-messages {
+    opacity: 1;
+  }
+
   .v-messages__message {
-    color: red;
+    color: rgb(176, 0, 32);
   }
 }
 

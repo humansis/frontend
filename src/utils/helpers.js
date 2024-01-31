@@ -1,6 +1,7 @@
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
+import moment from "moment";
 
 const { global: { t } } = i18n;
 
@@ -106,6 +107,10 @@ export const getUniqueObjectsInArray = (filterData, filterBy) => filterData.filt
 	),
 );
 
+export const isDateBeforeOrEqual = (firstDate, secondDate) => (
+	moment(firstDate) <= moment(secondDate)
+);
+
 export default {
 	BookletStatusArray,
 	copyObject,
@@ -116,4 +121,5 @@ export default {
 	getBookletStatus,
 	splitBySpace,
 	downloadFile,
+	isDateBeforeOrEqual,
 };
