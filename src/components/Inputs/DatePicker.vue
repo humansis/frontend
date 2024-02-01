@@ -130,4 +130,8 @@ export default {
 .v-date-picker-month__weekday {
 	font-weight: bold;
 }
+
+.v-date-picker {
+	min-height: 27rem !important;
+}
 </style>

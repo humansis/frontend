@@ -35,7 +35,7 @@
     "vue-qrcode-reader": "^5.5.1",
     "vue-router": "^4.2.5",
     "vue-swatches": "^2.1.1",
-    "vuetify": "^3.4.9",
+    "vuetify": "^3.4.11",
     "vuetify-sonner": "^0.3.12",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
