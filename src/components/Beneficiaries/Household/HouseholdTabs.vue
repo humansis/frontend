@@ -411,7 +411,7 @@ export default {
 			} = this.household.currentLocation;
 
 			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
-				return `${campName || camp.name}, ${tentNumber}`;
+				return `${camp.name || campName}, ${tentNumber}`;
 			}
 
 			return `${number}, ${street}, ${postcode}`;
@@ -450,7 +450,7 @@ export default {
 				address.campAddress = {
 					tentNumber,
 					camp: {
-						name: campName || camp?.name,
+						name: camp?.name || campName,
 						locationId: locationId || camp?.locationId,
 					},
 				};
