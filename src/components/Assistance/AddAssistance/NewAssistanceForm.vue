@@ -64,6 +64,8 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
+					class="has-warning-message"
+					persistent-hint
 					optional
 					@update:modelValue="onUpdateData(false)"
 				/>
@@ -85,6 +87,8 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
+					class="has-warning-message"
+					persistent-hint
 					optional
 					@update:modelValue="onUpdateData(false)"
 				/>
