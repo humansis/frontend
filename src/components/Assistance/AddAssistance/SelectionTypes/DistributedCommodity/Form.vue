@@ -321,10 +321,12 @@ export default {
 				quantity: {
 					required: requiredIf(this.displayedFields.quantity),
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.quantity),
 				},
 				value: {
 					required: requiredIf(this.displayedFields.value && !this.isModalityInKind),
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.value),
 				},
 				currency: {
 					required: requiredIf(this.displayedFields.currency && !this.isModalityInKind),
@@ -335,91 +337,75 @@ export default {
 				secondQuantity: {
 					required: false,
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.secondQuantity),
 				},
 				// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 				divisionNwsFields: {
 					firstNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...(this.displayedFields.householdMembersNwsFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					secondNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...(this.displayedFields.householdMembersNwsFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.secondNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
+
 					},
 					thirdNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...(this.displayedFields.householdMembersNwsFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.thirdNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					fourthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...(this.displayedFields.householdMembersNwsFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.fourthNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					fifthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...(this.displayedFields.householdMembersNwsFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.fifthNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 				},
 				divisionNesFields: {
 					firstNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...(this.displayedFields.householdMembersNesFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 					secondNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...(this.displayedFields.householdMembersNesFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 					thirdNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...(this.displayedFields.householdMembersNesFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 					fourthNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...(this.displayedFields.householdMembersNesFields && {
-							isDecimalPartLengthValid: helpers.withMessage(
-								this.decimalValidationMessage,
-								isDecimalPartLengthValid,
-							),
-						}),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 				},
 				description: {
@@ -434,6 +420,7 @@ export default {
 					)),
 					minValue: minValue(1),
 					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
+					...this.decimalPartValidationRule(this.formModel.cashbackLimit),
 				},
 			},
 		};
@@ -885,6 +872,15 @@ export default {
 			} finally {
 				this.loading.customFields = false;
 			}
+		},
+
+		decimalPartValidationRule(value, isRuleUsed = true) {
+			return ((value ?? false) && isRuleUsed && {
+				isDecimalPartLengthValid: helpers.withMessage(
+					this.decimalValidationMessage,
+					isDecimalPartLengthValid,
+				),
+			});
 		},
 
 		onSubmitForm() {
