@@ -157,6 +157,13 @@
 			:key="`array-text-break-${index}`"
 			:class="{ 'mb-4': isMembersLastRecord(item) }"
 		>
+			<p
+				v-if="item === 'hasBeneficiaryIdDuplicity'"
+				class="text-red"
+			>
+				{{ $t('Beneficiary ID and official ID matches two different Beneficiaries in database and this must be corrected, before data can be imported') }}
+			</p>
+
 			<v-chip
 				v-if="item === 'hasNoDuplicityDifferences'"
 				type="grey-lighten-2"
@@ -165,7 +172,7 @@
 			</v-chip>
 
 			<span
-				v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
+				v-else-if="isRecordValidToShow(item)"
 				:class="{ 'font-weight-bold': column.boldText }"
 				v-html-secure="item"
 			/>
@@ -277,6 +284,12 @@ export default {
 
 		isMembersLastRecord(item) {
 			return item === "memberDuplicitiesLastItem";
+		},
+
+		isRecordValidToShow(item) {
+			const exceptions = ["hasNoDuplicityDifferences", "hasBeneficiaryIdDuplicity"];
+
+			return !exceptions.includes(item) && !this.isMembersLastRecord(item);
 		},
 	},
 };
