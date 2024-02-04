@@ -586,7 +586,7 @@ export default {
 
 		householdHeadTitle() {
 			return `${this.$t("ID")} ${this.detailOfHousehold.householdHeadId}:
-				${this.detailOfHouseholdHead.localFamilyName} ${this.detailOfHouseholdHead.localGivenName}`;
+				${this.detailOfHouseholdHead.localGivenName} ${this.detailOfHouseholdHead.localFamilyName}`;
 		},
 
 		smartCardNumbersList() {
