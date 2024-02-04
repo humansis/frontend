@@ -1,11 +1,18 @@
 export const getArrayOfIdsByParam = (items, param) => {
+	if (!items) {
+		return null;
+	}
+
 	const result = [];
+
 	if (!Array.isArray(items)) {
 		return [items[param]];
 	}
+
 	items.forEach((item) => {
 		result.push(item[param]);
 	});
+
 	return result;
 };
 
