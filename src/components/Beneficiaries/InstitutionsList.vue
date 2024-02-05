@@ -184,7 +184,7 @@ export default {
 		async onExportInstitutions(type, format) {
 			if (type === EXPORT.INSTITUTIONS) {
 				const sort = `${this.table.sortColumn?.sortKey
-				|| this.table.sortColumn}.${this.table.sortDirection}`;
+					|| this.table.sortColumn}.${this.table.sortDirection}`;
 				const filters = {
 					...(this.filters.projects?.length
 						&& { projects: this.filters.projects }),
