@@ -1,9 +1,5 @@
 <template>
-	<div>
-		<AssistancesList
-			upcoming
-		/>
-	</div>
+	<AssistancesList upcoming />
 </template>
 
 <script>

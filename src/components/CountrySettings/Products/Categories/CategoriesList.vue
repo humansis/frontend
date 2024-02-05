@@ -1,118 +1,89 @@
 <template>
-	<Table
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="showDetail"
+	<DataGrid
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort('id', 'asc', true)"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditProducts"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditProducts"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Product Category"
+				confirm-message="Are you sure sure you want to delete Product Category?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="150"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					v-if="userCan.addEditProducts"
-					icon="edit"
-					tooltip="Edit"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.addEditProducts"
-					icon="trash"
-					:entity="$t('Product Category')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import ProductService from "@/services/ProductService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
+import { TABLE } from "@/consts";
 
 export default {
 	name: "CategoriesList",
 
 	components: {
-		ColumnField,
-		Table,
-		ActionButton,
-		SafeDelete,
+		DataGrid,
+		ButtonAction,
 	},
 
 	mixins: [grid, permissions],
 
 	data() {
 		return {
-			exportLoading: false,
+			TABLE,
+			isLoadingList: false,
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "name", width: "400", sortable: true },
-					{ key: "type", width: "150", type: "svgIcon", sortable: true },
-					{ type: "image", key: "image", width: "100" },
+					{ key: "name" },
+					{ key: "type", type: "svgIcon", sortable: false },
+					{ type: "image", key: "image", sortable: false },
+					{ key: "actions", value: "actions", sortable: false },
 				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "asc",
-				sortColumn: "id",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES.key,
 				searchPhrase: "",
 			},
 		};
-	},
-
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.categoryModal.isDetail) {
-				result = this.$t("Detail of Category");
-			} else if (this.categoryModal.isEditing) {
-				result = this.$t("Edit Category");
-			} else {
-				result = this.$t("Create New Category");
-			}
-			return result;
-		},
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -127,7 +98,9 @@ export default {
 				const { data: { data, totalCount } } = await ProductService.getListOfCategories(
 					this.table.currentPage,
 					this.perPage,
-					this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+					this.table.sortColumn !== ""
+						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+						: "",
 					this.table.searchPhrase,
 				);
 
@@ -135,7 +108,7 @@ export default {
 				this.table.total = totalCount;
 				this.prepareDataForTable(data);
 			} catch (e) {
-				Notification(`${this.$t("Categories")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Categories")} ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
 			}

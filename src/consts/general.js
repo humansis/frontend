@@ -32,6 +32,12 @@ export default {
 			TEXT_AREA: "Text area",
 			LOCATION: "Location",
 		},
+		ADM_TYPE: {
+			ADM1: "adm1",
+			ADM2: "adm2",
+			ADM3: "adm3",
+			ADM4: "adm4",
+		},
 	},
 	INPUT_TYPE: {
 		TEXT: "Text",

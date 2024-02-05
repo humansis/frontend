@@ -1,105 +1,57 @@
 <template>
-	<section class="hero is-primary is-fullheight">
-		<div class="hero-body">
-			<div class="container">
-				<div class="columns is-centered">
-					<div class="column is-5-tablet is-4-desktop is-3-widescreen">
-						<form class="box" @submit.prevent="submitForm">
-							<div class="logo mb-4">
-								<img src="@/assets/images/bms_logo_with_title.png" alt="">
-							</div>
-
-							<h1 class="title is-6 has-text-centered mb-4">Beneficiary Management System</h1>
-
-							<div class="has-text-light has-text-centered mb-4">
-								<span v-if="gitInfo.appVersion !== '__APP_VERSION__'">
-									{{ gitInfo.appVersion }}
-								</span>
-							</div>
-
-							<b-field
-								:label="$t('Username')"
-								label-position="inside"
-								:type="validateType('username')"
-								:message="validateMsg('username', 'Required')"
-							>
-								<b-input
-									v-model="formModel.username"
-									autofocus
-									@blur="validate('username')"
-								/>
-							</b-field>
-
-							<b-field
-								:label="$t('Password')"
-								label-position="inside"
-								:type="validateType('password')"
-								:message="validateMsg('password', 'Required')"
-							>
-								<b-input
-									type="password"
-									v-model="formModel.password"
-									password-reveal
-									@blur="validate('password')"
-								/>
-							</b-field>
-
-							<b-field grouped position="is-centered">
-								<b-button
-									type="is-primary"
-									native-type="submit"
-									:loading="loginButtonLoading"
-								>
-									<span :class="{ 'is-invisible': loginButtonLoading }">
-										{{ $t('Login') }}
-									</span>
-								</b-button>
-							</b-field>
-						</form>
+	<v-container fluid class="hero fill-height">
+		<v-row>
+			<v-col class="d-flex justify-center">
+				<v-card class="mx-auto px-6 py-8 login-box" max-width="600" width="100%">
+					<div class="logo">
+						<img src="@/assets/images/bms_logo_with_title.png" alt="logo Humansis">
 					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+
+					<h1 class="text-subtitle-1 text-center text-white mt-5 mb-5">Beneficiary Management System</h1>
+
+					<div
+						v-if="gitInfo.appVersion !== '__APP_VERSION__'"
+						class="text-subtitle-2 font-italic text-center text-white mb-5"
+					>
+						{{ gitInfo.appVersion }}
+					</div>
+
+					<div class="text-center">
+						<v-btn
+							:loading="loginButtonLoading"
+							color="primary"
+							type="submit"
+							class="text-center"
+							@click="redirectToKeycloak"
+						>
+							{{ $t("login with keycloak") }}
+						</v-btn>
+					</div>
+				</v-card>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { required } from "vuelidate/lib/validators";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
 import UsersService from "@/services/UsersService";
-import validation from "@/mixins/validation";
 import { setCookie } from "@/utils/cookie";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
+import { GENERAL, ROLE } from "@/consts";
 import gitInfo from "@/gitInfo";
-import JWTDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export default {
-	name: "Login",
-
-	mixins: [validation],
-
-	validations: {
-		formModel: {
-			username: {
-				required,
-			},
-			password: {
-				required,
-			},
-		},
-	},
+	name: "LoginPage",
 
 	data() {
 		return {
 			gitInfo,
-			formModel: {
-				username: "",
-				password: "",
-			},
+			keyCloakAuthenticationUrl: "",
 			loginButtonLoading: false,
 		};
 	},
@@ -116,23 +68,24 @@ export default {
 	},
 
 	beforeCreate() {
+		// TODO it is necessary?
 		document.documentElement.classList.add("layout-center");
 	},
 
-	mounted() {
-		this.urlLogin();
+	async mounted() {
+		await this.getKeycloakLoginUrl();
+		await this.checkForLoginToken();
 
 		this.$store.commit("fullPage", true);
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.$store.commit("fullPage", false);
 	},
 
 	methods: {
 		...mapActions([
 			"storeUser",
-			"updateStoredUser",
 			"storePermissions",
 			"storeLanguage",
 			"storeTranslations",
@@ -141,153 +94,165 @@ export default {
 			"storeAvailableProjects",
 		]),
 
-		urlLogin() {
-			if (process.env.VUE_APP_ENV === "prod") return;
+		async login(accessToken) {
+			try {
+				this.loginButtonLoading = true;
 
-			const { username, password } = this.$route.query;
+				const lastLoggedUsername = this.user.username || this.lastUsername;
 
-			if (username && password) {
-				this.formModel = {
-					username,
-					password,
-				};
+				const { data, status, message } = await LoginService.keycloakLogin({ token: accessToken });
 
-				this.submitForm();
-			}
-		},
+				if (status !== 200) {
+					throw new Error(message);
+				}
 
-		async submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) return;
+				const { token, userId } = data;
 
-			this.loginButtonLoading = true;
+				const user = await jwtDecode(token);
+				user.userId = userId;
 
-			const lastLoggedUsername = this.user.username || this.lastUsername;
+				await setCookie("token", token, user.exp - user.iat);
 
-			await LoginService.logUserIn(this.formModel).then(async (response) => {
-				if (response.status === 200) {
-					const { data: { token, userId } } = response;
+				await this.storeUser(user);
 
-					const user = await JWTDecode(token);
-					user.userId = userId;
+				if (user.roles[0] === ROLE.GUEST) {
+					await this.$router.push({ name: "AccountCreated" });
+					return;
+				}
 
-					await setCookie("token", token, user.exp - user.iat);
+				const { data: userDetail } = await UsersService.getDetailOfUser(userId);
 
-					await this.storeUser(user);
+				await this.storeAvailableProjects(userDetail.projectIds);
 
-					const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+				const language = this.languages.find(({ key }) => key === userDetail?.language)
+					|| GENERAL.DEFAULT_LANGUAGE;
 
-					this.updateStoredUser({
-						attribute: "changePassword",
-						value: userDetail.changePassword,
-					});
+				if (lastLoggedUsername === user.username) {
+					await this.setLocales(this.language.key);
+				} else {
+					await this.setLocales(language.key);
+				}
 
-					await this.storeAvailableProjects(userDetail.projectIds);
+				if (lastLoggedUsername === user.username) {
+					await this.storeLanguage(this.language);
+				} else {
+					await this.storeLanguage(language);
+				}
 
-					const language = this.languages.find(({ key }) => key === userDetail?.language)
-						|| GENERAL.DEFAULT_LANGUAGE;
+				const { data: countries } = await CountriesService.getListOfUsersCountries(userId);
 
-					if (lastLoggedUsername === user.username) {
-						await this.setLocales(this.language.key);
-					} else {
-						await this.setLocales(language.key);
-					}
+				if (countries.length) {
+					await this.storeCountries(countries);
 
 					if (lastLoggedUsername === user.username) {
-						await this.storeLanguage(this.language);
+						await this.storeCountry(this.country);
 					} else {
-						await this.storeLanguage(language);
-					}
-
-					const countries = await this.fetchUsersCountries(userId);
-
-					if (countries.length) {
-						await this.storeCountries(countries);
-
-						if (lastLoggedUsername === user.username) {
-							await this.storeCountry(this.country);
-						} else {
-							await this.storeCountry(countries[0]);
-						}
-					}
-
-					const { data: { privileges } } = user.roles[0]
-						? await LoginService.getRolePermissions(user.roles[0]) : {}
-							.then(({ data }) => data);
-
-					await this.storePermissions(privileges);
-
-					if (countries.length) {
-						if (this.$route.query.redirect) {
-							this.$router.push(this.$route.query.redirect.toString());
-						} else {
-							this.$router.push({
-								name: "Projects",
-								params: {
-									countryCode: this.country?.iso3 || countries[0].iso3,
-								},
-							});
-						}
-					} else {
-						Notification(`${this.$t("No Countries")}`, "is-warning");
+						await this.storeCountry(countries[0]);
 					}
 				}
-			}).catch((e) => {
-				Notification(`${e} ${this.$t("Invalid Credentials")}`, "is-danger");
-				this.$v.$reset();
-			});
 
-			this.loginButtonLoading = false;
-		},
+				let rolePrivileges = [];
 
-		fetchUsersCountries(userId) {
-			return CountriesService.getListOfUsersCountries(userId)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Countries")} ${e}`, "is-danger");
-				});
+				if (user.roles[0]) {
+					const { data: { privileges } } = await LoginService.getRolePermissions(user.roles[0]);
+					rolePrivileges = privileges;
+				}
+
+				await this.storePermissions(rolePrivileges);
+
+				if (countries.length) {
+					if (this.$route.query.redirect) {
+						this.$router.push(this.$route.query.redirect.toString());
+					} else {
+						this.$router.push({
+							name: "Projects",
+							params: {
+								countryCode: this.country?.iso3 || countries[0].iso3,
+							},
+						});
+					}
+				} else {
+					Notification(this.$t("No Countries"), "warning");
+				}
+			} catch (e) {
+				Notification(`${this.$t("Login")} ${e.message || e}`, "error");
+			} finally {
+				this.loginButtonLoading = false;
+			}
 		},
 
 		async setLocales(languageKey) {
 			if (!this.translations || languageKey !== this.language.key) {
-				await TranslationService.getTranslations(languageKey).then((response) => {
-					if (response.status === 200) {
-						this.storeTranslations(response.data);
-						this.$i18n.locale = languageKey;
-						this.$i18n.fallbackLocale = languageKey;
-						this.$root.$i18n.setLocaleMessage(languageKey, response.data);
+				try {
+					const { data, status, message } = await TranslationService.getTranslations(languageKey);
+
+					if (status !== 200) {
+						throw new Error(message);
 					}
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Translations")} ${e}`, "is-danger");
-				});
+
+					this.storeTranslations(data);
+					this.$i18n.locale = languageKey;
+					this.$i18n.fallbackLocale = languageKey;
+					this.$root.$i18n.setLocaleMessage(languageKey, data);
+				} catch (e) {
+					Notification(`${this.$t("Translations")} ${e.message || e}`, "warning");
+				}
 			} else {
 				this.$i18n.locale = languageKey;
 				this.$i18n.fallbackLocale = languageKey;
 				this.$root.$i18n.setLocaleMessage(languageKey, this.translations);
 			}
 		},
+
+		async getKeycloakLoginUrl() {
+			try {
+				const { data: { authenticationUrl } } = await LoginService.getKeycloakLoginUrl();
+
+				this.keyCloakAuthenticationUrl = authenticationUrl;
+			} catch (e) {
+				Notification(`${this.$t("Keycloak url")} ${e.message || e}`, "error");
+			}
+		},
+
+		redirectToKeycloak() {
+			if (this.keyCloakAuthenticationUrl.length) {
+				window.location.href = `${this.keyCloakAuthenticationUrl}
+					&redirect_uri=${encodeURIComponent(window.location)}`;
+			} else {
+				Notification(`${this.$t("Address for keycloak not found")}`, "error");
+			}
+		},
+
+		async checkForLoginToken() {
+			const query = this.$route.fullPath;
+			const params = new URLSearchParams(query);
+			const accessToken = params.get("access_token");
+
+			if (accessToken) {
+				await this.login(accessToken);
+			}
+		},
 	},
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .hero {
-	background-image: url(~@/assets/images/login_page.jpg);
+	background-image: url(@/assets/images/login_page.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
-}
+	min-height: 100vh;
 
-.box {
-	margin: 0 -5rem;
-	padding: 2.5rem 5rem;
-	background-color: rgba(161, 160 ,160, .85);
-}
+	.logo {
+		margin: 0 auto;
+		width: 9.375rem;
+		height: 9.375rem;
+		background-color: #f1f1fb;
+		border-radius: 6.25rem;
+	}
 
-.logo {
-	margin: 0 auto;
-	width: 150px;
-	height: 150px;
-	background-color: #f1f1fb;
-	border-radius: 100px;
+	.login-box {
+		background-color: rgba(161, 160, 160, .85);
+	}
 }
 </style>

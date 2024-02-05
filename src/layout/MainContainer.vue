@@ -1,33 +1,17 @@
 <template>
-	<div class="main-container">
+	<v-layout class="rounded rounded-md">
+		<SideMenu v-if="isAsideVisible" />
+
 		<NavBar />
-		<SideMenu />
-		<Modal
-			:can-cancel="false"
-			:header="$t('You need to change your password')"
-			:active="forcePasswordModal.isOpened"
-			:is-waiting="forcePasswordModal.isWaiting"
-		>
-			<UserPasswordForm
-				class="modal-card"
-				:formModel="userModel"
-				:submit-button-label="$t('Update')"
-				@formSubmitted="changeForcedPassword"
-			/>
-		</Modal>
-		<section class="section">
+
+		<v-main>
 			<router-view />
-		</section>
-	</div>
+		</v-main>
+	</v-layout>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import UsersService from "@/services/UsersService";
-import UserPasswordForm from "@/components/AdministrativeSettings/UserPasswordForm";
-import Modal from "@/components/Modal";
-import validation from "@/mixins/validation";
-import { Notification, Toast } from "@/utils/UI";
+import { mapState } from "vuex";
 import NavBar from "@/layout/NavBar";
 import SideMenu from "@/layout/SideMenu";
 
@@ -37,22 +21,6 @@ export default {
 	components: {
 		SideMenu,
 		NavBar,
-		Modal,
-		UserPasswordForm,
-	},
-
-	mixins: [validation],
-
-	data() {
-		return {
-			forcePasswordModal: {
-				isOpened: false,
-				isWaiting: false,
-			},
-			userModel: {
-				password: "",
-			},
-		};
 	},
 
 	computed: {
@@ -69,18 +37,12 @@ export default {
 		this.changeTextDirection(this.language.direction);
 		this.setLocales();
 
-		if (this.user?.changePassword) {
-			this.forcePasswordModal.isOpened = true;
-		}
-
 		if (!this.isAsideVisible && !this.isNavBarVisible) {
 			this.$store.commit("fullPage", false);
 		}
 	},
 
 	methods: {
-		...mapActions(["storeUser"]),
-
 		setLocales() {
 			this.$i18n.locale = this.language.key;
 			this.$i18n.fallbackLocale = this.language.key;
@@ -96,36 +58,12 @@ export default {
 				htmlElement.classList.add("is-rtl");
 			}
 		},
-
-		async changeForcedPassword({ password }) {
-			this.forcePasswordModal.isWaiting = true;
-
-			const { data: { salt } } = await UsersService.requestSalt(this.user.username);
-
-			await UsersService.patchUser(this.user.userId, {
-				password: UsersService.saltPassword(salt, password),
-			}).then(({ status }) => {
-				if (status === 200) {
-					this.storeUser({ ...this.user, changePassword: false });
-
-					Toast(
-						`${this.$t("Password Updated")}`,
-						"is-success",
-					);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Password Update")} ${e}`, "is-danger");
-			}).finally(() => {
-				this.forcePasswordModal.isWaiting = false;
-				this.forcePasswordModal.isOpened = false;
-			});
-		},
 	},
 };
 </script>
 
 <style>
 html, body, .main-container, .section {
-	height: 100%;
+	height: 100%; /* TODO remove? */
 }
 </style>

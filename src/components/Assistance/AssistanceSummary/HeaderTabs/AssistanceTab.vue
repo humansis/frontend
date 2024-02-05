@@ -1,109 +1,157 @@
 <template>
-	<div class="level level-center">
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Project') }}</h2>
+	<v-row
+		class="mt-2 mb-6 justify-center"
+		no-gutters
+	>
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Project')}}</p>
 
 				<div
 					v-if="projectName"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ projectName }}
 				</div>
-				<Loading v-else-if="isProjectLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t(admNames.adm1) }}</h2>
+				<v-progress-circular
+					v-else-if="isProjectLoading"
+					:size="25"
+					:indeterminate="isProjectLoading"
+					color="primary"
+				/>
+
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+					content-class="tooltip-top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t(admNames.adm1) }}</p>
 
 				<div
 					v-if="provinceName"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ provinceName }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Round') }}</h2>
+				<v-progress-circular
+					v-else-if="isAssistanceLoading"
+					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
+				/>
+
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+					content-class="tooltip-top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ $t('Round') }}</p>
 
 				<div
 					v-if="!isRoundNaN"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ round }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else>
-					<small>{{ $t("N/A") }}</small>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Date of Assistance') }}</h2>
+				<v-progress-circular
+					v-else-if="isAssistanceLoading"
+					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
+				/>
+
+				<div v-else class="pa-2 text-subtitle-1">
+					{{ $t("N/A") }}
+				</div>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ 'Date of Assistance' }}</p>
 
 				<div
 					v-if="dateDistribution"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ dateDistribution }}
 				</div>
-				<Loading v-else-if="isAssistanceLoading" type="bubbles" is-normal />
-				<div v-else class="level-item">
-					<b-tooltip :label="$t('Data not loaded')">
-						<b-icon icon="exclamation-circle" size="is-medium" />
-					</b-tooltip>
-				</div>
-			</div>
-		</div>
 
-		<div class="level-item has-text-centered">
-			<div class="box">
-				<h2 class="heading">{{ $t('Expiration Date') }}</h2>
+				<v-progress-circular
+					v-else-if="isAssistanceLoading"
+					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
+				/>
+
+				<v-tooltip
+					v-else
+					:text="$t('Data not loaded')"
+					location="top"
+					content-class="tooltip-top"
+				>
+					<template v-slot:activator="{ props }">
+						<v-icon v-bind="props" icon="circle-exclamation" size="x-large" />
+					</template>
+				</v-tooltip>
+			</v-sheet>
+		</v-col>
+
+		<v-col class="ma-2">
+			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
+				<p class="text-overline">{{ 'Expiration Date' }}</p>
 
 				<div
 					v-if="dateExpiration && isCommoditySmartCard"
-					class="has-text-weight-bold is-size-5"
+					class="font-weight-bold pa-2 text-subtitle-1"
 				>
 					{{ dateExpiration }}
 				</div>
-				<div v-else-if="!isExpirationDateLoaded">
-					<small>{{ $t("N/A") }}</small>
+
+				<div v-else-if="!isExpirationDateLoaded" class="pa-2 text-subtitle-1">
+					{{ $t("N/A") }}
 				</div>
-				<Loading v-else type="bubbles" is-normal />
-			</div>
-		</div>
-	</div>
+
+				<v-progress-circular
+					v-else
+					:indeterminate="isAssistanceLoading"
+					:size="25"
+					color="primary"
+				/>
+			</v-sheet>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import Loading from "@/components/Loading";
 import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceTab",
-
-	components: {
-		Loading,
-	},
 
 	props: {
 		assistance: {

@@ -1,206 +1,211 @@
 <template>
-	<div>
-		<h2 class="title">{{ upcoming ? $t('Assistances') : '' }}</h2>
-		<b-notification
-			v-if="showNoProjectError"
-			type="is-warning is-light"
-			has-icon
-			icon="exclamation-triangle"
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("This project does not contain any assistances")}}.
-				{{ $t("Create your first one")}}.
-			</div>
-		</b-notification>
-		<b-notification
-			v-if="showNoBeneficiariesError"
-			type="is-warning is-light"
-			has-icon
-			icon="user-plus"
-			:closable="false"
-		>
-			<div class="mt-3">
-				{{ $t("Please add some beneficiaries first!")}}
-				{{ $t("Then you will be able to manage some assistances")}}.
-			</div>
-		</b-notification>
-		<Table
-			ref="assistanceTable"
-			v-show="beneficiariesCount || upcoming"
-			has-reset-sort
-			default-sort-key="dateDistribution"
-			:wrapper-classes="['has-min-height-420']"
-			:has-search="!upcoming"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:has-clickable-rows="false"
-			:search-phrase="table.searchPhrase"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
-			@onSearch="onSearch"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					v-bind="column"
-					:sortable="column.sortable"
-					:key="column.id"
-					v-slot="props"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				width="170"
-				field="actions"
-				:label="$t('Actions')"
-				:visible="!upcoming"
+	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
+
+	<v-alert
+		v-if="showNoProjectError"
+		variant="outlined"
+		type="warning"
+		border="top"
+		class="mb-6"
+	>
+		<p>{{ $t("This project does not contain any assistances") }}</p>
+		<p>{{ $t("Create your first one") }}</p>
+	</v-alert>
+
+	<v-alert
+		v-if="showNoBeneficiariesError"
+		variant="outlined"
+		type="warning"
+		border="top"
+		class="mb-6"
+	>
+		<p>{{ $t("Please add some beneficiaries first!") }}</p>
+		<p>{{ $t("Then you will be able to manage some assistances") }}</p>
+	</v-alert>
+
+	<DataGrid
+		v-show="beneficiariesCount || upcoming"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		:is-search-visible="!upcoming"
+		is-row-click-disabled
+		reset-sort-button
+		@perPageChanged="onPerPageChange"
+		@pageChanged="onPageChange"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
+	>
+		<template v-slot:tableControls>
+			<ExportControl
+				v-if="!upcoming"
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@export="onExportAssistances"
+			/>
+
+			<v-btn
+				:class="filterButtonNew"
+				color="gray-darken-4"
+				icon-left="sticky-note"
+				variant="tonal"
+				class="ml-0"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('new')"
 			>
-				<div class="buttons is-right">
-					<ActionButton
-						v-if="!props.row.validated
-							&& userCan.editDistribution"
-						icon="edit"
-						:tooltip="$t('Update')"
-						@click="goToUpdate(props.row.id)"
-					/>
-					<ActionButton
-						v-if="(props.row.validated
-							|| props.row.completed)
-							&& isAssistanceDetailAllowed"
-						:icon="props.row.validated && props.row.completed
-							? 'eye' : 'edit'"
-						:tooltip="props.row.validated && props.row.completed
-							? $t('View') : $t('Update')"
-						@click="goToDetail(props.row.id)"
-					/>
-					<ActionButton
-						v-if="userCan.editDistribution"
-						icon="search"
-						type="is-primary"
-						:tooltip="$t('Details')"
-						@click="showEdit(props.row.id)"
-					/>
-					<b-dropdown :position="getDropdownPosition(props.index)">
-						<template #trigger>
-							<b-button
-								size="is-small"
-								icon-left="ellipsis-h"
-							/>
-						</template>
-						<b-dropdown-item
+				{{ $t('New') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonValidated"
+				class="ml-0"
+				icon-left="spinner"
+				color="green-darken-4"
+				variant="tonal"
+				prepend-icon="spinner"
+				@click="onStatusFilter('validated')"
+			>
+				{{ $t('Validated') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonClosed"
+				class="ml-0"
+				icon-left="check"
+				color="blue-darken-4"
+				variant="tonal"
+				prepend-icon="check"
+				@click="onStatusFilter('closed')"
+			>
+				{{ $t('Closed') }}
+			</v-btn>
+		</template>
+
+		<template v-if="!upcoming" v-slot:actions="{ row }">
+			<ButtonAction
+				v-if="!row.validated && userCan.editDistribution"
+				icon="edit"
+				tooltip-text="Update"
+				@actionConfirmed="onGoToUpdate(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="(row.validated || row.completed) && isAssistanceDetailAllowed"
+				:icon="row.validated && row.completed ? 'eye' : 'edit'"
+				:tooltip-text="row.validated && row.completed ? 'View' : 'Update'"
+				@actionConfirmed="onGoToDetail(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.editDistribution"
+				icon="search"
+				tooltip-text="Details"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<v-menu
+				transition="scale-transition"
+			>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						v-bind="props"
+						icon=""
+						class="action-button"
+					>
+						<v-icon icon="ellipsis-h" />
+					</v-btn>
+				</template>
+
+				<v-list>
+					<v-list-item class="dropdown-actions">
+						<ButtonAction
 							v-if="userCan.editDistribution"
-							@click="duplicate(props.row.id)"
-						>
-							<b-icon icon="copy" />
-
-							{{ $t("Duplicate") }}
-						</b-dropdown-item>
-						<b-dropdown-item
-							@click="assistanceMove(props.row.id)"
-							:disabled="isAssistanceMoveEnable(props.row)"
-						>
-							<b-icon icon="share" />
-
-							{{ $t("Move") }}
-						</b-dropdown-item>
-						<SafeDelete
-							:disabled="!props.row.deletable || !userCan.deleteDistribution"
-							componentType="DropDownItem"
-							:name="$t('Delete')"
-							icon="trash"
-							:message="$t('All distribution data will be deleted. Do you wish to continue?')"
-							:entity="$t('Assistance')"
-							:id="props.row.id"
-							@submitted="$emit('remove', $event)"
+							:is-only-icon="false"
+							icon="copy"
+							label="Duplicate"
+							button-size="small"
+							@actionConfirmed="onDuplicate(row.id)"
 						/>
-					</b-dropdown>
-				</div>
-			</b-table-column>
-			<template v-if="!upcoming" #export>
-				<ExportControl
-					:disabled="!table.data.length"
-					:available-export-formats="exportControl.formats"
-					:available-export-types="exportControl.types"
-					:is-export-loading="exportControl.loading"
-					:location="exportControl.location"
-					@onExport="exportAssistances"
-				/>
-			</template>
-			<template #progress>
-				<b-progress :value="table.progress" format="percent" />
-			</template>
-			<template #filterButton>
-				<b-button
-					:class="filterButtonNew"
-					slot="trigger"
-					icon-left="sticky-note"
-					@click="statusFilter('new')"
-				>
-					{{ $t('New') }}
-				</b-button>
-				<b-button
-					:class="filterButtonValidated"
-					slot="trigger"
-					icon-left="spinner"
-					@click="statusFilter('validated')"
-				>
-					{{ $t('Validated') }}
-				</b-button>
-				<b-button
-					:class="filterButtonClosed"
-					slot="trigger"
-					icon-left="check"
-					@click="statusFilter('closed')"
-				>
-					{{ $t('Closed') }}
-				</b-button>
-			</template>
-		</Table>
-	</div>
+
+						<ButtonAction
+							v-if="userCan.editDistribution"
+							:is-only-icon="false"
+							:disabled="isAssistanceMoveEnable(row)"
+							icon="share"
+							label="Move"
+							button-size="small"
+							@actionConfirmed="onAssistanceMove(row.id)"
+						/>
+
+						<ButtonAction
+							:disabled="!row.deletable || !userCan.deleteDistribution"
+							:is-only-icon="false"
+							label="Delete"
+							icon="trash"
+							button-size="small"
+							icon-color="red"
+							is-confirm-action
+							confirm-title="Deleting Assistance"
+							confirm-message="All distribution data will be deleted. Do you wish to continue?"
+							prepend-icon="circle-exclamation"
+							prepend-icon-color="red"
+							@actionConfirmed="$emit('remove', row.id)"
+						/>
+					</v-list-item>
+				</v-list>
+			</v-menu>
+		</template>
+	</DataGrid>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT } from "@/consts";
+import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: ASSISTANCE.STATUS.NEW, type: "is-light" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "is-success" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "is-info" },
+	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, type: "green-lighten-1" },
+	{ code: ASSISTANCE.STATUS.CLOSED, type: "light-blue-lighten-4" },
 ];
 
 export default {
 	name: "AssistancesList",
 
+	emits: ["remove"],
+
 	components: {
-		Table,
-		ActionButton,
-		SafeDelete,
-		ColumnField,
+		ButtonAction,
+		DataGrid,
 		ExportControl,
 	},
 
-	mixins: [permissions, grid, baseHelper, permissions],
+	mixins: [
+		permissions,
+		grid,
+		baseHelper,
+	],
 
 	props: {
-		upcoming: Boolean,
+		upcoming: {
+			type: Boolean,
+			default: false,
+		},
 
 		beneficiariesCount: {
 			type: Number,
@@ -221,6 +226,7 @@ export default {
 
 	data() {
 		return {
+			TABLE,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
@@ -235,30 +241,31 @@ export default {
 				closed: false,
 			},
 			filters: { states: ["new", "validated"] },
+			isLoadingList: false,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "assistanceID", label: "Assistance ID", type: "link", sortKey: "id", sortable: true },
-					{ key: "assistanceName", label: "Name", type: "link", sortKey: "name", sortable: true },
-					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state", sortable: true },
-					{ key: "round", sortable: true },
-					{ key: "type", type: "assistancesType", sortable: true },
-					{ key: "location", label: "Location", sortable: true },
-					{ key: "target", sortable: true },
-					{ key: "reached" },
-					{ key: "progress", sortable: true },
-					{ key: "dateDistribution", label: "Date of Assistance", type: "date", sortable: true },
-					{ key: "dateExpiration", label: "Expiration Date", sortable: true },
-					{ key: "commodity", label: "Commodity", type: "svgIcon" },
-					{ key: "eloNumber" },
-					{ key: "activity" },
-					{ key: "budgetLine" },
-				],
+				columns: generateColumns([
+					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
+					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
+					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
+					{ key: "round" },
+					{ key: "type", type: "assistancesType" },
+					{ key: "location" },
+					{ key: "target" },
+					{ key: "reached", sortable: false },
+					{ key: "progress" },
+					{ key: "dateDistribution", title: "Date of Assistance", type: "date" },
+					{ key: "dateExpiration", title: "Expiration Date" },
+					{ key: "commodity", type: "svgIcon", sortable: false },
+					{ key: "eloNumber", sortable: false },
+					{ key: "activity", sortable: false },
+					{ key: "budgetLine", sortable: false },
+					...!this.upcoming ? [{ key: "actions", value: "actions", sortable: false, minWidth: "150" }] : [],
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "dateDistribution",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES.key,
 				searchPhrase: "",
 				progress: null,
 			},
@@ -270,21 +277,21 @@ export default {
 	computed: {
 		filterButtonNew() {
 			return [
-				"btn ml-3 is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		filterButtonValidated() {
 			return [
-				"btn ml-3 is-success is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.validated },
 			];
 		},
 
 		filterButtonClosed() {
 			return [
-				"btn ml-3 is-info is-light",
+				"text-none ml-3",
 				{ "is-selected": this.statusActive.closed },
 			];
 		},
@@ -309,10 +316,6 @@ export default {
 		},
 	},
 
-	watch: {
-		$route: "fetchData",
-	},
-
 	created() {
 		this.fetchData();
 	},
@@ -322,7 +325,6 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			if (this.upcoming) {
 				await this.fetchUpcomingAssistances();
 			} else {
@@ -336,7 +338,9 @@ export default {
 				this.$route.params.projectId,
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
@@ -347,7 +351,7 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Assistance")} ${e}`, "is-danger");
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -355,7 +359,9 @@ export default {
 			await AssistancesService.getListOfAssistances(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				true,
 				null,
 				this.filters,
@@ -367,7 +373,7 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Upcoming Assistances")} ${e}`, "is-danger");
+				Notification(`${this.$t("Upcoming Assistances")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -406,21 +412,20 @@ export default {
 			this.table.progress += 15;
 			this.table.data.forEach((item, key) => {
 				const preparedCommodity = item.commodities;
-
-				let dateExpiration = "";
-
-				if (item.dateExpiration) {
-					dateExpiration = this.$moment(item.dateExpiration).format("YYYY-MM-DD");
-				} else {
-					dateExpiration = "No Date";
-				}
+				const dateExpiration = item.dateExpiration || "No Date";
 
 				const isCommoditySmartCard = preparedCommodity[0]?.modalityType === "Smartcard";
 				this.table.data[key].dateExpiration = isCommoditySmartCard
 					? dateExpiration : this.$t("N/A");
 
 				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
-					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
+					.map(({ modalityType }) => (
+						{
+							code: modalityType,
+							value: modalityType,
+							remoteDistributionAllowed: item.remoteDistributionAllowed,
+						}))
+					: [];
 			});
 			this.table.progress += 10;
 		},
@@ -460,7 +465,7 @@ export default {
 
 		getRouteNameToAssistance(data) {
 			return data.state.value === "Closed"
-				|| data.state.value === "Validated"
+			|| data.state.value === "Validated"
 				? "AssistanceDetail"
 				: "AssistanceEdit";
 		},
@@ -470,7 +475,7 @@ export default {
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
-		goToDetail(id) {
+		onGoToDetail(id) {
 			this.$router.push({
 				name: "AssistanceDetail",
 				params: {
@@ -479,7 +484,7 @@ export default {
 			});
 		},
 
-		goToUpdate(id) {
+		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
 			if (this.upcoming) {
@@ -494,7 +499,7 @@ export default {
 			}
 		},
 
-		statusFilter(filter) {
+		onStatusFilter(filter) {
 			this.statusActive[filter] = !this.statusActive[filter];
 
 			if (this.selectedFilters.includes(filter)) {
@@ -512,23 +517,15 @@ export default {
 			await this.fetchData();
 		},
 
-		duplicate(id) {
+		onDuplicate(id) {
 			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
-		},
-
-		getDropdownPosition(rowId) {
-			if (this.table.data.length === 3 && rowId === 2) {
-				return "is-top-left";
-			}
-
-			return [0, 1, 2].includes(rowId) ? "is-bottom-left" : "is-top-left";
 		},
 
 		isAssistanceMoveEnable(assistance) {
 			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
 		},
 
-		async exportAssistances(exportType, format) {
+		async onExportAssistances(exportType, format) {
 			if (exportType === EXPORT.ASSISTANCE_OVERVIEW) {
 				try {
 					this.exportControl.loading = true;
@@ -546,7 +543,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
@@ -556,10 +553,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import 'src/assets/scss/button';
+<style lang="scss">
+.dropdown-actions .v-list-item__content {
+	display: flex;
+	flex-direction: column;
 
-.table .buttons {
-	flex-wrap: nowrap;
+	> button {
+		justify-content: left;
+	}
 }
 </style>

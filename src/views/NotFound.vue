@@ -1,16 +1,30 @@
 <template>
-	<div class="has-text-centered has-redirect-message">
-		<h1 class="title mb-4 has-text-weight-bold is-size-1-mobile has-redirect-code">404</h1>
-		<h2 class="subtitle is-size-4-mobile is-size-3">{{ $t("Page Not Found") }}</h2>
-		<b-button
-			class="mt-4 is-size-5-mobile"
-			icon-left="home"
-			outlined
-			type="is-info is-light is-large"
-			@click="$router.push('/')"
+	<div class="text-center has-redirect-message mt-16">
+		<h1 class="has-redirect-code">404</h1>
+
+		<h2 class="text-h4 text-grey-darken-2 my-10">{{ $t("Page Not Found") }}</h2>
+
+		<div class="text-h5 text-grey-darken-2 my-10 text-left">
+			<p>{{ $t('Possible reasons')}}:</p>
+
+			<p class="pt-3">- {{ $t('There might be a mistake (typo) in the address')}}</p>
+
+			<p>- {{ $t('The link might be outdated')}}</p>
+
+			<p>- {{ $t('The page was removed')}}</p>
+
+			<p class="pt-8">{{ $t('If you believe this is an error, contact Administrator at georgios.petrou@peopleinneed.net')}}</p>
+		</div>
+
+		<v-btn
+			:to="{ name: 'Dashboard' }"
+			size="x-large"
+			color="light-blue-lighten-4"
+			prepend-icon="home"
+			class="text-none"
 		>
-			<span class="button-text">{{ $t("Go to Dashboard") }}</span>
-		</b-button>
+			{{ $t('Go to Projects') }}
+		</v-btn>
 	</div>
 </template>
 

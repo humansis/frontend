@@ -1,93 +1,112 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body overflow-visible">
-			<p v-if="!formModel.removingId" class="mb-5">
-				{{ $t('Please select the beneficiaries that you want to add to the') }}
-				<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
-			</p>
-			<p v-if="formModel.removingId" class="mb-5">
-				{{ $t('You are about to remove this beneficiary from') }}
-				<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
-				{{ $t('Do you wish to continue?') }}
-			</p>
-			<b-field
-				v-if="!formModel.removingId"
-				:label="$t('Beneficiaries')"
-				:type="validateType('beneficiaries')"
-				:message="validateMsg('beneficiaries')"
-			>
-				<MultiSelect
-					v-model="formModel.beneficiaries"
-					searchable
-					multiple
-					track-by="id"
-					:label="multiselectLabel"
-					:placeholder="$t('Click to select')"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					:loading="loading.beneficiaries"
-					:disabled="formDisabled"
-					:options="beneficiariesOptions"
-					:class="validateMultiselect('beneficiaries')"
-					@select="validate('beneficiaries')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
-			<b-field
-				:label="$t('Justification')"
-				:type="validateType('justification')"
-				:message="validateMsg('justification')"
-			>
-				<b-input
-					v-model="formModel.justification"
-					:disabled="formDisabled"
-				/>
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button v-if="closeButton" @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-				:loading="submitButtonLoading"
-			>
-				{{ submitButtonLabel }}
-			</b-button>
-		</footer>
-	</form>
+	<v-card-text>
+		<p v-if="!formModel.removingId" class="mb-5">
+			{{ $t('Please select the beneficiaries that you want to add to the') }}
+			<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
+		</p>
+
+		<p v-else class="mb-5">
+			{{ $t('You are about to remove this beneficiary from') }}
+			<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.<br>
+			{{ $t('Do you wish to continue?') }}
+		</p>
+
+		<DataSelect
+			v-if="!formModel.removingId"
+			v-model="formModel.beneficiaries"
+			:items="beneficiariesOptions"
+			:item-title="multiselectLabel"
+			:loading="loading.beneficiaries"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('beneficiaries')"
+			label="Beneficiaries"
+			name="beneficiaries"
+			item-value="id"
+			class="mb-4"
+			multiple
+			@update:modelValue="onValidate('beneficiaries')"
+		/>
+
+		<DataInput
+			v-model="formModel.justification"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('justification')"
+			label="Justification"
+			name="justification"
+			@update:modelValue="onValidate('justification')"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			color="primary"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AddBeneficiaryForm",
 
+	components: {
+		DataSelect,
+		DataInput,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			beneficiaries: { required: requiredIf((form) => !form.removingId) },
-			justification: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				beneficiaries: { required: requiredIf(!this.formModel.removingId) },
+				justification: { required },
+			},
+		};
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
-		assistance: Object,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		assistance: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -146,9 +165,9 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
-			this.$v.$touch();
-			if (!this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (!this.v$.$invalid) {
 				if (this.formModel.removingId) {
 					this.removeBeneficiaryFromAssistance(this.formModel);
 				} else {
@@ -185,7 +204,7 @@ export default {
 				.then(({ data }) => {
 					this.options.beneficiaries = data;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Project Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Project Beneficiaries")} ${e.message || e}`, "error");
 				});
 			this.loading.beneficiaries = false;
 		},
@@ -268,18 +287,13 @@ export default {
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {
-							Toast(data, "is-warning");
+							Notification(data, "warning");
 						} else {
-							Toast(successMessage, "is-success");
+							Notification(successMessage, "success");
 						}
 					})
 					.catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Beneficiary")} ${e}`,
-								"is-danger",
-							);
-						}
+						Notification(`${this.$t("Beneficiary")} ${e.message || e}`, "error");
 					});
 			}
 
@@ -292,27 +306,22 @@ export default {
 				)
 					.then(({ data, status }) => {
 						if (status === 400) {
-							Toast(data, "is-warning");
+							Notification(data, "warning");
 						} else {
-							Toast(successMessage, "is-success");
+							Notification(successMessage, "success");
 						}
 					})
 					.catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Beneficiary")} ${e}`,
-								"is-danger",
-							);
-						}
+						Notification(`${this.$t("Beneficiary")} ${e}`, "error");
 					});
 			}
 
 			this.submitButtonLoading = false;
-			this.closeForm();
+			this.onCloseForm();
 			this.$emit("addingOrRemovingSubmitted");
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
 		},
 

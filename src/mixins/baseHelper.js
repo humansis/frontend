@@ -1,5 +1,3 @@
-import i18n from "@/plugins/i18n";
-
 export default {
 	methods: {
 		prepareEntityForTable(ids, entities, returnedParam = null, emptyValue = "") {
@@ -22,7 +20,7 @@ export default {
 				}
 			}
 
-			if (!finalEntity.length) return (emptyValue === "None") ? i18n.t("None") : emptyValue;
+			if (!finalEntity.length) return (emptyValue === "None") ? this.$t("None") : emptyValue;
 
 			return finalEntity;
 		},

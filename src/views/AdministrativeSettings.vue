@@ -1,37 +1,75 @@
 <template>
-	<div>
-		<h1 class="title has-text-centered">{{ $t('Administrative Settings') }}</h1>
+	<v-container fluid>
+		<h2 class="text-center mt-4">{{ $t('Administrative Settings') }}</h2>
 
-		<b-tabs v-model="selectedTab" destroy-on-hide>
-			<b-tab-item icon="user" :label="$t('Users')">
+		<v-tabs
+			v-model="selectedTab"
+			color="primary"
+			align-tabs="start"
+			class="mt-5 mb-5"
+		>
+			<v-tab value="users" class="text-none">
+				<v-icon icon="user" class="mr-2" />
+
+				{{ $t('Users') }}
+			</v-tab>
+
+			<v-tab v-if="userCan.viewDonors" value="donors" class="text-none">
+				<v-icon icon="dollar-sign" class="mr-2" />
+
+				{{ $t('Donors') }}
+			</v-tab>
+
+			<v-tab value="myOrganizations" class="text-none">
+				<v-icon icon="child" class="mr-2" />
+
+				{{ $t('My Organizations') }}
+			</v-tab>
+
+			<v-tab value="organizationServices" class="text-none">
+				<v-icon icon="th-large" class="mr-2" />
+
+				{{ $t('Organization Services') }}
+			</v-tab>
+
+			<v-tab value="sync" class="text-none">
+				<v-icon icon="th-large" class="mr-2" />
+
+				{{ $t('Sync') }}
+			</v-tab>
+		</v-tabs>
+
+		<v-window v-model="selectedTab">
+			<v-window-item value="users">
 				<Users />
-			</b-tab-item>
+			</v-window-item>
 
-			<b-tab-item v-if="userCan.viewDonors" icon="dollar-sign" :label="$t('Donors')">
+			<v-window-item value="donors">
 				<Donors />
-			</b-tab-item>
+			</v-window-item>
 
-			<b-tab-item icon="child" :label="$t('My Organizations')">
+			<v-window-item value="myOrganizations">
 				<MyOrganizations />
-			</b-tab-item>
+			</v-window-item>
 
-			<b-tab-item icon="th-large" :label="$t('Organization Services')">
+			<v-window-item value="organizationServices">
 				<OrganizationServices />
-			</b-tab-item>
-			<b-tab-item icon="th-large" :label="$t('Sync')">
+			</v-window-item>
+
+			<v-window-item value="sync">
 				<Sync />
-			</b-tab-item>
-		</b-tabs>
-	</div>
+			</v-window-item>
+		</v-window>
+	</v-container>
 </template>
 
 <script>
+import Donors from "@/components/AdministrativeSettings/Donors";
+import MyOrganizations from "@/components/AdministrativeSettings/MyOrganizations";
+import OrganizationServices from "@/components/AdministrativeSettings/OrganizationServices";
+import Sync from "@/components/AdministrativeSettings/Sync";
+import Users from "@/components/AdministrativeSettings/Users";
 import permissions from "@/mixins/permissions";
-import Donors from "@/views/AdministrativeSettings/Donors";
-import MyOrganizations from "@/views/AdministrativeSettings/MyOrganizations";
-import OrganizationServices from "@/views/AdministrativeSettings/OrganizationServices";
-import Sync from "@/views/AdministrativeSettings/Sync";
-import Users from "@/views/AdministrativeSettings/Users";
 
 export default {
 	name: "AdministrativeSettings",
@@ -48,7 +86,7 @@ export default {
 
 	data() {
 		return {
-			selectedTab: 0,
+			selectedTab: "users",
 		};
 	},
 };

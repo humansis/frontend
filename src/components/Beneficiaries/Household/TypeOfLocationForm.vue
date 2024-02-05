@@ -1,127 +1,97 @@
 <template>
-	<section>
-		<b-field
-			:label="$t('Type of Location')"
-			:type="validateType('typeOfLocation')"
-			:message="validateMsg('typeOfLocation')"
-		>
-			<MultiSelect
-				v-model="formModel.typeOfLocation"
-				label="value"
-				:select-label="$t('Press enter to select')"
-				:selected-label="$t('Selected')"
-				:deselect-label="$t('Press enter to remove')"
-				track-by="code"
-				:placeholder="$t('Click to select')"
-				:loading="locationTypesLoading"
-				:options="options.typeOfLocation"
-				:searchable="false"
-				:class="validateMultiselect('typeOfLocation')"
-				@select="selectTypeOfLocation"
-			>
-				<span slot="noOptions">{{ $t("List is empty")}}</span>
-				<template slot="singleLabel" slot-scope="props">
-					<div class="option__desc">
-						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-					</div>
-				</template>
-				<template slot="option" slot-scope="props">
-					<div class="option__desc">
-						<span class="option__title">{{ normalizeText(props.option.value) }}</span>
-					</div>
-				</template>
-			</MultiSelect>
-		</b-field>
-		<div v-if="campSelected || this.formModel.type === 'camp'" :key="campKey">
-			<b-field
-				v-if="!createCamp"
-				:label="$t('Camp name')"
-				:type="validateType('camp')"
-				:message="validateMsg('camp')"
-			>
-				<MultiSelect
-					v-model="formModel.camp"
-					label="name"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="id"
-					:placeholder="$t('Click to select')"
-					:options="options.camps"
-					:searchable="false"
-					:class="validateMultiselect('camp')"
-					@select="selectCamp"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+	<DataSelect
+		v-model="formModel.typeOfLocation"
+		:items="options.typeOfLocation"
+		:loading="locationTypesLoading"
+		:error-messages="validationMsg('typeOfLocation')"
+		label="Type of Location"
+		name="type-of-location"
+		class="mb-4"
+		@update:modelValue="onSelectTypeOfLocation"
+	/>
 
-			<b-field
-				grouped
-				:type="validateType('campName')"
-				:message="validateMsg('campName')"
-			>
-				<b-checkbox v-model="createCamp">{{ $t('Create a Camp') }}</b-checkbox>
-				<b-input
-					v-if="createCamp"
-					v-model="formModel.campName"
-					:placeholder="$t('Camp Name')"
-					@blur="validate('campName')"
-				/>
-			</b-field>
+	<template v-if="campSelected">
+		<v-checkbox
+			v-model="createCamp"
+			:label="$t('Create a new Camp')"
+			name="create-new-camp"
+			density="compact"
+			class="mb-4"
+			hide-details="auto"
+		/>
 
-			<b-field
-				:label="$t('Tent number')"
-				:type="validateType('tentNumber')"
-				:message="validateMsg('tentNumber')"
-			>
-				<b-input
-					v-model="formModel.tentNumber"
-					@blur="validate('tentNumber')"
-				/>
-			</b-field>
-		</div>
-		<div v-else>
-			<b-field
-				:label="$t('Address number')"
-				:type="validateType('number')"
-				:message="validateMsg('number')"
-			>
-				<b-input
-					v-model="formModel.number"
-					@blur="validate('number')"
-				/>
-			</b-field>
+		<DataSelect
+			v-if="!createCamp"
+			v-model="formModel.camp"
+			:items="options.camps"
+			:error-messages="validationMsg('camp')"
+			label="Camp name"
+			name="camp-name"
+			item-title="name"
+			item-value="id"
+			class="mb-4"
+			@update:modelValue="onSelectCamp"
+		/>
 
-			<b-field
-				:label="$t('Address street')"
-				:type="validateType('street')"
-				:message="validateMsg('street')"
-			>
-				<b-input
-					v-model="formModel.street"
-					@blur="validate('street')"
-				/>
-			</b-field>
+		<DataInput
+			v-else
+			v-model="formModel.campName"
+			:error-messages="validationMsg('campName')"
+			label="Camp name"
+			name="camp-name"
+			class="mb-4"
+			@update:modelValue="onValidate('campName')"
+		/>
 
-			<b-field
-				:label="$t('Address postcode')"
-				:type="validateType('postcode')"
-				:message="validateMsg('postcode')"
-			>
-				<b-input
-					v-model="formModel.postcode"
-					@blur="validate('postcode')"
-				/>
-			</b-field>
-		</div>
-	</section>
+		<DataInput
+			v-model="formModel.tentNumber"
+			:error-messages="validationMsg('tentNumber')"
+			label="Tent number"
+			name="tent-number"
+			class="mb-4"
+			@update:modelValue="onValidate('tentNumber')"
+		/>
+	</template>
+
+	<template v-else>
+		<DataInput
+			v-model="formModel.number"
+			:error-messages="validationMsg('number')"
+			:optional="!residenceSelected"
+			label="Address number"
+			name="address-number"
+			class="mb-4"
+			@update:modelValue="onValidate('number')"
+		/>
+
+		<DataInput
+			v-model="formModel.street"
+			:error-messages="validationMsg('street')"
+			:optional="!residenceSelected"
+			label="Address street"
+			name="address-street"
+			class="mb-4"
+			@update:modelValue="onValidate('street')"
+		/>
+
+		<DataInput
+			v-model="formModel.postcode"
+			:error-messages="validationMsg('postcode')"
+			:optional="!residenceSelected"
+			label="Address postcode"
+			name="address-postcode"
+			class="mb-4"
+			@update:modelValue="onValidate('postcode')"
+		/>
+	</template>
 </template>
 
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf } from "@vuelidate/validators";
 import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -130,34 +100,41 @@ import { GENERAL } from "@/consts";
 export default {
 	name: "TypeOfLocationForm",
 
+	components: { DataInput, DataSelect },
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			typeOfLocation: { required },
-			camp: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.camp.code && !form.campName
-			)) },
-			campName: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.camp.code && !form.camp
-			)) },
-			tentNumber: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.camp.code
-			)) },
-			number: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.residence.code
-			)) },
-			street: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.residence.code
-			)) },
-			postcode: { required: requiredIf((form) => (
-					form.typeOfLocation?.code === GENERAL.LOCATION_TYPE.residence.code
-			)) },
-		},
+	validations() {
+		return {
+			formModel: {
+				typeOfLocation: { required },
+				camp: {
+					required: requiredIf(this.campSelected && !this.createCamp),
+				},
+				campName: {
+					required: requiredIf(this.campSelected && this.createCamp),
+				},
+				tentNumber: {
+					required: requiredIf(this.campSelected),
+				},
+				number: {
+					required: requiredIf(this.residenceSelected),
+				},
+				street: {
+					required: requiredIf(this.residenceSelected),
+				},
+				postcode: {
+					required: requiredIf(this.residenceSelected),
+				},
+			},
+		};
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		isEditing: {
 			type: Boolean,
@@ -167,10 +144,8 @@ export default {
 
 	data() {
 		return {
-			campKey: 0,
 			locationTypesLoading: true,
 			createCamp: false,
-			campSelected: false,
 			options: {
 				typeOfLocation: [],
 				camps: [],
@@ -179,8 +154,23 @@ export default {
 		};
 	},
 
+	computed: {
+		campSelected() {
+			return this.formModel.type === GENERAL.LOCATION_TYPE.camp.type;
+		},
+
+		residenceSelected() {
+			return this.formModel.type === GENERAL.LOCATION_TYPE.residence.type;
+		},
+	},
+
 	watch: {
 		formModel: "mapLocations",
+
+		createCamp() {
+			this.formModel.camp = "";
+			this.formModel.campName = null;
+		},
 	},
 
 	async mounted() {
@@ -200,7 +190,7 @@ export default {
 					this.options.typeOfLocation = result.data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Location Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
 				});
 			this.locationTypesLoading = false;
 		},
@@ -213,7 +203,7 @@ export default {
 					this.options.camps = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
+					Notification(`${this.$t("Camps")} ${e.message || e}`, "error");
 				})
 				.finally(() => {
 					this.campsLoading = false;
@@ -225,7 +215,6 @@ export default {
 				await this.fetchCamps();
 			}
 			if (this.formModel.type) {
-				this.campSelected = this.formModel.type === GENERAL.LOCATION_TYPE.camp.type;
 				const typeOfLocation = this.options.typeOfLocation
 					.find((item) => {
 						const isCamp = this.formModel.type === GENERAL.LOCATION_TYPE.camp.type
@@ -248,28 +237,24 @@ export default {
 			}
 			const campId = this.formModel?.campId || this.formModel.camp?.id;
 			if (campId && !this.formModel.camp) {
-				this.campSelected = this.formModel.type === GENERAL.LOCATION_TYPE.camp.type;
 				this.formModel.camp = this.options.camps
 					.find((item) => campId === item.id);
-				this.campKey += 1;
 			}
 		},
 
-		selectTypeOfLocation(selectedType) {
-			this.$v.$reset();
-			this.campSelected = selectedType.code === GENERAL.LOCATION_TYPE.camp.code;
+		onSelectTypeOfLocation(selectedType) {
+			this.v$.$reset();
 			this.formModel.type = selectedType.value.toLowerCase();
-			this.validate("typeOfLocation");
+			this.onValidate("typeOfLocation");
 		},
 
 		submitTypeOfLocationForm() {
-			this.$v.$touch();
-			return this.$v.$invalid;
+			this.v$.$touch();
+			return this.v$.$invalid;
 		},
 
-		selectCamp() {
-			this.validate("camp");
-			this.campKey += 1;
+		onSelectCamp() {
+			this.onValidate("camp");
 		},
 	},
 };

@@ -53,7 +53,7 @@ export default {
 
 	async uploadProductImage(image) {
 		const formData = new FormData();
-		formData.append("file", image);
+		formData.append("file", image[0]);
 
 		const { data, status } = await upload({
 			uri: `products/images`,
@@ -107,7 +107,7 @@ export default {
 
 	async uploadCategoryImage(image) {
 		const formData = new FormData();
-		formData.append("file", image);
+		formData.append("file", image[0]);
 
 		const { data, status } = await upload({
 			uri: `products/images`,

@@ -1,63 +1,55 @@
 <template>
-	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Vendors') }}</h1>
-			</div>
+	<v-container fluid>
+		<div class="d-flex mb-4">
+			<h2 class="me-auto">{{ $t('Vendors') }}</h2>
 
-			<div class="level-right">
-				<b-button
-					v-if="userCan.addEditVendors"
-					type="is-primary"
-					icon-left="plus"
-					@click="addNewVendor"
-				>
-					{{ $t('Add') }}
-				</b-button>
-			</div>
+			<v-btn
+				v-if="userCan.addEditVendors"
+				color="primary"
+				prepend-icon="plus"
+				class="text-none ml-0"
+				@click="onAddNewVendor"
+			>
+				{{ $t('Add') }}
+			</v-btn>
 		</div>
 
 		<Modal
+			v-model="vendorSummary.isOpened"
 			custom-header
-			:active="vendorSummary.isOpened"
-			:is-waiting="vendorSummary.isWaiting"
-			@close="closeVendorSummary"
 		>
 			<VendorSummary
 				:vendor="selectedVendor"
 				@loaded="vendorSummary.isWaiting = false"
-				@close="closeVendorSummary"
-				@changedPage="changedSummaryPage"
+				@close="onCloseVendorSummary"
+				@changedPage="onChangedSummaryPage"
 			/>
 		</Modal>
 
 		<Modal
-			can-cancel
-			:active="vendorModal.isOpened"
+			v-model="vendorModal.isOpened"
 			:header="modalHeader"
-			@close="closeVendorModal"
 		>
 			<VendorForm
-				close-button
-				class="modal-card"
-				:formModel="vendorModel"
-				:submit-button-label="vendorModal.isEditing ? $t('Update') : $t('Create')"
+				:form-model="vendorModel"
+				:submit-button-label="vendorModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="vendorModal.isDetail"
 				:form-loading="vendorModal.isWaiting"
 				:is-editing="vendorModal.isEditing"
-				@formSubmitted="submitVendorForm"
-				@formClosed="closeVendorModal"
+				close-button
+				@formSubmitted="onSubmitVendorForm"
+				@formClosed="onCloseVendorModal"
 			/>
 		</Modal>
 
 		<VendorsList
 			ref="vendorsList"
-			@remove="vendorRemove"
-			@showEdit="editVendor"
-			@showDetail="showDetail"
-			@onShowSummary="showVendorSummary"
+			@delete="onVendorRemove"
+			@showEdit="onEditVendor"
+			@showDetail="onShowDetail"
+			@showSummary="onShowVendorSummary"
 		/>
-	</div>
+	</v-container>
 </template>
 
 <script>
@@ -66,9 +58,9 @@ import VendorService from "@/services/VendorService";
 import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
-import Modal from "@/components/Modal";
+import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "Vendors",
@@ -124,22 +116,22 @@ export default {
 		modalHeader() {
 			let result = "";
 			if (this.vendorModal.isDetail) {
-				result = this.$t("Detail of Vendor");
+				result = "Detail of Vendor";
 			} else if (this.vendorModal.isEditing) {
-				result = this.$t("Edit Vendor");
+				result = "Edit Vendor";
 			} else {
-				result = this.$t("Create New Vendor");
+				result = "Create New Vendor";
 			}
 			return result;
 		},
 	},
 
 	methods: {
-		changedSummaryPage(title) {
+		onChangedSummaryPage(title) {
 			this.vendorSummary.header = title;
 		},
 
-		editVendor(vendor) {
+		onEditVendor(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: true,
@@ -149,12 +141,11 @@ export default {
 			};
 		},
 
-		closeVendorSummary() {
+		onCloseVendorSummary() {
 			this.vendorSummary.isOpened = false;
-			this.selectedVendor = null;
 		},
 
-		showVendorSummary(vendor) {
+		onShowVendorSummary(vendor) {
 			this.vendorSummary.isWaiting = true;
 			this.selectedVendor = vendor;
 			this.vendorSummary = {
@@ -187,7 +178,7 @@ export default {
 			};
 		},
 
-		addNewVendor() {
+		onAddNewVendor() {
 			this.vendorModal = {
 				isEditing: false,
 				isOpened: true,
@@ -198,12 +189,12 @@ export default {
 			this.eraseFormModel();
 		},
 
-		closeVendorModal() {
+		onCloseVendorModal() {
 			this.vendorModal.isOpened = false;
 			this.eraseFormModel();
 		},
 
-		showDetail(vendor) {
+		onShowDetail(vendor) {
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: false,
@@ -271,7 +262,7 @@ export default {
 			};
 		},
 
-		async submitVendorForm(vendorForm) {
+		async onSubmitVendorForm(vendorForm) {
 			this.vendorModal.isWaiting = true;
 			const {
 				id,
@@ -332,17 +323,17 @@ export default {
 						await VendorService.createVendor(body)
 							.then((vendorResponse) => {
 								if (vendorResponse.status === 200) {
-									Toast(this.$t("Vendor Successfully Created"), "is-success");
+									Notification(this.$t("Vendor Successfully Created"), "success");
 									this.$refs.vendorsList.fetchData();
-									this.closeVendorModal();
+									this.onCloseVendorModal();
 								}
 							}).catch((e) => {
-								Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
+								Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
 							});
 					}
 				})
 				.catch((e) => {
-					Toast(`${this.$t("User")} ${e}`, "is-danger");
+					Notification(`${this.$t("User")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -352,27 +343,27 @@ export default {
 					if (userResponse.status === 200) {
 						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
 							if (vendorResponse.status === 200) {
-								Toast(this.$t("Vendor Successfully Updated"), "is-success");
+								Notification(this.$t("Vendor Successfully Updated"), "success");
 								this.$refs.vendorsList.fetchData();
-								this.closeVendorModal();
+								this.onCloseVendorModal();
 							}
 						}).catch((e) => {
-							Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
+							Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
 						});
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("User")} ${e}`, "is-danger");
+					Notification(`${this.$t("User")} ${e.message || e}`, "error");
 				});
 		},
 
-		async vendorRemove(id) {
+		async onVendorRemove(id) {
 			await VendorService.deleteVendor(id).then((response) => {
 				if (response.status === 204) {
-					Toast(this.$t("Vendor Successfully Deleted"), "is-success");
+					Notification(this.$t("Vendor Successfully Deleted"), "success");
 					this.$refs.vendorsList.removeFromList(id);
 				}
 			}).catch((e) => {
-				Toast(`${this.$t("Vendor")} ${e}`, "is-danger");
+				Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
 			});
 		},
 	},

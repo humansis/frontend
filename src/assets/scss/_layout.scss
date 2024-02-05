@@ -1,156 +1,26 @@
-.container {
-	max-width: 100% !important;
-	padding: .2rem 1.8rem 1.8rem;
-}
-
-.breadcrumb {
-	display: flex;
-
-	.breadcrumb-item span {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 .75em;
-	}
-
-	.active {
-		font-weight: bold;
-	}
-}
-
-.has-redirect-code {
-	font-size: 15rem;
-	color: #0e2640;
+html {
+  background-color: $body-background-color;
 }
 
 .has-redirect-message {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -80%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+
+  .has-redirect-code {
+    font-size: 13rem;
+    color: #0e2640;
+    line-height: 1;
+  }
 }
 
-.table-wrapper {
-	overflow-x: auto;
+.toast {
+  width: 16.875rem;
 }
 
-.loading-overlay.is-active.is-full-page {
-	z-index: 200;
-
-	.loading-background {
-		background: #ffffff;
-	}
-}
-
-.add-config-btn {
-	display: flex;
-	justify-content: flex-end;
-	height: 0;
-
-	& button {
-		position: relative;
-		top: -4em;
-	}
-}
-
-.space-between.align-end {
-	justify-content: flex-end;
-	margin-bottom: 0;
-}
-
-html.has-aside-left.has-aside-expanded {
-	nav.navbar,
-	body,
-	.notices {
-		padding-left: 15rem;
-	}
-}
-
-@media screen and (max-width: 1023px) {
-	html.has-aside-left aside.aside {
-		display: none;
-	}
-
-	html.has-aside-left.has-aside-expanded aside.aside {
-		display: block;
-	}
-}
-
-aside.aside {
-	.bms-logo {
-		flex-shrink: 0;
-		width: 2rem;
-		height: 2rem;
-		font-size: 2rem;
-		box-sizing: content-box;
-		border-radius: 50%;
-		padding: .25rem;
-		background: #fbfcfc;
-	}
-
-	&.is-expanded {
-		width: 15rem;
-
-		.menu-list {
-			.icon {
-				width: 3rem;
-			}
-
-			li a {
-				.tooltip-content {
-					display: none;
-				}
-			}
-
-			.b-tooltip .icon {
-				width: auto;
-				font-size: .75em;
-				margin-left: .5em;
-			}
-		}
-	}
-
-	&:not(.is-expanded) .menu-list {
-		li a {
-			.tooltip-trigger {
-				display: none;
-			}
-
-			&:not(:hover) .tooltip-content {
-				display: none;
-			}
-
-			.b-tooltip .icon {
-				width: auto;
-				font-size: .75em;
-				margin-left: .5em;
-			}
-		}
-
-		ul {
-			.icon {
-				width: 3.5rem;
-			}
-
-			.tooltip-content {
-				margin-left: .75rem;
-			}
-		}
-	}
-
-	.menu-list a {
-		display: flex;
-		align-items: center;
-		white-space: nowrap;
-
-		&.is-expanded + ul {
-			display: block;
-		}
-	}
-}
-
-@media only screen and (max-width: $fullhd) {
-	html {
-		font-size: 14px !important;
-	}
+@media only screen and (max-width: $laptop-l) {
+  html {
+    font-size: 14px !important;
+  }
 }

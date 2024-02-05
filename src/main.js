@@ -1,26 +1,27 @@
-import Vue from "vue";
-import "@/plugins/buefy";
-import "@/plugins/vuelidate";
-import "@/plugins/breadcrumbs";
-import "@/plugins/vueselect";
-import "@/plugins/vueswatches";
-import "@/plugins/vuecountryflag";
-import "@/plugins/vuemoment";
-import "@/plugins/vueloading";
-import "@/plugins/vuehtmlsecure";
-import App from "@/App.vue";
+import { createApp } from "vue";
+import App from "@/App";
 import i18n from "@/plugins/i18n";
+import htmlSecureDirective from "@/plugins/vuehtmlsecure";
+import vuetify from "@/plugins/vuetify";
 import router from "@/router";
 import store from "@/store";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import moment from "moment";
 
-Vue.config.productionTip = false;
+import "@/assets/scss/main.scss";
 
-new Vue({
-	router,
-	store,
-	i18n,
-	mounted() {
-		document.documentElement.classList.remove("has-spinner-active");
-	},
-	render: (h) => h(App),
-}).$mount("#app");
+const app = createApp(App);
+
+app.directive("html-secure", htmlSecureDirective);
+
+app.config.productionTip = false;
+
+app.component("font-awesome-icon", FontAwesomeIcon);
+app.config.globalProperties.$moment = moment;
+
+app.use(router);
+app.use(store);
+app.use(i18n);
+app.use(vuetify);
+
+app.mount("#app");

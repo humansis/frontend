@@ -1,98 +1,86 @@
 <template>
-	<Table
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="showDetail"
+	<DataGrid
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort('id', 'asc', true)"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				v-slot="props"
-				:sortable="column.sortable"
-				:key="column.id"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<!--	TODO Uncomment in next version (when BE is ready) -->
+			<!--	<ButtonAction-->
+			<!--		icon="edit"-->
+			<!--		tooltip-text="Edit"-->
+			<!--		@actionConfirmed="onShowEdit(row)"-->
+			<!--	/>-->
+
+			<!--	<ButtonAction-->
+			<!--		icon="trash"-->
+			<!--		tooltip-text="Delete"-->
+			<!--		icon-color="red"-->
+			<!--		confirm-title="Deleting Custom Field"-->
+			<!--		confirm-message="Are you sure sure you want to delete Custom Field?"-->
+			<!--		prepend-icon="circle-exclamation"-->
+			<!--		prepend-icon-color="red"-->
+			<!--		is-confirm-action-->
+			<!--		@actionConfirmed="onRemove(row.id)"-->
+			<!--	/>-->
 		</template>
-		<b-table-column
-			v-slot="props"
-			visible
-			width="150"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					icon="trash"
-					:entity="$t('Custom Field')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
-		<template #export>
+
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportCustomFields"
+				@export="onExportCustomFields"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import CustomFieldsService from "@/services/CustomFieldsService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "CustomFieldsList",
 
 	components: {
-		ColumnField,
 		ExportControl,
-		SafeDelete,
-		Table,
-		ActionButton,
+		ButtonAction,
+		DataGrid,
 	},
 
 	mixins: [grid],
 
 	data() {
 		return {
+			TABLE,
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "customFields",
@@ -101,23 +89,18 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "field", sortable: true },
-					{ key: "type", sortable: true },
-					{ key: "target", visible: false },
-				],
+				columns: generateColumns([
+					{ key: "field" },
+					{ key: "type" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "asc",
-				sortColumn: "id",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS.key,
 				searchPhrase: "",
 			},
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -128,23 +111,24 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await CustomFieldsService.getListOfCustomFields(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Custom Fields")} ${e}`, "is-danger");
+				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		async exportCustomFields(exportType, format) {
+		async onExportCustomFields(exportType, format) {
 			if (exportType === EXPORT.CUSTOM_FIELDS) {
 				try {
 					this.exportControl.loading = true;
@@ -154,7 +138,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

@@ -1,61 +1,48 @@
 <template>
-	<Table
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:has-clickable-rows="false"
+	<DataGrid
+		v-model:items-per-page="perPage"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		is-row-click-disabled
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@changePerPage="onChangePerPage"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				:sortable="column.sortable"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				:disabled="!userCan.editScoring"
+				:icon="scoringStatusChangeButtonIcon(row)"
+				:tooltip-text="scoringStatusChangeButtonTooltip(row)"
+				@actionConfirmed="onStatusChange(row.id, !row.enabled)"
+			/>
+
+			<ButtonAction
+				icon="download"
+				tooltip-text="Download"
+				@actionConfirmed="onDownload(row)"
+			/>
+
+			<ButtonAction
+				:disabled="!userCan.deleteScoring || !row.deletable"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Scoring"
+				confirm-message="Are you sure sure you want to delete Scoring?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="180"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					:icon="scoringStatusChangeButtonIcon(props.row)"
-					:tooltip="$t(scoringStatusChangeButtonTooltip(props.row))"
-					:disabled="!userCan.editScoring"
-					@click="statusChange( props.row.id, !props.row.enabled)"
-				/>
-				<ActionButton
-					icon="download"
-					type="is-primary"
-					:tooltip="$t('Download')"
-					@click="download(props.row)"
-				/>
-				<SafeDelete
-					icon="trash"
-					:entity="$t('Scoring')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					:disabled="!userCan.deleteScoring || !props.row.deletable"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import AssistancesService from "@/services/AssistancesService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
@@ -63,18 +50,16 @@ import { Notification } from "@/utils/UI";
 import { SCORING } from "@/consts";
 
 const statusTags = [
-	{ code: SCORING.STATUS.INACTIVE, type: "is-light" },
-	{ code: SCORING.STATUS.ACTIVE, type: "is-success" },
+	{ code: SCORING.STATUS.INACTIVE, type: "grey-lighten-2" },
+	{ code: SCORING.STATUS.ACTIVE, type: "green-lighten-1" },
 ];
 
 export default {
 	name: "ScoringList",
 
 	components: {
-		ColumnField,
-		Table,
-		ActionButton,
-		SafeDelete,
+		ButtonAction,
+		DataGrid,
 	},
 
 	mixins: [grid, permissions],
@@ -85,11 +70,12 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id", label: "Scoring ID" },
-					{ key: "name" },
-					{ key: "status", type: "tag", customTags: statusTags },
-					{ key: "uploaded", type: "datetime" },
-					{ key: "note" },
+					{ key: "id", title: "Scoring ID", sortable: false },
+					{ key: "name", sortable: false },
+					{ key: "status", type: "tag", customTags: statusTags, sortable: false },
+					{ key: "uploaded", type: "datetime", sortable: false },
+					{ key: "note", sortable: false },
+					{ key: "actions", value: "actions", sortable: false },
 				]),
 				total: 0,
 				currentPage: 1,
@@ -117,7 +103,7 @@ export default {
 					}
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Scoring Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
 				});
 			this.isLoadingList = false;
 		},

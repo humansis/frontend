@@ -1,110 +1,94 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Field')"
-				:type="validateType('field')"
-				:message="validateMsg('field')"
-			>
-				<b-input
-					v-model="formModel.field"
-					:disabled="formDisabled"
-					@blur="validate('field')"
-				/>
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.field"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('field')"
+			label="Field"
+			name="field"
+			class="mb-4"
+			@update:modelValue="onValidate('field')"
+		/>
 
-			<b-field
-				:label="$t('Type')"
-				:type="validateType('type')"
-				:message="validateMsg('type')"
-			>
-				<MultiSelect
-					v-model="formModel.type"
-					searchable
-					is-relative
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:disabled="formDisabled"
-					:options="options.types"
-					:class="validateMultiselect('type')"
-					@select="validate('type')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
+		<DataSelect
+			v-model="formModel.type"
+			:items="options.types"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('type')"
+			label="Type"
+			name="type"
+			class="mb-4"
+			@update:modelValue="onValidate('type')"
+		/>
+	</v-card-text>
 
-			<b-field
-				v-if="false"
-				:label="$t('Target')"
-				:type="validateType('target')"
-				:message="validateMsg('target')"
-			>
-				<MultiSelect
-					v-model="formModel.target"
-					searchable
-					is-relative
-					label="value"
-					:select-label="$t('Press enter to select')"
-					:selected-label="$t('Selected')"
-					:deselect-label="$t('Press enter to remove')"
-					track-by="code"
-					:placeholder="$t('Click to select')"
-					:disabled="formDisabled"
-					:options="options.targets"
-					:loading="loadingTargets"
-					:class="validateMultiselect('target')"
-					@select="validate('target')"
-				>
-					<span slot="noOptions">{{ $t("List is empty")}}</span>
-				</MultiSelect>
-			</b-field>
-		</section>
-		<section class="modal-card-foot">
-			<b-button
-				v-if="closeButton"
-				@click="closeForm"
-			>
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				class="is-primary"
-				native-type="submit"
-			>
-				{{ $t(submitButtonLabel) }}
-			</b-button>
-		</section>
-	</form>
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			class="text-none"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="!formDisabled"
+			color="primary"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 
 export default {
 	name: "CustomFieldForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
+	components: {
+		DataInput,
+		DataSelect,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			field: { required },
-			type: { required },
-			target: {},
-		},
+	validations() {
+		return {
+			formModel: {
+				field: { required },
+				type: { required },
+				target: {},
+			},
+		};
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -136,26 +120,26 @@ export default {
 			this.formModel.type = this.options.types.find((item) => item.code === this.formModel.type);
 		},
 
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
 		async fetchTargets() {
 			await AssistancesService.getTargetTypes()
 				.then((response) => { this.options.targets = response.data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Target Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
 				});
 
 			this.formModel.target = this.options.targets

@@ -1,28 +1,25 @@
-import { NotificationProgrammatic, ToastProgrammatic } from "buefy";
+import { toast } from "vuetify-sonner";
 
-export const Toast = (message, type, duration = 5000) => {
-	ToastProgrammatic.open({
-		duration,
-		message,
-		position: "is-top",
-		queue: false,
-		type,
-	});
-};
-
-export const Notification = (message, type, position = "is-bottom-right", indefinite = false) => {
-	NotificationProgrammatic.open({
-		duration: 30000,
-		message,
-		position,
-		hasIcon: true,
-		queue: false,
-		indefinite,
-		type,
+export const Notification = (message, color, { indefinite = false, isCloseable = true } = {}) => {
+	toast(message, {
+		duration: indefinite ? Number.POSITIVE_INFINITY : 30000,
+		cardProps: {
+			color,
+		},
+		cardTextProps: {
+			class: "toast",
+		},
+		...(isCloseable && {
+			action: {
+				buttonProps: {
+					appendIcon: "times",
+					size: "x-small",
+				},
+			},
+		}),
 	});
 };
 
 export default {
-	Toast,
 	Notification,
 };

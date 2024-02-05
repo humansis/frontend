@@ -4,40 +4,86 @@ import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 export default {
 	mixins: [urlFiltersHelper],
 
+	emits: [
+		"showMove",
+		"showDetail",
+		"showDetail",
+		"showEdit",
+		"onDelete",
+		"download",
+		"statusChange",
+	],
+
 	data() {
 		return {
 			show: true,
-			isLoadingList: false,
 		};
 	},
 
 	computed: {
 		...mapState(["perPage"]),
+
+		sortValue() {
+			return [{
+				key: this.table.sortColumn?.key || this.table.sortColumn,
+				order: this.table.sortDirection,
+			}];
+		},
 	},
 
 	methods: {
 		...mapActions(["storePerPage"]),
 
-		onPageChange(currentPage) {
-			this.table.currentPage = currentPage || 1;
+		onPerPageChange({ currentPerPage, currentPage }) {
+			this.storePerPage(currentPerPage);
+
+			if (currentPage) {
+				this.table.currentPage = currentPage;
+			}
+
 			this.fetchData();
 		},
 
-		onSort(column) {
-			const currentColumn = this.table.visibleColumns.find(({ key }) => key === column);
-			const sortKey = currentColumn.sortKey || column;
+		onPageChange(currentPage) {
+			this.table.currentPage = currentPage || 1;
 
-			if (!this.table.sortReset) {
-				if (this.table.sortColumn === sortKey) {
-					this.table.sortDirection = this.table.sortDirection === "asc" ? "desc" : "asc";
-				} else {
-					this.table.sortColumn = sortKey;
-					this.table.sortDirection = "desc";
-				}
+			if (this.selectedRows) {
+				this.selectedRows = 0;
 			}
 
-			this.table.sortReset = false;
 			this.fetchData();
+		},
+
+		onSort(sortData) {
+			let sort = null;
+
+			if (sortData.length) {
+				sort = sortData;
+			} else {
+				sort = [{
+					key: this.table.sortColumn.key || this.table.sortColumn,
+					order: this.table.sortDirection === "asc"
+						? "desc"
+						: "asc",
+				}];
+			}
+
+			const currentColumn = this.table.columns.find(({ key }) => key === sort[0].key);
+			const sortKey = currentColumn.sortKey || sort[0].key;
+
+			this.table.sortColumn = { key: currentColumn.key, sortKey };
+			this.table.sortDirection = sort[0].order;
+
+			this.fetchData();
+		},
+
+		onResetSort({ key, order }) {
+			if (this.table.sortColumn !== "" && this.table.sortDirection !== "") {
+				this.table.sortColumn = key;
+				this.table.sortDirection = order;
+
+				this.fetchData();
+			}
 		},
 
 		onSearch(value) {
@@ -46,17 +92,14 @@ export default {
 			this.fetchData();
 		},
 
-		onChangePerPage() {
-			this.fetchData();
-		},
-
 		removeFromList(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			const index = this.table.data.indexOf(entity);
 			this.table.data.splice(index, 1);
+			this.table.total -= 1;
 		},
 
-		assistanceMove(id) {
+		onAssistanceMove(id) {
 			const entity = this.table.data.find((item) => item.id === id);
 			this.$emit("showMove", entity);
 		},
@@ -66,54 +109,41 @@ export default {
 			this.showDetail(entity);
 		},
 
-		showDetail(entity) {
-			this.$emit("showDetail", entity);
+		onShowDetail(id) {
+			this.$emit("showDetail", id);
 		},
 
-		showEdit(id) {
-			const entity = this.table.data.find((item) => item.id === id);
-			this.$emit("showEdit", entity);
+		onShowEdit(row) {
+			this.$emit("showEdit", row);
 		},
 
-		remove(id) {
-			this.$emit("remove", id);
+		onRemove(id) {
+			this.$emit("delete", id);
 		},
 
-		download(scoring) {
+		onDownload(scoring) {
 			this.$emit("download", scoring);
 		},
 
-		statusChange(id, enabled) {
+		onStatusChange(id, enabled) {
 			this.$emit("statusChange", { id, enabled });
 		},
 
-		resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
-			this.table.sortReset = true;
-			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
-				this.table.sortColumn = sortColumn;
-				this.table.sortDirection = sortDirection;
-
-				if (forceFetch) {
-					this.fetchData();
-				}
-			}
-		},
-
 		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
-			const searchValue = this.$refs[tableRef].searchValue();
+			const searchValue = this.$refs[tableRef].searchValue() || this.$refs[tableRef].searchPhrase;
 
-			if (Object.keys(this.filters).length) {
+			if (filtersRef && this.$refs[filtersRef] && Object.keys(this.filters).length) {
 				this.filters = {};
 				this.$refs[filtersRef].resetFilters();
 			}
 
-			if (bulkSearchRef) {
+			if (bulkSearchRef && this.$refs[bulkSearchRef]) {
 				this.bulkSearch = {};
 				this.$refs[bulkSearchRef].resetFilters();
 			}
 
-			if (searchValue) {
-				this.$refs[tableRef].onResetSearch();
+			if (searchValue.length) {
+				this.$refs[tableRef].resetSearch();
 			} else {
 				this.fetchData();
 			}

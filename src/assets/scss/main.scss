@@ -1,32 +1,14 @@
-/* Theme style (colors) */
-@import "theme-default";
+@import "initial-variable";
 
-/* Core Libs & Lib configs */
-@import "libs/all";
-
-/* Mixins */
-@import "mixins";
-
-/* Theme components */
-@import "title-bar";
-@import "nav-bar";
+@import "common";
+@import "button";
+@import "tooltip";
 @import "aside";
-@import "tiles";
 @import "table";
-@import "card";
-@import "form";
-@import "modal";
-@import "full-page";
-@import "footer";
-@import "misc";
-
-/* Custom styles */
 @import "layout";
 @import "components";
-@import "helpers";
+//@import "rtl-support";
 
-@import "rtl-support";
-@import "override";
-
-/* Animate.css custom build (just selected animations to minimize bundle size) */
-//@import "../css/animate.min.css";
+.v-icon {
+	--v-icon-size-multiplier: .75;
+}

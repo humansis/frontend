@@ -1,0 +1,56 @@
+$border-style: solid .5rem transparent;
+$border-with-color: solid .5rem rgb(7, 79, 96);
+
+.tooltip-top,
+.tooltip-bottom,
+.tooltip-right,
+.tooltip-left {
+  background-color: rgb(7, 79, 96) !important;
+}
+
+.tooltip-top::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border-top: $border-with-color;
+  border-right: $border-style;
+  border-left: $border-style;
+  transform: translateX(-50%);
+}
+
+.tooltip-bottom::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-bottom: $border-with-color;
+  border-right: $border-style;
+  border-left: $border-style;
+  transform: translateX(-50%);
+}
+
+.tooltip-right::before {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -.5rem;
+  border-right: $border-with-color;
+  border-top: $border-style;
+  border-bottom: $border-style;
+  border-left: $border-style;
+}
+
+.tooltip-left::before {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -.5rem;
+  border-left: $border-with-color;
+  border-top: $border-style;
+  border-bottom: $border-style;
+  border-right: $border-style;
+}
+

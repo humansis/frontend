@@ -34,7 +34,35 @@ export default {
 		secondUnit: null,
 		secondQuantity: null,
 		description: null,
-		divisionNwsFields: [
+		// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
+		payloadDivisionNwsFields: [
+			{
+				rangeFrom: 1,
+				rangeTo: 1,
+				value: null,
+			},
+			{
+				rangeFrom: 2,
+				rangeTo: 2,
+				value: null,
+			},
+			{
+				rangeFrom: 3,
+				rangeTo: 3,
+				value: null,
+			},
+			{
+				rangeFrom: 4,
+				rangeTo: 4,
+				value: null,
+			},
+			{
+				rangeFrom: 5,
+				rangeTo: null,
+				value: null,
+			},
+		],
+		payloadDivisionNesFields: [
 			{
 				rangeFrom: 1,
 				rangeTo: 3,
@@ -42,37 +70,33 @@ export default {
 			},
 			{
 				rangeFrom: 4,
-				rangeTo: 5,
+				rangeTo: 6,
 				value: null,
 			},
 			{
-				rangeFrom: 6,
-				rangeTo: 8,
+				rangeFrom: 7,
+				rangeTo: 9,
 				value: null,
 			},
 			{
-				rangeFrom: 9,
+				rangeFrom: 10,
 				rangeTo: null,
 				value: null,
 			},
 		],
-		divisionNesFields: [
-			{
-				rangeFrom: 1,
-				rangeTo: 3,
-				value: null,
-			},
-			{
-				rangeFrom: 4,
-				rangeTo: 8,
-				value: null,
-			},
-			{
-				rangeFrom: 9,
-				rangeTo: null,
-				value: null,
-			},
-		],
+		divisionNwsFields: {
+			firstNwsFields: null,
+			secondNwsFields: null,
+			thirdNwsFields: null,
+			fourthNwsFields: null,
+			fifthNwsFields: null,
+		},
+		divisionNesFields: {
+			firstNesFields: null,
+			secondNesFields: null,
+			thirdNesFields: null,
+			fourthNesFields: null,
+		},
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: ["Food"],
 		cashbackLimit: null,
@@ -86,6 +110,8 @@ export default {
 		secondUnit: false,
 		secondQuantity: false,
 		description: false,
+		customField: false,
+		amountMultiplier: false,
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: false,
 		householdMembersNwsFields: false,
@@ -120,13 +146,15 @@ export default {
 		CASHBACK: "Cashback",
 		DISTRIBUTION: {
 			PER_HOUSEHOLD: "Per Household",
+			PER_INDIVIDUAL: "Per Individual",
 			PER_MEMBER_CODE: "Per Household Member",
 			PER_MEMBER_LABEL: "Per Member (uniformly)",
 			PER_MEMBERS_CODE: "Per Household Members",
 			PER_MEMBERS_NWS_CODE: "Per Members NWS",
 			PER_MEMBERS_NES_CODE: "Per Members NES",
-			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1-3, 4-5, 6-8, 9+)",
-			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-8, 9+)",
+			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1, 2, 3, 4, 5+)",
+			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
+			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
 		},
 	},
 	FIELD_TYPE: {
@@ -161,4 +189,11 @@ export default {
 		{ code: "familyName", value: "Local family name" },
 		{ code: "nationalId", value: "ID Number" },
 	],
+	RELIEF_PACKAGES: {
+		STATE: {
+			DISTRIBUTED: "Distributed",
+			TO_DISTRIBUTED: "To distributed",
+			CANCELED: "Canceled",
+		},
+	},
 };

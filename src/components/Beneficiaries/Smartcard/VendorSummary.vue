@@ -1,89 +1,129 @@
 <template>
-	<div class="modal-card">
-		<header class="modal-card-head">
-			<h2 class="modal-card-title title is-5 mb-0">{{ header }}</h2>
-			<button
-				type="button"
-				class="delete"
-				@click="$emit('close')"
-			/>
-		</header>
-		<section class="modal-card-body">
-			<div v-if="!history">
+	<v-card-title class="text-h6 font-weight-bold">
+		{{ $t(header) }}
+
+		<v-divider />
+	</v-card-title>
+
+	<v-card-text>
+		<template v-if="!history">
+			<div class="d-flex justify-space-between">
 				<span>
-					<span class="has-text-weight-bold">{{ $t("Total No. Transactions") }}: </span>
+					<span class="text-subtitle-2 font-weight-bold">{{ $t("Total No. Transactions") }}: </span>
 					{{ totalNumberOfTransactions }}
 				</span>
-				<span>
-					<b-button class="is-right is-pulled-right" @click="showHistory">
-						{{ $t('See History')}}
-					</b-button>
-				</span>
-				<div v-for="batch in batches" :key="batch.id">
-					<hr class="spacer">
-					<div class="columns">
-						<div class="column is-four-fifths">
-							<p>
-								<strong>{{ $t("Unpaid Transactions") }}: </strong>
-								{{ batch.purchaseIds.length }}
-							</p>
-							<p><strong>{{ $t("Project") }}: </strong> {{ getProjectName(batch.projectId) }}</p>
-							<p>
-								<strong>{{ $t("Unpaid Transaction Value") }}: </strong>
-								{{ formatPrice(batch.value, batch.currency) }}
-							</p>
-						</div>
-						<div class="column has-text-right">
-							<b-button
-								class="mt-3"
-								type="is-primary"
-								:loading="redeemLoading === batch"
-								:label="$t('Redeem')"
-								:disabled="!batch.canRedeem"
-								@click.native="redeem(batch)"
-							/>
-						</div>
-					</div>
-				</div>
+
+				<v-btn
+					:disabled="isProjectsLoading"
+					variant="outlined"
+					class="text-none text-right"
+					@click="onShowHistory"
+				>
+					{{ $t('See History') }}
+				</v-btn>
 			</div>
-			<RedeemedBatches
-				v-else-if="!redemptionSummary"
-				:projects="projects"
-				:vendor-id="vendor.id"
-				@showRedemptionSummary="showRedemptionSummary"
-			/>
-			<RedemptionSummary
+
+			<template v-if="!isBatchesLoading">
+				<v-row v-for="batch in batches" :key="batch.id" class="mt-2">
+					<v-divider :thickness="2" color="bg-black" class="border-opacity-100" />
+
+					<v-col>
+						<p>
+							<strong>{{ $t("Unpaid Transactions") }}: </strong>
+							{{ batch.purchaseIds.length }}
+						</p>
+
+						<p>
+							<strong>{{ $t("Project") }}: </strong> {{ getProjectName(batch.projectId) }}
+						</p>
+
+						<p>
+							<strong>{{ $t("Unpaid Transaction Value") }}: </strong>
+							{{ formatPrice(batch.value, batch.currency) }}
+						</p>
+					</v-col>
+
+					<v-col class="d-flex justify-end align-center">
+						<v-btn
+							:disabled="!batch.canRedeem"
+							:loading="redeemLoading === batch"
+							color="primary"
+							class="text-none text-right"
+							@click="onRedeem(batch)"
+						>
+							{{ $t('Redeem') }}
+						</v-btn>
+					</v-col>
+				</v-row>
+			</template>
+
+			<v-progress-circular
 				v-else
-				:redemption-batch-id="redemptionBatch.id"
+				:size="50"
+				color="primary"
+				class="d-flex mx-auto"
+				indeterminate
 			/>
-		</section>
-		<footer class="modal-card-foot level">
-			<span class="level-item is-justify-content-start">
-				<b-button v-if="history" @click.native="goBack">
-					{{ $t('Back')}}
-				</b-button>
-			</span>
-			<span class="level-right">
-				<b-button @click.native="$emit('close')">
-					{{ $t('Close') }}
-				</b-button>
-				<b-button
-					v-if="redemptionSummary"
-					type="is-primary"
-					:loading="legacyPrintLoading"
-					:label="$t('Legacy Print')"
-					@click.native="legacyPrint"
-				/>
-				<b-button
-					v-if="redemptionSummary && printButtonVisible"
-					type="is-primary"
-					:loading="printLoading"
-					:label="$t('Print')"
-					@click.native="print"
-				/>
-			</span>
-		</footer>
-	</div>
+
+		</template>
+
+		<RedeemedBatches
+			v-else-if="!redemptionSummary"
+			:projects="projects"
+			:vendor-id="vendor.id"
+			@showRedemptionSummary="onShowRedemptionSummary"
+		/>
+
+		<RedemptionSummary
+			v-else
+			:redemption-batch-id="redemptionBatch.id"
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			v-if="history"
+			class="text-none"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onGoBack"
+		>
+			{{ $t('Back') }}
+		</v-btn>
+
+		<v-btn
+			class="text-none ml-2"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="$emit('close')"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			v-if="redemptionSummary"
+			:loading="legacyPrintLoading"
+			class="text-none ml-2"
+			color="primary"
+			variant="elevated"
+			@click="onLegacyPrint"
+		>
+			{{ $t('Legacy Print') }}
+		</v-btn>
+
+		<v-btn
+			v-if="redemptionSummary && printButtonVisible"
+			:loading="printLoading"
+			class="text-none ml-2"
+			color="primary"
+			variant="elevated"
+			@click="onPrint"
+		>
+			{{ $t('Print') }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
@@ -98,17 +138,23 @@ import { Notification } from "@/utils/UI";
 export default {
 	name: "VendorSummary",
 
-	components: { RedemptionSummary, RedeemedBatches },
+	components: {
+		RedeemedBatches,
+		RedemptionSummary,
+	},
 
 	mixins: [grid],
 
 	props: {
-		vendor: Object,
+		vendor: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
-			header: this.$t("Vendor Transaction Summary"),
+			header: "Vendor Transaction Summary",
 			legacyPrintLoading: false,
 			printLoading: false,
 			redeemLoading: false,
@@ -117,6 +163,8 @@ export default {
 			redemptionSummary: false,
 			redeemButtonPressed: false,
 			printButtonVisible: true,
+			isProjectsLoading: false,
+			isBatchesLoading: false,
 			batches: [],
 			projects: [],
 			totalNumberOfTransactions: "",
@@ -130,7 +178,7 @@ export default {
 	},
 
 	methods: {
-		showRedemptionSummary(batch) {
+		onShowRedemptionSummary(batch) {
 			this.printButtonVisible = true;
 			this.redemptionBatch = batch;
 
@@ -139,35 +187,35 @@ export default {
 			}
 
 			this.redemptionSummary = true;
-			this.header = this.$t("Vendor Redemption Summary");
+			this.header = "Vendor Redemption Summary";
 		},
 
 		getProjectName(id) {
 			return this.projects.find((project) => project.id === id)?.name;
 		},
 
-		goBack() {
+		onGoBack() {
 			this.fetchSmartcardRedemptions();
 
 			if (!this.redeemButtonPressed) {
 				if (this.redemptionSummary) {
 					this.redemptionSummary = false;
-					this.header = this.$t("Redeemed Batches");
+					this.header = "Redeemed Batches";
 				} else if (this.history) {
 					this.history = false;
-					this.header = this.$t("Vendor Transaction Summary");
+					this.header = "Vendor Transaction Summary";
 				}
 			} else if (this.redeemButtonPressed && this.redemptionSummary && this.history) {
 				this.redemptionSummary = false;
 				this.history = false;
 				this.redeemButtonPressed = false;
-				this.header = this.$t("Vendor Transaction Summary");
+				this.header = "Vendor Transaction Summary";
 			}
 		},
 
-		showHistory() {
+		onShowHistory() {
 			this.history = true;
-			this.header = this.$t("Redeemed Batches");
+			this.header = "Redeemed Batches";
 		},
 
 		formatPrice(price, currency) {
@@ -180,34 +228,45 @@ export default {
 		},
 
 		async fetchSmartcardRedemptions() {
-			await SmartcardService.getSmartCardRedemption(this.vendor.id)
-				.then(({ data }) => {
-					this.batches = data;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Smartcard Redemption")} ${e}`, "is-danger");
-				});
-			this.$emit("loaded");
+			try {
+				this.isBatchesLoading = true;
+
+				const { data } = await SmartcardService.getSmartCardRedemption(this.vendor.id);
+
+				this.batches = data;
+			} catch (e) {
+				Notification(`${this.$t("Smartcard Redemption")} ${e.message || e}`, "error");
+			} finally {
+				this.$emit("loaded");
+				this.isBatchesLoading = false;
+			}
 		},
 
 		async fetchVendorSummary() {
-			await VendorService.getSummaryOfVendor(this.vendor.id)
-				.then((data) => {
-					this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				const data = await VendorService.getSummaryOfVendor(this.vendor.id);
+
+				this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
+			} catch (e) {
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.projects = data;
-				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
-				});
+			try {
+				this.isProjectsLoading = true;
+
+				const { data: { data } } = await ProjectService.getShortListOfProjects();
+
+				this.projects = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
+			} finally {
+				this.isProjectsLoading = false;
+			}
 		},
 
-		async redeem(batch) {
+		async onRedeem(batch) {
 			this.redeemLoading = batch;
 			await SmartcardService.redeemBatch(this.vendor.id, batch.purchaseIds)
 				.then(({ data }) => {
@@ -217,12 +276,12 @@ export default {
 					this.redemptionBatch = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Redeem Batch")} ${e}`, "is-danger");
+					Notification(`${this.$t("Redeem Batch")} ${e.message || e}`, "error");
 				});
 			this.redeemLoading = null;
 		},
 
-		async print() {
+		async onPrint() {
 			this.printLoading = true;
 			await SmartcardService.printSmartcardBatches(this.redemptionBatch.id)
 				.then(({ data, status, message }) => {
@@ -233,16 +292,16 @@ export default {
 						link.download = `Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
 						link.click();
 					} else {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Print")} ${e}`, "is-danger");
+					Notification(`${this.$t("Print")} ${e.message || e}`, "error");
 				});
 			this.printLoading = false;
 		},
 
-		async legacyPrint() {
+		async onLegacyPrint() {
 			this.legacyPrintLoading = true;
 			await SmartcardService.legacyPrintSmartcardBatches(this.redemptionBatch.id)
 				.then(({ data, status, message }) => {
@@ -253,24 +312,14 @@ export default {
 						link.download = `Legacy_Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}.xlsx`;
 						link.click();
 					} else {
-						Notification(message, "is-warning");
+						Notification(message, "warning");
 					}
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Legacy Print")} ${e}`, "is-danger");
+					Notification(`${this.$t("Legacy Print")} ${e.message || e}`, "error");
 				});
 			this.legacyPrintLoading = false;
 		},
 	},
 };
 </script>
-
-<style scoped>
-.modal-card-foot {
-	justify-content: unset !important;
-}
-.spacer:nth-of-type(1) {
-	height: 2px;
-	background-color: black;
-}
-</style>

@@ -1,133 +1,122 @@
 <template>
-	<div>
-		<div>
-			<h1 class="title has-text-centered">{{ $t('Transactions') }}</h1>
-			<b-tabs v-model="selectedTab" @input="redirectToTab">
-				<b-tab-item
-					icon="hand-holding-water"
-					:label="$t('Assistances')"
-				/>
-				<b-tab-item
-					icon="shopping-cart"
-					:label="$t('Smartcard Purchased Items')"
-				/>
-			</b-tabs>
-		</div>
-		<Table
-			v-show="show"
-			ref="table"
-			has-reset-sort
-			has-search
-			default-sort-key="dateDistribution"
-			default-sort-direction="desc"
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:search-phrase="table.searchPhrase"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@resetSort="resetSort"
-			@onSearch="onSearch"
+	<v-container fluid>
+		<h2 class="text-center mt-4">{{ $t('Transactions') }}</h2>
+
+		<v-tabs
+			v-model="selectedTab"
+			color="primary"
+			align-tabs="start"
+			class="my-5"
+			@update:modelValue="onRedirectToTab"
 		>
-			<template v-for="column in table.columns">
-				<b-table-column
-					:key="column.id"
-					v-slot="props"
-					v-bind="column"
-					:sortable="column.sortable"
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
-			<template #filterButton>
-				<b-button
-					slot="trigger"
-					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					@click="filtersToggle"
-				>
-					{{ $t('Advanced Search') }}
-				</b-button>
-			</template>
-			<template #filter>
-				<b-collapse
-					:open="advancedSearchVisible"
-					animation="slide"
-				>
-					<DistributionsFilter
-						ref="distributionFilter"
-						:defaultFilters="{ ...filters, ...locationsFilter }"
-						@filtersChanged="onFiltersChange"
-						@onSearch="onSearch(table.searchPhrase)"
-					/>
-				</b-collapse>
-			</template>
-			<template #export>
+			<v-tab value="assistances" class="text-none">
+				<v-icon icon="hand-holding-water" class="mr-2" />
+
+				{{ $t('Assistances') }}
+			</v-tab>
+
+			<v-tab value="smartCardPurchasedItems" class="text-none">
+				<v-icon icon="shopping-cart" class="mr-2" />
+
+				{{ $t('Smartcard Purchased Items') }}
+			</v-tab>
+		</v-tabs>
+
+		<DataGrid
+			v-show="show"
+			ref="distributionsList"
+			v-model:items-per-page="perPage"
+			v-model:sort-by="sortValue"
+			:headers="table.columns"
+			:items="table.data"
+			:total-count="table.total"
+			:loading="isLoadingList"
+			:search-phrase="table.searchPhrase"
+			:current-page="table.currentPage"
+			reset-sort-button
+			reset-filters-button
+			is-search-visible
+			is-row-click-disabled
+			@perPageChanged="onPerPageChange"
+			@pageChanged="onPageChange"
+			@update:sortBy="onSort"
+			@search="onSearch"
+			@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS)"
+			@resetFilters="onResetFilters"
+		>
+			<template v-slot:tableControls>
 				<ExportControl
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
-					@onExport="exportDistributions"
+					@export="onExportDistributions"
 				/>
+
+				<v-btn
+					:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="ml-4 text-none"
+					@click="onAdvancedSearchToggle"
+				>
+					{{ $t('Advanced Search') }}
+				</v-btn>
 			</template>
-			<template slot="progress">
-				<b-progress :value="table.progress" format="percent" />
+
+			<template v-slot:advancedControls>
+				<v-expansion-panels v-model="visiblePanels">
+					<v-expansion-panel value="advancedSearch" eager>
+						<v-expansion-panel-text>
+							<DistributionsFilter
+								ref="distributionFilter"
+								:defaultFilters="{ ...filters, ...locationsFilter }"
+								@filtersChanged="onFiltersChange"
+								@search="onSearch(table.searchPhrase)"
+							/>
+						</v-expansion-panel-text>
+					</v-expansion-panel>
+				</v-expansion-panels>
 			</template>
-			<template slot="resetSort">
-				<div class="level-right">
-					<b-button
-						icon-left="eraser"
-						class="reset-sort-button is-small mr-2"
-						@click="resetFilters"
-					>
-						{{ $t('Reset Filters') }}
-					</b-button>
-					<b-button
-						icon-left="eraser"
-						class="reset-sort-button is-small"
-						@click="resetTableSort"
-					>
-						{{ $t('Reset Table Sort') }}
-					</b-button>
-				</div>
-			</template>
-		</Table>
-	</div>
+		</DataGrid>
+	</v-container>
 </template>
 
 <script>
 import TransactionService from "@/services/TransactionService";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
+import DistributionsFilter from "@/components/Transactions/DistributionsFilter";
 import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
-
-const DistributionsFilter = () => import("@/components/Transactions/DistributionsFilter");
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "Distributions",
 
 	components: {
 		ExportControl,
-		Table,
+		DataGrid,
 		DistributionsFilter,
-		ColumnField,
 	},
 
-	mixins: [grid, urlFiltersHelper, transactionHelper],
+	mixins: [
+		grid,
+		urlFiltersHelper,
+		transactionHelper,
+	],
 
 	data() {
 		return {
-			selectedTab: 0,
-			advancedSearchVisible: false,
+			TABLE,
+			selectedTab: "assistances",
+			visiblePanels: [],
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "transactionsAssistances",
@@ -136,25 +125,24 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "beneficiaryId", label: "Beneficiary", sortable: true, type: "link" },
-					{ key: "localGivenName" },
-					{ key: "localFamilyName" },
-					{ key: "project", type: "link" },
-					{ key: "assistance", type: "link" },
-					{ key: "fullLocationNames", label: "Location" },
-					{ key: "dateDistribution", label: "Assistance Date", type: "datetime", sortable: true },
-					{ key: "commodity" },
-					{ key: "carrierNumber", label: "Card No." },
-					{ key: "amount", label: "Distributed" },
-					{ key: "spent" },
-					{ key: "unit" },
-				],
+				columns: generateColumns([
+					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false },
+					{ key: "localGivenName", sortable: false },
+					{ key: "localFamilyName", sortable: false },
+					{ key: "project", type: "link", sortable: false },
+					{ key: "assistance", type: "link", sortable: false },
+					{ key: "fullLocationNames", title: "Location", sortable: false },
+					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
+					{ key: "commodity", sortable: false },
+					{ key: "carrierNumber", title: "Card No.", sortable: false },
+					{ key: "amount", title: "Distributed", sortable: false },
+					{ key: "spent", sortable: false },
+					{ key: "unit", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "desc",
-				sortColumn: "dateDistribution",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS.key,
 				searchPhrase: "",
 				progress: null,
 				dataUpdated: false,
@@ -162,6 +150,12 @@ export default {
 			filters: {},
 			locationsFilter: {},
 		};
+	},
+
+	computed: {
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
+		},
 	},
 
 	created() {
@@ -175,12 +169,13 @@ export default {
 			this.table.progress = null;
 
 			this.renameAdms();
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			this.setGridFiltersToUrl("distributions");
 			await TransactionService.getListOfDistributedItems(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ data, totalCount }) => {
@@ -192,17 +187,15 @@ export default {
 					await this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Distributed Items")} ${e}`, "is-danger");
+				Notification(`${this.$t("Distributed Items")} ${e.message || e}`, "error");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		redirectToTab(tab) {
-			if (tab) {
+		onRedirectToTab(tab) {
+			if (tab === "smartCardPurchasedItems") {
 				this.$router.push({ name: "TransactionsPurchases" });
-			} else {
-				this.$router.push({ name: "TransactionsAssistances" });
 			}
 		},
 
@@ -237,19 +230,19 @@ export default {
 			this.table.progress = 100;
 		},
 
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		resetFilters() {
-			this.resetSearch({ tableRef: "table", filtersRef: "distributionFilter" });
+		onResetFilters() {
+			this.resetSearch({ tableRef: "distributionsList", filtersRef: "distributionFilter" });
 		},
 
 		resetTableSort() {
 			this.$refs.table.onResetSort();
 		},
 
-		async exportDistributions(exportType, format) {
+		async onExportDistributions(exportType, format) {
 			if (exportType === EXPORT.TRANSACTIONS) {
 				try {
 					this.exportControl.loading = true;
@@ -266,7 +259,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Distributions")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Distributions")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

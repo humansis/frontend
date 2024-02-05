@@ -10,6 +10,12 @@ export const isIdsListLengthValid = (idsList) => (
 	splitBySpace(idsList).length <= ASSISTANCE.INPUT_DISTRIBUTED.IDS_LIST_MAX_LENGTH
 );
 
+export const isDecimalPartLengthValid = (value) => {
+	const floatValidation = /^-?\d+(\.\d{0,2})?$/;
+
+	return typeof value === "number" && floatValidation.test(value.toString());
+};
+
 export const getUniqueIds = (data, param) => {
 	const uniqueIds = [];
 
@@ -27,4 +33,5 @@ export const getUniqueIds = (data, param) => {
 export default {
 	isIdsListLengthValid,
 	getUniqueIds,
+	isDecimalPartLengthValid,
 };

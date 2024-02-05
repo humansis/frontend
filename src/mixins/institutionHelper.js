@@ -3,7 +3,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
 import ProjectService from "@/services/ProjectService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
 export default {
@@ -47,7 +47,7 @@ export default {
 				idNumber1,
 				idNumber2,
 				idNumber3,
-				projects,
+				projectIds,
 				address,
 				adm1,
 				adm2,
@@ -114,6 +114,12 @@ export default {
 				? new Date(supportDateReceived)
 				: null;
 
+			const projects = getArrayOfCodeListByKey(
+				projectIds,
+				this.options.projects,
+				"id",
+			);
+
 			return {
 				...this.formModel || this.institutionModel,
 				id,
@@ -160,13 +166,13 @@ export default {
 				);
 
 				if (status === 200) {
-					Toast(this.$t("Institution Successfully Created"), "is-success");
+					Notification(this.$t("Institution Successfully Created"), "success");
 					await this.$router.push({ name: "Institutions" });
 				} else {
-					Notification(message, "is-danger");
+					Notification(message, "error");
 				}
 			} catch (e) {
-				Notification(`${this.$t("Create Institution")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Create Institution")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -178,13 +184,13 @@ export default {
 				);
 
 				if (status === 200) {
-					Toast(this.$t("Institution Successfully Updated"), "is-success");
+					Notification(this.$t("Institution Successfully Updated"), "success");
 					await this.$router.push({ name: "Institutions" });
 				} else {
-					Notification(message, "is-danger");
+					Notification(message, "error");
 				}
 			} catch (e) {
-				Notification(`${this.$t("Update Institution")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Update Institution")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -196,7 +202,7 @@ export default {
 
 				this.formModel = this.mapToModel(institution);
 			} catch (e) {
-				Notification(`${this.$t("Institution")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Institution")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -207,7 +213,7 @@ export default {
 
 				this.options.phoneTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Phone Types")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Phone Types")} ${e.message || e}`, "error");
 			} finally {
 				this.phoneTypesLoading = false;
 			}
@@ -220,7 +226,7 @@ export default {
 
 				this.options.externalReceivedTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
 			} finally {
 				this.externalSupportReceivedLoading = false;
 			}
@@ -233,7 +239,7 @@ export default {
 
 				this.options.nationalCardTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("National IDs")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
 			} finally {
 				this.nationalCardTypesLoading = false;
 			}
@@ -246,7 +252,7 @@ export default {
 
 				this.options.projects = data;
 			} catch (e) {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 			} finally {
 				this.projectsLoading = false;
 			}
@@ -259,7 +265,7 @@ export default {
 
 				this.options.institutionTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Institution Types")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Institution Types")} ${e.message || e}`, "error");
 			} finally {
 				this.institutionTypesLoading = false;
 			}
@@ -273,7 +279,7 @@ export default {
 					this.storeInstitutionIdNames(data);
 				}
 			} catch (e) {
-				Notification(`${this.$t("Institution Id Names")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Institution Id Names")} ${e.message || e}`, "error");
 			}
 		},
 	},

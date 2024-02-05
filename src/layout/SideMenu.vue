@@ -1,243 +1,150 @@
 <template>
-	<aside
-		v-show="isAsideVisible"
-		class="aside is-placed-left"
-		:class="[asideBackgroundClass, {'is-expanded': isAsideExpanded}]"
-	>
-		<div ref="container" class="aside-container">
-			<div class="image">
-				<router-link :to="{ name: 'Home' }">
-					<img src="@/assets/images/bms_logo.png" alt="" class="bms-logo">
-				</router-link>
-			</div>
-			<div class="git-info">
+	<aside>
+		<v-navigation-drawer
+			width="250"
+			rail-width="50"
+			permanent
+			:rail="!isAsideExpanded"
+			:class="`nav-bar bg-indigo-lighten-3 ${asideBackgroundClass}`"
+		>
+			<v-list>
+				<v-list-item prepend-avatar="" class="side-menu-logo">
+					<router-link :to="{ name: 'Home' }" class="hms-logo">
+						<img src="@/assets/images/bms_logo.png" alt="">
+					</router-link>
+				</v-list-item>
+			</v-list>
+
+			<v-divider />
+
+			<v-list density="compact" class="side-links" nav>
+				<template
+					v-for="(sideBarItem, index) in sideBarItems"
+					:key="index"
+				>
+					<v-list-item
+						v-if="sideBarItem?.href"
+						:title="$t(sideBarItem.title)"
+						:href="sideBarItem.href"
+						:active="isRouteActive(sideBarItem)"
+						target="_blank"
+						rel="noopener noreferrer"
+						exact
+					>
+						<template v-slot:prepend>
+							<v-tooltip
+								:disabled="isAsideExpanded"
+								content-class="tooltip-right side-menu-tooltip"
+							>
+								<template v-slot:default>
+									<div class="d-flex align-center gc-2">
+										<span>{{ $t(sideBarItem.title) }}</span>
+
+										<v-icon :icon="sideBarItem?.tooltipIcon" size="small" />
+									</div>
+								</template>
+
+								<template v-slot:activator="{ props }">
+									<v-icon
+										v-bind="props"
+										:icon="sideBarItem.prependIcon"
+										size="small"
+									/>
+								</template>
+							</v-tooltip>
+						</template>
+					</v-list-item>
+
+					<v-list-item
+						v-if="isItemWithoutSubItems(sideBarItem)"
+						:title="$t(sideBarItem.title)"
+						:to="sideBarItem.to"
+						:active="isRouteActive(sideBarItem)"
+						exact
+					>
+						<template v-slot:prepend>
+							<v-tooltip
+								:text="$t(sideBarItem.title)"
+								:disabled="isAsideExpanded"
+								content-class="tooltip-right side-menu-tooltip"
+							>
+								<template v-slot:activator="{ props }">
+									<v-icon
+										v-bind="props"
+										:icon="sideBarItem.prependIcon"
+										size="small"
+									/>
+								</template>
+							</v-tooltip>
+						</template>
+					</v-list-item>
+
+					<v-list-group
+						v-else-if="isItemWithSubItems(sideBarItem)"
+						:value="sideBarItem.title"
+						fluid
+					>
+						<template v-slot:activator="{ props }">
+							<v-list-item
+								v-bind="props"
+								:title="$t(sideBarItem.title)"
+								:to="sideBarItem.to"
+							>
+								<template v-slot:prepend>
+									<v-tooltip
+										:text="$t(sideBarItem.title)"
+										:disabled="isAsideExpanded"
+										content-class="tooltip-right side-menu-tooltip"
+									>
+										<template v-slot:activator="{ props }">
+											<v-icon
+												v-bind="props"
+												:icon="sideBarItem.prependIcon"
+												size="small"
+											/>
+										</template>
+									</v-tooltip>
+								</template>
+							</v-list-item>
+						</template>
+
+						<template v-for="(subItem, index) in sideBarItem.subItems" :key="index">
+							<v-list-item
+								v-if="sideMenuItemsVisibility(subItem)"
+								:title="$t(subItem.title)"
+								:to="subItem.to"
+							>
+								<template v-slot:prepend>
+									<v-tooltip
+										:text="$t(subItem.title)"
+										:disabled="isAsideExpanded"
+										content-class="tooltip-right side-menu-tooltip"
+									>
+										<template v-slot:activator="{ props }">
+											<v-icon
+												v-bind="props"
+												:icon="subItem.prependIcon"
+												size="small"
+											/>
+										</template>
+									</v-tooltip>
+								</template>
+							</v-list-item>
+						</template>
+					</v-list-group>
+				</template>
+			</v-list>
+
+			<div class="environment-info text-caption text-center">
 				<p>{{ organization }}</p>
+
 				<p><strong>{{ environment }}</strong></p>
+
 				<p v-if="gitInfo.appVersion !== '__APP_VERSION__'">
 					{{ appVersion }}
 				</p>
 			</div>
-			<div class="menu">
-				<b-menu :activable="false">
-					<b-menu-list>
-						<b-menu-item
-							icon="home"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Home' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Home')" position="is-right" always>
-									{{ $t('Home') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							:active="isProjectsActive()"
-							icon="clipboard-list"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Projects' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Projects')" position="is-right" always>
-									{{ $t('Projects') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							icon="user-friends"
-							class="to-dropdown-item"
-							:active="beneficiariesActive"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-							@click="beneficiariesActive = !beneficiariesActive"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Beneficiaries')" position="is-right" always>
-									{{ $t('Beneficiaries') }}
-								</b-tooltip>
-							</template>
-							<b-menu-item
-								icon="home"
-								class="nested-item"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Households' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Households')" position="is-right" always>
-										{{ $t('Households') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-							<b-menu-item
-								icon="building"
-								class="nested-item"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Institutions' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Institutions')" position="is-right" always>
-										{{ $t('Institutions') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-							<b-menu-item
-								icon="users"
-								class="nested-item"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Communities' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Communities')" position="is-right" always>
-										{{ $t('Communities') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-							<b-menu-item
-								v-if="userCan.viewVendors"
-								class="nested-item"
-								icon="store"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Vendors' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Vendors')" position="is-right" always>
-										{{ $t('Vendors') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-						</b-menu-item>
-						<b-menu-item
-							icon="file-import"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Imports' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Imports')" position="is-right" always>
-									{{ $t('Imports') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							icon="chart-line"
-							tag="a"
-							href="https://app.powerbi.com/reportEmbed?reportId=d5a81245-560f-4114-bd05-525ddf55ceea&appId=92536ae3-49e4-4156-92a1-ba70dee78455&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9"
-							target="_blank"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip position="is-right" always>
-									{{ $t('Reports') }}
-									<b-icon icon="external-link-alt" size="is-small" />
-
-									<template #content>
-										{{ $t('Reports') }}
-										<b-icon icon="external-link-alt" size="is-small" />
-									</template>
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							v-if="userCan.viewVouchers"
-							icon="ticket-alt"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Vouchers' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Vouchers')" position="is-right" always>
-									{{ $t('Vouchers') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							v-if="isCountrySettingsVisible"
-							icon="globe-africa"
-							class="to-dropdown-item"
-							:active="countrySettingsActive"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-							@click="countrySettingsActive = !countrySettingsActive"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Country Settings')" position="is-right" always>
-									{{ $t('Country Settings') }}
-								</b-tooltip>
-							</template>
-							<b-menu-item
-								v-if="userCan.viewProducts"
-								class="nested-item"
-								icon="shopping-cart"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'Products' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Products')" position="is-right" always>
-										{{ $t('Products') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-							<b-menu-item
-								v-if="userCan.countrySettings || userCan.viewScoring"
-								class="nested-item"
-								icon="map-marker-alt"
-								exact-active-class="is-active"
-								tag="router-link"
-								:to="{ name: 'CountrySpecific' }"
-								:class="{ 'small-menu-item': isSmallerMenuItem }"
-							>
-								<template #label>
-									<b-tooltip :label="$t('Country specifics')" position="is-right" always>
-										{{ $t('Country specifics') }}
-									</b-tooltip>
-								</template>
-							</b-menu-item>
-						</b-menu-item>
-						<b-menu-item
-							v-if="userCan.adminSettings"
-							icon="wrench"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'Administrative Settings' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Administrative Settings')" position="is-right" always>
-									{{ $t('Administrative Settings') }}
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-						<b-menu-item
-							icon="exchange-alt"
-							exact-active-class="is-active"
-							tag="router-link"
-							:to="{ name: 'TransactionsAssistances' }"
-							:class="{ 'small-menu-item': isSmallerMenuItem }"
-						>
-							<template #label>
-								<b-tooltip :label="$t('Transactions')" position="is-right" always>
-									Transactions
-								</b-tooltip>
-							</template>
-						</b-menu-item>
-					</b-menu-list>
-				</b-menu>
-			</div>
-		</div>
+		</v-navigation-drawer>
 	</aside>
 </template>
 
@@ -253,6 +160,90 @@ export default {
 
 	data() {
 		return {
+			sideBarItems: [
+				{
+					title: "Home",
+					prependIcon: "home",
+					to: { name: "Home" },
+				},
+				{
+					title: "Projects",
+					prependIcon: "clipboard-list",
+					to: { name: "Projects" },
+					alias: [
+						"Project",
+						"AddProject",
+						"ProjectDetail",
+						"ProjectEdit",
+						"AddAssistance",
+						"AssistanceEdit",
+						"AssistanceDetail",
+					],
+				},
+				{
+					title: "Beneficiaries",
+					prependIcon: "user-friends",
+					subItems: [
+						{
+							title: "Households",
+							prependIcon: "home",
+							to: { name: "Households" },
+						},
+						{
+							title: "Institutions",
+							prependIcon: "building",
+							to: { name: "Institutions" },
+						},
+						{
+							title: "Vendors",
+							prependIcon: "store",
+							to: { name: "Vendors" },
+						},
+					],
+				},
+				{
+					title: "Imports",
+					prependIcon: "file-import",
+					to: { name: "Imports" },
+				},
+				{
+					title: "Reports",
+					prependIcon: "chart-line",
+					href: "https://app.powerbi.com/reportEmbed?reportId=d5a81245-560f-4114-bd05-525ddf55ceea&appId=92536ae3-49e4-4156-92a1-ba70dee78455&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9",
+					tooltipIcon: "external-link-alt",
+				},
+				{
+					title: "Vouchers",
+					prependIcon: "ticket-alt",
+					to: { name: "Vouchers" },
+				},
+				{
+					title: "Country Settings",
+					prependIcon: "globe-africa",
+					subItems: [
+						{
+							title: "Products",
+							prependIcon: "shopping-cart",
+							to: { name: "Products" },
+						},
+						{
+							title: "Country specifics",
+							prependIcon: "map-marker-alt",
+							to: { name: "CountrySpecific" },
+						},
+					],
+				},
+				{
+					title: "Administrative Settings",
+					prependIcon: "wrench",
+					to: { name: "Administrative Settings" },
+				},
+				{
+					title: "Transactions",
+					prependIcon: "exchange-alt",
+					to: { name: "TransactionsAssistances" },
+				},
+			],
 			gitInfo,
 			beneficiariesActive: false,
 			countrySettingsActive: false,
@@ -262,16 +253,15 @@ export default {
 
 	computed: {
 		...mapState([
-			"isAsideVisible",
 			"isAsideExpanded",
 		]),
 
 		environment() {
-			return process.env.VUE_APP_ENV.toUpperCase();
+			return import.meta.env.VITE_APP_ENV.toUpperCase();
 		},
 
 		organization() {
-			return process.env.VUE_APP_ORGANIZATION;
+			return import.meta.env.VITE_APP_ORGANIZATION;
 		},
 
 		appVersion() {
@@ -288,7 +278,7 @@ export default {
 		},
 
 		asideBackgroundClass() {
-			return `${process.env.VUE_APP_ENV}-aside-style`;
+			return `${import.meta.env.VITE_APP_ENV}-aside-style`;
 		},
 
 		isCountrySettingsVisible() {
@@ -310,7 +300,7 @@ export default {
 		window.addEventListener("resize", this.checkScreenHeight);
 	},
 
-	destroyed() {
+	unmounted() {
 		window.removeEventListener("resize", this.checkScreenHeight);
 	},
 
@@ -319,44 +309,82 @@ export default {
 			this.isSmallerMenuItem = window.innerHeight < 480;
 		},
 
-		isProjectsActive() {
-			const { name } = this.$route;
+		isRouteActive(item) {
+			const actualRoute = this.$route.name;
 
-			return name === "Project"
-				|| name === "AssistanceEdit"
-				|| name === "AssistanceDetail"
-				|| name === "AddAssistance";
+			return actualRoute === item.to?.name || item.alias?.includes(actualRoute);
+		},
+
+		isItemWithoutSubItems(sideBarItem) {
+			return !sideBarItem.subItems?.length
+				&& this.sideMenuItemsVisibility(sideBarItem)
+				&& !sideBarItem?.href;
+		},
+
+		isItemWithSubItems(sideBarItem) {
+			return sideBarItem.subItems?.length
+				&& this.sideMenuItemsVisibility(sideBarItem)
+				&& !sideBarItem?.href;
+		},
+
+		sideMenuItemsVisibility({ title }) {
+			switch (title) {
+				case "Vendors":
+					return this.userCan.viewVendors;
+				case "Vouchers":
+					return this.userCan.viewVouchers;
+				case "Country Settings":
+					return this.isCountrySettingsVisible;
+				case "Products":
+					return this.userCan.viewProducts;
+				case "Country specifics":
+					return this.userCan.countrySettings || this.userCan.viewScoring;
+				case "Administrative Settings":
+					return this.userCan.adminSettings;
+				default:
+					return true;
+			}
 		},
 	},
 };
 </script>
 
-<style>
-.git-info {
+<style lang="scss" scoped>
+.side-menu-logo {
+	:deep(.v-list-item__content) {
+		margin: auto auto;
+	}
+
+	a {
+		margin: 0 0 0 -.5rem;
+
+		img {
+			flex-shrink: 0;
+			width: auto;
+			max-width: 1.6rem;
+			height: auto;
+			font-size: 2rem;
+			box-sizing: content-box;
+			border-radius: 50%;
+			padding: .25rem;
+			background: #fbfcfc;
+		}
+	}
+}
+
+.environment-info {
 	position: absolute;
-	bottom: 20px;
-	padding: 4px;
-	color: #ffffff;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	width: 100%;
-	font-size: .9rem;
-	pointer-events: none;
-	opacity: .8;
-	line-height: 1.2;
+	bottom: 1.75rem;
+}
+</style>
+
+<style lang="scss">
+.v-list-item__content:has(> .hms-logo) {
+	overflow: visible;
 }
 
-.git-info p {
-	text-align: center;
-	margin-bottom: 1px;
-}
-
-.git-info p strong {
-	color: #ffffff;
-}
-
-.small-menu-item a {
-	padding: .6rem 0 !important;
+.side-menu-tooltip.tooltip-right {
+	left: 3.75rem !important;
 }
 </style>

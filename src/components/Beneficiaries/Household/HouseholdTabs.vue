@@ -1,134 +1,152 @@
 <template>
-	<card-component class="has-multiselect">
-		<b-progress :value="100" />
-		<CustomSteps
-			v-model="activeStep"
-			ref="customSteps"
-			animated
-			rounded
-			has-navigation
-			@stepsChanged="stepsChanged"
-		>
-			<b-step-item step="1" :label="$t('Household')">
-				<HouseholdForm
-					v-if="steps[1]"
-					ref="householdForm"
-					:is-editing="isEditing"
-					:detailOfHousehold="detailOfHousehold"
-					@loaded="loading[1] = false"
-				/>
-			</b-step-item>
+	<v-stepper
+		v-model="activeStep"
+		:items="steps"
+		hide-actions
+		editable
+		alt-labels
+		@update:modelValue="onStepsChanged"
+	>
+		<template v-slot:icon="{ step }">
+			<v-icon :icon="`${step}`" />
+		</template>
 
-			<b-step-item step="2" :label="$t('Household Head')">
-				<HouseholdHeadForm
-					v-if="steps[2]"
-					ref="householdHeadForm"
-					is-household-head
-					show-type-of-beneficiary
-					:is-editing="isEditing"
-					:detailOfHousehold="detailOfHousehold"
-					@loaded="loading[2] = false"
-				/>
-			</b-step-item>
+		<template v-slot:item.1>
+			<h3 class="mb-3">{{ $t('Household') }}</h3>
 
-			<b-step-item step="3" :label="$t('Members')">
-				<Members
-					v-if="steps[3]"
-					ref="householdMembers"
-					:is-editing="isEditing"
-					:detailOfHousehold="detailOfHousehold"
-					@loaded="loading[3] = false"
-				/>
-			</b-step-item>
+			<HouseholdForm
+				ref="householdForm"
+				:detail-of-household="detailOfHousehold"
+				:is-editing="isEditing"
+				@loaded="loading[1] = false"
+			/>
+		</template>
 
-			<b-step-item step="4" :label="$t('Summary')">
-				<Summary
-					v-if="steps[4]"
-					ref="householdSummary"
-					:detailOfHousehold="detailOfHousehold"
-					:members="summaryMembers"
-					:livelihood="livelihood"
-					:address="address"
-					:location="location"
-					:is-editing="isEditing"
-					@loaded="loading[4] = false"
-				/>
-			</b-step-item>
-			<template #navigation="{previous, next}">
-				<div class="buttons flex-end">
-					<b-button
-						v-show="!previous.disabled"
-						@click.prevent="previous.action"
+		<template v-slot:item.2>
+			<h3 class="mb-3">{{ $t('Household Head') }}</h3>
+
+			<HouseholdHeadForm
+				ref="householdHeadForm"
+				:detail-of-household="detailOfHousehold"
+				:is-editing="isEditing"
+				is-household-head
+				show-type-of-beneficiary
+				@loaded="loading[2] = false"
+			/>
+		</template>
+
+		<template v-slot:item.3>
+			<h3 class="mb-3">{{ $t('Members') }}</h3>
+
+			<Members
+				ref="householdMembers"
+				:is-editing="isEditing"
+				:detail-of-household="detailOfHousehold"
+				@loaded="loading[3] = false"
+			/>
+		</template>
+
+		<template v-slot:item.4>
+			<h3 class="mb-3">{{ $t('Summary') }}</h3>
+
+			<HouseholdSummary
+				ref="householdSummary"
+				:detail-of-household="detailOfHousehold"
+				:members="summaryMembers"
+				:livelihood="livelihood"
+				:address="address"
+				:location="location"
+				:is-editing="isEditing"
+				@loaded="loading[4] = false"
+			/>
+		</template>
+
+		<template v-slot:default="{ prev, next }">
+			<v-stepper-actions class="mt-n4">
+				<template v-slot:prev>
+					<v-btn
+						:disabled="activeStep === 1"
+						:color="activeStep === 1 ? 'blue-grey-lighten-0' : 'blue-grey-lighten-4'"
+						variant="elevated"
+						prepend-icon="angle-left"
+						class="text-none"
+						@click="prev"
 					>
 						{{ $t('Back') }}
-					</b-button>
-					<b-button
-						type="is-primary"
-						:disabled="next.disabled"
-						@click.prevent="nextPage(next)"
+					</v-btn>
+				</template>
+
+				<template v-slot:next>
+					<v-btn
+						v-if="activeStep === 4"
+						:disabled="!userCan.editBeneficiary"
+						:loading="saveButtonLoading"
+						color="primary"
+						variant="elevated"
+						prepend-icon="save"
+						class="text-none"
+						@click="onSave"
+					>
+						{{ $t(isEditing ? 'Update' : 'Save') }}
+					</v-btn>
+
+					<v-btn
+						v-else
+						:disabled="false"
+						color="primary"
+						variant="elevated"
+						append-icon="angle-right"
+						class="text-none"
+						@click="next"
 					>
 						{{ $t('Next') }}
-					</b-button>
-					<b-button
-						v-if="activeStep === 3 && userCan.editBeneficiary"
-						type="is-primary"
-						icon-left="save"
-						:loading="saveButtonLoading"
-						@click="save"
-					>
-						{{ isEditing ? $t('Update') : $t('Save') }}
-					</b-button>
-				</div>
-			</template>
-		</CustomSteps>
-	</card-component>
+					</v-btn>
+				</template>
+			</v-stepper-actions>
+		</template>
+	</v-stepper>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import CustomSteps from "@/components/Beneficiaries/Household/CustomSteps";
 import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import HouseholdSummary from "@/components/Beneficiaries/Household/HouseholdSummary";
 import Members from "@/components/Beneficiaries/Household/Members";
-import Summary from "@/components/Beneficiaries/Household/Summary";
-import CardComponent from "@/components/CardComponent";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdTabs",
 
 	components: {
-		CardComponent,
 		HouseholdHeadForm,
 		HouseholdForm,
 		Members,
-		Summary,
-		CustomSteps,
+		HouseholdSummary,
 	},
 
 	mixins: [permissions],
 
 	props: {
-		isEditing: Boolean,
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 
 		detailOfHousehold: {
 			type: Object,
-			default: () => {},
-		},
-
-		isLoaded: {
-			type: Boolean,
-			default: false,
+			default: null,
 		},
 	},
 
 	data() {
 		return {
-			activeStep: 0,
+			activeStep: 1,
+			completedStep: 0,
 			household: null,
 			householdHead: null,
 			householdMembers: [],
@@ -138,12 +156,12 @@ export default {
 			location: "",
 			address: "",
 			saveButtonLoading: false,
-			steps: {
-				1: false,
-				2: false,
-				3: false,
-				4: false,
-			},
+			steps: [
+				this.$t("Household"),
+				this.$t("Household Head"),
+				this.$t("Members"),
+				this.$t("Summary"),
+			],
 			loading: {
 				1: true,
 				2: false,
@@ -161,66 +179,45 @@ export default {
 		},
 	},
 
-	watch: {
-		isLoaded(value) {
-			if (value) {
-				Object.keys(this.steps).forEach((key) => {
-					this.steps[key] = true;
-				});
-			}
-		},
-	},
-
-	created() {
-		if (!this.isEditing) {
-			this.steps[1] = true;
-		}
-	},
-
 	methods: {
-		stepsChanged(active, next) {
+		onStepsChanged(step) {
 			let lastAvailableStep = 1;
 
-			if (active.step < next.step) {
-				if (this.$refs.householdForm.submit()) {
-					this.household = this.$refs.householdForm.formModel;
-					this.livelihood = this.prepareLivelihoodForSummary();
-					this.address = this.prepareAddressForSummary();
-					this.location = this.prepareLocationForSummary();
-					lastAvailableStep = 2;
+			if (this.$refs.householdForm.submit()) {
+				this.household = this.$refs.householdForm.formModel;
+				this.livelihood = this.prepareLivelihoodForSummary();
+				this.address = this.prepareAddressForSummary();
+				this.location = this.prepareLocationForSummary();
+				lastAvailableStep = 2;
 
-					if (this.$refs.householdHeadForm?.submit()
-					) {
-						this.householdHead = this.$refs.householdHeadForm.formModel;
-						lastAvailableStep = 3;
+				if (this.$refs.householdHeadForm?.submit()) {
+					this.householdHead = this.$refs.householdHeadForm.formModel;
+					lastAvailableStep = 3;
 
-						const members = this.$refs.householdMembers?.submit();
+					const members = this.$refs.householdMembers?.submit();
 
-						if (members) {
-							this.householdMembers = members;
-							this.prepareSummaryMembers(
-								[this.householdHead, ...members],
-							);
-							this.address = this.prepareAddressForSummary();
-							this.location = this.prepareLocationForSummary();
-							lastAvailableStep = 4;
-						}
+					if (members) {
+						this.householdMembers = members;
+						this.prepareSummaryMembers(
+							[this.householdHead, ...members],
+						);
+						this.address = this.prepareAddressForSummary();
+						this.location = this.prepareLocationForSummary();
+						lastAvailableStep = 4;
 					}
 				}
-
-				const step = (Number(next.step) <= lastAvailableStep)
-					? Number(next.step)
-					: lastAvailableStep;
-				this.changeStep(step);
-			} else {
-				this.changeStep(next.step);
 			}
+
+			const nextStep = (Number(step) <= lastAvailableStep)
+				? Number(step)
+				: lastAvailableStep;
+			this.changeStep(nextStep);
 		},
 
 		changeStep(stepId) {
-			this.$refs.customSteps.changeStep(Number(stepId));
+			this.activeStep = stepId;
 			this.loading[stepId] = !this.steps[stepId];
-			this.steps[stepId] = true;
+			// this.steps[stepId] = true;
 		},
 
 		close() {
@@ -228,7 +225,7 @@ export default {
 		},
 
 		nextPage(next) {
-			this.steps[this.activeStep + 2] = true;
+			// this.steps[this.activeStep + 2] = true;
 			let members = null;
 
 			switch (this.activeStep) {
@@ -265,22 +262,26 @@ export default {
 			}
 		},
 
-		save() {
+		onSave() {
 			if (
-				!this.$refs.householdSummary.submit()
+				!this.$refs.householdSummary?.submit()
 				|| !this.$refs.householdMembers?.submit()
 				|| !this.$refs.householdHeadForm?.submit()
 				|| !this.$refs.householdForm.submit()
 			) {
-				Notification(`${this.$t("Some required fields are not filled")}`, "is-danger");
+				Notification(`${this.$t("Some required fields are not filled")}`, "error");
 				return;
 			}
 
 			const {
 				shelterStatus,
 				livelihood: {
-					livelihood, assets, incomeLevel, debtLevel,
-					foodConsumptionScore, copingStrategiesIndex,
+					livelihood,
+					assets,
+					incomeLevel,
+					debtLevel,
+					foodConsumptionScore,
+					copingStrategiesIndex,
 					incomeSpentOnFood,
 				},
 				externalSupport: {
@@ -305,14 +306,14 @@ export default {
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
-				incomeLevel,
-				foodConsumptionScore,
-				copingStrategiesIndex,
-				debtLevel,
+				incomeLevel: incomeLevel || null,
+				foodConsumptionScore: foodConsumptionScore || null,
+				copingStrategiesIndex: copingStrategiesIndex || null,
+				debtLevel: debtLevel || null,
 				supportDateReceived: supportDateReceived ? supportDateReceived.toISOString() : null,
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
-				incomeSpentOnFood,
+				incomeSpentOnFood: incomeSpentOnFood || null,
 				houseIncome: 0,
 				countrySpecificAnswers:
 					this.prepareCountrySpecificsForHousehold(this.household.customFields),
@@ -333,7 +334,7 @@ export default {
 			Object.keys(countrySpecificAnswers).forEach((key) => {
 				preparedAnswers.push({
 					countrySpecificId: Number(key),
-					answer: `${countrySpecificAnswers[key]}`,
+					answer: `${countrySpecificAnswers[key]}` || null,
 				});
 			});
 			return preparedAnswers;
@@ -344,11 +345,11 @@ export default {
 
 			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast(this.$t("Household Successfully Updated"), "is-success");
+					Notification(this.$t("Household Successfully Updated"), "success");
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
 			});
 
 			this.saveButtonLoading = false;
@@ -359,11 +360,11 @@ export default {
 
 			await BeneficiariesService.createHousehold(householdBody).then((response) => {
 				if (response.status === 200) {
-					Toast(this.$t("Household Successfully Created"), "is-success");
+					Notification(this.$t("Household Successfully Created"), "success");
 					this.$router.push({ name: "Households" });
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
 			});
 
 			this.saveButtonLoading = false;
@@ -402,14 +403,17 @@ export default {
 			const {
 				typeOfLocation,
 				campName,
+				camp,
 				tentNumber,
 				number,
 				street,
 				postcode,
 			} = this.household.currentLocation;
+
 			if (typeOfLocation.code === GENERAL.LOCATION_TYPE.camp.code) {
-				return `${campName}, ${tentNumber}`;
+				return `${camp.name || campName}, ${tentNumber}`;
 			}
+
 			return `${number}, ${street}, ${postcode}`;
 		},
 
@@ -446,7 +450,7 @@ export default {
 				address.campAddress = {
 					tentNumber,
 					camp: {
-						name: campName || camp?.name,
+						name: camp?.name || campName,
 						locationId: locationId || camp?.locationId,
 					},
 				};

@@ -1,6 +1,9 @@
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
+import moment from "moment";
+
+const { global: { t } } = i18n;
 
 export const queryBuilder = (param) => {
 	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
@@ -17,7 +20,7 @@ export const queryBuilder = (param) => {
 		}
 	}
 	if (upcoming) { query.push(`upcoming=${upcoming}`); }
-	if (ids && ids.length) { query.push(idsToUri(ids, idsParam)); }
+	if (ids?.length) { query.push(idsToUri(ids, idsParam)); }
 	if (format) { query.push(`type=${format}`); }
 
 	return query.length ? `?${query.join("&").replace(/&+/g, "&")}` : "";
@@ -63,10 +66,10 @@ export const replaceEmptyValuesWithNull = (param) => {
 };
 
 export const BookletStatusArray = [
-	{ code: "0", value: i18n.t("Unassigned") },
-	{ code: "1", value: i18n.t("Distributed") },
-	{ code: "2", value: i18n.t("Used") },
-	{ code: "3", value: i18n.t("Deactivated") },
+	{ code: "0", value: t("Unassigned") },
+	{ code: "1", value: t("Distributed") },
+	{ code: "2", value: t("Used") },
+	{ code: "3", value: t("Deactivated") },
 ];
 
 export const copyObject = (obj) => JSON.parse(JSON.stringify(obj));
@@ -94,7 +97,7 @@ export const downloadFile = (data, filename, status, format, responseMessage) =>
 		link.download = `${filename}.${format}`;
 		link.click();
 	} else {
-		Notification(responseMessage, "is-warning");
+		Notification(responseMessage, "error");
 	}
 };
 
@@ -102,6 +105,10 @@ export const getUniqueObjectsInArray = (filterData, filterBy) => filterData.filt
 	(filteredValue, index) => index === filterData.findIndex(
 		(value) => filteredValue[filterBy] === value[filterBy],
 	),
+);
+
+export const isDateBeforeOrEqual = (firstDate, secondDate) => (
+	moment(firstDate) <= moment(secondDate)
 );
 
 export default {
@@ -114,4 +121,5 @@ export default {
 	getBookletStatus,
 	splitBySpace,
 	downloadFile,
+	isDateBeforeOrEqual,
 };

@@ -152,14 +152,6 @@ export default {
 		return data;
 	},
 
-	async getPhone(id) {
-		if (!id) return null;
-		const { data } = await fetcher({
-			uri: `beneficiaries/phones/${id}`,
-		});
-		return data;
-	},
-
 	async getNationalId(id) {
 		if (!id) return null;
 		const { data } = await fetcher({
@@ -175,15 +167,6 @@ export default {
 
 		const { data } = await fetcher({
 			uri: `beneficiaries/national-ids?${idsText}`,
-		});
-		return data;
-	},
-
-	async getPhones(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data } = await fetcher({
-			uri: `beneficiaries/phones?${idsText}`,
 		});
 		return data;
 	},
@@ -265,12 +248,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	exportHouseholds(format, ids, filters) {
-		const idsText = ids ? idsToUri(ids) : "";
-		const formatText = format ? `type=${format}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
-		return download({ uri: `households/exports?${formatText + idsText + filtersUri}` });
+	exportHouseholds(format, ids, filters, sort) {
+		return download({
+			uri: `households/exports${queryBuilder({ format, ids, filters, sort })}`,
+		});
 	},
 
 	exportBulkSearchHouseholds(format, ids, body) {
@@ -320,6 +301,13 @@ export default {
 
 	getBnfFile3ExportStatistics(bnfFile3Id) {
 		return fetcher({ uri: `exports/${bnfFile3Id}` });
+	},
+
+	recalculateReliefPackages(id) {
+		return fetcher({
+			uri: `assistances/${id}/recalculate`,
+			method: "POST",
+		});
 	},
 
 	exportBnf3File(format, bnfFile3Id) {

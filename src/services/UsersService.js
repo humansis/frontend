@@ -1,5 +1,5 @@
 import { download, fetcher, idsToUri } from "@/utils/fetcher";
-import { Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
@@ -36,9 +36,10 @@ export default {
 		return this.initializeUser(body.username)
 			.then(({ data: { salt, userId }, status, message }) => {
 				const userBody = body;
-				userBody.password = userBody.password
-					? this.saltPassword(salt, userBody.password)
-					: null;
+
+				if (userBody.password) {
+					userBody.password = this.saltPassword(salt, userBody.password);
+				}
 
 				if (status === 400) {
 					throw new Error(message);
@@ -47,7 +48,7 @@ export default {
 				return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
 			})
 			.catch((e) => {
-				Toast(`Initialize User ${e}`, "is-danger");
+				Notification(`Initialize User ${e.message || e}`, "error");
 			});
 	},
 
@@ -102,7 +103,7 @@ export default {
 				return { data, status };
 			})
 			.catch((e) => {
-				Toast(`Update User ${e}`, "is-danger");
+				Notification(`Update User ${e.message || e}`, "error");
 			});
 	},
 

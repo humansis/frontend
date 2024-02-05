@@ -1,27 +1,29 @@
-import ASSISTANCE from "./assistance.js";
-import CONFIG from "./config.js";
-import CURRENCIES from "./currencies.js";
-import EXPORT from "./export.js";
-import FILTER from "./filter.js";
-import GENERAL from "./general.js";
-import HOUSEHOLD from "./household.js";
-import IMPORT from "./import.js";
-import INSTITUTION from "./institution.js";
-import PHONE from "./phone.js";
-import ROLE from "./role.js";
-import SCORING from "./scoring.js";
+import ASSISTANCE from "./assistance";
+import CONFIG from "./config";
+import CURRENCIES from "./currencies";
+import EXPORT from "./export";
+import FILTER from "./filter";
+import GENERAL from "./general";
+import HOUSEHOLD from "./household";
+import IMPORT from "./import";
+import INSTITUTION from "./institution";
+import PHONE from "./phone";
+import ROLE from "./role";
+import SCORING from "./scoring";
+import TABLE from "./table";
 
 export {
 	ASSISTANCE,
+	CONFIG,
+	CURRENCIES,
 	EXPORT,
 	FILTER,
-	IMPORT,
-	ROLE,
 	GENERAL,
-	HOUSEHOLD,
+	IMPORT,
 	INSTITUTION,
-	CURRENCIES,
+	HOUSEHOLD,
 	PHONE,
+	ROLE,
 	SCORING,
-	CONFIG,
+	TABLE,
 };

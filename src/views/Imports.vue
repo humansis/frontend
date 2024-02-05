@@ -1,75 +1,72 @@
 <template>
-	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Imports') }}</h1>
-			</div>
-
-			<div class="level-right">
-				<ExportControl
-					:available-export-formats="exportControl.formats"
-					:available-export-types="exportControl.types"
-					:is-export-loading="exportControl.loading"
-					:location="exportControl.location"
-					@onExport="downloadTemplate"
-				/>
-				<b-button
-					class="mr-3"
-					type="is-primary"
-					icon-left="plus"
-					@click="addNewImport"
-				>
-					{{ $t('New Import') }}
-				</b-button>
-				<b-button
-					tag="a"
-					type="is-primary"
-					icon-left="question"
-					href="https://docs.pinf.cz/x/RwBf"
-					target="_blank"
-				>
-					{{ $t('Help') }}
-				</b-button>
-			</div>
-		</div>
-
+	<v-container fluid>
 		<Modal
-			can-cancel
-			:active="importModal.isOpened"
+			v-model="importModal.isOpened"
 			:header="modalHeader"
-			:is-waiting="importModal.isWaiting"
-			@close="closeImportModal"
 		>
 			<ImportForm
-				close-button
-				class="modal-card"
-				:formModel="importModel"
-				:submit-button-label="importModal.isEditing ? $t('Update') : $t('Create')"
+				:form-model="importModel"
+				:submit-button-label="importModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="importModal.isDetail"
 				:is-editing="importModal.isEditing"
 				:options="options"
-				@formSubmitted="submitImportForm"
-				@formClosed="closeImportModal"
+				close-button
+				@formSubmitted="onSubmitImportForm"
+				@formClosed="importModal.isOpened = false"
 			/>
 		</Modal>
 
+		<div :class="['d-flex mb-4 align-center', { 'import-header': isMobile }]">
+			<h2 class="me-auto">{{ $t('Imports') }}</h2>
+
+			<ExportControl
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.isLoading"
+				:location="exportControl.location"
+				class="export-template"
+				@export="onDownloadTemplate"
+			/>
+
+			<v-btn
+				color="primary"
+				prepend-icon="plus"
+				class="text-none ml-0"
+				@click="onAddNewImport"
+			>
+				{{ $t('New Import') }}
+			</v-btn>
+
+			<v-btn
+				color="primary"
+				prepend-icon="question"
+				class="text-none ml-2"
+				href="https://docs.pinf.cz/x/RwBf"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				{{ $t('Help') }}
+			</v-btn>
+		</div>
+
 		<ImportsList
 			ref="importList"
-			@showDetail="showDetail"
-			@showEdit="showEdit"
+			@showDetail="onShowDetail"
+			@showEdit="onShowEdit"
 		/>
-	</div>
+	</v-container>
 </template>
 
 <script>
 import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
-import ExportControl from "@/components/Export";
 import ImportForm from "@/components/Imports/ImportForm";
 import ImportsList from "@/components/Imports/ImportsList";
-import Modal from "@/components/Modal";
+import ExportControl from "@/components/Inputs/ExportControl";
+import Modal from "@/components/Inputs/Modal";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { downloadFile } from "@/utils/helpers";
-import { Notification, Toast } from "@/utils/UI.js";
+import { Notification } from "@/utils/UI";
 import { EXPORT } from "@/consts";
 
 export default {
@@ -82,10 +79,12 @@ export default {
 		ExportControl,
 	},
 
+	mixins: [vuetifyHelper],
+
 	data() {
 		return {
 			exportControl: {
-				loading: false,
+				isLoading: false,
 				location: "imports",
 				types: [EXPORT.IMPORTS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
@@ -109,15 +108,15 @@ export default {
 
 	computed: {
 		modalHeader() {
-			let result = "";
 			if (this.importModal.isDetail) {
-				result = this.$t("Detail of Import");
-			} else if (this.importModal.isEditing) {
-				result = this.$t("Edit Import");
-			} else {
-				result = this.$t("Create New Import");
+				return "Detail of Import";
 			}
-			return result;
+
+			if (this.importModal.isEditing) {
+				return "Edit Import";
+			}
+
+			return "Create New Import";
 		},
 	},
 
@@ -125,14 +124,14 @@ export default {
 		const { query: { openModal = "" } } = this.$route || {};
 
 		if (openModal === "1") {
-			this.addNewImport();
+			this.onAddNewImport();
 		}
 
 		this.fetchProjects();
 	},
 
 	methods: {
-		addNewImport() {
+		onAddNewImport() {
 			this.importModal = {
 				isEditing: false,
 				isOpened: true,
@@ -150,11 +149,7 @@ export default {
 			};
 		},
 
-		closeImportModal() {
-			this.importModal.isOpened = false;
-		},
-
-		showDetail(importItem) {
+		onShowDetail(importItem) {
 			this.mapToFormModel(importItem);
 			this.importModal = {
 				isOpened: true,
@@ -164,7 +159,7 @@ export default {
 			};
 		},
 
-		showEdit(importItem) {
+		onShowEdit(importItem) {
 			this.importModal = {
 				isEditing: true,
 				isOpened: true,
@@ -191,7 +186,7 @@ export default {
 			};
 		},
 
-		submitImportForm(importForm) {
+		onSubmitImportForm(importForm) {
 			const {
 				id,
 				title,
@@ -221,7 +216,7 @@ export default {
 					this.options.projects = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 
 			this.projectsLoading = false;
@@ -232,14 +227,13 @@ export default {
 
 			await ImportService.createImport(importBody).then(({ status, data }) => {
 				if (status === 200) {
-					Toast(this.$t("Import Successfully Created"), "is-success");
+					Notification(this.$t("Import Successfully Created"), "success");
 					this.$refs.importList.fetchData();
-					this.closeImportModal();
 
 					this.$router.push({ name: "Import", params: { importId: data.id } });
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+				Notification(`${this.$t("Import")} ${e.message || e}`, "error");
 				this.importModal.isWaiting = false;
 			});
 		},
@@ -250,32 +244,47 @@ export default {
 			await ImportService.changeImportState(id, { title, projectId, description })
 				.then(({ status }) => {
 					if (status === 202) {
-						Toast(this.$t("Import Successfully Updated"), "is-success");
+						Notification(this.$t("Import Successfully Updated"), "success");
 						this.$refs.importList.fetchData();
-
-						this.closeImportModal();
+						this.importModal.isOpened = false;
 					}
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Import")} ${e}`, "is-danger");
+					Notification(`${this.$t("Import")} ${e.message || e}`, "error");
 					this.importModal.isWaiting = false;
 				});
 		},
 
-		async downloadTemplate(exportType, format) {
+		async onDownloadTemplate(exportType, format) {
 			if (exportType === EXPORT.IMPORTS) {
 				try {
-					this.exportControl.loading = true;
+					this.exportControl.isLoading = true;
 
 					const { data, status, message } = await ImportService.exportTemplate(format);
 
 					downloadFile(data, "import-template", status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Downloading Template")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Downloading Template")} ${e.message || e}`, "error");
 				} finally {
-					this.exportControl.loading = false;
+					this.exportControl.isLoading = false;
 				}
 			}
 		},
 	},
 };
 </script>
+
+<style lang="scss">
+.import-header {
+	flex-direction: column;
+	gap: .75rem;
+	align-items: center !important;
+
+	> .export-template > div {
+		margin: auto;
+	}
+
+	> button, a {
+		margin-left: 1rem !important;
+	}
+}
+</style>
