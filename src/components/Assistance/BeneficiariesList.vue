@@ -758,6 +758,12 @@ export default {
 				if (newAssistance.target === ASSISTANCE.TARGET.INSTITUTION) {
 					this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.key;
 					this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.INSTITUTION.order;
+				} else {
+					this.setGridFilters("assistanceDetail", false);
+
+					if (!this.table.sortColumn?.length) {
+						this.setDefaultSortForHouseholdOrIndividual();
+					}
 				}
 
 				await this.reloadBeneficiariesList();
@@ -767,14 +773,9 @@ export default {
 
 	async created() {
 		if (!this.assistanceDetail) {
-			if (this.assistance?.target === ASSISTANCE.TARGET.HOUSEHOLD
-				|| this.assistance?.target === ASSISTANCE.TARGET.INDIVIDUAL) {
-				this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.key;
-				this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.order;
-			}
-		} else {
-			this.setGridFilters("assistanceDetail", false);
+			this.setDefaultSortForHouseholdOrIndividual();
 		}
+
 		await this.reloadBeneficiariesList();
 	},
 
@@ -829,6 +830,14 @@ export default {
 
 		onCloseAddBeneficiariesByIdsModal() {
 			this.addBeneficiariesByIdsModal.isOpened = false;
+		},
+
+		setDefaultSortForHouseholdOrIndividual() {
+			if (this.assistance?.target === ASSISTANCE.TARGET.HOUSEHOLD
+				|| this.assistance?.target === ASSISTANCE.TARGET.INDIVIDUAL) {
+				this.table.sortColumn = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.key;
+				this.table.sortDirection = TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD.order;
+			}
 		},
 
 		onStatusFilter(filter, queryValue = "") {
@@ -1353,6 +1362,7 @@ export default {
 						const filters = { assistanceId: this.assistance.id };
 						const { data, status, message } = await InstitutionService.exportInstitutions(
 							format,
+							null,
 							filters,
 						);
 
@@ -1362,12 +1372,15 @@ export default {
 					}
 				} else {
 					try {
+						const sort = `${this.table.sortColumn?.sortKey
+							|| this.table.sortColumn}.${this.table.sortDirection}`;
 						const { data, status, message } = await BeneficiariesService
 							.exportAssistanceBeneficiaries(
 								format,
 								this.$route.params.assistanceId,
 								this.table.searchPhrase,
 								{ exportType },
+								sort,
 							);
 
 						downloadFile(data, filename, status, format, message);

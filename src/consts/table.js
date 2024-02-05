@@ -4,7 +4,7 @@ export default {
 		ASSISTANCES: { key: "dateDistribution", order: "desc" },
 		ASSISTANCE_EDIT: {
 			HOUSEHOLD: { key: "createdAt", order: "asc" },
-			INSTITUTION: { key: "id", order: "desc" },
+			INSTITUTION: { key: "createdAt", order: "asc" },
 		},
 		ASSISTANCE_LIST: { key: "dateDistribution", order: "desc" },
 		CUSTOM_FIELDS: { key: "id", order: "asc" },
