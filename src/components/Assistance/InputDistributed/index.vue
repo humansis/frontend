@@ -42,6 +42,7 @@
 			<v-spacer />
 
 			<v-btn
+				:disabled="isDistributedButtonLoading"
 				class="text-none"
 				color="blue-grey-lighten-4"
 				variant="elevated"
@@ -51,6 +52,7 @@
 			</v-btn>
 
 			<v-btn
+				:loading="isDistributedButtonLoading"
 				color="primary"
 				class="text-none ml-3"
 				variant="elevated"
@@ -71,7 +73,7 @@
 			>
 				<v-tab
 					v-if="distributeData.notFound"
-					:value="0"
+					value="notFound"
 					class="text-none"
 				>
 					{{ $t('Not Found') }}
@@ -87,7 +89,7 @@
 
 				<v-tab
 					v-if="distributeData.conflicts"
-					:value="1"
+					value="conflictIds"
 					class="text-none"
 				>
 					{{ $t('Conflict IDs') }}
@@ -103,7 +105,7 @@
 
 				<v-tab
 					v-if="distributeData.successfullyDistributed"
-					:value="2"
+					value="setAsDistributed"
 					class="text-none"
 				>
 					{{ $t('Set As Distributed') }}
@@ -119,7 +121,7 @@
 
 				<v-tab
 					v-if="distributeData.success"
-					:value="3"
+					value="successfulOperation"
 					class="text-none"
 				>
 					{{ $t(successfulOperationTitle) }}
@@ -135,7 +137,7 @@
 
 				<v-tab
 					v-if="distributeData.alreadyProcessed"
-					:value="4"
+					value="alreadyProcessedOperation"
 					class="text-none"
 				>
 					{{ $t(alreadyProcessedOperationTitle) }}
@@ -151,7 +153,7 @@
 
 				<v-tab
 					v-if="distributeData.alreadyDistributed"
-					:value="5"
+					value="distributedInPast"
 					class="text-none"
 				>
 					{{ $t('Distributed In Past') }}
@@ -167,7 +169,7 @@
 
 				<v-tab
 					v-if="distributeData.partiallyDistributed"
-					:value="6"
+					value="partiallyDistributed"
 					class="text-none"
 				>
 					{{ $t('Partially Distributed') }}
@@ -183,7 +185,7 @@
 
 				<v-tab
 					if="distributeData.failed"
-					:value="7"
+					value="unknownError"
 					class="text-none"
 				>
 					{{ $t('Unknown Error') }}
@@ -199,59 +201,56 @@
 			</v-tabs>
 
 			<v-window v-model="activeTab">
-				<v-window-item>
-					<div v-if="activeTab === 0">
-						<BaseDeduplicationTable
-							v-if="isOperationAddOrRemoveBulk"
-							:data="distributeData.notFound"
-						/>
+				<v-window-item value="notFound">
+					<BaseDeduplicationTable
+						v-if="isOperationAddOrRemoveBulk"
+						:data="distributeData.notFound"
+					/>
 
-						<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
-					</div>
+					<BaseDistributedTable v-else show-only-id-number :data="distributeData.notFound" />
+				</v-window-item>
 
-					<div v-if="activeTab === 1">
-						<DuplicityDistributedTable :data="distributeData.conflicts" />
-					</div>
+				<v-window-item value="conflictIds">
+					<DuplicityDistributedTable :data="distributeData.conflicts" />
+				</v-window-item>
 
-					<div v-if="activeTab === 2">
-						<BaseDistributedTable :data="distributeData.successfullyDistributed" />
-					</div>
+				<v-window-item value="setAsDistributed">
+					<BaseDistributedTable :data="distributeData.successfullyDistributed" />
+				</v-window-item>
 
-					<div v-if="activeTab === 3">
-						<BaseDeduplicationTable
-							v-if="isOperationAddOrRemoveBulk"
-							:data="distributeData.success"
-						/>
+				<v-window-item value="successfulOperation">
+					<BaseDeduplicationTable
+						v-if="isOperationAddOrRemoveBulk"
+						:data="distributeData.success"
+					/>
 
-						<BaseDistributedTable v-else :data="distributeData.success" />
-					</div>
+					<BaseDistributedTable v-else :data="distributeData.success" />
+				</v-window-item>
 
-					<div v-if="activeTab === 4">
-						<BaseDeduplicationTable
-							v-if="isOperationAddOrRemoveBulk"
-							:data="distributeData.alreadyProcessed"
-						/>
+				<v-window-item value="alreadyProcessedOperation">
+					<BaseDeduplicationTable
+						v-if="isOperationAddOrRemoveBulk"
+						:data="distributeData.alreadyProcessed"
+					/>
 
-						<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
-					</div>
+					<BaseDistributedTable v-else :data="distributeData.alreadyProcessed" />
+				</v-window-item>
 
-					<div v-if="activeTab === 5">
-						<BaseDistributedTable :data="distributeData.alreadyDistributed" />
-					</div>
+				<v-window-item value="distributedInPast">
+					<BaseDistributedTable :data="distributeData.alreadyDistributed" />
+				</v-window-item>
 
-					<div v-if="activeTab === 6">
-						<BaseDistributedTable :data="distributeData.partiallyDistributed" />
-					</div>
+				<v-window-item value="partiallyDistributed">
+					<BaseDistributedTable :data="distributeData.partiallyDistributed" />
+				</v-window-item>
 
-					<div v-if="activeTab === 7">
-						<BaseDeduplicationTable
-							v-if="isOperationAddOrRemoveBulk"
-							:data="distributeData.failed"
-						/>
+				<v-window-item value="unknownError">
+					<BaseDeduplicationTable
+						v-if="isOperationAddOrRemoveBulk"
+						:data="distributeData.failed"
+					/>
 
-						<BaseDistributedTable v-else :data="distributeData.failed" />
-					</div>
-
+					<BaseDistributedTable v-else :data="distributeData.failed" />
 				</v-window-item>
 			</v-window>
 		</v-card-text>
@@ -281,6 +280,7 @@
 </template>
 
 <script>
+import { helpers, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import BaseDeduplicationTable from "@/components/Assistance/InputDistributed/BaseDeduplicationTable";
@@ -293,7 +293,6 @@ import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { helpers, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "StartTransactionsForm",
@@ -343,9 +342,9 @@ export default {
 
 	data() {
 		return {
-			activeTab: 0,
+			activeTab: "notFound",
 			distributedFormVisible: true,
-			distributedButtonLoading: false,
+			isDistributedButtonLoading: false,
 			distributeData: null,
 			idsListErrorMessage: "",
 			formModel: { ...ASSISTANCE.INPUT_DISTRIBUTED.DEFAULT_FORM_MODEL },
@@ -388,7 +387,7 @@ export default {
 
 			if (this.v$.$invalid) { return; }
 
-			this.distributedButtonLoading = true;
+			this.isDistributedButtonLoading = true;
 			let body;
 
 			const numberIds = this.formModel.idsList.split(/\s+/);
@@ -406,48 +405,57 @@ export default {
 				};
 
 				if (this.deduplication) {
-					await BeneficiariesService.removeBeneficiaryFromAssistance(this.$route.params.assistanceId, target, body)
-						.then(({ data, message }) => {
-							if (data) {
-								if (data.errors?.message) {
-									Notification(data.errors.message, "error");
-								} else {
-									this.distributeData = data;
-									this.distributedFormVisible = false;
-								}
+					await BeneficiariesService.removeBeneficiaryFromAssistance(
+						this.$route.params.assistanceId,
+						target,
+						body,
+					).then(({ data, message }) => {
+						if (data) {
+							if (data.errors?.message) {
+								Notification(data.errors.message, "error");
 							} else {
-								Notification(message, "warning");
+								this.distributeData = data;
+								this.distributedFormVisible = false;
 							}
-						}).catch((e) => {
-							Notification(`${this.$t("Beneficiary remove")} ${e.message || e}`, "error");
-						}).finally(() => {
-							this.distributedButtonLoading = false;
-							this.$emit("submit");
-						});
+						} else {
+							Notification(message, "warning");
+						}
+					}).catch((e) => {
+						Notification(`${this.$t("Beneficiary remove")} ${e.message || e}`, "error");
+					}).finally(() => {
+						this.isDistributedButtonLoading = false;
+						this.$emit("submit");
+					});
 				} else {
-					await BeneficiariesService.addBeneficiaryToAssistance(this.$route.params.assistanceId, target, body)
-						.then(({ data, message }) => {
-							if (data) {
-								if (data.errors?.message) {
-									Notification(data.errors.message, "warning");
-								} else {
-									this.distributeData = data;
-									this.distributedFormVisible = false;
-								}
+					await BeneficiariesService.addBeneficiaryToAssistance(
+						this.$route.params.assistanceId,
+						target,
+						body,
+					).then(({ data, message }) => {
+						if (data) {
+							if (data.errors?.message) {
+								Notification(data.errors.message, "warning");
 							} else {
-								Notification(message, "warning");
+								this.distributeData = data;
+								this.distributedFormVisible = false;
 							}
-						}).catch((error) => {
-							Notification(error, "error");
-						}).finally(() => {
-							this.distributedButtonLoading = false;
-							this.$emit("submit");
-						});
+						} else {
+							Notification(message, "warning");
+						}
+					}).catch((error) => {
+						Notification(error, "error");
+					}).finally(() => {
+						this.isDistributedButtonLoading = false;
+						this.$emit("submit");
+					});
 				}
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
-				await AssistancesService.updateReliefPackagesWithNumberIds(this.$route.params.assistanceId, body).then(({ data, status, message }) => {
+				await AssistancesService.updateReliefPackagesWithNumberIds(
+					this.$route.params.assistanceId,
+					body,
+				).then(({ data, status, message }) => {
 					if (status === 200) {
 						this.distributeData = data;
 						this.distributedFormVisible = false;
@@ -457,7 +465,7 @@ export default {
 				}).catch((error) => {
 					Notification(error, "error");
 				}).finally(() => {
-					this.distributedButtonLoading = false;
+					this.isDistributedButtonLoading = false;
 					this.$emit("submit");
 				});
 

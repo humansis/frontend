@@ -24,6 +24,8 @@ import { FILTER } from "@/consts";
 export default {
 	name: "HouseholdsFilter",
 
+	emits: ["search", "filtersChanged"],
+
 	components: {
 		AdvancedFilter,
 	},

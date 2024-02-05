@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -95,7 +96,6 @@ import validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "TypeOfLocationForm",
@@ -131,7 +131,10 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		isEditing: {
 			type: Boolean,

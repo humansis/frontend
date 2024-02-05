@@ -6,9 +6,10 @@
 			<h2 class="me-auto">{{ $t('Project Assistances') }}</h2>
 
 			<v-btn
-				class="text-none ml-0"
+				v-if="beneficiariesCount"
 				color="primary"
 				prepend-icon="plus"
+				class="text-none ml-0"
 				@click="onGoToAddAssistance"
 			>
 				{{ $t('New') }}

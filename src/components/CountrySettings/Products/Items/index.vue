@@ -207,7 +207,7 @@ export default {
 				name,
 				productCategoryId: productCategoryId.id,
 				unit,
-				unitPrice,
+				unitPrice: unitPrice || null,
 				currency: currency?.value || "",
 				iso3: iso3 || this.country.iso3,
 			};

@@ -8,7 +8,7 @@
 		</h2>
 
 		<v-btn
-			:to="{ name: 'Logout'}"
+			:to="{ name: 'Logout' }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"

@@ -108,6 +108,7 @@
 
 				<DataInput
 					v-model.number="formModel.livelihood.foodConsumptionScore"
+					:error-messages="validationMsg('livelihood.foodConsumptionScore')"
 					type="number"
 					label="Food consumption score"
 					name="food-consumption-score"
@@ -115,10 +116,12 @@
 					min="0"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('livelihood.foodConsumptionScore')"
 				/>
 
 				<DataInput
 					v-model.number="formModel.livelihood.copingStrategiesIndex"
+					:error-messages="validationMsg('livelihood.copingStrategiesIndex')"
 					type="number"
 					label="Coping strategies index"
 					name="coping-strategies-index"
@@ -126,6 +129,7 @@
 					min="0"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('livelihood.copingStrategiesIndex')"
 				/>
 			</v-col>
 
@@ -205,7 +209,7 @@
 </template>
 
 <script>
-import AddressService from "@/services/AddressService";
+import { integer } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
@@ -219,7 +223,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
 import getters from "@/store/getters";
 
 export default {
@@ -235,6 +238,17 @@ export default {
 	},
 
 	mixins: [validation, addressHelper],
+
+	validations() {
+		return {
+			formModel: {
+				livelihood: {
+					foodConsumptionScore: { integer },
+					copingStrategiesIndex: { integer },
+				},
+			},
+		};
+	},
 
 	props: {
 		detailOfHousehold: {

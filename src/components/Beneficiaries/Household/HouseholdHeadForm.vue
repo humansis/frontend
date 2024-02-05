@@ -358,6 +358,7 @@
 </template>
 
 <script>
+import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -368,7 +369,6 @@ import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeLis
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
-import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "HouseholdHeadForm",
@@ -397,7 +397,7 @@ export default {
 						required: requiredIf(this.formModel.primaryId.idNumber),
 						isPrimaryIdValid: helpers.withMessage(
 							this.primaryIdValidationMessage,
-							function () { return this.isPrimaryIdValid; },
+							function isPrimaryIdValid() { return this.isPrimaryIdValid; },
 						),
 					},
 					idNumber: {
@@ -413,7 +413,7 @@ export default {
 						required: requiredIf(this.formModel.secondaryId.idNumber),
 						isSecondaryIdValid: helpers.withMessage(
 							this.secondaryIdValidationMessage,
-							function () { return this.isSecondaryIdValid; },
+							function isSecondaryIdValid() { return this.isSecondaryIdValid; },
 						),
 					},
 					idNumber: {
@@ -430,7 +430,7 @@ export default {
 						required: requiredIf(this.formModel.tertiaryId.idNumber),
 						isTertiaryIdValid: helpers.withMessage(
 							this.tertiaryIdValidationMessage,
-							function () { return this.isTertiaryIdValid; },
+							function isTertiaryIdValid() { return this.isTertiaryIdValid; },
 						),
 					},
 					idNumber: {
@@ -586,7 +586,7 @@ export default {
 
 		householdHeadTitle() {
 			return `${this.$t("ID")} ${this.detailOfHousehold.householdHeadId}:
-				${this.detailOfHouseholdHead.localFamilyName} ${this.detailOfHouseholdHead.localGivenName}`;
+				${this.detailOfHouseholdHead.localGivenName} ${this.detailOfHouseholdHead.localFamilyName}`;
 		},
 
 		smartCardNumbersList() {

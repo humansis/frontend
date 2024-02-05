@@ -4,11 +4,13 @@
 			v-model="selectedProject"
 			:items="options"
 			:loading="loading"
+			:error-messages="validationMsg('selectedProject')"
 			item-title="name"
 			label="Project"
 			name="project"
 			item-value="id"
 			class="mb-4"
+			@update:modelValue="onValidate('selectedProject')"
 		/>
 	</v-card-text>
 
@@ -19,7 +21,7 @@
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
-			@click="$emit('formClosed')"
+			@click="onCloseForm"
 		>
 			{{ $t('Close') }}
 		</v-btn>
@@ -37,12 +39,22 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataSelect from "@/components/Inputs/DataSelect";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "AddProjectToHouseholdModal",
 
 	components: { DataSelect },
+
+	mixins: [validation],
+
+	validations() {
+		return {
+			selectedProject: { required },
+		};
+	},
 
 	props: {
 		confirmButtonLoading: Boolean,
@@ -64,8 +76,20 @@ export default {
 
 	methods: {
 		onAddHouseholdsToProject() {
+			this.v$.$touch();
+
+			if (this.v$.$invalid) {
+				return;
+			}
+
 			this.$emit("actionConfirmed", this.selectedProject);
+			this.v$.$reset();
 			this.selectedProject = null;
+		},
+
+		onCloseForm() {
+			this.$emit("formClosed");
+			this.v$.$reset();
 		},
 	},
 };

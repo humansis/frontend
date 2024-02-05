@@ -9,13 +9,13 @@
 		</h2>
 
 		<v-btn
+			:to="{ name: 'Dashboard' }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"
 			class="text-none"
-			@click="$router.push({ name: 'Dashboard' })"
 		>
-			{{ $t('Go to Dashboard') }}
+			{{ $t('Go to Projects') }}
 		</v-btn>
 	</div>
 </template>

@@ -12,7 +12,7 @@
 				label="Activity Description"
 				name="activity-description"
 				class="mb-4"
-				@blur="onValidate('activityDescription')"
+				@blur="onDataInput('activityDescription')"
 			/>
 
 			<DataInput
@@ -25,7 +25,7 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onValidate('householdsTargeted')"
+				@blur="onDataInput('householdsTargeted')"
 			/>
 
 			<DataInput
@@ -38,16 +38,16 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onValidate('individualsTargeted')"
+				@blur="onDataInput('individualsTargeted')"
 			/>
 		</v-card-text>
 	</v-card>
 </template>
 
 <script>
+import { requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "ActivityDetails",
@@ -71,7 +71,10 @@ export default {
 	},
 
 	props: {
-		visible: Object,
+		visible: {
+			type: Object,
+			required: true,
+		},
 
 		data: {
 			type: Object,
@@ -97,11 +100,12 @@ export default {
 		},
 	},
 
-	updated() {
-		this.$emit("updatedData", this.formModel);
-	},
-
 	methods: {
+		onDataInput(field) {
+			this.onValidate(field);
+			this.$emit("updatedData", this.formModel);
+		},
+
 		submit() {
 			this.v$.$touch();
 			return !this.v$.$invalid;

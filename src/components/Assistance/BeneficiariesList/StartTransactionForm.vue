@@ -44,9 +44,9 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "StartTransactionsForm",
@@ -66,8 +66,12 @@ export default {
 	},
 
 	props: {
-		submitButtonLabel: String,
 		closeButton: Boolean,
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

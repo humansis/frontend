@@ -42,6 +42,7 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
+			item-title="field"
 			class="mb-4"
 			@update:modelValue="onValidate('customField')"
 		/>
@@ -96,9 +97,10 @@
 					v-model.number="formModel[divisionFieldsValidationString][key]"
 					:label="divisionFields[divisionFieldsValidationString][i].label"
 					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
-					name="division"
+					:name="`division-${key}`"
+					type="number"
 					class="mb-4"
-					@blur="onValidate(`${divisionFieldsValidationString}.${key}`)"
+					@update:modelValue="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
 		</template>
@@ -164,6 +166,7 @@
 			type="number"
 			min="1"
 			class="mb-4"
+			optional
 			hide-spin-buttons
 			@blur="onValidate('secondQuantity')"
 		/>
@@ -209,8 +212,7 @@
 					v-model="formModel.allowedProductCategoryTypes"
 					:label="productCategoryType"
 					:value="productCategoryType"
-					:error-messages="isLastCategoryType(index)
-						&& validationMsg('allowedProductCategoryTypes')"
+					:error-messages="errorMessageForCategory(index)"
 					:disabled="formDisabled"
 					:name="`product-category-${index}`"
 					hide-details="auto"
@@ -266,6 +268,7 @@
 </template>
 
 <script>
+import { helpers, maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -275,10 +278,10 @@ import SvgIcon from "@/components/SvgIcon";
 import assistanceHelper from "@/mixins/assistanceHelper";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { isDecimalPartLengthValid } from "@/utils/customValidators";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
-import { maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "DistributedCommodityForm",
@@ -318,10 +321,12 @@ export default {
 				quantity: {
 					required: requiredIf(this.displayedFields.quantity),
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.quantity),
 				},
 				value: {
 					required: requiredIf(this.displayedFields.value && !this.isModalityInKind),
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.value),
 				},
 				currency: {
 					required: requiredIf(this.displayedFields.currency && !this.isModalityInKind),
@@ -332,34 +337,75 @@ export default {
 				secondQuantity: {
 					required: false,
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(this.formModel.secondQuantity),
 				},
 				// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 				divisionNwsFields: {
 					firstNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.firstNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					secondNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.secondNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
+
 					},
 					thirdNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.thirdNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					fourthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.fourthNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 					fifthNwsFields: {
 						required: requiredIf(this.displayedFields.householdMembersNwsFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNwsFields.fifthNwsFields,
+							this.displayedFields.householdMembersNwsFields,
+						),
 					},
 				},
 				divisionNesFields: {
 					firstNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNesFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 					secondNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNesFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 					thirdNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNesFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
+					},
+					fourthNesFields: {
+						required: requiredIf(this.displayedFields.householdMembersNesFields),
+						...this.decimalPartValidationRule(
+							this.formModel.divisionNesFields.firstNesFields,
+							this.displayedFields.householdMembersNesFields,
+						),
 					},
 				},
 				description: {
@@ -373,17 +419,25 @@ export default {
 						this.CASHBACK,
 					)),
 					minValue: minValue(1),
-					maxValue: maxValue(this.maxCashback),
 					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
+					...this.decimalPartValidationRule(this.formModel.cashbackLimit),
 				},
 			},
 		};
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 
 		project: {
 			type: Object,
@@ -407,6 +461,7 @@ export default {
 
 		dateExpiration: {
 			type: String,
+			required: true,
 		},
 	},
 
@@ -425,6 +480,7 @@ export default {
 				types: false,
 				customFields: false,
 			},
+			decimalValidationMessage: "The value has more than two decimal places.",
 		};
 	},
 
@@ -562,8 +618,9 @@ export default {
 		divisionNesFields() {
 			return [
 				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityNesField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 8 members)`), fieldName: "quantityNesField2" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (9+ members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 6 members)`), fieldName: "quantityNesField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (7 - 9 members)`), fieldName: "quantityNesField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (10+ members)`), fieldName: "quantityNesField4" },
 			];
 		},
 
@@ -631,6 +688,12 @@ export default {
 
 		isLastCategoryType(index) {
 			return index === (this.project.allowedProductCategoryTypes.length - 1);
+		},
+
+		errorMessageForCategory(index) {
+			return this.isLastCategoryType(index)
+				? this.validationMsg("allowedProductCategoryTypes")
+				: "";
 		},
 
 		async onModalitySelect({ code }) {
@@ -811,6 +874,15 @@ export default {
 			}
 		},
 
+		decimalPartValidationRule(value, isRuleUsed = true) {
+			return ((value ?? false) && isRuleUsed && {
+				isDecimalPartLengthValid: helpers.withMessage(
+					this.decimalValidationMessage,
+					isDecimalPartLengthValid,
+				),
+			});
+		},
+
 		onSubmitForm() {
 			this.v$.$touch();
 
@@ -837,6 +909,8 @@ export default {
 					.divisionNesFields.secondNesFields;
 				this.formModel.payloadDivisionNesFields[2].value = this.formModel
 					.divisionNesFields.thirdNesFields;
+				this.formModel.payloadDivisionNesFields[3].value = this.formModel
+					.divisionNesFields.fourthNesFields;
 			}
 
 			this.$emit("formSubmitted", {

@@ -79,6 +79,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { requiredIf } from "@vuelidate/validators";
 import AddressService from "@/services/AddressService";
 import LocationsService from "@/services/LocationsService";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -86,7 +87,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
-import { requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "LocationForm",
@@ -112,7 +112,10 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		formDisabled: {
 			type: Boolean,
@@ -365,13 +368,19 @@ export default {
 					this.formModel.adm2 = null;
 					this.formModel.adm3 = null;
 					this.formModel.adm4 = null;
+					this.options.districts = [];
+					this.options.communes = [];
+					this.options.villages = [];
 					break;
 				case "adm2":
 					this.formModel.adm3 = null;
 					this.formModel.adm4 = null;
+					this.options.communes = [];
+					this.options.villages = [];
 					break;
 				case "adm3":
 					this.formModel.adm4 = null;
+					this.options.villages = [];
 					break;
 				default:
 					break;

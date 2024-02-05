@@ -59,6 +59,8 @@
 			/>
 		</template>
 
+		<h4>{{ $t("Image") }}</h4>
+
 		<FileUpload
 			v-if="!formDisabled"
 			v-model="formModel.uploadedImage"
@@ -68,7 +70,6 @@
 			variant="outlined"
 			density="compact"
 			accept="image/*"
-			class="mt-4"
 			@update:modelValue="onValidate('uploadedImage')"
 		/>
 
@@ -105,12 +106,12 @@
 </template>
 
 <script>
+import { minValue, required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { CURRENCIES } from "@/consts";
-import { minValue, required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "ProductForm",
@@ -133,10 +134,10 @@ export default {
 			formModel: {
 				name: { required },
 				productCategoryId: { required },
-				currency: { required: requiredIf(this.formModel.productCategoryId?.name === "Cashback") },
+				currency: { required: requiredIf(this.isCategoryTypeCashback) },
 				unitPrice: {
-					required: requiredIf(this.formModel.productCategoryId?.name === "Cashback"),
-					minValue: minValue(0),
+					required: requiredIf(this.isCategoryTypeCashback),
+					...(this.isCategoryTypeCashback && { minValue: minValue(0.01) }),
 				},
 				uploadedImage: { required: requiredIf(!this.formModel?.image) },
 			},
@@ -144,11 +145,19 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		editing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 
 		categories: {
 			type: Array,

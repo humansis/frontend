@@ -4,14 +4,16 @@
 			v-if="searchFields.length"
 			v-model="selectedSearchField"
 			:items="searchFields"
-			label="Select format"
-			name="select-format"
+			:disabled="isDisabled"
+			label="Select field"
+			name="select-field"
 			clearable
 			class="format"
 		/>
 
 		<DataInput
 			v-model="value"
+			:disabled="isDisabled"
 			label="Search"
 			name="search"
 			append-inner-icon="search"

@@ -58,15 +58,17 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataTextarea from "@/components/Inputs/DataTextarea";
 import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "ScoringForm",
+
+	emits: ["formSubmitted", "formClosed"],
 
 	components: {
 		FileUpload,

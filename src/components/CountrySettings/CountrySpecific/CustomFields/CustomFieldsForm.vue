@@ -47,15 +47,17 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "CustomFieldForm",
+
+	emits: ["formSubmitted", "formClosed"],
 
 	components: {
 		DataInput,
@@ -75,10 +77,18 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

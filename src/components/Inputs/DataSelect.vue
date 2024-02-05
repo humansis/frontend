@@ -10,12 +10,14 @@
 		:variant="variant"
 		:density="density"
 		:hide-details="hideDetails"
-		:placeholder="$t(placeholder)"
+		:placeholder="$t(placeholder) || $t('Click to select')"
+		:hint="$t(hint)"
 		:multiple="multiple"
 		:chips="multiple"
-		:closable-chips="multiple"
+		:closable-chips="multiple && !disabled"
 		:no-data-text="$t('List is empty')"
 		autocomplete="off"
+		persistent-placeholder
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
@@ -155,6 +157,11 @@ export default {
 		},
 
 		placeholder: {
+			type: String,
+			default: "",
+		},
+
+		hint: {
 			type: String,
 			default: "",
 		},

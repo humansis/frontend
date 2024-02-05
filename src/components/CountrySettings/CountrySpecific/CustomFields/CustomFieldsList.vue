@@ -22,23 +22,24 @@
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
-			<ButtonAction
-				icon="edit"
-				tooltip-text="Edit"
-				@actionConfirmed="onShowEdit(row)"
-			/>
+			<!--	TODO Uncomment in next version (when BE is ready) -->
+			<!--	<ButtonAction-->
+			<!--		icon="edit"-->
+			<!--		tooltip-text="Edit"-->
+			<!--		@actionConfirmed="onShowEdit(row)"-->
+			<!--	/>-->
 
-			<ButtonAction
-				icon="trash"
-				tooltip-text="Delete"
-				icon-color="red"
-				confirm-title="Deleting Custom Field"
-				confirm-message="Are you sure sure you want to delete Custom Field?"
-				prepend-icon="circle-exclamation"
-				prepend-icon-color="red"
-				is-confirm-action
-				@actionConfirmed="onRemove(row.id)"
-			/>
+			<!--	<ButtonAction-->
+			<!--		icon="trash"-->
+			<!--		tooltip-text="Delete"-->
+			<!--		icon-color="red"-->
+			<!--		confirm-title="Deleting Custom Field"-->
+			<!--		confirm-message="Are you sure sure you want to delete Custom Field?"-->
+			<!--		prepend-icon="circle-exclamation"-->
+			<!--		prepend-icon-color="red"-->
+			<!--		is-confirm-action-->
+			<!--		@actionConfirmed="onRemove(row.id)"-->
+			<!--	/>-->
 		</template>
 
 		<template v-slot:tableControls>

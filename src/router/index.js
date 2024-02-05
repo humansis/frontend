@@ -10,9 +10,6 @@ import store from "@/store/index";
 let singleNotification = true;
 
 const { global: { t } } = i18n;
-const user = getters.getUserFromVuexStorage();
-const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
-	|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
 /* eslint-disable vue/max-len */
 const routes = [
@@ -44,16 +41,31 @@ const routes = [
 		},
 	},
 	{
+		path: "/no-permission",
+		name: "NoPermission",
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
+	},
+	{
+		path: "/not-found",
+		name: "NotFound",
+		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
+	},
+	{
 		path: "/",
 		name: "Dashboard",
-		redirect: () => ({
-			name: storedCountryCode ? "Projects" : "Login",
-			...(storedCountryCode && {
-				params: {
-					countryCode: storedCountryCode,
-				},
-			}),
-		}),
+		redirect: () => {
+			const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
+				|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
+
+			return {
+				name: storedCountryCode ? "Projects" : "Login",
+				...(storedCountryCode && {
+					params: {
+						countryCode: storedCountryCode,
+					},
+				}),
+			};
+		},
 	},
 	{
 		path: "/:countryCode",
@@ -444,20 +456,6 @@ const routes = [
 		],
 	},
 	{
-		path: "/no-permission",
-		name: "NoPermission",
-		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
-		meta: {
-			permissions: [],
-			breadcrumb: "No permission",
-		},
-	},
-	{
-		path: "/not-found",
-		name: "NotFound",
-		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
-	},
-	{
 		path: "/:pathMatch(.*)*",
 		redirect: { name: "NotFound" },
 	},
@@ -470,6 +468,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+	const user = getters.getUserFromVuexStorage();
+
 	window.document.title = to.meta && to.meta.breadcrumb
 		? `${to.meta.breadcrumb} | Humansis` : "Humansis";
 
@@ -494,14 +494,14 @@ router.beforeEach((to, from, next) => {
 			return next({ name: "AccountCreated" });
 		}
 
-		if (!canGoNext) {
+		if (to.name !== "NoPermission" && to.name !== "NotFound") {
+			store.dispatch("showSideMenu", true);
+		} else {
 			store.dispatch("showSideMenu", false);
-
-			return next({ name: "NoPermission" });
 		}
 
-		if (to.name !== "NoPermission") {
-			store.dispatch("showSideMenu", true);
+		if (!canGoNext) {
+			return next({ name: "NoPermission" });
 		}
 	}
 

@@ -6,7 +6,7 @@
 		:items="table.data"
 		:custom-key-sort="customSort"
 		is-row-click-disabled
-		show-default-footer
+		is-default-footer-visible
 	/>
 
 	<p class="text-right font-weight-bold mt-2">
@@ -40,9 +40,10 @@ export default {
 	mixins: [grid, baseHelper],
 
 	props: {
-		projects: Array,
-		purchaseIds: Array,
-		redemptionBatchId: Number,
+		redemptionBatchId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {

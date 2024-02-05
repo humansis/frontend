@@ -61,6 +61,13 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "StartStep",
 
+	emits: [
+		"moveStepForward",
+		"fetchStatistics",
+		"changeImportState",
+		"canceledImport",
+	],
+
 	components: {
 		FileUpload,
 	},

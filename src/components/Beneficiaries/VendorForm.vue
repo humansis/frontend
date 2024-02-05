@@ -33,6 +33,8 @@
 			@blur="onValidate('name')"
 		/>
 
+		<h4>{{ $t('Allowed Category Types') }}</h4>
+
 		<div
 			v-for="({ code, value }, index) of options.categoryTypes"
 			:key="`category-type-${code}`"
@@ -42,7 +44,7 @@
 				v-model="formModel.categoryType"
 				:value="value"
 				:disabled="formDisabled"
-				:error-messages="isLastCategoryType(index) && validationMsg('categoryType')"
+				:error-messages="errorMessageForCategory(index)"
 				:name="`category-type-${index}`"
 				hide-details="auto"
 				@blur="onValidate('categoryType')"
@@ -72,9 +74,15 @@
 			:disabled="formDisabled"
 			label="Contract No."
 			name="contract-no"
-			class="mb-2"
+			class="mb-4"
 			optional
 		/>
+
+		<h4 class="mb-n2">
+			{{ $t('Remote Distribution Permission') }}
+
+			<i class="optional-text font-weight-medium">- {{ $t('Optional') }}</i>
+		</h4>
 
 		<v-checkbox
 			v-model="formModel.canDoRemoteDistributions"
@@ -84,9 +92,7 @@
 			class="checkbox"
 		>
 			<template v-slot:label>
-				<span>{{ $t('Remote Distribution Permission') }}
-					<i class="optional-text">- {{ $t('Optional') }}</i>
-				</span>
+				<span>{{ $t('Allowed') }}</span>
 			</template>
 		</v-checkbox>
 
@@ -154,14 +160,16 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "VendorForm",
+
+	emits: ["formSubmitted", "formClosed"],
 
 	components: {
 		LocationForm,
@@ -193,12 +201,20 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		formLoading: Boolean,
 		isEditing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -238,6 +254,12 @@ export default {
 	methods: {
 		isLastCategoryType(index) {
 			return index === (this.options.categoryTypes.length - 1);
+		},
+
+		errorMessageForCategory(index) {
+			return this.isLastCategoryType(index)
+				? this.validationMsg("categoryType")
+				: "";
 		},
 
 		onSubmitForm() {

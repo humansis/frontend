@@ -33,7 +33,7 @@ import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
 export default {
-	name: "Summary",
+	name: "HomeSummary",
 
 	data() {
 		return {

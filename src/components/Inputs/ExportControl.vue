@@ -78,6 +78,7 @@ export default {
 		return {
 			selectedExportType: null,
 			selectedExportFormat: null,
+			selectedExportOptions: {},
 		};
 	},
 
@@ -98,14 +99,26 @@ export default {
 	},
 
 	mounted() {
-		this.setDefaultSelectedValue();
 		this.setExportInputs(this.location);
+		this.setDefaultSelectedValue();
 	},
 
 	methods: {
 		...mapActions(["storeSelectedExportOptions"]),
 
 		setDefaultSelectedValue() {
+			this.selectedExportType = this.availableExportTypes.includes(
+				this.selectedExportOptions?.exportType,
+			)
+				? this.selectedExportOptions.exportType
+				: null;
+
+			this.selectedExportFormat = this.availableExportFormats.includes(
+				this.selectedExportOptions?.formatType,
+			)
+				? this.selectedExportOptions.formatType
+				: null;
+
 			if (this.availableExportTypes.length === 1) {
 				const [option] = this.availableExportTypes;
 				this.selectedExportType = option;
@@ -115,6 +128,8 @@ export default {
 				const [option] = this.availableExportFormats;
 				this.selectedExportFormat = option;
 			}
+
+			this.onInputChanged();
 		},
 
 		onInputChanged() {
@@ -164,8 +179,10 @@ export default {
 						formatType,
 					} = selected;
 
-					this.selectedExportType = exportType;
-					this.selectedExportFormat = formatType;
+					this.selectedExportOptions = {
+						exportType,
+						formatType,
+					};
 				}
 			}
 		},

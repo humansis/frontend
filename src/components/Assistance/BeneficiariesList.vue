@@ -18,10 +18,9 @@
 
 		<Modal
 			v-model="inputDistributedModal.isOpened"
-			header="'Input Deduplication"
+			header="Input Deduplication"
 		>
 			<InputDistributed
-				class="modal-card"
 				deduplication
 				close-button
 				@submit="onFetchDataAfterBeneficiaryChange"
@@ -51,7 +50,6 @@
 			<InputDistributed
 				close-button
 				adding-to-assistance
-				class="modal-card"
 				@submit="onFetchDataAfterBeneficiaryChange"
 				@close="onCloseAddBeneficiariesByIdsModal"
 			/>
@@ -67,7 +65,6 @@
 				:form-model="beneficiaryModel"
 				:disabled="!beneficiaryModal.isEditing"
 				submit-button-label="Save"
-				class="modal-card"
 				close-button
 				@formSubmitted="onSubmitEditBeneficiaryForm"
 				@formClosed="onCloseBeneficiaryModal"
@@ -82,7 +79,6 @@
 				:form-model="institutionModel"
 				:institution-modal="institutionModal"
 				close-button
-				class="modal-card"
 				@formClosed="closeInstitutionModal"
 			/>
 		</Modal>
@@ -176,14 +172,15 @@
 		:search-fields="searchFields"
 		:default-search-field="defaultSearchField"
 		:selected-rows="selectedRows"
+		:reset-filters-button="assistanceDetail"
+		:class="{ 'completed-assistance': isAssistanceCompleted }"
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
-		reset-filters-button
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@search="onSearch"
+		@search="onBeneficiariesSearch"
 		@update:sortBy="onSort"
 		@resetFilters="onResetFilters"
 		@resetSort="onResetSort(defaultSortOptions)"
@@ -332,6 +329,12 @@ const statusTags = [
 export default {
 	name: "BeneficiariesList",
 
+	emits: [
+		"assistanceUpdated",
+		"beneficiariesCounted",
+		"fetchAssistanceStatistics",
+	],
+
 	components: {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
@@ -356,10 +359,18 @@ export default {
 	],
 
 	props: {
-		assistance: Object,
-		project: Object,
 		addButton: Boolean,
 		exportButton: Boolean,
+
+		assistance: {
+			type: Object,
+			required: true,
+		},
+
+		project: {
+			type: Object,
+			required: true,
+		},
 
 		changeButton: {
 			type: Boolean,
@@ -447,7 +458,7 @@ export default {
 					{ key: "contactFamilyName" },
 				],
 				institutionEditColumns: [
-					{ key: "id", title: "ID" },
+					{ key: "id", title: "ID", sortable: false },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },
@@ -519,7 +530,7 @@ export default {
 		availableExportTypes() {
 			const availableTypes = [];
 
-			if (this.exportButton && this.userCan.exportBeneficiaries) {
+			if (this.exportButton && this.userCan.exportBeneficiaries && this.assistance?.target) {
 				if (!this.isAssistanceTargetInstitution) {
 					availableTypes.push(
 						EXPORT.LIST_OF_BENEFICIARIES,
@@ -531,10 +542,13 @@ export default {
 				}
 
 				if (this.isAssistanceValidated) {
-					if (this.isDistributionExportVisible) {
+					if (this.isDistributionExportVisible && !this.isAssistanceTargetInstitution) {
 						availableTypes.push(EXPORT.BANK_DISTRIBUTION_LIST);
 					}
-					availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+
+					if (this.assistance.bnfFile3ExportId) {
+						availableTypes.push(EXPORT.BNF_FILE_3.OPTION_NAME);
+					}
 				}
 			}
 
@@ -551,9 +565,19 @@ export default {
 
 		householdsAndIndividualEditColumns() {
 			return [
-				{ key: "id", title: "Beneficiary ID" },
-				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
+				{ key: "id", title: "Beneficiary ID", sortable: false },
+				{
+					key: "givenName",
+					title: "Local given name",
+					sortKey: "localGivenName",
+					sortable: false,
+				},
+				{
+					key: "familyName",
+					title: "Local family name",
+					sortKey: "localFamilyName",
+					sortable: false,
+				},
 				{ key: "gender", sortable: false },
 				{ key: "dateOfBirth", title: "Date of Birth", type: "date", sortable: false },
 				{ key: "residencyStatus", sortable: false },
@@ -569,10 +593,21 @@ export default {
 
 		householdsAndIndividualDetailColumns() {
 			const baseColumns = [
-				{ key: "id", title: "Beneficiary ID" },
-				{ key: "givenName", title: "Local given name", sortKey: "localGivenName" },
-				{ key: "familyName", title: "Local family name", width: "190px", sortKey: "localFamilyName" },
-				{ key: "nationalId", title: "ID Number" },
+				{ key: "id", title: "Beneficiary ID", sortable: false },
+				{
+					key: "givenName",
+					title: "Local given name",
+					sortKey: "localGivenName",
+					sortable: false,
+				},
+				{
+					key: "familyName",
+					title: "Local family name",
+					width: "190px",
+					sortKey: "localFamilyName",
+					sortable: false,
+				},
+				{ key: "nationalId", title: "ID Number", sortable: false },
 				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
 				...!this.isAssistanceTypeActivity
 					? [
@@ -595,10 +630,10 @@ export default {
 
 		institutionDetailColumns() {
 			return [
-				{ key: "id", title: "ID" },
+				{ key: "id", title: "ID", sortable: false },
 				{ key: "name" },
 				{ key: "type" },
-				{ key: "contactGivenName", title: "Contact Name" },
+				{ key: "contactGivenName" },
 				{ key: "contactFamilyName" },
 				{ key: "phone", title: "Phone Number", sortable: false },
 				{ key: "status", type: "tagArray", customTags: statusTags, sortable: false },
@@ -1057,7 +1092,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed && !isCanceled,
+								selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1072,8 +1107,14 @@ export default {
 					data.forEach((item, key) => {
 						const { beneficiary, reliefPackages } = item;
 						const { id, residencyStatus } = beneficiary;
-						const givenName = this.prepareName(beneficiary.localGivenName, beneficiary.enGivenName);
-						const familyName = this.prepareName(beneficiary.localFamilyName, beneficiary.enFamilyName);
+						const givenName = this.prepareName(
+							beneficiary.localGivenName,
+							beneficiary.enGivenName,
+						);
+						const familyName = this.prepareName(
+							beneficiary.localFamilyName,
+							beneficiary.enFamilyName,
+						);
 						const dateOfBirth = beneficiary.birthDate;
 						const gender = this.$t(normalizeText(beneficiary.gender));
 						const vulnerabilities = beneficiary.vulnerabilityCriteria;
@@ -1124,7 +1165,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed && !isCanceled,
+							selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);

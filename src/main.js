@@ -1,20 +1,22 @@
 import { createApp } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import App from "@/App";
+import i18n from "@/plugins/i18n";
+import htmlSecureDirective from "@/plugins/vuehtmlsecure";
+import vuetify from "@/plugins/vuetify";
 import router from "@/router";
 import store from "@/store";
-import i18n from "@/plugins/i18n";
-import vuetify from "@/plugins/vuetify";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import moment from "moment";
+
 import "@/assets/scss/main.scss";
-import htmlSecureDirective from "@/plugins/vuehtmlsecure";
+
 const app = createApp(App);
 
 app.directive("html-secure", htmlSecureDirective);
 
 app.config.productionTip = false;
 
-app.component("font-awesome-icon", FontAwesomeIcon); // Register component globally
+app.component("font-awesome-icon", FontAwesomeIcon);
 app.config.globalProperties.$moment = moment;
 
 app.use(router);

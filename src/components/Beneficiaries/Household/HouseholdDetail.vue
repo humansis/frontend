@@ -2,16 +2,16 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.familyName"
-			label="Family Name"
-			name="family-name"
+			label="Local family name"
+			name="local-family-name"
 			class="mb-4"
 			disabled
 		/>
 
 		<DataInput
 			v-model="formModel.givenName"
-			label="First Name"
-			name="given-name"
+			label="Local given name"
+			name="local-given-name"
 			class="mb-4"
 			disabled
 		/>
@@ -27,8 +27,8 @@
 		<DataSelect
 			v-model="formModel.vulnerabilities"
 			:items="options.vulnerabilities"
-			label="Vulnerabilities"
-			name="vulnerabilities"
+			label="Vulnerability criteria"
+			name="vulnerability-criteria"
 			class="mb-4"
 			multiple
 			chips

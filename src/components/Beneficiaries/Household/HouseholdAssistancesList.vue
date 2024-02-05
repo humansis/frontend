@@ -3,6 +3,7 @@
 		v-show="show"
 		ref="assistanceList"
 		v-model:page="table.currentPage"
+		v-model:sort-by="sortValue"
 		:items-per-page="perPage"
 		:headers="table.columns"
 		:items="table.data"
@@ -54,7 +55,7 @@ export default {
 					{ key: "beneficiaryId", title: "Beneficiary Id", sortable: false },
 					{ key: "beneficiaryLocalGivenName", title: "Local Given Name", sortable: false },
 					{ key: "beneficiaryLocalFamilyName", title: "Local Family Name", sortable: false },
-					{ key: "state", title: "Status", type: "tag", customTags: statusTags },
+					{ key: "state", title: "Status", type: "tag", customTags: statusTags, sortable: false },
 					{ key: "projectName", title: "Project", type: "link", sortable: false },
 					{ key: "assistanceName", title: "Assistance", type: "link", sortable: false },
 					{ key: "fullLocationNames", title: "Location", sortable: false },

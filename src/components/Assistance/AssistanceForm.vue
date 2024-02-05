@@ -33,9 +33,12 @@
 			:min-date="minDateOfAssistance"
 			:max-date="maxDateOfAssistance"
 			:disabled="!isAssistanceNew"
+			:hint="isDateOfAssistanceInvalidMsg"
 			label="Date of Assistance"
 			name="date-of-assistance"
-			@blur="onValuesForAssistanceName"
+			class="has-warning-message mb-4"
+			persistent-hint
+			@update:modelValue="onValuesForAssistanceName"
 		/>
 
 		<DataSelect
@@ -45,6 +48,7 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
+			@update:modelValue="onValuesForAssistanceName"
 		/>
 
 		<p
@@ -119,11 +123,22 @@
 			</v-col>
 		</v-row>
 
-		<h3 v-if="isCommoditySmartCard" class="text-h5 mt-4">
-			{{ $t('Distributed Commodity') }}
-		</h3>
+		<template v-if="isCommoditySmartCard">
+			<h3 class="text-h5 my-4">{{ $t('Distributed Commodity') }}</h3>
 
-		<div v-if="isCommoditySmartCard">
+			<DatePicker
+				v-model="formModel.dateExpiration"
+				:min-date="formModel.dateDistribution"
+				:max-date="maxDateOfAssistance"
+				:disabled="!isAssistanceNew"
+				label="Expiration Date"
+				name="expiration-date"
+				class="mb-4"
+				@blur="onValuesForAssistanceName"
+			/>
+
+			<h4>{{ $t('Allowed Product Category Types') }}</h4>
+
 			<div
 				v-for="(productCategoryType, index) of project.allowedProductCategoryTypes"
 				:key="`product-category-type-${productCategoryType}`"
@@ -147,16 +162,16 @@
 					</template>
 				</v-checkbox>
 			</div>
-		</div>
 
-		<DataInput
-			v-if="formModel.cashbackLimit && isCommoditySmartCard"
-			v-model="formModel.cashbackLimit"
-			label="Cashback Limit"
-			name="cashback-limit"
-			class="my-4"
-			disabled
-		/>
+			<DataInput
+				v-if="formModel.cashbackLimit"
+				v-model="formModel.cashbackLimit"
+				label="Cashback Limit"
+				name="cashback-limit"
+				class="my-4"
+				disabled
+			/>
+		</template>
 	</v-card-text>
 
 	<v-card-actions>
@@ -189,6 +204,7 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
@@ -201,9 +217,9 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "AssistanceForm",
@@ -230,8 +246,12 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
 		editing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		assistance: {
 			type: Object,
@@ -330,6 +350,19 @@ export default {
 		isAssistanceTargetInstitution() {
 			return this.assistance.target.toLowerCase() === ASSISTANCE.TARGET.INSTITUTION;
 		},
+
+		isDateOfAssistanceInvalidMsg() {
+			if (this.formModel.dateExpiration) {
+				return !isDateBeforeOrEqual(
+					this.formModel.dateDistribution,
+					this.formModel.dateExpiration,
+				)
+					? this.$t("Date is after Expiration date of the commodity")
+					: "";
+			}
+
+			return "";
+		},
 	},
 
 	watch: {
@@ -406,27 +439,6 @@ export default {
 
 		onCloseForm() {
 			this.$emit("formClosed");
-		},
-
-		confirmUpdate(data) {
-			const message = this.$t("By changing data on a closed distribution, you may create"
-				+ " a discrepancy between data in Humansis and data in the signed distribution "
-				+ "protocol. Please check you gave your name and provided reasoning for the change "
-				+ "in the Note section of the distribution to serve for auditing purposes.");
-
-			// FIXME
-			this.$buefy.dialog.confirm({
-				title: this.$t("Do you really want to apply the change?"),
-				message,
-				confirmText: this.$t("Yes"),
-				cancelText: this.$t("No"),
-				type: "is-warning",
-				hasIcon: true,
-				onConfirm: () => {
-					this.$emit("formSubmitted", data);
-					this.onCloseForm();
-				},
-			});
 		},
 
 		onValuesForAssistanceName() {

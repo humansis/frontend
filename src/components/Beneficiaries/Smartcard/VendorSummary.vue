@@ -146,7 +146,10 @@ export default {
 	mixins: [grid],
 
 	props: {
-		vendor: Object,
+		vendor: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	data() {

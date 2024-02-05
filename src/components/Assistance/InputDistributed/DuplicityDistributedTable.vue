@@ -10,7 +10,8 @@
 			:headers="table.columns"
 			:items="beneficiaries"
 			is-row-click-disabled
-			is-footer-disabled
+			is-custom-footer-disabled
+			is-default-footer-visible
 		/>
 	</div>
 </template>

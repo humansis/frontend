@@ -61,7 +61,7 @@
 
 					<span
 						v-if="assistanceRemote"
-						class="remote-disribution-flag"
+						class="remote-distribution-flag"
 					>
 						R
 					</span>
@@ -152,7 +152,7 @@
 
 					<span
 						v-if="assistanceRemote"
-						class="remote-disribution-flag"
+						class="remote-distribution-flag"
 					>
 						R
 					</span>
@@ -249,7 +249,8 @@ export default {
 
 	computed: {
 		inAssistanceBeneficiariesCount() {
-			return this.statistics?.beneficiariesTotal - this.statistics?.beneficiariesDeleted;
+			return (this.statistics?.beneficiariesTotal || 0)
+				- (this.statistics?.beneficiariesDeleted || 0);
 		},
 
 		beneficiariesReached() {

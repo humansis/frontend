@@ -66,11 +66,12 @@
 
 			<DataInput
 				v-else-if="isValueDefaultInput"
-				v-model="formModel.value"
+				v-model.number="formModel.value"
 				:error-messages="validationMsg('value')"
 				:step="(fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.DOUBLE) ? '0.01' : '1'"
 				label="Value"
 				name="value"
+				type="number"
 				hide-spin-buttons
 				@blur="onValidate('value')"
 			/>
@@ -108,6 +109,7 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -117,10 +119,11 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "SelectionCriteriaForm",
+
+	emits: ["formSubmitted", "formClosed"],
 
 	components: {
 		LocationForm,
@@ -145,11 +148,14 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
 
 		submitButtonLabel: {
 			type: String,
-			default: "",
+			required: true,
 		},
 
 		closeButton: {

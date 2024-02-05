@@ -6,7 +6,6 @@
 		>
 			<InputDistributed
 				close-button
-				class="modal-card"
 				@submit="onFetchBeneficiariesAndStatistics"
 				@close="onCloseInputDistributedModal"
 			/>
@@ -19,7 +18,6 @@
 			<StartTransactionForm
 				close-button
 				submit-button-label="Confirm"
-				class="modal-card"
 				@formSubmitted="onConfirmTransaction"
 				@formClosed="onCloseTransactionModal"
 			/>
@@ -259,7 +257,9 @@ export default {
 		},
 
 		assistanceProgress() {
-			return Math.trunc(this.statistics?.progress * 100);
+			const progress = this.statistics?.progress || 0;
+
+			return Math.trunc(progress * 100);
 		},
 
 		amountDistributed() {
@@ -459,35 +459,6 @@ export default {
 
 			this.transactionModal.isWaiting = false;
 			this.onCloseTransactionModal();
-		},
-
-		unvalidateAssistance() {
-			// FIXME
-			this.$buefy.dialog.confirm({
-				title: this.$t("Unvalidate Assistance"),
-				message: this.$t("Please be sure that no field activity has been started. Do you really want to unvalidate assistance?"),
-				confirmText: this.$t("Confirm"),
-				cancelText: this.$t("Cancel"),
-				type: "is-primary",
-				onConfirm: async () => {
-					const { assistanceId, projectId } = this.$route.params;
-
-					await AssistancesService.updateAssistanceStatusValidated(
-						{ assistanceId, validated: false },
-					).then(({ status }) => {
-						if (status === 200) {
-							Notification(this.$t("Assistance Successfully Unvalidated"), "success");
-
-							this.$router.push({
-								name: "AssistanceEdit",
-								params: { assistanceId, projectId },
-							});
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-					});
-				},
-			});
 		},
 
 		async onCloseAssistance() {

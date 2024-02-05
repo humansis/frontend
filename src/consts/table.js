@@ -10,7 +10,7 @@ export default {
 		CUSTOM_FIELDS: { key: "id", order: "asc" },
 		DISTRIBUTIONS: { key: "dateDistribution", order: "desc" },
 		DONORS: { key: "fullname", order: "asc" },
-		HOUSEHOLDS: { key: "id", order: "asc" },
+		HOUSEHOLDS: { key: "updatedAt", order: "asc" },
 		IMPORTS: { key: "createdAt", order: "desc" },
 		INSTITUTIONS: { key: "id", order: "desc" },
 		PRODUCTS_CATEGORIES: { key: "id", order: "asc" },
@@ -19,7 +19,7 @@ export default {
 		PURCHASE_LIST: { key: "datePurchase", order: "desc" },
 		SMARTCARD_PURCHASED: { key: "datePurchase", order: "desc" },
 		USERS: { key: "id", order: "desc" },
-		VENDORS: { key: "id", order: "desc" },
+		VENDORS: { key: "id", order: "asc" },
 		VOUCHERS: { key: "code", order: "desc" },
 	},
 };

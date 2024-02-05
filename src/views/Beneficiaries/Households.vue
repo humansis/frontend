@@ -96,7 +96,7 @@
 			:progress="table.progress"
 			:search-phrase="table.searchPhrase"
 			:selected-rows="table.checkedRows.length"
-			:is-search-disabled="bulkSearch.isBulkSearchUsed"
+			:is-search-disabled="isBulkSearchVisible"
 			reset-filters-button
 			reset-sort-button
 			is-search-visible
@@ -285,11 +285,11 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id", title: "Household ID", type: "link" },
+					{ key: "id", title: "Household ID", type: "link", sortable: false },
 					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
 					{ key: "members", sortKey: "dependents" },
-					{ key: "vulnerabilities", type: "svgIcon" },
+					{ key: "vulnerabilities", title: "Vulnerability criteria", type: "svgIcon" },
 					{ key: "idNumbers", title: "ID Numbers", sortKey: "nationalId" },
 					{ key: "projects", title: "Projects" },
 					{ key: "currentLocation", title: "Current Location", sortKey: "currentHouseholdLocation" },
@@ -437,7 +437,9 @@ export default {
 				const filename = `BNF Households ${normalizeExportDate()}`;
 
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.householdId);
+					ids = this.table.checkedRows.map(
+						(household) => household.routeParams.householdId,
+					);
 				}
 
 				if (this.bulkSearch.isBulkSearchUsed) {
@@ -465,10 +467,19 @@ export default {
 					}
 				} else {
 					try {
+						this.exportControl.loading = true;
+
+						const sort = `${this.table.sortColumn?.sortKey
+							|| this.table.sortColumn}.${this.table.sortDirection}`;
+						const filters = {
+							...this.filters,
+							...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
+						};
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
-							this.filters,
+							filters,
+							sort,
 						);
 
 						downloadFile(data, filename, status, format, message);
@@ -490,6 +501,7 @@ export default {
 		},
 
 		onClickedBulkSearch(bulkSearchData) {
+			this.table.checkedRows = [];
 			this.bulkSearch = bulkSearchData;
 			this.fetchData();
 		},
@@ -499,6 +511,7 @@ export default {
 		},
 
 		onClickedSearch() {
+			this.table.checkedRows = [];
 			this.bulkSearch.isBulkSearchUsed = false;
 			this.onSearch(this.table.searchPhrase);
 		},

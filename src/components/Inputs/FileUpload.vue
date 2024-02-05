@@ -3,7 +3,7 @@
 		<template v-slot:prepend-inner>
 			<v-icon icon="upload" size="x-large" />
 
-			<p class="pt-3">{{ $t('Add File Or Drag And Drop') }}</p>
+			<p class="pt-3">{{ $t('Add file or Drag and Drop') }}</p>
 		</template>
 
 		<template v-slot:selection="{ fileNames }">

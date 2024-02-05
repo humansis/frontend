@@ -25,7 +25,6 @@
 import SyncService from "@/services/SyncService";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
-import SyncFilter from "@/components/AdministrativeSettings/Sync/Filter";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
@@ -38,7 +37,6 @@ export default {
 
 	components: {
 		DataGrid,
-		SyncFilter,
 		ButtonAction,
 	},
 
@@ -165,15 +163,11 @@ export default {
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
-			return VendorService.getListOfVendors(null, null, null, null, ids)
+			return VendorService.getListOfVendors(null, null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
 				});
-		},
-
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
 		},
 
 		resetFilters() {

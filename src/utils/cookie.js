@@ -9,7 +9,7 @@ export const getCookie = (name) => {
 	const cookieName = `${name}=`;
 	const ca = document.cookie.split(";");
 
-	for (let i = 0; i < ca.length; i++) {
+	for (let i = 0; i < ca.length; i += 1) {
 		let c = ca[i];
 		while (c.charAt(0) === " ") {
 			c = c.substring(1);

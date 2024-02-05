@@ -4,6 +4,7 @@
 		:density="density"
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
+		autocomplete="off"
 	>
 		<template v-slot:label>
 			<span>{{ $t(label) }}
@@ -50,29 +51,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-.v-label {
-	opacity: .65;
-
-	> span {
-		font-size: .9rem;
-	}
-}
-
-.v-field--disabled {
-	opacity: .8;
-	background-color: #f5f5f5;
-}
-
-.v-field--disabled,
-.v-input--disabled {
-	pointer-events: unset;
-
-	.v-field__input,
-	.v-field__append-inner,
-	.v-chip__content > span {
-		cursor: not-allowed !important;
-	}
-}
-</style>

@@ -23,7 +23,7 @@
 			prepend-icon="home"
 			class="text-none"
 		>
-			{{ $t('Go to Dashboard') }}
+			{{ $t('Go to Projects') }}
 		</v-btn>
 	</div>
 </template>

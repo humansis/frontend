@@ -61,7 +61,7 @@ export default {
 
 	methods: {
 		onFilterChanged(filters) {
-			this.$emit("filtersChanged", { filters });
+			this.$emit("filtersChanged", filters);
 		},
 
 		async fetchProjects() {

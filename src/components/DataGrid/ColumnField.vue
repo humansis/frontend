@@ -140,6 +140,8 @@
 			<SvgIcon
 				:items="cellData"
 			/>
+
+			<span v-if="isAssistanceRemote(cellData)" class="remote-distribution-flag">R</span>
 		</span>
 
 		<p v-else>
@@ -205,7 +207,9 @@ export default {
 			required: true,
 		},
 
-		cellData: {},
+		cellData: {
+			required: true,
+		},
 	},
 
 	computed: {
@@ -268,7 +272,7 @@ export default {
 		},
 
 		isAssistanceRemote(data) {
-			return !!data.remoteDistributionAllowed;
+			return !!data[0].remoteDistributionAllowed;
 		},
 
 		isMembersLastRecord(item) {

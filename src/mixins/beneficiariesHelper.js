@@ -5,6 +5,8 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {
+	emits: ["rowsChecked"],
+
 	mixins: [institutionHelper],
 
 	methods: {
@@ -317,7 +319,7 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async onSearch(search) {
+		async onBeneficiariesSearch(search) {
 			this.table.searchPhrase = this.assistanceDetail
 				? search.phrase
 				: search;

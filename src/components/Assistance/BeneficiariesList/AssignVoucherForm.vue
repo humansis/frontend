@@ -91,11 +91,27 @@ export default {
 	},
 
 	props: {
-		beneficiary: Object,
-		assistance: Object,
-		project: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
+
+		beneficiary: {
+			type: Object,
+			required: true,
+		},
+
+		assistance: {
+			type: Object,
+			required: true,
+		},
+
+		project: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

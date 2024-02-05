@@ -156,6 +156,13 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "IdentityStep",
 
+	emits: [
+		"goToFinalStep",
+		"updated",
+		"changeImportState",
+		"canceledImport",
+	],
+
 	components: {
 		DuplicityResolver,
 		Loading,

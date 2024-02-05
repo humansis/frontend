@@ -9,6 +9,7 @@
 				:duplicate-assistance="newAssistanceForm !== null"
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
+				@input="onUpdateData(false)"
 			/>
 
 			<LocationForm
@@ -25,8 +26,9 @@
 				:hint="isDateOfAssistanceInvalidMsg"
 				label="Date of Assistance"
 				name="date-of-assistance"
-				class="mb-4"
-				@update:modelValue="onValuesForAssistanceName"
+				class="has-warning-message mb-4"
+				persistent-hint
+				@update:modelValue="onUpdateData"
 			/>
 
 			<DataSelect
@@ -35,7 +37,7 @@
 				label="Round"
 				name="round"
 				class="mb-4"
-				@update:modelValue="onValuesForAssistanceName"
+				@update:modelValue="onUpdateData(false)"
 			/>
 
 			<DataInput
@@ -43,6 +45,7 @@
 				label="Elo number"
 				name="elo-number"
 				class="mb-4"
+				@input="onUpdateData(false)"
 			/>
 
 			<div class="mb-4">
@@ -51,6 +54,7 @@
 					v-model="formModel.activity"
 					label="Activity"
 					name="activity"
+					@input="onUpdateData(false)"
 				/>
 
 				<DataSelect
@@ -60,7 +64,10 @@
 					:hint="validationMessages.activity"
 					label="Activity"
 					name="activity"
+					class="has-warning-message"
+					persistent-hint
 					optional
+					@update:modelValue="onUpdateData(false)"
 				/>
 			</div>
 
@@ -70,6 +77,7 @@
 					v-model="formModel.budgetLine"
 					label="Budget line"
 					name="budget-line"
+					@input="onUpdateData(false)"
 				/>
 
 				<DataSelect
@@ -79,7 +87,10 @@
 					:hint="validationMessages.budgetLine"
 					label="Budget line"
 					name="budget-line"
+					class="has-warning-message"
+					persistent-hint
 					optional
+					@update:modelValue="onUpdateData(false)"
 				/>
 			</div>
 		</v-card-text>
@@ -98,7 +109,7 @@
 				persistent-hint
 				label="Sector"
 				name="sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4 "
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -111,7 +122,7 @@
 				persistent-hint
 				label="Subsector"
 				name="sub-sector"
-				class="mb-4 warning-message"
+				class="has-warning-message mb-4"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -145,6 +156,7 @@
 				label="Note"
 				name="note"
 				auto-grow
+				@blur="onUpdateData(false)"
 			/>
 		</v-card-text>
 	</v-card>
@@ -152,6 +164,7 @@
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import SectorsService from "@/services/SectorsService";
 import AssistanceName from "@/components/Assistance/AssistanceName";
@@ -163,10 +176,9 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
-import { getUniqueObjectsInArray } from "@/utils/helpers";
+import { getUniqueObjectsInArray, isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "NewAssistanceForm",
@@ -182,7 +194,7 @@ export default {
 
 	emits: [
 		"updatedData",
-		"onTargetSelect",
+		"targetSelect",
 		"showComponent",
 	],
 
@@ -231,7 +243,6 @@ export default {
 	data() {
 		return {
 			dataForAssistanceName: {},
-			isDateOfAssistanceValid: true,
 			formModel: {
 				name: "",
 				adm1: null,
@@ -249,6 +260,7 @@ export default {
 				eloNumber: "",
 				activity: null,
 				budgetLine: null,
+				isDateOfAssistanceValid: true,
 			},
 			options: {
 				rounds: ASSISTANCE.ROUNDS_OPTIONS,
@@ -286,7 +298,7 @@ export default {
 		},
 
 		isDateOfAssistanceInvalidMsg() {
-			return !this.isDateOfAssistanceValid
+			return !this.formModel.isDateOfAssistanceValid
 				? this.$t("Date is after Expiration date of the commodity")
 				: "";
 		},
@@ -311,9 +323,10 @@ export default {
 
 		assistanceDates() {
 			if (this.dateExpiration) {
-				this.isDateOfAssistanceValid = this.$moment(this.formModel.dateOfAssistance)
-					.format("YYYY-MM-DD") <= this.dateExpiration;
-				this.formModel.isDateOfAssistanceValid = this.isDateOfAssistanceValid;
+				this.formModel.isDateOfAssistanceValid = isDateBeforeOrEqual(
+					this.formModel.dateOfAssistance,
+					this.dateExpiration,
+				);
 			}
 		},
 	},
@@ -324,7 +337,7 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", this.formModel);
+		this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 	},
 
 	methods: {
@@ -357,7 +370,7 @@ export default {
 				await this.showComponents();
 			}
 
-			this.$emit("updatedData", this.formModel);
+			this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 		},
 
 		submit() {
@@ -368,9 +381,10 @@ export default {
 				|| (!this.v$.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
-		onUpdateData() {
-			this.$emit("updatedData", this.formModel);
+		async onUpdateData(isFetchForced = true) {
 			this.onValuesForAssistanceName();
+			await this.$nextTick();
+			this.$emit("updatedData", { data: this.formModel, isFetchForced });
 		},
 
 		normalizeText(text) {
@@ -417,7 +431,7 @@ export default {
 				this.onValidate("targetType");
 				this.$emit("targetSelect", targetType);
 				await this.showComponents();
-				this.$emit("updatedData", this.formModel);
+				this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
 			}
 		},
 
@@ -523,7 +537,10 @@ export default {
 			this.loading.assistanceTypes = true;
 			await AssistancesService.getAssistanceTypes(code)
 				.then(({ data }) => {
-					this.options.assistanceTypes = data;
+					this.options.assistanceTypes = data.map((type) => ({
+						...type,
+						value: type.value.replace(/^\w/, (value) => value.toUpperCase()),
+					}));
 				})
 				.catch((e) => {
 					Notification(`${this.$t("Assistance Types")} ${e.message || e}`, "error");

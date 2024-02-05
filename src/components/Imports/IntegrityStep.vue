@@ -348,6 +348,8 @@ import { IMPORT } from "@/consts";
 export default {
 	name: "IntegrityStep",
 
+	emits: ["canceledImport", "changeImportState"],
+
 	components: {
 		Loading,
 		FileUpload,
@@ -396,7 +398,7 @@ export default {
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
-			importStatus: "",
+			importStatus: this.status,
 			invalidFiles: [],
 			filesUpload: false,
 			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,

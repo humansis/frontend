@@ -24,17 +24,17 @@
 				<v-col cols="1">
 					<v-row class="d-flex align-center justify-end">
 						<ButtonAction
-							v-if="isDisplayFullIconVisible"
+							v-if="noteComputed?.length"
 							:icon="displayFull ? 'arrow-up' : 'arrow-down'"
 							:tooltipText="displayFull ? 'Show less' : 'Show full note'"
-							@actionConfirmed="onToggleDisplayFull"
+							@actionConfirmed="displayFull = !displayFull"
 						/>
 
 						<ButtonAction
 							v-if="!completed && !edit"
 							tooltipText="Edit note"
 							icon="pen"
-							@actionConfirmed="onToggleEdit"
+							@actionConfirmed="edit = !edit"
 						/>
 
 						<ButtonAction
@@ -100,10 +100,6 @@ export default {
 		completed() {
 			return this.assistance?.completed || false;
 		},
-
-		isDisplayFullIconVisible() {
-			return !this.completed && !this.edit && this.noteComputed?.length;
-		},
 	},
 
 	watch: {
@@ -140,14 +136,6 @@ export default {
 		onDiscardNoteChanges() {
 			this.note = this?.assistance?.note;
 			this.edit = false;
-		},
-
-		onToggleDisplayFull() {
-			this.displayFull = !this.displayFull;
-		},
-
-		onToggleEdit() {
-			this.edit = !this.edit;
 		},
 	},
 };

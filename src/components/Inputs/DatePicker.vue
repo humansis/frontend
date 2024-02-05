@@ -16,7 +16,7 @@
 				:disabled="disabled"
 				:optional="optional"
 				:placeholder="placeholder"
-				:clearable="clearable"
+				:clearable="clearable && !disabled"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
 				readonly
@@ -50,7 +50,7 @@ export default {
 	props: {
 		modelValue: {
 			type: Date,
-			default: "",
+			default: null,
 		},
 
 		minDate: {
@@ -129,5 +129,9 @@ export default {
 <style lang="scss">
 .v-date-picker-month__weekday {
 	font-weight: bold;
+}
+
+.v-date-picker {
+	min-height: 27rem !important;
 }
 </style>

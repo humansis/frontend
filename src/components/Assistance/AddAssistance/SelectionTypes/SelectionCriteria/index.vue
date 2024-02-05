@@ -42,7 +42,6 @@
 			ref="criteriaForm"
 			:form-model="criteriaModel"
 			submit-button-label="Create"
-			class="modal-card"
 			close-button
 			@formSubmitted="onSubmitCriteriaForm"
 			@formClosed="onCloseCriteriaModal"
@@ -162,14 +161,21 @@ export default {
 	},
 
 	emits: [
-		"onDeliveredCommodityValue",
+		"deliveredCommodityValue",
 		"updatedData",
 		"beneficiariesCounted",
 	],
 
 	props: {
-		targetType: String,
-		assistanceBody: Object,
+		targetType: {
+			type: String,
+			default: "",
+		},
+
+		assistanceBody: {
+			type: Object,
+			required: true,
+		},
 
 		data: {
 			type: Array,
@@ -298,7 +304,10 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Vulnerability scores ${normalizeExportDate()}`;
-					const { data, status, message } = await AssistancesService.exportVulnerabilityScores(format, this.assistanceBody);
+					const { data, status, message } = await AssistancesService.exportVulnerabilityScores(
+						format,
+						this.assistanceBody,
+					);
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {

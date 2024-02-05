@@ -1,7 +1,7 @@
 import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 
 export default {
-	async getListOfVendors(page, size, sort, search = null, ids = null, filters) {
+	async getListOfVendors(page, size, sort, filters, search = null, ids = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";

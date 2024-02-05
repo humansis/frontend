@@ -6,7 +6,7 @@
 		:items="table.data"
 		:custom-key-sort="customSort"
 		is-row-click-disabled
-		show-default-footer
+		is-default-footer-visible
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
@@ -46,8 +46,15 @@ export default {
 	mixins: [grid],
 
 	props: {
-		projects: Array,
-		vendorId: Number,
+		projects: {
+			type: Array,
+			required: true,
+		},
+
+		vendorId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {

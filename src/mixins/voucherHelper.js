@@ -91,7 +91,7 @@ export default {
 
 		async getProjects(ids) {
 			if (!ids.length) return [];
-			return ProjectService.getListOfProjects(null, null, null, null, ids)
+			return ProjectService.getListOfProjects(null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
 					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");

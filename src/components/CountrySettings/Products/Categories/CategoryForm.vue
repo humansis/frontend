@@ -10,6 +10,8 @@
 			@update:modelValue="onValidate('name')"
 		/>
 
+		<h4>{{ $t('Type') }}</h4>
+
 		<v-radio-group
 			v-model="formModel.type"
 			:error-messages="validationMsg('type')"
@@ -34,6 +36,8 @@
 				</template>
 			</v-radio>
 		</v-radio-group>
+
+		<h4>{{ $t('Image') }}</h4>
 
 		<FileUpload
 			v-if="!formDisabled"
@@ -81,11 +85,11 @@
 </template>
 
 <script>
+import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
-import { required, requiredIf } from "@vuelidate/validators";
 
 export default {
 	name: "CategoryForm",
@@ -114,11 +118,19 @@ export default {
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		editing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {

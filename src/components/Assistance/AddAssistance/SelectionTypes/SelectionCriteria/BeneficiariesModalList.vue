@@ -5,7 +5,7 @@
 			:headers="table.columns"
 			:items="table.data"
 			is-row-click-disabled
-			show-default-footer
+			is-default-footer-visible
 		/>
 	</v-card-text>
 </template>
@@ -38,7 +38,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id" },
+					{ key: "id", sortable: false },
 					{ key: "localFamilyName", title: "Local family name" },
 					{ key: "localGivenName", title: "Local given name" },
 					{ key: "vulnerability" },

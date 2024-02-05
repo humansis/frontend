@@ -24,6 +24,7 @@
 	</v-alert>
 
 	<DataGrid
+		v-show="beneficiariesCount || upcoming"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -150,7 +151,7 @@
 							icon="trash"
 							button-size="small"
 							icon-color="red"
-							confirm-action
+							is-confirm-action
 							confirm-title="Deleting Assistance"
 							confirm-message="All distribution data will be deleted. Do you wish to continue?"
 							prepend-icon="circle-exclamation"
@@ -176,7 +177,6 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
-import getters from "@/store/getters";
 
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
@@ -186,6 +186,8 @@ const statusTags = [
 
 export default {
 	name: "AssistancesList",
+
+	emits: ["remove"],
 
 	components: {
 		ButtonAction,
@@ -417,7 +419,13 @@ export default {
 					? dateExpiration : this.$t("N/A");
 
 				this.table.data[key].commodity = preparedCommodity[0] ? [preparedCommodity[0]]
-					.map(({ modalityType }) => ({ code: modalityType, value: modalityType })) : [];
+					.map(({ modalityType }) => (
+						{
+							code: modalityType,
+							value: modalityType,
+							remoteDistributionAllowed: item.remoteDistributionAllowed,
+						}))
+					: [];
 			});
 			this.table.progress += 10;
 		},

@@ -15,7 +15,7 @@
 
 	<span
 		v-if="validationMessages.modalityType?.length"
-		class="error"
+		class="text-red"
 	>
 		{{ validationMessages.modalityType }}
 	</span>
@@ -32,7 +32,6 @@
 			:date-expiration="dateExpiration"
 			:commodity="commodity"
 			submit-button-label="Create"
-			class="modal-card"
 			close-button
 			@formSubmitted="onSubmitCommodityForm"
 			@formClosed="onCloseCommodityModal"
@@ -44,8 +43,28 @@
 		:headers="preparedTableColumns"
 		:items="modifiedTableData"
 		is-row-click-disabled
-		is-footer-disabled
+		is-custom-footer-disabled
 	>
+		<template v-slot:custom-value="{ row }">
+			<span
+				v-if="isPerHouseholdMembers(row.division) && isModalityCash"
+				v-html-secure="mapDivisionFields(row.divisionFields)"
+			/>
+			<template v-else>
+				{{ row.value }}
+			</template>
+		</template>
+
+		<template v-slot:custom-quantity="{ row }">
+			<span
+				v-if="isPerHouseholdMembers(row.division) && isModalityInKind"
+				v-html-secure="mapDivisionFields(row.divisionFields)"
+			/>
+			<template v-else>
+				{{ row.quantity }}
+			</template>
+		</template>
+
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				tooltip="Delete"
@@ -100,7 +119,7 @@ export default {
 	},
 
 	emits: [
-		"onDeliveredCommodityValue",
+		"deliveredCommodityValue",
 		"updatedData",
 	],
 
@@ -268,8 +287,13 @@ export default {
 				value: (this.isModalityCash && this.isPerHouseholdMembers(division))
 					? null
 					: Number(value) || null,
-				divisionFields: division?.fields || division?.quantities
-					|| (this.isPerMembersNws(division) ? payloadDivisionNwsFields : payloadDivisionNesFields),
+				divisionFields: division?.fields
+					|| division?.quantities
+					|| (
+						this.isPerMembersNws(division)
+							? payloadDivisionNwsFields
+							: payloadDivisionNesFields
+					),
 				secondUnit,
 				secondQuantity,
 				dateExpiration,
@@ -350,7 +374,7 @@ export default {
 
 		getDivisionName(division) {
 			if (division?.quantities) {
-				if (division.quantities?.length === 4) {
+				if (division.quantities?.length === 5) {
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
 				}
 
@@ -407,7 +431,7 @@ export default {
 
 		showColumn(columnName) {
 			this.table.columns.forEach((column, i) => {
-				if (column.field === columnName) {
+				if (column.key === columnName) {
 					this.table.columns[i].visible = true;
 				}
 			});
@@ -434,10 +458,6 @@ export default {
 		onRemoveCommodity(index) {
 			this.table.data.splice(index, 1);
 			this.$emit("deliveredCommodityValue", this.preparedCommodities);
-		},
-
-		isDivisionFields(column, props) {
-			return (this.isModalityCash ? column.field === "value" : column.field === "quantity") && this.isPerHouseholdMembers(props.row.division);
 		},
 
 		mapDivisionFields(divisionFields) {

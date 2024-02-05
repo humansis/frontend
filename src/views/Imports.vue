@@ -43,6 +43,7 @@
 				class="text-none ml-2"
 				href="https://docs.pinf.cz/x/RwBf"
 				target="_blank"
+				rel="noopener noreferrer"
 			>
 				{{ $t('Help') }}
 			</v-btn>
@@ -245,6 +246,7 @@ export default {
 					if (status === 202) {
 						Notification(this.$t("Import Successfully Updated"), "success");
 						this.$refs.importList.fetchData();
+						this.importModal.isOpened = false;
 					}
 				}).catch((e) => {
 					Notification(`${this.$t("Import")} ${e.message || e}`, "error");

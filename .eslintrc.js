@@ -16,6 +16,7 @@ module.exports = {
 		"import/extensions": ["error", "always", {
 			js: "never",
 			vue: "never",
+			mjs: "never",
 		}],
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
@@ -28,6 +29,12 @@ module.exports = {
 		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
 		"vue/html-self-closing": "warn",
+		/*
+		*	TODO For now i just turned off validation for mutating props, but in the future
+		*   we need to avoid mutating props and push props into local data, then change it and emit
+		* 	it back.
+		*/
+		"vue/no-mutating-props": "off",
 		"vue/multi-word-component-names": "off",
 		"vue/no-multiple-template-root": "off",
 		"vue/valid-v-slot": ["error", {
@@ -68,8 +75,8 @@ module.exports = {
 			"error",
 			{
 				groups: [
-					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
-					["^.+\\.css$"],
+					["^vue", "^@vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
+					["^.+\\.s?(css|sass)$"],
 				],
 			},
 		],
@@ -79,6 +86,7 @@ module.exports = {
 			alias: {
 				map: [
 					["@", "./src"],
+					["vue-qrcode-reader", "./node_modules"],
 				],
 				extensions: [".js", ".vue"],
 			},

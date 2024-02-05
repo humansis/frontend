@@ -71,12 +71,13 @@
 			:total-count="table.total"
 			class="mb-4"
 			is-header-disabled
-			is-footer-disabled
+			is-custom-footer-disabled
 		/>
 	</div>
 </template>
 
 <script>
+import { required } from "@vuelidate/validators";
 import ProjectService from "@/services/ProjectService";
 import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
@@ -85,7 +86,6 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "HouseholdSummary",
@@ -107,11 +107,30 @@ export default {
 	},
 
 	props: {
-		members: Array,
-		detailOfHousehold: Object,
-		livelihood: String,
-		location: String,
-		address: String,
+		members: {
+			type: Array,
+			required: true,
+		},
+
+		detailOfHousehold: {
+			type: Object,
+			required: true,
+		},
+
+		livelihood: {
+			type: String,
+			required: true,
+		},
+
+		location: {
+			type: String,
+			required: true,
+		},
+
+		address: {
+			type: String,
+			required: true,
+		},
 
 		isEditing: {
 			type: Boolean,
@@ -177,10 +196,6 @@ export default {
 
 		submit() {
 			this.v$.$touch();
-
-			if (this.v$.$error) {
-				Notification(this.$t("Please fill all required fields"), "error");
-			}
 
 			return !this.v$.$invalid;
 		},

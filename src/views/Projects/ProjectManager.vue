@@ -48,7 +48,7 @@
 							:disabled="formDisabled"
 							label="Subsectors"
 							name="subsectors"
-							class="mb-4 warning-message"
+							class="has-warning-message mb-4"
 							persistent-hint
 							multiple
 							optional
@@ -78,7 +78,6 @@
 						<DataSelect
 							v-model="formModel.selectedDonors"
 							:items="options.donors"
-							:clearable="true"
 							label="Donors"
 							name="donors"
 							item-title="fullname"
@@ -105,9 +104,11 @@
 							:disabled="formDisabled"
 							label="English Invoice Address"
 							name="english-invoice-address"
-							class="mb-2"
+							class="mb-4"
 							optional
 						/>
+
+						<h4>{{ $t('Allowed Product Category Types') }}</h4>
 
 						<div
 							v-for="(productCategoryType, index) of options.allowedProductCategoryTypes"
@@ -118,8 +119,7 @@
 								v-model="formModel.allowedProductCategoryTypes"
 								:label="productCategoryType"
 								:value="productCategoryType"
-								:error-messages="index === (options.allowedProductCategoryTypes.length - 1)
-									&& validationMsg('allowedProductCategoryTypes')"
+								:error-messages="errorMessageForCategory(index)"
 								:disabled="formDisabled"
 								:name="`product-category-${index}`"
 								hide-details="auto"
@@ -142,6 +142,7 @@
 							label="Notes"
 							name="notes"
 							class="mt-4"
+							is-optional
 							auto-grow
 						/>
 					</v-col>
@@ -204,23 +205,24 @@
 
 <script>
 import { mapState } from "vuex";
+import { required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
 import SectorsService from "@/services/SectorsService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
-import DatePicker from "@/components/Inputs/DatePicker";
 import DataTextarea from "@/components/Inputs/DataTextarea";
+import DatePicker from "@/components/Inputs/DatePicker";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
 import permissions from "@/mixins/permissions";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 const todayDate = new Date();
@@ -296,7 +298,6 @@ export default {
 				startDate: new Date(),
 				endDate: new Date(todayDate.setMonth(todayDate.getMonth() + 3)),
 				targets: [],
-				donorIds: [],
 				selectedDonors: [],
 				projectInvoiceAddressLocal: "",
 				projectInvoiceAddressEnglish: "",
@@ -548,14 +549,16 @@ export default {
 		},
 
 		async updateProject(id, projectBody) {
-			await ProjectService.updateProject(id, projectBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Project Successfully Updated"), "success");
-					this.$router.push({ name: "Projects" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
-			});
+			try {
+				const { status, message } = await ProjectService.updateProject(id, projectBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Project Successfully Updated"), "success");
+				this.$router.push({ name: "Projects" });
+			} catch (e) {
+				Notification(`${this.$t("Project:")} ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchModalityTypes() {
@@ -587,6 +590,12 @@ export default {
 				this.formModel.targets.push(tableRow.data);
 			}
 			this.onValidateTarget();
+		},
+
+		errorMessageForCategory(index) {
+			return index === (this.options.allowedProductCategoryTypes.length - 1)
+				? this.validationMsg("allowedProductCategoryTypes")
+				: "";
 		},
 
 		onValidateNewProject() {
@@ -664,7 +673,7 @@ export default {
 				name,
 				sectors,
 				subSectors,
-				donorIds,
+				donors,
 				notes,
 				targets,
 				projectInvoiceAddressLocal,
@@ -727,7 +736,6 @@ export default {
 				name,
 				sectors,
 				subSectors,
-				donorIds,
 				internalId,
 				startDate: new Date(startDate),
 				endDate: new Date(endDate),
@@ -739,7 +747,7 @@ export default {
 					"code",
 					true,
 				),
-				selectedDonors: getArrayOfCodeListByKey(donorIds, this.options.donors, "id", true),
+				selectedDonors: donors,
 				projectInvoiceAddressLocal,
 				projectInvoiceAddressEnglish,
 				allowedProductCategoryTypes,

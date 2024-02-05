@@ -75,20 +75,18 @@
 </template>
 
 <script>
-import DataInput from "@/components/Inputs/DataInput";
+import { required } from "@vuelidate/validators";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { HOUSEHOLD } from "@/consts";
-import { required } from "@vuelidate/validators";
 
 export default {
 	name: "BulkSearch",
 
 	components: {
 		DataTextarea,
-		DataInput,
 		DataSelect,
 	},
 
@@ -110,7 +108,7 @@ export default {
 			},
 			bulkSearch: {
 				isBulkSearchUsed: false,
-				searchBy: "",
+				searchBy: null,
 				ids: "",
 				notFoundIds: "",
 			},
@@ -181,6 +179,10 @@ export default {
 
 .not-found-ids {
 	width: 45vw;
+
+	.v-field--disabled {
+		pointer-events: auto;
+	}
 
 	textarea {
 		min-height: 5.5rem !important;

@@ -51,6 +51,7 @@
 		<v-data-table
 			v-bind="$attrs"
 			:cell-props="getCellProps"
+			:items-per-page-options="TABLE.PER_PAGE_OPTIONS"
 			@[rowClickEvent]="onHandleRowClick"
 		>
 			<template v-slot:loader>
@@ -62,8 +63,8 @@
 				<v-skeleton-loader :type="`table-row@${perPage}`" />
 			</template>
 
-			<template v-if="!showDefaultFooter" v-slot:bottom>
-				<v-row v-if="!isFooterDisabled" class="align-center ma-2 pa-0 table-footer">
+			<template v-if="!isDefaultFooterVisible" v-slot:bottom>
+				<v-row v-if="!isCustomFooterDisabled" class="align-center ma-2 pa-0 table-footer">
 					<v-col class="per-page-col">
 						<DataSelect
 							v-model="perPage"
@@ -94,7 +95,7 @@
 						</v-chip>
 					</v-col>
 
-					<v-col v-if="selectedRows > 0" class="item-selected-col">
+					<v-col v-if="selectedRows > 0" class="total-selected-col">
 						<v-chip
 							label=""
 							color="light-blue-darken-2"
@@ -133,6 +134,7 @@
 							hide-details
 							dense
 							@click:appendInner="onGoToPage"
+							@keyup.enter="onGoToPage"
 						/>
 					</v-col>
 				</v-row>
@@ -150,7 +152,9 @@
 				</template>
 
 				<template v-else>
-					<ColumnField :column="column" :cell-data="item[column.key]" />
+					<slot :name="`custom-${column.key}`" :row="item" :index="index">
+						<ColumnField :column="column" :cell-data="item[column.key]" />
+					</slot>
 				</template>
 			</template>
 		</v-data-table>
@@ -240,12 +244,12 @@ export default {
 			default: false,
 		},
 
-		isFooterDisabled: {
+		isCustomFooterDisabled: {
 			type: Boolean,
 			default: false,
 		},
 
-		showDefaultFooter: {
+		isDefaultFooterVisible: {
 			type: Boolean,
 			default: false,
 		},

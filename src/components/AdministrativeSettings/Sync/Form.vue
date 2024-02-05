@@ -32,8 +32,14 @@
 export default {
 	name: "SyncForm",
 
+	emits: ["formClosed"],
+
 	props: {
-		formModel: Object,
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
 		closeButton: Boolean,
 		formDisabled: Boolean,
 	},

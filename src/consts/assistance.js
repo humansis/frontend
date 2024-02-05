@@ -95,6 +95,7 @@ export default {
 			firstNesFields: null,
 			secondNesFields: null,
 			thirdNesFields: null,
+			fourthNesFields: null,
 		},
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: ["Food"],
