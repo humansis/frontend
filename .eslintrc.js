@@ -4,36 +4,42 @@ module.exports = {
 		node: true,
 	},
 	extends: [
-		"plugin:vue/essential",
+		"plugin:vue/vue3-essential",
+		"plugin:import/recommended",
 		"@vue/airbnb",
 	],
 	parserOptions: {
-		parser: "babel-eslint",
+		ecmaVersion: 2020,
 	},
 	plugins: ["simple-import-sort"],
 	rules: {
-		"import/extensions": ["warn", "ignorePackages"],
+		"import/extensions": ["error", "always", {
+			js: "never",
+			vue: "never",
+			mjs: "never",
+		}],
 		indent: ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": "off",
-		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+		"no-console": "off",
+		"no-debugger": "off",
 		"no-tabs": "off",
-		"no-plusplus": "off",
 		"object-curly-newline": "off",
 		quotes: ["warn", "double", { avoidEscape: true, allowTemplateLiterals: true }],
 		"vue/html-closing-bracket-newline": "warn",
 		"vue/html-closing-bracket-spacing": "warn",
 		"vue/html-indent": ["error", "tab"],
 		"vue/html-self-closing": "warn",
-		"simple-import-sort/imports": [
-			"error",
-			{
-				groups: [
-					["^vue", "^vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
-					["^.+\\.css$"],
-				],
-			},
-		],
+		/*
+		*	TODO For now i just turned off validation for mutating props, but in the future
+		*   we need to avoid mutating props and push props into local data, then change it and emit
+		* 	it back.
+		*/
+		"vue/no-mutating-props": "off",
+		"vue/multi-word-component-names": "off",
+		"vue/no-multiple-template-root": "off",
+		"vue/valid-v-slot": ["error", {
+			allowModifiers: true,
+		}],
 		"vue/order-in-components": ["error", {
 			order: [
 				"el",
@@ -65,5 +71,25 @@ module.exports = {
 				"renderError",
 			],
 		}],
+		"simple-import-sort/imports": [
+			"error",
+			{
+				groups: [
+					["^vue", "^@vuelidate", "^@/services", "^@/components", "^@/mixins", "^@/utils", "^"],
+					["^.+\\.s?(css|sass)$"],
+				],
+			},
+		],
+	},
+	settings: {
+		"import/resolver": {
+			alias: {
+				map: [
+					["@", "./src"],
+					["vue-qrcode-reader", "./node_modules"],
+				],
+				extensions: [".js", ".vue"],
+			},
+		},
 	},
 };

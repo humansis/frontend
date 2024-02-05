@@ -237,9 +237,9 @@ export default {
 	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filters = null) {
 		let fulltext = "";
 
-		if (search.field?.length && search.phrase?.length) {
+		if (search?.field?.length && search.phrase?.length) {
 			fulltext = `&filter[${search.field}]=${search.phrase}`;
-		} else if (search.length) {
+		} else if (search?.length) {
 			fulltext = `&filter[fulltext]=${search}`;
 		}
 
@@ -295,6 +295,13 @@ export default {
 			body,
 		});
 		return { data, status, message };
+	},
+
+	revertDistributionOfReliefPackage(id) {
+		return fetcher({
+			uri: `assistances/relief-packages/${id}/revert-distribution`,
+			method: "PATCH",
+		});
 	},
 
 	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
@@ -426,14 +433,14 @@ export default {
 	},
 
 	async updateAssistanceStatusValidated({ assistanceId, validated }) {
-		const { data, status } = await fetcher({
+		const { data, status, message } = await fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",
 			body: {
 				validated,
 			},
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 	async updateAssistanceNote({ assistanceId, note }) {

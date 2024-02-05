@@ -2,7 +2,7 @@ import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfProjects(page, size, sort, search = null, ids) {
+	async getListOfProjects(page, size, sort, ids, search = null) {
 		const fulltext = search ? `&filter[fulltext]=${search}` : "";
 		const sortText = sort ? `&sort[]=${sort}` : "";
 		const pageText = page ? `&page=${page}` : "";
@@ -32,9 +32,10 @@ export default {
 		return { data };
 	},
 
-	async updateProject(id, body) {
-		const { data, status } = await fetcher({ uri: `projects/${id}`, method: "PUT", body });
-		return { data, status };
+	updateProject(id, body) {
+		return fetcher({
+			uri: `projects/${id}`, method: "PUT", body,
+		});
 	},
 
 	async deleteProject(id) {

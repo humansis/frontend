@@ -1,5 +1,11 @@
 import i18n from "@/plugins/i18n";
 
+const { global: { t } } = i18n;
+
+export const kebabize = (text = "") => text
+	.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? "-" : "") + $.toLowerCase())
+	.replace(/( )/g, "-");
+
 export const normalizeText = (text = "") => text
 	.replace(/([A-Z])/g, " $1")
 	.replace(/(_)/g, " ")
@@ -25,37 +31,33 @@ export const normalizeFiltersOptions = (text = "") => text
 export const normalizeExportDate = (date = new Date()) => date
 	.toISOString().split("T")[0];
 
-export const generateColumns = ((visibleColumns) => {
+export const normalizeFirstLetter = (text = "") => text.replace(/^.| ./g, (str) => str.toUpperCase());
+
+export const generateColumns = ((columns) => {
 	const preparedColumns = [];
 
-	visibleColumns.forEach((column) => {
-		let label = "";
+	columns.forEach(({ key, title, withoutLabel, ...rest }) => {
+		let preparedTitle = "";
 
-		if (!column.withoutLabel) {
-			label = column.label ? i18n.t(column.label) : i18n.t(normalizeText(column.key));
+		if (!withoutLabel) {
+			preparedTitle = t(title || normalizeText(key));
 		}
 
 		preparedColumns.push({
-			field: column.key,
-			label,
-			type: column.type,
-			width: column.width,
-			centered: false,
-			sortable: column.sortable,
-			attribute: column.attribute,
-			visible: column.visible,
-			customSort: column.customSort,
-			customTags: column.customTags,
-			boldText: column.bold,
+			...rest,
+			key,
+			title: preparedTitle,
 		});
 	});
 
-	return preparedColumns;
+	return preparedColumns.filter(({ visible }) => visible !== false);
 });
 
 export default {
+	kebabize,
 	normalizeText,
 	normalizeSelectorValue,
 	normalizeProjectName,
+	normalizeFirstLetter,
 	generateColumns,
 };

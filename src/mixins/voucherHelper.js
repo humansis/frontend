@@ -16,12 +16,16 @@ export default {
 				this.table.data[key] = item;
 				this.table.data[key].beneficiary = this.$t("None");
 				this.table.data[key].assistance = this.$t("None");
+				this.table.data[key].status = this.getStatus(item.status);
+
 				if (item.projectId) {
 					projectIds.push(item.projectId);
 				}
+
 				if (item.assistanceId) {
 					assistanceIds.push(item.assistanceId);
 				}
+
 				if (item.beneficiaryId) {
 					beneficiaryIds.push(item.beneficiaryId);
 				}
@@ -70,7 +74,7 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					return [];
 				});
 		},
@@ -80,17 +84,17 @@ export default {
 			return AssistancesService.getAssistances(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 					return [];
 				});
 		},
 
 		async getProjects(ids) {
 			if (!ids.length) return [];
-			return ProjectService.getListOfProjects(null, null, null, null, ids)
+			return ProjectService.getListOfProjects(null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 					return [];
 				});
 		},

@@ -89,17 +89,19 @@ export const getResponseJSON = async (response, download = false) => {
 	throw new Error(await getErrorsFromResponse(data));
 };
 
-export const fetcher = async (
-	{
-		uri,
-		version = 1,
-		auth = true,
-		method,
-		body,
-		contentType,
-		tryRequest = false,
-	}) => {
-	const url = `${CONFIG.API}/v${version}/${uri}`;
+export const fetcher = async ({
+	uri,
+	version = 1,
+	auth = true,
+	method,
+	body,
+	contentType,
+	tryRequest = false,
+	ignoreBaseUrl = false,
+}) => {
+	const url = ignoreBaseUrl
+		? `${CONFIG.API_HOST}/${uri}`
+		: `${CONFIG.API}/v${version}/${uri}`;
 
 	let headers = {};
 
@@ -233,4 +235,20 @@ export const idsToUri = (ids, param = null) => {
 	});
 
 	return query;
+};
+
+export const checkResponseStatus = (status, message) => {
+	if (status !== 200) {
+		throw new Error(message);
+	}
+};
+
+export default {
+	getResponseJSON,
+	fetcher,
+	upload,
+	download,
+	filtersToUri,
+	idsToUri,
+	checkResponseStatus,
 };

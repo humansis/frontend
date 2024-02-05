@@ -1,119 +1,117 @@
 <template>
-	<Table
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="showDetail"
+	<DataGrid
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.INSTITUTIONS)"
+		@rowClicked="(row) => onShowDetail(row.item.id)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column v-bind="column" sortable :key="column.id">
-				<template v-slot="props">
-					{{ props.row[column.field] }}
-				</template>
-			</b-table-column>
-		</template>
-		<b-table-column
-			v-slot="props"
-			width="190"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					v-if="userCan.viewBeneficiary"
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					v-if="userCan.editBeneficiary"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.deleteBeneficiary"
-					icon="trash"
-					:entity="$t('Institution')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				v-if="userCan.viewBeneficiary"
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row.id)"
+			/>
 
-		<template #export>
+			<ButtonAction
+				v-if="userCan.editBeneficiary"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row.id)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.deleteBeneficiary"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Institution"
+				confirm-message="Are you sure sure you want to delete Institution?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				close-button-name="Cancel"
+				confirm-button-name="Delete"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
+		</template>
+
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportInstitutions"
+				@export="onExportInstitutions"
 			/>
-		</template>
 
-		<template #filterButton>
-			<b-button
-				slot="trigger"
-				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				@click="filtersToggle"
+			<v-btn
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
 			>
 				{{ $t('Advanced Search') }}
-			</b-button>
+			</v-btn>
 		</template>
 
-		<template #filter>
-			<b-collapse v-model="advancedSearchVisible">
-				<InstitutionsFilter
-					@filtersChanged="onFiltersChange"
-					@onSearch="onSearch(table.searchPhrase)"
-				/>
-			</b-collapse>
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="isAdvancedSearchVisible">
+				<v-expansion-panel :value="true">
+					<v-expansion-panel-text>
+						<InstitutionsFilter
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import InstitutionService from "@/services/InstitutionService";
-import ActionButton from "@/components/ActionButton";
 import InstitutionsFilter from "@/components/Beneficiaries/InstitutionsFilter";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "InstitutionsList",
 
 	components: {
 		InstitutionsFilter,
-		SafeDelete,
-		Table,
-		ActionButton,
+		DataGrid,
 		ExportControl,
+		ButtonAction,
 	},
 
 	mixins: [grid, permissions],
 
 	data() {
 		return {
-			advancedSearchVisible: false,
+			TABLE,
+			isLoadingList: false,
+			isAdvancedSearchVisible: false,
 			exportControl: {
 				loading: false,
 				location: "institutions",
@@ -123,25 +121,21 @@ export default {
 			filters: [],
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "id" },
+				columns: generateColumns([
+					{ key: "id", sortable: false },
 					{ key: "name" },
 					{ key: "type" },
 					{ key: "contactGivenName" },
 					{ key: "contactFamilyName" },
-				],
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.INSTITUTIONS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.INSTITUTIONS.key,
 				searchPhrase: "",
 			},
 		};
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -152,11 +146,12 @@ export default {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await InstitutionService.getListOfInstitutions(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(({ data, totalCount }) => {
@@ -165,14 +160,14 @@ export default {
 
 				this.prepareDataForTable(data);
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Institutions")} ${e}`, "is-danger");
+				Notification(`${this.$t("Institutions")} ${e.message || e}}`, "error");
 			});
 
 			this.isLoadingList = false;
 		},
 
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
 		prepareDataForTable(data) {
@@ -182,15 +177,11 @@ export default {
 			});
 		},
 
-		onFiltersChange({ filters }) {
+		onFiltersChange(filters) {
 			this.filters = filters;
 		},
 
-		showDetail(entity) {
-			if (this.userCan.viewBeneficiary) this.$emit("showDetail", entity);
-		},
-
-		async exportInstitutions(type, format) {
+		async onExportInstitutions(type, format) {
 			if (type === EXPORT.INSTITUTIONS) {
 				const filters = {
 					...(this.filters.projects?.length
@@ -207,7 +198,7 @@ export default {
 
 					downloadFile(data, this.$t("Institutions"), status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Institutions Export")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Institutions Export")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

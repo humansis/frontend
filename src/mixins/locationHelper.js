@@ -1,6 +1,7 @@
 import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import { copyObject } from "@/utils/helpers";
+import { Notification } from "@/utils/UI";
 
 export default {
 	computed: {
@@ -29,17 +30,20 @@ export default {
 					this.filtersOptions.adm1.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm1)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm1)} ${e.message || e}`, "error");
 				});
 		},
 
 		fillParentProvinces() {
+			const adm1Map = new Map(this.filtersOptions.adm1.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm2.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm1.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm1Map.get(item.parentId);
 
-					this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm2.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},
@@ -52,17 +56,20 @@ export default {
 					this.filtersOptions.adm2.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm2)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm2)} ${e.message || e}`, "error");
 				});
 		},
 
 		fillParentDistricts() {
+			const adm2Map = new Map(this.filtersOptions.adm2.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm3.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm2.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm2Map.get(item.parentId);
 
-					this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm3.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},
@@ -75,17 +82,20 @@ export default {
 					this.filtersOptions.adm3.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm3)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm3)} ${e.message || e}`, "error");
 				});
 		},
 
 		fillParentCommunes() {
+			const adm3Map = new Map(this.filtersOptions.adm3.data.map((adm) => [adm.id, adm]));
+
 			this.filtersOptions.adm4.data.forEach((item, index) => {
 				if (item.hasDuplicity) {
-					const parentLocation = this.filtersOptions.adm3.data
-						.filter((item2) => item2.id === item.parentId)[0];
+					const parentLocation = adm3Map.get(item.parentId);
 
-					this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+					if (parentLocation) {
+						this.filtersOptions.adm4.data[index].parentLocationName = parentLocation.name;
+					}
 				}
 			});
 		},
@@ -98,7 +108,7 @@ export default {
 					this.filtersOptions.adm4.loading = false;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t(this.admNames.adm4)} ${e}`, "is-danger");
+					Notification(`${this.$t(this.admNames.adm4)} ${e.message || e}`, "error");
 				});
 		},
 

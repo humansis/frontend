@@ -1,93 +1,80 @@
 <template>
-	<Table
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
-		:search-phrase="table.searchPhrase"
-		@clicked="showDetail"
+	<DataGrid
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
+		reset-sort-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort('id', 'asc', true)"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_ITEMS)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				:key="column.id"
-				v-slot="props"
-			>
-				<ColumnField :data="props" :column="column" />
-			</b-table-column>
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditProducts"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditProducts"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Product"
+				confirm-message="Are you sure sure you want to delete Product?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
 		</template>
-		<b-table-column
-			v-slot="props"
-			width="150"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					v-if="userCan.addEditProducts"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.addEditProducts"
-					icon="trash"
-					:entity="$t('Product')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
-		<template #export>
+
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportProducts"
+				@export="onExportProducts"
 			/>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import ProductService from "@/services/ProductService";
-import ActionButton from "@/components/ActionButton";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "ProductsList",
 
 	components: {
 		ExportControl,
-		ColumnField,
-		SafeDelete,
-		Table,
-		ActionButton,
+		DataGrid,
+		ButtonAction,
 	},
 
 	mixins: [grid, permissions],
@@ -101,6 +88,8 @@ export default {
 
 	data() {
 		return {
+			TABLE,
+			isLoadingList: false,
 			exportControl: {
 				loading: false,
 				location: "products",
@@ -109,58 +98,43 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "name", width: "400", sortable: true },
-					{ key: "category", type: "productCategoryImage", width: "400", sortable: true, sortKey: "productCategoryId" },
-					{ key: "unit", width: "200", sortable: true },
-					{ type: "image", key: "image", width: "100" },
-				],
+				columns: generateColumns([
+					{ key: "name" },
+					{ key: "category", type: "productCategoryImage", sortKey: "productCategoryId" },
+					{ key: "unit", width: "200" },
+					{ key: "image", type: "image", sortable: false },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "asc",
-				sortColumn: "id",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_ITEMS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_ITEMS.key,
 				searchPhrase: "",
 			},
 		};
 	},
 
-	computed: {
-		modalHeader() {
-			let result = "";
-			if (this.productModal.isDetail) {
-				result = this.$t("Detail of Product");
-			} else if (this.productModal.isEditing) {
-				result = this.$t("Edit Product");
-			} else {
-				result = this.$t("Create New Product");
-			}
-			return result;
-		},
-	},
-
-	watch: {
-		categories() {
-			this.fetchData();
-		},
+	async mounted() {
+		await this.fetchData();
 	},
 
 	methods: {
 		async fetchData() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await ProductService.getListOfProducts(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 			).then((response) => {
 				this.table.data = response.data;
 				this.table.total = response.totalCount;
 				this.prepareDataForTable(response.data);
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
+				Notification(`${this.$t("Products")} ${e.message || e}`, "error");
 			});
 
 			this.isLoadingList = false;
@@ -184,7 +158,7 @@ export default {
 			});
 		},
 
-		async exportProducts(exportType, format) {
+		async onExportProducts(exportType, format) {
 			if (exportType === EXPORT.PRODUCTS) {
 				try {
 					this.exportControl.loading = true;
@@ -194,7 +168,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Products")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Products")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

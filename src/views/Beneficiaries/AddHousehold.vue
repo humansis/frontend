@@ -1,8 +1,11 @@
 <template>
-	<div>
-		<h1 class="title">{{ $t('Add Household') }}</h1>
-		<HouseholdTabs :is-editing="false" />
-	</div>
+	<v-container fluid>
+		<div class="d-flex mb-4">
+			<h2 class="me-auto">{{ $t('Add Household') }}</h2>
+		</div>
+
+		<HouseholdTabs />
+	</v-container>
 </template>
 
 <script>

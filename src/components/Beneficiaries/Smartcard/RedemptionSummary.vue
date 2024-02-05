@@ -1,62 +1,63 @@
 <template>
-	<section class="modal-card-body">
-		<Table
-			v-show="show"
-			:data="table.data"
-			:total="table.total"
-			:columns="table.visibleColumns"
-			:backend-sorting="false"
-			:is-loading="isLoadingList"
-		>
-			<template v-for="column in table.columns">
-				<b-table-column v-bind="column" sortable :key="column.id">
-					<template v-slot="props">
-						{{ props.row[column.field] }}
-					</template>
-				</b-table-column>
-			</template>
-			<template #footer>
-				<span class="is-pulled-right mr-6">
-					{{ totalAmount }}
-				</span>
-			</template>
-		</Table>
-	</section>
+	<DataGrid
+		v-show="show"
+		:headers="table.columns"
+		:loading="isLoadingList"
+		:items="table.data"
+		:custom-key-sort="customSort"
+		is-row-click-disabled
+		is-default-footer-visible
+	/>
+
+	<p class="text-right font-weight-bold mt-2">
+		{{$t('Total amount')}}: {{ totalAmount }}
+	</p>
 </template>
 
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import SmartcardService from "@/services/SmartcardService";
-import Table from "@/components/DataGrid/Table";
+import DataGrid from "@/components/DataGrid";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
 
+const customSort = {
+	amount: (a, b) => {
+		const amountA = a.match(/\d+\.\d+/);
+		const amountB = b.match(/\d+\.\d+/);
+
+		return amountA - amountB;
+	},
+};
+
 export default {
 	name: "RedemptionSummary",
 
-	components: { Table },
+	components: { DataGrid },
 
 	mixins: [grid, baseHelper],
 
 	props: {
-		projects: Array,
-		purchaseIds: Array,
-		redemptionBatchId: Number,
+		redemptionBatchId: {
+			type: Number,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
 			totalAmount: 0,
+			isLoadingList: false,
+			customSort,
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
+				columns: generateColumns([
 					{ key: "date" },
-					{ key: "beneficiary", label: "Name (local)" },
-					{ key: "amount", customSort: this.sortAmount },
-				],
+					{ key: "beneficiary", title: "Name (local)" },
+					{ key: "amount" },
+				]),
 				total: 0,
 			},
 		};
@@ -67,24 +68,16 @@ export default {
 	},
 
 	methods: {
-		sortAmount(a, b, c) {
-			if (!c) {
-				return a.value - b.value;
-			}
-			return b.value - a.value;
-		},
-
 		async fetchPurchases() {
 			this.isLoadingList = true;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
 			await SmartcardService.getSmartcardRedemptionPurchases(this.redemptionBatchId)
 				.then(({ data, totalCount }) => {
 					this.table.data = data;
 					this.prepareDataForTable(data);
 					this.table.total = totalCount;
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Batches")} ${e}`, "is-danger");
+					Notification(`${this.$t("Batches")} ${e.message || e}`, "error");
 				});
 
 			this.isLoadingList = false;
@@ -118,11 +111,17 @@ export default {
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
-				});
+			try {
+				const filters = { isArchived: true };
+
+				const { data } = await BeneficiariesService.getBeneficiaries(ids, filters);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		formatPrice(price, currency) {

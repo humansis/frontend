@@ -1,12 +1,11 @@
 <template>
 	<AdvancedFilter
-		ref="advancedFilter"
 		v-if="admNames"
-		multiline
+		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -18,9 +17,13 @@ import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { copyObject } from "@/utils/helpers";
 import { FILTER } from "@/consts";
 
-// TODO fix gender, after select one option, gender is not visible, but filter still working
 export default {
 	name: "VendorsFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -121,7 +124,7 @@ export default {
 			}
 		},
 
-		async filterChanged(filters, filterName) {
+		async onFilterChanged(filters, filterName) {
 			const filtersCopy = await this.clearedLocationFilters(filters, filterName);
 			const location = this.getLocation(filters);
 

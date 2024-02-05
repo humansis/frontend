@@ -1,31 +1,34 @@
 <template>
-	<div>
-		<div class="columns is-multiline">
-			<div class="column">
+	<v-container fluid>
+		<v-row :class="{ 'flex-column': isMobile }">
+			<v-col class="mb-4">
 				<DistributionMap />
-			</div>
+			</v-col>
 
-			<div class="column">
-				<Summary />
-			</div>
-		</div>
+			<v-col class="mb-4">
+				<HomeSummary />
+			</v-col>
+		</v-row>
 
 		<UpcomingAssistances />
-	</div>
+	</v-container>
 </template>
 
 <script>
 import DistributionMap from "@/components/Home/DistributionMap";
-import Summary from "@/components/Home/Summary";
+import HomeSummary from "@/components/Home/HomeSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
+import vuetifyHelper from "@/mixins/vuetifyHelper";
 
 export default {
-	name: "Home",
+	name: "HomePage",
 
 	components: {
 		DistributionMap,
-		Summary,
+		HomeSummary,
 		UpcomingAssistances,
 	},
+
+	mixins: [vuetifyHelper],
 };
 </script>

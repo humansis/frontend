@@ -1,98 +1,118 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Title')"
-				:type="validateType('title')"
-				:message="validateMsg('title')"
-			>
-				<b-input
-					v-model="formModel.title"
-					:disabled="formDisabled"
-					@blur="validate('title')"
-				/>
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.title"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('title')"
+			label="Title"
+			name="title"
+			class="mb-4"
+			@blur="onValidate('title')"
+		/>
 
-			<MultiSelectWithLabel
-				v-model="formModel.projects"
-				name="projects"
-				label="Projects"
-				validated-field-name="projects"
-				variable-to-show="name"
-				track-by="id"
-				searchable
-				multiple
-				add-select-all
-				select-all-label="All projects"
-				:validation="getValidations"
-				:loading="projectsLoading"
-				:options="options.projects"
-				:disabled="formDisabled"
-			/>
+		<DataSelect
+			v-model="formModel.projects"
+			:items="options.projects"
+			:loading="projectsLoading"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('projects')"
+			label="Projects"
+			name="projects"
+			item-title="name"
+			item-value="id"
+			class="mb-4"
+			multiple
+			chips
+			closable-chips
+			@update:modelValue="onValidate('projects')"
+		/>
 
-			<b-field
-				:label="$t('Description')"
-				:type="validateType('description')"
-				:message="validateMsg('description')"
-			>
-				<b-input
-					v-model="formModel.description"
-					type="textarea"
-					maxlength="255"
-					:disabled="formDisabled"
-					@blur="validate('description')"
-				/>
-			</b-field>
-		</section>
-		<footer class="modal-card-foot">
-			<b-button v-if="closeButton" @click="closeForm">
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				v-if="!formDisabled"
-				type="is-primary"
-				native-type="submit"
-			>
-				{{ $t(submitButtonLabel) }}
-			</b-button>
-		</footer>
-	</form>
+		<DataTextarea
+			v-model.trim="formModel.description"
+			:disabled="formDisabled"
+			label="Description"
+			name="description"
+			class="mb-4"
+			is-optional
+		/>
+	</v-card-text>
+
+	<v-card-actions>
+		<v-spacer />
+
+		<v-btn
+			v-if="closeButton"
+			class="text-none"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			color="primary"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t(submitButtonLabel) }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-import MultiSelectWithLabel from "@/components/Inputs/MultiSelectWithLabel";
+import { required } from "@vuelidate/validators";
+import DataInput from "@/components/Inputs/DataInput";
+import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
 
 export default {
 	name: "importForm",
 
 	components: {
-		MultiSelectWithLabel,
+		DataInput,
+		DataSelect,
+		DataTextarea,
 	},
 
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			title: { required },
-			projects: { required },
-			description: {},
-		},
+	validations() {
+		return {
+			formModel: {
+				title: { required },
+				projects: { required },
+			},
+		};
 	},
 
 	props: {
-		formModel: Object,
-		submitButtonLabel: String,
 		closeButton: Boolean,
 		formDisabled: Boolean,
 		isEditing: Boolean,
+
+		formModel: {
+			type: Object,
+			required: true,
+		},
+
+		submitButtonLabel: {
+			type: String,
+			required: true,
+		},
 
 		options: {
 			type: Object,
 			default: () => {},
 		},
 	},
+
+	emits: [
+		"formSubmitted",
+		"formClosed",
+	],
 
 	data() {
 		return {
@@ -101,19 +121,19 @@ export default {
 	},
 
 	methods: {
-		submitForm() {
-			this.$v.$touch();
-			if (this.$v.$invalid) {
+		onSubmitForm() {
+			this.v$.$touch();
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };

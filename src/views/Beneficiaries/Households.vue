@@ -1,283 +1,280 @@
 <template>
-	<div>
-		<div class="level">
-			<div class="level-left">
-				<h1 class="title">{{ $t('Households') }}</h1>
-			</div>
-
-			<div class="level-right">
-				<b-dropdown position="is-bottom-left">
-					<b-button
-						v-if="userCan.addBeneficiary"
-						slot="trigger"
-						type="is-primary"
-						icon-left="plus"
-					>
-						{{ $t('Create') }}
-					</b-button>
-					<b-dropdown-item
-						v-if="userCan.importBeneficiaries"
-						:value="false"
-						@click="goToImportPage"
-					>
-						<div class="media">
-							<b-icon class="media-left" icon="upload" />
-							<div class="media-content">
-								<h2>{{ $t('Import') }}</h2>
-								<small>{{ $t('Import from File') }}</small>
-							</div>
-						</div>
-					</b-dropdown-item>
-					<b-dropdown-item
-						:value="false"
-						@click="goToCreatePage"
-					>
-						<div class="media">
-							<b-icon class="media-left" icon="user-plus" />
-							<div class="media-content">
-								<h2>{{ $t('Add Beneficiary') }}</h2>
-								<small>{{ $t('Create household form') }}</small>
-							</div>
-						</div>
-					</b-dropdown-item>
-				</b-dropdown>
-			</div>
-		</div>
-
-		<AddProjectToHouseholdModal
-			:loading="loading.projects"
-			:options="options.projects"
-			:is-opened="addToProjectModal.isOpened"
-			:confirm-button-loading="confirmButtonLoading"
-			@close="closeAddToProjectModal"
-			@confirm="addHouseholdsToProject"
+	<v-container fluid>
+		<ConfirmAction
+			:is-dialog-opened="removeHouseholdModal.isOpened"
+			confirm-title="Deleting"
+			confirm-message="Are you sure you want to delete this Households?"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="red"
+			close-button-name="Cancel"
+			confirm-button-name="Delete"
+			confirm-button-color="red"
+			@actionConfirmed="removeMultipleHouseholds"
+			@modalClosed="removeHouseholdModal.isOpened = false"
 		/>
 
+		<div class="d-flex mb-4">
+			<h2 class="me-auto">{{ $t('Households') }}</h2>
+
+			<v-menu>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						v-if="userCan.addBeneficiary"
+						v-bind="props"
+						color="primary"
+						prepend-icon="plus"
+						class="text-none ml-0"
+					>
+						{{ $t('Create') }}
+					</v-btn>
+				</template>
+
+				<v-list>
+					<router-link :to="{ name: 'Imports', query: { openModal: '1' } }">
+						<v-list-item v-if="userCan.importBeneficiaries">
+							<v-card
+								:title="$t('Import')"
+								:subtitle="$t('Import from File')"
+								density="compact"
+							>
+								<template v-slot:prepend>
+									<v-icon icon="upload" size="small" />
+								</template>
+							</v-card>
+						</v-list-item>
+					</router-link>
+
+					<router-link :to="{ name: 'AddHousehold' }">
+						<v-list-item>
+							<v-card
+								:title="$t('Add Beneficiary')"
+								:subtitle="$t('Create household form')"
+								density="compact"
+							>
+								<template v-slot:prepend>
+									<v-icon icon="user-plus" size="small" />
+								</template>
+							</v-card>
+						</v-list-item>
+					</router-link>
+				</v-list>
+			</v-menu>
+		</div>
+
 		<Modal
-			can-cancel
-			:header="$t('Household Detail')"
-			:active="householdDetailModal.isOpened"
-			@close="closeHouseholdDetailModal"
+			v-model="addToProjectModal.isOpened"
+			header="Add Beneficiary to a Project"
 		>
-			<HouseholdDetail
-				close-button
-				:form-model="householdModel"
-				class="modal-card"
-				@formClosed="closeHouseholdDetailModal"
+			<AddProjectToHousehold
+				:loading="isLoading.projects"
+				:options="options.projects"
+				:confirm-button-loading="confirmButtonLoading"
+				@actionConfirmed="onAddHouseholdsToProject"
+				@formClosed="addToProjectModal.isOpened = false"
 			/>
 		</Modal>
-		<Table
-			ref="householdList"
-			has-reset-sort
-			has-search
-			checkable
-			paginated
-			:data="table.data"
-			:total="table.total"
-			:current-page="table.currentPage"
-			:is-loading="isLoadingList"
-			:checked-rows="table.checkedRows"
-			:search-phrase="table.searchPhrase"
-			:has-clickable-rows="false"
-			:is-search-visible="!isBulkSearchVisible"
-			@checked="onRowsChecked"
-			@pageChanged="onPageChange"
-			@sorted="onSort"
-			@onSearch="onSearch"
-			@changePerPage="onChangePerPage"
-			@resetSort="resetSort"
+
+		<Modal
+			v-model="householdDetailModal.isOpened"
+			header="Household Detail"
 		>
-			<template #progress>
-				<b-progress :value="table.progress" format="percent" />
+			<HouseholdDetail
+				:household-model="householdModel"
+				@formClosed="householdDetailModal.isOpened = false"
+			/>
+		</Modal>
+
+		<DataGrid
+			ref="households"
+			v-model="table.checkedRows"
+			v-model:page="table.currentPage"
+			:items-per-page="perPage"
+			:headers="table.columns"
+			:items="table.data"
+			:total-count="table.total"
+			:loading="isLoading.households"
+			:progress="table.progress"
+			:search-phrase="table.searchPhrase"
+			:selected-rows="table.checkedRows.length"
+			:is-search-disabled="isBulkSearchVisible"
+			reset-filters-button
+			reset-sort-button
+			is-search-visible
+			show-select
+			@update:sortBy="onSort"
+			@search="onSearch"
+			@pageChanged="onPageChange"
+			@perPageChanged="onPerPageChange"
+			@resetFilters="onResetFilters"
+			@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS)"
+		>
+			<template v-slot:actions="{ row: { householdId } }">
+				<ButtonAction
+					v-if="userCan.viewBeneficiary"
+					:disabled="!householdsSelects"
+					icon="search"
+					icon-color="primary"
+					label="Show Detail"
+					@actionConfirmed="onShowHouseholdDetail(householdId)"
+				/>
+
+				<ButtonAction
+					v-if="userCan.viewBeneficiary"
+					:disabled="!householdsSelects"
+					icon="edit"
+					label="Edit"
+					@actionConfirmed="$router.push({ name: 'EditHousehold', params: { householdId } })"
+				/>
+
+				<ButtonAction
+					v-if="userCan.deleteBeneficiary"
+					:disabled="!householdsSelects"
+					icon="trash"
+					label="Delete"
+					icon-color="red"
+					confirm-title="Deleting Household"
+					confirm-message="Are you sure sure you want to delete Household?"
+					prepend-icon="circle-exclamation"
+					prepend-icon-color="red"
+					is-confirm-action
+					@actionConfirmed="onRemoveHousehold(householdId)"
+				/>
 			</template>
 
-			<template slot="resetSort">
-				<div class="level-right">
-					<b-button
-						icon-left="eraser"
-						class="reset-sort-button is-small mr-2"
-						@click="resetFilters"
-					>
-						{{ $t('Reset Filters') }}
-					</b-button>
-					<b-button
-						icon-left="eraser"
-						class="reset-sort-button is-small"
-						@click="resetTableSort"
-					>
-						{{ $t('Reset Table Sort') }}
-					</b-button>
-				</div>
-			</template>
-
-			<template v-for="column in table.columns">
-				<b-table-column
-					:key="column.id"
-					v-slot="props"
-					v-bind="column"
-					sortable
-				>
-					<ColumnField :data="props" :column="column" />
-				</b-table-column>
-			</template>
-			<b-table-column
-				v-slot="props"
-				width="150"
-				field="actions"
-				:label="$t('Actions')"
-			>
-				<div class="buttons is-right">
-					<ActionButton
-						v-if="userCan.viewBeneficiary"
-						icon="search"
-						type="is-primary"
-						:disabled="!householdsSelects"
-						:tooltip="$t('Show Detail')"
-						@click="showDetail(props.row.householdId)"
-					/>
-					<ActionButton
-						v-if="userCan.viewBeneficiary"
-						icon="edit"
-						:disabled="!householdsSelects"
-						:tooltip="$t('Edit')"
-						@click="editHousehold(props.row.householdId)"
-					/>
-					<SafeDelete
-						v-if="userCan.deleteBeneficiary"
-						:id="props.row.householdId"
-						icon="trash"
-						:entity="$t('Household')"
-						:tooltip="$t('Delete')"
-						:disabled="!householdsSelects"
-						@submitted="removeHousehold"
-					/>
-				</div>
-			</b-table-column>
-
-			<template #filterButton>
-				<b-button
-					slot="trigger"
-					:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-					@click="advancedSearchToggle"
-				>
-					{{ $t('Advanced Search') }}
-				</b-button>
-			</template>
-
-			<template #bulkSearchButton>
-				<b-button
-					slot="trigger"
-					:icon-right="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
-					class="ml-4"
-					@click="bulkSearchToggle"
-				>
-					{{ $t('Bulk search') }}
-				</b-button>
-			</template>
-
-			<template v-if="actionsButtonVisible" #actions>
-				<div class="column">
-					<b-dropdown aria-role="list">
-						<template #trigger>
-							<b-button
-								type="is-primary"
-								icon-right="arrow-down"
-								:label="$t('Actions')"
-							/>
-						</template>
-						<b-dropdown-item @click="showAddToProjectModal">
-							<b-icon class="mr-1" icon="plus" />
-							{{ $t('Add to Project') }}
-						</b-dropdown-item>
-						<b-dropdown-item @click="saveDeleteOfMultipleHouseholds">
-							<b-icon class="mr-1" icon="trash" />
-							{{ $t('Delete') }}
-						</b-dropdown-item>
-					</b-dropdown>
-				</div>
-			</template>
-
-			<template #filter>
-				<b-collapse v-model="advancedSearchVisible">
-					<HouseholdsFilter
-						ref="householdsFilter"
-						:defaultFilters="{ ...filters, ...locationsFilter }"
-						@filtersChanged="onFiltersChange"
-						@onSearch="clickedSearch()"
-					/>
-				</b-collapse>
-
-				<b-collapse v-model="isBulkSearchVisible">
-					<BulkSearch
-						ref="bulkSearch"
-						@clickedBulkSearch="clickedBulkSearch"
-						@bulkSearchChanged="bulkSearchChanged"
-					/>
-				</b-collapse>
-			</template>
-
-			<template #export>
+			<template v-slot:tableControls>
 				<ExportControl
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
 					:is-export-loading="exportControl.loading"
 					:location="exportControl.location"
-					@onExport="exportHouseholds"
+					@export="onExportHouseholds"
 				/>
+
+				<v-btn
+					:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="ml-4 text-none"
+					@click="onAdvancedSearchToggle"
+				>
+					{{ $t('Advanced Search') }}
+				</v-btn>
+
+				<v-btn
+					:append-icon="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="ml-4 text-none"
+					@click="onBulkSearchToggle"
+				>
+					{{ $t('Bulk Search') }}
+				</v-btn>
+
+				<v-menu v-if="isActionsButtonVisible">
+					<template v-slot:activator="{ props }">
+						<v-btn
+							v-bind="props"
+							:append-icon="props.open ? 'arrow-up' : 'arrow-down'"
+							color="primary"
+							class="ml-4 text-none"
+						>
+							{{ $t('Actions') }}
+						</v-btn>
+					</template>
+
+					<v-list>
+						<v-list-item @click="onShowAddToProjectModal">
+							<v-icon class="mr-1" icon="plus" />
+							{{ $t('Add to Project') }}
+						</v-list-item>
+
+						<v-list-item
+							v-if="userCan.deleteBeneficiary"
+							@click="removeHouseholdModal.isOpened = true"
+						>
+							<v-icon class="mr-1" icon="trash" />
+							{{ $t('Delete') }}
+						</v-list-item>
+					</v-list>
+				</v-menu>
 			</template>
-		</Table>
-	</div>
+
+			<template v-slot:advancedControls>
+				<v-expansion-panels v-model="visiblePanels">
+					<v-expansion-panel value="advancedSearch" class="mt-0" eager>
+						<v-expansion-panel-text>
+							<HouseholdsFilter
+								ref="householdsFilter"
+								:defaultFilters="{ ...filters, ...locationsFilter }"
+								@filtersChanged="onFiltersChange"
+								@search="onClickedSearch"
+							/>
+						</v-expansion-panel-text>
+					</v-expansion-panel>
+					<v-expansion-panel value="bulkSearch" class="mt-0" eager>
+						<v-expansion-panel-text>
+							<BulkSearch
+								ref="bulkSearch"
+								@clickedBulkSearch="onClickedBulkSearch"
+								@bulkSearchChanged="onBulkSearchChanged"
+							/>
+						</v-expansion-panel-text>
+					</v-expansion-panel>
+				</v-expansion-panels>
+			</template>
+		</DataGrid>
+	</v-container>
 </template>
 
 <script>
-import AddressService from "@/services/AddressService";
+import { defineAsyncComponent } from "vue";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
-import ActionButton from "@/components/ActionButton";
-import AddProjectToHouseholdModal from "@/components/Beneficiaries/Household/AddProjectToHouseholdModal";
-import BulkSearch from "@/components/Beneficiaries/Household/BulkSearch";
+import AddProjectToHousehold from "@/components/Beneficiaries/Household/AddProjectToHousehold";
 import HouseholdDetail from "@/components/Beneficiaries/Household/HouseholdDetail";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import Modal from "@/components/Modal";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import ConfirmAction from "@/components/ConfirmAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
+import Modal from "@/components/Inputs/Modal";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
-import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
-import { Notification, Toast } from "@/utils/UI";
-import { EXPORT } from "@/consts";
-
-const HouseholdsFilter = () => import("@/components/Beneficiaries/HouseholdsFilter");
+import { Notification } from "@/utils/UI";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "HouseholdPage",
 
 	components: {
-		AddProjectToHouseholdModal,
-		HouseholdDetail,
-		Table,
-		ActionButton,
-		HouseholdsFilter,
-		SafeDelete,
-		ColumnField,
-		Modal,
+		AddProjectToHousehold,
+		BulkSearch: defineAsyncComponent(() => import("@/components/Beneficiaries/Household/BulkSearch")),
+		ButtonAction,
+		ConfirmAction,
+		DataGrid,
 		ExportControl,
-		BulkSearch,
+		HouseholdDetail,
+		HouseholdsFilter: defineAsyncComponent(() => import("@/components/Beneficiaries/Household/HouseholdsFilter")),
+		Modal,
 	},
 
-	mixins: [grid, addressHelper, permissions, urlFiltersHelper, validation],
+	mixins: [
+		grid,
+		addressHelper,
+		permissions,
+		urlFiltersHelper,
+		validation,
+	],
 
 	data() {
 		return {
-			advancedSearchVisible: false,
-			isBulkSearchVisible: false,
+			TABLE,
+			visiblePanels: [],
 			householdsSelects: true,
 			exportControl: {
 				loading: false,
@@ -287,21 +284,21 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "id", label: "Household ID", type: "link", width: "30" },
-					{ key: "familyName", label: "Local family name", width: "30", sortKey: "localFamilyName" },
-					{ key: "givenName", label: "Local given name", width: "30", sortKey: "localFirstName" },
-					{ key: "members", width: "30", sortKey: "dependents" },
-					{ key: "vulnerabilities", type: "svgIcon", width: "30" },
-					{ key: "idNumbers", label: "ID Numbers", width: "30", sortKey: "nationalId" },
-					{ key: "projects", label: "Projects", width: "30" },
-					{ key: "currentLocation", label: "Current Location", width: "30", sortKey: "currentHouseholdLocation" },
-				],
+				columns: generateColumns([
+					{ key: "id", title: "Household ID", type: "link", sortable: false },
+					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
+					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
+					{ key: "members", sortKey: "dependents" },
+					{ key: "vulnerabilities", title: "Vulnerability criteria", type: "svgIcon" },
+					{ key: "idNumbers", title: "ID Numbers", sortKey: "nationalId" },
+					{ key: "projects", title: "Projects" },
+					{ key: "currentLocation", title: "Current Location", sortKey: "currentHouseholdLocation" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortColumn: "id",
-				sortDirection: "asc",
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS.key,
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS.order,
 				progress: null,
 				searchPhrase: "",
 				checkedRows: [],
@@ -311,6 +308,9 @@ export default {
 			bulkSearch: {},
 			locationsFilter: {},
 			householdDetailModal: {
+				isOpened: false,
+			},
+			removeHouseholdModal: {
 				isOpened: false,
 			},
 			addToProjectModal: {
@@ -323,10 +323,11 @@ export default {
 				externalSupportReceivedType: [],
 				projects: [],
 			},
-			actionsButtonVisible: false,
+			isActionsButtonVisible: false,
 			confirmButtonLoading: false,
 			selectedProject: null,
-			loading: {
+			isLoading: {
+				households: false,
 				projects: false,
 			},
 		};
@@ -335,6 +336,21 @@ export default {
 	computed: {
 		arrayIds() {
 			return this.bulkSearch.ids?.split(/\s+/);
+		},
+
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
+		},
+
+		isBulkSearchVisible() {
+			return this.visiblePanels.includes("bulkSearch");
+		},
+	},
+
+	watch: {
+		"table.checkedRows": {
+			handler: "onRowsChecked",
+			deep: true,
 		},
 	},
 
@@ -345,9 +361,8 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			this.isLoading.households = true;
 			this.table.progress = null;
-			this.table.columns = generateColumns(this.table.visibleColumns);
 
 			if (
 				this.bulkSearch.isBulkSearchUsed
@@ -366,7 +381,9 @@ export default {
 			await BeneficiariesService.getListOfHouseholds(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.table.searchPhrase,
 				this.filters,
 			).then(async ({ totalCount, data }) => {
@@ -377,9 +394,9 @@ export default {
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
 				}
-				this.isLoadingList = false;
+				this.isLoading.households = false;
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Households")} ${e}`, "is-danger");
+				Notification(`${this.$t("Households")} ${e.message || e}`, "error");
 			});
 		},
 
@@ -389,7 +406,9 @@ export default {
 					.getListOfHouseholdByBulkSearch(
 						this.table.currentPage,
 						this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
+						this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "",
 						{
 							searchBy: this.bulkSearch.searchBy,
 							searchIds: this.arrayIds,
@@ -406,19 +425,21 @@ export default {
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
 				}
-				this.isLoadingList = false;
+				this.isLoading.households = false;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Bulk Search")} ${e}`, "is-danger");
+				Notification(`${this.$t("Bulk Search")} ${e.message || e}`, "error");
 			}
 		},
 
-		async exportHouseholds(exportType, format) {
+		async onExportHouseholds(exportType, format) {
 			if (exportType === EXPORT.HOUSEHOLDS) {
 				let ids = [];
 				const filename = `BNF Households ${normalizeExportDate()}`;
 
 				if (!this.householdsSelects) {
-					ids = this.table.checkedRows.map((item) => item.householdId);
+					ids = this.table.checkedRows.map(
+						(household) => household.routeParams.householdId,
+					);
 				}
 
 				if (this.bulkSearch.isBulkSearchUsed) {
@@ -439,7 +460,7 @@ export default {
 					} catch (e) {
 						Notification(
 							`${this.$t("Export Households (bulk search)")} ${e.message || e}`,
-							"is-danger",
+							"error",
 						);
 					} finally {
 						this.exportControl.loading = false;
@@ -448,22 +469,24 @@ export default {
 					try {
 						this.exportControl.loading = true;
 
+						const sort = `${this.table.sortColumn?.sortKey
+							|| this.table.sortColumn}.${this.table.sortDirection}`;
 						const filters = {
 							...this.filters,
 							...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 						};
-
 						const { data, status, message } = await BeneficiariesService.exportHouseholds(
 							format,
 							ids,
 							filters,
+							sort,
 						);
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
 						Notification(
 							`${this.$t("Export Households")} ${e.message || e}`,
-							"is-danger",
+							"error",
 						);
 					} finally {
 						this.exportControl.loading = false;
@@ -473,45 +496,48 @@ export default {
 		},
 
 		onRowsChecked(rows) {
-			this.table.checkedRows = rows;
-			this.actionsButtonVisible = !!rows?.length;
+			this.isActionsButtonVisible = !!rows?.length;
 			this.householdsSelects = !rows?.length;
 		},
 
-		clickedBulkSearch(bulkSearchData) {
+		onClickedBulkSearch(bulkSearchData) {
+			this.table.checkedRows = [];
 			this.bulkSearch = bulkSearchData;
 			this.fetchData();
 		},
 
-		bulkSearchChanged() {
+		onBulkSearchChanged() {
 			this.table.dataUpdated = false;
 		},
 
-		clickedSearch() {
+		onClickedSearch() {
+			this.table.checkedRows = [];
 			this.bulkSearch.isBulkSearchUsed = false;
 			this.onSearch(this.table.searchPhrase);
 		},
 
-		async addHouseholdsToProject(project) {
+		async onAddHouseholdsToProject(project) {
 			this.selectedProject = project;
 			this.confirmButtonLoading = true;
 
 			if (this.table.checkedRows?.length && this.selectedProject) {
-				const householdsIds = this.table.checkedRows.map((household) => household.householdId);
+				const householdsIds = this.table.checkedRows.map(
+					(household) => household.routeParams.householdId,
+				);
 
 				await BeneficiariesService
 					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
 					.then(() => {
 						this.table.checkedRows = [];
-						this.actionsButtonVisible = false;
-						Toast(this.$t("Beneficiaries Successfully Added to a Project"), "is-success");
+						this.isActionsButtonVisible = false;
+						Notification(this.$t("Beneficiaries Successfully Added to a Project"), "success");
 						this.fetchData();
 					})
 					.catch((e) => {
-						if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 					});
 
-				this.closeAddToProjectModal();
+				this.addToProjectModal.isOpened = false;
 				this.table.checkedRows = [];
 				this.confirmButtonLoading = false;
 				this.onRowsChecked();
@@ -519,15 +545,15 @@ export default {
 		},
 
 		async fetchProjects() {
-			this.loading.projects = true;
+			this.isLoading.projects = true;
 
 			try {
 				const { data: { data } } = await ProjectService.getShortListOfProjects();
 
 				this.options.projects = data;
-				this.loading.projects = false;
+				this.isLoading.projects = false;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -535,31 +561,29 @@ export default {
 			this.table.progress = 5;
 			const projectIds = [];
 			const beneficiaryIds = [];
-			const addressIds = {
-				camp: [],
-				residence: [],
-				temporary_settlement: [],
-			};
+			const addresses = [];
+
 			data.forEach((item, key) => {
 				const { id } = item;
-				const { typeOfLocation, addressId } = this.getAddressTypeAndId(item);
+				const address = this.getAddressTypeAndId(item);
 
 				projectIds.push(...item.projectIds);
 				beneficiaryIds.push(item.householdHeadId);
 
-				this.table.data[key] = item;
-				this.table.data[key].householdId = id;
-				this.table.data[key].id = {
-					routeParams: { householdId: id },
-					routeName: "HouseholdInformationSummary",
-					name: id,
+				this.table.data[key] = {
+					...item,
+					householdId: id,
+					address,
+					members: item.beneficiaryIds.length,
+					id: {
+						routeParams: { householdId: id },
+						routeName: "HouseholdInformationSummary",
+						name: id,
+					},
 				};
-				this.table.data[key].addressId = addressId;
-				this.table.data[key].members = item.beneficiaryIds.length;
 
-				// TODO Fix bug with Informal Settlement (Location Type)
-				if (typeOfLocation && addressId) {
-					addressIds[typeOfLocation].push(addressId);
+				if (address) {
+					addresses.push(address);
 				}
 			});
 
@@ -567,7 +591,7 @@ export default {
 
 			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
 
-			this.prepareAddressForTable(addressIds);
+			this.prepareAddressForTable(addresses);
 
 			this.table.progress = 100;
 		},
@@ -577,7 +601,6 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			const allNationalIdIds = [];
 			await this.table.data.forEach(async (item, key) => {
 				const {
 					nationalIds,
@@ -597,35 +620,32 @@ export default {
 				this.table.data[key].supportDateReceived = item.supportDateReceived
 					? new Date(item.supportDateReceived)
 					: null;
-				allNationalIdIds.push(...nationalIds);
 			});
 			this.table.progress += 5;
-			this.getNationalIds(allNationalIdIds)
-				.then((nationalIdResult) => {
-					this.table.progress += 5;
-					this.table.data.forEach((item, key) => {
-						let idsText = "";
-						if (item.nationalIds) {
-							item.nationalIds.forEach((nationalId, index) => {
-								if (index !== 0) {
-									idsText += "<br />";
-								}
-								const idEntity = nationalIdResult.find((idItem) => idItem.id === nationalId);
-								if (idEntity) {
-									idsText += `${idEntity.type}: <b>${idEntity.number}</b>`;
-								}
-							});
+			this.table.data.forEach((item, key) => {
+				let idsText = "";
+
+				if (item.nationalIds) {
+					item.nationalIds.forEach((nationalId, index) => {
+						if (index !== 0) {
+							idsText += "<br />";
 						}
-						this.table.data[key].idNumbers = idsText || this.$t("None");
+
+						if (nationalId) {
+							idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
+						}
 					});
-				});
+				}
+				this.table.data[key].idNumbers = idsText || this.$t("None");
+			});
 		},
 
-		async prepareAddressForTable(addressIds) {
-			const mappedLocations = await this.getPreparedLocations(addressIds);
+		async prepareAddressForTable(address) {
+			await this.getPreparedLocations(address);
+
 			this.table.data.map(async (item, key) => {
 				this.table.data[key]
-					.currentLocation = (this.prepareEntityForTable(item.addressId, mappedLocations, "locationName"));
+					.currentLocation = item.address.locationName;
 			});
 			this.table.progress += 5;
 		},
@@ -642,72 +662,8 @@ export default {
 			return BeneficiariesService.getListOfVulnerabilities()
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vulnerabilities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
 				});
-		},
-
-		async getNationalIds(ids) {
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data).catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
-		},
-
-		// Replaces method from addressHelper
-		async getAddresses(ids) {
-			const addresses = [];
-			if (ids.camp.length) {
-				let camps = [];
-				await AddressService.getCampAddresses(ids.camp)
-					.then(({ data }) => {
-						camps = data;
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
-					});
-				const uniqueCampIds = getUniqueIds(camps, "campId");
-
-				await AddressService.getCampsByIds(uniqueCampIds)
-					.then(({ data }) => {
-						data.forEach((item) => {
-							const address = camps.find(({ campId }) => campId === item.id);
-							if (address) {
-								addresses.push({
-									locationId: item.locationId,
-									id: address.id,
-									type: "camp",
-								});
-							}
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camps")} ${e}`, "is-danger");
-					});
-			}
-			if (ids.residence.length) {
-				await AddressService.getResidenceAddresses(ids.residence)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "residence" });
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Residency Address")} ${e}`, "is-danger");
-					});
-			}
-			if (ids.temporary_settlement.length) {
-				await AddressService.getTemporarySettlementAddresses(ids.temporary_settlement)
-					.then(({ data }) => {
-						data.forEach(({ locationId, id }) => {
-							addresses.push({ locationId, id, type: "temporary_settlement" });
-						});
-					}).catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Temporary Settlement Address")} ${e}`,
-								"is-danger",
-							);
-						}
-					});
-			}
-			return addresses;
 		},
 
 		async getProjects(ids) {
@@ -715,7 +671,7 @@ export default {
 				const { data: { data } } = await ProjectService.getShortListOfProjects(ids);
 				return data;
 			} catch (e) {
-				if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 			}
 
 			return [];
@@ -725,12 +681,13 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 				});
 		},
 
 		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
 			if (!beneficiaries?.length) return "";
+
 			this.table.data[tableIndex].loading = true;
 			const result = {
 				nationalIds: [],
@@ -771,58 +728,27 @@ export default {
 			return result;
 		},
 
-		goToCreatePage() {
-			this.$router.push({ name: "AddHousehold" });
-		},
-
-		goToImportPage() {
-			this.$router.push({ name: "Imports", query: { openModal: "1" } });
-		},
-
 		normalizeText(text) {
 			return normalizeText(text);
 		},
 
-		advancedSearchToggle() {
-			this.isBulkSearchVisible = false;
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		bulkSearchToggle() {
-			this.advancedSearchVisible = false;
-			this.isBulkSearchVisible = !this.isBulkSearchVisible;
-		},
-
-		goToSummaryDetail({ id }) {
-			this.$router.push({ name: "HouseholdInformationSummary", params: { householdId: id } });
-		},
-
-		editHousehold(id) {
-			this.$router.push({ name: "EditHousehold", params: { householdId: id } });
+		onBulkSearchToggle() {
+			this.visiblePanels = this.isBulkSearchVisible ? [] : ["bulkSearch"];
 		},
 
 		async removeMultipleHouseholds() {
-			await this.removeHousehold(null, true);
-			this.actionsButtonVisible = false;
+			this.removeHouseholdModal.isOpened = false;
+			await this.onRemoveHousehold(null, true);
+			this.isActionsButtonVisible = false;
 			await this.fetchData();
 			this.onRowsChecked();
 		},
 
-		saveDeleteOfMultipleHouseholds() {
-			this.$buefy.dialog.confirm({
-				title: this.$t("Deleting"),
-				message: this.$t("Are you sure you want to delete this Households?"),
-				confirmText: this.$t("Delete"),
-				cancelText: this.$t("Cancel"),
-				type: "is-danger",
-				hasIcon: true,
-				onConfirm: () => {
-					this.removeMultipleHouseholds();
-				},
-			});
-		},
-
-		async removeHousehold(id, multiple = false) {
+		async onRemoveHousehold(id, multiple = false) {
 			if (multiple) {
 				const { checkedRows } = this.table;
 				let error = "";
@@ -830,46 +756,40 @@ export default {
 
 				if (checkedRows?.length) {
 					await Promise.all(checkedRows.map(async (household) => {
-						await BeneficiariesService.removeHousehold(household.householdId).then((response) => {
+						const { householdId } = household.routeParams;
+
+						await BeneficiariesService.removeHousehold(householdId).then((response) => {
 							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${household.householdId}. `;
+								success += `${this.$t("Success for Household")} ${householdId}. `;
 							}
 						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${household.householdId} ${e}. `;
+							error += `${this.$t("Error for Household")} ${householdId} ${e.message || e}. `;
 						});
 					}));
 
-					if (error) Toast(error, "is-danger");
-					if (success) Toast(success, "is-success");
+					if (error) Notification(error, "error");
+					if (success) Notification(success, "success");
 				}
 			} else {
 				await BeneficiariesService.removeHousehold(id).then((response) => {
 					if (response.status === 204) {
-						Toast(this.$t("Household Successfully Deleted"), "is-success");
+						Notification(this.$t("Household Successfully Deleted"), "success");
 						this.fetchData();
 					}
 				}).catch((e) => {
-					Toast(`${this.$t("Household")} ${e}`, "is-danger");
+					Notification(`${this.$t("Household")} ${e.message || e}`, "error");
 				});
 			}
 
 			this.table.checkedRows = [];
 		},
 
-		closeHouseholdDetailModal() {
-			this.householdDetailModal.isOpened = false;
-		},
-
-		showDetail(id) {
+		onShowHouseholdDetail(id) {
 			this.mapHouseholdDetail(this.table.data.find((item) => item.householdId === id));
 			this.householdDetailModal.isOpened = true;
 		},
 
-		closeAddToProjectModal() {
-			this.addToProjectModal.isOpened = false;
-		},
-
-		showAddToProjectModal() {
+		onShowAddToProjectModal() {
 			this.fetchProjects();
 			this.addToProjectModal.isOpened = true;
 		},
@@ -880,16 +800,14 @@ export default {
 			};
 		},
 
-		resetFilters() {
+		onResetFilters() {
 			this.resetSearch({
-				tableRef: "householdList",
+				tableRef: "households",
 				filtersRef: "householdsFilter",
 				bulkSearchRef: "bulkSearch",
 			});
-		},
 
-		resetTableSort() {
-			this.$refs.householdList.onResetSort();
+			this.$refs.households.resetSearch();
 		},
 	},
 };

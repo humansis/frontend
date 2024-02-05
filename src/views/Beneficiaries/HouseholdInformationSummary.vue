@@ -1,36 +1,39 @@
 <template>
-	<card-component>
-		<b-progress :value="100" />
-		<h1 class="title has-text-centered has-text-weight-bold mb-6">
-			{{ $t('Household Information Summary') }}
-		</h1>
-		<h2 v-if="householdHead" class="subtitle is-5 has-text-centered has-text-weight-bold mb-6">
-			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}
-		</h2>
-		<h3 class="subtitle is-5 has-text-centered has-text-weight-bold mb-5">
-			{{ $t('Current Address') }}
-		</h3>
-		<p v-if="householdHead" class="has-text-centered">
-			{{ `${address.number || ""}, ${address.street || ""}, ${address.postcode || ""}` }}
-		</p>
-		<b-tabs v-model="activeTab">
-			<b-tab-item :label="$t('Assistances')">
-				<HouseholdAssistancesList />
-			</b-tab-item>
+	<v-container fluid>
+		<h2 class="text-center mb-4">{{ $t('Household Information Summary') }}</h2>
 
-			<b-tab-item :label="$t('Purchases')">
+		<p v-if="householdHead" class="text-center text-h5 mb-8">
+			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}
+		</p>
+
+		<h3 class="text-center mb-4">{{ $t('Current Address') }}</h3>
+
+		<p v-if="householdHead" class="text-center mb-4">
+			{{ address }}
+		</p>
+
+		<v-tabs v-model="activeTab">
+			<v-tab value="assistances">{{ $t('Assistances') }}</v-tab>
+
+			<v-tab value="purchases">{{ $t('Purchases') }}</v-tab>
+		</v-tabs>
+
+		<v-window v-model="activeTab">
+			<v-window-item value="assistances">
+				<HouseholdAssistancesList />
+			</v-window-item>
+
+			<v-window-item value="purchases">
 				<HouseholdPurchasesList />
-			</b-tab-item>
-		</b-tabs>
-	</card-component>
+			</v-window-item>
+		</v-window>
+	</v-container>
 </template>
 
 <script>
-import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import HouseholdAssistancesList from "@/components/Beneficiaries/Household/HouseholdAssistancesList";
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
-import CardComponent from "@/components/CardComponent";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import { Notification } from "@/utils/UI";
@@ -40,9 +43,8 @@ export default {
 	name: "HouseholdInformationSummary",
 
 	components: {
-		HouseholdPurchasesList,
 		HouseholdAssistancesList,
-		CardComponent,
+		HouseholdPurchasesList,
 	},
 
 	mixins: [addressHelper, grid],
@@ -52,7 +54,7 @@ export default {
 			household: {},
 			householdHead: null,
 			address: {},
-			activeTab: 0,
+			activeTab: "assistances",
 		};
 	},
 
@@ -71,7 +73,7 @@ export default {
 					this.household = data;
 					this.prepareData(data);
 				}).catch((e) => {
-					if (e.message) Notification(`${this.$t("Household")} ${e}`, "is-danger");
+					Notification(`${this.$t("Household")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -80,49 +82,18 @@ export default {
 				.then((data) => {
 					this.householdHead = data;
 				});
-			const { typeOfLocation, addressId } = this.getAddressTypeAndId(household);
 
-			this.address = await this.getAddresses(addressId, typeOfLocation);
+			const address = this.getAddressTypeAndId(household);
+
+			this.prepareAddressForSummary(address);
 		},
 
-		async getAddresses(id, type) {
-			let address = null;
-			if (type === GENERAL.LOCATION_TYPE.camp.type) {
-				await AddressService.getCampAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Camp Address")} ${e}`, "is-danger");
-					});
+		prepareAddressForSummary(currentAddress) {
+			if (currentAddress.type === GENERAL.LOCATION_TYPE.camp.type) {
+				this.address = `${currentAddress.campName}, ${currentAddress.tentNumber}`;
+			} else {
+				this.address = `${currentAddress.number}, ${currentAddress.street}, ${currentAddress.postcode}`;
 			}
-			if (type === GENERAL.LOCATION_TYPE.residence.type) {
-				await AddressService.getResidenceAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) Notification(`${this.$t("Residence Address")} ${e}`, "is-danger");
-					});
-			}
-			if (type === GENERAL.LOCATION_TYPE.temporarySettlement.type) {
-				await AddressService.getTemporarySettlementAddresses([id])
-					.then(({ data }) => {
-						data.forEach((item) => {
-							address = item;
-						});
-					}).catch((e) => {
-						if (e.message) {
-							Notification(
-								`${this.$t("Temporary Settlement Address")} ${e}`,
-								"is-danger",
-							);
-						}
-					});
-			}
-			return address;
 		},
 	},
 };

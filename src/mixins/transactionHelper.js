@@ -18,7 +18,7 @@ export default {
 	methods: {
 		renameAdms() {
 			const adms = [...Object.keys(this.admNames)];
-			this.table.visibleColumns = this.table.visibleColumns.map((item) => {
+			this.table.columns = this.table.columns.map((item) => {
 				const column = { ...item };
 				if (adms.includes(column.key)) {
 					column.label = this.admNames[column.key];
@@ -155,7 +155,7 @@ export default {
 			return ProductService.getProducts(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Products")} ${e}`, "is-danger");
+					Notification(`${this.$t("Products")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -164,16 +164,22 @@ export default {
 			return AssistancesService.getCommodities(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
 				});
 		},
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
-			return VendorService.getListOfVendors(null, null, null, null, ids)
+
+			/*
+			*	TODO In future we probably need to refactor sending arguments
+			*   in functions and make it like one object with properties, because these nulls are horrible
+			*/
+
+			return VendorService.getListOfVendors(null, null, null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+					Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -206,7 +212,7 @@ export default {
 			return AssistancesService.getAssistances(ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Assistances")} ${e}`, "is-danger");
+					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -214,15 +220,15 @@ export default {
 			return BeneficiariesService.getBeneficiaries(ids, filters)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Beneficiaries")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
 				});
 		},
 
 		async getProjects(ids) {
-			return ProjectService.getListOfProjects(null, null, null, null, ids)
+			return ProjectService.getListOfProjects(null, null, null, ids)
 				.then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -234,7 +240,7 @@ export default {
 					this.filtersOptions.project.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -245,7 +251,7 @@ export default {
 					this.filtersOptions.commodity.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Modality")}${e}`, "is-danger");
+					Notification(`${this.$t("Modality")}${e.message || e}`, "error");
 				});
 		},
 
@@ -260,7 +266,7 @@ export default {
 					this.filtersOptions.vendor.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Vendor")}${e}`, "is-danger");
+					Notification(`${this.$t("Vendor")}${e.message || e}`, "error");
 				});
 		},
 
@@ -271,7 +277,7 @@ export default {
 					this.filtersOptions.beneficiaryType.loading = false;
 				})
 				.catch((e) => {
-					Notification(`${this.$t("Beneficiary Types")} ${e}`, "is-danger");
+					Notification(`${this.$t("Beneficiary Types")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -284,7 +290,7 @@ export default {
 					this.filtersOptions.distribution.data = data;
 					this.filtersOptions.distribution.loading = false;
 				}).catch((e) => {
-					Notification(`Project Assistances ${e}`, "is-danger");
+					Notification(`Project Assistances ${e.message || e}`, "error");
 				});
 		},
 	},

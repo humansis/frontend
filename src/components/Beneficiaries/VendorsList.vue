@@ -1,135 +1,105 @@
 <template>
-	<Table
-		ref="table"
+	<DataGrid
+		ref="vendorsList"
 		v-show="show"
-		has-reset-sort
-		has-search
-		:data="table.data"
-		:total="table.total"
-		:current-page="table.currentPage"
-		:is-loading="isLoadingList"
+		v-model:items-per-page="perPage"
+		v-model:sort-by="sortValue"
+		:headers="table.columns"
+		:items="table.data"
+		:total-count="table.total"
+		:loading="isLoadingList"
 		:search-phrase="table.searchPhrase"
-		:default-sort-direction="table.sortDirection"
-		:default-sort-key="table.sortColumn"
-		@clicked="showDetail"
+		reset-sort-button
+		reset-filters-button
+		is-search-visible
+		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
-		@sorted="onSort"
-		@changePerPage="onChangePerPage"
-		@resetSort="resetSort('id', 'asc')"
-		@onSearch="onSearch"
+		@update:sortBy="onSort"
+		@search="onSearch"
+		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VENDORS)"
+		@resetFilters="onResetVendorsFilters"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template #progress>
-			<b-progress :value="table.progress" format="percent" />
+		<template v-slot:actions="{ row }">
+			<ButtonAction
+				icon="hand-holding-usd"
+				tooltip-text="Show Vendor Summary"
+				@actionConfirmed="onShowSummary(row)"
+			/>
+
+			<ButtonAction
+				icon="search"
+				tooltip-text="Show Detail"
+				@actionConfirmed="onShowDetail(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditVendors"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
+
+			<ButtonAction
+				v-if="userCan.addEditVendors"
+				icon="trash"
+				tooltip-text="Delete"
+				icon-color="red"
+				confirm-title="Deleting Vendor"
+				confirm-message="Are you sure sure you want to delete Vendor?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="red"
+				is-confirm-action
+				@actionConfirmed="onRemove(row.id)"
+			/>
 		</template>
 
-		<template v-for="column in table.columns">
-			<b-table-column
-				v-bind="column"
-				v-slot="props"
-				:key="column.id"
-			>
-				<ColumnField :column="column" :data="props" />
-			</b-table-column>
-		</template>
-
-		<b-table-column
-			v-slot="props"
-			width="190"
-			field="actions"
-			:label="$t('Actions')"
-		>
-			<div class="buttons is-right">
-				<ActionButton
-					icon="hand-holding-usd"
-					:tooltip="$t('Show Vendor Summary')"
-					@click="showSummary(props.row)"
-				/>
-				<ActionButton
-					icon="search"
-					type="is-primary"
-					:tooltip="$t('Show Detail')"
-					@click="showDetailWithId(props.row.id)"
-				/>
-				<ActionButton
-					v-if="userCan.addEditVendors"
-					icon="edit"
-					:tooltip="$t('Edit')"
-					@click="showEdit(props.row.id)"
-				/>
-				<SafeDelete
-					v-if="userCan.addEditVendors"
-					icon="trash"
-					:entity="$t('Vendor')"
-					:tooltip="$t('Delete')"
-					:id="props.row.id"
-					@submitted="remove"
-				/>
-			</div>
-		</b-table-column>
-
-		<template #filterButton>
-			<b-button
-				slot="trigger"
-				:icon-right="advancedSearchVisible ? 'arrow-up' : 'arrow-down'"
-				@click="filtersToggle"
-			>
-				{{ $t('Advanced Search') }}
-			</b-button>
-		</template>
-
-		<template #filter>
-			<b-collapse :open="advancedSearchVisible">
-				<VendorsFilter
-					ref="vendorsFilter"
-					:defaultFilters="{ ...filters, ...locationsFilter }"
-					@filtersChanged="onFiltersChange"
-					@onSearch="onSearch(table.searchPhrase)"
-				/>
-			</b-collapse>
-		</template>
-
-		<template #export>
+		<template v-slot:tableControls>
 			<ExportControl
 				:disabled="!table.dataUpdated || !table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
-				@onExport="exportVendors"
+				@export="onExportVendors"
 			/>
+
+			<v-btn
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</v-btn>
 		</template>
 
-		<template slot="resetSort">
-			<div class="level-right">
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small mr-2"
-					@click="resetFilters"
-				>
-					{{ $t('Reset Filters') }}
-				</b-button>
-				<b-button
-					icon-left="eraser"
-					class="reset-sort-button is-small"
-					@click="resetTableSort"
-				>
-					{{ $t('Reset Table Sort') }}
-				</b-button>
-			</div>
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="isAdvancedSearchVisible">
+				<v-expansion-panel :value="true" eager>
+					<v-expansion-panel-text>
+						<VendorsFilter
+							ref="vendorsFilter"
+							:defaultFilters="{ ...filters, ...locationsFilter }"
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
 		</template>
-	</Table>
+	</DataGrid>
 </template>
 
 <script>
 import LocationsService from "@/services/LocationsService";
 import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
-import ActionButton from "@/components/ActionButton";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
-import ColumnField from "@/components/DataGrid/ColumnField";
-import Table from "@/components/DataGrid/Table";
-import ExportControl from "@/components/Export";
-import SafeDelete from "@/components/SafeDelete";
+import ButtonAction from "@/components/ButtonAction";
+import DataGrid from "@/components/DataGrid";
+import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
@@ -138,25 +108,25 @@ import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "VendorsList",
 
 	components: {
 		ExportControl,
-		SafeDelete,
-		Table,
-		ActionButton,
-		ColumnField,
+		DataGrid,
 		VendorsFilter,
+		ButtonAction,
 	},
 
 	mixins: [grid, baseHelper, permissions, urlFiltersHelper],
 
 	data() {
 		return {
-			advancedSearchVisible: false,
+			TABLE,
+			isAdvancedSearchVisible: false,
+			isLoadingList: false,
 			filters: {},
 			locationsFilter: {},
 			exportControl: {
@@ -167,23 +137,23 @@ export default {
 			},
 			table: {
 				data: [],
-				columns: [],
-				visibleColumns: [
-					{ key: "id", label: "ID", sortable: true },
-					{ key: "username", sortable: true },
-					{ key: "name", sortable: true },
-					{ key: "categoryType", width: "200", type: "svgIcon" },
-					{ key: "vendorNo", label: "Vendor No." },
-					{ key: "contractNo", label: "Contract No." },
-					{ key: "addressNumber", sortable: true },
-					{ key: "addressPostcode", sortable: true },
-					{ key: "addressStreet", sortable: true },
-					{ key: "location", sortable: true },
-				],
+				columns: generateColumns([
+					{ key: "id", title: "ID" },
+					{ key: "username" },
+					{ key: "name" },
+					{ key: "categoryType", type: "svgIcon", sortable: false },
+					{ key: "vendorNo", title: "Vendor No.", sortable: false },
+					{ key: "contractNo", title: "Contract No.", sortable: false },
+					{ key: "addressNumber" },
+					{ key: "addressPostcode" },
+					{ key: "addressStreet" },
+					{ key: "location" },
+					{ key: "actions", value: "actions", sortable: false },
+				]),
 				total: 0,
 				currentPage: 1,
-				sortDirection: "",
-				sortColumn: "",
+				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.VENDORS.order,
+				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.VENDORS.key,
 				searchPhrase: "",
 				sortReset: false,
 				progress: null,
@@ -202,16 +172,15 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 
-			this.table.columns = generateColumns(this.table.visibleColumns);
-
 			this.setGridFiltersToUrl("vendors");
 			await VendorService.getListOfVendors(
 				this.table.currentPage,
 				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				null,
+				this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "",
 				this.filters,
+				this.table.searchPhrase,
 			).then(({ data, totalCount }) => {
 				this.table.data = [];
 				this.table.total = totalCount;
@@ -220,22 +189,22 @@ export default {
 					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
-				if (e.message) Notification(`${this.$t("Vendors")} ${e}`, "is-danger");
+				Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
 			});
 			this.isLoadingList = false;
 			this.table.progress = 100;
 		},
 
-		filtersToggle() {
-			this.advancedSearchVisible = !this.advancedSearchVisible;
+		onAdvancedSearchToggle() {
+			this.isAdvancedSearchVisible = !this.isAdvancedSearchVisible;
 		},
 
-		resetFilters() {
-			this.resetSearch({ tableRef: "table", filtersRef: "vendorsFilter" });
+		onResetVendorsFilters() {
+			this.resetSearch({ tableRef: "vendorsList", filtersRef: "vendorsFilter" });
 		},
 
 		resetTableSort() {
-			this.$refs.table.onResetSort();
+			this.$refs.vendorsList.onResetSort();
 		},
 
 		async prepareDataForTable(data) {
@@ -284,15 +253,15 @@ export default {
 				});
 		},
 
-		showSummary(vendor) {
-			this.$emit("onShowSummary", vendor);
+		onShowSummary(vendor) {
+			this.$emit("showSummary", vendor);
 		},
 
 		async getLocations(locationIds) {
 			if (!locationIds?.length) return [];
 			return LocationsService.getLocations(locationIds)
 				.then(({ data }) => data).catch((e) => {
-					if (e.message) Notification(`${this.$t("Locations")} ${e}`, "is-danger");
+					Notification(`${this.$t("Locations")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -300,11 +269,11 @@ export default {
 			if (!userIds?.length) return [];
 			return UsersService.getListOfUsers(null, null, null, null, userIds)
 				.then(({ data }) => data).catch((e) => {
-					if (e.message) Notification(`${this.$t("Users")} ${e}`, "is-danger");
+					Notification(`${this.$t("Users")} ${e.message || e}`, "error");
 				});
 		},
 
-		async exportVendors(exportType, format) {
+		async onExportVendors(exportType, format) {
 			if (exportType === EXPORT.VENDORS) {
 				try {
 					this.exportControl.loading = true;
@@ -318,7 +287,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Vendors")} ${e.message || e}`, "is-danger");
+					Notification(`${this.$t("Export Vendors")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

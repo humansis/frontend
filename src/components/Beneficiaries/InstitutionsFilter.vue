@@ -2,8 +2,8 @@
 	<AdvancedFilter
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
-		@filtersChanged="filterChanged"
-		@onSearch="$emit('onSearch')"
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
 	/>
 </template>
 
@@ -17,6 +17,11 @@ import { FILTER } from "@/consts";
 
 export default {
 	name: "InstitutionsFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
 
 	components: {
 		AdvancedFilter,
@@ -39,7 +44,7 @@ export default {
 			filtersOptions: {
 				projects: {
 					name: "Project",
-					placeholder: this.$t("Select Projects"),
+					placeholder: "Select Projects",
 					trackBy: "id",
 					label: "name",
 					multiple: true,
@@ -55,8 +60,8 @@ export default {
 	},
 
 	methods: {
-		filterChanged(filters) {
-			this.$emit("filtersChanged", { filters });
+		onFilterChanged(filters) {
+			this.$emit("filtersChanged", filters);
 		},
 
 		async fetchProjects() {
@@ -65,7 +70,7 @@ export default {
 					this.filtersOptions.projects.data = data;
 				})
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Projects")} ${e}`, "is-danger");
+					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 
 			this.filtersOptions.projects.loading = false;

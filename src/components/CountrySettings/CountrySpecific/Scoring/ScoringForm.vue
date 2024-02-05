@@ -1,107 +1,90 @@
 <template>
-	<form @submit.prevent="submitForm">
-		<section class="modal-card-body">
-			<b-field
-				:label="$t('Name')"
-				:type="validateType('name')"
-				:message="validateMsg('name')"
-			>
-				<b-input
-					v-model="formModel.name"
-					:placeholder="$t('Insert name of scoring')"
-					@blur="validate('name')"
-				/>
-			</b-field>
+	<v-card-text>
+		<DataInput
+			v-model="formModel.name"
+			:error-messages="validationMsg('name')"
+			label="Name"
+			name="name"
+			class="mb-4"
+			@update:modelValue="onValidate('name')"
+		/>
 
-			<p class="help is-danger mb-2">
-				{{ $t("Name cannot be changed afterwards.") }}
-			</p>
+		<p class="text-caption text-red mb-4">
+			{{ $t("Name cannot be changed afterwards.") }}
+		</p>
 
-			<b-field
-				:label="$t('Note')"
-			>
-				<b-input
-					v-model.trim="formModel.note"
-					type="textarea"
-					maxlength="100"
-					:placeholder="$t('Type…')"
-				/>
-			</b-field>
+		<DataTextarea
+			v-model.trim="formModel.note"
+			label="Note"
+			name="note"
+			class="mb-4"
+			auto-grow
+		/>
 
-			<b-field
-				:type="validateType('dropFiles')"
-				:message="validateMsg('dropFiles')"
-			>
-				<b-upload
-					v-model="formModel.dropFiles"
-					multiple
-					drag-drop
-					:accept="allowedFileExtensions"
-					@blur="validate('dropFiles')"
-				>
-					<section class="section">
-						<div class="content has-text-centered">
-							<p>
-								<b-icon
-									icon="file-upload"
-									size="is-large"
-								/>
-							</p>
-							<p>{{ $t("Drop your file here or click to upload") }}</p>
-						</div>
-					</section>
-				</b-upload>
-			</b-field>
+		<FileUpload
+			v-model="formModel.dropFiles"
+			:error-messages="validationMsg('dropFiles')"
+			:accept="allowedFileExtensions"
+			prepend-icon=""
+			hide-details="auto"
+			variant="outlined"
+			density="compact"
+			@update:modelValue="onValidate('uploadedImage')"
+		/>
+	</v-card-text>
 
-			<b-message v-if="formModel.dropFiles.length > 1" type="is-warning">
-				{{ $t('You can upload only one file.') }}
-			</b-message>
+	<v-card-actions>
+		<v-spacer />
 
-			<div class="tags">
-				<span v-for="(file, index) in formModel.dropFiles"
-					:key="index"
-					class="tag is-primary"
-				>
-					{{ file.name }}
-					<button class="delete is-small"
-						type="button"
-						@click="deleteDropFile(index)"
-					/>
-				</span>
-			</div>
-		</section>
-		<section class="modal-card-foot">
-			<b-button
-				@click="closeForm"
-			>
-				{{ $t('Close') }}
-			</b-button>
-			<b-button
-				class="is-primary"
-				native-type="submit"
-				:disabled="formModel.dropFiles.length > 1"
-			>
-				{{ $t('Create') }}
-			</b-button>
-		</section>
-	</form>
+		<v-btn
+			class="text-none"
+			color="blue-grey-lighten-4"
+			variant="elevated"
+			@click="onCloseForm"
+		>
+			{{ $t('Close') }}
+		</v-btn>
+
+		<v-btn
+			:disabled="formModel.dropFiles.length > 1"
+			color="primary"
+			class="text-none ml-3"
+			variant="elevated"
+			@click="onSubmitForm"
+		>
+			{{ $t("Create") }}
+		</v-btn>
+	</v-card-actions>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required } from "@vuelidate/validators";
+import DataInput from "@/components/Inputs/DataInput";
+import DataTextarea from "@/components/Inputs/DataTextarea";
+import FileUpload from "@/components/Inputs/FileUpload";
 import validation from "@/mixins/validation";
 import { IMPORT } from "@/consts";
 
 export default {
 	name: "ScoringForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
+	components: {
+		FileUpload,
+		DataInput,
+		DataTextarea,
+	},
+
 	mixins: [validation],
 
-	validations: {
-		formModel: {
-			name: { required },
-			dropFiles: { required },
-		},
+	validations() {
+		return {
+			formModel: {
+				name: { required },
+				dropFiles: { required },
+			},
+		};
 	},
 
 	props: {
@@ -123,24 +106,20 @@ export default {
 	},
 
 	methods: {
-		deleteDropFile(index) {
-			this.formModel.dropFiles.splice(index, 1);
-		},
+		onSubmitForm() {
+			this.v$.$touch();
 
-		submitForm() {
-			this.$v.$touch();
-
-			if (this.$v.$invalid) {
+			if (this.v$.$invalid) {
 				return;
 			}
 
 			this.$emit("formSubmitted", this.formModel);
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 
-		closeForm() {
+		onCloseForm() {
 			this.$emit("formClosed");
-			this.$v.$reset();
+			this.v$.$reset();
 		},
 	},
 };

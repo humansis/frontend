@@ -1,7 +1,6 @@
 <template>
-	<div>
-		<b-loading v-if="bLoading" active :is-full-page="false" :canCancel="true" />
-		<vue-loading v-else :type="type" :size="computeSize" :color="color" />
+	<div class="text-center">
+		<v-progress-circular indeterminate :size="computeSize" :color="color" />
 	</div>
 </template>
 
@@ -11,38 +10,42 @@ export default {
 	name: "Loading",
 
 	props: {
-		type: String,
-		bLoading: Boolean,
-		isSmall: Boolean,
-		isNormal: Boolean,
-		isMedium: Boolean,
-		isLarge: Boolean,
-		size: Object,
+		isSmall: {
+			type: Boolean,
+			default: false,
+		},
+
+		isMedium: {
+			type: Boolean,
+			default: false,
+		},
+
+		isLarge: {
+			type: Boolean,
+			default: false,
+		},
 
 		color: {
 			type: String,
-			default: "#5ac1dd",
+			default: "primary",
 		},
 	},
 
 	computed: {
 		computeSize() {
-			if (this.size) {
-				return this.size;
-			}
 			if (this.isSmall) {
-				return { width: "30px", height: "30px" };
+				return 30;
 			}
-			if (this.isNormal) {
-				return { width: "40px", height: "40px" };
-			}
+
 			if (this.isMedium) {
-				return { width: "50px", height: "50px" };
+				return 60;
 			}
+
 			if (this.isLarge) {
-				return { width: "70px", height: "70px" };
+				return 70;
 			}
-			return { width: "40px", height: "40px" };
+
+			return 45;
 		},
 	},
 };

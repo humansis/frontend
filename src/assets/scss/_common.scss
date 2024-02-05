@@ -1,0 +1,19 @@
+img, video {
+  height: auto;
+  max-width: 100%;
+}
+
+input:-webkit-autofill {
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+  }
+}
+
+a {
+  color: #074f60;
+  cursor: pointer;
+  text-decoration: none
+}

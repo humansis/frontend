@@ -1,11 +1,12 @@
-import AddressService from "@/services/AddressService";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
-import { Notification, Toast } from "@/utils/UI";
+import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {
+	emits: ["rowsChecked"],
+
 	mixins: [institutionHelper],
 
 	methods: {
@@ -15,7 +16,7 @@ export default {
 					transactionIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transactions")} ${e}`, "is-danger");
+					Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -23,7 +24,7 @@ export default {
 			return AssistancesService
 				.getTransactionStatuses().then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Transaction Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Transaction Statuses")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -31,7 +32,7 @@ export default {
 			return AssistancesService
 				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Smartcard Deposit")} ${e}`, "is-danger");
+					Notification(`${this.$t("Smartcard Deposit")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -41,7 +42,7 @@ export default {
 					bookletIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklets")} ${e}`, "is-danger");
+					Notification(`${this.$t("Booklets")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -49,11 +50,11 @@ export default {
 			return AssistancesService
 				.getBookletStatuses().then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Booklet Statuses")} ${e}`, "is-danger");
+					Notification(`${this.$t("Booklet Statuses")} ${e.message || e}`, "error");
 				});
 		},
 
-		async assignBookletToBeneficiary(booklet) {
+		async onAssignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
 			let target = "";
 
@@ -77,20 +78,18 @@ export default {
 				booklet.code,
 			).then(({ status }) => {
 				if (status === 200) {
-					Toast(
+					Notification(
 						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
-						"is-success",
+						"success",
 					);
-					this.closeAssignVoucherModal();
+					this.onCloseAssignVoucherModal();
 				}
 			}).catch((e) => {
-				if (e.message) {
-					Notification(
-						`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e}`,
-						"is-danger",
-					);
-				}
-				this.closeAssignVoucherModal();
+				Notification(
+					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e.message || e}`,
+					"error",
+				);
+				this.onCloseAssignVoucherModal();
 			});
 
 			this.assignVoucherModal.isWaiting = false;
@@ -118,7 +117,7 @@ export default {
 					reliefPackageIds,
 				).then(({ data }) => data)
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Relief Packages")} ${e}`, "is-danger");
+					Notification(`${this.$t("Relief Packages")} ${e.message || e}`, "error");
 				});
 		},
 
@@ -141,50 +140,38 @@ export default {
 			return idNumbers;
 		},
 
-		async getNationalIds(ids) {
-			if (!ids.length) return [];
-			return BeneficiariesService.getNationalIds(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					if (e.message) Notification(`${this.$t("National IDs")} ${e}`, "is-danger");
-				});
-		},
-
 		async getAssistanceCommodities() {
 			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
 				.then(({ data }) => { this.commodities = data; })
 				.catch((e) => {
-					if (e.message) Notification(`${this.$t("Commodities")} ${e}`, "is-danger");
+					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
 				});
 		},
 
-		openAssignVoucherModal(id, canAssignVoucher) {
+		onOpenAssignVoucherModal(id, canAssignVoucher) {
 			if (canAssignVoucher) {
 				this.assignVoucherToBeneficiaryId = this.table.data.find((item) => item.id === id);
 				this.assignVoucherModal.isOpened = true;
 			}
 		},
 
-		closeAssignVoucherModal() {
+		onCloseAssignVoucherModal() {
 			this.assignVoucherModal.isOpened = false;
 		},
 
-		openAddBeneficiaryModal(id, canBeOpened) {
+		onOpenAddBeneficiaryModal(id, canBeOpened) {
 			if (canBeOpened) {
 				this.addBeneficiaryModel.removingId = id;
 				this.addBeneficiaryModal.isOpened = true;
 			}
 		},
 
-		closeAddBeneficiaryModal() {
+		onCloseAddBeneficiaryModal() {
 			this.addBeneficiaryModal.isOpened = false;
 		},
 
-		showDetail(beneficiary) {
+		showDetailModal(beneficiary) {
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					this.showCommunityDetail(beneficiary);
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
 					break;
@@ -195,11 +182,8 @@ export default {
 			}
 		},
 
-		showEdit({ id }) {
+		showEditModal({ id }) {
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					this.showCommunityEdit(id);
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
@@ -244,28 +228,10 @@ export default {
 
 				this.institutionModel = this.mapToModel(institution);
 			} catch (e) {
-				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "is-danger");
+				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "error");
 			} finally {
 				this.institutionModal.isWaiting = false;
 			}
-		},
-
-		async showCommunityDetail(community) {
-			this.communityModal = {
-				isOpened: true,
-				isEditing: false,
-				isWaiting: true,
-			};
-
-			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
-
-			this.communityModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.communityModal.isWaiting = false;
 		},
 
 		showBeneficiaryEdit(id) {
@@ -280,45 +246,7 @@ export default {
 			};
 		},
 
-		async showInstitutionEdit(id) {
-			this.institutionModal = {
-				isOpened: true,
-				isEditing: true,
-				isWaiting: true,
-			};
-
-			const institution = this.table.data.find((item) => item.id === id);
-			const address = institution?.addressId ? await this.getAddress(institution.addressId) : {};
-
-			this.institutionModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.institutionModal.isWaiting = false;
-		},
-
-		async showCommunityEdit(id) {
-			this.communityModal = {
-				isOpened: true,
-				isEditing: true,
-				isWaiting: true,
-			};
-
-			const community = this.table.data.find((item) => item.id === id);
-			const address = community?.addressId ? await this.getAddress(community.addressId) : {};
-
-			this.communityModel = {
-				addressStreet: address?.street,
-				addressNumber: address?.number,
-				addressPostCode: address?.postcode,
-			};
-
-			this.communityModal.isWaiting = false;
-		},
-
-		closeBeneficiaryModal() {
+		onCloseBeneficiaryModal() {
 			this.beneficiaryModal = {
 				isOpened: false,
 				isEditing: false,
@@ -338,11 +266,19 @@ export default {
 			};
 		},
 
-		onRowsCheck(rows) {
-			this.$emit("rowsChecked", rows);
+		onRowsCheck() {
+			const selectedData = this.table.data.filter(
+				(item) => this.table.checkedRows.includes(item.id)
+					&& (item.reliefPackages[0].state !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+							|| (item.status?.length === 1
+								&& item.status[0] !== ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED)),
+			);
+
+			this.selectedRows = selectedData.length;
+			this.$emit("rowsChecked", selectedData);
 		},
 
-		async randomSample() {
+		async onRandomSample() {
 			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
 			const randomPage = this.rnd(1, this.table.total / size);
 			this.table.customPerPage = size;
@@ -353,24 +289,8 @@ export default {
 			return Math.floor((b - a + 1) * Math.random()) + a;
 		},
 
-		async submitEditBeneficiaryForm() {
+		async onSubmitEditBeneficiaryForm() {
 			this.beneficiaryModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			await this.reloadBeneficiariesList();
-		},
-
-		async submitEditInstitutionForm() {
-			this.institutionModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-			await this.reloadBeneficiariesList();
-		},
-
-		async submitEditCommunityForm() {
-			this.communityModal = {
 				isOpened: false,
 				isEditing: false,
 			};
@@ -399,7 +319,7 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async onSearch(search) {
+		async onBeneficiariesSearch(search) {
 			this.table.searchPhrase = this.assistanceDetail
 				? search.phrase
 				: search;
@@ -414,7 +334,7 @@ export default {
 			await this.reloadBeneficiariesList();
 		},
 
-		async resetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
+		async onResetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			this.table.sortReset = true;
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
@@ -424,11 +344,6 @@ export default {
 					await this.reloadBeneficiariesList();
 				}
 			}
-		},
-
-		getAddress(id) {
-			return AddressService.getAddress(id)
-				.then((response) => response);
 		},
 	},
 };

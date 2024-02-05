@@ -71,6 +71,8 @@ export default {
 		{ name: "Khmer", key: "km", direction: "ltr" },
 		{ name: "Armenian", key: "hy", direction: "ltr" },
 		{ name: "Mongolian", key: "mn", direction: "ltr" },
+		{ name: "Pashto", key: "ps", direction: "ltr" },
+		{ name: "Dari", key: "fa", direction: "ltr" },
 	],
 	permissions: {
 		addProject: false,
@@ -81,6 +83,7 @@ export default {
 		editDistribution: false,
 		deleteDistribution: false,
 		viewDistribution: false,
+		revertDistribution: false,
 		assignDistributionItems: false,
 		addBeneficiary: false,
 		editBeneficiary: false,

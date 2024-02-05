@@ -9,10 +9,10 @@ export default {
 	},
 
 	async updateOrganizationService(id, body) {
-		const { data, status } = await fetcher({
+		const { data, status, message } = await fetcher({
 			uri: `organizations/services/${id}`, method: "PATCH", body,
 		});
-		return { data, status };
+		return { data, status, message };
 	},
 
 };

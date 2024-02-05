@@ -1,357 +1,50 @@
-aside.aside {
-  width: $aside-collapsed-width;
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 40;
-  height: 100vh;
-  padding: 0;
-  box-shadow: $aside-box-shadow;
-  background: $aside-background-color;
+$local-color: #074F60;
+$dev-color: #a9a9c7;
+$test-color: #d9c1a7;
+$stage-color: #93bfbf;
+$demo-color: #92bd92;
 
-  &.is-placed-right {
-    @include transition(right);
-    width: $aside-right-width;
-    display: block;
-    left: auto;
-    right: $aside-right-width * -1;
-    background: $base-color-light;
-  }
+@mixin listItemStyle {
+  .side-links .v-list-item {
+    color: white;
 
-  .aside-container {
-    position: relative;
-    height: 100vh;
-
-    &.has-padding {
-      padding-top: $default-padding;
-      padding-bottom: $default-padding;
+    &.v-list-item--active > .v-list-item__overlay {
+      opacity: .25 !important;
     }
 
-    .ps__rail-y {
-      width: $default-padding / 12 !important;
-      right: $default-padding / 12 !important;
-      left: auto !important;
-      background: none !important;
-      z-index: 10;
-    }
-    .ps__thumb-y {
-      //width: $default-padding / 6 !important;
-    }
-  }
-
-  .image {
-    margin: $size-base auto;
-    img {
-      max-width: $aside-collapsed-width - 2;
-      margin: 0 auto;
-    }
-  }
-
-  .menu-list {
-    li {
-      ul {
-        display: none;
-        border-left: 0;
-        background-color: rgba($base-color, .5);
-        padding-left: 0;
-        margin: 0 0 $default-padding * .5;
-
-        li {
-          a {
-            padding: $default-padding * .5 0 $default-padding * .5 $default-padding * .5;
-            font-size: $aside-submenu-font-size;
-
-            &.has-icon {
-              padding-left: 0;
-            }
-            &.is-active {
-              &:not(:hover) {
-                background: transparent;
-              }
-            }
-          }
-        }
-      }
+    &:hover {
+      background-color: rgba(255, 255, 255, .25);
     }
 
-    a {
-      @include icon-with-update-mark($aside-collapsed-width);
-
-      span.menu-item-label {
-        display: none;
-      }
-    }
-  }
-
-  .menu-label {
-    padding: 0 $default-padding * .5;
-
-    &:first-of-type {
-      margin-top: 0;
-    }
-  }
-}
-
-html.has-aside-right {
-  aside.aside.is-placed-right {
-    right: 0;
-  }
-}
-
-.localhost-aside-style {
-  background: $localhost-color !important;
-
-  .menu-list {
-    a {
-      color: white;
-
-      &.is-active {
-        background-color: $menu-item-hover-background-color;
-      }
-
+    .v-list-item__prepend > i {
       &:hover {
-        background-color: $menu-item-hover-background-color;
+        opacity: 1;
       }
     }
-
-    li ul {
-      background-color: $menu-item-hover-background-color !important;
-    }
   }
+}
+
+.local-aside-style {
+  @include listItemStyle;
+  background: $local-color !important;
 }
 
 .dev-aside-style {
+  @include listItemStyle;
   background: $dev-color !important;
-
-  .menu-list {
-    a {
-      color: white;
-
-      &.is-active {
-        background-color: $dev-color-hover;
-      }
-
-      &:hover {
-        background-color: $dev-color-hover;
-      }
-    }
-
-    li ul {
-      background-color: $dev-color-hover !important;
-    }
-  }
 }
 
 .test-aside-style {
+  @include listItemStyle;
   background: $test-color !important;
-
-  .menu-list {
-    a {
-      color: white;
-
-      &.is-active {
-        background-color: $test-color-hover;
-      }
-
-      &:hover {
-        background-color: $test-color-hover;
-      }
-    }
-
-    li ul {
-      background-color: $test-color-hover !important;
-    }
-  }
 }
 
 .stage-aside-style {
+  @include listItemStyle;
   background: $stage-color !important;
-
-  .menu-list {
-    a {
-      color: white;
-
-      &.is-active {
-        background-color: $stage-color-hover;
-      }
-
-      &:hover {
-        background-color: $stage-color-hover;
-      }
-    }
-
-    li ul {
-      background-color: $stage-color-hover !important;
-    }
-  }
 }
 
 .demo-aside-style {
+  @include listItemStyle;
   background: $demo-color !important;
-
-  .menu-list {
-    a {
-      color: white;
-
-      &.is-active {
-        background-color: $demo-color-hover;
-      }
-
-      &:hover {
-        background-color: $demo-color-hover;
-      }
-    }
-
-    li ul {
-      background-color: $demo-color-hover !important;
-    }
-  }
-}
-
-@include touch {
-  #app, nav.navbar {
-    @include transition(margin);
-  }
-  aside.aside {
-    &.is-placed-left {
-      @include transition(left);
-    }
-  }
-  html {
-    &.has-aside-mobile-transition {
-      body {
-        overflow-x: hidden;
-      }
-      body, #app, nav.navbar {
-        width: 100vw;
-      }
-      aside.aside.is-placed-left {
-        width: $aside-mobile-width;
-        display: block;
-        left: $aside-mobile-width * -1;
-
-        .image {
-          img {
-            max-width: $aside-mobile-width * .33;
-          }
-        }
-
-        .menu-list {
-          li.is-active {
-            ul {
-              display: block;
-            }
-          }
-          a {
-            @include icon-with-update-mark($aside-icon-width);
-
-            span.menu-item-label {
-              display: inline-block;
-            }
-          }
-        }
-      }
-    }
-    &.has-aside-mobile-expanded {
-      #app, nav.navbar {
-        margin-left: $aside-mobile-width;
-      }
-      aside.aside.is-placed-left {
-        left: 0;
-      }
-    }
-    &.has-aside-right {
-      overflow: hidden;
-      #app, nav.navbar {
-        margin-left: $aside-right-width * -1;
-      }
-    }
-  }
-}
-
-@include desktop {
-  html {
-    &.has-aside-left, &.has-aside-right {
-      nav.navbar, body {
-        @include transition(padding);
-      }
-    }
-    &.has-aside-left {
-      &.has-aside-expanded {
-        nav.navbar, body, .notices {
-          padding-left: $aside-width;
-        }
-      }
-      nav.navbar, body, .notices {
-        padding-left: $aside-collapsed-width;
-      }
-      aside.is-placed-left {
-        display: block;
-      }
-    }
-  }
-
-  aside.aside {
-    &.is-expanded {
-      width: $aside-width;
-
-      .menu-list {
-        @include icon-with-update-mark($aside-icon-width);
-
-        span.menu-item-label {
-          display: inline-block;
-        }
-
-        li.is-active {
-          ul {
-            display: block;
-          }
-        }
-      }
-    }
-
-    &.is-placed-right {
-      top: $navbar-height;
-      height: calc(100vh - #{$navbar-height});
-
-      .aside-container {
-        height: calc(100vh - #{$navbar-height});
-
-        .media {
-          padding-right: $default-padding;
-        }
-      }
-    }
-  }
-}
-
-@include until-widescreen {
-  aside.aside {
-    &.is-placed-right {
-      background-color: $white;
-      box-shadow: -.5rem 0 1rem rgba($black, .1);
-      right: $aside-right-width * -1 - 1.5rem;
-
-      .aside-container {
-        .media {
-          padding-left: $default-padding;
-          padding-right: $default-padding;
-        }
-      }
-    }
-  }
-}
-
-@include widescreen {
-  html {
-    &.has-aside-right {
-      body {
-        padding-right: $aside-right-width;
-      }
-      footer.footer {
-        margin-right: $default-padding;
-      }
-    }
-  }
 }
