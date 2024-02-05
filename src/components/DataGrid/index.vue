@@ -134,6 +134,7 @@
 							hide-details
 							dense
 							@click:appendInner="onGoToPage"
+							@keyup.enter="onGoToPage"
 						/>
 					</v-col>
 				</v-row>

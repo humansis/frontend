@@ -9,7 +9,7 @@
 		<h3 class="text-center mb-4">{{ $t('Current Address') }}</h3>
 
 		<p v-if="householdHead" class="text-center mb-4">
-			{{ `${address.number || ""}, ${address.street || ""}, ${address.postcode || ""}` }}
+			{{ address }}
 		</p>
 
 		<v-tabs v-model="activeTab">
@@ -37,6 +37,7 @@ import HouseholdPurchasesList from "@/components/Beneficiaries/Household/Househo
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import { Notification } from "@/utils/UI";
+import { GENERAL } from "@/consts";
 
 export default {
 	name: "HouseholdInformationSummary",
@@ -82,7 +83,17 @@ export default {
 					this.householdHead = data;
 				});
 
-			this.address = this.getAddressTypeAndId(household);
+			const address = this.getAddressTypeAndId(household);
+
+			this.prepareAddressForSummary(address);
+		},
+
+		prepareAddressForSummary(currentAddress) {
+			if (currentAddress.type === GENERAL.LOCATION_TYPE.camp.type) {
+				this.address = `${currentAddress.campName}, ${currentAddress.tentNumber}`;
+			} else {
+				this.address = `${currentAddress.number}, ${currentAddress.street}, ${currentAddress.postcode}`;
+			}
 		},
 	},
 };
