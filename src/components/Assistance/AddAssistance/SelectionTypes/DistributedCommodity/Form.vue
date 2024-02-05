@@ -382,28 +382,28 @@ export default {
 					firstNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.firstNesFields,
+							this.formModel.divisionNesFields.firstNesFields,
 							this.displayedFields.householdMembersNesFields,
 						),
 					},
 					secondNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.firstNesFields,
+							this.formModel.divisionNesFields.firstNesFields,
 							this.displayedFields.householdMembersNesFields,
 						),
 					},
 					thirdNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.firstNesFields,
+							this.formModel.divisionNesFields.firstNesFields,
 							this.displayedFields.householdMembersNesFields,
 						),
 					},
 					fourthNesFields: {
 						required: requiredIf(this.displayedFields.householdMembersNesFields),
 						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.firstNesFields,
+							this.formModel.divisionNesFields.firstNesFields,
 							this.displayedFields.householdMembersNesFields,
 						),
 					},
