@@ -97,7 +97,7 @@ export const downloadFile = (data, filename, status, format, responseMessage) =>
 		link.download = `${filename}.${format}`;
 		link.click();
 	} else {
-		Notification(responseMessage, "error");
+		Notification(responseMessage, status === 400 ? "warning" : "error");
 	}
 };
 
