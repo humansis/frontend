@@ -88,6 +88,7 @@
 			ref="households"
 			v-model="table.checkedRows"
 			v-model:page="table.currentPage"
+			v-model:sort-by="sortValue"
 			:items-per-page="perPage"
 			:headers="table.columns"
 			:items="table.data"
@@ -291,8 +292,13 @@ export default {
 					{ key: "members", sortKey: "dependents" },
 					{ key: "vulnerabilities", title: "Vulnerability criteria", type: "svgIcon" },
 					{ key: "idNumbers", title: "ID Numbers", sortKey: "nationalId" },
-					{ key: "projects", title: "Projects" },
-					{ key: "currentLocation", title: "Current Location", sortKey: "currentHouseholdLocation" },
+					{ key: "projects", title: "Projects", sortable: false },
+					{
+						key: "currentLocation",
+						title: "Current Location",
+						sortKey: "currentHouseholdLocation",
+						sortable: false,
+					},
 					{ key: "actions", value: "actions", sortable: false },
 				]),
 				total: 0,
