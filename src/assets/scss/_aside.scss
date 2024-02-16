@@ -24,6 +24,7 @@ $demo-color: #92bd92;
   }
 }
 
+.prod-aside-style,
 .local-aside-style {
   @include listItemStyle;
   background: $local-color !important;

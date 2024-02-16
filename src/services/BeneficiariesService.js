@@ -267,26 +267,25 @@ export default {
 		assistanceId,
 		search,
 		{ exportType },
+		sort,
 	) {
-		const formatText = `type=${format}`;
-		const fulltext = search ? `&fulltext=${search}` : "";
 		let uri;
 
 		if (exportType === EXPORT.DISTRIBUTION_LIST) {
-			uri = `assistances/${assistanceId}/beneficiaries/exports?${formatText}`;
+			uri = `assistances/${assistanceId}/beneficiaries/exports${queryBuilder({ format })}`;
 		}
 
 		if (exportType === EXPORT.LIST_OF_BENEFICIARIES) {
-			uri = `assistances/${assistanceId}/beneficiaries/exports-raw?${formatText}`;
+			uri = `assistances/${assistanceId}/beneficiaries/exports-raw${queryBuilder({ format, sort })}`;
 		}
 
 		if (exportType === EXPORT.BANK_DISTRIBUTION_LIST) {
-			uri = `assistances/${assistanceId}/bank-report/exports?${formatText}`;
+			uri = `assistances/${assistanceId}/bank-report/exports${queryBuilder({ format })}`;
 		}
 
 		if (exportType === EXPORT.HOUSEHOLDS) {
 			uri = `assistances/${assistanceId}/households/exports
-				?${formatText + fulltext}`;
+				${queryBuilder({ format, search, sort })}`;
 		}
 
 		return download({ uri });
