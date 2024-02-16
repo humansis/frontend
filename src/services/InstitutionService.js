@@ -41,7 +41,7 @@ export default {
 		return fetcher({ uri: "institution-id-numbers" });
 	},
 
-	exportInstitutions(format, filters = {}) {
-		return download({ uri: `institutions/exports${queryBuilder({ format, filters })}` });
+	exportInstitutions(format, sort, filters = {}) {
+		return download({ uri: `institutions/exports${queryBuilder({ format, sort, filters })}` });
 	},
 };
