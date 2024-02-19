@@ -273,11 +273,7 @@ export default {
 						this.table.data[key].idType.push("memberDuplicitiesLastItem");
 						this.table.data[key].idNumber.push("memberDuplicitiesLastItem");
 
-						const isBeneficiaryIdDuplicityReason = memberDuplicity.reasons.some(
-							(reason) => "Beneficiary ID" in reason,
-						);
-
-						if (isBeneficiaryIdDuplicityReason) {
+						if (memberDuplicity.isIdMismatch) {
 							this.table.data[key].recordFrom.push("hasBeneficiaryIdDuplicity");
 						}
 					}
