@@ -184,7 +184,7 @@ export default {
 
 	data() {
 		return {
-			options: this.items,
+			options: this.selectOptions(),
 			data: this.modelValue,
 			searchValue: "",
 		};
@@ -211,13 +211,6 @@ export default {
 	},
 
 	methods: {
-		onSearch() {
-			this.options = this.items;
-			this.options = this.options.filter(
-				(item) => item[this.itemTitle].toLowerCase().includes(this.searchValue.toLowerCase()),
-			);
-		},
-
 		onSelectAll() {
 			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
@@ -225,6 +218,13 @@ export default {
 
 		normalizeFirstLetter(value) {
 			return normalizeFirstLetter(value);
+		},
+
+		selectOptions() {
+			return this.items.map((item) => ({
+				...item,
+				[this.itemTitle]: this.$t(String(item[this.itemTitle])),
+			}));
 		},
 	},
 

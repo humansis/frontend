@@ -1,11 +1,23 @@
 <template>
 	<v-card-text>
+		<DataSelect
+			v-if="!isEditing"
+			v-model="formModel.targetType"
+			:items="options.targetTypes"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('targetType')"
+			label="Target"
+			name="target"
+			class="mb-4"
+			@update:modelValue="onValidate('targetType')"
+		/>
+
 		<DataInput
 			v-model="formModel.field"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('field')"
-			label="Field"
-			name="field"
+			label="Custom Field name"
+			name="custom-field-name"
 			class="mb-4"
 			@update:modelValue="onValidate('field')"
 		/>
@@ -36,6 +48,7 @@
 
 		<v-btn
 			v-if="!formDisabled"
+			:loading="loading"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"
@@ -48,11 +61,10 @@
 
 <script>
 import { required } from "@vuelidate/validators";
-import AssistancesService from "@/services/AssistancesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
-import { Notification } from "@/utils/UI";
+import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
 	name: "CustomFieldForm",
@@ -71,7 +83,7 @@ export default {
 			formModel: {
 				field: { required },
 				type: { required },
-				target: {},
+				targetType: { required },
 			},
 		};
 	},
@@ -89,35 +101,39 @@ export default {
 			type: String,
 			required: true,
 		},
+
+		loading: {
+			type: Boolean,
+			default: false,
+		},
+
+		isEditing: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			options: {
-				types: [
-					{
-						code: "number",
-						value: this.$t("Number"),
-					},
-					{
-						code: "text",
-						value: this.$t("Text"),
-					},
-				],
-				targets: [],
+				types: COUNTRY_SETTINGS.CUSTOM_FIELDS.TYPES,
+				targetTypes: COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES,
 			},
-			loadingTargets: true,
 		};
 	},
 
 	mounted() {
-		this.fetchTargets();
 		this.mapSelects();
 	},
 
 	methods: {
 		mapSelects() {
-			this.formModel.type = this.options.types.find((item) => item.code === this.formModel.type);
+			this.formModel.type = this.options.types.find(
+				(item) => item.code === this.formModel.type,
+			);
+			this.formModel.targetType = this.options.targetTypes.find(
+				(item) => item.code === this.formModel.targetType,
+			);
 		},
 
 		onSubmitForm() {
@@ -133,18 +149,6 @@ export default {
 		onCloseForm() {
 			this.$emit("formClosed");
 			this.v$.$reset();
-		},
-
-		async fetchTargets() {
-			await AssistancesService.getTargetTypes()
-				.then((response) => { this.options.targets = response.data; })
-				.catch((e) => {
-					Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
-				});
-
-			this.formModel.target = this.options.targets
-				.find((item) => item.code === this.formModel.target);
-			this.loadingTargets = false;
 		},
 	},
 };

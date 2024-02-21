@@ -11,6 +11,7 @@ import PHONE from "./phone";
 import ROLE from "./role";
 import SCORING from "./scoring";
 import TABLE from "./table";
+import COUNTRY_SETTINGS from "./countrySettings";
 
 export {
 	ASSISTANCE,
@@ -26,4 +27,5 @@ export {
 	ROLE,
 	SCORING,
 	TABLE,
+	COUNTRY_SETTINGS,
 };

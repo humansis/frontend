@@ -858,7 +858,7 @@ export default {
 			try {
 				this.loading.customFields = true;
 
-				const { data } = await CustomFieldsService.getListOfCustomFields(
+				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
 					null,

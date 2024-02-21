@@ -64,7 +64,7 @@ import grid from "@/mixins/grid";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { COUNTRY_SETTINGS, EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "CustomFieldsList",
@@ -91,6 +91,7 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "field" },
+					{ key: "bnfType", title: "BNF type", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
 				]),
@@ -109,23 +110,30 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await CustomFieldsService.getListOfCustomFields(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
-					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-			});
+				const { data: { data, totalCount } } = await CustomFieldsService.getListOfCustomFields(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== ""
+						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+						: "",
+					this.table.searchPhrase,
+				);
 
-			this.isLoadingList = false;
+				this.table.data = data.map((item) => ({
+					...item,
+					bnfType: COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
+						(type) => type.code === item.targetType,
+					)?.shortCut,
+				}));
+				this.table.total = totalCount;
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		async onExportCustomFields(exportType, format) {
@@ -138,7 +146,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Custom Fields:")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

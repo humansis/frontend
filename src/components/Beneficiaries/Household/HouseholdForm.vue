@@ -488,11 +488,17 @@ export default {
 		},
 
 		async fetchCustomFields() {
-			await CustomFieldsService.getListOfCustomFields()
-				.then(({ data }) => { this.customFields = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				});
+			try {
+				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
+					null,
+					null,
+					null,
+				);
+
+				this.customFields = data;
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			}
 		},
 
 		submit() {
