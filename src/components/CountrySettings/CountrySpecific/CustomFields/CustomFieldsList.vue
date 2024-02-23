@@ -122,12 +122,16 @@ export default {
 					this.table.searchPhrase,
 				);
 
-				this.table.data = data.map((item) => ({
-					...item,
-					bnfType: COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
+				this.table.data = data.map((item) => {
+					const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
 						(type) => type.code === item.targetType,
-					)?.shortCut,
-				}));
+					);
+
+					return {
+						...item,
+						bnfType: targetType?.shortCut,
+					};
+				});
 				this.table.total = totalCount;
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
