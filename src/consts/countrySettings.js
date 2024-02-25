@@ -1,5 +1,11 @@
+const LIST_TYPE_CODE = "list";
+const SINGLE_SELECT_CODE = "single_select";
+const MULTI_SELECT_CODE = "multi_select";
 export default {
 	CUSTOM_FIELDS: {
+		LIST_TYPE_CODE,
+		SINGLE_SELECT_CODE,
+		MULTI_SELECT_CODE,
 		TYPES: [
 			{
 				code: "number",
@@ -8,6 +14,10 @@ export default {
 			{
 				code: "text",
 				value: "Text",
+			},
+			{
+				code: LIST_TYPE_CODE,
+				value: "List",
 			},
 		],
 		TARGET_TYPES: [
@@ -22,5 +32,35 @@ export default {
 				shortCut: "IND",
 			},
 		],
+		SELECTION_TYPES: [
+			{
+				code: SINGLE_SELECT_CODE,
+				value: "Single-select",
+			},
+			{
+				code: MULTI_SELECT_CODE,
+				value: "Multi-select",
+			},
+		],
+		CUSTOM_FIELD_MODEL: {
+			id: null,
+			iso3: "",
+			field: "",
+			type: "",
+			targetType: null,
+			selectionType: null,
+			isPropagateToSelectionCriteria: false,
+			listOfValues: [
+				{ value: "" },
+			],
+		},
+	},
+	SCORING: {
+		SCORING_MODEL: {
+			name: "",
+			note: "",
+			dropFiles: [],
+			content: "",
+		},
 	},
 };

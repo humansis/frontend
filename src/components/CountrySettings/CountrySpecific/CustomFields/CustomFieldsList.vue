@@ -15,20 +15,21 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
-			<!--	TODO Uncomment in next version (when BE is ready) -->
-			<!--	<ButtonAction-->
-			<!--		icon="edit"-->
-			<!--		tooltip-text="Edit"-->
-			<!--		@actionConfirmed="onShowEdit(row)"-->
-			<!--	/>-->
+			<ButtonAction
+				v-if="!table.data[index].isUsed"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
 
+			<!--	TODO Uncomment in next version (when BE is ready) -->
 			<!--	<ButtonAction-->
 			<!--		icon="trash"-->
 			<!--		tooltip-text="Delete"-->
@@ -62,6 +63,7 @@ import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { COUNTRY_SETTINGS, EXPORT, TABLE } from "@/consts";
@@ -113,31 +115,24 @@ export default {
 			try {
 				this.isLoadingList = true;
 
-				const { data: { data, totalCount } } = await CustomFieldsService.getListOfCustomFields(
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await CustomFieldsService.getListOfCustomFields(
 					this.table.currentPage,
 					this.perPage,
 					this.table.sortColumn !== ""
 						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
 						: "",
-					this.table.searchPhrase,
 				);
 
-				this.table.data = data.map((item) => {
-					const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
-						(type) => type.code === item.targetType,
-					);
-					const bnfType = targetType?.shortCut;
-					const field = bnfType
-						? `${bnfType}-${item.field}`
-						: item.field;
+				checkResponseStatus(status, message);
 
-					return {
-						...item,
-						field,
-						bnfType,
-					};
-				});
-				this.table.total = totalCount;
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+					this.table.total = totalCount;
+				}
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
 			} finally {
@@ -160,6 +155,24 @@ export default {
 					this.exportControl.loading = false;
 				}
 			}
+		},
+
+		prepareDataForTable(data) {
+			this.table.data = data.map((item) => {
+				const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
+					(type) => type.code === item.targetType,
+				);
+				const bnfType = targetType?.shortCut;
+				const field = bnfType
+					? `${bnfType}-${item.field}`
+					: item.field;
+
+				return {
+					...item,
+					field,
+					bnfType,
+				};
+			});
 		},
 	},
 };

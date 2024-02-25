@@ -20,7 +20,7 @@
 			<ButtonAction
 				icon="download"
 				tooltip-text="Download"
-				@actionConfirmed="onDownload(row)"
+				@actionConfirmed="onDownloadScoring(row)"
 			/>
 
 			<ButtonAction
@@ -46,8 +46,10 @@ import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { SCORING } from "@/consts";
+import { EXPORT, SCORING } from "@/consts";
 
 const statusTags = [
 	{ code: SCORING.STATUS.INACTIVE, type: "grey-lighten-2" },
@@ -89,32 +91,44 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await AssistancesService.getScoringTypes(
-				this.table.currentPage,
-				this.perPage,
-			)
-				.then(({ data, totalCount }) => {
-					this.table.data = [];
-					this.table.total = totalCount;
-					if (totalCount > 0) {
-						this.prepareDataForTable(data);
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
-				});
-			this.isLoadingList = false;
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					this.table.currentPage,
+					this.perPage,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.table.data = [];
+				this.table.total = totalCount;
+
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].status = item.enabled
+				const status = item.enabled
 					? SCORING.STATUS.ACTIVE
 					: SCORING.STATUS.INACTIVE;
-				this.table.data[key].uploaded = item.createdAt;
+
+				this.table.data[key] = {
+					...item,
+					status,
+					uploaded: item.createdAt,
+				};
 			});
 		},
 
@@ -124,6 +138,17 @@ export default {
 
 		scoringStatusChangeButtonTooltip(scoring) {
 			return scoring.enabled ? "Deactivate" : "Activate";
+		},
+
+		async onDownloadScoring(scoring) {
+			try {
+				const filename = `${scoring.name}-ID-${scoring.id}`;
+				const { data, status, message } = await AssistancesService.downloadScoring(scoring.id);
+
+				downloadFile(data, filename, status, EXPORT.FORMAT_CSV, message);
+			} catch (e) {
+				Notification(`${this.$t("Scoring download")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

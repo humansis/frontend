@@ -173,6 +173,7 @@ export default {
 				adm3: null,
 				adm4: null,
 			},
+			selectedCriteria: {},
 			options: {
 				criteriaTargets: [],
 				criteria: [],
@@ -207,12 +208,17 @@ export default {
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LOCATION_TYPE
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.BOOLEAN
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS
-				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LIVELIHOOD;
+				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LIVELIHOOD
+				|| this.isCriteriaTypeOfList;
 		},
 
 		isValueDefaultInput() {
 			return 	this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.INTEGER
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.DOUBLE;
+		},
+
+		isCriteriaTypeOfList() {
+			return this.selectedCriteria.allowedValues?.length;
 		},
 	},
 
@@ -364,6 +370,7 @@ export default {
 			this.formModel.condition = "";
 			this.formModel.value = null;
 
+			this.selectedCriteria = criteria;
 			this.fieldTypeToDisplay = criteria.type;
 
 			switch (criteria.type) {
@@ -384,6 +391,10 @@ export default {
 					break;
 				default:
 					this.valueSelectOptions = [];
+			}
+
+			if (this.isCriteriaTypeOfList) {
+				this.valueSelectOptions = criteria.allowedValues;
 			}
 
 			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);

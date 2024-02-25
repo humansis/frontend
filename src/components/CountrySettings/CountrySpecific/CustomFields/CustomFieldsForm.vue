@@ -32,6 +32,65 @@
 			class="mb-4"
 			@update:modelValue="onValidate('type')"
 		/>
+
+		<template v-if="isListSelected">
+			<DataSelect
+				v-model="formModel.selectionType"
+				:items="options.selectionTypes"
+				:disabled="formDisabled"
+				:error-messages="validationMsg('selectionType')"
+				label="Selection"
+				name="selection"
+				class="mb-4"
+				@update:modelValue="onValidate('selectionType')"
+			/>
+
+			<div
+				v-for="(value, index) in formModel.listOfValues"
+				:key="index"
+				class="d-flex"
+			>
+				<DataInput
+					v-model="formModel.listOfValues[index].value"
+					:disabled="formDisabled"
+					:error-messages="validationMsg('listOfValues', 'formModel', index)"
+					:label="`Value ${index + 1}`"
+					:name="`value-${index + 1}`"
+					class="mb-4"
+					@update:modelValue="onValidate('listOfValues')"
+				/>
+
+				<ButtonAction
+					v-if="index !== 0 && !isDetail"
+					icon="trash"
+					iconColor="red"
+					tooltip-text="Remove input"
+					class="pb-1"
+					@actionConfirmed="removeInput(index)"
+				/>
+			</div>
+
+			<v-checkbox
+				v-if="isListSelected"
+				v-model="formModel.isPropagateToSelectionCriteria"
+				:disabled="formDisabled"
+				:label="$t('Propagate to selection criteria')"
+				name="propagate-to-selection-criteria"
+				class="checkbox"
+				hide-details
+			/>
+
+			<div class="d-flex justify-end">
+				<v-btn
+					color="primary"
+					class="text-none mb-8"
+					variant="elevated"
+					@click="addNewValueInput"
+				>
+					{{ $t("Add new value") }}
+				</v-btn>
+			</div>
+		</template>
 	</v-card-text>
 
 	<v-card-actions>
@@ -50,7 +109,7 @@
 			v-if="!formDisabled"
 			:loading="loading"
 			color="primary"
-			class="text-none ml-3"
+			class="text-none ml-3 mr-4"
 			variant="elevated"
 			@click="onSubmitForm"
 		>
@@ -60,7 +119,8 @@
 </template>
 
 <script>
-import { required } from "@vuelidate/validators";
+import { helpers, required } from "@vuelidate/validators";
+import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
@@ -72,6 +132,7 @@ export default {
 	emits: ["formSubmitted", "formClosed"],
 
 	components: {
+		ButtonAction,
 		DataInput,
 		DataSelect,
 	},
@@ -83,7 +144,15 @@ export default {
 			formModel: {
 				field: { required },
 				type: { required },
-				targetType: { required },
+				...(!this.isEditing && { targetType: { required } }),
+				selectionType: { required },
+				listOfValues: {
+					$each: helpers.forEach({
+						value: {
+							required,
+						},
+					}),
+				},
 			},
 		};
 	},
@@ -111,29 +180,61 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		isDetail: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
 		return {
 			options: {
 				types: COUNTRY_SETTINGS.CUSTOM_FIELDS.TYPES,
+				selectionTypes: COUNTRY_SETTINGS.CUSTOM_FIELDS.SELECTION_TYPES,
 				targetTypes: COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES,
 			},
 		};
 	},
 
+	computed: {
+		isListSelected() {
+			return this.formModel.type?.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
+		},
+	},
+
 	mounted() {
-		this.mapSelects();
+		if (this.isEditing || this.isDetail) {
+			this.mapSelects();
+		}
 	},
 
 	methods: {
 		mapSelects() {
+			const selectCode = this.formModel.isMultiSelect
+				? COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE
+				: COUNTRY_SETTINGS.CUSTOM_FIELDS.SINGLE_SELECT_CODE;
+
 			this.formModel.type = this.options.types.find(
 				(item) => item.code === this.formModel.type,
 			);
 			this.formModel.targetType = this.options.targetTypes.find(
 				(item) => item.code === this.formModel.targetType,
 			);
+			this.formModel.selectionType = this.options.selectionTypes.find(
+				(type) => type.code === selectCode,
+			);
+			this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
+				value,
+			}));
+		},
+
+		addNewValueInput() {
+			this.formModel.listOfValues.push({ value: "" });
+		},
+
+		removeInput(index) {
+			this.formModel.listOfValues.splice(index, 1);
 		},
 
 		onSubmitForm() {
