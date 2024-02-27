@@ -84,6 +84,18 @@ export default {
 				value: null,
 			},
 		],
+		payloadDivisionCodFields: [
+			{
+				rangeFrom: 1,
+				rangeTo: 3,
+				value: null,
+			},
+			{
+				rangeFrom: 4,
+				rangeTo: null,
+				value: null,
+			},
+		],
 		divisionNwsFields: {
 			firstNwsFields: null,
 			secondNwsFields: null,
@@ -96,6 +108,10 @@ export default {
 			secondNesFields: null,
 			thirdNesFields: null,
 			fourthNesFields: null,
+		},
+		divisionCodFields: {
+			firstCodFields: null,
+			secondCodFields: null,
 		},
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: ["Food"],
@@ -116,6 +132,7 @@ export default {
 		allowedProductCategoryTypes: false,
 		householdMembersNwsFields: false,
 		householdMembersNesFields: false,
+		householdMembersCodFields: false,
 		dateExpiration: false,
 	},
 	MODALITY: {
@@ -152,8 +169,10 @@ export default {
 			PER_MEMBERS_CODE: "Per Household Members",
 			PER_MEMBERS_NWS_CODE: "Per Members NWS",
 			PER_MEMBERS_NES_CODE: "Per Members NES",
+			PER_MEMBERS_COD_CODE: "Per Members COD",
 			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1, 2, 3, 4, 5+)",
 			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
+			PER_MEMBERS_COD_LABEL: "Per Members COD (1-3, 4+)",
 			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
 		},
 	},
