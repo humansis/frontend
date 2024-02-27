@@ -17,6 +17,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
+			v-if="userCan.addCustomField"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -40,6 +41,7 @@ import CustomFieldsService from "@/services/CustomFieldsService";
 import CustomFieldsForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
 import CustomFieldsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Inputs/Modal";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
@@ -51,6 +53,8 @@ export default {
 		Modal,
 		CustomFieldsForm,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {

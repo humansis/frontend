@@ -19,7 +19,7 @@ export default {
 			{
 				code: "individual",
 				value: "Individual",
-				shortCut: "Ind",
+				shortCut: "IND",
 			},
 		],
 	},

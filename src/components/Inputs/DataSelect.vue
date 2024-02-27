@@ -221,10 +221,18 @@ export default {
 		},
 
 		selectOptions() {
-			return this.items.map((item) => ({
-				...item,
-				[this.itemTitle]: this.$t(String(item[this.itemTitle])),
-			}));
+			return this.items.map((item) => {
+				const nestedItem = item[this.itemTitle];
+
+				if (nestedItem) {
+					return {
+						...item,
+						[this.itemTitle]: this.$t(String(nestedItem)),
+					};
+				}
+
+				return item;
+			});
 		},
 	},
 

@@ -126,10 +126,15 @@ export default {
 					const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
 						(type) => type.code === item.targetType,
 					);
+					const bnfType = targetType?.shortCut;
+					const field = bnfType
+						? `${bnfType}-${item.field}`
+						: item.field;
 
 					return {
 						...item,
-						bnfType: targetType?.shortCut,
+						field,
+						bnfType,
 					};
 				});
 				this.table.total = totalCount;
