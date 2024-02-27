@@ -18,7 +18,6 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addCustomField"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -166,7 +165,6 @@ export default {
 				field,
 				type,
 				iso3,
-				targetType,
 				isPropagatedToSelectionCriteria,
 				listOfValues,
 				selectionType,
@@ -176,7 +174,6 @@ export default {
 				field,
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
-				targetType: targetType.code,
 				isPropagatedToSelectionCriteria,
 				allowedValues: listOfValues.map((item) => item.value),
 				isMultiSelect: selectionType.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
