@@ -49,7 +49,7 @@ export default {
 			type: "",
 			targetType: null,
 			selectionType: null,
-			isPropagateToSelectionCriteria: false,
+			isPropagatedToSelectionCriteria: false,
 			listOfValues: [
 				{ value: "" },
 			],

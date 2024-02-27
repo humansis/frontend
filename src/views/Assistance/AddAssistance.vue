@@ -298,7 +298,11 @@ export default {
 			try {
 				this.scoringTypesLoading = true;
 
-				const { data: { data }, status, message } = await AssistancesService.getScoringTypes(
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
 					null,
 					null,
 				);

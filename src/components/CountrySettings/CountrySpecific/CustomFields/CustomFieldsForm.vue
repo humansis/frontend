@@ -63,7 +63,7 @@
 				<ButtonAction
 					v-if="index !== 0 && !isDetail"
 					icon="trash"
-					iconColor="red"
+					icon-color="red"
 					tooltip-text="Remove input"
 					class="pb-1"
 					@actionConfirmed="removeInput(index)"
@@ -72,7 +72,7 @@
 
 			<v-checkbox
 				v-if="isListSelected"
-				v-model="formModel.isPropagateToSelectionCriteria"
+				v-model="formModel.isPropagatedToSelectionCriteria"
 				:disabled="formDisabled"
 				:label="$t('Propagate to selection criteria')"
 				name="propagate-to-selection-criteria"

@@ -125,7 +125,7 @@ export default {
 				selectionType,
 				isMultiSelect,
 				allowedValues,
-				doesPropagateToSelectionCriteria,
+				isPropagatedToSelectionCriteria,
 			},
 		) {
 			this.customFieldModel = {
@@ -138,7 +138,7 @@ export default {
 				selectionType,
 				isMultiSelect,
 				allowedValues,
-				isPropagateToSelectionCriteria: doesPropagateToSelectionCriteria,
+				isPropagatedToSelectionCriteria,
 			};
 		},
 
@@ -167,7 +167,7 @@ export default {
 				type,
 				iso3,
 				targetType,
-				isPropagateToSelectionCriteria,
+				isPropagatedToSelectionCriteria,
 				listOfValues,
 				selectionType,
 			} = customFieldForm;
@@ -177,7 +177,7 @@ export default {
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
 				targetType: targetType.code,
-				doesPropagateToSelectionCriteria: isPropagateToSelectionCriteria,
+				isPropagatedToSelectionCriteria,
 				allowedValues: listOfValues.map((item) => item.value),
 				isMultiSelect: selectionType.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
 			};

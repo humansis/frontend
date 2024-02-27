@@ -75,7 +75,7 @@ export default {
 
 			if (validation?.$error) {
 				return typeof index === "number"
-					? this.$t(validation?.$errors[0]?.$message[index][0] || "")
+					? this.$t(validation?.$errors[0]?.$message[index]?.[0] || "")
 					: this.$t(validation?.$errors[0]?.$message);
 			}
 
