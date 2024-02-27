@@ -2,6 +2,7 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.familyName"
+			:data-cy="prepareComponentIdentifier()"
 			label="Local family name"
 			name="local-family-name"
 			class="mb-4"
@@ -10,6 +11,7 @@
 
 		<DataInput
 			v-model="formModel.givenName"
+			:data-cy="prepareComponentIdentifier()"
 			label="Local given name"
 			name="local-given-name"
 			class="mb-4"
@@ -18,6 +20,7 @@
 
 		<DataInput
 			v-model="formModel.members"
+			:data-cy="prepareComponentIdentifier()"
 			label="Members"
 			name="members"
 			class="mb-4"
@@ -27,6 +30,7 @@
 		<DataSelect
 			v-model="formModel.vulnerabilities"
 			:items="options.vulnerabilities"
+			:data-cy="prepareComponentIdentifier()"
 			label="Vulnerability criteria"
 			name="vulnerability-criteria"
 			class="mb-4"
@@ -37,6 +41,7 @@
 
 		<DataInput
 			v-model="formModel.projects"
+			:data-cy="prepareComponentIdentifier()"
 			label="Projects"
 			name="projects"
 			class="mb-4"
@@ -45,8 +50,9 @@
 
 		<DataInput
 			v-model="formModel.incomeLevel"
+			:data-cy="prepareComponentIdentifier()"
 			label="Income"
-			name="income-level"
+			name="income"
 			class="mb-4"
 			disabled
 		/>
@@ -54,6 +60,7 @@
 		<DataSelect
 			v-model="formModel.supportReceivedTypes"
 			:items="options.externalSupportReceivedType"
+			:data-cy="prepareComponentIdentifier()"
 			label="Support received types"
 			name="support-received-types"
 			class="mb-4"
@@ -65,6 +72,7 @@
 		<DatePicker
 			v-model="formModel.supportDateReceived"
 			:clearable="false"
+			:data-cy="prepareComponentIdentifier()"
 			label="Support date receive"
 			name="support-date-receive"
 			class="mb-4"
@@ -74,6 +82,7 @@
 		<DataSelect
 			v-model="formModel.assets"
 			:items="options.assets"
+			:data-cy="prepareComponentIdentifier()"
 			label="Assets"
 			name="assets"
 			class="mb-4"
@@ -85,6 +94,7 @@
 		<DataSelect
 			v-model="formModel.shelterStatus"
 			:items="options.shelterStatuses"
+			:data-cy="prepareComponentIdentifier()"
 			label="Shelter status"
 			name="shelter-status"
 			class="mb-4"
@@ -95,6 +105,7 @@
 
 		<DataInput
 			v-model="formModel.currentLocation"
+			:data-cy="prepareComponentIdentifier()"
 			label="Current Location"
 			name="current-location"
 			disabled
@@ -105,6 +116,7 @@
 		<v-spacer />
 
 		<v-btn
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none mx-4"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -120,6 +132,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
 
@@ -132,10 +145,17 @@ export default {
 		DataInput,
 	},
 
+	mixins: [identifierBuilder],
+
 	props: {
 		householdModel: {
 			type: Object,
 			required: true,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

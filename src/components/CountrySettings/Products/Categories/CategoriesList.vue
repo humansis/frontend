@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:data-cy="dataCy"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -15,14 +16,16 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_CATEGORIES)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				v-if="userCan.addEditProducts"
 				icon="edit"
 				tooltip-text="Edit"
@@ -31,6 +34,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditProducts"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -50,6 +54,7 @@ import ProductService from "@/services/ProductService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -63,12 +68,13 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid, permissions],
+	mixins: [grid, permissions, identifierBuilder],
 
 	data() {
 		return {
 			TABLE,
 			isLoadingList: false,
+			dataCy: "categories-table",
 			table: {
 				data: [],
 				columns: generateColumns([

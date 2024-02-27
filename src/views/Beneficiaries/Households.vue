@@ -21,6 +21,7 @@
 					<v-btn
 						v-if="userCan.addBeneficiary"
 						v-bind="props"
+						:data-cy="identifierBuilder('add-beneficiary-button')"
 						color="primary"
 						prepend-icon="plus"
 						class="text-none ml-0"
@@ -35,6 +36,7 @@
 							<v-card
 								:title="$t('Import')"
 								:subtitle="$t('Import from File')"
+								:data-cy="identifierBuilder('import-from-file-button')"
 								density="compact"
 							>
 								<template v-slot:prepend>
@@ -49,6 +51,7 @@
 							<v-card
 								:title="$t('Add Beneficiary')"
 								:subtitle="$t('Create household form')"
+								:data-cy="identifierBuilder('add-beneficiary-button')"
 								density="compact"
 							>
 								<template v-slot:prepend>
@@ -77,9 +80,11 @@
 		<Modal
 			v-model="householdDetailModal.isOpened"
 			header="Household Detail"
+			data-cy="detail-modal"
 		>
 			<HouseholdDetail
 				:household-model="householdModel"
+				data-cy="detail-modal"
 				@formClosed="householdDetailModal.isOpened = false"
 			/>
 		</Modal>
@@ -109,10 +114,11 @@
 			@resetFilters="onResetFilters"
 			@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.HOUSEHOLDS)"
 		>
-			<template v-slot:actions="{ row: { householdId } }">
+			<template v-slot:actions="{ row: { householdId }, index }">
 				<ButtonAction
 					v-if="userCan.viewBeneficiary"
 					:disabled="!householdsSelects"
+					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
 					icon-color="primary"
 					label="Show Detail"
@@ -122,6 +128,7 @@
 				<ButtonAction
 					v-if="userCan.viewBeneficiary"
 					:disabled="!householdsSelects"
+					:data-cy="`table-row-${index + 1}-edit-button`"
 					icon="edit"
 					label="Edit"
 					@actionConfirmed="$router.push({ name: 'EditHousehold', params: { householdId } })"
@@ -130,6 +137,7 @@
 				<ButtonAction
 					v-if="userCan.deleteBeneficiary"
 					:disabled="!householdsSelects"
+					:data-cy="`table-row-${index + 1}-delete-button`"
 					icon="trash"
 					label="Delete"
 					icon-color="red"
@@ -154,6 +162,7 @@
 
 				<v-btn
 					:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+					:data-cy="identifierBuilder('advanced-search-button')"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"
@@ -241,6 +250,7 @@ import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
@@ -270,6 +280,7 @@ export default {
 		permissions,
 		urlFiltersHelper,
 		validation,
+		identifierBuilder,
 	],
 
 	data() {
@@ -332,6 +343,7 @@ export default {
 			isActionsButtonVisible: false,
 			confirmButtonLoading: false,
 			selectedProject: null,
+			dataCy: "",
 			isLoading: {
 				households: false,
 				projects: false,

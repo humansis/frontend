@@ -18,6 +18,7 @@
 					<template v-slot:actions="{ expanded }">
 						<div class="d-flex align-center">
 							<v-btn
+								:data-cy="identifierBuilder(`member-${index + 1}-form-remove-button`)"
 								icon="trash"
 								color="error"
 								variant="tonal"
@@ -39,6 +40,7 @@
 						:detailOfHousehold="detailOfHousehold"
 						:beneficiary="member"
 						:members-smart-card-numbers="smartCardNumbers[index]"
+						:data-cy="`member-${index + 1}-form`"
 					/>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
@@ -58,6 +60,7 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -66,6 +69,8 @@ export default {
 	components: {
 		HouseholdHeadForm,
 	},
+
+	mixins: [identifierBuilder],
 
 	props: {
 		detailOfHousehold: {

@@ -16,6 +16,8 @@
 		:chips="multiple"
 		:closable-chips="multiple && !disabled"
 		:no-data-text="$t('List is empty')"
+		:name="name"
+		:data-cy="identifierBuilder(`${name}-select`)"
 		autocomplete="off"
 		persistent-placeholder
 		return-object
@@ -72,9 +74,12 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
+	mixins: [identifierBuilder],
+
 	props: {
 		modelValue: {
 			type: [Object, Number, String],
@@ -164,6 +169,16 @@ export default {
 		hint: {
 			type: String,
 			default: "",
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
+		},
+
+		name: {
+			type: String,
+			required: true,
 		},
 	},
 

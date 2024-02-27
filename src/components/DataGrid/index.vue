@@ -9,6 +9,7 @@
 					:search-fields="searchFields"
 					:default-search-field="defaultSearchField"
 					:is-disabled="isSearchDisabled"
+					:data-cy="dataCy"
 					class="ml-4"
 					@search="$emit('search', $event)"
 				/>
@@ -70,6 +71,7 @@
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
 							:is-clearable="false"
+							:data-cy="prepareComponentIdentifier()"
 							name="per-page"
 							class="per-page mr-5"
 							label="Per page"
@@ -166,6 +168,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import Search from "@/components/Inputs/Search";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
@@ -179,7 +182,7 @@ export default {
 		Search,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, identifierBuilder],
 
 	inheritAttrs: false,
 
@@ -271,6 +274,7 @@ export default {
 			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
 			page: this.currentPage,
 			perPage: this.$attrs["items-per-page"],
+			dataCy: "table",
 		};
 	},
 

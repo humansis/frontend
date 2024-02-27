@@ -25,6 +25,7 @@
 			v-model="formModel.dropFiles"
 			:error-messages="validationMsg('dropFiles')"
 			:accept="allowedFileExtensions"
+			name="file"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"

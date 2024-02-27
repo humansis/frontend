@@ -4,6 +4,7 @@
 			v-model="selectedExportType"
 			:items="availableExportTypes"
 			:disabled="disabled"
+			:data-cy="prepareComponentIdentifier()"
 			name="select-export-type"
 			label="Select type"
 			class="export-type"
@@ -16,6 +17,7 @@
 			:disabled="disabled"
 			:icon-loading="isExportLoading"
 			:is-append-icon-enabled="isExportButtonEnabled"
+			:data-cy="prepareComponentIdentifier()"
 			name="select-export-format"
 			label="Select format"
 			class="export-format"
@@ -30,6 +32,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import DataSelect from "@/components/Inputs/DataSelect";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { EXPORT } from "@/consts";
 
@@ -40,7 +43,7 @@ export default {
 		DataSelect,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, identifierBuilder],
 
 	props: {
 		availableExportTypes: {
@@ -79,6 +82,7 @@ export default {
 			selectedExportType: null,
 			selectedExportFormat: null,
 			selectedExportOptions: {},
+			dataCy: "export",
 		};
 	},
 

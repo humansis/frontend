@@ -2,11 +2,17 @@
 	<form>
 		<v-row>
 			<v-col cols="6">
-				<h4 class="mb-4">{{ $t('Current Location') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('current-location-text')"
+					class="mb-4"
+				>
+					{{ $t('Current Location') }}
+				</h4>
 
 				<LocationForm
 					ref="currentLocationForm"
 					:form-model="formModel.currentLocation"
+					:data-cy="dataCy"
 					class="mb-4"
 					@locationChanged="$refs.currentTypeOfLocationForm.mapLocations()"
 					@mapped="$refs.currentTypeOfLocationForm.mapLocations()"
@@ -14,6 +20,7 @@
 
 				<DataInput
 					v-model.number="formModel.latitude"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Latitude"
 					name="latitude"
@@ -24,6 +31,7 @@
 
 				<DataInput
 					v-model.number="formModel.longitude"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Longitude"
 					name="longitude"
@@ -34,11 +42,17 @@
 			</v-col>
 
 			<v-col cols="6">
-				<h4 class="mb-4">{{ $t('Type of Location') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('type-of-location-text')"
+					class="mb-4"
+				>
+					{{ $t('Type of Location') }}
+				</h4>
 
 				<TypeOfLocationForm
 					ref="currentTypeOfLocationForm"
 					:form-model="formModel.currentLocation"
+					:data-cy="dataCy"
 					is-editing
 				/>
 			</v-col>
@@ -46,12 +60,18 @@
 
 		<v-row>
 			<v-col cols="4">
-				<h4 class="mb-4">{{ $t('Livelihood') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('livelihood-text')"
+					class="mb-4"
+				>
+					{{ $t('Livelihood') }}
+				</h4>
 
 				<DataSelect
 					v-model="formModel.livelihood.livelihood"
 					:items="options.livelihood"
 					:loading="livelihoodLoading"
+					:data-cy="prepareComponentIdentifier()"
 					label="Livelihood"
 					name="livelihood"
 					class="mb-4"
@@ -61,6 +81,7 @@
 				<DataInput
 					v-model.number="formModel.livelihood.incomeLevel"
 					:placeholder="countryCurrency"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Income"
 					name="income"
@@ -73,6 +94,7 @@
 				<DataInput
 					v-model.number="formModel.livelihood.incomeSpentOnFood"
 					:placeholder="countryCurrency"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Income spent on food"
 					name="income-spent-on-food"
@@ -85,6 +107,7 @@
 				<DataInput
 					v-model.number="formModel.livelihood.debtLevel"
 					:placeholder="countryCurrency"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Debt level"
 					name="debt-level"
@@ -98,6 +121,7 @@
 					v-model="formModel.livelihood.assets"
 					:items="options.assets"
 					:loading="assetsLoading"
+					:data-cy="prepareComponentIdentifier()"
 					label="Assets"
 					name="assets"
 					class="mb-4"
@@ -109,6 +133,7 @@
 				<DataInput
 					v-model.number="formModel.livelihood.foodConsumptionScore"
 					:error-messages="validationMsg('livelihood.foodConsumptionScore')"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Food consumption score"
 					name="food-consumption-score"
@@ -122,6 +147,7 @@
 				<DataInput
 					v-model.number="formModel.livelihood.copingStrategiesIndex"
 					:error-messages="validationMsg('livelihood.copingStrategiesIndex')"
+					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Coping strategies index"
 					name="coping-strategies-index"
@@ -134,12 +160,18 @@
 			</v-col>
 
 			<v-col cols="4">
-				<h4 class="mb-4">{{ $t('External Support') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('external-support-text')"
+					class="mb-4"
+				>
+					{{ $t('External Support') }}
+				</h4>
 
 				<DataSelect
 					v-model="formModel.externalSupport.externalSupportReceivedType"
 					:items="options.externalSupportReceivedType"
 					:loading="assetsLoading"
+					:data-cy="prepareComponentIdentifier()"
 					label="Support received types"
 					name="support-received-types"
 					class="mb-4"
@@ -150,6 +182,7 @@
 
 				<DatePicker
 					v-model="formModel.externalSupport.supportDateReceived"
+					:data-cy="prepareComponentIdentifier()"
 					label="Support date received"
 					name="support-date-received"
 					class="mb-4"
@@ -158,6 +191,7 @@
 
 				<DataInput
 					v-model="formModel.externalSupport.supportOrganization"
+					:data-cy="prepareComponentIdentifier()"
 					label="Support organisation"
 					name="support-organisation"
 					class="mb-4"
@@ -166,7 +200,12 @@
 			</v-col>
 
 			<v-col cols="4">
-				<h4 class="mb-4">{{ $t('Custom Fields') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('custom-fields-text')"
+					class="mb-4"
+				>
+					{{ $t('Custom Fields') }}
+				</h4>
 
 				<DataInput
 					v-for="option in customFields"
@@ -176,6 +215,7 @@
 					:name="normalizeName(option.field)"
 					:type="option.type"
 					:hide-spin-buttons="option.type === 'number' ? true : null"
+					:data-cy="prepareComponentIdentifier()"
 					class="mb-4"
 					optional
 				/>
@@ -184,12 +224,18 @@
 
 		<v-row>
 			<v-col>
-				<h4 class="mb-4">{{ $t('Household Status') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('household-status-text')"
+					class="mb-4"
+				>
+					{{ $t('Household Status') }}
+				</h4>
 
 				<DataSelect
 					v-model="formModel.shelterStatus"
 					:items="options.shelterStatuses"
 					:loading="shelterStatusLoading"
+					:data-cy="prepareComponentIdentifier()"
 					label="Shelter status"
 					name="shelter-status"
 					class="mb-4"
@@ -198,6 +244,7 @@
 
 				<DataTextarea
 					v-model="formModel.notes"
+					:data-cy="prepareComponentIdentifier()"
 					label="Notes"
 					name="notes"
 					class="mb-4"
@@ -219,6 +266,7 @@ import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import addressHelper from "@/mixins/addressHelper";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
@@ -237,7 +285,7 @@ export default {
 		TypeOfLocationForm,
 	},
 
-	mixins: [validation, addressHelper],
+	mixins: [validation, addressHelper, identifierBuilder],
 
 	validations() {
 		return {
@@ -259,6 +307,11 @@ export default {
 		isEditing: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "household-form",
 		},
 	},
 

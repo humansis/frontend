@@ -8,11 +8,17 @@
 
 		<v-row>
 			<v-col cols="3">
-				<h4 class="mb-4">{{ $t('Name') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('name-text')"
+					class="mb-4"
+				>
+					{{ $t('Name') }}
+				</h4>
 
 				<DataInput
 					v-model="formModel.nameLocal.familyName"
 					:error-messages="validationMsg('nameLocal.familyName')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Local family name"
 					name="local-family-name"
 					class="mb-4"
@@ -22,6 +28,7 @@
 				<DataInput
 					v-model="formModel.nameLocal.firstName"
 					:error-messages="validationMsg('nameLocal.firstName')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Local given name"
 					name="local-given-name"
 					class="mb-4"
@@ -30,6 +37,7 @@
 
 				<DataInput
 					v-model="formModel.nameLocal.parentsName"
+					:data-cy="prepareComponentIdentifier()"
 					label="Local parent's name"
 					name="local-parents-name"
 					class="mb-4"
@@ -38,10 +46,16 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">{{ $t('Name (English)') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('english-name-text')"
+					class="mb-4"
+				>
+					{{ $t('Name (English)') }}
+				</h4>
 
 				<DataInput
 					v-model="formModel.nameEnglish.familyName"
+					:data-cy="prepareComponentIdentifier()"
 					label="English family name"
 					name="english-family-name"
 					class="mb-4"
@@ -50,6 +64,7 @@
 
 				<DataInput
 					v-model="formModel.nameEnglish.firstName"
+					:data-cy="prepareComponentIdentifier()"
 					label="English given name"
 					name="english-given-name"
 					class="mb-4"
@@ -58,6 +73,7 @@
 
 				<DataInput
 					v-model="formModel.nameEnglish.parentsName"
+					:data-cy="prepareComponentIdentifier()"
 					label="English parent's name"
 					name="english-parents-name"
 					class="mb-4"
@@ -66,12 +82,18 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">{{ $t('Personal Information') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('personal-information-text')"
+					class="mb-4"
+				>
+					{{ $t('Personal Information') }}
+				</h4>
 
 				<DataSelect
 					v-model="formModel.personalInformation.gender"
 					:items="options.gender"
 					:error-messages="validationMsg('personalInformation.gender')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Gender"
 					name="gender"
 					class="mb-4"
@@ -81,6 +103,7 @@
 				<DatePicker
 					v-model="formModel.personalInformation.dateOfBirth"
 					:error-messages="validationMsg('personalInformation.dateOfBirth')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Date of birth"
 					name="date-of-birth"
 					class="mb-4"
@@ -89,19 +112,40 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">
+				<h4
+					:data-cy="identifierBuilder('id-text')"
+					class="mb-4"
+				>
 					{{ $t('ID') }}
+
 					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
 					</i>
 				</h4>
 
 				<v-tabs v-model="idTabs" density="compact">
-					<v-tab value="primary">{{ $t('Primary') }}</v-tab>
+					<v-tab
+						:data-cy="identifierBuilder('primary-button')"
+						value="primary"
+					>
+						{{ $t('Primary') }}
+					</v-tab>
 
-					<v-tab value="secondary" :disabled="isSecondaryIdTabDisabled">{{ $t('Secondary') }}</v-tab>
+					<v-tab
+						:disabled="isSecondaryIdTabDisabled"
+						:data-cy="identifierBuilder('secondary-button')"
+						value="secondary"
+					>
+						{{ $t('Secondary') }}
+					</v-tab>
 
-					<v-tab value="tertiary" :disabled="isTertiaryIdTabDisabled">{{ $t('Tertiary') }}</v-tab>
+					<v-tab
+						:disabled="isTertiaryIdTabDisabled"
+						:data-cy="identifierBuilder('tertiary-button')"
+						value="tertiary"
+					>
+						{{ $t('Tertiary') }}
+					</v-tab>
 				</v-tabs>
 
 				<v-window v-model="idTabs" class="pt-4">
@@ -111,8 +155,9 @@
 							:items="options.idType"
 							:loading="idTypeLoading"
 							:error-messages="validationMsg('primaryId.idType')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Type"
-							name="it-type"
+							name="primary-id-type"
 							class="mb-4"
 							@update:modelValue="onValidate('primaryId.idType'); onIdChange($event)"
 						/>
@@ -120,8 +165,9 @@
 						<DataInput
 							v-model.trim="formModel.primaryId.idNumber"
 							:error-messages="validationMsg('primaryId.idNumber')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Number"
-							name="id-number"
+							name="primary-id-number"
 							class="mb-4"
 							@update:modelValue="onValidate('primaryId.idNumber')"
 						/>
@@ -133,8 +179,9 @@
 							:items="options.idType"
 							:loading="idTypeLoading"
 							:error-messages="validationMsg('secondaryId.idType')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Type"
-							name="it-type"
+							name="secondary-id-type"
 							class="mb-4"
 							@update:modelValue="onValidate('secondaryId.idType'); onIdChange($event)"
 						/>
@@ -142,8 +189,9 @@
 						<DataInput
 							v-model.trim="formModel.secondaryId.idNumber"
 							:error-messages="validationMsg('secondaryId.idNumber')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Number"
-							name="id-number"
+							name="secondary-id-number"
 							class="mb-4"
 							@update:modelValue="onValidate('secondaryId.idNumber')"
 						/>
@@ -155,8 +203,9 @@
 							:items="options.idType"
 							:loading="idTypeLoading"
 							:error-messages="validationMsg('tertiaryId.idType')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Type"
-							name="it-type"
+							name="tertiary-id-type"
 							class="mb-4"
 							@update:modelValue="onValidate('tertiaryId.idType'); onIdChange($event)"
 						/>
@@ -164,8 +213,9 @@
 						<DataInput
 							v-model.trim="formModel.tertiaryId.idNumber"
 							:error-messages="validationMsg('tertiaryId.idNumber')"
+							:data-cy="prepareComponentIdentifier()"
 							label="ID Number"
-							name="id-number"
+							name="tertiary-id-number"
 							class="mb-4"
 							@update:modelValue="onValidate('tertiaryId.idNumber')"
 						/>
@@ -174,13 +224,19 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">{{ $t('Residency') }}</h4>
+				<h4
+					:data-cy="identifierBuilder('residency-text')"
+					class="mb-4"
+				>
+					{{ $t('Residency') }}
+				</h4>
 
 				<DataSelect
 					v-model="formModel.residencyStatus"
 					:items="options.residencyStatus"
 					:loading="residenceStatusesLoading"
 					:error-messages="validationMsg('residencyStatus')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Residency status"
 					name="residency-status"
 					class="mb-4"
@@ -192,7 +248,9 @@
 					class="mb-4 pa-3"
 					variant="outlined"
 				>
-					<h5>{{ $t('Smartcard number') }}</h5>
+					<h5 :data-cy="identifierBuilder('smart-card-text')">
+						{{ $t('Smartcard number') }}
+					</h5>
 
 					<ul>
 						<li
@@ -206,8 +264,12 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">
+				<h4
+					:data-cy="identifierBuilder('referral-text')"
+					class="mb-4"
+				>
 					{{ $t('Referral') }}
+
 					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
 					</i>
@@ -216,6 +278,7 @@
 				<v-checkbox
 					v-model="formModel.addAReferral"
 					:label="$t('Add a Referral')"
+					:data-cy="identifierBuilder('referral-checkbox')"
 					name="add-a-referral"
 					density="compact"
 					hide-details
@@ -226,6 +289,7 @@
 					v-model="formModel.referral.referralType"
 					:items="options.referralType"
 					:loading="referralTypeLoading"
+					:data-cy="prepareComponentIdentifier()"
 					label="Referral Type"
 					name="referral-type"
 					class="mb-4"
@@ -234,6 +298,7 @@
 				<DataInput
 					v-if="formModel.addAReferral"
 					v-model="formModel.referral.comment"
+					:data-cy="prepareComponentIdentifier()"
 					label="Comment"
 					name="Comment"
 					class="mb-4"
@@ -241,8 +306,12 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">
+				<h4
+					:data-cy="identifierBuilder('phone-1-text')"
+					class="mb-4"
+				>
 					{{ $t('Phone') }}
+
 					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
 					</i>
@@ -253,6 +322,7 @@
 						v-model="formModel.phone1.type"
 						:items="options.phoneType"
 						:loading="phoneTypesLoading"
+						:data-cy="prepareComponentIdentifier()"
 						label="Type phone 1"
 						name="phone1-type"
 						class="mb-4"
@@ -261,6 +331,7 @@
 					<v-checkbox
 						v-model="formModel.phone1.proxy"
 						:label="$t('Proxy')"
+						:data-cy="identifierBuilder('proxy-phone-1-checkbox')"
 						name="phone1-proxy"
 						density="compact"
 						class="ml-2 mb-4"
@@ -272,6 +343,7 @@
 					v-model="formModel.phone1.ext"
 					:items="options.phonePrefixes"
 					:error-messages="validationMsg('phone1.ext')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Prefix phone 1"
 					name="phone1-prefix"
 					class="mb-4"
@@ -280,6 +352,7 @@
 
 				<DataInput
 					v-model="formModel.phone1.phoneNo"
+					:data-cy="prepareComponentIdentifier()"
 					label="Phone No. 1"
 					name="phone1-no"
 					class="mb-4"
@@ -287,8 +360,12 @@
 			</v-col>
 
 			<v-col cols="3">
-				<h4 class="mb-4">
+				<h4
+					:data-cy="identifierBuilder('phone-2-text')"
+					class="mb-4"
+				>
 					{{ $t('Phone 2') }}
+
 					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
 					</i>
@@ -299,6 +376,7 @@
 						v-model="formModel.phone2.type"
 						:items="options.phoneType"
 						:loading="phoneTypesLoading"
+						:data-cy="prepareComponentIdentifier()"
 						label="Type phone 2"
 						name="phone2-type"
 						class="mb-4"
@@ -307,6 +385,7 @@
 					<v-checkbox
 						v-model="formModel.phone2.proxy"
 						:label="$t('Proxy')"
+						:data-cy="identifierBuilder('proxy-phone-2-checkbox')"
 						name="phone2-proxy"
 						density="compact"
 						class="ml-2 mb-4"
@@ -318,6 +397,7 @@
 					v-model="formModel.phone2.ext"
 					:items="options.phonePrefixes"
 					:error-messages="validationMsg('phone2.ext')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Prefix phone 2"
 					name="phone2-prefix"
 					class="mb-4"
@@ -326,6 +406,7 @@
 
 				<DataInput
 					v-model="formModel.phone2.phoneNo"
+					:data-cy="prepareComponentIdentifier()"
 					label="Phone No. 2"
 					name="phone2-no"
 					class="mb-4"
@@ -333,8 +414,12 @@
 			</v-col>
 
 			<v-col cols="12">
-				<h4 class="mb-4">
+				<h4
+					:data-cy="identifierBuilder('vulnerability-criteria-text')"
+					class="mb-4"
+				>
 					{{ $t('Vulnerability criteria') }}
+
 					<i class="optional-text font-weight-regular">
 						- {{ $t('Optional') }}
 					</i>
@@ -346,6 +431,7 @@
 						v-model="formModel.vulnerabilities[vulnerability.code]"
 						:key="vulnerability.code"
 						:label="$t(normalizeText(vulnerability.value))"
+						:data-cy="identifierBuilder(`vulnerability-${(vulnerability.code)}-checkbox`)"
 						name="phone2-proxy"
 						density="compact"
 						class="flex-0-0 ml-2"
@@ -363,6 +449,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import idHelper from "@/mixins/idHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
@@ -379,7 +466,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [validation, idHelper],
+	mixins: [validation, idHelper, identifierBuilder],
 
 	validations() {
 		return {
@@ -482,6 +569,11 @@ export default {
 		membersSmartCardNumbers: {
 			type: Array,
 			default: () => [],
+		},
+
+		dataCy: {
+			type: String,
+			default: "household-head",
 		},
 	},
 

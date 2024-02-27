@@ -17,6 +17,7 @@
 				:optional="optional"
 				:placeholder="placeholder"
 				:clearable="clearable && !disabled"
+				:data-cy="prepareComponentIdentifier()"
 				prepend-inner-icon="calendar"
 				autocomplete="off"
 				readonly
@@ -27,6 +28,7 @@
 			v-model="selectedDate"
 			:min="minDate"
 			:max="maxDate"
+			:data-cy="identifierBuilder(`${name}-calendar-select`)"
 			locale="en-in"
 			hide-header
 			no-title
@@ -37,6 +39,7 @@
 
 <script>
 import DataInput from "@/components/Inputs/DataInput";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "DatePicker",
@@ -44,6 +47,8 @@ export default {
 	components: {
 		DataInput,
 	},
+
+	mixins: [identifierBuilder],
 
 	inheritAttrs: false,
 
@@ -89,6 +94,11 @@ export default {
 		},
 
 		placeholder: {
+			type: String,
+			default: "",
+		},
+
+		dataCy: {
 			type: String,
 			default: "",
 		},

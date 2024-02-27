@@ -4,6 +4,7 @@
 		:items="options.typeOfLocation"
 		:loading="locationTypesLoading"
 		:error-messages="validationMsg('typeOfLocation')"
+		:data-cy="prepareComponentIdentifier()"
 		label="Type of Location"
 		name="type-of-location"
 		class="mb-4"
@@ -14,6 +15,7 @@
 		<v-checkbox
 			v-model="createCamp"
 			:label="$t('Create a new Camp')"
+			:data-cy="identifierBuilder('create-new-camp-checkbox')"
 			name="create-new-camp"
 			density="compact"
 			class="mb-4"
@@ -25,6 +27,7 @@
 			v-model="formModel.camp"
 			:items="options.camps"
 			:error-messages="validationMsg('camp')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Camp name"
 			name="camp-name"
 			item-title="name"
@@ -37,6 +40,7 @@
 			v-else
 			v-model="formModel.campName"
 			:error-messages="validationMsg('campName')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Camp name"
 			name="camp-name"
 			class="mb-4"
@@ -46,6 +50,7 @@
 		<DataInput
 			v-model="formModel.tentNumber"
 			:error-messages="validationMsg('tentNumber')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Tent number"
 			name="tent-number"
 			class="mb-4"
@@ -58,6 +63,7 @@
 			v-model="formModel.number"
 			:error-messages="validationMsg('number')"
 			:optional="!residenceSelected"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address number"
 			name="address-number"
 			class="mb-4"
@@ -68,6 +74,7 @@
 			v-model="formModel.street"
 			:error-messages="validationMsg('street')"
 			:optional="!residenceSelected"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address street"
 			name="address-street"
 			class="mb-4"
@@ -78,6 +85,7 @@
 			v-model="formModel.postcode"
 			:error-messages="validationMsg('postcode')"
 			:optional="!residenceSelected"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address postcode"
 			name="address-postcode"
 			class="mb-4"
@@ -92,6 +100,7 @@ import AddressService from "@/services/AddressService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
@@ -102,7 +111,7 @@ export default {
 
 	components: { DataInput, DataSelect },
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -139,6 +148,11 @@ export default {
 		isEditing: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

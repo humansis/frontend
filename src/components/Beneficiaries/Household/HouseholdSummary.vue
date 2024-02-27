@@ -1,6 +1,9 @@
 <template>
 	<div>
-		<h4 class="text-center mb-4">
+		<h4
+			:data-cy="identifierBuilder('please-add-household-text')"
+			class="text-center mb-4"
+		>
 			{{ $t('Please add this household to one or more project') }}
 		</h4>
 
@@ -10,6 +13,7 @@
 					v-model="formModel.selectedProjects"
 					:items="options.projects"
 					:error-messages="validationMsg('selectedProjects')"
+					:data-cy="prepareComponentIdentifier()"
 					label="Projects"
 					name="projects"
 					item-title="name"
@@ -23,6 +27,7 @@
 
 				<DataInput
 					v-model="formModel.enumerator"
+					:data-cy="prepareComponentIdentifier()"
 					label="Enumerator"
 					name="enumerator"
 					class="mb-4"
@@ -31,37 +36,64 @@
 			</v-col>
 		</v-row>
 
-		<h4 class="text-center mb-4">
+		<h4
+			:data-cy="identifierBuilder('household-information-text')"
+			class="text-center mb-4"
+		>
 			{{ $t('Household Information Summary') }}
 		</h4>
 
 		<v-row class="mb-4">
 			<v-col v-if="livelihoodFilled" cols="4">
 				<v-card>
-					<v-card-subtitle class="pt-1 pb-0">{{ $t('Livelihood') }}</v-card-subtitle>
+					<v-card-subtitle
+						:data-cy="identifierBuilder('livelihood-text')"
+						class="pt-1 pb-0"
+					>
+						{{ $t('Livelihood') }}
+					</v-card-subtitle>
 
-					<v-card-title>{{ livelihood }}</v-card-title>
+					<v-card-title :data-cy="identifierBuilder('livelihood-data')">
+						{{ livelihood }}
+					</v-card-title>
 				</v-card>
 			</v-col>
 
 			<v-col :cols="livelihoodFilled ? 4 : 6">
 				<v-card>
-					<v-card-subtitle class="pt-1 pb-0">{{ $t('Current Address') }}</v-card-subtitle>
+					<v-card-subtitle
+						:data-cy="identifierBuilder('current-address-text')"
+						class="pt-1 pb-0"
+					>
+						{{ $t('Current Address') }}
+					</v-card-subtitle>
 
-					<v-card-title>{{ address }}</v-card-title>
+					<v-card-title :data-cy="identifierBuilder('current-address-data')">
+						{{ address }}
+					</v-card-title>
 				</v-card>
 			</v-col>
 
 			<v-col :cols="livelihoodFilled ? 4 : 6">
 				<v-card>
-					<v-card-subtitle class="pt-1 pb-0">{{ $t('Current Location') }}</v-card-subtitle>
+					<v-card-subtitle
+						:data-cy="identifierBuilder('current-location-text')"
+						class="pt-1 pb-0"
+					>
+						{{ $t('Current Location') }}
+					</v-card-subtitle>
 
-					<v-card-title>{{ location }}</v-card-title>
+					<v-card-title :data-cy="identifierBuilder('current-location-data')">
+						{{ location }}
+					</v-card-title>
 				</v-card>
 			</v-col>
 		</v-row>
 
-		<h4 class="text-center mb-4">
+		<h4
+			:data-cy="identifierBuilder('household-members-text')"
+			class="text-center mb-4"
+		>
 			{{ $t('Household Members') }}
 		</h4>
 
@@ -82,6 +114,7 @@ import ProjectService from "@/services/ProjectService";
 import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { generateColumns } from "@/utils/datagrid";
@@ -96,7 +129,7 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -135,6 +168,11 @@ export default {
 		isEditing: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "summary-form",
 		},
 	},
 

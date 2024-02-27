@@ -15,14 +15,16 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
 		@rowClicked="onGoToDetail"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row.id)"
 			/>
 
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row.id)"
@@ -30,6 +32,7 @@
 
 			<ButtonAction
 				:disabled="!row.deletable"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -63,6 +66,7 @@ import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
@@ -78,7 +82,12 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [
+		permissions,
+		grid,
+		baseHelper,
+		identifierBuilder,
+	],
 
 	data() {
 		return {
@@ -90,6 +99,7 @@ export default {
 				types: [EXPORT.PROJECTS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			dataCy: "table",
 			table: {
 				data: [],
 				columns: generateColumns([

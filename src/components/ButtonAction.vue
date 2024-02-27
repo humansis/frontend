@@ -11,6 +11,7 @@
 				v-bind="props"
 				:class="['action-button', { disabled }, buttonClass]"
 				:disabled="disabled"
+				:data-cy="identifierBuilder()"
 				icon=""
 				@click.stop="onButtonClicked"
 			>
@@ -20,6 +21,7 @@
 			<v-btn
 				v-else-if="defaultButton"
 				:prepend-icon="icon"
+				:data-cy="identifierBuilder()"
 				color="primary"
 				variant="elevated"
 				class="text-none"
@@ -34,6 +36,7 @@
 				:class="['text-none action-button texted-button', { disabled }]"
 				:disabled="disabled"
 				:size="buttonSize"
+				:data-cy="identifierBuilder()"
 				@click.stop="onButtonClicked"
 			>
 				<v-icon :icon="icon" :color="iconColor" />
@@ -61,6 +64,7 @@
 
 <script>
 import ConfirmAction from "@/components/ConfirmAction";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "ButtonAction",
@@ -68,6 +72,8 @@ export default {
 	components: {
 		ConfirmAction,
 	},
+
+	mixins: [identifierBuilder],
 
 	props: {
 		label: {
@@ -168,6 +174,11 @@ export default {
 		openConfirmModal: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

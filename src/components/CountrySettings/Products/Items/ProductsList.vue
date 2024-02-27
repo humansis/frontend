@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:data-cy="dataCy"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -15,8 +16,9 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PRODUCTS_ITEMS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
@@ -24,6 +26,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditProducts"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -31,6 +34,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditProducts"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -62,6 +66,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
@@ -77,7 +82,7 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid, permissions],
+	mixins: [grid, permissions, identifierBuilder],
 
 	props: {
 		categories: {
@@ -90,6 +95,7 @@ export default {
 		return {
 			TABLE,
 			isLoadingList: false,
+			dataCy: "products-table",
 			exportControl: {
 				loading: false,
 				location: "products",

@@ -5,6 +5,7 @@
 			v-model="selectedSearchField"
 			:items="searchFields"
 			:disabled="isDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Select field"
 			name="select-field"
 			clearable
@@ -14,6 +15,7 @@
 		<DataInput
 			v-model="value"
 			:disabled="isDisabled"
+			:dataCy="prepareComponentIdentifier()"
 			label="Search"
 			name="search"
 			append-inner-icon="search"
@@ -29,6 +31,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 
 export default {
@@ -39,7 +42,7 @@ export default {
 		DataSelect,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, identifierBuilder],
 
 	props: {
 		searchPhrase: {
@@ -60,6 +63,11 @@ export default {
 		isDisabled: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

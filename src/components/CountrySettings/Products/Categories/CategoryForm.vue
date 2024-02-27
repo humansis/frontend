@@ -4,13 +4,14 @@
 			v-model="formModel.name"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('name')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Name"
 			name="name"
 			class="mb-4"
 			@update:modelValue="onValidate('name')"
 		/>
 
-		<h4>{{ $t('Type') }}</h4>
+		<h4 :data-cy="identifierBuilder('type-text')">{{ $t('Type') }}</h4>
 
 		<v-radio-group
 			v-model="formModel.type"
@@ -23,6 +24,7 @@
 				:key="`category-type-${code}`"
 				:value="value"
 				:disabled="formDisabled"
+				:data-cy="identifierBuilder(`${code}-checkbox`)"
 				class="mb-3"
 				@update:modelValue="onValidate('type')"
 			>
@@ -37,12 +39,14 @@
 			</v-radio>
 		</v-radio-group>
 
-		<h4>{{ $t('Image') }}</h4>
+		<h4 :data-cy="identifierBuilder('image-text')">{{ $t('Image') }}</h4>
 
 		<FileUpload
 			v-if="!formDisabled"
 			v-model="formModel.uploadedImage"
 			:error-messages="validationMsg('uploadedImage')"
+			:data-cy="prepareComponentIdentifier()"
+			name="image"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"
@@ -89,6 +93,7 @@ import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
 import SvgIcon from "@/components/SvgIcon";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 
 export default {
@@ -105,7 +110,7 @@ export default {
 		FileUpload,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -135,6 +140,7 @@ export default {
 
 	data() {
 		return {
+			dataCy: "categories-form",
 			options: {
 				// TODO Get this from API (change it everywhere)
 				categoryTypes: [

@@ -11,6 +11,12 @@ export const normalizeText = (text = "") => text
 	.replace(/(_)/g, " ")
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
+export const normalizeDataCy = (text = "") => text
+	.replace(/(?<![A-Z\s-])[A-Z]/g, (str) => ` ${str}`)
+	.replace(/[A-Z]/g, (str) => str.toLowerCase())
+	.trim()
+	.replace(/( )/g, "-");
+
 export const normalizeSelectorValue = (text = "") => text
 	.replace(/^.| ./g, (str) => str.toUpperCase());
 
@@ -59,5 +65,6 @@ export default {
 	normalizeSelectorValue,
 	normalizeProjectName,
 	normalizeFirstLetter,
+	normalizeDataCy,
 	generateColumns,
 };

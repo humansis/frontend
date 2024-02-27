@@ -9,6 +9,7 @@
 		</strong>
 
 		<FileUpload
+			name="file"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"

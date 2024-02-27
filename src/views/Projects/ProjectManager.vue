@@ -1,7 +1,10 @@
 <template>
 	<v-container fluid>
 		<v-card class="mx-auto mt-5">
-			<v-card-title class="text-h5 font-weight-bold">
+			<v-card-title
+				:data-cy="identifierBuilder(`${pageTitle}-text`)"
+				class="text-h5 font-weight-bold"
+			>
 				{{ $t(pageTitle) }}
 			</v-card-title>
 
@@ -12,6 +15,7 @@
 							v-model="formModel.name"
 							:disabled="formDisabled"
 							:error-messages="validationMsg('name')"
+							:data-cy="prepareComponentIdentifier()"
 							label="Project name"
 							name="project-name"
 							class="mb-4"
@@ -21,6 +25,7 @@
 						<DataInput
 							v-model="formModel.internalId"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="Internal ID"
 							name="project-name"
 							class="mb-4"
@@ -33,6 +38,7 @@
 							:disabled="formDisabled"
 							:clearable="!formDisabled"
 							:error-messages="validationMsg('selectedSectors')"
+							:data-cy="prepareComponentIdentifier()"
 							label="Sectors"
 							name="sectors"
 							multiple
@@ -46,8 +52,9 @@
 							:items="options.subSectors"
 							:hint="missingSubSectors"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="Subsectors"
-							name="subsectors"
+							name="sub-sectors"
 							class="has-warning-message mb-4"
 							persistent-hint
 							multiple
@@ -59,6 +66,7 @@
 							v-model="formModel.startDate"
 							:error-messages="validationMsg('startDate')"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="Start Date"
 							name="start-date"
 							class="mb-4"
@@ -69,6 +77,7 @@
 							v-model="formModel.endDate"
 							:error-messages="validationMsg('endDate')"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="End Date"
 							name="end-date"
 							class="mb-4"
@@ -78,6 +87,7 @@
 						<DataSelect
 							v-model="formModel.selectedDonors"
 							:items="options.donors"
+							:data-cy="prepareComponentIdentifier()"
 							label="Donors"
 							name="donors"
 							item-title="fullname"
@@ -93,6 +103,7 @@
 						<DataInput
 							v-model="formModel.projectInvoiceAddressLocal"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="Local Invoice Address"
 							name="local-invoice-address"
 							class="mb-4"
@@ -102,6 +113,7 @@
 						<DataInput
 							v-model="formModel.projectInvoiceAddressEnglish"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="English Invoice Address"
 							name="english-invoice-address"
 							class="mb-4"
@@ -122,6 +134,7 @@
 								:error-messages="errorMessageForCategory(index)"
 								:disabled="formDisabled"
 								:name="`product-category-${index}`"
+								:data-cy="identifierBuilder(`${productCategoryType}-checkbox`)"
 								hide-details="auto"
 								@blur="onValidate('allowedProductCategoryTypes')"
 							>
@@ -139,6 +152,7 @@
 						<DataTextarea
 							v-model="formModel.notes"
 							:disabled="formDisabled"
+							:data-cy="prepareComponentIdentifier()"
 							label="Notes"
 							name="notes"
 							class="mt-4"
@@ -182,6 +196,7 @@
 			<v-col class="d-flex justify-end">
 				<v-btn
 					:to="{ name: 'Projects' }"
+					:data-cy="identifierBuilder('cancel-button')"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="text-none"
@@ -192,6 +207,7 @@
 				<v-btn
 					v-if="!projectAction.isDetail"
 					:disabled="!isTargetTableValid"
+					:data-cy="identifierBuilder(`${buttonName}-button`)"
 					color="primary"
 					class="text-none ml-3"
 					@click="onValidateNewProject"
@@ -216,6 +232,7 @@ import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import EditableTable from "@/components/Inputs/EditableTable";
 import SvgIcon from "@/components/SvgIcon";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } from "@/utils/codeList";
@@ -252,7 +269,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [validation, permissions],
+	mixins: [validation, permissions, identifierBuilder],
 
 	validations() {
 		return {
@@ -286,6 +303,7 @@ export default {
 			isTargetTableValid: true,
 			targetTableValidateMessages: [],
 			filteredSubSectorsForTargets: [],
+			dataCy: "form",
 			formModel: {
 				id: null,
 				iso3: "",

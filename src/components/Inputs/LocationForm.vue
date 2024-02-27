@@ -9,7 +9,8 @@
 			:loading="provincesLoading"
 			:disabled="formDisabled || disabledAdm.adm1"
 			:clearable="!disabledAdmClear.adm1"
-			name="province"
+			:data-cy="prepareComponentIdentifier()"
+			:name="admNames.adm1"
 			item-title="name"
 			item-value="id"
 			class="mb-4"
@@ -23,7 +24,8 @@
 			:loading="districtsLoading"
 			:disabled="formDisabled || disabledAdm.adm2"
 			:clearable="!disabledAdmClear.adm2"
-			name="district"
+			:data-cy="prepareComponentIdentifier()"
+			:name="admNames.adm2"
 			item-title="name"
 			item-value="id"
 			class="mb-4"
@@ -38,7 +40,8 @@
 			:loading="communesLoading"
 			:disabled="formDisabled || disabledAdm.adm3"
 			:clearable="!disabledAdmClear.adm3"
-			name="commune"
+			:data-cy="prepareComponentIdentifier()"
+			:name="admNames.adm3"
 			item-title="name"
 			item-value="id"
 			class="mb-4"
@@ -60,7 +63,8 @@
 			:loading="villagesLoading"
 			:disabled="formDisabled || disabledAdm.adm4"
 			:clearable="!disabledAdmClear.adm4"
-			name="village"
+			:data-cy="prepareComponentIdentifier()"
+			:name="admNames.adm4"
 			item-title="name"
 			item-value="id"
 			class="mb-4"
@@ -83,6 +87,7 @@ import { requiredIf } from "@vuelidate/validators";
 import AddressService from "@/services/AddressService";
 import LocationsService from "@/services/LocationsService";
 import DataSelect from "@/components/Inputs/DataSelect";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
@@ -95,7 +100,7 @@ export default {
 		DataSelect,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -163,6 +168,11 @@ export default {
 				adm3: false,
 				adm4: false,
 			}),
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

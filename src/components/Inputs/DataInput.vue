@@ -4,6 +4,8 @@
 		:density="density"
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
+		:name="name"
+		:data-cy="identifierBuilder(`${name}-input`)"
 		autocomplete="off"
 	>
 		<template v-slot:label>
@@ -15,8 +17,12 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
+
 export default {
 	name: "DataInput",
+
+	mixins: [identifierBuilder],
 
 	props: {
 		label: {
@@ -47,6 +53,16 @@ export default {
 		placeholder: {
 			type: String,
 			default: "",
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
+		},
+
+		name: {
+			type: String,
+			required: true,
 		},
 	},
 };
