@@ -210,21 +210,21 @@ export default {
 		isDuplicityInValues() {
 			const { listOfValues } = this.formModel;
 
-			if (listOfValues?.length) {
-				const uniqueValues = new Set();
-
-				return listOfValues.some(({ value }) => {
-					if (uniqueValues.has(value)) {
-						return true;
-					}
-
-					uniqueValues.add(value);
-
-					return false;
-				});
+			if (!listOfValues?.length) {
+				return false;
 			}
 
-			return false;
+			const uniqueValues = new Set();
+
+			return listOfValues.some(({ value }) => {
+				if (uniqueValues.has(value)) {
+					return true;
+				}
+
+				uniqueValues.add(value);
+
+				return false;
+			});
 		},
 	},
 
