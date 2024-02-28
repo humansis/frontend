@@ -417,6 +417,10 @@ export default {
 			return type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
 		},
 
+		getOptionsForCustomField(values) {
+			return values.length ? values : [];
+		},
+
 		mapDetailOfHouseholdToFormModel() {
 			const countryAnswers = this.prepareCustomFields(
 				this.detailOfHousehold.countrySpecificAnswers,

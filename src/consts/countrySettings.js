@@ -46,7 +46,7 @@ export default {
 			id: null,
 			iso3: "",
 			field: "",
-			type: "",
+			type: null,
 			targetType: null,
 			selectionType: null,
 			isPropagatedToSelectionCriteria: false,

@@ -70,6 +70,10 @@
 				/>
 			</div>
 
+			<p v-if="isDuplicityInValues" class="text-error">
+				{{ $t("Each value must be unique") }}
+			</p>
+
 			<v-checkbox
 				v-if="isListSelected"
 				v-model="formModel.isPropagatedToSelectionCriteria"
@@ -189,6 +193,7 @@ export default {
 
 	data() {
 		return {
+			isValuesForListDuplicated: false,
 			options: {
 				types: COUNTRY_SETTINGS.CUSTOM_FIELDS.TYPES,
 				selectionTypes: COUNTRY_SETTINGS.CUSTOM_FIELDS.SELECTION_TYPES,
@@ -200,6 +205,26 @@ export default {
 	computed: {
 		isListSelected() {
 			return this.formModel.type?.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
+		},
+
+		isDuplicityInValues() {
+			const { listOfValues } = this.formModel;
+
+			if (listOfValues?.length) {
+				const uniqueValues = new Set();
+
+				return listOfValues.some(({ value }) => {
+					if (uniqueValues.has(value)) {
+						return true;
+					}
+
+					uniqueValues.add(value);
+
+					return false;
+				});
+			}
+
+			return false;
 		},
 	},
 
@@ -239,7 +264,8 @@ export default {
 
 		onSubmitForm() {
 			this.v$.$touch();
-			if (this.v$.$invalid) {
+
+			if (this.v$.$invalid || this.isDuplicityInValues) {
 				return;
 			}
 
