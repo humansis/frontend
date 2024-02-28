@@ -27,7 +27,7 @@
 							:disabled="formDisabled"
 							:data-cy="prepareComponentIdentifier()"
 							label="Internal ID"
-							name="project-name"
+							name="internal-id"
 							class="mb-4"
 							optional
 						/>
