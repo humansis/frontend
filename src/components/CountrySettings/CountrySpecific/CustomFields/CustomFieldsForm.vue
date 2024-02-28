@@ -149,14 +149,18 @@ export default {
 				field: { required },
 				type: { required },
 				...(!this.isEditing && { targetType: { required } }),
-				selectionType: { required },
-				listOfValues: {
-					$each: helpers.forEach({
-						value: {
-							required,
+				...(this.isListSelected
+					&& {
+						selectionType: { required },
+						listOfValues: {
+							$each: helpers.forEach({
+								value: {
+									required,
+								},
+							}),
 						},
-					}),
-				},
+					}
+				),
 			},
 		};
 	},

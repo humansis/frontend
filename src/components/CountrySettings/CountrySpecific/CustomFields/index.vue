@@ -18,6 +18,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
+			v-if="userCan.addCustomField"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -165,18 +166,26 @@ export default {
 				field,
 				type,
 				iso3,
+				targetType,
 				isPropagatedToSelectionCriteria,
 				listOfValues,
 				selectionType,
 			} = customFieldForm;
 
+			const dataForListType = {
+				...(type.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE && {
+					isPropagatedToSelectionCriteria,
+					allowedValues: listOfValues.map((item) => item.value),
+					isMultiSelect: selectionType?.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
+				}),
+			};
+
 			const customFieldBody = {
 				field,
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
-				isPropagatedToSelectionCriteria,
-				allowedValues: listOfValues.map((item) => item.value),
-				isMultiSelect: selectionType.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
+				targetType: targetType.code,
+				...dataForListType,
 			};
 
 			if (this.customFieldModal.isEditing && id) {
