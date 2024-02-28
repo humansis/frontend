@@ -92,7 +92,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "field" },
+					{ key: "fieldWithPrefix", title: "Field" },
 					{ key: "bnfType", title: "BNF type", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -163,13 +163,13 @@ export default {
 					(type) => type.code === item.targetType,
 				);
 				const bnfType = targetType?.shortCut;
-				const field = bnfType
+				const fieldWithPrefix = bnfType
 					? `${bnfType}-${item.field}`
 					: item.field;
 
 				return {
 					...item,
-					field,
+					fieldWithPrefix,
 					bnfType,
 				};
 			});
