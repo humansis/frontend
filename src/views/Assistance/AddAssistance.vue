@@ -692,7 +692,7 @@ export default {
 
 		async fetchCustomFields() {
 			try {
-				const { data } = await CustomFieldsService.getListOfCustomFields(
+				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
 					null,

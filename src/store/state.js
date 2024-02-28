@@ -105,6 +105,7 @@ export default {
 		authoriseElectronicCashTransfer: false,
 		distributionReport: false,
 		countrySettings: false,
+		addCustomField: false,
 		addEditUsers: false,
 		adminSettings: false,
 		moveAssistance: false,
