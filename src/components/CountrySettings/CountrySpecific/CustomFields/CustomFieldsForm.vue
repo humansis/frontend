@@ -86,6 +86,7 @@
 
 			<div class="d-flex justify-end">
 				<v-btn
+					v-if="!isDetail"
 					color="primary"
 					class="text-none mb-8"
 					variant="elevated"

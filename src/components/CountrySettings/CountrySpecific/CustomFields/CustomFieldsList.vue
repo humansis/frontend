@@ -23,7 +23,7 @@
 			/>
 
 			<ButtonAction
-				v-if="!table.data[index].isUsed"
+				v-if="isEditButtonVisible(index)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -173,6 +173,13 @@ export default {
 					bnfType,
 				};
 			});
+		},
+
+		isEditButtonVisible(index) {
+			const rowData = this.table.data[index];
+
+			return !rowData.isUsed
+				&& rowData.type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
 		},
 	},
 };

@@ -1,6 +1,7 @@
 const LIST_TYPE_CODE = "list";
 const SINGLE_SELECT_CODE = "single_select";
 const MULTI_SELECT_CODE = "multi_select";
+
 export default {
 	CUSTOM_FIELDS: {
 		LIST_TYPE_CODE,
