@@ -201,8 +201,11 @@ export default {
 	},
 
 	watch: {
-		items(value) {
-			this.options = value;
+		items: {
+			deep: true,
+			handler() {
+				this.options = this.selectOptions();
+			},
 		},
 
 		modelValue(value) {
