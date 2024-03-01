@@ -106,6 +106,7 @@ export default {
 		distributionReport: false,
 		countrySettings: false,
 		addCustomField: false,
+		editCustomField: false,
 		addEditUsers: false,
 		adminSettings: false,
 		moveAssistance: false,

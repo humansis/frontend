@@ -62,6 +62,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -77,7 +78,7 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {
@@ -179,7 +180,8 @@ export default {
 			const rowData = this.table.data[index];
 
 			return !rowData.isUsed
-				&& rowData.type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
+				&& rowData.type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE
+				&& this.userCan.editCustomField;
 		},
 	},
 };
