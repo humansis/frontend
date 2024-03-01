@@ -12,6 +12,7 @@
 			:loading="isExportLoading"
 			:no-data-text="$t('No data for these filters')"
 			variant="text"
+			is-row-click-disabled
 			@perPageChanged="onPerPageChange"
 			@pageChanged="onPageChange"
 		>
@@ -51,7 +52,7 @@
 
 			<template v-slot:actions="{ index }">
 				<v-btn
-					:disabled="isDataForTableLoading(index)"
+					:disabled="isResolveFromFileDisabled(index)"
 					:loading="table.data[index].toUpdateLoading"
 					:variant="isFromFileSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -271,6 +272,10 @@ export default {
 						});
 						this.table.data[key].idType.push("memberDuplicitiesLastItem");
 						this.table.data[key].idNumber.push("memberDuplicitiesLastItem");
+
+						if (memberDuplicity.isIdMismatch) {
+							this.table.data[key].recordFrom.push("hasBeneficiaryIdDuplicity");
+						}
 					}
 
 					if (Object.hasOwn(memberDuplicity, "differences")) {
@@ -445,6 +450,11 @@ export default {
 			return this.table.data[item].toUpdateLoading
 				|| this.table.data[item].toLinkLoading
 				|| this.isFormChangesLoading;
+		},
+
+		isResolveFromFileDisabled(item) {
+			return this.isDataForTableLoading(item)
+				|| this.table.data[item].recordFrom?.includes("hasBeneficiaryIdDuplicity");
 		},
 	},
 
