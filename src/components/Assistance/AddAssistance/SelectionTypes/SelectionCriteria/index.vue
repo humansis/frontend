@@ -143,6 +143,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
 import { normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT } from "@/consts";
@@ -544,27 +545,33 @@ export default {
 		},
 
 		async fetchScoringTypes() {
-			this.scoringTypesLoading = true;
+			try {
+				this.scoringTypesLoading = true;
 
-			await AssistancesService.getScoringTypes(
-				null,
-				null,
-				this.filters,
-			)
-				.then(({ data }) => {
-					data.forEach((item) => {
-						this.options.scoringTypes.push({
-							...item,
-							identifier: `${item.name} (ID: ${item.id})`,
-						});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+					this.filters,
+				);
+
+				checkResponseStatus(status, message);
+
+				data.forEach((item) => {
+					this.options.scoringTypes.push({
+						...item,
+						identifier: `${item.name} (ID: ${item.id})`,
 					});
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-					this.scoringType = this.options.scoringTypes?.[0] || null;
 				});
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringType = this.options.scoringTypes?.[0] || null;
+				this.scoringTypesLoading = false;
+			}
 		},
 
 		assistanceBodyIsValid({ sector, subsector, target, type }) {

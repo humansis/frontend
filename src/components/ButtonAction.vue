@@ -9,7 +9,7 @@
 			<v-btn
 				v-if="isOnlyIcon"
 				v-bind="props"
-				:class="['action-button', { disabled }, buttonClass]"
+				:class="['action-button', $attrs.class, { disabled }]"
 				:disabled="disabled"
 				:data-cy="identifierBuilder()"
 				icon=""
@@ -77,11 +77,6 @@ export default {
 
 	props: {
 		label: {
-			type: String,
-			default: "",
-		},
-
-		buttonClass: {
 			type: String,
 			default: "",
 		},

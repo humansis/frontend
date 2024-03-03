@@ -356,12 +356,20 @@ export default {
 
 		prepareCountrySpecificsForHousehold(countrySpecificAnswers) {
 			const preparedAnswers = [];
+
 			Object.keys(countrySpecificAnswers).forEach((key) => {
-				preparedAnswers.push({
-					countrySpecificId: Number(key),
-					answer: `${countrySpecificAnswers[key]}` || null,
-				});
+				const answer = countrySpecificAnswers[key];
+				const isAnswerArray = Array.isArray(answer);
+
+				if ((isAnswerArray && answer.length)
+					|| (answer !== null && answer !== undefined && !isAnswerArray)) {
+					preparedAnswers.push({
+						countrySpecificId: Number(key),
+						answer: String(answer),
+					});
+				}
 			});
+
 			return preparedAnswers;
 		},
 

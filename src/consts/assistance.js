@@ -168,6 +168,7 @@ export default {
 		LOCATION: "location",
 		LOCATION_TYPE: "locationType",
 		STRING: "string",
+		ARRAY: "array",
 	},
 	ROUNDS_OPTIONS: [{ code: null, value: "N/A" }]
 		.concat(

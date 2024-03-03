@@ -152,6 +152,7 @@ import DistributedCommodity from "@/components/Assistance/AddAssistance/Selectio
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
 import ConfirmAction from "@/components/ConfirmAction";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -294,13 +295,26 @@ export default {
 					Notification(`${this.$t("Duplicate Assistance")} ${e.message || e}`, "error");
 				});
 
-			await AssistancesService.getScoringTypes()
-				.then(({ data }) => { this.scoringTypes = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-				});
+			try {
+				this.scoringTypesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.scoringTypes = data;
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringTypesLoading = false;
+			}
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}

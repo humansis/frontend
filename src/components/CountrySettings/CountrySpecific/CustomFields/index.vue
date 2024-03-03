@@ -8,6 +8,7 @@
 			:submit-button-label="submitButtonLabel"
 			:form-disabled="customFieldModal.isDetail"
 			:is-editing="customFieldModal.isEditing"
+			:is-detail="customFieldModal.isDetail"
 			:loading="customFieldModal.isWaiting"
 			close-button
 			@formSubmitted="onSubmitCustomFieldForm"
@@ -44,6 +45,7 @@ import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
 	name: "CustomFieldPage",
@@ -64,13 +66,7 @@ export default {
 				isEditing: false,
 				isWaiting: false,
 			},
-			customFieldModel: {
-				id: null,
-				iso3: "",
-				field: "",
-				type: "",
-				targetType: "",
-			},
+			customFieldModel: COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
 		};
 	},
 
@@ -126,6 +122,10 @@ export default {
 				field,
 				type,
 				targetType,
+				selectionType,
+				isMultiSelect,
+				allowedValues,
+				isPropagatedToSelectionCriteria,
 			},
 		) {
 			this.customFieldModel = {
@@ -135,6 +135,10 @@ export default {
 				field,
 				type,
 				targetType,
+				selectionType,
+				isMultiSelect,
+				allowedValues,
+				isPropagatedToSelectionCriteria,
 			};
 		},
 
@@ -151,12 +155,8 @@ export default {
 			};
 
 			this.customFieldModel = {
-				...this.customFieldModel,
-				id: null,
-				iso3: "",
-				field: "",
-				type: "",
-				targetType: "",
+				...COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
+				listOfValues: [{ value: "" }],
 			};
 		},
 
@@ -167,13 +167,25 @@ export default {
 				type,
 				iso3,
 				targetType,
+				isPropagatedToSelectionCriteria,
+				listOfValues,
+				selectionType,
 			} = customFieldForm;
+
+			const dataForListType = {
+				...(type.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE && {
+					isPropagatedToSelectionCriteria,
+					allowedValues: listOfValues.map((item) => item.value),
+					isMultiSelect: selectionType?.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
+				}),
+			};
 
 			const customFieldBody = {
 				field,
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
 				targetType: targetType.code,
+				...dataForListType,
 			};
 
 			if (this.customFieldModal.isEditing && id) {

@@ -207,18 +207,33 @@
 					{{ $t('Custom Fields') }}
 				</h4>
 
-				<DataInput
-					v-for="option in customFields"
-					v-model="formModel.customFields[option.id]"
-					:key="option.id"
-					:label="normalizeText(option.field)"
-					:name="normalizeName(option.field)"
-					:type="option.type"
-					:hide-spin-buttons="option.type === 'number' ? true : null"
-					:data-cy="prepareComponentIdentifier()"
-					class="mb-4"
-					optional
-				/>
+				<template v-for="option in customFields" :key="option.id">
+					<DataSelect
+						v-if="isInputTypeList(option.type)"
+						v-model="formModel.customFields[option.id]"
+						:items="getOptionsForCustomField(option.allowedValues)"
+						:multiple="option.isMultiSelect"
+						:chips="option.isMultiSelect"
+						:loading="assetsLoading"
+						:label="normalizeText(option.field)"
+						:name="normalizeName(option.field)"
+						:data-cy="prepareComponentIdentifier()"
+						class="mb-4"
+						optional
+					/>
+
+					<DataInput
+						v-else
+						v-model="formModel.customFields[option.id]"
+						:label="normalizeText(option.field)"
+						:name="normalizeName(option.field)"
+						:type="option.type"
+						:hide-spin-buttons="option.type === 'number' ? true : null"
+						:data-cy="prepareComponentIdentifier()"
+						class="mb-4"
+						optional
+					/>
+				</template>
 			</v-col>
 		</v-row>
 
@@ -271,6 +286,7 @@ import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
+import { COUNTRY_SETTINGS } from "@/consts";
 import getters from "@/store/getters";
 
 export default {
@@ -395,6 +411,14 @@ export default {
 				return this.getAddressTypeAndId(this.detailOfHousehold);
 			}
 			return null;
+		},
+
+		isInputTypeList(type) {
+			return type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
+		},
+
+		getOptionsForCustomField(values) {
+			return values.length ? values : [];
 		},
 
 		mapDetailOfHouseholdToFormModel() {

@@ -98,17 +98,10 @@ export default {
 		return data;
 	},
 
-	async getScoringTypes(page, size, filter = null) {
-		const query = [];
-
-		if (page) { query.push(`page=${page}`); }
-		if (size) { query.push(`size=${size}`); }
-		if (filter) { query.push(filtersToUri(filter)); }
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `scoring-blueprints?${query.join("&")}`,
+	getScoringTypes(page, size, filters = null) {
+		return fetcher({
+			uri: `scoring-blueprints${queryBuilder({ page, size, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
 	async createScoring(body) {
@@ -140,26 +133,24 @@ export default {
 		});
 	},
 
-	async updateScoring({ id, enabled }) {
-		const { data, status } = await fetcher({
+	updateScoring({ id, enabled }) {
+		return fetcher({
 			uri: `scoring-blueprints/${id}`,
 			method: "PATCH",
 			body: {
 				enabled,
 			},
 		});
-		return { data, status };
 	},
 
-	async removeScoring(id) {
-		const { data, status } = await fetcher({
+	removeScoring(id) {
+		return fetcher({
 			uri: `scoring-blueprints/${id}`,
 			method: "DELETE",
 		});
-		return { data, status };
 	},
 
-	async downloadScoring(scoringId) {
+	downloadScoring(scoringId) {
 		return download({ uri: `scoring-blueprints/${scoringId}/content` });
 	},
 
