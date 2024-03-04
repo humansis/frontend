@@ -188,6 +188,7 @@ export default {
 				const filters = {
 					...(this.filters.projects?.length
 						&& { projects: this.filters.projects }),
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 				};
 
 				try {
