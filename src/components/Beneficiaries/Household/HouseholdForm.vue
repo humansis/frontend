@@ -198,43 +198,6 @@
 					optional
 				/>
 			</v-col>
-
-			<v-col cols="4">
-				<h4
-					:data-cy="identifierBuilder('custom-fields-text')"
-					class="mb-4"
-				>
-					{{ $t('Custom Fields') }}
-				</h4>
-
-				<template v-for="option in customFields" :key="option.id">
-					<DataSelect
-						v-if="isInputTypeList(option.type)"
-						v-model="formModel.customFields[option.id]"
-						:items="getOptionsForCustomField(option.allowedValues)"
-						:multiple="option.isMultiSelect"
-						:chips="option.isMultiSelect"
-						:loading="assetsLoading"
-						:label="normalizeText(option.field)"
-						:name="normalizeName(option.field)"
-						:data-cy="prepareComponentIdentifier()"
-						class="mb-4"
-						optional
-					/>
-
-					<DataInput
-						v-else
-						v-model="formModel.customFields[option.id]"
-						:label="normalizeText(option.field)"
-						:name="normalizeName(option.field)"
-						:type="option.type"
-						:hide-spin-buttons="option.type === 'number' ? true : null"
-						:data-cy="prepareComponentIdentifier()"
-						class="mb-4"
-						optional
-					/>
-				</template>
-			</v-col>
 		</v-row>
 
 		<v-row>
@@ -267,6 +230,12 @@
 				/>
 			</v-col>
 		</v-row>
+
+		<CustomFieldsPanel
+			v-model="formModel"
+			:filters="{ targetType: 'household' }"
+			:data-cy="dataCy"
+		/>
 	</form>
 </template>
 
@@ -274,6 +243,7 @@
 import { integer } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsService from "@/services/CustomFieldsService";
+import CustomFieldsPanel from "@/components/Beneficiaries/Household/CustomFieldsPanel";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -281,18 +251,18 @@ import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import addressHelper from "@/mixins/addressHelper";
+import customFieldsHelper from "@/mixins/customFieldsHelper";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
-import { kebabize, normalizeCustomFields } from "@/utils/datagrid";
 import { Notification } from "@/utils/UI";
-import { COUNTRY_SETTINGS } from "@/consts";
 import getters from "@/store/getters";
 
 export default {
 	name: "HouseholdForm",
 
 	components: {
+		CustomFieldsPanel,
 		DataTextarea,
 		DatePicker,
 		DataSelect,
@@ -301,7 +271,12 @@ export default {
 		TypeOfLocationForm,
 	},
 
-	mixins: [validation, addressHelper, identifierBuilder],
+	mixins: [
+		validation,
+		addressHelper,
+		identifierBuilder,
+		customFieldsHelper,
+	],
 
 	validations() {
 		return {
@@ -398,27 +373,11 @@ export default {
 	},
 
 	methods: {
-		normalizeText(text) {
-			return normalizeCustomFields(text);
-		},
-
-		normalizeName(text) {
-			return kebabize(text);
-		},
-
 		async mapCurrentLocation() {
 			if (this.detailOfHousehold) {
 				return this.getAddressTypeAndId(this.detailOfHousehold);
 			}
 			return null;
-		},
-
-		isInputTypeList(type) {
-			return type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE;
-		},
-
-		getOptionsForCustomField(values) {
-			return values.length ? values : [];
 		},
 
 		mapDetailOfHouseholdToFormModel() {
@@ -462,18 +421,6 @@ export default {
 				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
 				notes: this.detailOfHousehold.notes,
 			};
-		},
-
-		prepareCustomFields(answers) {
-			const preparedAnswer = {};
-
-			if (!answers) return preparedAnswer;
-
-			answers.forEach(({ answer, countrySpecificId }) => {
-				preparedAnswer[countrySpecificId] = answer;
-			});
-
-			return preparedAnswer;
 		},
 
 		async fetchSupportReceivedTypes() {

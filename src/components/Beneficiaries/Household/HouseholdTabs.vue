@@ -510,6 +510,10 @@ export default {
 
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
+					const customFieldValues = this.prepareCountrySpecificsForHousehold(
+						beneficiary.customFields,
+					);
+
 					const preparedBeneficiary = {
 						id: beneficiary.beneficiaryId,
 						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
@@ -520,6 +524,7 @@ export default {
 						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender.code,
+						customFieldValues,
 						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,
