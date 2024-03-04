@@ -850,14 +850,14 @@ export default {
 				this.selectedFilters.push(filterValue);
 			}
 
-			this.onFiltersChange({ reliefPackageStates: this.selectedFilters });
+			this.onFiltersChange({ reliefPackageStates: this.selectedFilters }, true);
 		},
 
-		async onFiltersChange(selectedFilters) {
+		async onFiltersChange(selectedFilters, forceFetch = false) {
 			this.filters = selectedFilters;
 			this.table.currentPage = 1;
 
-			if (selectedFilters.reliefPackageStates?.length) {
+			if (forceFetch) {
 				await this.fetchData();
 			}
 		},
@@ -873,7 +873,7 @@ export default {
 			this.selectedFilters = [];
 			await this.onFiltersChange({ reliefPackageStates: [] });
 
-			if (this.$refs.beneficiariesList.searchValue().length) {
+			if (this.$refs.beneficiariesList.searchValue()?.length) {
 				this.$refs.beneficiariesList.resetSearch();
 			} else {
 				await this.fetchData();
