@@ -282,7 +282,7 @@ import { getCodeAndValueObject } from "@/utils/codeList";
 import { isDecimalPartLengthValid } from "@/utils/customValidators";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, CURRENCIES, GENERAL } from "@/consts";
+import { ASSISTANCE, CURRENCIES } from "@/consts";
 
 export default {
 	name: "DistributedCommodityForm",
@@ -571,14 +571,6 @@ export default {
 				...this.defaultDivisionsForIndividual,
 				...this.defaultDivisionsForCustomAmount,
 			];
-		},
-
-		isCountrySYR() {
-			return this.isCountryMatching(GENERAL.COUNTRIES_ISO3.SYR);
-		},
-
-		isCountryCOD() {
-			return this.isCountryMatching(GENERAL.COUNTRIES_ISO3.COD);
 		},
 
 		cashbackLimitDisabled() {
