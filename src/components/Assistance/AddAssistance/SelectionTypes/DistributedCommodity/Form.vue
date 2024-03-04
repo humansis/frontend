@@ -42,7 +42,7 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
-			item-title="field"
+			item-value="id"
 			class="mb-4"
 			@update:modelValue="onValidate('customField')"
 		/>
@@ -279,6 +279,8 @@ import assistanceHelper from "@/mixins/assistanceHelper";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
 import { isDecimalPartLengthValid } from "@/utils/customValidators";
+import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
@@ -858,15 +860,25 @@ export default {
 			try {
 				this.loading.customFields = true;
 
-				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
-					null,
+					"field.asc",
 					null,
 					{ type: "number" },
 				);
 
-				this.options.customFields = data;
+				this.options.customFields = [];
+
+				checkResponseStatus(status, message);
+
+				if (totalCount) {
+					this.prepareCustomFieldsForSelect(data);
+				}
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
 			} finally {
@@ -968,6 +980,13 @@ export default {
 			}
 
 			this.options.types = modalityTypes;
+		},
+
+		prepareCustomFieldsForSelect(customFields) {
+			this.options.customFields = customFields.map((customField) => ({
+				...customField,
+				value: `${customField.field} (${normalizeText(customField.targetType)})`,
+			}));
 		},
 	},
 };
