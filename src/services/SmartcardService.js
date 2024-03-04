@@ -16,9 +16,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getSmartcardRedemptionPurchases(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `smartcard-redemption-batches/${id}/smartcard-purchases` });
-		return { data, totalCount };
+	getSmartcardRedemptionPurchases(id) {
+		return fetcher({
+			uri: `smartcard-redemption-batches/${id}/redemption-summaries`,
+		});
 	},
 
 	async printSmartcardBatches(id) {
