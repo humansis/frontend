@@ -110,7 +110,7 @@ export default {
 					{ key: "sectors", type: "svgIcon", minWidth: "200", sortable: false },
 					{ key: "startDate", type: "date" },
 					{ key: "endDate", type: "date" },
-					{ key: "donors" },
+					{ key: "donors", sortable: false },
 					{ key: "numberOfHouseholds", title: "Registered Households" },
 					{ key: "beneficiariesReached", title: "Registered Individuals" },
 					{ key: "actions", value: "actions", sortable: false },
