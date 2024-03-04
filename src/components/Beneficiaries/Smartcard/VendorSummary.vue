@@ -77,6 +77,7 @@
 		<RedemptionSummary
 			v-else
 			:redemption-batch-id="redemptionBatch.id"
+			:redemption-currency="redemptionCurrency"
 		/>
 	</v-card-text>
 
@@ -168,6 +169,7 @@ export default {
 			batches: [],
 			projects: [],
 			totalNumberOfTransactions: "",
+			redemptionCurrency: "",
 		};
 	},
 
@@ -186,6 +188,7 @@ export default {
 				this.printButtonVisible = false;
 			}
 
+			this.redemptionCurrency = batch.currency;
 			this.redemptionSummary = true;
 			this.header = "Vendor Redemption Summary";
 		},
