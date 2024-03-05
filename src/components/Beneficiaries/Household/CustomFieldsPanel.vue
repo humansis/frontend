@@ -48,7 +48,7 @@
 							:label="normalizeText(option.field)"
 							:name="normalizeName(option.field)"
 							:type="option.type"
-							:hide-spin-buttons="option.type === 'number' ? true : null"
+							:hide-spin-buttons="option.type === 'number' || null"
 							:data-cy="prepareComponentIdentifier()"
 							class="mb-4"
 							optional
