@@ -440,15 +440,23 @@
 				</div>
 			</v-col>
 		</v-row>
+
+		<CustomFieldsPanel
+			v-model="formModel"
+			:filters="{ targetType: 'individual' }"
+			:data-cy="dataCy"
+		/>
 	</form>
 </template>
 
 <script>
 import { helpers, maxLength, required, requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
+import CustomFieldsPanel from "@/components/Beneficiaries/Household/CustomFieldsPanel";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import customFieldsHelper from "@/mixins/customFieldsHelper";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import idHelper from "@/mixins/idHelper";
 import validation from "@/mixins/validation";
@@ -464,9 +472,15 @@ export default {
 		DatePicker,
 		DataSelect,
 		DataInput,
+		CustomFieldsPanel,
 	},
 
-	mixins: [validation, idHelper, identifierBuilder],
+	mixins: [
+		validation,
+		idHelper,
+		identifierBuilder,
+		customFieldsHelper,
+	],
 
 	validations() {
 		return {
@@ -592,6 +606,7 @@ export default {
 			householdHeadSmartCardNumbers: [],
 			formModel: {
 				beneficiaryId: null,
+				customFields: {},
 				nameLocal: {
 					familyName: "",
 					firstName: "",
@@ -736,6 +751,7 @@ export default {
 				localFamilyName,
 				localGivenName,
 				localParentsName,
+				customFieldValues,
 				nationalIds,
 				phones,
 				referralComment,
@@ -748,6 +764,8 @@ export default {
 			if (referralComment || referralType) {
 				this.formModel.addAReferral = true;
 			}
+
+			const countryAnswers = this.prepareCustomFields(customFieldValues);
 
 			const { phone1, phone2 } = this.preparePhones(phones);
 
@@ -785,6 +803,10 @@ export default {
 				referral: {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
 					comment: referralComment,
+				},
+				customFields: {
+					...this.formModel.customFields,
+					...countryAnswers,
 				},
 				phone1,
 				phone2,
