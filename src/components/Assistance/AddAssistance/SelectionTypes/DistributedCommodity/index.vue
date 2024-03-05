@@ -105,6 +105,7 @@ import DistributedCommodityForm from "@/components/Assistance/AddAssistance/Sele
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import Modal from "@/components/Inputs/Modal";
+import countryHelper from "@/mixins/countryHelper";
 import { generateColumns } from "@/utils/datagrid";
 import { ASSISTANCE } from "@/consts";
 
@@ -117,6 +118,8 @@ export default {
 		ButtonAction,
 		DataGrid,
 	},
+
+	mixins: [countryHelper],
 
 	emits: [
 		"deliveredCommodityValue",
@@ -263,6 +266,7 @@ export default {
 					value,
 					payloadDivisionNwsFields,
 					payloadDivisionNesFields,
+					payloadDivisionCodFields,
 					currency,
 					secondUnit,
 					secondQuantity,
@@ -272,36 +276,44 @@ export default {
 					allowedProductCategoryTypes,
 					cashbackLimit,
 				},
-			) => ({
-				modality: modality?.value || modality,
-				modalityType: modalityType?.value || modalityType,
-				division: this.getDivisionName(division),
-				customFieldId: customField?.id || division?.customField?.id,
-				customFieldName: customField?.field || division?.customFieldName,
-				amountMultiplier: amountMultiplier || division?.amountMultiplier,
-				unit,
-				currency: currency?.value || currency,
-				quantity: (!this.isModalityCash && this.isPerHouseholdMembers(division))
-					? null
-					: Number(quantity) || null,
-				value: (this.isModalityCash && this.isPerHouseholdMembers(division))
-					? null
-					: Number(value) || null,
-				divisionFields: division?.fields
-					|| division?.quantities
-					|| (
-						this.isPerMembersNws(division)
-							? payloadDivisionNwsFields
-							: payloadDivisionNesFields
-					),
-				secondUnit,
-				secondQuantity,
-				dateExpiration,
-				description,
-				remoteDistributionAllowed,
-				allowedProductCategoryTypes,
-				cashbackLimit,
-			}));
+			) => {
+				let payloadDivision = {};
+
+				if (this.isPerMembersNws(division)) {
+					payloadDivision = payloadDivisionNwsFields;
+				} else if (this.isPerMembersNes(division)) {
+					payloadDivision = payloadDivisionNesFields;
+				} else {
+					payloadDivision = payloadDivisionCodFields;
+				}
+
+				return {
+					modality: modality?.value || modality,
+					modalityType: modalityType?.value || modalityType,
+					division: this.getDivisionName(division),
+					customFieldId: customField?.id || division?.customField?.id,
+					customFieldName: customField?.field || division?.customFieldName,
+					amountMultiplier: amountMultiplier || division?.amountMultiplier,
+					unit,
+					currency: currency?.value || currency,
+					quantity: (!this.isModalityCash && this.isPerHouseholdMembers(division))
+						? null
+						: Number(quantity) || null,
+					value: (this.isModalityCash && this.isPerHouseholdMembers(division))
+						? null
+						: Number(value) || null,
+					divisionFields: division?.fields
+						|| division?.quantities
+						|| payloadDivision,
+					secondUnit,
+					secondQuantity,
+					dateExpiration,
+					description,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				};
+			});
 
 			return tableData || [];
 		},
@@ -372,16 +384,22 @@ export default {
 			return !!this.table.data.length;
 		},
 
-		getDivisionName(division) {
-			if (division?.quantities) {
-				if (division.quantities?.length === 5) {
-					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+		getDivisionName({ quantities, code }) {
+			if (quantities) {
+				const quantitiesLength = quantities?.length;
+
+				if (this.isCountrySYR) {
+					return quantitiesLength === 5
+						? ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
+						: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
 				}
 
-				return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+				if (this.isCountryCOD && quantitiesLength === 2) {
+					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE;
+				}
 			}
 
-			return division?.code || null;
+			return code || null;
 		},
 
 		getDivision(divisionString) {
@@ -389,6 +407,7 @@ export default {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE:
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
 				default:
 					return divisionString;
@@ -472,14 +491,21 @@ export default {
 
 		isPerHouseholdMembers(division) {
 			const divisionStr = this.getDivisionStr(division);
+
 			return divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE
 				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
-				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE;
 		},
 
 		isPerMembersNws(division) {
 			return this.getDivisionStr(division) === ASSISTANCE
 				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+		},
+
+		isPerMembersNes(division) {
+			return this.getDivisionStr(division) === ASSISTANCE
+				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
 		},
 
 		getDivisionStr(division) {
