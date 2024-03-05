@@ -94,7 +94,7 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "fieldWithPrefix", title: "Field" },
-					{ key: "bnfType", title: "BNF type", sortKey: "targetType" },
+					{ key: "target", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
 				]),
@@ -163,15 +163,15 @@ export default {
 				const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
 					(type) => type.code === item.targetType,
 				);
-				const bnfType = targetType?.shortCut;
-				const fieldWithPrefix = bnfType
-					? `${bnfType}-${item.field}`
+				const target = targetType?.shortCut;
+				const fieldWithPrefix = target
+					? `${target}-${item.field}`
 					: item.field;
 
 				return {
 					...item,
 					fieldWithPrefix,
-					bnfType,
+					target,
 				};
 			});
 		},
