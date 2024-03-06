@@ -290,7 +290,7 @@ export default {
 				return {
 					modality: modality?.value || modality,
 					modalityType: modalityType?.value || modalityType,
-					division: this.getDivisionName(division),
+					division: this.getDivision(division?.code),
 					customFieldId: customField?.id || division?.customField?.id,
 					customFieldName: customField?.field || division?.customFieldName,
 					amountMultiplier: amountMultiplier || division?.amountMultiplier,
@@ -382,24 +382,6 @@ export default {
 	methods: {
 		submit() {
 			return !!this.table.data.length;
-		},
-
-		getDivisionName({ quantities, code }) {
-			if (quantities) {
-				const quantitiesLength = quantities?.length;
-
-				if (this.isCountrySYR) {
-					return quantitiesLength === 5
-						? ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
-						: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
-				}
-
-				if (this.isCountryCOD && quantitiesLength === 2) {
-					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE;
-				}
-			}
-
-			return code || null;
 		},
 
 		getDivision(divisionString) {
