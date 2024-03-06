@@ -7,133 +7,135 @@
 			:rail="!isAsideExpanded"
 			:class="`nav-bar bg-indigo-lighten-3 ${asideBackgroundClass}`"
 		>
-			<v-list>
-				<v-list-item prepend-avatar="" class="side-menu-logo">
-					<router-link :to="{ name: 'Home' }" class="hms-logo">
-						<img src="@/assets/images/bms_logo.png" alt="">
-					</router-link>
-				</v-list-item>
-			</v-list>
-
-			<v-divider />
-
-			<v-list density="compact" class="side-links" nav>
-				<template
-					v-for="(sideBarItem, index) in sideBarItems"
-					:key="index"
-				>
-					<v-list-item
-						v-if="sideBarItem?.href"
-						:title="$t(sideBarItem.title)"
-						:href="sideBarItem.href"
-						:active="isRouteActive(sideBarItem)"
-						target="_blank"
-						rel="noopener noreferrer"
-						exact
-					>
-						<template v-slot:prepend>
-							<v-tooltip
-								:disabled="isAsideExpanded"
-								content-class="tooltip-right side-menu-tooltip"
-							>
-								<template v-slot:default>
-									<div class="d-flex align-center gc-2">
-										<span>{{ $t(sideBarItem.title) }}</span>
-
-										<v-icon :icon="sideBarItem?.tooltipIcon" size="small" />
-									</div>
-								</template>
-
-								<template v-slot:activator="{ props }">
-									<v-icon
-										v-bind="props"
-										:icon="sideBarItem.prependIcon"
-										size="small"
-									/>
-								</template>
-							</v-tooltip>
-						</template>
+			<div>
+				<v-list>
+					<v-list-item prepend-avatar="" class="side-menu-logo">
+						<router-link :to="{ name: 'Home' }" class="hms-logo">
+							<img src="@/assets/images/bms_logo.png" alt="">
+						</router-link>
 					</v-list-item>
+				</v-list>
 
-					<v-list-item
-						v-if="isItemWithoutSubItems(sideBarItem)"
-						:title="$t(sideBarItem.title)"
-						:to="sideBarItem.to"
-						:active="isRouteActive(sideBarItem)"
-						exact
+				<v-divider />
+
+				<v-list density="compact" class="side-links" nav>
+					<template
+						v-for="(sideBarItem, index) in sideBarItems"
+						:key="index"
 					>
-						<template v-slot:prepend>
-							<v-tooltip
-								:text="$t(sideBarItem.title)"
-								:disabled="isAsideExpanded"
-								content-class="tooltip-right side-menu-tooltip"
-							>
-								<template v-slot:activator="{ props }">
-									<v-icon
-										v-bind="props"
-										:icon="sideBarItem.prependIcon"
-										size="small"
-									/>
-								</template>
-							</v-tooltip>
-						</template>
-					</v-list-item>
+						<v-list-item
+							v-if="sideBarItem?.href"
+							:title="$t(sideBarItem.title)"
+							:href="sideBarItem.href"
+							:active="isRouteActive(sideBarItem)"
+							target="_blank"
+							rel="noopener noreferrer"
+							exact
+						>
+							<template v-slot:prepend>
+								<v-tooltip
+									:disabled="isAsideExpanded"
+									content-class="tooltip-right side-menu-tooltip"
+								>
+									<template v-slot:default>
+										<div class="d-flex align-center gc-2">
+											<span>{{ $t(sideBarItem.title) }}</span>
 
-					<v-list-group
-						v-else-if="isItemWithSubItems(sideBarItem)"
-						:value="sideBarItem.title"
-						fluid
-					>
-						<template v-slot:activator="{ props }">
-							<v-list-item
-								v-bind="props"
-								:title="$t(sideBarItem.title)"
-								:to="sideBarItem.to"
-							>
-								<template v-slot:prepend>
-									<v-tooltip
-										:text="$t(sideBarItem.title)"
-										:disabled="isAsideExpanded"
-										content-class="tooltip-right side-menu-tooltip"
-									>
-										<template v-slot:activator="{ props }">
-											<v-icon
-												v-bind="props"
-												:icon="sideBarItem.prependIcon"
-												size="small"
-											/>
-										</template>
-									</v-tooltip>
-								</template>
-							</v-list-item>
-						</template>
+											<v-icon :icon="sideBarItem?.tooltipIcon" size="small" />
+										</div>
+									</template>
 
-						<template v-for="(subItem, index) in sideBarItem.subItems" :key="index">
-							<v-list-item
-								v-if="sideMenuItemsVisibility(subItem)"
-								:title="$t(subItem.title)"
-								:to="subItem.to"
-							>
-								<template v-slot:prepend>
-									<v-tooltip
-										:text="$t(subItem.title)"
-										:disabled="isAsideExpanded"
-										content-class="tooltip-right side-menu-tooltip"
-									>
-										<template v-slot:activator="{ props }">
-											<v-icon
-												v-bind="props"
-												:icon="subItem.prependIcon"
-												size="small"
-											/>
-										</template>
-									</v-tooltip>
-								</template>
-							</v-list-item>
-						</template>
-					</v-list-group>
-				</template>
-			</v-list>
+									<template v-slot:activator="{ props }">
+										<v-icon
+											v-bind="props"
+											:icon="sideBarItem.prependIcon"
+											size="small"
+										/>
+									</template>
+								</v-tooltip>
+							</template>
+						</v-list-item>
+
+						<v-list-item
+							v-if="isItemWithoutSubItems(sideBarItem)"
+							:title="$t(sideBarItem.title)"
+							:to="sideBarItem.to"
+							:active="isRouteActive(sideBarItem)"
+							exact
+						>
+							<template v-slot:prepend>
+								<v-tooltip
+									:text="$t(sideBarItem.title)"
+									:disabled="isAsideExpanded"
+									content-class="tooltip-right side-menu-tooltip"
+								>
+									<template v-slot:activator="{ props }">
+										<v-icon
+											v-bind="props"
+											:icon="sideBarItem.prependIcon"
+											size="small"
+										/>
+									</template>
+								</v-tooltip>
+							</template>
+						</v-list-item>
+
+						<v-list-group
+							v-else-if="isItemWithSubItems(sideBarItem)"
+							:value="sideBarItem.title"
+							fluid
+						>
+							<template v-slot:activator="{ props }">
+								<v-list-item
+									v-bind="props"
+									:title="$t(sideBarItem.title)"
+									:to="sideBarItem.to"
+								>
+									<template v-slot:prepend>
+										<v-tooltip
+											:text="$t(sideBarItem.title)"
+											:disabled="isAsideExpanded"
+											content-class="tooltip-right side-menu-tooltip"
+										>
+											<template v-slot:activator="{ props }">
+												<v-icon
+													v-bind="props"
+													:icon="sideBarItem.prependIcon"
+													size="small"
+												/>
+											</template>
+										</v-tooltip>
+									</template>
+								</v-list-item>
+							</template>
+
+							<template v-for="(subItem, index) in sideBarItem.subItems" :key="index">
+								<v-list-item
+									v-if="sideMenuItemsVisibility(subItem)"
+									:title="$t(subItem.title)"
+									:to="subItem.to"
+								>
+									<template v-slot:prepend>
+										<v-tooltip
+											:text="$t(subItem.title)"
+											:disabled="isAsideExpanded"
+											content-class="tooltip-right side-menu-tooltip"
+										>
+											<template v-slot:activator="{ props }">
+												<v-icon
+													v-bind="props"
+													:icon="subItem.prependIcon"
+													size="small"
+												/>
+											</template>
+										</v-tooltip>
+									</template>
+								</v-list-item>
+							</template>
+						</v-list-group>
+					</template>
+				</v-list>
+			</div>
 
 			<div class="environment-info text-caption text-center">
 				<p>{{ organization }}</p>
@@ -373,13 +375,18 @@ export default {
 }
 
 .environment-info {
-	position: absolute;
 	width: 100%;
-	bottom: 1.75rem;
+	margin-bottom: 1.5rem;
 }
 </style>
 
 <style lang="scss">
+.v-navigation-drawer__content {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
 .v-list-item__content:has(> .hms-logo) {
 	overflow: visible;
 }
