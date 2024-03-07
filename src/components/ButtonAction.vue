@@ -16,6 +16,8 @@
 				@click.stop="onButtonClicked"
 			>
 				<v-icon :icon="icon" :color="iconColor" />
+
+				<slot name="combinedIcons" />
 			</v-btn>
 
 			<v-btn

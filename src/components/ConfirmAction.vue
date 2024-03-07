@@ -20,7 +20,7 @@
 						<v-icon
 							:icon="prependIcon"
 							:color="prependIconColor"
-							size="large"
+							size="x-large"
 						/>
 					</v-col>
 
@@ -28,7 +28,6 @@
 						<span class="text-body-2">{{ $t(confirmMessage) }}</span>
 					</v-col>
 				</v-row>
-
 			</v-card-text>
 
 			<v-card-actions>
