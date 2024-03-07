@@ -327,7 +327,7 @@ export default {
 				.replace(/^./, (str) => str.toUpperCase());
 		},
 
-		getSlashedArray(items) {
+		getSlashedArray(items, index = 0) {
 			const noData = "<b>No data</b>";
 
 			if (typeof items.database === "string" && typeof items.import === "string"
@@ -343,11 +343,11 @@ export default {
 				: noData;
 
 			if (Array.isArray(items.database)) {
-				database = items.database[0]?.length ? items.database[0] : noData;
+				database = items.database[index]?.length ? items.database[index] : noData;
 			}
 
 			if (Array.isArray(items.import)) {
-				imp = items.import[0]?.length ? items.import[0] : noData;
+				imp = items.import[index]?.length ? items.import[index] : noData;
 			}
 
 			return `${imp} / ${database}`;
@@ -362,12 +362,33 @@ export default {
 						${difference[1]}
 					`);
 				} else {
+					this.transformArrayPropertyOfDifferences(difference, key);
+				}
+			}
+		},
+
+		transformArrayPropertyOfDifferences(difference, key) {
+			const { database, import: extractedImport } = difference[1];
+
+			if ((Array.isArray(database) && database.length > 1)
+				|| (Array.isArray(extractedImport) && extractedImport.length > 1)) {
+				const dataField = database.length > extractedImport.length
+					? database
+					: extractedImport;
+
+				dataField.forEach((item, index) => {
 					this.table.data[key].recordFrom.push(`
+						${this.transformProperty(difference[0])}
+						:
+						${this.getSlashedArray(difference[1], index)}
+					`);
+				});
+			} else {
+				this.table.data[key].recordFrom.push(`
 						${this.transformProperty(difference[0])}
 						:
 						${this.getSlashedArray(difference[1])}
 					`);
-				}
 			}
 		},
 
