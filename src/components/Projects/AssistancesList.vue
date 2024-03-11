@@ -2,7 +2,7 @@
 	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
 
 	<v-alert
-		v-if="showNoProjectError"
+		v-if="isNoProjectErrorVisible"
 		variant="outlined"
 		type="warning"
 		border="top"
@@ -13,7 +13,7 @@
 	</v-alert>
 
 	<v-alert
-		v-if="showNoBeneficiariesError"
+		v-if="isNoBeneficiariesErrorVisible"
 		variant="outlined"
 		type="warning"
 		border="top"
@@ -24,7 +24,7 @@
 	</v-alert>
 
 	<DataGrid
-		v-show="beneficiariesCount || upcoming"
+		v-show="isAssistanceTableVisible"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -300,19 +300,23 @@ export default {
 			return this.userCan.editDistribution || this.userCan.viewDistribution;
 		},
 
-		showNoProjectError() {
+		isNoProjectErrorVisible() {
 			return !this.project?.assistanceCount
 				&& this.beneficiariesCount
 				&& !this.isLoadingList
 				&& !this.upcoming;
 		},
 
-		showNoBeneficiariesError() {
+		isNoBeneficiariesErrorVisible() {
 			return !this.beneficiariesCount
 				&& this.projectLoaded
 				&& this.table.data
 				&& !this.isLoadingList
 				&& !this.upcoming;
+		},
+
+		isAssistanceTableVisible() {
+			return this.beneficiariesCount || this.upcoming || this.project?.assistanceCount;
 		},
 	},
 
