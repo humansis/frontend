@@ -213,6 +213,7 @@ export default {
 		STATE: {
 			DISTRIBUTED: "Distributed",
 			TO_DISTRIBUTED: "To distributed",
+			INVALIDATED: "Invalidated",
 			CANCELED: "Canceled",
 		},
 	},

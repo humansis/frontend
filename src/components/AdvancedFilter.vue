@@ -122,12 +122,15 @@ export default {
 						}
 					});
 				} else if (this.selectedFiltersOptions[key]) {
+					const select = this.filtersOptions[key]?.trackBy || "code";
+
 					if (this.filtersOptions[key]?.type === "date" || this.filtersOptions[key]?.type === "datetime") {
 						filters[filterKey] = new Date(this.selectedFiltersOptions[key]).toISOString();
 					} else if (this.filtersOptions[key]?.type === "text") {
 						filters[filterKey] = this.selectedFiltersOptions[key];
+					} else if (this.filtersOptions[key]?.returnAs === "object") {
+						filters[filterKey] = this.selectedFiltersOptions[key][select];
 					} else {
-						const select = this.filtersOptions[key]?.trackBy || "code";
 						filters[filterKey] = [this.selectedFiltersOptions[key][select]];
 					}
 				}
