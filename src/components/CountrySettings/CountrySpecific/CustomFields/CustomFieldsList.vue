@@ -93,7 +93,7 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "fieldWithPrefix", title: "Field" },
+					{ key: "fieldWithPrefix", title: "Field", sortKey: "field" },
 					{ key: "target", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
