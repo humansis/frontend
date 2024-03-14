@@ -354,13 +354,18 @@ export default {
 		},
 
 		setRecordFrom(difference, key) {
-			if (difference[1]?.database?.length || difference[1]?.import?.length) {
+			if (!difference[1]) return;
+
+			const { database, import: extractedImport } = difference[1];
+
+			if (database?.length || extractedImport?.length
+				|| typeof database === "number" || typeof extractedImport === "number") {
 				if (typeof difference[1] === "number" || typeof difference[1] === "string") {
 					this.table.data[key].recordFrom.push(`
-						${difference[0]}
-						-
-						${difference[1]}
-					`);
+					${difference[0]}
+					-
+					${difference[1]}
+				`);
 				} else {
 					this.transformArrayPropertyOfDifferences(difference, key);
 				}
