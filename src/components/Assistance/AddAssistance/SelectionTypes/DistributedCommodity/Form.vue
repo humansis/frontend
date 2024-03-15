@@ -276,6 +276,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import SvgIcon from "@/components/SvgIcon";
 import assistanceHelper from "@/mixins/assistanceHelper";
+import countryHelper from "@/mixins/countryHelper";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
 import { isDecimalPartLengthValid } from "@/utils/customValidators";
@@ -300,7 +301,11 @@ export default {
 		"formClosed",
 	],
 
-	mixins: [validation, assistanceHelper],
+	mixins: [
+		validation,
+		assistanceHelper,
+		countryHelper,
+	],
 
 	validations() {
 		return {
@@ -342,74 +347,95 @@ export default {
 					...this.decimalPartValidationRule(this.formModel.secondQuantity),
 				},
 				// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
-				divisionNwsFields: {
-					firstNwsFields: {
-						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.firstNwsFields,
-							this.displayedFields.householdMembersNwsFields,
-						),
-					},
-					secondNwsFields: {
-						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.secondNwsFields,
-							this.displayedFields.householdMembersNwsFields,
-						),
-
-					},
-					thirdNwsFields: {
-						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.thirdNwsFields,
-							this.displayedFields.householdMembersNwsFields,
-						),
-					},
-					fourthNwsFields: {
-						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.fourthNwsFields,
-							this.displayedFields.householdMembersNwsFields,
-						),
-					},
-					fifthNwsFields: {
-						required: requiredIf(this.displayedFields.householdMembersNwsFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNwsFields.fifthNwsFields,
-							this.displayedFields.householdMembersNwsFields,
-						),
-					},
-				},
-				divisionNesFields: {
-					firstNesFields: {
-						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNesFields.firstNesFields,
-							this.displayedFields.householdMembersNesFields,
-						),
-					},
-					secondNesFields: {
-						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNesFields.firstNesFields,
-							this.displayedFields.householdMembersNesFields,
-						),
-					},
-					thirdNesFields: {
-						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNesFields.firstNesFields,
-							this.displayedFields.householdMembersNesFields,
-						),
-					},
-					fourthNesFields: {
-						required: requiredIf(this.displayedFields.householdMembersNesFields),
-						...this.decimalPartValidationRule(
-							this.formModel.divisionNesFields.firstNesFields,
-							this.displayedFields.householdMembersNesFields,
-						),
-					},
-				},
+				...(this.isCountrySYR
+					&& {
+						divisionNwsFields: {
+							firstNwsFields: {
+								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNwsFields.firstNwsFields,
+									this.displayedFields.householdMembersNwsFields,
+								),
+							},
+							secondNwsFields: {
+								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNwsFields.secondNwsFields,
+									this.displayedFields.householdMembersNwsFields,
+								),
+							},
+							thirdNwsFields: {
+								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNwsFields.thirdNwsFields,
+									this.displayedFields.householdMembersNwsFields,
+								),
+							},
+							fourthNwsFields: {
+								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNwsFields.fourthNwsFields,
+									this.displayedFields.householdMembersNwsFields,
+								),
+							},
+							fifthNwsFields: {
+								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNwsFields.fifthNwsFields,
+									this.displayedFields.householdMembersNwsFields,
+								),
+							},
+						},
+						divisionNesFields: {
+							firstNesFields: {
+								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNesFields.firstNesFields,
+									this.displayedFields.householdMembersNesFields,
+								),
+							},
+							secondNesFields: {
+								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNesFields.firstNesFields,
+									this.displayedFields.householdMembersNesFields,
+								),
+							},
+							thirdNesFields: {
+								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNesFields.firstNesFields,
+									this.displayedFields.householdMembersNesFields,
+								),
+							},
+							fourthNesFields: {
+								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionNesFields.firstNesFields,
+									this.displayedFields.householdMembersNesFields,
+								),
+							},
+						},
+					}),
+				...(this.isCountryCOD
+					&& {
+						divisionCodFields: {
+							firstCodFields: {
+								required: requiredIf(this.displayedFields.householdMembersCodFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionCodFields.firstCodFields,
+									this.displayedFields.householdMembersCodFields,
+								),
+							},
+							secondCodFields: {
+								required: requiredIf(this.displayedFields.householdMembersCodFields),
+								...this.decimalPartValidationRule(
+									this.formModel.divisionCodFields.secondCodFields,
+									this.displayedFields.householdMembersCodFields,
+								),
+							},
+						},
+					}),
 				description: {
 					required: requiredIf(this.displayedFields.description),
 				},
@@ -487,9 +513,9 @@ export default {
 	},
 
 	computed: {
-		divisionOptions() {
-			return [
-				...(this.isTargetHousehold ? [
+		defaultDivisionsForHousehold() {
+			return this.isTargetHousehold
+				? [
 					{
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
@@ -498,28 +524,54 @@ export default {
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_LABEL),
 					},
-					{
-						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
-						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
-					},
-					{
-						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
-						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
-					},
-				] : []),
-				...(this.isTargetIndividual ? [
+					...(this.isCountrySYR ? [
+						{
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
+						},
+						{
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
+						},
+					] : []),
+					...(this.isCountryCOD ? [
+						{
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LABEL),
+						},
+					] : []),
+				]
+				: [];
+		},
+
+		defaultDivisionsForIndividual() {
+			return this.isTargetIndividual
+				? [
 					{
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL),
 					},
-				] : []),
-				...(this.isCustomAmountEnabled ? [
+				]
+				: [];
+		},
+
+		defaultDivisionsForCustomAmount() {
+			return this.isCustomAmountEnabled
+				? [
 					{
 						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD,
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD),
 
 					},
-				] : []),
+				]
+				: [];
+		},
+
+		divisionOptions() {
+			return [
+				...this.defaultDivisionsForHousehold,
+				...this.defaultDivisionsForIndividual,
+				...this.defaultDivisionsForCustomAmount,
 			];
 		},
 
@@ -553,24 +605,36 @@ export default {
 				);
 			}
 
+			if (this.formModel.divisionCodFields) {
+				max = Math.max(
+					...Object.values(this.formModel.divisionCodFields).map((item) => Number(item)),
+				);
+			}
+
 			return max;
 		},
 
 		showDivisionFields() {
 			return this.displayedFields.householdMembersNwsFields
-				|| this.displayedFields.householdMembersNesFields;
+				|| this.displayedFields.householdMembersNesFields
+				|| this.displayedFields.householdMembersCodFields;
 		},
 
 		divisionFieldsValidationString() {
-			return this.displayedFields.householdMembersNwsFields
-				? "divisionNwsFields"
-				: "divisionNesFields";
+			if (this.displayedFields.householdMembersNwsFields) {
+				return "divisionNwsFields";
+			} if (this.displayedFields.householdMembersNesFields) {
+				return "divisionNesFields";
+			}
+
+			return "divisionCodFields";
 		},
 
 		divisionFields() {
 			return {
 				divisionNwsFields: this.divisionNwsFields,
 				divisionNesFields: this.divisionNesFields,
+				divisionCodFields: this.divisionCodFields,
 			};
 		},
 
@@ -623,6 +687,13 @@ export default {
 				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 6 members)`), fieldName: "quantityNesField2" },
 				{ label: this.$t(`${this.valueOrQuantityLabel} (7 - 9 members)`), fieldName: "quantityNesField3" },
 				{ label: this.$t(`${this.valueOrQuantityLabel} (10+ members)`), fieldName: "quantityNesField4" },
+			];
+		},
+
+		divisionCodFields() {
+			return [
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityCodField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4+ members)`), fieldName: "quantityCodField2" },
 			];
 		},
 
@@ -779,6 +850,7 @@ export default {
 				quantity: false,
 				householdMembersNwsFields: false,
 				householdMembersNesFields: false,
+				householdMembersCodFields: false,
 				customField: false,
 				amountMultiplier: false,
 				currency: true,
@@ -798,6 +870,10 @@ export default {
 					break;
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
 					this.displayedFields.householdMembersNesFields = true;
+
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
+					this.displayedFields.householdMembersCodFields = true;
 
 					break;
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD:
@@ -914,7 +990,7 @@ export default {
 					.divisionNwsFields.fourthNwsFields;
 				this.formModel.payloadDivisionNwsFields[4].value = this.formModel
 					.divisionNwsFields.fifthNwsFields;
-			} else {
+			} else if (this.displayedFields.householdMembersNesFields) {
 				this.formModel.payloadDivisionNesFields[0].value = this.formModel
 					.divisionNesFields.firstNesFields;
 				this.formModel.payloadDivisionNesFields[1].value = this.formModel
@@ -923,6 +999,11 @@ export default {
 					.divisionNesFields.thirdNesFields;
 				this.formModel.payloadDivisionNesFields[3].value = this.formModel
 					.divisionNesFields.fourthNesFields;
+			} else {
+				this.formModel.payloadDivisionCodFields[0].value = this.formModel
+					.divisionCodFields.firstCodFields;
+				this.formModel.payloadDivisionCodFields[1].value = this.formModel
+					.divisionCodFields.secondCodFields;
 			}
 
 			this.$emit("formSubmitted", {
