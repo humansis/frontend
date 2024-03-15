@@ -98,8 +98,8 @@
 		<ConfirmAction
 			:is-dialog-opened="isWarningDialogOpenedForInvalidation"
 			:is-confirm-button-visible="false"
+			:confirm-message="warningMessageForInvalidation"
 			confirm-title="Set as Invalidated"
-			confirm-message="Distribution can no longer be invalidated, because it happened more than 30 days ago."
 			prepend-icon="circle-exclamation"
 			prepend-icon-color="warning"
 			close-button-name="Cancel"
@@ -226,7 +226,7 @@
 			/>
 
 			<ButtonAction
-				v-if="isPossibleToSetSmartCardAsInvalid(row)"
+				v-if="isSetSmartCardAsInvalidVisible(row)"
 				icon="credit-card"
 				tooltip-text="Set as Invalidated"
 				@actionConfirmed="onSetSmartCardAsInvalid(index, row.id, row.reliefPackages)"
@@ -470,8 +470,9 @@ export default {
 		return {
 			isLoadingList: false,
 			isRecalculationLoading: false,
-			isWarningDialogOpenedForInvalidation: false,
 			advancedSearchVisible: false,
+			isWarningDialogOpenedForInvalidation: false,
+			warningMessageForInvalidation: "",
 			selectedRows: 0,
 			exportControl: {
 				loading: false,
@@ -960,9 +961,10 @@ export default {
 				&& this.userCan.revertDistribution;
 		},
 
-		isPossibleToSetSmartCardAsInvalid({ status }) {
+		isSetSmartCardAsInvalidVisible({ status }) {
 			return this.assistance.commodities[0].modalityType === ASSISTANCE.COMMODITY.SMARTCARD
-				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED;
+				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+				&& this.userCan.invalidateDistribution;
 		},
 
 		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
@@ -971,9 +973,20 @@ export default {
 				new Date(reliefPackage[0].distributedAt),
 			);
 			const isDistributionDateValid = todayDate.diff(distributedAtDate, "days") < 30;
-			this.isWarningDialogOpenedForInvalidation = !isDistributionDateValid;
+			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
 
-			if (isDistributionDateValid) {
+			this.isWarningDialogOpenedForInvalidation = !isDistributionDateValid
+				|| isAlreadyPartOfAmountSpent;
+
+			if (!isDistributionDateValid) {
+				this.warningMessageForInvalidation = "Distribution can no longer be invalidated, because it happened more than 30 days ago.";
+			}
+
+			if (isAlreadyPartOfAmountSpent) {
+				this.warningMessageForInvalidation = "Part of the distributed amount was already spent. Distribution can't be Invalidated";
+			}
+
+			if (!this.isWarningDialogOpenedForInvalidation) {
 				this.smartCardInvalidateModal.isOpened = true;
 				this.smartCardInvalidateModel = {
 					tableIndex,
