@@ -8,6 +8,10 @@ export default {
 		key: "en",
 		name: "English",
 	},
+	COUNTRIES_ISO3: {
+		SYR: "SYR",
+		COD: "COD",
+	},
 	LOCATION_TYPE: {
 		camp: {
 			code: "0",
