@@ -63,8 +63,9 @@
 
 	<template v-if="column.type === 'tag'">
 		<v-chip
-			variant="flat"
 			:color="getTagColor"
+			:class="getTagClass"
+			variant="flat"
 			size="small"
 		>
 			{{ normalizeText($t(cellData)) }}
@@ -77,7 +78,8 @@
 			:key="`tags-array-item-${index}`"
 		>
 			<v-chip
-				:color="getTagTypeByItem(item)"
+				:color="getTagColorByItem(item)"
+				:class="getTagClassByItem(item)"
 				variant="flat"
 				size="small"
 			>
@@ -221,9 +223,11 @@ export default {
 
 	computed: {
 		getTagColor() {
-			const tag = this.column.customTags
-				.find(({ code }) => code === this.cellData);
-			return tag?.type || "primary";
+			return this.column.customTags.find(({ code }) => code === this.cellData)?.type;
+		},
+
+		getTagClass() {
+			return this.column.customTags.find(({ code }) => code === this.cellData)?.class;
 		},
 
 		formattedDate() {
@@ -274,8 +278,12 @@ export default {
 			return this.cellData.name || "";
 		},
 
-		getTagTypeByItem(item) {
+		getTagColorByItem(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
+		},
+
+		getTagClassByItem(item) {
+			return this.column.customTags.find(({ code }) => code === item)?.class;
 		},
 
 		isAssistanceRemote(data) {

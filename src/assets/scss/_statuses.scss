@@ -1,0 +1,39 @@
+.status {
+  &.new {
+    background-color: #BCFAFF;
+    color: #088D8D;
+  }
+
+  &.validated {
+    background-color: #001AFF1A;
+    color: #2400FF;
+  }
+
+  &.closed {
+    background-color: #49C78333;
+    color: #0A891E;
+  }
+
+  &.expired {
+    background-color: #F2F2F2;
+    color: #555454;
+  }
+
+  &.canceled {
+    background-color: #E300161A;
+    color: #E90319;
+  }
+
+  &.invalidated {
+    background-color: #F4F1FF;
+    color: #FA00FF;
+  }
+
+  &.to-distribute {
+    @extend .validated;
+  }
+
+  &.distributed {
+    @extend .closed;
+  }
+}

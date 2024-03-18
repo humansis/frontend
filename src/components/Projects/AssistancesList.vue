@@ -53,10 +53,8 @@
 
 			<v-btn
 				:class="filterButtonNew"
-				color="gray-darken-4"
 				icon-left="sticky-note"
 				variant="tonal"
-				class="ml-0"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter('new')"
 			>
@@ -65,9 +63,7 @@
 
 			<v-btn
 				:class="filterButtonValidated"
-				class="ml-0"
 				icon-left="spinner"
-				color="green-darken-4"
 				variant="tonal"
 				prepend-icon="spinner"
 				@click="onStatusFilter('validated')"
@@ -77,9 +73,7 @@
 
 			<v-btn
 				:class="filterButtonClosed"
-				class="ml-0"
 				icon-left="check"
-				color="blue-darken-4"
 				variant="tonal"
 				prepend-icon="check"
 				@click="onStatusFilter('closed')"
@@ -179,9 +173,9 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "green-lighten-1" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "light-blue-lighten-4" },
+	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
+	{ code: ASSISTANCE.STATUS.CLOSED, class: "status closed" },
 ];
 
 export default {
@@ -277,21 +271,21 @@ export default {
 	computed: {
 		filterButtonNew() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status new",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		filterButtonValidated() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status validated",
 				{ "is-selected": this.statusActive.validated },
 			];
 		},
 
 		filterButtonClosed() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status closed",
 				{ "is-selected": this.statusActive.closed },
 			];
 		},

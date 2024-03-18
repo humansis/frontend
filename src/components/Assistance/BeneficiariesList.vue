@@ -277,9 +277,7 @@
 			<template v-if="assistanceDetail">
 				<v-btn
 					:class="toDistributeButtonClass"
-					color="gray-darken-4"
 					variant="tonal"
-					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('toDistribute', 'To distribute')"
 					@keydown.enter.prevent
@@ -289,9 +287,7 @@
 
 				<v-btn
 					:class="distributedButtonClass"
-					color="green-darken-4"
 					variant="tonal"
-					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('distributed')"
 					@keydown.enter.prevent
@@ -313,8 +309,6 @@
 
 				<v-btn
 					:class="expiredButtonClass"
-					class="ml-0"
-					color="red-darken-1"
 					variant="tonal"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('expired')"
@@ -325,8 +319,6 @@
 
 				<v-btn
 					:class="canceledButtonClass"
-					class="ml-0"
-					color="amber-lighten-1"
 					variant="tonal"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('canceled')"
@@ -370,11 +362,11 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: "To distribute", type: "grey-lighten-2" },
-	{ code: "Distributed", type: "green-lighten-1" },
-	{ code: "Expired", type: "red-lighten-1" },
+	{ code: "To distribute", class: "status to-distribute" },
+	{ code: "Distributed", class: "status distributed" },
+	{ code: "Expired", class: "status expired" },
 	{ code: "Invalidated", type: "orange-darken-1" },
-	{ code: "Canceled", type: "amber-lighten-4" },
+	{ code: "Canceled", class: "status canceled" },
 ];
 
 export default {
@@ -773,14 +765,14 @@ export default {
 
 		toDistributeButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status to-distribute",
 				{ "is-selected": this.statusActive.toDistribute },
 			];
 		},
 
 		distributedButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status distributed",
 				{ "is-selected": this.statusActive.distributed },
 			];
 		},
@@ -794,14 +786,14 @@ export default {
 
 		expiredButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status expired",
 				{ "is-selected": this.statusActive.expired },
 			];
 		},
 
 		canceledButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status canceled",
 				{ "is-selected": this.statusActive.canceled },
 			];
 		},
