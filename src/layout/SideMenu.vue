@@ -385,6 +385,11 @@ export default {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	-ms-overflow-style: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 .v-list-item__content:has(> .hms-logo) {
