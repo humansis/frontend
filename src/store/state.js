@@ -84,6 +84,7 @@ export default {
 		deleteDistribution: false,
 		viewDistribution: false,
 		revertDistribution: false,
+		invalidateDistribution: false,
 		assignDistributionItems: false,
 		addBeneficiary: false,
 		editBeneficiary: false,

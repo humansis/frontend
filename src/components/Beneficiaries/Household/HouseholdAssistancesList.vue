@@ -31,6 +31,7 @@ const statusTags = [
 	{ code: "To distribute", type: "grey-lighten-2" },
 	{ code: "Distribution in progress", type: "info" },
 	{ code: "Distributed", type: "success" },
+	{ code: "Invalidated", type: "orange-darken-1" },
 	{ code: "Expired", type: "error" },
 	{ code: "Canceled", type: "warning" },
 ];

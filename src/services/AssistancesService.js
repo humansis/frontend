@@ -295,6 +295,14 @@ export default {
 		});
 	},
 
+	invalidateDistributionOfReliefPackage(id, body) {
+		return fetcher({
+			uri: `assistances/relief-packages/${id}/invalidate-distribution`,
+			method: "PATCH",
+			body,
+		});
+	},
+
 	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
 		const idsText = smartcardDepositIds ? idsToUri(smartcardDepositIds) : "";
 
