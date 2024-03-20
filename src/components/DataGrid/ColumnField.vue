@@ -63,8 +63,8 @@
 
 	<template v-if="column.type === 'tag'">
 		<v-chip
-			:color="getTagColor"
-			:class="getTagClass"
+			:color="getTagColor(cellData)"
+			:class="getTagClass(cellData)"
 			variant="flat"
 			size="small"
 		>
@@ -78,8 +78,8 @@
 			:key="`tags-array-item-${index}`"
 		>
 			<v-chip
-				:color="getTagColorByItem(item)"
-				:class="getTagClassByItem(item)"
+				:color="getTagColor(item)"
+				:class="getTagClass(item)"
 				variant="flat"
 				size="small"
 			>
@@ -222,14 +222,6 @@ export default {
 	},
 
 	computed: {
-		getTagColor() {
-			return this.column.customTags.find(({ code }) => code === this.cellData)?.type;
-		},
-
-		getTagClass() {
-			return this.column.customTags.find(({ code }) => code === this.cellData)?.class;
-		},
-
 		formattedDate() {
 			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
 				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD")}`
@@ -278,11 +270,11 @@ export default {
 			return this.cellData.name || "";
 		},
 
-		getTagColorByItem(item) {
+		getTagColor(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
 		},
 
-		getTagClassByItem(item) {
+		getTagClass(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.class;
 		},
 
