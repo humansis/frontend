@@ -31,7 +31,7 @@ const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
 	{ code: "Distributed", class: "status distributed" },
 	{ code: "Expired", class: "status expired" },
-	{ code: "Invalidated", type: "orange-darken-1" },
+	{ code: "Invalidated", type: "status invalidated" },
 	{ code: "Canceled", class: "status canceled" },
 ];
 

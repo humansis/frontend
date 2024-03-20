@@ -1,4 +1,8 @@
 .status {
+  .v-btn__underlay {
+    opacity: 0;
+  }
+
   &.new {
     background-color: #BCFAFF;
     color: #088D8D;

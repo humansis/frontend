@@ -297,8 +297,6 @@
 
 				<v-btn
 					:class="invalidatedButtonClass"
-					class="ml-0"
-					color="orange-darken-3"
 					variant="tonal"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('invalidated')"
@@ -365,7 +363,7 @@ const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
 	{ code: "Distributed", class: "status distributed" },
 	{ code: "Expired", class: "status expired" },
-	{ code: "Invalidated", type: "orange-darken-1" },
+	{ code: "Invalidated", class: "status invalidated" },
 	{ code: "Canceled", class: "status canceled" },
 ];
 
@@ -779,7 +777,7 @@ export default {
 
 		invalidatedButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status invalidated",
 				{ "is-selected": this.statusActive.invalidated },
 			];
 		},
