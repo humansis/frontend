@@ -4,6 +4,7 @@
 			<h2 class="me-auto">{{ $t('Projects') }}</h2>
 
 			<v-btn
+				v-if="userCan.addProject"
 				:to="{ name: 'AddProject' }"
 				color="primary"
 				prepend-icon="plus"

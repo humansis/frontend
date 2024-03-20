@@ -24,6 +24,7 @@
 			/>
 
 			<ButtonAction
+				v-if="userCan.editProject"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -31,6 +32,7 @@
 			/>
 
 			<ButtonAction
+				v-if="userCan.deleteProject"
 				:disabled="!row.deletable"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
