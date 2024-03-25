@@ -8,12 +8,22 @@
     color: #088D8D;
   }
 
+  &.similarity-check,
+  &.identity-check,
+  &.integrity-check,
+  &.in-progress,
   &.to-distribute,
+  &.importing,
   &.validated {
     background-color: #001AFF1A;
     color: #2400FF;
   }
 
+  &.similarity-check-correct,
+  &.identity-check-correct,
+  &.integrity-check-correct,
+  &.finish,
+  &.finished,
   &.distributed,
   &.closed {
     background-color: #49C78333;
@@ -25,6 +35,10 @@
     color: #555454;
   }
 
+  &.similarity-check-failed,
+  &.identity-check-failed,
+  &.integrity-check-failed,
+  &.automatically-canceled,
   &.canceled {
     background-color: #E300161A;
     color: #E90319;

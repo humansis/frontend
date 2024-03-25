@@ -46,9 +46,7 @@
 
 			<v-btn
 				:class="newButtonClass"
-				color="gray-darken-4"
 				variant="tonal"
-				class="ml-0"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter(IMPORT.FILTERS.NEW, 'new')"
 				@keydown.enter.prevent
@@ -58,9 +56,7 @@
 
 			<v-btn
 				:class="inProgressButtonClass"
-				color="info"
 				variant="tonal"
-				class="ml-0"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter(IMPORT.FILTERS.IN_PROGRESS, 'inProgress')"
 				@keydown.enter.prevent
@@ -70,7 +66,6 @@
 
 			<v-btn
 				:class="finishedButtonClass"
-				class="ml-0"
 				color="success"
 				variant="tonal"
 				prepend-icon="sticky-note"
@@ -82,8 +77,6 @@
 
 			<v-btn
 				:class="canceledButtonClass"
-				class="ml-0"
-				color="amber-lighten-1"
 				variant="tonal"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter(IMPORT.FILTERS.CANCELED, 'canceled')"
@@ -121,20 +114,20 @@ import { IMPORT, TABLE } from "@/consts";
 
 const customSort = { status: () => {} };
 const statusTags = [
-	{ code: IMPORT.STATUS.NEW, type: "grey-lighten-2" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK, type: "info" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, type: "success" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, type: "error" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK, type: "info" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, type: "success" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, type: "error" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK, type: "info" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, type: "success" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, type: "error" },
-	{ code: IMPORT.STATUS.FINISH, type: "success" },
-	{ code: IMPORT.STATUS.CANCEL, type: "warning" },
-	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, type: "warning" },
-	{ code: IMPORT.STATUS.IMPORTING, type: "warning" },
+	{ code: IMPORT.STATUS.NEW, class: "status new" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK, class: "status integrity-check" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, class: "status integrity-check-correct" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, class: "status integrity-check-failed" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK, class: "status identity-check" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, class: "status identity-check-correct" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, class: "status identity-check-failed" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK, class: "status similarity-check" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, class: "status similarity-check-correct" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, class: "status similarity-check-failed" },
+	{ code: IMPORT.STATUS.FINISH, class: "status finish" },
+	{ code: IMPORT.STATUS.CANCEL, class: "status canceled" },
+	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, class: "status automatically-canceled" },
+	{ code: IMPORT.STATUS.IMPORTING, class: "status importing" },
 ];
 
 export default {
@@ -201,28 +194,28 @@ export default {
 	computed: {
 		newButtonClass() {
 			return [
-				"btn ml-3",
+				"text-none ml-3 status new",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		inProgressButtonClass() {
 			return [
-				"ml-3",
+				"text-none ml-3 status in-progress",
 				{ "is-selected": this.statusActive.inProgress },
 			];
 		},
 
 		finishedButtonClass() {
 			return [
-				"ml-3",
+				"text-none ml-3 status finished",
 				{ "is-selected": this.statusActive.finished },
 			];
 		},
 
 		canceledButtonClass() {
 			return [
-				"ml-3",
+				"text-none ml-3 status canceled",
 				{ "is-selected": this.statusActive.canceled },
 			];
 		},
