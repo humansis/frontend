@@ -115,19 +115,20 @@ import { IMPORT, TABLE } from "@/consts";
 const customSort = { status: () => {} };
 const statusTags = [
 	{ code: IMPORT.STATUS.NEW, class: "status new" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK, class: "status integrity-check" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, class: "status integrity-check-correct" },
-	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, class: "status integrity-check-failed" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK, class: "status identity-check" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, class: "status identity-check-correct" },
-	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, class: "status identity-check-failed" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK, class: "status similarity-check" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, class: "status similarity-check-correct" },
-	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, class: "status similarity-check-failed" },
-	{ code: IMPORT.STATUS.FINISH, class: "status finish" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK, class: "status check" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_CORRECT, class: "status correct" },
+	{ code: IMPORT.STATUS.INTEGRITY_CHECK_FAILED, class: "status failed" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK, class: "status check" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_CORRECT, class: "status correct" },
+	{ code: IMPORT.STATUS.IDENTITY_CHECK_FAILED, class: "status failed" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK, class: "status check" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_CORRECT, class: "status correct" },
+	{ code: IMPORT.STATUS.SIMILARITY_CHECK_FAILED, class: "status failed" },
+	{ code: IMPORT.STATUS.FINISH, class: "status finished" },
 	{ code: IMPORT.STATUS.CANCEL, class: "status canceled" },
-	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, class: "status automatically-canceled" },
+	{ code: IMPORT.STATUS.AUTOMATICALLY_CANCELED, class: "status canceled" },
 	{ code: IMPORT.STATUS.IMPORTING, class: "status importing" },
+	{ code: IMPORT.STATUS.UPLOADING, class: "status uploading" },
 ];
 
 export default {
