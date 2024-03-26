@@ -121,6 +121,8 @@ export default {
 				iso3,
 				field,
 				type,
+				label,
+				note,
 				targetType,
 				selectionType,
 				isMultiSelect,
@@ -134,6 +136,8 @@ export default {
 				iso3,
 				field,
 				type,
+				label,
+				note,
 				targetType,
 				selectionType,
 				isMultiSelect,
@@ -163,7 +167,8 @@ export default {
 		onSubmitCustomFieldForm(customFieldForm) {
 			const {
 				id,
-				field,
+				label,
+				note,
 				type,
 				iso3,
 				targetType,
@@ -181,7 +186,8 @@ export default {
 			};
 
 			const customFieldBody = {
-				field,
+				label,
+				note,
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
 				targetType: targetType.code,

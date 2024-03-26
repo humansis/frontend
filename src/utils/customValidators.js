@@ -16,6 +16,8 @@ export const isDecimalPartLengthValid = (value) => {
 	return typeof value === "number" && floatValidation.test(value.toString());
 };
 
+export const isCustomFieldLabelValid = (value) => !value.includes("{") && !value.includes("}");
+
 export const getUniqueIds = (data, param) => {
 	const uniqueIds = [];
 
@@ -34,4 +36,5 @@ export default {
 	isIdsListLengthValid,
 	getUniqueIds,
 	isDecimalPartLengthValid,
+	isCustomFieldLabelValid,
 };

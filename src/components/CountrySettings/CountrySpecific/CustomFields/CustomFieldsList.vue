@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -93,7 +94,9 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "fieldWithPrefix", title: "Field", sortKey: "field" },
+					{ key: "key", sortable: false },
+					{ key: "label" },
+					{ key: "note" },
 					{ key: "target", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -163,15 +166,10 @@ export default {
 				const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
 					(type) => type.code === item.targetType,
 				);
-				const target = targetType?.shortCut;
-				const fieldWithPrefix = target
-					? `${target}-${item.field}`
-					: item.field;
 
 				return {
 					...item,
-					fieldWithPrefix,
-					target,
+					target: targetType?.shortCut,
 				};
 			});
 		},
@@ -186,3 +184,19 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.custom-fields-table {
+	td:nth-child(3) {
+		max-width: 10rem;
+
+		div {
+			overflow: hidden;
+			max-width: 90%;
+			text-overflow: ellipsis;
+			width: fit-content;
+			white-space: nowrap;
+		}
+	}
+}
+</style>

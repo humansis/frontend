@@ -1,5 +1,26 @@
 <template>
 	<v-card-text>
+		<DataInput
+			v-model="formModel.label"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('label')"
+			label="Label"
+			name="label"
+			class="mb-4"
+			@update:modelValue="onValidate('label')"
+		/>
+
+		<DataSelect
+			v-model="formModel.type"
+			:items="options.types"
+			:disabled="formDisabled"
+			:error-messages="validationMsg('type')"
+			label="Type"
+			name="type"
+			class="mb-4"
+			@update:modelValue="onValidate('type')"
+		/>
+
 		<DataSelect
 			v-if="!isEditing"
 			v-model="formModel.targetType"
@@ -12,25 +33,17 @@
 			@update:modelValue="onValidate('targetType')"
 		/>
 
-		<DataInput
-			v-model="formModel.field"
+		<DataTextarea
+			v-model.trim="formModel.note"
 			:disabled="formDisabled"
-			:error-messages="validationMsg('field')"
-			label="Custom Field name"
-			name="custom-field-name"
+			:error-messages="validationMsg('note')"
+			:rows="2"
+			label="Note"
+			name="note"
 			class="mb-4"
-			@update:modelValue="onValidate('field')"
-		/>
-
-		<DataSelect
-			v-model="formModel.type"
-			:items="options.types"
-			:disabled="formDisabled"
-			:error-messages="validationMsg('type')"
-			label="Type"
-			name="type"
-			class="mb-4"
-			@update:modelValue="onValidate('type')"
+			is-optional
+			auto-grow
+			@update:modelValue="onValidate('note')"
 		/>
 
 		<template v-if="isListSelected">
@@ -124,11 +137,13 @@
 </template>
 
 <script>
-import { helpers, required } from "@vuelidate/validators";
+import { helpers, maxLength, required } from "@vuelidate/validators";
 import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
+import { isCustomFieldLabelValid } from "@/utils/customValidators";
 import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
@@ -140,6 +155,7 @@ export default {
 		ButtonAction,
 		DataInput,
 		DataSelect,
+		DataTextarea,
 	},
 
 	mixins: [validation],
@@ -147,7 +163,14 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				field: { required },
+				label: {
+					required,
+					isCustomFieldLabelValid: helpers.withMessage(
+						this.$t("Label contains forbidden special characters: {}"),
+						isCustomFieldLabelValid,
+					),
+				},
+				note: { maxLength: maxLength(200) },
 				type: { required },
 				...(!this.isEditing && { targetType: { required } }),
 				...(this.isListSelected
