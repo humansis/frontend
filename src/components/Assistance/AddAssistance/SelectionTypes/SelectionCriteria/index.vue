@@ -411,6 +411,8 @@ export default {
 			await this.getCountOfBeneficiaries({ totalCount: true });
 			await this.getCountOfBeneficiaries({ totalCount: false });
 
+			this.vulnerabilityScoreTouched = false;
+
 			this.$emit(
 				"updatedData",
 				this.prepareCriteria(),
@@ -434,8 +436,6 @@ export default {
 			if (this.calculationLoading || !this.groups.length) return;
 
 			await this.fetchCriteriaInfo();
-
-			this.vulnerabilityScoreTouched = false;
 		},
 
 		async getCountOfBeneficiariesInGroup(groupKey) {
