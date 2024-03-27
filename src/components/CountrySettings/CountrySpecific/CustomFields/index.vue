@@ -6,7 +6,6 @@
 		<CustomFieldsForm
 			:form-model="customFieldModel"
 			:submit-button-label="submitButtonLabel"
-			:form-disabled="customFieldModal.isDetail"
 			:is-editing="customFieldModal.isEditing"
 			:is-detail="customFieldModal.isDetail"
 			:loading="customFieldModal.isWaiting"
@@ -123,6 +122,7 @@ export default {
 				type,
 				label,
 				note,
+				isUsed,
 				targetType,
 				selectionType,
 				isMultiSelect,
@@ -138,6 +138,7 @@ export default {
 				type,
 				label,
 				note,
+				isUsed,
 				targetType,
 				selectionType,
 				isMultiSelect,
