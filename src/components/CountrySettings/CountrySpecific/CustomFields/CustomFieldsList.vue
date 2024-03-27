@@ -16,7 +16,7 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row, index }">
+		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
@@ -24,7 +24,7 @@
 			/>
 
 			<ButtonAction
-				v-if="isEditButtonVisible(index)"
+				v-if="userCan.editCustomField"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -172,14 +172,6 @@ export default {
 					target: targetType?.shortCut,
 				};
 			});
-		},
-
-		isEditButtonVisible(index) {
-			const rowData = this.table.data[index];
-
-			return !rowData.isUsed
-				&& rowData.type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE
-				&& this.userCan.editCustomField;
 		},
 	},
 };

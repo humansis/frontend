@@ -2,7 +2,7 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.label"
-			:disabled="formDisabled"
+			:disabled="isDetail"
 			:error-messages="validationMsg('label')"
 			label="Label"
 			name="label"
@@ -13,7 +13,7 @@
 		<DataSelect
 			v-model="formModel.type"
 			:items="options.types"
-			:disabled="formDisabled"
+			:disabled="isDetail || formModel.isUsed"
 			:error-messages="validationMsg('type')"
 			label="Type"
 			name="type"
@@ -25,7 +25,7 @@
 			v-if="!isEditing"
 			v-model="formModel.targetType"
 			:items="options.targetTypes"
-			:disabled="formDisabled"
+			:disabled="isDetail || formModel.isUsed"
 			:error-messages="validationMsg('targetType')"
 			label="Target"
 			name="target"
@@ -35,7 +35,7 @@
 
 		<DataTextarea
 			v-model.trim="formModel.note"
-			:disabled="formDisabled"
+			:disabled="isDetail || formModel.isUsed"
 			:error-messages="validationMsg('note')"
 			:rows="2"
 			label="Note"
@@ -50,7 +50,7 @@
 			<DataSelect
 				v-model="formModel.selectionType"
 				:items="options.selectionTypes"
-				:disabled="formDisabled"
+				:disabled="isDetail || formModel.isUsed"
 				:error-messages="validationMsg('selectionType')"
 				label="Selection"
 				name="selection"
@@ -65,7 +65,7 @@
 			>
 				<DataInput
 					v-model="formModel.listOfValues[index].value"
-					:disabled="formDisabled"
+					:disabled="isDetail || formModel.isUsed"
 					:error-messages="validationMsg('listOfValues', 'formModel', index)"
 					:label="`Value ${index + 1}`"
 					:name="`value-${index + 1}`"
@@ -90,7 +90,7 @@
 			<v-checkbox
 				v-if="isListSelected"
 				v-model="formModel.isPropagatedToSelectionCriteria"
-				:disabled="formDisabled"
+				:disabled="isDetail || formModel.isUsed"
 				:label="$t('Propagate to selection criteria')"
 				name="propagate-to-selection-criteria"
 				class="checkbox"
@@ -99,7 +99,7 @@
 
 			<div class="d-flex justify-end">
 				<v-btn
-					v-if="!isDetail"
+					v-if="!isDetail || !formModel.isUsed"
 					color="primary"
 					class="text-none mb-8"
 					variant="elevated"
@@ -191,7 +191,6 @@ export default {
 
 	props: {
 		closeButton: Boolean,
-		formDisabled: Boolean,
 
 		formModel: {
 			type: Object,
@@ -277,12 +276,16 @@ export default {
 			this.formModel.selectionType = this.options.selectionTypes.find(
 				(type) => type.code === selectCode,
 			);
-			this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
-				value,
-			}));
+
+			if (this.formModel.allowedValues) {
+				this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
+					value,
+				}));
+			}
 		},
 
 		addNewValueInput() {
+			console.log(this.formModel);
 			this.formModel.listOfValues.push({ value: "" });
 		},
 
