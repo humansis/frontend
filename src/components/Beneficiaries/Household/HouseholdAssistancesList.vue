@@ -28,12 +28,11 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: "To distribute", type: "grey-lighten-2" },
-	{ code: "Distribution in progress", type: "info" },
-	{ code: "Distributed", type: "success" },
-	{ code: "Invalidated", type: "orange-darken-1" },
-	{ code: "Expired", type: "error" },
-	{ code: "Canceled", type: "warning" },
+	{ code: "To distribute", class: "status to-distribute" },
+	{ code: "Distributed", class: "status distributed" },
+	{ code: "Expired", class: "status expired" },
+	{ code: "Invalidated", class: "status invalidated" },
+	{ code: "Canceled", class: "status canceled" },
 ];
 
 export default {

@@ -97,8 +97,8 @@ import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, type: "green-lighten-1" },
-	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.INVALIDATED, type: "orange-darken-1" },
+	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
+	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.INVALIDATED, class: "status invalidated" },
 ];
 
 export default {

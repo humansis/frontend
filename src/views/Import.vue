@@ -28,7 +28,7 @@
 		<div v-if="importStatus" class="text-center mt-4">
 			<v-chip
 				variant="flat"
-				:color="importStatusType"
+				:class="importStatusClass"
 			>
 				<span>
 					{{ $t(importStatus) }}
@@ -197,32 +197,41 @@ export default {
 			return this.statistics?.failReason || "";
 		},
 
-		importStatusType() {
+		importStatusClass() {
 			let result = "";
 
 			switch (this.importStatus) {
-				case IMPORT.STATUS.CANCEL:
-				case IMPORT.STATUS.IMPORTING:
+				case IMPORT.STATUS.NEW:
+					result = "status new";
+					break;
+				case IMPORT.STATUS.UPLOADING:
+					result = "status uploading";
+					break;
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
-					result = "warning";
+				case IMPORT.STATUS.CANCEL:
+					result = "status canceled";
+					break;
+				case IMPORT.STATUS.IMPORTING:
+					result = "status importing";
 					break;
 				case IMPORT.STATUS.FINISH:
+					result = "status finished";
+					break;
 				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
-					result = "success";
+					result = "status correct";
 					break;
 				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
-					result = "error";
+					result = "status failed";
 					break;
-				case IMPORT.STATUS.NEW:
 				case IMPORT.STATUS.INTEGRITY_CHECK:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 				case IMPORT.STATUS.SIMILARITY_CHECK:
 				default:
-					result = "info";
+					result = "status check";
 			}
 
 			return result;
