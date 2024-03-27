@@ -359,7 +359,7 @@ export default {
 							firstNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
 								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.firstNwsFields,
@@ -369,7 +369,7 @@ export default {
 							secondNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
 								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.secondNwsFields,
@@ -379,7 +379,7 @@ export default {
 							thirdNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
 								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.thirdNwsFields,
@@ -389,7 +389,7 @@ export default {
 							fourthNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
 								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.fourthNwsFields,
@@ -399,7 +399,7 @@ export default {
 							fifthNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
 								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.fifthNwsFields,
@@ -411,7 +411,7 @@ export default {
 							firstNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
 								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
@@ -421,7 +421,7 @@ export default {
 							secondNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
 								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
@@ -431,7 +431,7 @@ export default {
 							thirdNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
 								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
@@ -441,7 +441,7 @@ export default {
 							fourthNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
 								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
@@ -456,7 +456,7 @@ export default {
 							firstCodFields: {
 								required: requiredIf(this.displayedFields.householdMembersCodFields),
 								...(this.displayedFields.householdMembersCodFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionCodFields.firstCodFields,
@@ -466,7 +466,7 @@ export default {
 							secondCodFields: {
 								required: requiredIf(this.displayedFields.householdMembersCodFields),
 								...(this.displayedFields.householdMembersCodFields && {
-									minValue: minValue(0.01),
+									minValue: minValue(this.minValueForFields),
 								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionCodFields.secondCodFields,
@@ -744,6 +744,10 @@ export default {
 
 		valueOrQuantityLabel() {
 			return this.isModalityCash ? "Value" : "Quantity 1";
+		},
+
+		minValueForFields() {
+			return this.isModalityCash ? 0.01 : 1;
 		},
 	},
 
