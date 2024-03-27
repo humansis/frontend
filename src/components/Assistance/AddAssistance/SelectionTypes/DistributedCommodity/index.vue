@@ -392,7 +392,7 @@ export default {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
 				default:
-					return divisionString;
+					return divisionString || null;
 			}
 		},
 
