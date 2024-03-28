@@ -58,7 +58,9 @@ export default {
 
 			preparedData.forEach((item, key) => {
 				const criteria = this.scores.find(({ beneficiaryId }) => item.id === beneficiaryId) || {};
-				preparedData[key].vulnerability = criteria.totalScore;
+				preparedData[key].vulnerability = typeof criteria.totalScore === "number"
+					? Math.round((criteria.totalScore + Number.EPSILON) * 100) / 100
+					: "";
 			});
 
 			this.table.data = preparedData;

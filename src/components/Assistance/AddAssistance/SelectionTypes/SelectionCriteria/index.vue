@@ -634,7 +634,6 @@ export default {
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
 		},
-
 	},
 };
 </script>
