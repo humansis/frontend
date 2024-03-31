@@ -1,6 +1,14 @@
 <template>
 	<v-card-text>
 		<DataInput
+			v-model="formModel.key"
+			label="Key"
+			name="key"
+			class="mb-4"
+			disabled
+		/>
+
+		<DataInput
 			v-model="formModel.label"
 			:disabled="isDetail"
 			:error-messages="validationMsg('label')"
@@ -13,7 +21,7 @@
 		<DataSelect
 			v-model="formModel.type"
 			:items="options.types"
-			:disabled="isDetail || formModel.isUsed"
+			:disabled="isDetail || isEditing"
 			:error-messages="validationMsg('type')"
 			label="Type"
 			name="type"
@@ -22,10 +30,9 @@
 		/>
 
 		<DataSelect
-			v-if="!isEditing"
 			v-model="formModel.targetType"
 			:items="options.targetTypes"
-			:disabled="isDetail || formModel.isUsed"
+			:disabled="isDetail || isEditing"
 			:error-messages="validationMsg('targetType')"
 			label="Target"
 			name="target"
@@ -35,7 +42,7 @@
 
 		<DataTextarea
 			v-model.trim="formModel.note"
-			:disabled="isDetail || formModel.isUsed"
+			:disabled="isDetail"
 			:error-messages="validationMsg('note')"
 			:rows="2"
 			label="Note"
@@ -172,7 +179,7 @@ export default {
 				},
 				note: { maxLength: maxLength(200) },
 				type: { required },
-				...(!this.isEditing && { targetType: { required } }),
+				targetType: { required },
 				...(this.isListSelected
 					&& {
 						selectionType: { required },

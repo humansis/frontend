@@ -117,6 +117,7 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				key,
 				iso3,
 				field,
 				type,
@@ -133,6 +134,7 @@ export default {
 			this.customFieldModel = {
 				...this.customFieldModel,
 				id,
+				key,
 				iso3,
 				field,
 				type,
