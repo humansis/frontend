@@ -139,6 +139,7 @@ import ButtonAction from "@/components/ButtonAction";
 import EditNote from "@/components/Inputs/EditNote";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -367,34 +368,85 @@ export default {
 		},
 
 		async onSetGeneralReliefItemAsDistributed() {
-			let error = "";
-			let success = "";
-
 			if (this.selectedBeneficiaries?.length) {
-				this.setAtDistributedButtonLoading = true;
+				try {
+					this.setAtDistributedButtonLoading = true;
 
-				await Promise.all(this.selectedBeneficiaries.map(async (beneficiary) => {
-					const body = beneficiary.reliefPackages?.map(({ id }) => ({
-						id, dateDistributed: new Date().toISOString(),
-					}));
+					const distributedBeneficiaries = this.selectedBeneficiaries.flatMap(
+						(beneficiary) => beneficiary.reliefPackages?.map(({ id }) => (
+							{
+								id,
+								dateDistributed: new Date().toISOString(),
+							}
+						)) || [],
+					);
 
-					await AssistancesService.updateReliefPackage(body).then(({ status }) => {
-						if (status === 200) {
-							success += `${this.$t("Success for Beneficiary")} ${beneficiary.id}. `;
-						}
-					}).catch((e) => {
-						error += `${this.$t("Error for Beneficiary")} ${beneficiary.id} ${e.message || e}. `;
-					});
-				}));
+					const { data, status, message } = await AssistancesService.updateReliefPackage(
+						distributedBeneficiaries,
+					);
 
-				if (error) Notification(error, "error");
-				if (success) Notification(success, "success");
+					checkResponseStatus(status, message);
 
-				this.setAtDistributedButtonVisible = false;
-				this.$refs.beneficiariesList.fetchData();
-				this.onFetchAssistanceStatistics();
+					this.prepareDistributedNotification(data);
+				} catch (e) {
+					Notification(`${this.$t("Distribution")}: ${e.message || e}`, "error");
+				} finally {
+					this.setAtDistributedButtonVisible = false;
 
-				this.setAtDistributedButtonLoading = false;
+					await this.$refs.beneficiariesList.fetchData();
+					await this.onFetchAssistanceStatistics();
+
+					this.setAtDistributedButtonLoading = false;
+				}
+			}
+		},
+
+		prepareDistributedNotification(distributionResponse) {
+			const {
+				successfullyDistributed,
+				alreadyDistributed,
+				partiallyDistributed,
+				conflicts,
+				notFound,
+				failed,
+			} = distributionResponse;
+
+			if (successfullyDistributed.length || alreadyDistributed.length) {
+				const successMessage = [];
+
+				if (successfullyDistributed.length) {
+					successMessage.push(`${successfullyDistributed.length} packages were marked as distributed`);
+				}
+
+				if (alreadyDistributed.length) {
+					successMessage.push(`${alreadyDistributed.length} packages were already marked as distributed`);
+				}
+
+				Notification(`${this.$t("Distribution")}: ${this.$t(successMessage.join(" and "))}`, "success");
+			}
+
+			if (partiallyDistributed.length || conflicts.length || notFound.length) {
+				const warningMessage = [];
+
+				if (partiallyDistributed.length) {
+					warningMessage.push(`${partiallyDistributed.length} packages were partially distributed`);
+				}
+
+				if (conflicts.length) {
+					warningMessage.push(`${conflicts.length} packages were with conflict`);
+				}
+
+				if (notFound.length) {
+					warningMessage.push(`${notFound.length} packages were not found`);
+				}
+
+				Notification(`${this.$t("Distribution")}: ${this.$t(warningMessage.join(" and "))}`, "warning");
+			}
+
+			if (failed.length) {
+				const errorMessage = `${failed.length} packages were failed`;
+
+				Notification(`${this.$t("Distribution")}: ${this.$t(errorMessage)}`, "error");
 			}
 		},
 

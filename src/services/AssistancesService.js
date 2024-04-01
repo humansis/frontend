@@ -270,13 +270,12 @@ export default {
 		return { data, totalCount };
 	},
 
-	async updateReliefPackage(body) {
-		const { data, status } = await fetcher({
+	updateReliefPackage(body) {
+		return fetcher({
 			uri: `assistances/relief-packages/distribute`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status };
 	},
 
 	async updateReliefPackagesWithNumberIds(id, body) {
