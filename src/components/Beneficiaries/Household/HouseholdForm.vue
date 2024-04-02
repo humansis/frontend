@@ -233,8 +233,8 @@
 
 		<CustomFieldsPanel
 			v-model="formModel"
-			:filters="{ targetType: 'household' }"
 			:data-cy="dataCy"
+			:custom-fields-list="customFieldsList"
 		/>
 	</form>
 </template>
@@ -242,7 +242,6 @@
 <script>
 import { integer } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
-import CustomFieldsService from "@/services/CustomFieldsService";
 import CustomFieldsPanel from "@/components/Beneficiaries/Household/CustomFieldsPanel";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
 import DataInput from "@/components/Inputs/DataInput";
@@ -311,7 +310,8 @@ export default {
 			shelterStatusLoading: true,
 			assetsLoading: true,
 			livelihoodLoading: true,
-			customFields: [],
+			customFieldsList: [],
+			customFieldsTarget: { targetType: "household" },
 			formModel: {
 				id: null,
 				latitude: null,
@@ -334,7 +334,7 @@ export default {
 					supportDateReceived: null,
 					supportOrganization: "",
 				},
-				customFields: {},
+				customFieldValues: {},
 				shelterStatus: [],
 				notes: "",
 			},
@@ -381,8 +381,9 @@ export default {
 		},
 
 		mapDetailOfHouseholdToFormModel() {
-			const countryAnswers = this.prepareCustomFields(
-				this.detailOfHousehold.countrySpecificAnswers,
+			const customFieldValues = this.prepareCustomFieldValues(
+				this.detailOfHousehold.customFieldValues,
+				this.customFieldsList,
 			);
 
 			this.formModel = {
@@ -414,9 +415,9 @@ export default {
 						.supportDateReceived ? new Date(this.detailOfHousehold.supportDateReceived) : null,
 					supportOrganization: this.detailOfHousehold.supportOrganizationName,
 				},
-				customFields: {
+				customFieldValues: {
 					...this.formModel.customFields,
-					...countryAnswers,
+					...customFieldValues,
 				},
 				shelterStatus: getArrayOfCodeListByKey([`${this.detailOfHousehold.shelterStatus}`], this.options.shelterStatuses, "code"),
 				notes: this.detailOfHousehold.notes,
@@ -456,20 +457,6 @@ export default {
 					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
 				});
 			this.shelterStatusLoading = false;
-		},
-
-		async fetchCustomFields() {
-			try {
-				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
-					null,
-					null,
-					null,
-				);
-
-				this.customFields = data;
-			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
-			}
 		},
 
 		submit() {

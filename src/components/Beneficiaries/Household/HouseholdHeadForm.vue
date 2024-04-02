@@ -443,8 +443,8 @@
 
 		<CustomFieldsPanel
 			v-model="formModel"
-			:filters="{ targetType: 'individual' }"
 			:data-cy="dataCy"
+			:custom-fields-list="customFieldsList"
 		/>
 	</form>
 </template>
@@ -604,9 +604,11 @@ export default {
 			tertiaryIdValidationMessage: "",
 			detailOfHouseholdHead: {},
 			householdHeadSmartCardNumbers: [],
+			customFieldsList: [],
+			customFieldsTarget: { targetType: "individual" },
 			formModel: {
 				beneficiaryId: null,
-				customFields: {},
+				customFieldValues: {},
 				nameLocal: {
 					familyName: "",
 					firstName: "",
@@ -703,11 +705,6 @@ export default {
 		},
 	},
 
-	watch: {
-		detailOfHousehold: "map",
-		beneficiary: "map",
-	},
-
 	async mounted() {
 		if (this.isEditing) {
 			if (this.isHouseholdHead) {
@@ -720,6 +717,7 @@ export default {
 			this.fetchVulnerabilities(),
 			this.fetchResidenceStatus(),
 			this.fetchReferralTypes(),
+			this.fetchCustomFields(),
 		]);
 		await this.map();
 	},
@@ -765,8 +763,6 @@ export default {
 				this.formModel.addAReferral = true;
 			}
 
-			const countryAnswers = this.prepareCustomFields(customFieldValues);
-
 			const { phone1, phone2 } = this.preparePhones(phones);
 
 			const validNationalIdNames = ["isPrimaryIdValid", "isSecondaryIdValid", "isTertiaryIdValid"];
@@ -804,9 +800,9 @@ export default {
 					referralType: getArrayOfCodeListByKey([referralType], this.options.referralType, "code"),
 					comment: referralComment,
 				},
-				customFields: {
-					...this.formModel.customFields,
-					...countryAnswers,
+				customFieldValues: {
+					...this.formModel.customFieldValues,
+					...this.prepareCustomFieldValues(customFieldValues, this.customFieldsList),
 				},
 				phone1,
 				phone2,
