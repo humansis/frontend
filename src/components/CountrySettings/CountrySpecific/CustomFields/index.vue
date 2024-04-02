@@ -6,7 +6,6 @@
 		<CustomFieldsForm
 			:form-model="customFieldModel"
 			:submit-button-label="submitButtonLabel"
-			:form-disabled="customFieldModal.isDetail"
 			:is-editing="customFieldModal.isEditing"
 			:is-detail="customFieldModal.isDetail"
 			:loading="customFieldModal.isWaiting"
@@ -118,9 +117,13 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				key,
 				iso3,
 				field,
 				type,
+				label,
+				note,
+				isUsed,
 				targetType,
 				selectionType,
 				isMultiSelect,
@@ -131,9 +134,13 @@ export default {
 			this.customFieldModel = {
 				...this.customFieldModel,
 				id,
+				key,
 				iso3,
 				field,
 				type,
+				label,
+				note,
+				isUsed,
 				targetType,
 				selectionType,
 				isMultiSelect,
@@ -163,7 +170,8 @@ export default {
 		onSubmitCustomFieldForm(customFieldForm) {
 			const {
 				id,
-				field,
+				label,
+				note,
 				type,
 				iso3,
 				targetType,
@@ -181,7 +189,8 @@ export default {
 			};
 
 			const customFieldBody = {
-				field,
+				label,
+				note,
 				type: type.code,
 				iso3: iso3 || this.country.iso3,
 				targetType: targetType.code,

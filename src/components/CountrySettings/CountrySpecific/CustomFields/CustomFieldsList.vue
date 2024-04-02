@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -15,7 +16,7 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row, index }">
+		<template v-slot:actions="{ row }">
 			<ButtonAction
 				icon="search"
 				tooltip-text="Show Detail"
@@ -23,7 +24,7 @@
 			/>
 
 			<ButtonAction
-				v-if="isEditButtonVisible(index)"
+				v-if="userCan.editCustomField"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -93,7 +94,9 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "fieldWithPrefix", title: "Field", sortKey: "field" },
+					{ key: "key", sortable: false },
+					{ key: "label" },
+					{ key: "note" },
 					{ key: "target", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -163,26 +166,29 @@ export default {
 				const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
 					(type) => type.code === item.targetType,
 				);
-				const target = targetType?.shortCut;
-				const fieldWithPrefix = target
-					? `${target}-${item.field}`
-					: item.field;
 
 				return {
 					...item,
-					fieldWithPrefix,
-					target,
+					target: targetType?.shortCut,
 				};
 			});
-		},
-
-		isEditButtonVisible(index) {
-			const rowData = this.table.data[index];
-
-			return !rowData.isUsed
-				&& rowData.type === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE
-				&& this.userCan.editCustomField;
 		},
 	},
 };
 </script>
+
+<style lang="scss">
+.custom-fields-table {
+	td:nth-child(3) {
+		max-width: 10rem;
+
+		div {
+			overflow: hidden;
+			max-width: 90%;
+			text-overflow: ellipsis;
+			width: fit-content;
+			white-space: nowrap;
+		}
+	}
+}
+</style>

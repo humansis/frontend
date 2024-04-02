@@ -1,31 +1,27 @@
 <template>
 	<v-card-text>
-		<DataSelect
-			v-if="!isEditing"
-			v-model="formModel.targetType"
-			:items="options.targetTypes"
-			:disabled="formDisabled"
-			:error-messages="validationMsg('targetType')"
-			label="Target"
-			name="target"
+		<DataInput
+			v-model="formModel.key"
+			label="Key"
+			name="key"
 			class="mb-4"
-			@update:modelValue="onValidate('targetType')"
+			disabled
 		/>
 
 		<DataInput
-			v-model="formModel.field"
-			:disabled="formDisabled"
-			:error-messages="validationMsg('field')"
-			label="Custom Field name"
-			name="custom-field-name"
+			v-model="formModel.label"
+			:disabled="isDetail"
+			:error-messages="validationMsg('label')"
+			label="Label"
+			name="label"
 			class="mb-4"
-			@update:modelValue="onValidate('field')"
+			@update:modelValue="onValidate('label')"
 		/>
 
 		<DataSelect
 			v-model="formModel.type"
 			:items="options.types"
-			:disabled="formDisabled"
+			:disabled="isDetail || isEditing"
 			:error-messages="validationMsg('type')"
 			label="Type"
 			name="type"
@@ -33,11 +29,35 @@
 			@update:modelValue="onValidate('type')"
 		/>
 
+		<DataSelect
+			v-model="formModel.targetType"
+			:items="options.targetTypes"
+			:disabled="isDetail || isEditing"
+			:error-messages="validationMsg('targetType')"
+			label="Target"
+			name="target"
+			class="mb-4"
+			@update:modelValue="onValidate('targetType')"
+		/>
+
+		<DataTextarea
+			v-model.trim="formModel.note"
+			:disabled="isDetail"
+			:error-messages="validationMsg('note')"
+			:rows="2"
+			label="Note"
+			name="note"
+			class="mb-4"
+			is-optional
+			auto-grow
+			@update:modelValue="onValidate('note')"
+		/>
+
 		<template v-if="isListSelected">
 			<DataSelect
 				v-model="formModel.selectionType"
 				:items="options.selectionTypes"
-				:disabled="formDisabled"
+				:disabled="isDetail || formModel.isUsed"
 				:error-messages="validationMsg('selectionType')"
 				label="Selection"
 				name="selection"
@@ -52,7 +72,7 @@
 			>
 				<DataInput
 					v-model="formModel.listOfValues[index].value"
-					:disabled="formDisabled"
+					:disabled="isDetail || formModel.isUsed"
 					:error-messages="validationMsg('listOfValues', 'formModel', index)"
 					:label="`Value ${index + 1}`"
 					:name="`value-${index + 1}`"
@@ -77,7 +97,7 @@
 			<v-checkbox
 				v-if="isListSelected"
 				v-model="formModel.isPropagatedToSelectionCriteria"
-				:disabled="formDisabled"
+				:disabled="isDetail || formModel.isUsed"
 				:label="$t('Propagate to selection criteria')"
 				name="propagate-to-selection-criteria"
 				class="checkbox"
@@ -111,7 +131,7 @@
 		</v-btn>
 
 		<v-btn
-			v-if="!formDisabled"
+			v-if="!isDetail"
 			:loading="loading"
 			color="primary"
 			class="text-none ml-3 mr-4"
@@ -124,11 +144,13 @@
 </template>
 
 <script>
-import { helpers, required } from "@vuelidate/validators";
+import { helpers, maxLength, required } from "@vuelidate/validators";
 import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import DataTextarea from "@/components/Inputs/DataTextarea";
 import validation from "@/mixins/validation";
+import { isCustomFieldLabelValid } from "@/utils/customValidators";
 import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
@@ -140,6 +162,7 @@ export default {
 		ButtonAction,
 		DataInput,
 		DataSelect,
+		DataTextarea,
 	},
 
 	mixins: [validation],
@@ -147,9 +170,16 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				field: { required },
+				label: {
+					required,
+					isCustomFieldLabelValid: helpers.withMessage(
+						this.$t("Label contains forbidden special characters: {}"),
+						isCustomFieldLabelValid,
+					),
+				},
+				note: { maxLength: maxLength(200) },
 				type: { required },
-				...(!this.isEditing && { targetType: { required } }),
+				targetType: { required },
 				...(this.isListSelected
 					&& {
 						selectionType: { required },
@@ -168,7 +198,6 @@ export default {
 
 	props: {
 		closeButton: Boolean,
-		formDisabled: Boolean,
 
 		formModel: {
 			type: Object,
@@ -254,12 +283,16 @@ export default {
 			this.formModel.selectionType = this.options.selectionTypes.find(
 				(type) => type.code === selectCode,
 			);
-			this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
-				value,
-			}));
+
+			if (this.formModel.allowedValues) {
+				this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
+					value,
+				}));
+			}
 		},
 
 		addNewValueInput() {
+			console.log(this.formModel);
 			this.formModel.listOfValues.push({ value: "" });
 		},
 

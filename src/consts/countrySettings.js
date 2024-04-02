@@ -46,7 +46,8 @@ export default {
 		CUSTOM_FIELD_MODEL: {
 			id: null,
 			iso3: "",
-			field: "",
+			label: "",
+			note: "",
 			type: null,
 			targetType: null,
 			selectionType: null,
