@@ -131,7 +131,7 @@
 		</v-btn>
 
 		<v-btn
-			v-if="!formDisabled"
+			v-if="!isDetail"
 			:loading="loading"
 			color="primary"
 			class="text-none ml-3 mr-4"
