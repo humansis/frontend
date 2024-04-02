@@ -106,7 +106,7 @@
 
 			<div class="d-flex justify-end">
 				<v-btn
-					v-if="!isDetail || !formModel.isUsed"
+					v-if="!isDetail"
 					color="primary"
 					class="text-none mb-8"
 					variant="elevated"
