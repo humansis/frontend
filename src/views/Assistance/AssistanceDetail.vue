@@ -401,7 +401,7 @@ export default {
 			}
 		},
 
-		prepareDistributedNotification(distributionResponse) {
+		async prepareDistributedNotification(distributionResponse) {
 			const {
 				successfullyDistributed,
 				alreadyDistributed,
@@ -422,6 +422,7 @@ export default {
 					successMessage.push(`${alreadyDistributed.length} packages were already marked as distributed`);
 				}
 
+				await this.$nextTick();
 				Notification(`${this.$t("Distribution")}: ${this.$t(successMessage.join(" and "))}`, "success");
 			}
 
@@ -440,12 +441,14 @@ export default {
 					warningMessage.push(`${notFound.length} packages were not found`);
 				}
 
+				await this.$nextTick();
 				Notification(`${this.$t("Distribution")}: ${this.$t(warningMessage.join(" and "))}`, "warning");
 			}
 
 			if (failed.length) {
 				const errorMessage = `${failed.length} packages were failed`;
 
+				await this.$nextTick();
 				Notification(`${this.$t("Distribution")}: ${this.$t(errorMessage)}`, "error");
 			}
 		},
