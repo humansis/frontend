@@ -40,10 +40,10 @@ export default {
 			const icons = this.items.map(({ code, value }) => ({
 				code,
 				value,
-				svg: this.icons.find((icon) => icon.key === code)?.svg,
+				svg: this.icons[code],
 			}));
 
-			return (this.items?.length && this.icons?.length) ? icons : [];
+			return (this.items?.length && Object.keys(this.icons).length) ? icons : [];
 		},
 	},
 };

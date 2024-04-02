@@ -36,12 +36,12 @@ export default {
 		direction: "ltr",
 	},
 	perPage: 10,
-	icons: [
+	icons: {
 		...modalityTypeIcons,
 		...productCategoryIcons,
 		...sectorIcons,
 		...vulnerabilityCriteriaIcons,
-	],
+	},
 	translations: null,
 	admNames: {},
 	institutionIdNames: {},
