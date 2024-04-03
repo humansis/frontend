@@ -415,11 +415,11 @@ export default {
 				const successMessage = [];
 
 				if (successfullyDistributed.length) {
-					successMessage.push(`${successfullyDistributed.length} packages were marked as distributed`);
+					successMessage.push(`${successfullyDistributed.length} beneficiaries were marked as distributed`);
 				}
 
 				if (alreadyDistributed.length) {
-					successMessage.push(`${alreadyDistributed.length} packages were already marked as distributed`);
+					successMessage.push(`${alreadyDistributed.length} beneficiaries were already marked as distributed`);
 				}
 
 				await this.$nextTick();
@@ -430,15 +430,15 @@ export default {
 				const warningMessage = [];
 
 				if (partiallyDistributed.length) {
-					warningMessage.push(`${partiallyDistributed.length} packages were partially distributed`);
+					warningMessage.push(`${partiallyDistributed.length} beneficiaries were partially distributed`);
 				}
 
 				if (conflicts.length) {
-					warningMessage.push(`${conflicts.length} packages were with conflict`);
+					warningMessage.push(`${conflicts.length} beneficiaries were with conflict`);
 				}
 
 				if (notFound.length) {
-					warningMessage.push(`${notFound.length} packages were not found`);
+					warningMessage.push(`${notFound.length} beneficiaries were not found`);
 				}
 
 				await this.$nextTick();
@@ -446,7 +446,7 @@ export default {
 			}
 
 			if (failed.length) {
-				const errorMessage = `${failed.length} packages were failed`;
+				const errorMessage = `${failed.length} beneficiaries were failed`;
 
 				await this.$nextTick();
 				Notification(`${this.$t("Distribution")}: ${this.$t(errorMessage)}`, "error");
