@@ -443,8 +443,8 @@
 
 		<CustomFieldsPanel
 			v-model="formModel"
-			:data-cy="dataCy"
 			:custom-fields-list="customFieldsList"
+			:data-cy="dataCy"
 		/>
 	</form>
 </template>
