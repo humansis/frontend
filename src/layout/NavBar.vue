@@ -103,7 +103,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
 import { Notification } from "@/utils/UI";
@@ -128,7 +127,6 @@ export default {
 			"language",
 			"languages",
 			"countries",
-			"icons",
 			"admNames",
 		]),
 
@@ -162,7 +160,6 @@ export default {
 	},
 
 	async created() {
-		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames?.adm1) await this.fetchAdmNames();
 		this.setTooltip();
 	},
@@ -173,7 +170,6 @@ export default {
 			"storeCountries",
 			"storeLanguage",
 			"storeTranslations",
-			"storeIcons",
 			"storeAdmNames",
 		]),
 
@@ -208,15 +204,6 @@ export default {
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta?.description;
 			this.tooltip.label = this.$t(this.$route.meta?.description || "");
-		},
-
-		async fetchIcons() {
-			await IconService.getIcons()
-				.then(({ data }) => {
-					this.storeIcons(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Icons")} ${e.message || e}`, "error");
-				});
 		},
 
 		async fetchAdmNames() {
