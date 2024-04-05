@@ -9,10 +9,10 @@
 		autocomplete="off"
 	>
 		<template v-slot:label>
-			<LabelWithTooltip
+			<ExtendedLabel
 				:label="label"
-				:label-append-icon-tooltip="labelAppendIconTooltip"
-				:label-append-icon="labelAppendIcon"
+				:tooltip-text="labelAppendIconTooltip"
+				:icon="labelAppendIcon"
 				:is-optional="optional"
 			/>
 		</template>
@@ -20,14 +20,14 @@
 </template>
 
 <script>
-import LabelWithTooltip from "@/components/Inputs/Helpers/LabelWithTooltip";
+import ExtendedLabel from "@/components/Inputs/Helpers/ExtendedLabel";
 import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "DataInput",
 
 	components: {
-		LabelWithTooltip,
+		ExtendedLabel,
 	},
 
 	mixins: [identifierBuilder],
@@ -75,7 +75,7 @@ export default {
 
 		labelAppendIcon: {
 			type: String,
-			default: "",
+			default: "circle-info",
 		},
 
 		labelAppendIconTooltip: {
