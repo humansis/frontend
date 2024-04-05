@@ -36,7 +36,9 @@
 							:chips="option.isMultiSelect"
 							:label="normalizeText(option.label)"
 							:name="normalizeName(option.label)"
+							:label-append-icon-tooltip="option.note"
 							:data-cy="prepareComponentIdentifier()"
+							label-append-icon="circle-info"
 							class="mb-4"
 							optional
 						/>
@@ -48,7 +50,9 @@
 							:name="normalizeName(option.label)"
 							:type="option.type"
 							:hide-spin-buttons="option.type === 'number' || null"
+							:label-append-icon-tooltip="option.note"
 							:data-cy="prepareComponentIdentifier()"
+							label-append-icon="circle-info"
 							class="mb-4"
 							optional
 						/>

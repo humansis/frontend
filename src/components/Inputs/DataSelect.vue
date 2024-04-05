@@ -24,9 +24,12 @@
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
 		<template v-slot:label>
-			<span>{{ $t(label) }}
-				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
-			</span>
+			<LabelWithTooltip
+				:label="label"
+				:label-append-icon-tooltip="labelAppendIconTooltip"
+				:label-append-icon="labelAppendIcon"
+				:is-optional="optional"
+			/>
 		</template>
 
 		<template v-if="!multiple" v-slot:item="{ props, item }">
@@ -74,10 +77,15 @@
 </template>
 
 <script>
+import LabelWithTooltip from "@/components/Inputs/Helpers/LabelWithTooltip";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
+
+	components: {
+		LabelWithTooltip,
+	},
 	mixins: [identifierBuilder],
 
 	props: {
@@ -179,6 +187,16 @@ export default {
 		name: {
 			type: String,
 			required: true,
+		},
+
+		labelAppendIcon: {
+			type: String,
+			default: "",
+		},
+
+		labelAppendIconTooltip: {
+			type: String,
+			default: "",
 		},
 	},
 

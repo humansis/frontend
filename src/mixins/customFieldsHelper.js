@@ -13,7 +13,7 @@ export default {
 				} = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
-					null,
+					"label.asc",
 					null,
 					this.customFieldsTarget,
 				);
