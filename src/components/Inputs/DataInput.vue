@@ -9,18 +9,26 @@
 		autocomplete="off"
 	>
 		<template v-slot:label>
-			<span>{{ $t(label) }}
-				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
-			</span>
+			<ExtendedLabel
+				:label="label"
+				:tooltip-text="labelAppendIconTooltip"
+				:icon="labelAppendIcon"
+				:is-optional="optional"
+			/>
 		</template>
 	</v-text-field>
 </template>
 
 <script>
+import ExtendedLabel from "@/components/Inputs/Helpers/ExtendedLabel";
 import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "DataInput",
+
+	components: {
+		ExtendedLabel,
+	},
 
 	mixins: [identifierBuilder],
 
@@ -63,6 +71,16 @@ export default {
 		name: {
 			type: String,
 			required: true,
+		},
+
+		labelAppendIcon: {
+			type: String,
+			default: "circle-info",
+		},
+
+		labelAppendIconTooltip: {
+			type: String,
+			default: "",
 		},
 	},
 };

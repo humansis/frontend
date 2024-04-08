@@ -292,7 +292,6 @@ export default {
 		},
 
 		addNewValueInput() {
-			console.log(this.formModel);
 			this.formModel.listOfValues.push({ value: "" });
 		},
 

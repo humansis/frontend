@@ -340,8 +340,8 @@ export default {
 				supportOrganizationName,
 				incomeSpentOnFood: incomeSpentOnFood || null,
 				houseIncome: 0,
-				countrySpecificAnswers:
-					this.prepareCountrySpecificsForHousehold(this.household.customFields),
+				customFieldValues:
+					this.prepareCustomFieldValuesForHousehold(this.household.customFieldValues),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -354,23 +354,27 @@ export default {
 			}
 		},
 
-		prepareCountrySpecificsForHousehold(countrySpecificAnswers) {
-			const preparedAnswers = [];
+		prepareCustomFieldValuesForHousehold(customFieldValues) {
+			const preparedValues = [];
 
-			Object.keys(countrySpecificAnswers).forEach((key) => {
-				const answer = countrySpecificAnswers[key];
-				const isAnswerArray = Array.isArray(answer);
+			Object.keys(customFieldValues).forEach((key) => {
+				const value = customFieldValues[key];
+				const isValueArray = Array.isArray(value);
 
-				if ((isAnswerArray && answer.length)
-					|| (answer !== null && answer !== undefined && !isAnswerArray)) {
-					preparedAnswers.push({
-						countrySpecificId: Number(key),
-						answer: String(answer),
-					});
+				if ((isValueArray && value.length)
+					|| (value !== null && value !== undefined && !isValueArray)) {
+					const customFieldValue = String(value);
+
+					if (customFieldValue.length) {
+						preparedValues.push({
+							customFieldId: Number(key),
+							value: customFieldValue,
+						});
+					}
 				}
 			});
 
-			return preparedAnswers;
+			return preparedValues;
 		},
 
 		async updateHousehold(id, householdBody) {
@@ -510,8 +514,8 @@ export default {
 
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
-					const customFieldValues = this.prepareCountrySpecificsForHousehold(
-						beneficiary.customFields,
+					const customFieldValues = this.prepareCustomFieldValuesForHousehold(
+						beneficiary.customFieldValues,
 					);
 
 					const preparedBeneficiary = {
