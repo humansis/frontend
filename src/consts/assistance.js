@@ -14,6 +14,10 @@ export default {
 		ACTIVITY: "activity",
 		DISTRIBUTION: "distribution",
 	},
+	CRITERIA_FIELD_TYPE: {
+		CORE: "core",
+		CUSTOM: "custom",
+	},
 	COMPONENT: {
 		SELECTION_CRITERIA: "selectionCriteria",
 		DISTRIBUTED_COMMODITY: "distributedCommodity",

@@ -117,6 +117,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -241,15 +242,25 @@ export default {
 		},
 
 		async fetchCriteriaFields(target) {
-			this.criteriaLoading = true;
+			try {
+				this.criteriaLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
-				.then(({ data }) => { this.options.criteria = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Fields")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaFields(
+					target.code,
+				);
 
-			this.criteriaLoading = false;
+				checkResponseStatus(status, message);
+
+				this.prepareDataForCriteria(data);
+			} catch (e) {
+				Notification(`${this.$t("Criteria Fields")}: ${e.message || e}`, "error");
+			} finally {
+				this.criteriaLoading = false;
+			}
 		},
 
 		async fetchCriteriaConditions(target, field) {
@@ -308,6 +319,38 @@ export default {
 				});
 
 			this.valueSelectLoading = false;
+		},
+
+		prepareDataForCriteria(selectionCriteria) {
+			this.options.criteria = selectionCriteria.sort((a, b) => {
+				const alphaNumericOrder = a.value.localeCompare(b.value, undefined, {
+					numeric: true,
+					sensitivity: "base",
+				});
+
+				if (a.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CORE
+					&& b.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM) {
+					return -1;
+				}
+
+				if (a.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
+					&& b.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CORE) {
+					return 1;
+				}
+
+				return alphaNumericOrder;
+			});
+
+			this.options.criteria = this.options.criteria.map((criteria) => {
+				const value = criteria.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
+					? `${criteria.value} (${this.$t("Custom Field")})`
+					: criteria.value;
+
+				return {
+					...criteria,
+					value,
+				};
+			});
 		},
 
 		presetValueBasedOnCriteria(criteria) {

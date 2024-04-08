@@ -62,12 +62,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getAssistanceSelectionCriteriaFields(targetCode) {
-		const { data: { data, totalCount } } = await fetcher(
-
-			{ uri: `selection-criteria/targets/${targetCode}/fields` },
-		);
-		return { data, totalCount };
+	getAssistanceSelectionCriteriaFields(targetCode) {
+		return fetcher({
+			uri: `selection-criteria/targets/${targetCode}/fields`,
+		});
 	},
 
 	async getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
