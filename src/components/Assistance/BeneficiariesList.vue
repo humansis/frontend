@@ -698,10 +698,6 @@ export default {
 			];
 		},
 
-		customFieldName() {
-			return this.commodities?.[0]?.division?.customFieldName;
-		},
-
 		defaultSortKey() {
 			return this.isAssistanceTargetInstitution ? "name" : "localFamilyName";
 		},

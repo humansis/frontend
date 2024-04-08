@@ -275,10 +275,6 @@ export default {
 			return "";
 		},
 
-		customFieldName() {
-			return this.commodities[0]?.division?.customFieldName;
-		},
-
 		assistanceType() {
 			return this.assistance?.type || "";
 		},

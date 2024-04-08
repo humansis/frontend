@@ -292,7 +292,7 @@ export default {
 					modalityType: modalityType?.value || modalityType,
 					division: this.getDivision(division?.code),
 					customFieldId: customField?.id || division?.customField?.id,
-					customFieldName: customField?.field || division?.customFieldName,
+					customFieldName: customField?.label || division?.customField?.label,
 					amountMultiplier: amountMultiplier || division?.amountMultiplier,
 					unit,
 					currency: currency?.value || currency,

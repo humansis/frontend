@@ -988,7 +988,7 @@ export default {
 				} = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
-					"field.asc",
+					"label.asc",
 					null,
 					{ type: "number" },
 				);
@@ -1001,7 +1001,7 @@ export default {
 					this.prepareCustomFieldsForSelect(data);
 				}
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.loading.customFields = false;
 			}
@@ -1111,7 +1111,7 @@ export default {
 		prepareCustomFieldsForSelect(customFields) {
 			this.options.customFields = customFields.map((customField) => ({
 				...customField,
-				value: `${customField.field} (${normalizeText(customField.targetType)})`,
+				value: `${customField.label} (${normalizeText(customField.targetType)})`,
 			}));
 		},
 	},

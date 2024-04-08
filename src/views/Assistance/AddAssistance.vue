@@ -577,11 +577,11 @@ export default {
 				await this.fetchCustomFields();
 
 				commodities.forEach((item, index) => {
-					const commodity = item?.division?.customFieldName;
-					const isCommodityFound = this.customFields.find((field) => field.field === commodity);
+					const commodity = item?.division?.customField?.key;
+					const isCommodityFound = this.customFields.find((field) => field.key === commodity);
 
 					if (commodity && !isCommodityFound) {
-						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been renamed or removed, Commodity must be added again.")}`, "warning");
+						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been removed, Commodity must be added again.")}`, "warning");
 						commodities.splice(index, 1);
 					}
 				});
