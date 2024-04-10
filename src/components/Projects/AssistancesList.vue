@@ -463,15 +463,15 @@ export default {
 				: `${data.reached} / ${data.total}`;
 		},
 
-		getRouteNameToAssistance(data) {
-			return data.state.value === "Closed"
-			|| data.state.value === "Validated"
+		getRouteNameToAssistance({ state: { code } }) {
+			return code === ASSISTANCE.STATUS.CLOSED
+			|| code === ASSISTANCE.STATUS.VALIDATED
 				? "AssistanceDetail"
 				: "AssistanceEdit";
 		},
 
 		assistanceProgress(data) {
-			return (data.state.value === "New" && this.$t("N/A"))
+			return (data.state.code === ASSISTANCE.STATUS.NEW && this.$t("N/A"))
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
