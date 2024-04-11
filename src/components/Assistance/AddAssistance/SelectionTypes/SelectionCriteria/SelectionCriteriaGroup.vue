@@ -93,6 +93,16 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		customFields: {
+			type: Array,
+			default: () => [],
+		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -123,14 +133,36 @@ export default {
 
 		criteriaGroups() {
 			const criteriaGroups = this.data.map((
-				{ criteria, criteriaTarget, value, scoreWeight, condition },
-			) => ({
-				criteriaTarget: criteriaTarget?.value || criteriaTarget?.code,
-				criteria: criteria?.value || criteria?.code,
-				value: this.prepareCriteriaValue(value),
-				scoreWeight,
-				condition: condition?.code,
-			}));
+				{
+					criteria,
+					criteriaTarget,
+					value,
+					scoreWeight,
+					condition,
+					newlyCreated,
+				},
+			) => {
+				const customFieldCriteria = this.isAssistanceDuplicated
+					? this.customFields.find((customField) => customField.key === criteria.code)
+					: null;
+				let criteriaValue = null;
+
+				if (newlyCreated) {
+					criteriaValue = criteria?.value || criteria?.code;
+				} else {
+					criteriaValue = customFieldCriteria
+						? `${customFieldCriteria?.label} (${this.$t("Custom Field")})`
+						: criteria?.value || criteria?.code;
+				}
+
+				return {
+					criteriaTarget: criteriaTarget?.value || criteriaTarget?.code,
+					criteria: criteriaValue,
+					value: this.prepareCriteriaValue(value),
+					scoreWeight,
+					condition: condition?.code,
+				};
+			});
 
 			return criteriaGroups || [];
 		},

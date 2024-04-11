@@ -70,6 +70,7 @@
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
 						:is-assistance-duplicated="isDuplicated"
+						:custom-fields="customFields"
 						@updatedData="onFetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
 						@deliveredCommodityValue="onGetDeliveredCommodityValue"
@@ -225,6 +226,7 @@ export default {
 				modalityType: "",
 			},
 			scoringTypes: [],
+			customFields: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
 			isDuplicated: false,
@@ -570,11 +572,11 @@ export default {
 			const preparedCommodities = [];
 
 			if (this.isDuplicated) {
-				const customFields = await this.fetchCustomFields() || [];
+				await this.fetchCustomFields();
 
 				commodities.forEach((item, index) => {
 					const commodity = item?.division?.customFieldName;
-					const isCommodityFound = customFields.find((field) => field.field === commodity);
+					const isCommodityFound = this.customFields.find((field) => field.field === commodity);
 
 					if (commodity && !isCommodityFound) {
 						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been renamed or removed, Commodity must be added again.")}`, "warning");
@@ -711,13 +713,11 @@ export default {
 					null,
 					null,
 					null,
-					{ type: "number" },
 				);
 
-				return data;
+				this.customFields = data;
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				return false;
 			}
 		},
 

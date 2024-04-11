@@ -56,6 +56,8 @@
 		:group-id="key"
 		:target-type="selectedTargetType"
 		:loading="calculationLoading"
+		:is-assistance-duplicated="isAssistanceDuplicated"
+		:custom-fields="customFields"
 		@addCriteria="onAddCriteria"
 		@updatedCriteria="onUpdatedCriteria"
 		@removeGroup="onRemoveCriteriaGroup(key)"
@@ -181,6 +183,11 @@ export default {
 		data: {
 			type: Array,
 			default: null,
+		},
+
+		customFields: {
+			type: Array,
+			default: () => [],
 		},
 
 		isAssistanceDuplicated: {
@@ -328,12 +335,14 @@ export default {
 
 			this.groups.forEach(({ data }, index) => {
 				data.forEach(({ condition, scoreWeight, value, criteriaTarget, criteria }) => {
+					const fieldType = criteria.type || criteria.code;
+
 					selectionCriteria.push({
 						group: Number(index),
 						target: criteriaTarget.code,
 						field: criteria.code,
 						condition: condition.code,
-						value: this.prepareCriteriaValue(value, criteria.type),
+						value: this.prepareCriteriaValue(value, fieldType),
 						weight: scoreWeight,
 					});
 				});
@@ -359,10 +368,12 @@ export default {
 					result = this.$moment(newValue).format("YYYY-MM-DD");
 					break;
 				case ASSISTANCE.FIELD_TYPE.LOCATION:
-					result = Number(newValue.replace("locationId-", ""));
+					result = (typeof newValue === "number")
+						? newValue
+						: Number(newValue.replace("locationId-", ""));
 					break;
 				default:
-					result = newValue;
+					result = String(newValue);
 			}
 
 			return result;
@@ -390,11 +401,11 @@ export default {
 		onSubmitCriteriaForm(criteriaForm) {
 			if (criteriaForm.groupId !== undefined) {
 				this.groups[criteriaForm.groupId].tableData = [];
-				this.groups[criteriaForm.groupId].data.push(criteriaForm);
+				this.groups[criteriaForm.groupId].data.push({ ...criteriaForm, newlyCreated: true });
 			} else {
 				const index = this.groups.push({ data: [] }) - 1;
 				this.groups[index].tableData = [];
-				this.groups[index].data.push(criteriaForm);
+				this.groups[index].data.push({ ...criteriaForm, newlyCreated: true });
 			}
 
 			this.criteriaModal.isOpened = false;
