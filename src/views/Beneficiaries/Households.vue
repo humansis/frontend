@@ -122,6 +122,7 @@
 					icon="search"
 					icon-color="primary"
 					label="Show Detail"
+					tooltip-text="Detail"
 					@actionConfirmed="onShowHouseholdDetail(householdId)"
 				/>
 
@@ -131,6 +132,7 @@
 					:data-cy="`table-row-${index + 1}-edit-button`"
 					icon="edit"
 					label="Edit"
+					tooltip-text="Edit"
 					@actionConfirmed="$router.push({ name: 'EditHousehold', params: { householdId } })"
 				/>
 
@@ -140,6 +142,7 @@
 					:data-cy="`table-row-${index + 1}-delete-button`"
 					icon="trash"
 					label="Delete"
+					tooltip-text="Delete"
 					icon-color="red"
 					confirm-title="Deleting Household"
 					confirm-message="Are you sure sure you want to delete Household?"
