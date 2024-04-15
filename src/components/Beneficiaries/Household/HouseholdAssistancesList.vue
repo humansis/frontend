@@ -52,7 +52,7 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "icon", type: "IconWithTooltip", sortable: false, withoutLabel: true },
-					{ key: "beneficiaryId", title: "Beneficiary Id", sortable: false },
+					{ key: "beneficiaryId", title: "Beneficiary ID", sortable: false },
 					{ key: "beneficiaryLocalGivenName", title: "Local Given Name", sortable: false },
 					{ key: "beneficiaryLocalFamilyName", title: "Local Family Name", sortable: false },
 					{ key: "state", title: "Status", type: "tag", customTags: statusTags, sortable: false },

@@ -11,7 +11,7 @@
 			<v-tab value="customFields" class="text-none">
 				<v-icon icon="user-edit" class="mr-2" />
 
-				{{ $t('Custom fields') }}
+				{{ $t('Custom Fields') }}
 			</v-tab>
 
 			<v-tab value="scoring" class="text-none">

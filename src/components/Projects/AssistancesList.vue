@@ -257,7 +257,7 @@ export default {
 					{ key: "dateDistribution", title: "Date of Assistance", type: "date" },
 					{ key: "dateExpiration", title: "Expiration Date" },
 					{ key: "commodity", type: "svgIcon", sortable: false },
-					{ key: "eloNumber", sortable: false },
+					{ key: "eloNumber", title: "ELO Number", sortable: false },
 					{ key: "activity", sortable: false },
 					{ key: "budgetLine", sortable: false },
 					...!this.upcoming ? [{ key: "actions", value: "actions", sortable: false, minWidth: "150" }] : [],

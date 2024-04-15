@@ -38,7 +38,7 @@
 			>
 				<v-icon :icon="icon" :color="iconColor" />
 
-				<span class="pl-2">{{ label }}</span>
+				<span class="pl-2">{{ $t(label) }}</span>
 			</v-btn>
 
 			<ConfirmAction

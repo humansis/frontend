@@ -36,8 +36,8 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "documentNumber", sortable: false },
-					{ key: "beneficiaryId", sortable: false },
+					{ key: "documentNumber", title: "Document number", sortable: false },
+					{ key: "beneficiaryId", title: "Beneficiary ID", sortable: false },
 					{ key: "message", sortable: false },
 				]),
 				total: 0,
