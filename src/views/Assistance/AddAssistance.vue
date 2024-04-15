@@ -26,7 +26,9 @@
 		/>
 
 		<div class="new-assistance-title">
-			<h1 class="text-h5 font-weight-bold">{{ $t('New Assistance') }}</h1>
+			<h1 class="text-h5 font-weight-bold" data-cy="page-title-text">
+				{{ $t('New Assistance') }}
+			</h1>
 
 			<span v-if="householdWithoutHead" class="integrity-issues">
 				<v-icon icon="exclamation-triangle" class="pr-2" />

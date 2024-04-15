@@ -22,11 +22,11 @@ export default {
 			}
 		},
 
-		identifierBuilder(elementIdentifier) {
+		identifierBuilder(elementIdentifier, isPageIdentifierEnabled = true) {
 			const pageIdentifierName = this.pageIdentifier();
 			const identifierParams = [];
 
-			if (pageIdentifierName.length) {
+			if (pageIdentifierName.length && isPageIdentifierEnabled) {
 				identifierParams.push(pageIdentifierName);
 			}
 

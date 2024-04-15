@@ -28,6 +28,7 @@
 							:title="$t(sideBarItem.title)"
 							:href="sideBarItem.href"
 							:active="isRouteActive(sideBarItem)"
+							:data-cy="identifierBuilder(`${sideBarItem.title}-button`, false)"
 							target="_blank"
 							rel="noopener noreferrer"
 							exact
@@ -61,6 +62,7 @@
 							:title="$t(sideBarItem.title)"
 							:to="sideBarItem.to"
 							:active="isRouteActive(sideBarItem)"
+							:data-cy="identifierBuilder(`${sideBarItem.title}-button`, false)"
 							exact
 						>
 							<template v-slot:prepend>
@@ -83,6 +85,7 @@
 						<v-list-group
 							v-else-if="isItemWithSubItems(sideBarItem)"
 							:value="sideBarItem.title"
+							:data-cy="identifierBuilder(`${sideBarItem.title}-button`, false)"
 							fluid
 						>
 							<template v-slot:activator="{ props }">
@@ -114,6 +117,7 @@
 									v-if="sideMenuItemsVisibility(subItem)"
 									:title="$t(subItem.title)"
 									:to="subItem.to"
+									:data-cy="identifierBuilder(`${subItem.title}-button`, false)"
 								>
 									<template v-slot:prepend>
 										<v-tooltip
@@ -152,16 +156,18 @@
 
 <script>
 import { mapState } from "vuex";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import gitInfo from "@/gitInfo";
 
 export default {
 	name: "SideMenu",
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {
+			dataCy: "side-menu",
 			sideBarItems: [
 				{
 					title: "Home",

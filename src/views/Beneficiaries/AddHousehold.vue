@@ -1,7 +1,9 @@
 <template>
 	<v-container fluid>
 		<div class="d-flex mb-4">
-			<h2 class="me-auto">{{ $t('Add Household') }}</h2>
+			<h2 class="me-auto" data-cy="page-title-text">
+				{{ $t('Add Household') }}
+			</h2>
 		</div>
 
 		<HouseholdTabs />

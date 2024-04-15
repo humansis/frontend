@@ -14,7 +14,7 @@
 		/>
 
 		<div class="d-flex mb-4">
-			<h2 class="me-auto">{{ $t('Households') }}</h2>
+			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Households') }}</h2>
 
 			<v-menu>
 				<template v-slot:activator="{ props }">
