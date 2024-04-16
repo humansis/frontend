@@ -366,14 +366,26 @@ export default {
 			switch (dataType) {
 				case ASSISTANCE.FIELD_TYPE.DATE:
 					result = this.$moment(newValue).format("YYYY-MM-DD");
+
 					break;
 				case ASSISTANCE.FIELD_TYPE.LOCATION:
 					result = (typeof newValue === "number")
 						? newValue
 						: Number(newValue.replace("locationId-", ""));
+
+					break;
+				case ASSISTANCE.FIELD_TYPE.GENDER:
+				case ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS:
+				case ASSISTANCE.FIELD_TYPE.LIVELIHOOD:
+				case ASSISTANCE.FIELD_TYPE.INTEGER:
+				case ASSISTANCE.FIELD_TYPE.DOUBLE:
+				case ASSISTANCE.FIELD_TYPE.STRING:
+				case ASSISTANCE.FIELD_TYPE.LOCATION_TYPE:
+					result = String(newValue);
+
 					break;
 				default:
-					result = String(newValue);
+					result = newValue;
 			}
 
 			return result;
