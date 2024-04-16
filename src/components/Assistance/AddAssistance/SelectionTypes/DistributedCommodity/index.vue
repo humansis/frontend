@@ -207,7 +207,7 @@ export default {
 		preparedCommodities() {
 			return this.modifiedTableData.map((
 				{
-					modalityType,
+					modalityTypeCode,
 					division,
 					customFieldId,
 					amountMultiplier,
@@ -229,7 +229,7 @@ export default {
 				const quantities = (quantitiesSource || this.isDivisionPerCustom) ? null : divisionFields;
 
 				return {
-					modalityType,
+					modalityType: modalityTypeCode,
 					unit,
 					quantity,
 					value,
@@ -287,9 +287,11 @@ export default {
 					payloadDivision = payloadDivisionCodFields;
 				}
 
+				// TODO modalityTypeCode is temporary solution for bug on prod, it will be refactored
 				return {
 					modality: modality?.value || modality,
 					modalityType: modalityType?.value || modalityType,
+					modalityTypeCode: modalityType?.code || modalityType,
 					division: this.getDivision(division?.code),
 					customFieldId: customField?.id || division?.customField?.id,
 					customFieldName: customField?.field || division?.customFieldName,
@@ -319,17 +321,17 @@ export default {
 		},
 
 		isModalityCash() {
-			const modality = this.table.data[0]?.modality?.value || this.table.data[0]?.modality;
+			const modality = this.table.data[0]?.modality?.code || this.table.data[0]?.modality;
 			return modality === ASSISTANCE.MODALITY.CASH;
 		},
 
 		isModalityInKind() {
-			const modality = this.table.data[0]?.modality?.value || this.table.data[0]?.modality;
+			const modality = this.table.data[0]?.modality?.code || this.table.data[0]?.modality;
 			return modality === ASSISTANCE.MODALITY.IN_KIND;
 		},
 
 		isModalityTypeSmartCard() {
-			const modalityType = this.table.data[0]?.modalityType?.value
+			const modalityType = this.table.data[0]?.modalityType?.code
 				|| this.table.data[0]?.modalityType;
 			return modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},

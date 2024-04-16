@@ -257,7 +257,7 @@ export default {
 					{ key: "dateDistribution", title: "Date of Assistance", type: "date" },
 					{ key: "dateExpiration", title: "Expiration Date" },
 					{ key: "commodity", type: "svgIcon", sortable: false },
-					{ key: "eloNumber", sortable: false },
+					{ key: "eloNumber", title: "ELO Number", sortable: false },
 					{ key: "activity", sortable: false },
 					{ key: "budgetLine", sortable: false },
 					...!this.upcoming ? [{ key: "actions", value: "actions", sortable: false, minWidth: "150" }] : [],
@@ -463,15 +463,15 @@ export default {
 				: `${data.reached} / ${data.total}`;
 		},
 
-		getRouteNameToAssistance(data) {
-			return data.state.value === "Closed"
-			|| data.state.value === "Validated"
+		getRouteNameToAssistance({ state: { code } }) {
+			return code === ASSISTANCE.STATUS.CLOSED
+			|| code === ASSISTANCE.STATUS.VALIDATED
 				? "AssistanceDetail"
 				: "AssistanceEdit";
 		},
 
 		assistanceProgress(data) {
-			return (data.state.value === "New" && this.$t("N/A"))
+			return (data.state.code === ASSISTANCE.STATUS.NEW && this.$t("N/A"))
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 

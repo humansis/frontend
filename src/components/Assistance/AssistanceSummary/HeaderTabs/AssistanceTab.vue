@@ -91,7 +91,7 @@
 
 		<v-col class="ma-2">
 			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
-				<p class="text-overline">{{ 'Date of Assistance' }}</p>
+				<p class="text-overline">{{ $t('Date of Assistance') }}</p>
 
 				<div
 					v-if="dateDistribution"
@@ -122,7 +122,7 @@
 
 		<v-col class="ma-2">
 			<v-sheet class="pa-1 text-center elevation-1 rounded-lg box">
-				<p class="text-overline">{{ 'Expiration Date' }}</p>
+				<p class="text-overline">{{ $t('Expiration Date') }}</p>
 
 				<div
 					v-if="dateExpiration && isCommoditySmartCard"
