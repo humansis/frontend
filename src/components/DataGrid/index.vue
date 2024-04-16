@@ -74,7 +74,7 @@
 							:data-cy="prepareComponentIdentifier()"
 							name="per-page"
 							class="per-page mr-5"
-							label="Per page"
+							label="Per Page"
 							@update:modelValue="onPerPageChanged"
 						/>
 					</v-col>

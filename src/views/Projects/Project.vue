@@ -268,7 +268,7 @@ export default {
 				projectId,
 				note,
 				round: {
-					code: (round === "N/A" ? null : round),
+					code: (round === this.$t("N/A") ? null : round),
 					value: round,
 				},
 			};

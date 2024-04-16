@@ -4,7 +4,7 @@
 			v-model="addBeneficiaryModal.isOpened"
 			:header="addBeneficiaryModel.removingId
 				? 'Remove Beneficiary From This Assistance'
-				: 'Add Beneficiaries to This Assistance'"
+				: 'Add Beneficiaries to this Assistance'"
 		>
 			<AddBeneficiaryForm
 				:form-model="addBeneficiaryModel"
@@ -116,9 +116,7 @@
 				max-width="900"
 				class="mb-6"
 			>
-				{{ $t(`To change the amount to be distributed, you must change the Custom field:`) }}
-				{{ customFieldName }}
-				{{ $t(`value for the Beneficiary, and then use Recalculate.`) }}
+				{{ $t(`To change the amount to be distributed, you must change the Custom field: {customFieldName} value for the Beneficiary, and then use Recalculate.`, { customFieldName }) }}
 			</v-alert>
 		</div>
 

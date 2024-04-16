@@ -125,7 +125,7 @@ const routes = [
 						component: () => import("@/views/Projects/Projects"),
 						meta: {
 							permissions: [],
-							description: "This page is where you can see all the country's projects (only thoses that you have the right to see).",
+							description: "This page is where you can see all the country`s projects (only thoses that you have the right to see).",
 						},
 					},
 					{
@@ -263,7 +263,7 @@ const routes = [
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
 									permissions: [],
-									description: "This page is where ou can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
+									description: "This page is where you can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
 							{
@@ -378,7 +378,7 @@ const routes = [
 						meta: {
 							permissions: ["viewProducts"],
 							breadcrumb: "Products",
-							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights.",
 						},
 					},
 					{
@@ -387,7 +387,7 @@ const routes = [
 						component: () => import(/* webpackChunkName: "CountrySpecific" */ "@/views/CountrySettings/CountrySpecific"),
 						meta: {
 							breadcrumb: "Country specifics",
-							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights",
+							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights.",
 						},
 					},
 				],

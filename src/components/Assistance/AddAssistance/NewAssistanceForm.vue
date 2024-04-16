@@ -42,7 +42,7 @@
 
 			<DataInput
 				v-model="formModel.eloNumber"
-				label="Elo number"
+				label="ELO number"
 				name="elo-number"
 				class="mb-4"
 				@input="onUpdateData(false)"

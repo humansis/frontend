@@ -2,7 +2,7 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.institutionName"
-			label="Institution name"
+			label="Institution Name"
 			name="institution-name"
 			class="mb-4"
 			disabled
@@ -11,7 +11,7 @@
 		<DataSelect
 			v-model="formModel.institutionType"
 			:items="options.institutionTypes"
-			label="Institution type"
+			label="Institution Type"
 			name="institution-type"
 			class="mb-4"
 			disabled

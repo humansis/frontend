@@ -2,7 +2,7 @@
 	<v-card-text>
 		<p v-if="!formModel.removingId" class="mb-5">
 			{{ $t('Please select the beneficiaries that you want to add to the') }}
-			<strong>{{ assistance.name }} </strong>{{ $t('assistance') }}.
+			<strong>{{ assistance.name }}</strong> {{ $t('assistance') }}.
 		</p>
 
 		<p v-else class="mb-5">

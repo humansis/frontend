@@ -162,7 +162,9 @@
 					</v-col>
 				</v-row>
 
-				<h4 class="mb-1">Target
+				<h4 class="mb-1">
+					{{ $t("Target") }}
+
 					<span class="font-weight-light font-italic">- Optional</span>
 				</h4>
 
