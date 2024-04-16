@@ -20,6 +20,14 @@ export default {
 		ACTIVITY: "activity",
 		DISTRIBUTION: "distribution",
 	},
+	CRITERIA_TARGET: {
+		HEAD: "Head",
+		BENEFICIARY: "Beneficiary",
+		HOUSEHOLD: "Household",
+	},
+	CRITERIA: {
+		HAS_VALID_SMART_CARD: "hasValidSmartcard",
+	},
 	CRITERIA_FIELD_TYPE: {
 		CORE: "core",
 		CUSTOM: "custom",
