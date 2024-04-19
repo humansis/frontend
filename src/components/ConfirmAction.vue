@@ -36,6 +36,7 @@
 				<v-btn
 					v-if="isCloseButtonVisible"
 					:color="closeButtonColor"
+					:data-cy="identifierBuilder(`${closeButtonName}--confirm-button`, false)"
 					variant="elevated"
 					class="text-none"
 					@click="isOpened = false"
@@ -46,6 +47,7 @@
 				<v-btn
 					v-if="isConfirmButtonVisible"
 					:color="confirmButtonColor"
+					:data-cy="identifierBuilder(`${confirmButtonName}-confirm-button`, false)"
 					variant="elevated"
 					class="text-none"
 					@click="onActionConfirmed"
@@ -58,10 +60,14 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
+
 export default {
 	name: "ConfirmAction",
 
 	emits: ["modalClosed", "actionConfirmed"],
+
+	mixins: [identifierBuilder],
 
 	props: {
 		isDialogOpened: {
@@ -115,6 +121,11 @@ export default {
 		},
 
 		prependIconColor: {
+			type: String,
+			default: "",
+		},
+
+		dataCy: {
 			type: String,
 			default: "",
 		},

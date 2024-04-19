@@ -5,6 +5,7 @@
 
 			<v-btn
 				v-if="userCan.addEditVendors"
+				:data-cy="identifierBuilder('new-button')"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
@@ -59,6 +60,7 @@ import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
 import Modal from "@/components/Inputs/Modal";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import usersHelper from "@/mixins/usersHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -74,7 +76,11 @@ export default {
 		VendorForm,
 	},
 
-	mixins: [permissions, usersHelper],
+	mixins: [
+		permissions,
+		identifierBuilder,
+		usersHelper,
+	],
 
 	data() {
 		return {

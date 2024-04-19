@@ -6,6 +6,8 @@ export default {
 			switch (this.$route.name) {
 				case "Products":
 					return "products";
+				case "Project":
+					return "project-assistance";
 				case "Projects":
 				case "AddProject":
 				case "ProjectDetail":

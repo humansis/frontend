@@ -5,6 +5,7 @@
 		:loading="isLoadingList"
 		:items="table.data"
 		:custom-key-sort="customSort"
+		:data-cy="prepareComponentIdentifier('redeemed-batches-table')"
 		is-row-click-disabled
 		is-default-footer-visible
 	>
@@ -23,6 +24,7 @@ import SmartcardService from "@/services/SmartcardService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -44,7 +46,7 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid],
+	mixins: [grid, identifierBuilder],
 
 	props: {
 		projects: {

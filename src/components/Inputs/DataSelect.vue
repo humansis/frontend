@@ -43,6 +43,7 @@
 				v-if="!iconLoading"
 				:icon="appendIcon"
 				:color="appendIconColor"
+				:data-cy="identifierBuilder('button')"
 				@click="$emit('append-icon-clicked')"
 			/>
 
