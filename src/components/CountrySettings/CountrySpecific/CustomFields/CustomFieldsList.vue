@@ -129,6 +129,7 @@ export default {
 					this.table.sortColumn !== ""
 						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
 						: "",
+					this.table.searchPhrase,
 				);
 
 				checkResponseStatus(status, message);
