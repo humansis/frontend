@@ -8,6 +8,7 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
+		is-frontend-sort-disabled
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
@@ -172,8 +173,10 @@ export default {
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].type = normalizeText(item.type);
+				this.table.data[key] = {
+					...item,
+					type: normalizeText(item.type),
+				};
 			});
 		},
 

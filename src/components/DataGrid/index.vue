@@ -51,6 +51,8 @@
 
 		<v-data-table
 			v-bind="$attrs"
+			:headers="headers"
+			:custom-key-sort="frontendSorting"
 			:cell-props="getCellProps"
 			:items-per-page-options="TABLE.PER_PAGE_OPTIONS"
 			@[rowClickEvent]="onHandleRowClick"
@@ -143,7 +145,7 @@
 			</template>
 
 			<template
-				v-for="(column, headerIndex) in $attrs.headers"
+				v-for="(column, headerIndex) in headers"
 				v-slot:[`item.${column.key}`]="{ item, index }"
 				:key="headerIndex"
 			>
@@ -266,6 +268,21 @@ export default {
 			type: String,
 			default: "elevated",
 		},
+
+		headers: {
+			type: Object,
+			required: true,
+		},
+
+		isFrontendSortDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		customKeySort: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
@@ -281,6 +298,22 @@ export default {
 	computed: {
 		pageCount() {
 			return Math.ceil(this.totalCount / this.perPage);
+		},
+
+		frontendSorting() {
+			return this.isFrontendSortDisabled ? this.resetFrontendSorting : this.customKeySort;
+		},
+
+		resetFrontendSorting() {
+			const customSort = {};
+
+			this.headers.forEach((header) => {
+				if (header?.sortable !== false) {
+					customSort[header.key] = () => {};
+				}
+			});
+
+			return customSort;
 		},
 	},
 
