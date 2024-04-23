@@ -22,7 +22,7 @@
 			<v-radio
 				v-for="({ code, value }) of options.categoryTypes"
 				:key="`category-type-${code}`"
-				:value="value"
+				:value="code"
 				:disabled="formDisabled"
 				:data-cy="identifierBuilder(`${code}-checkbox`)"
 				class="mb-3"
