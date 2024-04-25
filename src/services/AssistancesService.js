@@ -30,6 +30,12 @@ export default {
 		return { data, totalCount };
 	},
 
+	getShortListOfAssistance({ filters }) {
+		return fetcher({
+			uri: `catalogs/assistance${queryBuilder({ filters })}`,
+		});
+	},
+
 	async getAssistances(ids) {
 		const idsText = ids ? idsToUri(ids) : "";
 
