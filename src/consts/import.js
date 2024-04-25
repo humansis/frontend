@@ -39,4 +39,10 @@ export default {
 	FAIL_REASON: {
 		BAD_VERSION: "Bad version",
 	},
+	STEPS_SLUG: {
+		START: "start-import",
+		INTEGRITY_CHECK: "integrity-check",
+		IDENTITY_CHECK: "identity-check",
+		FINALISATION: "finalisation",
+	},
 };

@@ -158,10 +158,10 @@ export default {
 				"Finalisation",
 			],
 			steps: [
-				{ code: 1, slug: "start-import" },
-				{ code: 2, slug: "integrity-check" },
-				{ code: 3, slug: "identity-check" },
-				{ code: 4, slug: "finalisation" },
+				{ code: 1, slug: IMPORT.STEPS_SLUG.START },
+				{ code: 2, slug: IMPORT.STEPS_SLUG.INTEGRITY_CHECK },
+				{ code: 3, slug: IMPORT.STEPS_SLUG.IDENTITY_CHECK },
+				{ code: 4, slug: IMPORT.STEPS_SLUG.FINALISATION },
 			],
 			confirmModal: {
 				isOpen: false,
@@ -418,6 +418,10 @@ export default {
 		},
 
 		stepsRedirect(status) {
+			const tabIndex = this.$route.query.step === IMPORT.STEPS_SLUG.FINALISATION
+				? this.steps.find((step) => step.slug === IMPORT.STEPS_SLUG.FINALISATION).code
+				: this.steps.find((step) => step.slug === IMPORT.STEPS_SLUG.IDENTITY_CHECK).code;
+
 			switch (status) {
 				case IMPORT.STATUS.CANCEL:
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
@@ -432,8 +436,11 @@ export default {
 					this.onChangeTab(4);
 					break;
 
-				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
+					this.onChangeTab(tabIndex);
+					break;
+
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 					this.onChangeTab(3);
 					break;
