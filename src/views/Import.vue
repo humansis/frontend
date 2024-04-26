@@ -418,9 +418,10 @@ export default {
 		},
 
 		stepsRedirect(status) {
-			const tabIndex = this.$route.query.step === IMPORT.STEPS_SLUG.FINALISATION
-				? this.steps.find((step) => step.slug === IMPORT.STEPS_SLUG.FINALISATION).code
-				: this.steps.find((step) => step.slug === IMPORT.STEPS_SLUG.IDENTITY_CHECK).code;
+			const stepSlug = this.$route.query.step === IMPORT.STEPS_SLUG.FINALISATION
+				? IMPORT.STEPS_SLUG.FINALISATION
+				: IMPORT.STEPS_SLUG.IDENTITY_CHECK;
+			const tabIndex = this.steps.find((step) => step.slug === stepSlug).code;
 
 			switch (status) {
 				case IMPORT.STATUS.CANCEL:
