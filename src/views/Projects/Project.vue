@@ -62,6 +62,7 @@ import Modal from "@/components/Inputs/Modal";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import ProjectSummary from "@/components/Projects/ProjectSummary";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -104,6 +105,7 @@ export default {
 				target: "",
 				note: "",
 				round: null,
+				eloNumber: "",
 			},
 		};
 	},
@@ -167,27 +169,49 @@ export default {
 		},
 
 		async onEditAssistance(
-			{ id, name, dateDistribution, dateExpiration, round, note, locationId },
+			{
+				id,
+				name,
+				dateDistribution,
+				dateExpiration,
+				round,
+				eloNumber,
+				note,
+				locationId,
+			},
 		) {
 			const formattedDateDistribution = dateDistribution
 				? this.$moment(dateDistribution).format("YYYY-MM-DD")
 				: null;
-
 			const formattedDateExpiration = dateExpiration
 				? this.$moment(dateExpiration).format("YYYY-MM-DD")
 				: null;
+			const assistanceBody = {
+				name,
+				round,
+				note: note?.length ? note : null,
+				locationId,
+				eloNumber: eloNumber?.length ? eloNumber : null,
+				...(formattedDateDistribution && { dateDistribution: formattedDateDistribution }),
+				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
+			};
 
-			await AssistancesService.updateAssistance({
-				id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
-			})
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Assistance Successfully Updated"), "success");
-						this.$refs.assistancesList.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.updateAssistance(
+					id,
+					assistanceBody,
+				);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Assistance Successfully Updated"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")} ${e.message || e}:`, "error");
+			}
 		},
 
 		async onRemoveAssistance(id) {
@@ -245,6 +269,7 @@ export default {
 				subsector,
 				type,
 				round,
+				eloNumber,
 				note,
 			},
 		) {
@@ -267,6 +292,7 @@ export default {
 				name,
 				projectId,
 				note,
+				eloNumber,
 				round: {
 					code: (round === this.$t("N/A") ? null : round),
 					value: round,

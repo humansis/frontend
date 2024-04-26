@@ -48,7 +48,14 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
+			class="mb-4"
 			@update:modelValue="onValuesForAssistanceName"
+		/>
+
+		<DataInput
+			v-model="formModel.eloNumber"
+			label="ELO number"
+			name="elo-number"
 		/>
 
 		<p
@@ -420,6 +427,7 @@ export default {
 			const data = {
 				id: this.formModel.id,
 				note: this.formModel.note,
+				eloNumber: this.formModel.eloNumber,
 				...(!this.isAssistanceValidated && {
 					name: this.formModel.name,
 					round: this.formModel.round?.code,
