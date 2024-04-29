@@ -350,7 +350,7 @@ export default {
 		},
 
 		searchValue() {
-			return this.$refs.search.value;
+			return this.$refs.search?.value;
 		},
 	},
 };
