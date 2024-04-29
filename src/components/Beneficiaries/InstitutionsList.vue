@@ -37,7 +37,7 @@
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Institution"
-				confirm-message="Are you sure sure you want to delete Institution?"
+				confirm-message="Are you sure you want to delete Institution?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				close-button-name="Cancel"

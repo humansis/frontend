@@ -59,7 +59,7 @@ export default {
 			if (Object.keys(validation).includes("minValue")
 				&& validation.minValue.$invalid
 				&& validation.$errors[0]) {
-				return this.$t(validation?.$errors[0]?.$message);
+				return this.$t(`The minimum allowed value is {value}`, { value: validation?.$errors[0].$params.min });
 			}
 
 			if (Object.keys(validation).includes("passwordValidation")

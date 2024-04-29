@@ -44,7 +44,7 @@
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Voucher"
-				confirm-message="Are you sure sure you want to delete Voucher?"
+				confirm-message="Are you sure you want to delete Voucher?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action

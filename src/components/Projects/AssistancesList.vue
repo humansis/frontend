@@ -33,6 +33,7 @@
 		:loading="isLoadingList"
 		:is-search-visible="!upcoming"
 		:custom-key-sort="customSort"
+		:no-data-text="$t('No data available')"
 		is-row-click-disabled
 		reset-sort-button
 		@perPageChanged="onPerPageChange"

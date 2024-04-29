@@ -29,7 +29,7 @@
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Scoring"
-				confirm-message="Are you sure sure you want to delete Scoring?"
+				confirm-message="Are you sure you want to delete Scoring?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action

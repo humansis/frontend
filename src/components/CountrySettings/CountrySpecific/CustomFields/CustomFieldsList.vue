@@ -36,7 +36,7 @@
 			<!--		tooltip-text="Delete"-->
 			<!--		icon-color="red"-->
 			<!--		confirm-title="Deleting Custom Field"-->
-			<!--		confirm-message="Are you sure sure you want to delete Custom Field?"-->
+			<!--		confirm-message="Are you sure you want to delete Custom Field?"-->
 			<!--		prepend-icon="circle-exclamation"-->
 			<!--		prepend-icon-color="red"-->
 			<!--		is-confirm-action-->

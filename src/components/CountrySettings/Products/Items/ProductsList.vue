@@ -39,7 +39,7 @@
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Product"
-				confirm-message="Are you sure sure you want to delete Product?"
+				confirm-message="Are you sure you want to delete Product?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
