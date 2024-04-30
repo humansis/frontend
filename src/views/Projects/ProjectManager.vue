@@ -223,7 +223,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { required } from "@vuelidate/validators";
+import { helpers, required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import DonorService from "@/services/DonorService";
 import ProjectService from "@/services/ProjectService";
@@ -243,7 +243,7 @@ import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
-const minDate = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
+const isEndDateValid = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 const todayDate = new Date();
 const OPTIONS_FOR_COLUMN_INDEX = {
 	SECTOR: 0,
@@ -281,7 +281,10 @@ export default {
 				startDate: { required },
 				endDate: {
 					required,
-					minValue: minDate,
+					isDateValid: helpers.withMessage(
+						`End Date is before Start Date.`,
+						isEndDateValid,
+					),
 				},
 				allowedProductCategoryTypes: { required },
 			},
