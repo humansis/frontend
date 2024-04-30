@@ -612,6 +612,8 @@ export default {
 
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.selectionCriteriaUpdate();
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -626,6 +628,10 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
 
+			this.selectionCriteriaUpdate();
+		},
+
+		selectionCriteriaUpdate() {
 			this.$emit(
 				"updatedData",
 				this.prepareCriteria(),
