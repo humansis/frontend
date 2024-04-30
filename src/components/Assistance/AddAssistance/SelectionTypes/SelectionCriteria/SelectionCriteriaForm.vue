@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "@vuelidate/validators";
+import { integer, minValue, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -141,9 +141,13 @@ export default {
 				criteriaTarget: { required },
 				criteria: { required },
 				condition: { required },
-				value: { required: requiredIf(
-					this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION,
-				) },
+				value: {
+					required: requiredIf(this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION),
+					...(this.isSelectedCriteriaInteger && {
+						minValue: minValue(1),
+						integer,
+					}),
+				},
 			},
 		};
 	},
@@ -220,6 +224,10 @@ export default {
 
 		isCriteriaTypeOfList() {
 			return this.selectedCriteria.allowedValues?.length;
+		},
+
+		isSelectedCriteriaInteger() {
+			return this.formModel.criteria?.type === ASSISTANCE.FIELD_TYPE.INTEGER;
 		},
 	},
 
