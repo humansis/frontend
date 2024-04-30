@@ -282,7 +282,7 @@ export default {
 				endDate: {
 					required,
 					isDateValid: helpers.withMessage(
-						`End Date if before Start Date.`,
+						`End Date is before Start Date.`,
 						isEndDateValid,
 					),
 				},
