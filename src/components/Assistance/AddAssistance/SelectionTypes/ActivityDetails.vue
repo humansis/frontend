@@ -104,6 +104,7 @@ export default {
 		data(data) {
 			if (data) {
 				this.formModel = data;
+				this.$emit("updatedData", this.formModel);
 			}
 		},
 	},

@@ -278,12 +278,17 @@ export default {
 	},
 
 	watch: {
-		groups(groups) {
-			if (!groups.length) {
-				this.minimumSelectionScore = null;
-			}
+		groups: {
+			deep: true,
+			handler(groups) {
+				if (!groups.length) {
+					this.minimumSelectionScore = null;
+					this.totalCount = 0;
+					this.countOf = 0;
+				}
 
-			this.$emit("deliveredCommodityValue");
+				this.$emit("deliveredCommodityValue");
+			},
 		},
 
 		data(data) {
@@ -500,9 +505,6 @@ export default {
 				await this.calculationOfAssistanceBeneficiariesScores({
 					assistanceBody,
 				});
-			} else {
-				this.totalCount = 0;
-				this.countOf = 0;
 			}
 
 			this.$emit("deliveredCommodityValue");
@@ -515,7 +517,7 @@ export default {
 				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
 					.then(({ data, status }) => {
 						if (status === 200) {
-							if (groupKey === null) {
+							if (groupKey === null && this.groups.length) {
 								if (totalCount) {
 									this.totalCount = data.totalCount;
 								} else {
@@ -610,6 +612,8 @@ export default {
 
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.selectionCriteriaUpdate();
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -624,6 +628,10 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
 
+			this.selectionCriteriaUpdate();
+		},
+
+		selectionCriteriaUpdate() {
 			this.$emit(
 				"updatedData",
 				this.prepareCriteria(),

@@ -180,7 +180,7 @@ export default {
 					{
 						key: "actions",
 						value: "actions",
-						title: "Records From File / Humansis",
+						title: "Use Record From",
 						sortable: false,
 					},
 				]),

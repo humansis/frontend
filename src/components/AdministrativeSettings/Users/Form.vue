@@ -282,20 +282,19 @@ export default {
 				await ProjectService.getListOfProjects()
 					.then(({ data }) => {
 						this.options.projects = data;
+
+						this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
 					}).catch((e) => {
 						Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 					});
-			}
-
-			if (this.formModel.id) {
+			} else if (this.formModel.id) {
 				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
-					this.options.projects = [...this.options.projects, ...data];
+					this.formModel.projectIds = data;
 				}).catch((e) => {
 					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
 				});
 			}
 
-			this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, this.options.projects, "id");
 			this.projectsLoading = false;
 		},
 

@@ -32,6 +32,8 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:is-search-visible="!upcoming"
+		:custom-key-sort="customSort"
+		:no-data-text="$t('No data available')"
 		is-row-click-disabled
 		reset-sort-button
 		@perPageChanged="onPerPageChange"
@@ -172,6 +174,7 @@ import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
+const customSort = { progress: () => {} };
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
 	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
@@ -221,6 +224,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			customSort,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
@@ -346,7 +350,7 @@ export default {
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
+					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");

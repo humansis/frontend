@@ -145,7 +145,7 @@
 					tooltip-text="Delete"
 					icon-color="red"
 					confirm-title="Deleting Household"
-					confirm-message="Are you sure sure you want to delete Household?"
+					confirm-message="Are you sure you want to delete Household?"
 					prepend-icon="circle-exclamation"
 					prepend-icon-color="red"
 					is-confirm-action

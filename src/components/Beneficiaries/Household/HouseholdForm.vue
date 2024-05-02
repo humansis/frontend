@@ -190,7 +190,7 @@
 				/>
 
 				<DataInput
-					v-model="formModel.externalSupport.supportOrganization"
+					v-model.trim="formModel.externalSupport.supportOrganization"
 					:data-cy="prepareComponentIdentifier()"
 					label="Support organisation"
 					name="support-organisation"
@@ -221,7 +221,7 @@
 				/>
 
 				<DataTextarea
-					v-model="formModel.notes"
+					v-model.trim="formModel.notes"
 					:data-cy="prepareComponentIdentifier()"
 					label="Notes"
 					name="notes"

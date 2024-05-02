@@ -277,6 +277,7 @@ export default {
 					this.redemptionSummary = true;
 					this.redeemButtonPressed = true;
 					this.redemptionBatch = data;
+					this.redemptionCurrency = batch.currency;
 				})
 				.catch((e) => {
 					Notification(`${this.$t("Redeem Batch")} ${e.message || e}`, "error");

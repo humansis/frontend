@@ -286,13 +286,13 @@
 										color="error"
 										class="font-weight-bold mr-2 mb-2"
 									>
-										{{ column }}
+										{{ $t(column) }}
 									</v-chip>
 
 									<br>
 
 									<span class="text-body-2">
-										{{ message }}
+										{{ $t(message) }}
 									</span>
 								</div>
 							</td>

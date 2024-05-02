@@ -26,7 +26,7 @@
 				/>
 
 				<DataInput
-					v-model="formModel.enumerator"
+					v-model.trim="formModel.enumerator"
 					:data-cy="prepareComponentIdentifier()"
 					label="Enumerator"
 					name="enumerator"

@@ -6,6 +6,7 @@ import ProductService from "@/services/ProductService";
 import ProjectService from "@/services/ProjectService";
 import VendorService from "@/services/VendorService";
 import baseHelper from "@/mixins/baseHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -281,17 +282,30 @@ export default {
 				});
 		},
 
-		async fetchAssistance() {
-			this.filtersOptions.distribution.loading = true;
+		async fetchAssistanceForAdvancedSearch() {
+			try {
+				this.filtersOptions.distribution.loading = true;
 
-			this.selectedAssistanceForFilter = [];
-			await AssistancesService.getListOfProjectAssistancesByType("distribution", this.selectedFiltersOptions.project?.id)
-				.then(({ data }) => {
-					this.filtersOptions.distribution.data = data;
-					this.filtersOptions.distribution.loading = false;
-				}).catch((e) => {
-					Notification(`Project Assistances ${e.message || e}`, "error");
-				});
+				const projectId = this.selectedFiltersOptions.project?.id;
+				const filters = { ...(projectId && {
+					projects: [projectId],
+					type: "distribution",
+				}) };
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getShortListOfAssistance({ filters });
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.distribution.data = data;
+			} catch (e) {
+				Notification(`Project Assistances ${e.message || e}:`, "error");
+			} finally {
+				this.filtersOptions.distribution.loading = false;
+			}
 		},
 	},
 };

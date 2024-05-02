@@ -160,7 +160,7 @@ export default {
 			this.fetchDistricts(),
 			this.fetchCommunes(),
 			this.fetchVillages(),
-			this.fetchAssistance(),
+			this.fetchAssistanceForAdvancedSearch(),
 		]).then(() => {
 			this.fillParentCommunes();
 			this.fillParentDistricts();
@@ -225,7 +225,8 @@ export default {
 			if (filterName === "project") {
 				this.selectedFiltersOptions.distribution = [];
 				preparedFilters.distribution = null;
-				this.fetchAssistance();
+
+				await this.fetchAssistanceForAdvancedSearch();
 			}
 
 			const location = this.getLocation(filters);
