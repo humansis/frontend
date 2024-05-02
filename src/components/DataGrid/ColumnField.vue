@@ -63,8 +63,9 @@
 
 	<template v-if="column.type === 'tag'">
 		<v-chip
+			:color="getTagColor(cellData)"
+			:class="getTagClass(cellData)"
 			variant="flat"
-			:color="getTagColor"
 			size="small"
 		>
 			{{ normalizeText($t(cellData)) }}
@@ -77,7 +78,8 @@
 			:key="`tags-array-item-${index}`"
 		>
 			<v-chip
-				:color="getTagTypeByItem(item)"
+				:color="getTagColor(item)"
+				:class="getTagClass(item)"
 				variant="flat"
 				size="small"
 			>
@@ -157,6 +159,13 @@
 			:key="`array-text-break-${index}`"
 			:class="{ 'mb-4': isMembersLastRecord(item) }"
 		>
+			<p
+				v-if="item === 'hasBeneficiaryIdDuplicity'"
+				class="text-red"
+			>
+				{{ $t('Beneficiary ID and official ID matches two different Beneficiaries in database and this must be corrected, before data can be imported') }}
+			</p>
+
 			<v-chip
 				v-if="item === 'hasNoDuplicityDifferences'"
 				type="grey-lighten-2"
@@ -165,7 +174,7 @@
 			</v-chip>
 
 			<span
-				v-else-if="item !== 'hasNoDuplicityDifferences' && !isMembersLastRecord(item)"
+				v-else-if="isRecordValidToShow(item)"
 				:class="{ 'font-weight-bold': column.boldText }"
 				v-html-secure="item"
 			/>
@@ -213,12 +222,6 @@ export default {
 	},
 
 	computed: {
-		getTagColor() {
-			const tag = this.column.customTags
-				.find(({ code }) => code === this.cellData);
-			return tag?.type || "primary";
-		},
-
 		formattedDate() {
 			return this.cellData && (typeof this.cellData !== "object" || this.cellData instanceof Date)
 				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD")}`
@@ -267,8 +270,12 @@ export default {
 			return this.cellData.name || "";
 		},
 
-		getTagTypeByItem(item) {
+		getTagColor(item) {
 			return this.column.customTags.find(({ code }) => code === item)?.type;
+		},
+
+		getTagClass(item) {
+			return this.column.customTags.find(({ code }) => code === item)?.class;
 		},
 
 		isAssistanceRemote(data) {
@@ -277,6 +284,12 @@ export default {
 
 		isMembersLastRecord(item) {
 			return item === "memberDuplicitiesLastItem";
+		},
+
+		isRecordValidToShow(item) {
+			const exceptions = ["hasNoDuplicityDifferences", "hasBeneficiaryIdDuplicity"];
+
+			return !exceptions.includes(item) && !this.isMembersLastRecord(item);
 		},
 	},
 };

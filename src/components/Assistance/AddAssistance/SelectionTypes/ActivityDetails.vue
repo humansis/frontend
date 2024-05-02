@@ -12,7 +12,7 @@
 				label="Activity Description"
 				name="activity-description"
 				class="mb-4"
-				@blur="onDataInput('activityDescription')"
+				@update:modelValue="onDataInput('activityDescription')"
 			/>
 
 			<DataInput
@@ -25,7 +25,7 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onDataInput('householdsTargeted')"
+				@update:modelValue="onDataInput('householdsTargeted')"
 			/>
 
 			<DataInput
@@ -38,14 +38,14 @@
 				min="0"
 				class="mb-4"
 				hide-spin-buttons
-				@blur="onDataInput('individualsTargeted')"
+				@update:modelValue="onDataInput('individualsTargeted')"
 			/>
 		</v-card-text>
 	</v-card>
 </template>
 
 <script>
-import { requiredIf } from "@vuelidate/validators";
+import { integer, minValue, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import validation from "@/mixins/validation";
 
@@ -64,8 +64,16 @@ export default {
 		return {
 			formModel: {
 				activityDescription: { required: requiredIf(this.visible.activityDescription) },
-				householdsTargeted: { required: requiredIf(this.visible.householdsTargeted) },
-				individualsTargeted: { required: requiredIf(this.visible.individualsTargeted) },
+				householdsTargeted: {
+					required: requiredIf(this.visible.householdsTargeted),
+					minValue: minValue(0),
+					integer,
+				},
+				individualsTargeted: {
+					required: requiredIf(this.visible.individualsTargeted),
+					minValue: minValue(0),
+					integer,
+				},
 			},
 		};
 	},
@@ -96,6 +104,7 @@ export default {
 		data(data) {
 			if (data) {
 				this.formModel = data;
+				this.$emit("updatedData", this.formModel);
 			}
 		},
 	},

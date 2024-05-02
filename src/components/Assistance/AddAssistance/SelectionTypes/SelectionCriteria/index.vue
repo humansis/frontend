@@ -56,6 +56,8 @@
 		:group-id="key"
 		:target-type="selectedTargetType"
 		:loading="calculationLoading"
+		:is-assistance-duplicated="isAssistanceDuplicated"
+		:custom-fields="customFields"
 		@addCriteria="onAddCriteria"
 		@updatedCriteria="onUpdatedCriteria"
 		@removeGroup="onRemoveCriteriaGroup(key)"
@@ -143,6 +145,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
 import { normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT } from "@/consts";
@@ -180,6 +183,11 @@ export default {
 		data: {
 			type: Array,
 			default: null,
+		},
+
+		customFields: {
+			type: Array,
+			default: () => [],
 		},
 
 		isAssistanceDuplicated: {
@@ -270,12 +278,17 @@ export default {
 	},
 
 	watch: {
-		groups(groups) {
-			if (!groups.length) {
-				this.minimumSelectionScore = null;
-			}
+		groups: {
+			deep: true,
+			handler(groups) {
+				if (!groups.length) {
+					this.minimumSelectionScore = null;
+					this.totalCount = 0;
+					this.countOf = 0;
+				}
 
-			this.$emit("deliveredCommodityValue");
+				this.$emit("deliveredCommodityValue");
+			},
 		},
 
 		data(data) {
@@ -327,12 +340,14 @@ export default {
 
 			this.groups.forEach(({ data }, index) => {
 				data.forEach(({ condition, scoreWeight, value, criteriaTarget, criteria }) => {
+					const fieldType = criteria.type || criteria.code;
+
 					selectionCriteria.push({
 						group: Number(index),
 						target: criteriaTarget.code,
 						field: criteria.code,
 						condition: condition.code,
-						value: this.prepareCriteriaValue(value, criteria.type),
+						value: this.prepareCriteriaValue(value, fieldType),
 						weight: scoreWeight,
 					});
 				});
@@ -356,9 +371,23 @@ export default {
 			switch (dataType) {
 				case ASSISTANCE.FIELD_TYPE.DATE:
 					result = this.$moment(newValue).format("YYYY-MM-DD");
+
 					break;
 				case ASSISTANCE.FIELD_TYPE.LOCATION:
-					result = Number(newValue.replace("locationId-", ""));
+					result = (typeof newValue === "number")
+						? newValue
+						: Number(newValue.replace("locationId-", ""));
+
+					break;
+				case ASSISTANCE.FIELD_TYPE.GENDER:
+				case ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS:
+				case ASSISTANCE.FIELD_TYPE.LIVELIHOOD:
+				case ASSISTANCE.FIELD_TYPE.INTEGER:
+				case ASSISTANCE.FIELD_TYPE.DOUBLE:
+				case ASSISTANCE.FIELD_TYPE.STRING:
+				case ASSISTANCE.FIELD_TYPE.LOCATION_TYPE:
+					result = String(newValue);
+
 					break;
 				default:
 					result = newValue;
@@ -389,11 +418,11 @@ export default {
 		onSubmitCriteriaForm(criteriaForm) {
 			if (criteriaForm.groupId !== undefined) {
 				this.groups[criteriaForm.groupId].tableData = [];
-				this.groups[criteriaForm.groupId].data.push(criteriaForm);
+				this.groups[criteriaForm.groupId].data.push({ ...criteriaForm, newlyCreated: true });
 			} else {
 				const index = this.groups.push({ data: [] }) - 1;
 				this.groups[index].tableData = [];
-				this.groups[index].data.push(criteriaForm);
+				this.groups[index].data.push({ ...criteriaForm, newlyCreated: true });
 			}
 
 			this.criteriaModal.isOpened = false;
@@ -409,6 +438,8 @@ export default {
 
 			await this.getCountOfBeneficiaries({ totalCount: true });
 			await this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.vulnerabilityScoreTouched = false;
 
 			this.$emit(
 				"updatedData",
@@ -433,8 +464,6 @@ export default {
 			if (this.calculationLoading || !this.groups.length) return;
 
 			await this.fetchCriteriaInfo();
-
-			this.vulnerabilityScoreTouched = false;
 		},
 
 		async getCountOfBeneficiariesInGroup(groupKey) {
@@ -476,9 +505,6 @@ export default {
 				await this.calculationOfAssistanceBeneficiariesScores({
 					assistanceBody,
 				});
-			} else {
-				this.totalCount = 0;
-				this.countOf = 0;
 			}
 
 			this.$emit("deliveredCommodityValue");
@@ -491,7 +517,7 @@ export default {
 				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
 					.then(({ data, status }) => {
 						if (status === 200) {
-							if (groupKey === null) {
+							if (groupKey === null && this.groups.length) {
 								if (totalCount) {
 									this.totalCount = data.totalCount;
 								} else {
@@ -544,27 +570,33 @@ export default {
 		},
 
 		async fetchScoringTypes() {
-			this.scoringTypesLoading = true;
+			try {
+				this.scoringTypesLoading = true;
 
-			await AssistancesService.getScoringTypes(
-				null,
-				null,
-				this.filters,
-			)
-				.then(({ data }) => {
-					data.forEach((item) => {
-						this.options.scoringTypes.push({
-							...item,
-							identifier: `${item.name} (ID: ${item.id})`,
-						});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+					this.filters,
+				);
+
+				checkResponseStatus(status, message);
+
+				data.forEach((item) => {
+					this.options.scoringTypes.push({
+						...item,
+						identifier: `${item.name} (ID: ${item.id})`,
 					});
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-					this.scoringType = this.options.scoringTypes?.[0] || null;
 				});
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringType = this.options.scoringTypes?.[0] || null;
+				this.scoringTypesLoading = false;
+			}
 		},
 
 		assistanceBodyIsValid({ sector, subsector, target, type }) {
@@ -580,6 +612,8 @@ export default {
 
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
+
+			this.selectionCriteriaUpdate();
 		},
 
 		onUpdatedCriteria({ groupKey }) {
@@ -594,6 +628,10 @@ export default {
 			this.getCountOfBeneficiaries({ totalCount: true });
 			this.getCountOfBeneficiaries({ totalCount: false });
 
+			this.selectionCriteriaUpdate();
+		},
+
+		selectionCriteriaUpdate() {
 			this.$emit(
 				"updatedData",
 				this.prepareCriteria(),
@@ -627,7 +665,6 @@ export default {
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
 		},
-
 	},
 };
 </script>

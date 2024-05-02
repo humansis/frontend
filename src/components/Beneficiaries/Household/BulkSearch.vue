@@ -7,9 +7,10 @@
 						v-model="bulkSearch.searchBy"
 						:items="options.idType"
 						:error-messages="validationMsg('searchBy', 'bulkSearch')"
+						:data-cy="prepareComponentIdentifier()"
 						class="search-by"
 						label="Search by"
-						name="filter-select"
+						name="search-by"
 						@update:modelValue="onBulkSearchChanged"
 					/>
 				</v-col>
@@ -25,8 +26,9 @@
 					<DataTextarea
 						v-model.trim="bulkSearch.ids"
 						:error-messages="validationMsg('ids', 'bulkSearch')"
+						:data-cy="prepareComponentIdentifier()"
 						label="ID Numbers"
-						name="filter-input"
+						name="id-numbers"
 						@input="onBulkSearchChanged"
 					/>
 
@@ -51,6 +53,7 @@
 		<v-col v-if="bulkSearch.notFoundIds.length" cols="12" lg="6">
 			<DataTextarea
 				v-model="bulkSearch.notFoundIds"
+				:data-cy="prepareComponentIdentifier()"
 				label="Following ID Numbers were not found:"
 				name="not-found-ids"
 				class="not-found-ids"
@@ -63,6 +66,7 @@
 		<v-col cols="12" class="text-right">
 			<v-btn
 				:disabled="isMaximumIds"
+				:data-cy="identifierBuilder('search-in-bulk-button')"
 				color="primary"
 				prepend-icon="search"
 				class="text-none ml-0"
@@ -78,6 +82,7 @@
 import { required } from "@vuelidate/validators";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { Notification } from "@/utils/UI";
 import { HOUSEHOLD } from "@/consts";
@@ -90,7 +95,7 @@ export default {
 		DataSelect,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -112,6 +117,7 @@ export default {
 				ids: "",
 				notFoundIds: "",
 			},
+			dataCy: "",
 		};
 	},
 

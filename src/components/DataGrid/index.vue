@@ -9,6 +9,7 @@
 					:search-fields="searchFields"
 					:default-search-field="defaultSearchField"
 					:is-disabled="isSearchDisabled"
+					:data-cy="dataCy"
 					class="ml-4"
 					@search="$emit('search', $event)"
 				/>
@@ -50,6 +51,8 @@
 
 		<v-data-table
 			v-bind="$attrs"
+			:headers="headers"
+			:custom-key-sort="frontendSorting"
 			:cell-props="getCellProps"
 			:items-per-page-options="TABLE.PER_PAGE_OPTIONS"
 			@[rowClickEvent]="onHandleRowClick"
@@ -70,6 +73,7 @@
 							v-model="perPage"
 							:items="TABLE.PER_PAGE_OPTIONS"
 							:is-clearable="false"
+							:data-cy="prepareComponentIdentifier()"
 							name="per-page"
 							class="per-page mr-5"
 							label="Per Page"
@@ -141,7 +145,7 @@
 			</template>
 
 			<template
-				v-for="(column, headerIndex) in $attrs.headers"
+				v-for="(column, headerIndex) in headers"
 				v-slot:[`item.${column.key}`]="{ item, index }"
 				:key="headerIndex"
 			>
@@ -166,6 +170,7 @@ import ColumnField from "@/components/DataGrid/ColumnField";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import Search from "@/components/Inputs/Search";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { TABLE } from "@/consts/index";
 
@@ -179,7 +184,7 @@ export default {
 		Search,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, identifierBuilder],
 
 	inheritAttrs: false,
 
@@ -263,6 +268,21 @@ export default {
 			type: String,
 			default: "elevated",
 		},
+
+		headers: {
+			type: Object,
+			required: true,
+		},
+
+		isFrontendSortDisabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		customKeySort: {
+			type: Object,
+			default: () => {},
+		},
 	},
 
 	data() {
@@ -271,12 +291,29 @@ export default {
 			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
 			page: this.currentPage,
 			perPage: this.$attrs["items-per-page"],
+			dataCy: "table",
 		};
 	},
 
 	computed: {
 		pageCount() {
 			return Math.ceil(this.totalCount / this.perPage);
+		},
+
+		frontendSorting() {
+			return this.isFrontendSortDisabled ? this.resetFrontendSorting : this.customKeySort;
+		},
+
+		resetFrontendSorting() {
+			const customSort = {};
+
+			this.headers.forEach((header) => {
+				if (header?.sortable !== false) {
+					customSort[header.key] = () => {};
+				}
+			});
+
+			return customSort;
 		},
 	},
 
@@ -313,7 +350,7 @@ export default {
 		},
 
 		searchValue() {
-			return this.$refs.search.value;
+			return this.$refs.search?.value;
 		},
 	},
 };

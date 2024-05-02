@@ -83,6 +83,30 @@
 			/>
 		</Modal>
 
+		<Modal
+			v-model="smartCardInvalidateModal.isOpened"
+			header="Set as Invalidated"
+		>
+			<SmartCardInvalidateForm
+				:beneficiary-data="smartCardInvalidateModel"
+				:table-data="table.data"
+				@updateTable="table.data = $event"
+				@formClosed="smartCardInvalidateModal.isOpened = false"
+			/>
+		</Modal>
+
+		<ConfirmAction
+			:is-dialog-opened="isWarningDialogOpenedForInvalidation"
+			:is-confirm-button-visible="false"
+			:confirm-message="warningMessageForInvalidation"
+			confirm-title="Set as Invalidated"
+			prepend-icon="circle-exclamation"
+			prepend-icon-color="warning"
+			close-button-name="Cancel"
+			confirm-button-name=""
+			@modalClosed="isWarningDialogOpenedForInvalidation = false"
+		/>
+
 		<div>
 			<v-alert
 				v-if="isCustomAmountBoxVisible && isCustomAmountEnabled && customFieldName"
@@ -200,6 +224,17 @@
 			/>
 
 			<ButtonAction
+				v-if="isSetSmartCardAsInvalidVisible(row)"
+				icon="credit-card"
+				tooltip-text="Set as Invalidated"
+				@actionConfirmed="onSetSmartCardAsInvalid(index, row.id, row.reliefPackages)"
+			>
+				<template v-slot:combinedIcons>
+					<v-icon icon="slash" class="card-icon" />
+				</template>
+			</ButtonAction>
+
+			<ButtonAction
 				v-if="userCan.editDistribution"
 				icon="search"
 				tooltip-text="View"
@@ -240,9 +275,7 @@
 			<template v-if="assistanceDetail">
 				<v-btn
 					:class="toDistributeButtonClass"
-					color="gray-darken-4"
 					variant="tonal"
-					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('toDistribute', 'To distribute')"
 					@keydown.enter.prevent
@@ -252,9 +285,7 @@
 
 				<v-btn
 					:class="distributedButtonClass"
-					color="green-darken-4"
 					variant="tonal"
-					class="ml-0"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('distributed')"
 					@keydown.enter.prevent
@@ -263,9 +294,17 @@
 				</v-btn>
 
 				<v-btn
+					:class="invalidatedButtonClass"
+					variant="tonal"
+					prepend-icon="sticky-note"
+					@click="onStatusFilter('invalidated')"
+					@keydown.enter.prevent
+				>
+					{{ $t('Invalidated') }}
+				</v-btn>
+
+				<v-btn
 					:class="expiredButtonClass"
-					class="ml-0"
-					color="red-darken-1"
 					variant="tonal"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('expired')"
@@ -276,8 +315,6 @@
 
 				<v-btn
 					:class="canceledButtonClass"
-					class="ml-0"
-					color="amber-lighten-1"
 					variant="tonal"
 					prepend-icon="sticky-note"
 					@click="onStatusFilter('canceled')"
@@ -298,9 +335,11 @@ import InstitutionService from "@/services/InstitutionService";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
+import SmartCardInvalidateForm from "@/components/Assistance/BeneficiariesList/SmartCardInvalidateForm";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import ButtonAction from "@/components/ButtonAction";
+import ConfirmAction from "@/components/ConfirmAction";
 import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
 import ExportControl from "@/components/Inputs/ExportControl";
@@ -313,15 +352,17 @@ import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
-	{ code: "To distribute", type: "grey-lighten-2" },
-	{ code: "Distributed", type: "green-lighten-1" },
-	{ code: "Expired", type: "red-lighten-1" },
-	{ code: "Canceled", type: "amber-lighten-4" },
+	{ code: "To distribute", class: "status to-distribute" },
+	{ code: "Distributed", class: "status distributed" },
+	{ code: "Expired", class: "status expired" },
+	{ code: "Invalidated", class: "status invalidated" },
+	{ code: "Canceled", class: "status canceled" },
 ];
 
 export default {
@@ -337,6 +378,7 @@ export default {
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
+		SmartCardInvalidateForm,
 		DataGrid,
 		DataInput,
 		ButtonAction,
@@ -344,6 +386,7 @@ export default {
 		ExportControl,
 		InputDistributed,
 		InstitutionForm,
+		ConfirmAction,
 	},
 
 	mixins: [
@@ -416,6 +459,8 @@ export default {
 			isLoadingList: false,
 			isRecalculationLoading: false,
 			advancedSearchVisible: false,
+			isWarningDialogOpenedForInvalidation: false,
+			warningMessageForInvalidation: "",
 			selectedRows: 0,
 			exportControl: {
 				loading: false,
@@ -429,6 +474,7 @@ export default {
 			statusActive: {
 				toDistribute: false,
 				distributed: false,
+				invalidated: false,
 				expired: false,
 				canceled: false,
 			},
@@ -490,6 +536,14 @@ export default {
 			inputDistributedModal: {
 				isOpened: false,
 				isWaiting: false,
+			},
+			smartCardInvalidateModal: {
+				isOpened: false,
+			},
+			smartCardInvalidateModel: {
+				bnfId: null,
+				reliefPackage: null,
+				tableIndex: null,
 			},
 			addBeneficiariesByIdsModal: {
 				isOpened: false,
@@ -642,10 +696,6 @@ export default {
 			];
 		},
 
-		customFieldName() {
-			return this.commodities?.[0]?.division?.customFieldName;
-		},
-
 		defaultSortKey() {
 			return this.isAssistanceTargetInstitution ? "name" : "localFamilyName";
 		},
@@ -707,28 +757,35 @@ export default {
 
 		toDistributeButtonClass() {
 			return [
-				"btn ml-3 is-light",
+				"text-none ml-3 status to-distribute",
 				{ "is-selected": this.statusActive.toDistribute },
 			];
 		},
 
 		distributedButtonClass() {
 			return [
-				"btn ml-3 is-success is-light",
+				"text-none ml-3 status distributed",
 				{ "is-selected": this.statusActive.distributed },
+			];
+		},
+
+		invalidatedButtonClass() {
+			return [
+				"text-none ml-3 status invalidated",
+				{ "is-selected": this.statusActive.invalidated },
 			];
 		},
 
 		expiredButtonClass() {
 			return [
-				"btn ml-3 is-danger is-light",
+				"text-none ml-3 status expired",
 				{ "is-selected": this.statusActive.expired },
 			];
 		},
 
 		canceledButtonClass() {
 			return [
-				"btn ml-3 is-warning is-light",
+				"text-none ml-3 status canceled",
 				{ "is-selected": this.statusActive.canceled },
 			];
 		},
@@ -848,14 +905,14 @@ export default {
 				this.selectedFilters.push(filterValue);
 			}
 
-			this.onFiltersChange({ reliefPackageStates: this.selectedFilters });
+			this.onFiltersChange({ reliefPackageStates: this.selectedFilters }, true);
 		},
 
-		async onFiltersChange(selectedFilters) {
+		async onFiltersChange(selectedFilters, forceFetch = false) {
 			this.filters = selectedFilters;
 			this.table.currentPage = 1;
 
-			if (selectedFilters.reliefPackageStates?.length) {
+			if (forceFetch) {
 				await this.fetchData();
 			}
 		},
@@ -871,7 +928,7 @@ export default {
 			this.selectedFilters = [];
 			await this.onFiltersChange({ reliefPackageStates: [] });
 
-			if (this.$refs.beneficiariesList.searchValue().length) {
+			if (this.$refs.beneficiariesList.searchValue()?.length) {
 				this.$refs.beneficiariesList.resetSearch();
 			} else {
 				await this.fetchData();
@@ -886,6 +943,41 @@ export default {
 			return this.isNotDistributedAvailable
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
 				&& this.userCan.revertDistribution;
+		},
+
+		isSetSmartCardAsInvalidVisible({ status }) {
+			return this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
+				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
+				&& this.userCan.invalidateDistribution;
+		},
+
+		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
+			const todayDate = this.$moment(new Date());
+			const distributedAtDate = this.$moment(
+				new Date(reliefPackage[0].distributedAt),
+			);
+			const isDistributionDateValid = todayDate.diff(distributedAtDate, "days") < 30;
+			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
+
+			this.isWarningDialogOpenedForInvalidation = !isDistributionDateValid
+				|| isAlreadyPartOfAmountSpent;
+
+			if (!isDistributionDateValid) {
+				this.warningMessageForInvalidation = "Distribution can no longer be invalidated, because it happened more than 30 days ago.";
+			}
+
+			if (isAlreadyPartOfAmountSpent) {
+				this.warningMessageForInvalidation = "Part of the distributed amount was already spent. Distribution can't be Invalidated";
+			}
+
+			if (!this.isWarningDialogOpenedForInvalidation) {
+				this.smartCardInvalidateModal.isOpened = true;
+				this.smartCardInvalidateModel = {
+					tableIndex,
+					bnfId,
+					reliefPackage,
+				};
+			}
 		},
 
 		onOpenViewModal(row) {
@@ -1212,12 +1304,15 @@ export default {
 
 		async onSetAsNotDistributed(tableIndex, bnfId, reliefPackage) {
 			try {
-				const { data, status, message } = await AssistancesService
-					.revertDistributionOfReliefPackage(reliefPackage[0].id);
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.revertDistributionOfReliefPackage(
+					reliefPackage[0].id,
+				);
 
-				if (status !== 200) {
-					throw new Error(message);
-				}
+				checkResponseStatus(status, message);
 
 				Notification(
 					`${this.$t("Successfully set as not distributed for Beneficiary ID")} ${bnfId}`,
@@ -1407,5 +1502,9 @@ export default {
 <style lang="scss">
 .random-sample {
 	max-width: 15rem;
+}
+
+.card-icon {
+	position: absolute;
 }
 </style>

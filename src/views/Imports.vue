@@ -17,7 +17,7 @@
 		</Modal>
 
 		<div :class="['d-flex mb-4 align-center', { 'import-header': isMobile }]">
-			<h2 class="me-auto">{{ $t('Imports') }}</h2>
+			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Imports') }}</h2>
 
 			<ExportControl
 				:available-export-formats="exportControl.formats"

@@ -1,6 +1,8 @@
 <template>
 	<v-container fluid>
-		<h2 class="text-center mb-4">{{ $t('Household Information Summary') }}</h2>
+		<h2 class="text-center mb-4" data-cy="page-title-text">
+			{{ $t('Household Information Summary') }}
+		</h2>
 
 		<p v-if="householdHead" class="text-center text-h5 mb-8">
 			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}

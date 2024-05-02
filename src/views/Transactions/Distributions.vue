@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<h2 class="text-center mt-4">{{ $t('Transactions') }}</h2>
+		<h2 class="text-center mt-4" data-cy="page-title-text">{{ $t('Transactions') }}</h2>
 
 		<v-tabs
 			v-model="selectedTab"
@@ -94,7 +94,12 @@ import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+
+const statusTags = [
+	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
+	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.INVALIDATED, class: "status invalidated" },
+];
 
 export default {
 	name: "Distributions",
@@ -135,6 +140,7 @@ export default {
 					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },
 					{ key: "carrierNumber", title: "Card No.", sortable: false },
+					{ key: "state", title: "Status", type: "tag", customTags: statusTags, sortable: false },
 					{ key: "amount", title: "Distributed", sortable: false },
 					{ key: "spent", sortable: false },
 					{ key: "unit", sortable: false },

@@ -17,6 +17,7 @@
 
 			<FileUpload
 				v-model="formModel.uploadedImage"
+				name="image"
 				prepend-icon=""
 				hide-details="auto"
 				variant="outlined"

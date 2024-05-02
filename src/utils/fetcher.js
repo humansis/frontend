@@ -237,8 +237,8 @@ export const idsToUri = (ids, param = null) => {
 	return query;
 };
 
-export const checkResponseStatus = (status, message) => {
-	if (status !== 200) {
+export const checkResponseStatus = (status, message, validationCode = 200) => {
+	if (status !== validationCode) {
 		throw new Error(message);
 	}
 };

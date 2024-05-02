@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<h2 class="text-center mt-4">{{ $t('Country specifics') }}</h2>
+		<h2 class="text-center mt-4" data-cy="page-title-text">{{ $t('Country specifics') }}</h2>
 
 		<v-tabs
 			v-model="selectedTab"

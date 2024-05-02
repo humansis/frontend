@@ -3,7 +3,7 @@
 		<ProjectSummary @projectLoaded="onProjectLoaded" />
 
 		<div class="d-flex mb-4">
-			<h2 class="me-auto">{{ $t('Project Assistances') }}</h2>
+			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Project Assistances') }}</h2>
 
 			<v-btn
 				v-if="beneficiariesCount"

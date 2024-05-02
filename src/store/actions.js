@@ -59,10 +59,6 @@ export default {
 		}
 	},
 
-	storeIcons: ({ commit }, icons) => {
-		commit(CONST.STORE_ICONS, icons);
-	},
-
 	storePermissions: ({ commit }, permissions) => {
 		if (permissions) {
 			commit(CONST.STORE_PERMISSIONS, permissions);

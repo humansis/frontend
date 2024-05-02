@@ -47,7 +47,7 @@ export default {
 			return result;
 		},
 
-		validationMsg(field, object = "formModel") {
+		validationMsg(field, object = "formModel", index = null) {
 			const validation = this.getValidation(field, object);
 
 			if (Object.keys(validation).includes("required")
@@ -59,7 +59,7 @@ export default {
 			if (Object.keys(validation).includes("minValue")
 				&& validation.minValue.$invalid
 				&& validation.$errors[0]) {
-				return this.$t(validation?.$errors[0]?.$message);
+				return this.$t(`The minimum allowed value is {value}`, { value: validation?.$errors[0].$params.min });
 			}
 
 			if (Object.keys(validation).includes("passwordValidation")
@@ -73,7 +73,13 @@ export default {
 				return this.$t("Passwords must be same");
 			}
 
-			return validation?.$error ? this.$t(validation?.$errors[0]?.$message) : "";
+			if (validation?.$error) {
+				return typeof index === "number"
+					? this.$t(validation?.$errors[0]?.$message[index]?.[0] || "")
+					: this.$t(validation?.$errors[0]?.$message);
+			}
+
+			return "";
 		},
 	},
 };

@@ -1,3 +1,7 @@
+import modalityTypeIcons from "@/assets/icons/svg/modalityTypes.json";
+import productCategoryIcons from "@/assets/icons/svg/productCategory.json";
+import sectorIcons from "@/assets/icons/svg/sectors.json";
+import vulnerabilityCriteriaIcons from "@/assets/icons/svg/vulnerabilityCriteria.json";
 import gitInfo from "@/gitInfo";
 
 function setPackageVersion() {
@@ -32,7 +36,12 @@ export default {
 		direction: "ltr",
 	},
 	perPage: 10,
-	icons: null,
+	icons: {
+		...modalityTypeIcons,
+		...productCategoryIcons,
+		...sectorIcons,
+		...vulnerabilityCriteriaIcons,
+	},
 	translations: null,
 	admNames: {},
 	institutionIdNames: {},
@@ -84,6 +93,7 @@ export default {
 		deleteDistribution: false,
 		viewDistribution: false,
 		revertDistribution: false,
+		invalidateDistribution: false,
 		assignDistributionItems: false,
 		addBeneficiary: false,
 		editBeneficiary: false,
@@ -105,6 +115,8 @@ export default {
 		authoriseElectronicCashTransfer: false,
 		distributionReport: false,
 		countrySettings: false,
+		addCustomField: false,
+		editCustomField: false,
 		addEditUsers: false,
 		adminSettings: false,
 		moveAssistance: false,

@@ -1,7 +1,7 @@
 <template>
 	<v-container fluid>
 		<div class="d-flex mb-4">
-			<h2 class="me-auto">{{ $t('Institutions') }}</h2>
+			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Institutions') }}</h2>
 
 			<v-btn
 				v-if="userCan.addBeneficiary"

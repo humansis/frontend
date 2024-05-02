@@ -12,6 +12,7 @@
 			:loading="isExportLoading"
 			:no-data-text="$t('No data for these filters')"
 			variant="text"
+			is-row-click-disabled
 			@perPageChanged="onPerPageChange"
 			@pageChanged="onPageChange"
 		>
@@ -51,7 +52,7 @@
 
 			<template v-slot:actions="{ index }">
 				<v-btn
-					:disabled="isDataForTableLoading(index)"
+					:disabled="isResolveFromFileDisabled(index)"
 					:loading="table.data[index].toUpdateLoading"
 					:variant="isFromFileSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -179,7 +180,7 @@ export default {
 					{
 						key: "actions",
 						value: "actions",
-						title: "Records From File / Humansis",
+						title: "Use Record From",
 						sortable: false,
 					},
 				]),
@@ -271,6 +272,10 @@ export default {
 						});
 						this.table.data[key].idType.push("memberDuplicitiesLastItem");
 						this.table.data[key].idNumber.push("memberDuplicitiesLastItem");
+
+						if (memberDuplicity.isIdMismatch) {
+							this.table.data[key].recordFrom.push("hasBeneficiaryIdDuplicity");
+						}
 					}
 
 					if (Object.hasOwn(memberDuplicity, "differences")) {
@@ -322,7 +327,7 @@ export default {
 				.replace(/^./, (str) => str.toUpperCase());
 		},
 
-		getSlashedArray(items) {
+		getSlashedArray(items, index = 0) {
 			const noData = "<b>No data</b>";
 
 			if (typeof items.database === "string" && typeof items.import === "string"
@@ -338,31 +343,57 @@ export default {
 				: noData;
 
 			if (Array.isArray(items.database)) {
-				database = items.database[0]?.length ? items.database[0] : noData;
+				database = items.database[index]?.length ? items.database[index] : noData;
 			}
 
 			if (Array.isArray(items.import)) {
-				imp = items.import[0]?.length ? items.import[0] : noData;
+				imp = items.import[index]?.length ? items.import[index] : noData;
 			}
 
 			return `${imp} / ${database}`;
 		},
 
 		setRecordFrom(difference, key) {
-			if (difference[1]?.database?.length || difference[1]?.import?.length) {
+			if (!difference[1]) return;
+
+			const { database, import: extractedImport } = difference[1];
+
+			if (database?.length || extractedImport?.length
+				|| typeof database === "number" || typeof extractedImport === "number") {
 				if (typeof difference[1] === "number" || typeof difference[1] === "string") {
 					this.table.data[key].recordFrom.push(`
-						${difference[0]}
-						-
-						${difference[1]}
-					`);
+					${difference[0]}
+					-
+					${difference[1]}
+				`);
 				} else {
+					this.transformArrayPropertyOfDifferences(difference, key);
+				}
+			}
+		},
+
+		transformArrayPropertyOfDifferences(difference, key) {
+			const { database, import: extractedImport } = difference[1];
+
+			if ((Array.isArray(database) && database.length > 1)
+				|| (Array.isArray(extractedImport) && extractedImport.length > 1)) {
+				const dataField = database.length > extractedImport.length
+					? database
+					: extractedImport;
+
+				dataField.forEach((item, index) => {
 					this.table.data[key].recordFrom.push(`
+						${this.transformProperty(difference[0])}
+						:
+						${this.getSlashedArray(difference[1], index)}
+					`);
+				});
+			} else {
+				this.table.data[key].recordFrom.push(`
 						${this.transformProperty(difference[0])}
 						:
 						${this.getSlashedArray(difference[1])}
 					`);
-				}
 			}
 		},
 
@@ -445,6 +476,11 @@ export default {
 			return this.table.data[item].toUpdateLoading
 				|| this.table.data[item].toLinkLoading
 				|| this.isFormChangesLoading;
+		},
+
+		isResolveFromFileDisabled(item) {
+			return this.isDataForTableLoading(item)
+				|| this.table.data[item].recordFrom?.includes("hasBeneficiaryIdDuplicity");
 		},
 	},
 

@@ -4,6 +4,7 @@
 			v-if="isUploadBoxVisible"
 			v-model="dropFiles"
 			:accept="allowedFileExtensions"
+			name="file"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"

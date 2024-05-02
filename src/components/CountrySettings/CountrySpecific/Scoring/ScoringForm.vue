@@ -25,11 +25,12 @@
 			v-model="formModel.dropFiles"
 			:error-messages="validationMsg('dropFiles')"
 			:accept="allowedFileExtensions"
+			name="file"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"
 			density="compact"
-			@update:modelValue="onValidate('uploadedImage')"
+			@update:modelValue="onValidate('dropFiles')"
 		/>
 	</v-card-text>
 

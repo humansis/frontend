@@ -1,6 +1,8 @@
 <template>
 	<v-textarea
 		:placeholder="$t(placeholder)"
+		:name="name"
+		:data-cy="identifierBuilder(`${name}-input`)"
 		variant="outlined"
 		density="compact"
 		hide-details="auto"
@@ -30,8 +32,12 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
+
 export default {
 	name: "DataTextarea",
+
+	mixins: [identifierBuilder],
 
 	props: {
 		label: {
@@ -52,6 +58,16 @@ export default {
 		isOptional: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
+		},
+
+		name: {
+			type: String,
+			required: true,
 		},
 	},
 };

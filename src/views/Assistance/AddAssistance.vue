@@ -26,7 +26,9 @@
 		/>
 
 		<div class="new-assistance-title">
-			<h1 class="text-h5 font-weight-bold">{{ $t('New Assistance') }}</h1>
+			<h1 class="text-h5 font-weight-bold" data-cy="page-title-text">
+				{{ $t('New Assistance') }}
+			</h1>
 
 			<span v-if="householdWithoutHead" class="integrity-issues">
 				<v-icon icon="exclamation-triangle" class="pr-2" />
@@ -70,6 +72,7 @@
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
 						:is-assistance-duplicated="isDuplicated"
+						:custom-fields="customFields"
 						@updatedData="onFetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
 						@deliveredCommodityValue="onGetDeliveredCommodityValue"
@@ -152,6 +155,7 @@ import DistributedCommodity from "@/components/Assistance/AddAssistance/Selectio
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
 import ConfirmAction from "@/components/ConfirmAction";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -224,6 +228,7 @@ export default {
 				modalityType: "",
 			},
 			scoringTypes: [],
+			customFields: [],
 			selectedBeneficiariesCount: 0,
 			loading: false,
 			isDuplicated: false,
@@ -294,13 +299,26 @@ export default {
 					Notification(`${this.$t("Duplicate Assistance")} ${e.message || e}`, "error");
 				});
 
-			await AssistancesService.getScoringTypes()
-				.then(({ data }) => { this.scoringTypes = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Scoring Types")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.scoringTypesLoading = false;
-				});
+			try {
+				this.scoringTypesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.scoringTypes = data;
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringTypesLoading = false;
+			}
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}
@@ -556,14 +574,14 @@ export default {
 			const preparedCommodities = [];
 
 			if (this.isDuplicated) {
-				const customFields = await this.fetchCustomFields() || [];
+				await this.fetchCustomFields();
 
 				commodities.forEach((item, index) => {
-					const commodity = item?.division?.customFieldName;
-					const isCommodityFound = customFields.find((field) => field.field === commodity);
+					const commodity = item?.division?.customField?.key;
+					const isCommodityFound = this.customFields.find((field) => field.key === commodity);
 
 					if (commodity && !isCommodityFound) {
-						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been renamed or removed, Commodity must be added again.")}`, "warning");
+						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been removed, Commodity must be added again.")}`, "warning");
 						commodities.splice(index, 1);
 					}
 				});
@@ -692,18 +710,16 @@ export default {
 
 		async fetchCustomFields() {
 			try {
-				const { data } = await CustomFieldsService.getListOfCustomFields(
+				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
 					null,
 					null,
-					{ type: "number" },
 				);
 
-				return data;
+				this.customFields = data;
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				return false;
 			}
 		},
 

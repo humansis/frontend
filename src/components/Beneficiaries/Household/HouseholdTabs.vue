@@ -12,7 +12,12 @@
 		</template>
 
 		<template v-slot:item.1>
-			<h3 class="mb-3">{{ $t('Household') }}</h3>
+			<h3
+				:data-cy="identifierBuilder('household-form-household-text')"
+				class="mb-3"
+			>
+				{{ $t('Household') }}
+			</h3>
 
 			<HouseholdForm
 				ref="householdForm"
@@ -23,7 +28,12 @@
 		</template>
 
 		<template v-slot:item.2>
-			<h3 class="mb-3">{{ $t('Household Head') }}</h3>
+			<h3
+				:data-cy="identifierBuilder('household-head-form-household-head-text')"
+				class="mb-3"
+			>
+				{{ $t('Household Head') }}
+			</h3>
 
 			<HouseholdHeadForm
 				ref="householdHeadForm"
@@ -36,7 +46,12 @@
 		</template>
 
 		<template v-slot:item.3>
-			<h3 class="mb-3">{{ $t('Members') }}</h3>
+			<h3
+				:data-cy="identifierBuilder('members-form-members-text')"
+				class="mb-3"
+			>
+				{{ $t('Members') }}
+			</h3>
 
 			<Members
 				ref="householdMembers"
@@ -47,7 +62,12 @@
 		</template>
 
 		<template v-slot:item.4>
-			<h3 class="mb-3">{{ $t('Summary') }}</h3>
+			<h3
+				:data-cy="identifierBuilder('summary-form-summary-text')"
+				class="mb-3"
+			>
+				{{ $t('Summary') }}
+			</h3>
 
 			<HouseholdSummary
 				ref="householdSummary"
@@ -67,6 +87,7 @@
 					<v-btn
 						:disabled="activeStep === 1"
 						:color="activeStep === 1 ? 'blue-grey-lighten-0' : 'blue-grey-lighten-4'"
+						:data-cy="identifierBuilder('form-back-button')"
 						variant="elevated"
 						prepend-icon="angle-left"
 						class="text-none"
@@ -81,6 +102,7 @@
 						v-if="activeStep === 4"
 						:disabled="!userCan.editBeneficiary"
 						:loading="saveButtonLoading"
+						:data-cy="identifierBuilder('form-save-button')"
 						color="primary"
 						variant="elevated"
 						prepend-icon="save"
@@ -93,6 +115,7 @@
 					<v-btn
 						v-else
 						:disabled="false"
+						:data-cy="identifierBuilder('form-next-button')"
 						color="primary"
 						variant="elevated"
 						append-icon="angle-right"
@@ -114,6 +137,7 @@ import HouseholdForm from "@/components/Beneficiaries/Household/HouseholdForm";
 import HouseholdHeadForm from "@/components/Beneficiaries/Household/HouseholdHeadForm";
 import HouseholdSummary from "@/components/Beneficiaries/Household/HouseholdSummary";
 import Members from "@/components/Beneficiaries/Household/Members";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { Notification } from "@/utils/UI";
@@ -129,7 +153,7 @@ export default {
 		HouseholdSummary,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	props: {
 		isEditing: {
@@ -156,6 +180,7 @@ export default {
 			location: "",
 			address: "",
 			saveButtonLoading: false,
+			dataCy: "",
 			steps: [
 				this.$t("Household"),
 				this.$t("Household Head"),
@@ -315,8 +340,8 @@ export default {
 				supportOrganizationName,
 				incomeSpentOnFood: incomeSpentOnFood || null,
 				houseIncome: 0,
-				countrySpecificAnswers:
-					this.prepareCountrySpecificsForHousehold(this.household.customFields),
+				customFieldValues:
+					this.prepareCustomFieldValuesForHousehold(this.household.customFieldValues),
 				...this.prepareAddressForHousehold(currentLocation),
 			};
 
@@ -329,15 +354,27 @@ export default {
 			}
 		},
 
-		prepareCountrySpecificsForHousehold(countrySpecificAnswers) {
-			const preparedAnswers = [];
-			Object.keys(countrySpecificAnswers).forEach((key) => {
-				preparedAnswers.push({
-					countrySpecificId: Number(key),
-					answer: `${countrySpecificAnswers[key]}` || null,
-				});
+		prepareCustomFieldValuesForHousehold(customFieldValues) {
+			const preparedValues = [];
+
+			Object.keys(customFieldValues).forEach((key) => {
+				const value = customFieldValues[key];
+				const isValueArray = Array.isArray(value);
+
+				if ((isValueArray && value.length)
+					|| (value !== null && value !== undefined && !isValueArray)) {
+					const customFieldValue = String(value);
+
+					if (customFieldValue.length) {
+						preparedValues.push({
+							customFieldId: Number(key),
+							value: customFieldValue,
+						});
+					}
+				}
 			});
-			return preparedAnswers;
+
+			return preparedValues;
 		},
 
 		async updateHousehold(id, householdBody) {
@@ -477,6 +514,10 @@ export default {
 
 			if (beneficiaries.length) {
 				beneficiaries.forEach((beneficiary) => {
+					const customFieldValues = this.prepareCustomFieldValuesForHousehold(
+						beneficiary.customFieldValues,
+					);
+
 					const preparedBeneficiary = {
 						id: beneficiary.beneficiaryId,
 						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
@@ -487,6 +528,7 @@ export default {
 						enGivenName: beneficiary.nameEnglish.firstName,
 						enParentsName: beneficiary.nameEnglish.parentsName,
 						gender: beneficiary.personalInformation.gender.code,
+						customFieldValues,
 						phones: [],
 						residencyStatus: beneficiary.residencyStatus.code,
 						isHead: beneficiary.isHead,

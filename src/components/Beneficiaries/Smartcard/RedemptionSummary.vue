@@ -15,12 +15,12 @@
 </template>
 
 <script>
-import BeneficiariesService from "@/services/BeneficiariesService";
 import SmartcardService from "@/services/SmartcardService";
 import DataGrid from "@/components/DataGrid";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 const customSort = {
@@ -44,6 +44,11 @@ export default {
 			type: Number,
 			required: true,
 		},
+
+		redemptionCurrency: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -55,7 +60,7 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "date" },
-					{ key: "beneficiary", title: "Name (local)" },
+					{ key: "localName", title: "Name (local)" },
 					{ key: "amount" },
 				]),
 				total: 0,
@@ -69,59 +74,47 @@ export default {
 
 	methods: {
 		async fetchPurchases() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await SmartcardService.getSmartcardRedemptionPurchases(this.redemptionBatchId)
-				.then(({ data, totalCount }) => {
-					this.table.data = data;
+				const {
+					data: { data, totalCount },
+					message,
+					status,
+				} = await SmartcardService.getSmartcardRedemptionPurchases(
+					this.redemptionBatchId,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.table.data = [];
+				this.table.total = totalCount;
+
+				if (totalCount) {
 					this.prepareDataForTable(data);
-					this.table.total = totalCount;
-				}).catch((e) => {
-					Notification(`${this.$t("Batches")} ${e.message || e}`, "error");
-				});
-
-			this.isLoadingList = false;
+				}
+			} catch (e) {
+				Notification(`${this.$t("Batches")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
-			const beneficiaryIds = [];
 			let total = 0;
+
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].date = this.$moment(item.dateOfPurchase).format("DD-MM-YYYY HH:mm");
-				total += item.value;
-				this.table.data[key].amount = this.formatPrice(item.value, item.currency);
-				beneficiaryIds.push(item.beneficiaryId);
+				this.table.data[key] = {
+					...item,
+					date: this.$moment(item.dateOfPurchase).format("DD-MM-YYYY HH:mm"),
+					amount: this.formatPrice(item.amount, this.redemptionCurrency),
+					localName: `${item.localGivenName} (${item.localFamilyName})`,
+				};
+
+				total += Number(item.amount);
 			});
-			this.totalAmount = this.formatPrice(total, data[0].currency);
 
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
-			this.table.data.forEach((item, key) => {
-				const beneficiary = beneficiaries.find(({ id }) => id === item.beneficiaryId);
-				if (beneficiary) {
-					this.table.data[key].beneficiary = this
-						.prepareName(beneficiary.localGivenName, beneficiary.localFamilyName);
-				}
-			});
-			this.reload();
-		},
-
-		async getBeneficiaries(ids) {
-			try {
-				const filters = { isArchived: true };
-
-				const { data } = await BeneficiariesService.getBeneficiaries(ids, filters);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
-			}
-
-			return [];
+			this.totalAmount = this.formatPrice(total, this.redemptionCurrency);
 		},
 
 		formatPrice(price, currency) {
@@ -130,6 +123,7 @@ export default {
 				currency,
 				minimumFractionDigits: 2,
 			});
+
 			return format.format(price);
 		},
 	},

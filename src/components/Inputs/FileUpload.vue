@@ -1,5 +1,10 @@
 <template>
-	<v-file-input show-size class="file-upload">
+	<v-file-input
+		:name="name"
+		:data-cy="identifierBuilder(`${name}-upload`)"
+		show-size
+		class="file-upload"
+	>
 		<template v-slot:prepend-inner>
 			<v-icon icon="upload" size="x-large" />
 
@@ -22,8 +27,24 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
+
 export default {
 	name: "FileUpload",
+
+	mixins: [identifierBuilder],
+
+	props: {
+		dataCy: {
+			type: String,
+			default: "",
+		},
+
+		name: {
+			type: String,
+			required: true,
+		},
+	},
 };
 </script>
 

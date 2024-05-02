@@ -28,7 +28,7 @@
 		<div v-if="importStatus" class="text-center mt-4">
 			<v-chip
 				variant="flat"
-				:color="importStatusType"
+				:class="importStatusClass"
 			>
 				<span>
 					{{ $t(importStatus) }}
@@ -158,10 +158,10 @@ export default {
 				"Finalisation",
 			],
 			steps: [
-				{ code: 1, slug: "start-import" },
-				{ code: 2, slug: "integrity-check" },
-				{ code: 3, slug: "identity-check" },
-				{ code: 4, slug: "finalisation" },
+				{ code: 1, slug: IMPORT.STEPS_SLUG.START },
+				{ code: 2, slug: IMPORT.STEPS_SLUG.INTEGRITY_CHECK },
+				{ code: 3, slug: IMPORT.STEPS_SLUG.IDENTITY_CHECK },
+				{ code: 4, slug: IMPORT.STEPS_SLUG.FINALISATION },
 			],
 			confirmModal: {
 				isOpen: false,
@@ -197,32 +197,41 @@ export default {
 			return this.statistics?.failReason || "";
 		},
 
-		importStatusType() {
+		importStatusClass() {
 			let result = "";
 
 			switch (this.importStatus) {
-				case IMPORT.STATUS.CANCEL:
-				case IMPORT.STATUS.IMPORTING:
+				case IMPORT.STATUS.NEW:
+					result = "status new";
+					break;
+				case IMPORT.STATUS.UPLOADING:
+					result = "status uploading";
+					break;
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
-					result = "warning";
+				case IMPORT.STATUS.CANCEL:
+					result = "status canceled";
+					break;
+				case IMPORT.STATUS.IMPORTING:
+					result = "status importing";
 					break;
 				case IMPORT.STATUS.FINISH:
+					result = "status finished";
+					break;
 				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
-					result = "success";
+					result = "status correct";
 					break;
 				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
-					result = "error";
+					result = "status failed";
 					break;
-				case IMPORT.STATUS.NEW:
 				case IMPORT.STATUS.INTEGRITY_CHECK:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 				case IMPORT.STATUS.SIMILARITY_CHECK:
 				default:
-					result = "info";
+					result = "status check";
 			}
 
 			return result;
@@ -409,6 +418,11 @@ export default {
 		},
 
 		stepsRedirect(status) {
+			const stepSlug = this.$route.query.step === IMPORT.STEPS_SLUG.FINALISATION
+				? IMPORT.STEPS_SLUG.FINALISATION
+				: IMPORT.STEPS_SLUG.IDENTITY_CHECK;
+			const tabIndex = this.steps.find((step) => step.slug === stepSlug).code;
+
 			switch (status) {
 				case IMPORT.STATUS.CANCEL:
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
@@ -423,8 +437,11 @@ export default {
 					this.onChangeTab(4);
 					break;
 
-				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
+					this.onChangeTab(tabIndex);
+					break;
+
+				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 					this.onChangeTab(3);
 					break;

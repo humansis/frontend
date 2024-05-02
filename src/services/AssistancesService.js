@@ -30,6 +30,12 @@ export default {
 		return { data, totalCount };
 	},
 
+	getShortListOfAssistance({ filters }) {
+		return fetcher({
+			uri: `catalogs/assistance${queryBuilder({ filters })}`,
+		});
+	},
+
 	async getAssistances(ids) {
 		const idsText = ids ? idsToUri(ids) : "";
 
@@ -62,12 +68,10 @@ export default {
 		return { data, totalCount };
 	},
 
-	async getAssistanceSelectionCriteriaFields(targetCode) {
-		const { data: { data, totalCount } } = await fetcher(
-
-			{ uri: `selection-criteria/targets/${targetCode}/fields` },
-		);
-		return { data, totalCount };
+	getAssistanceSelectionCriteriaFields(targetCode) {
+		return fetcher({
+			uri: `selection-criteria/targets/${targetCode}/fields`,
+		});
 	},
 
 	async getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
@@ -98,17 +102,10 @@ export default {
 		return data;
 	},
 
-	async getScoringTypes(page, size, filter = null) {
-		const query = [];
-
-		if (page) { query.push(`page=${page}`); }
-		if (size) { query.push(`size=${size}`); }
-		if (filter) { query.push(filtersToUri(filter)); }
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `scoring-blueprints?${query.join("&")}`,
+	getScoringTypes(page, size, filters = null) {
+		return fetcher({
+			uri: `scoring-blueprints${queryBuilder({ page, size, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
 	async createScoring(body) {
@@ -140,26 +137,24 @@ export default {
 		});
 	},
 
-	async updateScoring({ id, enabled }) {
-		const { data, status } = await fetcher({
+	updateScoring({ id, enabled }) {
+		return fetcher({
 			uri: `scoring-blueprints/${id}`,
 			method: "PATCH",
 			body: {
 				enabled,
 			},
 		});
-		return { data, status };
 	},
 
-	async removeScoring(id) {
-		const { data, status } = await fetcher({
+	removeScoring(id) {
+		return fetcher({
 			uri: `scoring-blueprints/${id}`,
 			method: "DELETE",
 		});
-		return { data, status };
 	},
 
-	async downloadScoring(scoringId) {
+	downloadScoring(scoringId) {
 		return download({ uri: `scoring-blueprints/${scoringId}/content` });
 	},
 
@@ -279,13 +274,12 @@ export default {
 		return { data, totalCount };
 	},
 
-	async updateReliefPackage(body) {
-		const { data, status } = await fetcher({
+	updateReliefPackage(body) {
+		return fetcher({
 			uri: `assistances/relief-packages/distribute`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status };
 	},
 
 	async updateReliefPackagesWithNumberIds(id, body) {
@@ -301,6 +295,14 @@ export default {
 		return fetcher({
 			uri: `assistances/relief-packages/${id}/revert-distribution`,
 			method: "PATCH",
+		});
+	},
+
+	invalidateDistributionOfReliefPackage(id, body) {
+		return fetcher({
+			uri: `assistances/relief-packages/${id}/invalidate-distribution`,
+			method: "PATCH",
+			body,
 		});
 	},
 

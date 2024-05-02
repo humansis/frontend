@@ -14,6 +14,10 @@ export default {
 		ACTIVITY: "activity",
 		DISTRIBUTION: "distribution",
 	},
+	CRITERIA_FIELD_TYPE: {
+		CORE: "core",
+		CUSTOM: "custom",
+	},
 	COMPONENT: {
 		SELECTION_CRITERIA: "selectionCriteria",
 		DISTRIBUTED_COMMODITY: "distributedCommodity",
@@ -187,6 +191,7 @@ export default {
 		LOCATION: "location",
 		LOCATION_TYPE: "locationType",
 		STRING: "string",
+		ARRAY: "array",
 	},
 	ROUNDS_OPTIONS: [{ code: null, value: "N/A" }]
 		.concat(
@@ -212,6 +217,7 @@ export default {
 		STATE: {
 			DISTRIBUTED: "Distributed",
 			TO_DISTRIBUTED: "To distributed",
+			INVALIDATED: "Invalidated",
 			CANCELED: "Canceled",
 		},
 	},

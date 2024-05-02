@@ -22,5 +22,9 @@ export default {
 				this.assistance?.commodities[0]?.modalityType || this.formModel?.modalityType?.code,
 			);
 		},
+
+		customFieldName() {
+			return this.commodities[0]?.division?.customField?.label;
+		},
 	},
 };

@@ -8,6 +8,7 @@
 		:loading="isLoadingList"
 		reset-sort-button
 		is-search-visible
+		is-frontend-sort-disabled
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
@@ -36,7 +37,7 @@
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Institution"
-				confirm-message="Are you sure sure you want to delete Institution?"
+				confirm-message="Are you sure you want to delete Institution?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				close-button-name="Cancel"
@@ -172,8 +173,10 @@ export default {
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].type = normalizeText(item.type);
+				this.table.data[key] = {
+					...item,
+					type: normalizeText(item.type),
+				};
 			});
 		},
 
@@ -188,6 +191,7 @@ export default {
 				const filters = {
 					...(this.filters.projects?.length
 						&& { projects: this.filters.projects }),
+					...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 				};
 
 				try {

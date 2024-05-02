@@ -1,7 +1,10 @@
 <template>
 	<v-container fluid>
 		<v-card class="mx-auto mt-5">
-			<v-card-title class="text-h5 font-weight-bold">
+			<v-card-title
+				:data-cy="identifierBuilder(`${pageTitle}-text`)"
+				class="text-h5 font-weight-bold"
+			>
 				{{ $t(pageTitle) }}
 			</v-card-title>
 
@@ -405,6 +408,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import idHelper from "@/mixins/idHelper";
 import institutionHelper from "@/mixins/institutionHelper";
 import validation from "@/mixins/validation";
@@ -424,7 +428,12 @@ export default {
 		DataTextarea,
 	},
 
-	mixins: [validation, idHelper, institutionHelper],
+	mixins: [
+		validation,
+		idHelper,
+		institutionHelper,
+		identifierBuilder,
+	],
 
 	validations() {
 		return {

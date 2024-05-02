@@ -2,7 +2,7 @@
 	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
 
 	<v-alert
-		v-if="showNoProjectError"
+		v-if="isNoProjectErrorVisible"
 		variant="outlined"
 		type="warning"
 		border="top"
@@ -13,7 +13,7 @@
 	</v-alert>
 
 	<v-alert
-		v-if="showNoBeneficiariesError"
+		v-if="isNoBeneficiariesErrorVisible"
 		variant="outlined"
 		type="warning"
 		border="top"
@@ -24,7 +24,7 @@
 	</v-alert>
 
 	<DataGrid
-		v-show="beneficiariesCount || upcoming"
+		v-show="isAssistanceTableVisible"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
 		:headers="table.columns"
@@ -32,6 +32,8 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:is-search-visible="!upcoming"
+		:custom-key-sort="customSort"
+		:no-data-text="$t('No data available')"
 		is-row-click-disabled
 		reset-sort-button
 		@perPageChanged="onPerPageChange"
@@ -53,10 +55,8 @@
 
 			<v-btn
 				:class="filterButtonNew"
-				color="gray-darken-4"
 				icon-left="sticky-note"
 				variant="tonal"
-				class="ml-0"
 				prepend-icon="sticky-note"
 				@click="onStatusFilter('new')"
 			>
@@ -65,9 +65,7 @@
 
 			<v-btn
 				:class="filterButtonValidated"
-				class="ml-0"
 				icon-left="spinner"
-				color="green-darken-4"
 				variant="tonal"
 				prepend-icon="spinner"
 				@click="onStatusFilter('validated')"
@@ -77,9 +75,7 @@
 
 			<v-btn
 				:class="filterButtonClosed"
-				class="ml-0"
 				icon-left="check"
-				color="blue-darken-4"
 				variant="tonal"
 				prepend-icon="check"
 				@click="onStatusFilter('closed')"
@@ -178,10 +174,11 @@ import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
+const customSort = { progress: () => {} };
 const statusTags = [
-	{ code: ASSISTANCE.STATUS.NEW, type: "grey-lighten-2" },
-	{ code: ASSISTANCE.STATUS.VALIDATED, type: "green-lighten-1" },
-	{ code: ASSISTANCE.STATUS.CLOSED, type: "light-blue-lighten-4" },
+	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
+	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
+	{ code: ASSISTANCE.STATUS.CLOSED, class: "status closed" },
 ];
 
 export default {
@@ -227,6 +224,7 @@ export default {
 	data() {
 		return {
 			TABLE,
+			customSort,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
@@ -277,21 +275,21 @@ export default {
 	computed: {
 		filterButtonNew() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status new",
 				{ "is-selected": this.statusActive.new },
 			];
 		},
 
 		filterButtonValidated() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status validated",
 				{ "is-selected": this.statusActive.validated },
 			];
 		},
 
 		filterButtonClosed() {
 			return [
-				"text-none ml-3",
+				"text-none ml-3 status closed",
 				{ "is-selected": this.statusActive.closed },
 			];
 		},
@@ -300,19 +298,23 @@ export default {
 			return this.userCan.editDistribution || this.userCan.viewDistribution;
 		},
 
-		showNoProjectError() {
+		isNoProjectErrorVisible() {
 			return !this.project?.assistanceCount
 				&& this.beneficiariesCount
 				&& !this.isLoadingList
 				&& !this.upcoming;
 		},
 
-		showNoBeneficiariesError() {
+		isNoBeneficiariesErrorVisible() {
 			return !this.beneficiariesCount
 				&& this.projectLoaded
 				&& this.table.data
 				&& !this.isLoadingList
 				&& !this.upcoming;
+		},
+
+		isAssistanceTableVisible() {
+			return this.beneficiariesCount || this.upcoming || this.project?.assistanceCount;
 		},
 	},
 
@@ -348,7 +350,7 @@ export default {
 				this.table.progress = 0;
 				this.table.total = totalCount;
 				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
+					this.prepareDataForTable(data);
 				}
 			}).catch((e) => {
 				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");

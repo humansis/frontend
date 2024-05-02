@@ -4,6 +4,7 @@
 			v-model="formModel.username"
 			:disabled="formDisabled || isEditing"
 			:error-messages="validationMsg('username')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Username"
 			name="username"
 			class="mb-4"
@@ -16,6 +17,7 @@
 			:error-messages="validationMsg('password')"
 			:append-inner-icon="passwordVisible ? 'eye-slash' : 'eye'"
 			:type="passwordVisible ? 'text' : 'password'"
+			:data-cy="prepareComponentIdentifier()"
 			label="Password"
 			name="password"
 			class="mb-4"
@@ -27,13 +29,16 @@
 			v-model="formModel.name"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('name')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Name"
 			name="name"
 			class="mb-4"
 			@blur="onValidate('name')"
 		/>
 
-		<h4>{{ $t('Allowed Category Types') }}</h4>
+		<h4 :data-cy="identifierBuilder('allowed-category-types-text')">
+			{{ $t('Allowed Category Types') }}
+		</h4>
 
 		<div
 			v-for="({ code, value }, index) of options.categoryTypes"
@@ -46,6 +51,7 @@
 				:disabled="formDisabled"
 				:error-messages="errorMessageForCategory(index)"
 				:name="`category-type-${index}`"
+				:data-cy="identifierBuilder(`${code}-checkbox`)"
 				hide-details="auto"
 				@blur="onValidate('categoryType')"
 			>
@@ -63,6 +69,7 @@
 		<DataInput
 			v-model="formModel.vendorNo"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Vendor No."
 			name="vendor-no"
 			class="my-4"
@@ -72,13 +79,17 @@
 		<DataInput
 			v-model="formModel.contractNo"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Contract No."
 			name="contract-no"
 			class="mb-4"
 			optional
 		/>
 
-		<h4 class="mb-n2">
+		<h4
+			:data-cy="identifierBuilder('remote-distribution-permission-input')"
+			class="mb-n2"
+		>
 			{{ $t('Remote Distribution Permission') }}
 
 			<i class="optional-text font-weight-medium">- {{ $t('Optional') }}</i>
@@ -87,6 +98,7 @@
 		<v-checkbox
 			v-model="formModel.canDoRemoteDistributions"
 			:disabled="formDisabled"
+			:data-cy="identifierBuilder('remote-distribution-permission-checkbox')"
 			name="remote-distribution-permission"
 			hide-details
 			class="checkbox"
@@ -99,6 +111,7 @@
 		<DataInput
 			v-model="formModel.addressStreet"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address Street"
 			name="address-street"
 			class="mb-4"
@@ -108,6 +121,7 @@
 		<DataInput
 			v-model="formModel.addressNumber"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address Number"
 			name="address-number"
 			class="mb-4"
@@ -117,6 +131,7 @@
 		<DataInput
 			v-model="formModel.addressPostcode"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Address Postcode"
 			name="address-postcode"
 			class="mb-4"
@@ -128,6 +143,7 @@
 			:form-model="formModel"
 			:form-disabled="formDisabled"
 			:disabled-adm-clear="disabledAdmInput"
+			:data-cy="dataCy"
 			@mapped="mapping = false"
 		/>
 	</v-card-text>
@@ -137,6 +153,7 @@
 
 		<v-btn
 			v-if="closeButton"
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -149,6 +166,7 @@
 			v-if="!formDisabled"
 			:disabled="mapping || formLoading"
 			:loading="formLoading"
+			:data-cy="identifierBuilder(`${submitButtonLabel}-button`)"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"
@@ -164,6 +182,7 @@ import { required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 
 export default {
@@ -177,7 +196,7 @@ export default {
 		SvgIcon,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -221,6 +240,7 @@ export default {
 		return {
 			mapping: true,
 			passwordVisible: false,
+			dataCy: "form",
 			options: {
 				categoryTypes: [
 					{

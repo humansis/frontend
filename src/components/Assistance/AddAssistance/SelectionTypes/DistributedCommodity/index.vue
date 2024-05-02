@@ -294,7 +294,7 @@ export default {
 					modalityTypeCode: modalityType?.code || modalityType,
 					division: this.getDivision(division?.code),
 					customFieldId: customField?.id || division?.customField?.id,
-					customFieldName: customField?.field || division?.customFieldName,
+					customFieldName: customField?.label || division?.customField?.label,
 					amountMultiplier: amountMultiplier || division?.amountMultiplier,
 					unit,
 					currency: currency?.value || currency,
@@ -394,7 +394,7 @@ export default {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
 				default:
-					return divisionString;
+					return divisionString || null;
 			}
 		},
 

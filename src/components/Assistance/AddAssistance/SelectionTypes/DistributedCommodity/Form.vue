@@ -42,7 +42,7 @@
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
-			item-title="field"
+			item-value="id"
 			class="mb-4"
 			@update:modelValue="onValidate('customField')"
 		/>
@@ -100,6 +100,7 @@
 					:name="`division-${key}`"
 					type="number"
 					class="mb-4"
+					hide-spin-buttons
 					@update:modelValue="onValidate(`${divisionFieldsValidationString}.${key}`)"
 				/>
 			</div>
@@ -237,6 +238,7 @@
 			:disabled="cashbackLimitDisabled"
 			label="Cashback Limit"
 			name="cashback-limit"
+			min="0.01"
 			type="number"
 			class="mb-4"
 			hide-spin-buttons
@@ -280,6 +282,8 @@ import countryHelper from "@/mixins/countryHelper";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
 import { isDecimalPartLengthValid } from "@/utils/customValidators";
+import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { getUniqueObjectsInArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, CURRENCIES } from "@/consts";
@@ -318,19 +322,23 @@ export default {
 				},
 				amountMultiplier: {
 					required: requiredIf(this.displayedFields.amountMultiplier),
-					minValue: minValue(0.01),
+					...(this.displayedFields.amountMultiplier && {
+						minValue: minValue(0.01),
+					}),
 				},
 				unit: {
 					required: requiredIf(this.displayedFields.unit),
 				},
 				quantity: {
 					required: requiredIf(this.displayedFields.quantity),
-					minValue: minValue(1),
+					...(this.displayedFields.quantity && { minValue: minValue(1) }),
 					...this.decimalPartValidationRule(this.formModel.quantity),
 				},
 				value: {
 					required: requiredIf(this.displayedFields.value && !this.isModalityInKind),
-					minValue: minValue(1),
+					...(this.displayedFields.value && {
+						minValue: minValue(this.isModalityVoucher ? 1 : 0.01),
+					}),
 					...this.decimalPartValidationRule(this.formModel.value),
 				},
 				currency: {
@@ -350,6 +358,9 @@ export default {
 						divisionNwsFields: {
 							firstNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...(this.displayedFields.householdMembersNwsFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.firstNwsFields,
 									this.displayedFields.householdMembersNwsFields,
@@ -357,6 +368,9 @@ export default {
 							},
 							secondNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...(this.displayedFields.householdMembersNwsFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.secondNwsFields,
 									this.displayedFields.householdMembersNwsFields,
@@ -364,6 +378,9 @@ export default {
 							},
 							thirdNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...(this.displayedFields.householdMembersNwsFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.thirdNwsFields,
 									this.displayedFields.householdMembersNwsFields,
@@ -371,6 +388,9 @@ export default {
 							},
 							fourthNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...(this.displayedFields.householdMembersNwsFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.fourthNwsFields,
 									this.displayedFields.householdMembersNwsFields,
@@ -378,6 +398,9 @@ export default {
 							},
 							fifthNwsFields: {
 								required: requiredIf(this.displayedFields.householdMembersNwsFields),
+								...(this.displayedFields.householdMembersNwsFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNwsFields.fifthNwsFields,
 									this.displayedFields.householdMembersNwsFields,
@@ -387,6 +410,9 @@ export default {
 						divisionNesFields: {
 							firstNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...(this.displayedFields.householdMembersNesFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
 									this.displayedFields.householdMembersNesFields,
@@ -394,6 +420,9 @@ export default {
 							},
 							secondNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...(this.displayedFields.householdMembersNesFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
 									this.displayedFields.householdMembersNesFields,
@@ -401,6 +430,9 @@ export default {
 							},
 							thirdNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...(this.displayedFields.householdMembersNesFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
 									this.displayedFields.householdMembersNesFields,
@@ -408,6 +440,9 @@ export default {
 							},
 							fourthNesFields: {
 								required: requiredIf(this.displayedFields.householdMembersNesFields),
+								...(this.displayedFields.householdMembersNesFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionNesFields.firstNesFields,
 									this.displayedFields.householdMembersNesFields,
@@ -420,6 +455,9 @@ export default {
 						divisionCodFields: {
 							firstCodFields: {
 								required: requiredIf(this.displayedFields.householdMembersCodFields),
+								...(this.displayedFields.householdMembersCodFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionCodFields.firstCodFields,
 									this.displayedFields.householdMembersCodFields,
@@ -427,6 +465,9 @@ export default {
 							},
 							secondCodFields: {
 								required: requiredIf(this.displayedFields.householdMembersCodFields),
+								...(this.displayedFields.householdMembersCodFields && {
+									minValue: minValue(this.minValueForFields),
+								}),
 								...this.decimalPartValidationRule(
 									this.formModel.divisionCodFields.secondCodFields,
 									this.displayedFields.householdMembersCodFields,
@@ -444,7 +485,9 @@ export default {
 					required: requiredIf(this.formModel.allowedProductCategoryTypes.includes(
 						this.CASHBACK,
 					)),
-					minValue: minValue(1),
+					...(this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK) && {
+						minValue: minValue(0.01),
+					}),
 					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
 					...this.decimalPartValidationRule(this.formModel.cashbackLimit),
 				},
@@ -702,6 +745,10 @@ export default {
 		valueOrQuantityLabel() {
 			return this.isModalityCash ? "Value" : "Quantity 1";
 		},
+
+		minValueForFields() {
+			return this.isModalityCash ? 0.01 : 1;
+		},
 	},
 
 	watch: {
@@ -934,17 +981,27 @@ export default {
 			try {
 				this.loading.customFields = true;
 
-				const { data } = await CustomFieldsService.getListOfCustomFields(
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await CustomFieldsService.getListOfCustomFields(
 					null,
 					null,
-					null,
+					"label.asc",
 					null,
 					{ type: "number" },
 				);
 
-				this.options.customFields = data;
+				this.options.customFields = [];
+
+				checkResponseStatus(status, message);
+
+				if (totalCount) {
+					this.prepareCustomFieldsForSelect(data);
+				}
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.loading.customFields = false;
 			}
@@ -1049,6 +1106,13 @@ export default {
 			}
 
 			this.options.types = modalityTypes;
+		},
+
+		prepareCustomFieldsForSelect(customFields) {
+			this.options.customFields = customFields.map((customField) => ({
+				...customField,
+				value: `${customField.label} (${normalizeText(customField.targetType)})`,
+			}));
 		},
 	},
 };

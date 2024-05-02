@@ -6,7 +6,9 @@
 		<CustomFieldsForm
 			:form-model="customFieldModel"
 			:submit-button-label="submitButtonLabel"
-			:form-disabled="customFieldModal.isDetail"
+			:is-editing="customFieldModal.isEditing"
+			:is-detail="customFieldModal.isDetail"
+			:loading="customFieldModal.isWaiting"
 			close-button
 			@formSubmitted="onSubmitCustomFieldForm"
 			@formClosed="onCloseCustomFieldModal"
@@ -15,6 +17,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
+			v-if="userCan.addCustomField"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -38,7 +41,10 @@ import CustomFieldsService from "@/services/CustomFieldsService";
 import CustomFieldsForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
 import CustomFieldsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Inputs/Modal";
+import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
 	name: "CustomFieldPage",
@@ -49,6 +55,8 @@ export default {
 		CustomFieldsForm,
 	},
 
+	mixins: [permissions],
+
 	data() {
 		return {
 			customFieldModal: {
@@ -57,13 +65,7 @@ export default {
 				isEditing: false,
 				isWaiting: false,
 			},
-			customFieldModel: {
-				id: null,
-				iso3: "",
-				field: "",
-				type: "",
-				target: "",
-			},
+			customFieldModel: COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
 		};
 	},
 
@@ -92,6 +94,7 @@ export default {
 	methods: {
 		onShowDetail(customField) {
 			this.mapToFormModel(customField);
+
 			this.customFieldModal = {
 				isOpened: true,
 				isDetail: true,
@@ -102,6 +105,7 @@ export default {
 
 		onEditCustomField(customField) {
 			this.mapToFormModel(customField);
+
 			this.customFieldModal = {
 				isOpened: true,
 				isDetail: false,
@@ -113,19 +117,35 @@ export default {
 		mapToFormModel(
 			{
 				id,
+				key,
 				iso3,
 				field,
 				type,
-				target,
+				label,
+				note,
+				isUsed,
+				targetType,
+				selectionType,
+				isMultiSelect,
+				allowedValues,
+				isPropagatedToSelectionCriteria,
 			},
 		) {
 			this.customFieldModel = {
 				...this.customFieldModel,
 				id,
+				key,
 				iso3,
 				field,
 				type,
-				target,
+				label,
+				note,
+				isUsed,
+				targetType,
+				selectionType,
+				isMultiSelect,
+				allowedValues,
+				isPropagatedToSelectionCriteria,
 			};
 		},
 
@@ -142,28 +162,39 @@ export default {
 			};
 
 			this.customFieldModel = {
-				...this.customFieldModel,
-				id: null,
-				iso3: "",
-				field: "",
-				type: "",
+				...COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
+				listOfValues: [{ value: "" }],
 			};
 		},
 
 		onSubmitCustomFieldForm(customFieldForm) {
 			const {
 				id,
-				field,
+				label,
+				note,
 				type,
-				target,
 				iso3,
+				targetType,
+				isPropagatedToSelectionCriteria,
+				listOfValues,
+				selectionType,
 			} = customFieldForm;
 
+			const dataForListType = {
+				...(type.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.LIST_TYPE_CODE && {
+					isPropagatedToSelectionCriteria,
+					allowedValues: listOfValues.map((item) => item.value),
+					isMultiSelect: selectionType?.code === COUNTRY_SETTINGS.CUSTOM_FIELDS.MULTI_SELECT_CODE,
+				}),
+			};
+
 			const customFieldBody = {
-				field,
+				label,
+				note,
 				type: type.code,
-				target: target?.code,
 				iso3: iso3 || this.country.iso3,
+				targetType: targetType.code,
+				...dataForListType,
 			};
 
 			if (this.customFieldModal.isEditing && id) {
@@ -174,55 +205,55 @@ export default {
 		},
 
 		async createCustomField(customFieldBody) {
-			this.customFieldModal.isWaiting = true;
+			try {
+				this.customFieldModal.isWaiting = true;
 
-			await CustomFieldsService.createCustomField(customFieldBody)
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Custom Field Successfully Created"), "success");
-						this.$refs.customFieldsList.fetchData();
-						this.onCloseCustomFieldModal();
-					} else if (response.message) {
-						Notification(response.message, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.customFieldModal.isWaiting = false;
-				});
+				const { status, message } = await CustomFieldsService.createCustomField(customFieldBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Custom Field Successfully Created"), "success");
+				await this.$refs.customFieldsList.fetchData();
+				this.onCloseCustomFieldModal();
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			} finally {
+				this.customFieldModal.isWaiting = false;
+			}
 		},
 
 		async updateCustomField(id, customFieldBody) {
-			this.customFieldModal.isWaiting = true;
+			try {
+				this.customFieldModal.isWaiting = true;
 
-			await CustomFieldsService.updateCustomField(id, customFieldBody)
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Custom Field Successfully Updated"), "success");
-						this.$refs.customFieldsList.fetchData();
-						this.onCloseCustomFieldModal();
-					} else if (response.message) {
-						Notification(response.message, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.customFieldModal.isWaiting = false;
-				});
+				const { status, message } = await CustomFieldsService.updateCustomField(
+					id,
+					customFieldBody,
+				);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Custom Field Successfully Updated"), "success");
+				await this.$refs.customFieldsList.fetchData();
+				this.onCloseCustomFieldModal();
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			} finally {
+				this.customFieldModal.isWaiting = false;
+			}
 		},
 
 		async onRemoveCustomField(id) {
-			await CustomFieldsService.deleteCustomField(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Notification(this.$t("Custom Field Successfully Removed"), "success");
-						this.$refs.customFieldsList.removeFromList(id);
-					} else if (response.message) {
-						Notification(response.message, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-				});
+			try {
+				const { status, message } = await CustomFieldsService.deleteCustomField(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Custom Field Successfully Removed"), "success");
+				this.$refs.customFieldsList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			}
 		},
 	},
 };

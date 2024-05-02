@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -22,19 +23,20 @@
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
-			<!--	TODO Uncomment in next version (when BE is ready) -->
-			<!--	<ButtonAction-->
-			<!--		icon="edit"-->
-			<!--		tooltip-text="Edit"-->
-			<!--		@actionConfirmed="onShowEdit(row)"-->
-			<!--	/>-->
+			<ButtonAction
+				v-if="userCan.editCustomField"
+				icon="edit"
+				tooltip-text="Edit"
+				@actionConfirmed="onShowEdit(row)"
+			/>
 
+			<!--	TODO Uncomment in next version (when BE is ready) -->
 			<!--	<ButtonAction-->
 			<!--		icon="trash"-->
 			<!--		tooltip-text="Delete"-->
 			<!--		icon-color="red"-->
 			<!--		confirm-title="Deleting Custom Field"-->
-			<!--		confirm-message="Are you sure sure you want to delete Custom Field?"-->
+			<!--		confirm-message="Are you sure you want to delete Custom Field?"-->
 			<!--		prepend-icon="circle-exclamation"-->
 			<!--		prepend-icon-color="red"-->
 			<!--		is-confirm-action-->
@@ -61,10 +63,12 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { COUNTRY_SETTINGS, EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "CustomFieldsList",
@@ -75,7 +79,7 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {
@@ -90,7 +94,10 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "field" },
+					{ key: "key", sortable: false },
+					{ key: "label" },
+					{ key: "note" },
+					{ key: "target", sortKey: "targetType" },
 					{ key: "type" },
 					{ key: "actions", value: "actions", sortable: false },
 				]),
@@ -109,23 +116,33 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await CustomFieldsService.getListOfCustomFields(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
-					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`${this.$t("Custom Fields")} ${e.message || e}`, "error");
-			});
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await CustomFieldsService.getListOfCustomFields(
+					this.table.currentPage,
+					this.perPage,
+					this.table.sortColumn !== ""
+						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+						: "",
+					this.table.searchPhrase,
+				);
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				if (totalCount > 0) {
+					this.prepareDataForTable(data);
+					this.table.total = totalCount;
+				}
+			} catch (e) {
+				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		async onExportCustomFields(exportType, format) {
@@ -138,12 +155,41 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Custom Fields:")} ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
 			}
 		},
+
+		prepareDataForTable(data) {
+			this.table.data = data.map((item) => {
+				const targetType = COUNTRY_SETTINGS.CUSTOM_FIELDS.TARGET_TYPES.find(
+					(type) => type.code === item.targetType,
+				);
+
+				return {
+					...item,
+					target: targetType?.shortCut,
+				};
+			});
+		},
 	},
 };
 </script>
+
+<style lang="scss">
+.custom-fields-table {
+	td:nth-child(3) {
+		max-width: 10rem;
+
+		div {
+			overflow: hidden;
+			max-width: 90%;
+			text-overflow: ellipsis;
+			width: fit-content;
+			white-space: nowrap;
+		}
+	}
+}
+</style>

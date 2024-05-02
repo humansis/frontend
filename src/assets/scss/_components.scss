@@ -6,15 +6,39 @@
   }
 }
 
+.v-window {
+  overflow: visible;
+}
+
+.v-tooltip > .v-overlay__content {
+  max-width: 25rem !important;
+}
+
 .v-field--disabled {
   opacity: .8;
   background-color: #f5f5f5;
+}
+
+.v-icon.label-icon {
+  pointer-events: auto;
+  margin-left: .4rem;
+  margin-right: .25rem;
 }
 
 .v-input--disabled {
   &:not(.v-checkbox) {
     pointer-events: unset;
     cursor: not-allowed;
+  }
+
+  .v-icon.label-icon {
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+
+  .v-field__outline {
+      --v-field-border-width: 1px !important;
+      --v-field-border-opacity: .5 !important;
   }
 
   .v-selection-control div,

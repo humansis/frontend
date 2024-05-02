@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { required, requiredIf } from "@vuelidate/validators";
+import { integer, minValue, required, requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
@@ -117,6 +117,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -140,9 +141,13 @@ export default {
 				criteriaTarget: { required },
 				criteria: { required },
 				condition: { required },
-				value: { required: requiredIf(
-					this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION,
-				) },
+				value: {
+					required: requiredIf(this.fieldTypeToDisplay !== this.ASSISTANCE.FIELD_TYPE.LOCATION),
+					...(this.isSelectedCriteriaInteger && {
+						minValue: minValue(1),
+						integer,
+					}),
+				},
 			},
 		};
 	},
@@ -173,6 +178,7 @@ export default {
 				adm3: null,
 				adm4: null,
 			},
+			selectedCriteria: {},
 			options: {
 				criteriaTargets: [],
 				criteria: [],
@@ -207,12 +213,21 @@ export default {
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LOCATION_TYPE
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.BOOLEAN
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.RESIDENCY_STATUS
-				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LIVELIHOOD;
+				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.LIVELIHOOD
+				|| this.isCriteriaTypeOfList;
 		},
 
 		isValueDefaultInput() {
 			return 	this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.INTEGER
 				|| this.fieldTypeToDisplay === this.ASSISTANCE.FIELD_TYPE.DOUBLE;
+		},
+
+		isCriteriaTypeOfList() {
+			return this.selectedCriteria.allowedValues?.length;
+		},
+
+		isSelectedCriteriaInteger() {
+			return this.formModel.criteria?.type === ASSISTANCE.FIELD_TYPE.INTEGER;
 		},
 	},
 
@@ -235,15 +250,25 @@ export default {
 		},
 
 		async fetchCriteriaFields(target) {
-			this.criteriaLoading = true;
+			try {
+				this.criteriaLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaFields(target.code)
-				.then(({ data }) => { this.options.criteria = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Fields")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaFields(
+					target.code,
+				);
 
-			this.criteriaLoading = false;
+				checkResponseStatus(status, message);
+
+				this.prepareDataForCriteria(data);
+			} catch (e) {
+				Notification(`${this.$t("Criteria Fields")}: ${e.message || e}`, "error");
+			} finally {
+				this.criteriaLoading = false;
+			}
 		},
 
 		async fetchCriteriaConditions(target, field) {
@@ -302,6 +327,38 @@ export default {
 				});
 
 			this.valueSelectLoading = false;
+		},
+
+		prepareDataForCriteria(selectionCriteria) {
+			this.options.criteria = selectionCriteria.sort((a, b) => {
+				const alphaNumericOrder = a.value.localeCompare(b.value, undefined, {
+					numeric: true,
+					sensitivity: "base",
+				});
+
+				if (a.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CORE
+					&& b.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM) {
+					return -1;
+				}
+
+				if (a.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
+					&& b.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CORE) {
+					return 1;
+				}
+
+				return alphaNumericOrder;
+			});
+
+			this.options.criteria = this.options.criteria.map((criteria) => {
+				const value = criteria.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
+					? `${criteria.value} (${this.$t("Custom Field")})`
+					: criteria.value;
+
+				return {
+					...criteria,
+					value,
+				};
+			});
 		},
 
 		presetValueBasedOnCriteria(criteria) {
@@ -364,6 +421,7 @@ export default {
 			this.formModel.condition = "";
 			this.formModel.value = null;
 
+			this.selectedCriteria = criteria;
 			this.fieldTypeToDisplay = criteria.type;
 
 			switch (criteria.type) {
@@ -384,6 +442,10 @@ export default {
 					break;
 				default:
 					this.valueSelectOptions = [];
+			}
+
+			if (this.isCriteriaTypeOfList) {
+				this.valueSelectOptions = criteria.allowedValues;
 			}
 
 			this.fetchCriteriaConditions(this.formModel.criteriaTarget, criteria);

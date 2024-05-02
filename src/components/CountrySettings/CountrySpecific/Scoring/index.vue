@@ -26,7 +26,6 @@
 	<ScoringList
 		ref="scoringList"
 		@delete="onRemoveScoring"
-		@download="onDownloadScoring"
 		@statusChange="onStatusChange"
 	/>
 </template>
@@ -37,7 +36,9 @@ import ScoringForm from "@/components/CountrySettings/CountrySpecific/Scoring/Sc
 import ScoringList from "@/components/CountrySettings/CountrySpecific/Scoring/ScoringList";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { COUNTRY_SETTINGS } from "@/consts";
 
 export default {
 	name: "Scoring",
@@ -55,12 +56,7 @@ export default {
 			scoringModal: {
 				isOpened: false,
 			},
-			scoringModel: {
-				name: "",
-				note: "",
-				dropFiles: [],
-				content: "",
-			},
+			scoringModel: COUNTRY_SETTINGS.SCORING.SCORING_MODEL,
 		};
 	},
 
@@ -72,13 +68,7 @@ export default {
 		onAddNewScoringOption() {
 			this.scoringModal.isOpened = true;
 
-			this.scoringModel = {
-				...this.scoringModel,
-				name: "",
-				note: "",
-				dropFiles: [],
-				content: "",
-			};
+			this.scoringModel = { ...COUNTRY_SETTINGS.SCORING.SCORING_MODEL };
 		},
 
 		onSubmitScoringForm(scoringForm) {
@@ -96,62 +86,48 @@ export default {
 		},
 
 		async createScoring(scoringBody) {
-			await AssistancesService.createScoring(scoringBody)
-				.then((response) => {
-					if (response.status === 201) {
-						Notification(this.$t("Scoring Successfully Created"), "success");
-						this.$refs.scoringList.fetchData();
-						this.onCloseScoringModal();
-					} else if (response.message) {
-						Notification(response.message, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Scoring")} ${e.message || e}`, "error");
-				});
+			try {
+				const { status, message } = await AssistancesService.createScoring(scoringBody);
+
+				checkResponseStatus(status, message, 201);
+
+				Notification(this.$t("Scoring Successfully Created"), "success");
+				await this.$refs.scoringList.fetchData();
+				this.onCloseScoringModal();
+			} catch (e) {
+				Notification(`${this.$t("Scoring")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onRemoveScoring(id) {
-			await AssistancesService.removeScoring(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Notification(this.$t("Scoring Successfully Removed"), "success");
-						this.$refs.scoringList.fetchData();
-					} else if (response.message) {
-						Notification(response.message, "is-danger");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Scoring")} ${e.message || e}`, "error");
-				});
-		},
+			try {
+				const { status, message } = await AssistancesService.removeScoring(id);
 
-		async onDownloadScoring(scoring) {
-			await AssistancesService.downloadScoring(scoring.id)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `${scoring.name}-ID-${scoring.id}`;
-						link.click();
-					} else {
-						Notification(message, "warning");
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Scoring download")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Scoring Successfully Removed"), "success");
+				await this.$refs.scoringList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Scoring")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onStatusChange({ id, enabled }) {
-			await AssistancesService.updateScoring({ id, enabled })
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Scoring Successfully Updated"), "success");
-						this.$refs.scoringList.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Scoring")} ${e.message || e}`, "error");
-				});
+			try {
+				const { status, message } = await AssistancesService.updateScoring(
+					{
+						id,
+						enabled,
+					},
+				);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Scoring Successfully Updated"), "success");
+				await this.$refs.scoringList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Scoring")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

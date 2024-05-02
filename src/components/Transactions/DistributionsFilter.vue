@@ -43,6 +43,7 @@ export default {
 				projects: FILTER.DEFAULT_FILTERS.PROJECTS,
 				assistances: FILTER.DEFAULT_FILTERS.ASSISTANCES,
 				commodity: FILTER.DEFAULT_FILTERS.COMMODITY,
+				status: FILTER.DEFAULT_FILTERS.STATUS,
 				adm1: FILTER.DEFAULT_FILTERS.ADM1,
 				adm2: FILTER.DEFAULT_FILTERS.ADM2,
 				adm3: FILTER.DEFAULT_FILTERS.ADM3,
@@ -88,6 +89,16 @@ export default {
 					loading: true,
 					placeholder: this.$t("Select Commodity"),
 					data: [],
+				},
+				state: {
+					name: "Status",
+					trackBy: "value",
+					returnAs: "object",
+					placeholder: this.$t("Select Status"),
+					data: [
+						{ code: 0, value: this.$t("Distributed") },
+						{ code: 1, value: this.$t("Invalidated") },
+					],
 				},
 				adm1: {
 					name: "Province",
@@ -149,7 +160,7 @@ export default {
 			this.fetchDistricts(),
 			this.fetchCommunes(),
 			this.fetchVillages(),
-			this.fetchAssistance(),
+			this.fetchAssistanceForAdvancedSearch(),
 		]).then(() => {
 			this.fillParentCommunes();
 			this.fillParentDistricts();
@@ -214,7 +225,8 @@ export default {
 			if (filterName === "project") {
 				this.selectedFiltersOptions.distribution = [];
 				preparedFilters.distribution = null;
-				this.fetchAssistance();
+
+				await this.fetchAssistanceForAdvancedSearch();
 			}
 
 			const location = this.getLocation(filters);
@@ -230,6 +242,7 @@ export default {
 						: FILTER.DEFAULT_FILTERS.DATE_TO,
 					beneficiaryTypes: preparedFilters.beneficiaryType
 						|| FILTER.DEFAULT_FILTERS.BENEFICIARY_TYPES,
+					state: preparedFilters.state,
 					modalityTypes: preparedFilters.commodity || FILTER.DEFAULT_FILTERS.MODALITY_TYPES,
 					assistances: preparedFilters.distribution || FILTER.DEFAULT_FILTERS.ASSISTANCES,
 					locations: location ? [location] : FILTER.DEFAULT_FILTERS.LOCATIONS,

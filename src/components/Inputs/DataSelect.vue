@@ -16,15 +16,20 @@
 		:chips="multiple"
 		:closable-chips="multiple && !disabled"
 		:no-data-text="$t('List is empty')"
+		:name="name"
+		:data-cy="identifierBuilder(`${name}-select`)"
 		autocomplete="off"
 		persistent-placeholder
 		return-object
 		@update:modelValue="$emit('update:modelValue', $event)"
 	>
 		<template v-slot:label>
-			<span>{{ $t(label) }}
-				<i v-if="optional" class="optional-text">- {{ $t('Optional') }}</i>
-			</span>
+			<ExtendedLabel
+				:label="label"
+				:tooltip-text="labelAppendIconTooltip"
+				:icon="labelAppendIcon"
+				:is-optional="optional"
+			/>
 		</template>
 
 		<template v-if="!multiple" v-slot:item="{ props, item }">
@@ -72,9 +77,17 @@
 </template>
 
 <script>
+import ExtendedLabel from "@/components/Inputs/Helpers/ExtendedLabel";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
+
+	components: {
+		ExtendedLabel,
+	},
+	mixins: [identifierBuilder],
+
 	props: {
 		modelValue: {
 			type: [Object, Number, String],
@@ -165,11 +178,31 @@ export default {
 			type: String,
 			default: "",
 		},
+
+		dataCy: {
+			type: String,
+			default: "",
+		},
+
+		name: {
+			type: String,
+			required: true,
+		},
+
+		labelAppendIcon: {
+			type: String,
+			default: "circle-info",
+		},
+
+		labelAppendIconTooltip: {
+			type: String,
+			default: "",
+		},
 	},
 
 	data() {
 		return {
-			options: this.items,
+			options: this.selectOptions(),
 			data: this.modelValue,
 			searchValue: "",
 		};
@@ -186,8 +219,11 @@ export default {
 	},
 
 	watch: {
-		items(value) {
-			this.options = value;
+		items: {
+			deep: true,
+			handler() {
+				this.options = this.selectOptions();
+			},
 		},
 
 		modelValue(value) {
@@ -196,13 +232,6 @@ export default {
 	},
 
 	methods: {
-		onSearch() {
-			this.options = this.items;
-			this.options = this.options.filter(
-				(item) => item[this.itemTitle].toLowerCase().includes(this.searchValue.toLowerCase()),
-			);
-		},
-
 		onSelectAll() {
 			this.data = this.selectedAllOptions ? [] : this.options;
 			this.$emit("update:modelValue", this.data);
@@ -210,6 +239,21 @@ export default {
 
 		normalizeFirstLetter(value) {
 			return normalizeFirstLetter(value);
+		},
+
+		selectOptions() {
+			return this.items.map((item) => {
+				const nestedItem = item[this.itemTitle];
+
+				if (nestedItem) {
+					return {
+						...item,
+						[this.itemTitle]: this.$t(String(nestedItem)),
+					};
+				}
+
+				return item;
+			});
 		},
 	},
 

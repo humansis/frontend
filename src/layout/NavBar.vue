@@ -12,7 +12,7 @@
 			<v-icon :icon="menuToggleIcon" class="expand-icon" />
 		</v-app-bar-nav-icon>
 
-		<v-breadcrumbs :items="breadcrumbs">
+		<v-breadcrumbs :items="breadcrumbs" :data-cy="identifierBuilder('breadcrumbs-text', false)">
 			<template v-slot:title="{ item }">
 				{{ $t(item.title) }}
 			</template>
@@ -41,8 +41,18 @@
 
 			<v-menu>
 				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" icon="globe-africa" size="small" class="mr-2">
-						<v-icon class="mr-1" icon="globe-africa" size="large" />
+					<v-btn
+						v-bind="props"
+						:data-cy="identifierBuilder('countries-menu-button', false)"
+						icon="globe-africa"
+						size="small"
+						class="mr-2"
+					>
+						<v-icon
+							class="mr-1"
+							icon="globe-africa"
+							size="large"
+						/>
 
 						<span class="country-name has-text-centered">{{ $t(country.iso3) }}</span>
 					</v-btn>
@@ -53,6 +63,7 @@
 						v-for="value in countries"
 						:key="value.name"
 						:value="value.iso3"
+						:data-cy="identifierBuilder(`country-${value.iso3}-select`, false)"
 						@click="handleChangeCountry(value)"
 					>
 						{{ $t(value.iso3) }}
@@ -62,7 +73,13 @@
 
 			<v-menu>
 				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" icon="language" size="small" class="mr-2" />
+					<v-btn
+						v-bind="props"
+						:data-cy="identifierBuilder('languages-menu-button', false)"
+						icon="language"
+						size="small"
+						class="mr-2"
+					/>
 				</template>
 
 				<v-list>
@@ -71,6 +88,7 @@
 						:key="value.key"
 						:value="value.key"
 						:class="language.key === value.key ? 'is-active' : ''"
+						:data-cy="identifierBuilder(`language-${value.key}-select`, false)"
 						@click="handleChangeLanguage(value)"
 					>
 						{{ $t(value.name) }}
@@ -103,16 +121,19 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import IconService from "@/services/IconService";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { Notification } from "@/utils/UI";
 
 export default {
 	name: "NavBar",
 
+	mixins: [identifierBuilder],
+
 	data() {
 		return {
+			dataCy: "nav-bar",
 			tooltip: {
 				label: "",
 				active: false,
@@ -128,7 +149,6 @@ export default {
 			"language",
 			"languages",
 			"countries",
-			"icons",
 			"admNames",
 		]),
 
@@ -162,7 +182,6 @@ export default {
 	},
 
 	async created() {
-		if (!this.icons) await this.fetchIcons();
 		if (!this.admNames?.adm1) await this.fetchAdmNames();
 		this.setTooltip();
 	},
@@ -173,7 +192,6 @@ export default {
 			"storeCountries",
 			"storeLanguage",
 			"storeTranslations",
-			"storeIcons",
 			"storeAdmNames",
 		]),
 
@@ -208,15 +226,6 @@ export default {
 		setTooltip() {
 			this.tooltip.active = !!this.$route.meta?.description;
 			this.tooltip.label = this.$t(this.$route.meta?.description || "");
-		},
-
-		async fetchIcons() {
-			await IconService.getIcons()
-				.then(({ data }) => {
-					this.storeIcons(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Icons")} ${e.message || e}`, "error");
-				});
 		},
 
 		async fetchAdmNames() {

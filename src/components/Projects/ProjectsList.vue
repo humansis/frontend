@@ -15,26 +15,31 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
 		@rowClicked="onGoToDetail"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row.id)"
 			/>
 
 			<ButtonAction
+				v-if="userCan.editProject"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row.id)"
 			/>
 
 			<ButtonAction
+				v-if="userCan.deleteProject"
 				:disabled="!row.deletable"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
 				confirm-title="Deleting Project"
-				confirm-message="Are you sure sure you want to delete Project?"
+				confirm-message="Are you sure you want to delete Project?"
 				prepend-icon="circle-exclamation"
 				prepend-icon-color="red"
 				is-confirm-action
@@ -63,6 +68,7 @@ import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
@@ -78,7 +84,12 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [permissions, grid, baseHelper],
+	mixins: [
+		permissions,
+		grid,
+		baseHelper,
+		identifierBuilder,
+	],
 
 	data() {
 		return {
@@ -90,6 +101,7 @@ export default {
 				types: [EXPORT.PROJECTS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			dataCy: "table",
 			table: {
 				data: [],
 				columns: generateColumns([
@@ -98,7 +110,7 @@ export default {
 					{ key: "sectors", type: "svgIcon", minWidth: "200", sortable: false },
 					{ key: "startDate", type: "date" },
 					{ key: "endDate", type: "date" },
-					{ key: "donors" },
+					{ key: "donors", sortable: false },
 					{ key: "numberOfHouseholds", title: "Registered Households" },
 					{ key: "beneficiariesReached", title: "Registered Individuals" },
 					{ key: "actions", value: "actions", sortable: false },

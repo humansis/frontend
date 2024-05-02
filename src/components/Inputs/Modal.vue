@@ -6,7 +6,10 @@
 	>
 		<v-card>
 			<template v-if="!customHeader">
-				<v-card-title class="text-h6 font-weight-bold">
+				<v-card-title
+					:data-cy="identifierBuilder(`${header}-text`)"
+					class="text-h6 font-weight-bold"
+				>
 					{{ $t(header) }}
 				</v-card-title>
 
@@ -19,8 +22,12 @@
 </template>
 
 <script>
+import identifierBuilder from "@/mixins/identifierBuilder";
+
 export default {
 	name: "Modal",
+
+	mixins: [identifierBuilder],
 
 	props: {
 		header: {
@@ -31,6 +38,11 @@ export default {
 		customHeader: {
 			type: Boolean,
 			default: false,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 };

@@ -2,16 +2,16 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.givenName"
-			label="First Name"
-			name="first-name"
+			label="Local given name"
+			name="local-given-name"
 			disabled
 			class="mb-4"
 		/>
 
 		<DataInput
 			v-model="formModel.familyName"
-			label="Family Name"
-			name="family-name"
+			label="Local family name"
+			name="local-family-name"
 			disabled
 			class="mb-4"
 		/>

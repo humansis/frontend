@@ -11,13 +11,6 @@ import "vuetify/styles/main.sass";
 library.add(fas);
 library.add(far);
 
-const humansisTheme = {
-	dark: false,
-	colors: {
-		primary: "#074f60",
-	},
-};
-
 const vuetify = createVuetify({
 	display: {
 		mobileBreakpoint: "xs",
@@ -33,9 +26,14 @@ const vuetify = createVuetify({
 		},
 	},
 	theme: {
-		defaultTheme: "humansisTheme",
+		defaultTheme: "humansis",
 		themes: {
-			humansisTheme,
+			humansis: {
+				dark: false,
+				colors: {
+					primary: "#074f60",
+				},
+			},
 		},
 	},
 	components,
