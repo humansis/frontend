@@ -36,7 +36,7 @@
 				/>
 
 				<DataInput
-					v-model="formModel.nameLocal.parentsName"
+					v-model.trim="formModel.nameLocal.parentsName"
 					:data-cy="prepareComponentIdentifier()"
 					label="Local parent's name"
 					name="local-parents-name"
@@ -54,7 +54,7 @@
 				</h4>
 
 				<DataInput
-					v-model="formModel.nameEnglish.familyName"
+					v-model.trim="formModel.nameEnglish.familyName"
 					:data-cy="prepareComponentIdentifier()"
 					label="English family name"
 					name="english-family-name"
@@ -63,7 +63,7 @@
 				/>
 
 				<DataInput
-					v-model="formModel.nameEnglish.firstName"
+					v-model.trim="formModel.nameEnglish.firstName"
 					:data-cy="prepareComponentIdentifier()"
 					label="English given name"
 					name="english-given-name"
@@ -72,7 +72,7 @@
 				/>
 
 				<DataInput
-					v-model="formModel.nameEnglish.parentsName"
+					v-model.trim="formModel.nameEnglish.parentsName"
 					:data-cy="prepareComponentIdentifier()"
 					label="English parent's name"
 					name="english-parents-name"

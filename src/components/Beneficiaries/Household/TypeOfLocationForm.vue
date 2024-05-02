@@ -38,7 +38,7 @@
 
 		<DataInput
 			v-else
-			v-model="formModel.campName"
+			v-model.trim="formModel.campName"
 			:error-messages="validationMsg('campName')"
 			:data-cy="prepareComponentIdentifier()"
 			label="Camp name"
@@ -48,7 +48,7 @@
 		/>
 
 		<DataInput
-			v-model="formModel.tentNumber"
+			v-model.trim="formModel.tentNumber"
 			:error-messages="validationMsg('tentNumber')"
 			:data-cy="prepareComponentIdentifier()"
 			label="Tent number"
@@ -60,7 +60,7 @@
 
 	<template v-else>
 		<DataInput
-			v-model="formModel.number"
+			v-model.trim="formModel.number"
 			:error-messages="validationMsg('number')"
 			:optional="!residenceSelected"
 			:data-cy="prepareComponentIdentifier()"
@@ -71,7 +71,7 @@
 		/>
 
 		<DataInput
-			v-model="formModel.street"
+			v-model.trim="formModel.street"
 			:error-messages="validationMsg('street')"
 			:optional="!residenceSelected"
 			:data-cy="prepareComponentIdentifier()"
@@ -82,7 +82,7 @@
 		/>
 
 		<DataInput
-			v-model="formModel.postcode"
+			v-model.trim="formModel.postcode"
 			:error-messages="validationMsg('postcode')"
 			:optional="!residenceSelected"
 			:data-cy="prepareComponentIdentifier()"
