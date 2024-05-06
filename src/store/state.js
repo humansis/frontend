@@ -48,6 +48,7 @@ export default {
 	gridFilters: {
 		households: [],
 		assistanceDetail: [],
+		assistances: [],
 		vouchers: [],
 		distributions: [],
 		purchases: [],

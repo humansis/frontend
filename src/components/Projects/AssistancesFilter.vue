@@ -1,0 +1,74 @@
+<template>
+	<AdvancedFilter
+		ref="advancedFilter"
+		:selected-filters-options="selectedFiltersOptions"
+		:filters-options="filtersOptions"
+		multiline
+		@filtersChanged="onFilterChanged"
+		@search="$emit('search')"
+	/>
+</template>
+
+<script>
+import AdvancedFilter from "@/components/AdvancedFilter";
+import filtersHelper from "@/mixins/filtersHelper";
+import { copyObject } from "@/utils/helpers";
+import { FILTER } from "@/consts";
+
+export default {
+	name: "AssistancesFilter",
+
+	emits: [
+		"search",
+		"filtersChanged",
+	],
+
+	components: { AdvancedFilter },
+
+	mixins: [filtersHelper],
+
+	props: {
+		defaultFilters: {
+			type: Object,
+			default: () => ({
+				dateFrom: FILTER.DEFAULT_FILTERS.DATE_FROM,
+				dateTo: FILTER.DEFAULT_FILTERS.DATE_TO,
+			}),
+		},
+	},
+
+	data() {
+		return {
+			selectedFiltersOptions: copyObject(this.defaultFilters),
+			filtersOptionsCopy: {},
+			filtersOptions: {
+				dateFrom: {
+					name: "Date From",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
+				dateTo: {
+					name: "Date To",
+					placeholder: this.$t("Select Date"),
+					type: "date",
+				},
+			},
+		};
+	},
+
+	methods: {
+		onFilterChanged(filters) {
+			this.$emit("filtersChanged", {
+				filters: {
+					dateFrom: filters.dateFrom
+						? this.$moment(filters.dateFrom).format("YYYY-MM-DD")
+						: FILTER.DEFAULT_FILTERS.DATE_FROM,
+					dateTo: filters.dateTo
+						? this.$moment(filters.dateTo).format("YYYY-MM-DD")
+						: FILTER.DEFAULT_FILTERS.DATE_TO,
+				},
+			});
+		},
+	},
+};
+</script>

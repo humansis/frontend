@@ -24,6 +24,7 @@
 	</v-alert>
 
 	<DataGrid
+		ref="assistancesList"
 		v-show="isAssistanceTableVisible"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -35,55 +36,15 @@
 		:custom-key-sort="customSort"
 		:no-data-text="$t('No data available')"
 		is-row-click-disabled
+		reset-filters-button
 		reset-sort-button
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
 		@search="onSearch"
+		@resetFilters="onResetFilters"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
-		<template v-slot:tableControls>
-			<ExportControl
-				v-if="!upcoming"
-				:disabled="!table.data.length"
-				:available-export-formats="exportControl.formats"
-				:available-export-types="exportControl.types"
-				:is-export-loading="exportControl.loading"
-				:location="exportControl.location"
-				@export="onExportAssistances"
-			/>
-
-			<v-btn
-				:class="filterButtonNew"
-				icon-left="sticky-note"
-				variant="tonal"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('new')"
-			>
-				{{ $t('New') }}
-			</v-btn>
-
-			<v-btn
-				:class="filterButtonValidated"
-				icon-left="spinner"
-				variant="tonal"
-				prepend-icon="spinner"
-				@click="onStatusFilter('validated')"
-			>
-				{{ $t('Validated') }}
-			</v-btn>
-
-			<v-btn
-				:class="filterButtonClosed"
-				icon-left="check"
-				variant="tonal"
-				prepend-icon="check"
-				@click="onStatusFilter('closed')"
-			>
-				{{ $t('Closed') }}
-			</v-btn>
-		</template>
-
 		<template v-if="!upcoming" v-slot:actions="{ row }">
 			<ButtonAction
 				v-if="!row.validated && userCan.editDistribution"
@@ -158,6 +119,73 @@
 				</v-list>
 			</v-menu>
 		</template>
+
+		<template v-slot:tableControls>
+			<ExportControl
+				v-if="!upcoming"
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@export="onExportAssistances"
+			/>
+
+			<v-btn
+				v-if="!upcoming"
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonNew"
+				icon-left="sticky-note"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('new')"
+			>
+				{{ $t('New') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonValidated"
+				icon-left="spinner"
+				variant="tonal"
+				prepend-icon="spinner"
+				@click="onStatusFilter('validated')"
+			>
+				{{ $t('Validated') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonClosed"
+				icon-left="check"
+				variant="tonal"
+				prepend-icon="check"
+				@click="onStatusFilter('closed')"
+			>
+				{{ $t('Closed') }}
+			</v-btn>
+		</template>
+
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="visiblePanels">
+				<v-expansion-panel value="advancedSearch" eager>
+					<v-expansion-panel-text>
+						<AssistancesFilter
+							ref="assistancesFilter"
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</template>
 	</DataGrid>
 </template>
 
@@ -166,9 +194,11 @@ import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
+import AssistancesFilter from "@/components/Projects/AssistancesFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
@@ -190,12 +220,14 @@ export default {
 		ButtonAction,
 		DataGrid,
 		ExportControl,
+		AssistancesFilter,
 	},
 
 	mixins: [
 		permissions,
 		grid,
 		baseHelper,
+		urlFiltersHelper,
 	],
 
 	props: {
@@ -231,13 +263,10 @@ export default {
 				types: [EXPORT.ASSISTANCE_OVERVIEW],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			visiblePanels: [],
 			exportLoading: false,
-			selectedFilters: ["new", "validated"],
-			statusActive: {
-				new: true,
-				validated: true,
-				closed: false,
-			},
+			selectedFilters: [...ASSISTANCE.DEFAULT_SELECTED_STATUS],
+			statusActive: { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS },
 			filters: { states: ["new", "validated"] },
 			isLoadingList: false,
 			table: {
@@ -292,6 +321,10 @@ export default {
 				"text-none ml-3 status closed",
 				{ "is-selected": this.statusActive.closed },
 			];
+		},
+
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
 		},
 
 		isAssistanceDetailAllowed() {
@@ -477,6 +510,10 @@ export default {
 				|| `${Math.trunc(data.progress * 100)} %`;
 		},
 
+		onAdvancedSearchToggle() {
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
+		},
+
 		onGoToDetail(id) {
 			this.$router.push({
 				name: "AssistanceDetail",
@@ -510,13 +547,26 @@ export default {
 				this.selectedFilters.push(filter);
 			}
 
-			this.onFiltersChange({ states: this.selectedFilters });
+			this.onStatusFiltersChange({ states: this.selectedFilters });
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onStatusFiltersChange(selectedFilters) {
+			this.filters = { ...this.filters, ...selectedFilters };
 			this.table.currentPage = 1;
 			await this.fetchData();
+		},
+
+		onResetFilters() {
+			this.resetSearch(
+				{
+					tableRef: "assistancesList",
+					filtersRef: "assistancesFilter",
+				},
+				false,
+			);
+			this.statusActive = { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS };
+			this.selectedFilters = [...ASSISTANCE.DEFAULT_SELECTED_STATUS];
+			this.onStatusFiltersChange({ states: this.selectedFilters });
 		},
 
 		onDuplicate(id) {

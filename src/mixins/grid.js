@@ -129,7 +129,7 @@ export default {
 			this.$emit("statusChange", { id, enabled });
 		},
 
-		resetSearch({ tableRef, filtersRef, bulkSearchRef }) {
+		resetSearch({ tableRef, filtersRef, bulkSearchRef }, isFetchEnabled = true) {
 			const searchValue = this.$refs[tableRef].searchValue() || this.$refs[tableRef].searchPhrase;
 
 			if (filtersRef && this.$refs[filtersRef] && Object.keys(this.filters).length) {
@@ -142,10 +142,12 @@ export default {
 				this.$refs[bulkSearchRef].resetFilters();
 			}
 
-			if (searchValue.length) {
-				this.$refs[tableRef].resetSearch();
-			} else {
-				this.fetchData();
+			if (isFetchEnabled) {
+				if (searchValue.length) {
+					this.$refs[tableRef].resetSearch();
+				} else {
+					this.fetchData();
+				}
 			}
 		},
 

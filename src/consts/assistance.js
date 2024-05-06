@@ -4,6 +4,12 @@ export default {
 		VALIDATED: "validated",
 		CLOSED: "closed",
 	},
+	DEFAULT_SELECTED_STATUS: ["new", "validated"],
+	DEFAULT_SELECTED_STATUS_BUTTONS: {
+		new: true,
+		validated: true,
+		closed: false,
+	},
 	TARGET: {
 		INDIVIDUAL: "individual",
 		HOUSEHOLD: "household",
