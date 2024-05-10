@@ -12,7 +12,6 @@
 <script>
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
-import { copyObject } from "@/utils/helpers";
 import { FILTER } from "@/consts";
 
 export default {
@@ -39,7 +38,7 @@ export default {
 
 	data() {
 		return {
-			selectedFiltersOptions: copyObject(this.defaultFilters),
+			selectedFiltersOptions: { ...this.defaultFilters },
 			filtersOptionsCopy: {},
 			filtersOptions: {
 				dateFrom: {

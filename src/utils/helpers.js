@@ -72,6 +72,7 @@ export const BookletStatusArray = [
 	{ code: "3", value: t("Deactivated") },
 ];
 
+// TODO remove this function in other places and check functionality
 export const copyObject = (obj) => JSON.parse(JSON.stringify(obj));
 
 export const deepEqual = (x, y) => {
