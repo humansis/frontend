@@ -317,6 +317,9 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
+			const modifiedSupportDateReceived = supportDateReceived
+				? this.$moment(supportDateReceived).format("YYYY-MM-DD")
+				: null;
 
 			const householdBody = {
 				iso3: this.country.iso3,
@@ -335,7 +338,7 @@ export default {
 				foodConsumptionScore: foodConsumptionScore || null,
 				copingStrategiesIndex: copingStrategiesIndex || null,
 				debtLevel: debtLevel || null,
-				supportDateReceived: supportDateReceived ? supportDateReceived.toISOString() : null,
+				supportDateReceived: modifiedSupportDateReceived,
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				incomeSpentOnFood: incomeSpentOnFood || null,
