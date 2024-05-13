@@ -167,6 +167,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		targetType: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -330,7 +335,16 @@ export default {
 		},
 
 		prepareDataForCriteria(selectionCriteria) {
-			this.options.criteria = selectionCriteria.sort((a, b) => {
+			this.options.criteria = selectionCriteria;
+
+			if (this.targetType === ASSISTANCE.TARGET.INDIVIDUAL
+				&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.HEAD) {
+				this.options.criteria = this.options.criteria.filter(
+					(criteria) => criteria.code !== ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD,
+				);
+			}
+
+			this.options.criteria = this.options.criteria.sort((a, b) => {
 				const alphaNumericOrder = a.value.localeCompare(b.value, undefined, {
 					numeric: true,
 					sensitivity: "base",
