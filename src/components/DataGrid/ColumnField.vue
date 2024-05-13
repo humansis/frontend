@@ -230,7 +230,7 @@ export default {
 
 		formattedDateTime() {
 			return this.cellData && typeof this.cellData !== "object"
-				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD hh:mm")}`
+				? `${this.$moment.utc(this.cellData).format("YYYY-MM-DD HH:mm")}`
 				: this.$t("N/A");
 		},
 
@@ -240,10 +240,10 @@ export default {
 			}
 
 			if (typeof this.cellData === "object") {
-				const newDate = this.$moment(this.cellData);
+				const newDate = this.$moment.utc(this.cellData);
 
 				if (newDate.isValid()) {
-					return newDate.format("YYYY-MM-DD hh:mm");
+					return newDate.format("YYYY-MM-DD HH:mm");
 				}
 			}
 

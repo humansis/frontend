@@ -120,7 +120,6 @@
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
-					icon-color="primary"
 					label="Show Detail"
 					tooltip-text="Detail"
 					@actionConfirmed="onShowHouseholdDetail(householdId)"

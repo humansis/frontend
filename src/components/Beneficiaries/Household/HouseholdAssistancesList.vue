@@ -59,7 +59,7 @@ export default {
 					{ key: "projectName", title: "Project", type: "link", sortable: false },
 					{ key: "assistanceName", title: "Assistance", type: "link", sortable: false },
 					{ key: "fullLocationNames", title: "Location", sortable: false },
-					{ key: "dateDistribution", title: "Assistance Date", type: "date" },
+					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },
 					{ key: "carrierNumber", title: "Card No.", sortable: false },
 					{ key: "amount", title: "Distributed", sortable: false },
