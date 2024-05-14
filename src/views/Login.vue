@@ -38,8 +38,9 @@ import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
-import UsersService from "@/services/UsersService";
+import usersHelper from "@/mixins/usersHelper";
 import { setCookie } from "@/utils/cookie";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL, ROLE } from "@/consts";
 import gitInfo from "@/gitInfo";
@@ -47,6 +48,8 @@ import { jwtDecode } from "jwt-decode";
 
 export default {
 	name: "LoginPage",
+
+	mixins: [usersHelper],
 
 	data() {
 		return {
@@ -102,9 +105,7 @@ export default {
 
 				const { data, status, message } = await LoginService.keycloakLogin({ token: accessToken });
 
-				if (status !== 200) {
-					throw new Error(message);
-				}
+				checkResponseStatus(status, message);
 
 				const { token, userId } = data;
 
@@ -120,7 +121,7 @@ export default {
 					return;
 				}
 
-				const { data: userDetail } = await UsersService.getDetailOfUser(userId);
+				const userDetail = await this.getDetailOfUser(userId);
 
 				await this.storeAvailableProjects(userDetail.projectIds);
 
@@ -139,7 +140,7 @@ export default {
 					await this.storeLanguage(language);
 				}
 
-				const { data: countries } = await CountriesService.getListOfUsersCountries(userId);
+				const countries = await this.fetchUserCountries(userId);
 
 				if (countries.length) {
 					await this.storeCountries(countries);
@@ -154,8 +155,19 @@ export default {
 				let rolePrivileges = [];
 
 				if (user.roles[0]) {
-					const { data: { privileges } } = await LoginService.getRolePermissions(user.roles[0]);
-					rolePrivileges = privileges;
+					try {
+						const {
+							data: { privileges },
+							status: responseStatus,
+							message: responseMessage,
+						} = await LoginService.getRolePermissions(user.roles[0]);
+
+						checkResponseStatus(responseStatus, responseMessage);
+
+						rolePrivileges = privileges;
+					} catch (e) {
+						Notification(`${this.$t("Permissions")}: ${e.message || e}`, "error");
+					}
 				}
 
 				await this.storePermissions(rolePrivileges);
@@ -184,18 +196,20 @@ export default {
 		async setLocales(languageKey) {
 			if (!this.translations || languageKey !== this.language.key) {
 				try {
-					const { data, status, message } = await TranslationService.getTranslations(languageKey);
+					const {
+						data,
+						status,
+						message,
+					} = await TranslationService.getTranslations(languageKey);
 
-					if (status !== 200) {
-						throw new Error(message);
-					}
+					checkResponseStatus(status, message);
 
 					this.storeTranslations(data);
 					this.$i18n.locale = languageKey;
 					this.$i18n.fallbackLocale = languageKey;
 					this.$root.$i18n.setLocaleMessage(languageKey, data);
 				} catch (e) {
-					Notification(`${this.$t("Translations")} ${e.message || e}`, "warning");
+					Notification(`${this.$t("Translations")}: ${e.message || e}`, "warning");
 				}
 			} else {
 				this.$i18n.locale = languageKey;
@@ -204,13 +218,37 @@ export default {
 			}
 		},
 
+		async fetchUserCountries(userId) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CountriesService.getListOfUsersCountries(userId);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("User countries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
+		},
+
 		async getKeycloakLoginUrl() {
 			try {
-				const { data: { authenticationUrl } } = await LoginService.getKeycloakLoginUrl();
+				const {
+					data: { authenticationUrl },
+					status,
+					message,
+				} = await LoginService.getKeycloakLoginUrl();
+
+				checkResponseStatus(status, message);
 
 				this.keyCloakAuthenticationUrl = authenticationUrl;
 			} catch (e) {
-				Notification(`${this.$t("Keycloak url")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Keycloak url")}: ${e.message || e}`, "error");
 			}
 		},
 

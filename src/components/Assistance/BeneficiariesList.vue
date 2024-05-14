@@ -994,38 +994,57 @@ export default {
 			this.table.data = [];
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.COMMUNITY:
-					await AssistancesService.getListOfCommunities(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== ""
+					try {
+						const sort = this.table.sortColumn !== ""
 							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-							: "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
+							: "";
+
+						const {
+							data: { data, totalCount },
+							status,
+							message,
+						} = await AssistancesService.getListOfCommunities({
+							id: this.$route.params.assistanceId,
+							page: page || this.table.currentPage,
+							size: size || this.perPage,
+							search: this.table.searchPhrase,
+							sort,
+						});
+
+						checkResponseStatus(status, message);
+
 						this.table.data = [];
 						this.table.progress = 0;
 						this.$emit("beneficiariesCounted", totalCount);
 						this.table.total = totalCount;
+
 						if (totalCount > 0) {
 							await this.prepareDataForTable(data);
 						}
-					}).catch((e) => {
-						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
-					});
+					} catch (e) {
+						Notification(`${this.$t("Communities")}: ${e.message || e}`, "error");
+					}
+
 					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					try {
-						const { data: { data, totalCount } } = await AssistancesService
-							.getListOfInstitutions(
-								this.$route.params.assistanceId,
-								page || this.table.currentPage,
-								size || this.perPage,
-								this.table.sortColumn !== ""
-									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-									: "",
-								this.filters,
-							);
+						const sort = this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "";
+						const {
+							data: { data, totalCount },
+							status,
+							message,
+						} = await AssistancesService
+							.getListOfInstitutions({
+								id: this.$route.params.assistanceId,
+								page: page || this.table.currentPage,
+								size: size || this.perPage,
+								filters: this.filters,
+								sort,
+							});
+
+						checkResponseStatus(status, message);
 
 						this.table.data = [];
 						this.table.progress = 0;
@@ -1038,6 +1057,7 @@ export default {
 					} catch (e) {
 						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 					}
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
@@ -1046,18 +1066,25 @@ export default {
 						const search = this.assistanceDetail
 							? { phrase: this.table.searchPhrase, field: this.table.searchField }
 							: this.table.searchPhrase;
+						const sort = this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "";
 
-						const { data: { data, totalCount } } = await AssistancesService
-							.getOptimizedListOfBeneficiaries(
-								this.$route.params.assistanceId,
-								page || this.table.currentPage,
-								size || this.perPage,
-								this.table.sortColumn !== ""
-									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-									: "",
+						const {
+							data: { data, totalCount },
+							status,
+							message,
+						} = await AssistancesService
+							.getOptimizedListOfBeneficiaries({
+								id: this.$route.params.assistanceId,
+								page: page || this.table.currentPage,
+								size: size || this.perPage,
+								filters: this.filters,
+								sort,
 								search,
-								this.filters,
-							);
+							});
+
+						checkResponseStatus(status, message);
 
 						this.table.data = [];
 						this.table.progress = 0;
@@ -1068,7 +1095,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					} catch (e) {
-						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
 					} finally {
 						if (this.assistanceDetail) {
 							this.setGridFiltersToUrl("assistanceDetail", false, {
@@ -1282,13 +1309,14 @@ export default {
 			try {
 				this.isRecalculationLoading = true;
 
-				const { message, status } = await BeneficiariesService.recalculateReliefPackages(
+				const {
+					message,
+					status,
+				} = await BeneficiariesService.recalculateReliefPackages(
 					this.assistance.id,
 				);
 
-				if (status !== 200) {
-					throw new Error(message);
-				}
+				checkResponseStatus(status, message);
 
 				this.$emit("assistanceUpdated");
 				await this.reloadBeneficiariesList();
@@ -1296,7 +1324,7 @@ export default {
 
 				Notification(this.$t("Assistance Successfully Recalculated"), "success");
 			} catch (e) {
-				Notification(`${this.$t("Recalculation")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Recalculation")}: ${e.message || e}`, "error");
 			} finally {
 				this.isRecalculationLoading = false;
 			}
@@ -1342,30 +1370,59 @@ export default {
 		},
 
 		async getCommunities(ids) {
-			return BeneficiariesService.getCommunities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getCommunities(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Communities")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids, filters) {
-			return BeneficiariesService.getBeneficiaries(ids, filters)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaries({
+					ids,
+					filters,
 				});
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async fetchBnfFile3Statistics(bnfFile3ExportId) {
 			try {
-				const { data } = await BeneficiariesService.getBnfFile3ExportStatistics(
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getBnfFile3ExportStatistics(
 					bnfFile3ExportId,
 				);
 
+				checkResponseStatus(status, message);
+
 				this.bnfFile3Statistics = data;
 			} catch (e) {
-				Notification(`${this.$t("BNF File 3 Statistics")} ${e.message || e}`, "error");
+				Notification(`${this.$t("BNF File 3 Statistics")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -1441,57 +1498,71 @@ export default {
 			if (!this.changeButton) {
 				if (exportType === EXPORT.BNF_FILE_3.OPTION_NAME) {
 					try {
-						const { data, status, message } = await BeneficiariesService.exportBnf3File(
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportBnf3File({
+							bnfFile3Id: this.assistance.bnfFile3ExportId,
 							format,
-							this.assistance.bnfFile3ExportId,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("BNF File 3 Export")}: ${e.message || e}`, "error");
 					}
 				} else if (exportType === EXPORT.INSTITUTIONS) {
 					try {
 						const filters = { assistanceId: this.assistance.id };
-						const { data, status, message } = await InstitutionService.exportInstitutions(
+						const {
+							data,
+							status,
+							message,
+						} = await InstitutionService.exportInstitutions({
 							format,
-							null,
 							filters,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Institutions Export")}: ${e.message || e}`, "error");
 					}
 				} else {
 					try {
 						const sort = `${this.table.sortColumn?.sortKey
 							|| this.table.sortColumn}.${this.table.sortDirection}`;
-						const { data, status, message } = await BeneficiariesService
-							.exportAssistanceBeneficiaries(
-								format,
-								this.$route.params.assistanceId,
-								this.table.searchPhrase,
-								{ exportType },
-								sort,
-							);
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportAssistanceBeneficiaries({
+							assistanceId: this.$route.params.assistanceId,
+							search: this.table.searchPhrase,
+							format,
+							exportType,
+							sort,
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Export")}: ${e.message || e}`, "error");
 					}
 				}
 			} else {
 				try {
-					const { data, status, message } = BeneficiariesService.exportBeneficiaries(
+					const {
+						data,
+						status,
+						message,
+					} = await BeneficiariesService.exportBeneficiaries({
+						ids: this.table.data,
+						idsParam: "id",
 						format,
-						this.table.data,
-						"id",
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export")}: ${e.message || e}`, "error");
 				}
 			}
 		},

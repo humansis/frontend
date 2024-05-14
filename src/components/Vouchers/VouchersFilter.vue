@@ -14,6 +14,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { getArrayOfCodeListByParams } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { copyObject } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { CURRENCIES, FILTER } from "@/consts";
@@ -141,15 +142,21 @@ export default {
 		},
 
 		async fetchAssistances() {
-			await AssistancesService.getListOfAssistances()
-				.then(({ data }) => {
-					this.filtersOptions.assistances.data = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfAssistances({});
 
-			this.filtersOptions.assistances.loading = false;
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.assistances.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.assistances.loading = false;
+			}
 		},
 
 		async fetchBeneficiaries(ids) {
@@ -158,19 +165,27 @@ export default {
 				this.filtersOptions.beneficiaries.data = [];
 
 				const promise = ids.map(async (id) => {
-					await AssistancesService.getListOfBeneficiaries(id)
-						.then(({ data }) => {
-							data.forEach((item) => {
-								if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
-									this.filtersOptions.beneficiaries.data.push(item);
-								}
-							});
-						})
-						.catch((e) => {
-							Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+					try {
+						const {
+							data: { data },
+							status,
+							message,
+						} = await AssistancesService.getListOfBeneficiaries(id);
+
+						checkResponseStatus(status, message);
+
+						data.forEach((item) => {
+							if (!this.filtersOptions.beneficiaries.data.some((el) => el.id === item.id)) {
+								this.filtersOptions.beneficiaries.data.push(item);
+							}
 						});
+					} catch (e) {
+						Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+					}
 				});
+
 				await Promise.all(promise);
+
 				this.selectedFiltersOptions
 					.beneficiaries = getArrayOfCodeListByParams(this.selectedFiltersOptions.beneficiaries, this.filtersOptions.beneficiaries.data, "id", "id");
 				this.filtersOptions.beneficiaries.loading = false;

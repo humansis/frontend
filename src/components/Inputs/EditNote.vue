@@ -61,6 +61,7 @@
 import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
 import DataTextarea from "@/components/Inputs/DataTextarea";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -119,18 +120,21 @@ export default {
 				note: this.note,
 			};
 
-			await AssistancesService.updateAssistanceNote(
-				updateData,
-			)
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Note Successfully Updated"), "success");
-						this.edit = false;
-					}
-					this.assistance.note = this.note;
-				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.updateAssistanceNote(updateData);
+
+				this.assistance.note = this.note;
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Note Successfully Updated"), "success");
+				this.edit = false;
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}> ${e.message || e}`, "error");
+			}
 		},
 
 		onDiscardNoteChanges() {

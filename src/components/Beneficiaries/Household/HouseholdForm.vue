@@ -254,6 +254,7 @@ import customFieldsHelper from "@/mixins/customFieldsHelper";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import getters from "@/store/getters";
 
@@ -425,38 +426,73 @@ export default {
 		},
 
 		async fetchSupportReceivedTypes() {
-			await BeneficiariesService.getSupportReceivedTypes()
-				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getSupportReceivedTypes();
+
+				checkResponseStatus(status, message);
+
+				this.options.externalSupportReceivedType = data;
+			} catch (e) {
+				Notification(`${this.$t("Support Received Types")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchLivelihoods() {
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => { this.options.livelihood = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
-				});
-			this.livelihoodLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLivelihoods();
+
+				checkResponseStatus(status, message);
+
+				this.options.livelihood = data;
+			} catch (e) {
+				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
+			} finally {
+				this.livelihoodLoading = false;
+			}
 		},
 
 		async fetchAssets() {
-			await BeneficiariesService.getListOfAssets()
-				.then(({ data }) => { this.options.assets = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Assets")} ${e.message || e}`, "error");
-				});
-			this.assetsLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfAssets();
+
+				checkResponseStatus(status, message);
+
+				this.options.assets = data;
+			} catch (e) {
+				Notification(`${this.$t("Assets")}: ${e.message || e}`, "error");
+			} finally {
+				this.assetsLoading = false;
+			}
 		},
 
 		async fetchShelterStatuses() {
-			await BeneficiariesService.getListOfShelterStatuses()
-				.then(({ data }) => { this.options.shelterStatuses = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
-				});
-			this.shelterStatusLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfShelterStatuses();
+
+				checkResponseStatus(status, message);
+
+				this.options.shelterStatuses = data;
+			} catch (e) {
+				Notification(`${this.$t("Shelter Status")}: ${e.message || e}`, "error");
+			} finally {
+				this.shelterStatusLoading = false;
+			}
 		},
 
 		submit() {

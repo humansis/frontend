@@ -498,11 +498,17 @@ export default {
 		async fetchSectors() {
 			try {
 				this.sectorsLoading = true;
-				const { data } = await SectorsService.getListOfSectors();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getListOfSectors();
+
+				checkResponseStatus(status, message);
 
 				this.options.sectors = data;
 			} catch (e) {
-				Notification(`${this.$t("Sectors")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Sectors")}: ${e.message || e}`, "error");
 			} finally {
 				this.sectorsLoading = false;
 			}
@@ -511,13 +517,20 @@ export default {
 		async fetchSubSectors() {
 			try {
 				this.subSectorsLoading = true;
-				const { data: { data } } = await SectorsService.getFilteredListOfSubSectors();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getFilteredListOfSubSectors();
+
+				checkResponseStatus(status, message);
 
 				this.options.allSubSectors = data;
 				this.filterSubSectors();
 				this.getSectorsWithoutSelectedSubSector();
 			} catch (e) {
-				Notification(`${this.$t("SubSectors")} ${e.message || e}`, "error");
+				Notification(`${this.$t("SubSectors")}: ${e.message || e}`, "error");
 			} finally {
 				this.subSectorsLoading = false;
 			}
@@ -526,11 +539,18 @@ export default {
 		async fetchDonors() {
 			try {
 				this.donorsLoading = true;
-				const { data } = await DonorService.getListOfDonors();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await DonorService.getListOfDonors({});
+
+				checkResponseStatus(status, message);
 
 				this.options.donors = data;
 			} catch (e) {
-				Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Donors")}: ${e.message || e}`, "error");
 			} finally {
 				this.donorsLoading = false;
 			}
@@ -538,34 +558,47 @@ export default {
 
 		async fetchTargets() {
 			try {
-				const { data } = await AssistancesService.getTargetTypes();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTargetTypes();
+
+				checkResponseStatus(status, message);
 
 				this.options.targetTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Target Types")} :${e.message || e}`, "error");
 			}
 		},
 
 		async fetchProject() {
 			try {
-				const { data } = await ProjectService.getDetailOfProject(this.$route.params.projectId);
+				const {
+					data,
+					status,
+					message,
+				} = await ProjectService.getDetailOfProject(this.$route.params.projectId);
+
+				checkResponseStatus(status, message);
 
 				this.mapToFormModel(data);
 			} catch (e) {
-				Notification(`${this.$t("Project Detail")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Project Detail")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async createProject(projectBody) {
 			try {
-				const { status, message } = await ProjectService.createProject(projectBody);
+				const {
+					status,
+					message,
+				} = await ProjectService.createProject(projectBody);
 
-				if (status === 200) {
-					Notification(this.$t("Project Successfully Created"), "success");
-					await this.$router.push({ name: "Projects" });
-				} else {
-					Notification(message, "error");
-				}
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Project Successfully Created"), "success");
+				await this.$router.push({ name: "Projects" });
 			} catch (e) {
 				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 			}
@@ -573,24 +606,36 @@ export default {
 
 		async updateProject(id, projectBody) {
 			try {
-				const { status, message } = await ProjectService.updateProject(id, projectBody);
+				const {
+					status,
+					message,
+				} = await ProjectService.updateProject({
+					body: projectBody,
+					id,
+				});
 
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Project Successfully Updated"), "success");
 				this.$router.push({ name: "Projects" });
 			} catch (e) {
-				Notification(`${this.$t("Project:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async fetchModalityTypes() {
 			try {
-				const { data } = await AssistancesService.getListOfAllModalityTypes();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfAllModalityTypes();
+
+				checkResponseStatus(status, message);
 
 				this.editableTableColumns[OPTIONS_FOR_COLUMN_INDEX.MODALITY_TYPE].options = data;
 			} catch (e) {
-				Notification(`${this.$t("Modality Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Modality Types")}: ${e.message || e}`, "error");
 			}
 		},
 

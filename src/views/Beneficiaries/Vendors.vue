@@ -60,6 +60,8 @@ import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import usersHelper from "@/mixins/usersHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -72,7 +74,7 @@ export default {
 		VendorForm,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, usersHelper],
 
 	data() {
 		return {
@@ -224,7 +226,7 @@ export default {
 				canDoRemoteDistributions,
 			},
 		) {
-			const { data } = await UsersService.getDetailOfUser(userId);
+			const user = await this.getDetailOfUser(userId);
 
 			const categoryType = [];
 
@@ -244,7 +246,7 @@ export default {
 				...this.vendorModel,
 				id,
 				shop,
-				username: data.username,
+				username: user.username,
 				name,
 				categoryType,
 				addressStreet,
@@ -255,7 +257,7 @@ export default {
 				adm3Id,
 				adm4Id,
 				userId,
-				user: data,
+				user,
 				vendorNo,
 				contractNo,
 				canDoRemoteDistributions,
@@ -315,56 +317,85 @@ export default {
 		},
 
 		async createVendor(userBody, vendorBody) {
-			await UsersService.createUser(userBody)
-				.then(async (userResponse) => {
-					if (userResponse?.status === 200) {
-						const body = vendorBody;
-						body.userId = userResponse.data.id;
-						await VendorService.createVendor(body)
-							.then((vendorResponse) => {
-								if (vendorResponse.status === 200) {
-									Notification(this.$t("Vendor Successfully Created"), "success");
-									this.$refs.vendorsList.fetchData();
-									this.onCloseVendorModal();
-								}
-							}).catch((e) => {
-								Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
-							});
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("User")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await UsersService.createUser(userBody);
+
+				checkResponseStatus(status, message);
+
+				try {
+					const body = vendorBody;
+					body.userId = data.id;
+
+					const {
+						status: vendorStatus,
+						message: vendorMessage,
+					} = await VendorService.createVendor(body);
+
+					checkResponseStatus(vendorStatus, vendorMessage);
+
+					Notification(this.$t("Vendor Successfully Created"), "success");
+					await this.$refs.vendorsList.fetchData();
+					this.onCloseVendorModal();
+				} catch (e) {
+					Notification(`${this.$t("Vendor")}: ${e.message || e}`, "error");
+				}
+			} catch (e) {
+				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async updateVendor(id, userBody, vendorBody) {
-			await UsersService.updateUser(userBody.id, userBody)
-				.then(async (userResponse) => {
-					if (userResponse.status === 200) {
-						await VendorService.updateVendor(id, vendorBody).then((vendorResponse) => {
-							if (vendorResponse.status === 200) {
-								Notification(this.$t("Vendor Successfully Updated"), "success");
-								this.$refs.vendorsList.fetchData();
-								this.onCloseVendorModal();
-							}
-						}).catch((e) => {
-							Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
-						});
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("User")} ${e.message || e}`, "error");
+			try {
+				const {
+					status,
+					message,
+				} = await UsersService.updateUser({
+					id: userBody.id,
+					body: userBody,
 				});
+
+				checkResponseStatus(status, message);
+
+				try {
+					const {
+						status: vendorStatus,
+						message: vendorMessage,
+					} = await VendorService.updateVendor({
+						body: vendorBody,
+						id,
+					});
+
+					checkResponseStatus(vendorStatus, vendorMessage);
+
+					Notification(this.$t("Vendor Successfully Updated"), "success");
+					await this.$refs.vendorsList.fetchData();
+					this.onCloseVendorModal();
+				} catch (e) {
+					Notification(`${this.$t("Vendor")}: ${e.message || e}`, "error");
+				}
+			} catch (e) {
+				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onVendorRemove(id) {
-			await VendorService.deleteVendor(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("Vendor Successfully Deleted"), "success");
-					this.$refs.vendorsList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Vendor")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await VendorService.deleteVendor(id);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Vendor Successfully Deleted"), "success");
+				this.$refs.vendorsList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Vendor")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

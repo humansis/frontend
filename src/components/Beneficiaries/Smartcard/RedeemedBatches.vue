@@ -24,6 +24,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 const customSort = {
@@ -85,17 +86,24 @@ export default {
 
 	methods: {
 		async fetchBatches() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await SmartcardService.getSmartcardRedemptionBatches([this.vendorId])
-				.then(({ data, totalCount }) => {
-					this.table.total = totalCount;
-					this.prepareDataForTable(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Batches")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await SmartcardService.getSmartcardRedemptionBatches([this.vendorId]);
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.total = totalCount;
+				this.prepareDataForTable(data);
+			} catch (e) {
+				Notification(`${this.$t("Batches")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {

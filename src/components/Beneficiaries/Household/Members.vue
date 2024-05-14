@@ -112,7 +112,7 @@ export default {
 			const promises = [];
 			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
 				if (this.detailOfHousehold.householdHeadId !== id) {
-					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then((data) => {
+					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then(({ data }) => {
 						this.members.push(data);
 					});
 					promises.push(beneficiaryPromise);

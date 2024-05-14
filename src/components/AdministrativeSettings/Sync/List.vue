@@ -30,6 +30,7 @@ import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -73,24 +74,37 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await SyncService.getListOfSync(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, totalCount }) => {
+				const sort = this.table.sortColumn !== ""
+					? `${this.table.sortColumn}.${this.table.sortDirection}`
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await SyncService.getListOfSync({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 
-				if (data?.length) this.prepareDataForTable(data);
-			}).catch((e) => {
-				Notification(`${this.$t("Sync list")} ${e.message || e}`, "error");
-			});
-
-			this.isLoadingList = false;
+				if (data?.length) {
+					await this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Sync list")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		async prepareDataForTable(data) {
@@ -155,19 +169,42 @@ export default {
 
 		async getUsers(ids) {
 			if (!ids?.length) return [];
-			return UsersService.getListOfUsers(null, null, null, null, ids, "userId")
-				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("Users list")} ${e.message || e}`, "error");
+
+			try {
+				const { data: { data }, status, message } = await UsersService.getListOfUsers({
+					ids,
+					idsParam: "userId",
+					filters: { showVendors: true },
 				});
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Users list")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
-			return VendorService.getListOfVendors(null, null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await VendorService.getListOfVendors({ ids });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Vendors")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		resetFilters() {

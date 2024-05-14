@@ -224,6 +224,7 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -403,13 +404,19 @@ export default {
 
 	methods: {
 		async fetchSubsectors() {
-			await SectorsService.getListOfSubSectors(this.formModel.sector)
-				.then(({ data }) => {
-					this.findSubsectorName(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getListOfSubSectors(this.formModel.sector);
+
+				checkResponseStatus(status, message);
+
+				this.findSubsectorName(data);
+			} catch (e) {
+				Notification(`${this.$t("Subsectors")}: ${e.message || e}`, "error");
+			}
 		},
 
 		findSubsectorName(data) {

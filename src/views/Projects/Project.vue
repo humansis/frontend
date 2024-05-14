@@ -139,33 +139,39 @@ export default {
 		},
 
 		async getListOfProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filterProjects(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
+
+				this.filterProjects(data);
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onMoveAssistance({ id }) {
-			await AssistancesService.moveAssistance(
-				this.assistance.id,
-				this.project.id,
-				id,
-			)
-				.then((response) => {
-					if (response.status === 202) {
-						Notification(this.$t("Assistance Successfully Moved"), "success");
-						this.$refs.assistancesList.fetchData();
-					}
-
-					if (response.status === 400) {
-						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
-							|| `${this.$t("Error code 400")}`, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.moveAssistance({
+					assistanceId: this.assistance.id,
+					originalProjectId: this.project.id,
+					targetProjectId: id,
 				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Assistance Successfully Moved"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
+			}
 		},
 
 		async onEditAssistance(
@@ -186,6 +192,7 @@ export default {
 			const formattedDateExpiration = dateExpiration
 				? this.$moment(dateExpiration).format("YYYY-MM-DD")
 				: null;
+
 			const assistanceBody = {
 				name,
 				round,
@@ -200,29 +207,33 @@ export default {
 				const {
 					status,
 					message,
-				} = await AssistancesService.updateAssistance(
-					id,
-					assistanceBody,
-				);
+				} = await AssistancesService.updateAssistance({
+					id, assistanceBody,
+				});
 
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Assistance Successfully Updated"), "success");
 				await this.$refs.assistancesList.fetchData();
 			} catch (e) {
-				Notification(`${this.$t("Assistance")} ${e.message || e}:`, "error");
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async onRemoveAssistance(id) {
-			await AssistancesService.removeAssistance(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("Assistance Successfully Deleted"), "success");
-					this.$refs.assistancesList.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.removeAssistance(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Assistance Successfully Deleted"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onShowEdit(assistance) {

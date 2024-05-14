@@ -1,6 +1,7 @@
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -10,48 +11,97 @@ export default {
 	mixins: [institutionHelper],
 
 	methods: {
-		getTransactions(transactionIds) {
-			return AssistancesService
-				.getTransactionsForAssistance(
-					transactionIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
-				});
+		async getTransactions(transactionIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTransactionsForAssistance(transactionIds);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Transactions")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getTransactionStatuses() {
-			return AssistancesService
-				.getTransactionStatuses().then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Transaction Statuses")} ${e.message || e}`, "error");
-				});
+		async getTransactionStatuses() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTransactionStatuses();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Transaction Statuses")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getSmartCardDeposits(smartcardDepositIds) {
-			return AssistancesService
-				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Smartcard Deposit")} ${e.message || e}`, "error");
-				});
+		async getSmartCardDeposits(smartcardDepositIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getSmartCardDepositsForAssistance(smartcardDepositIds);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Smartcard Deposit")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getBooklets(bookletIds) {
-			return AssistancesService
-				.getBookletsForAssistance(
-					bookletIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Booklets")} ${e.message || e}`, "error");
-				});
+		async getBooklets(bookletIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService
+					.getBookletsForAssistance(
+						bookletIds,
+					);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Booklets")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getBookletStatuses() {
-			return AssistancesService
-				.getBookletStatuses().then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Booklet Statuses")} ${e.message || e}`, "error");
-				});
+		async getBookletStatuses() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getBookletStatuses();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Booklet Statuses")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async onAssignBookletToBeneficiary(booklet) {
@@ -71,28 +121,31 @@ export default {
 					target = "beneficiaries";
 			}
 
-			await AssistancesService.assignBookletInAssistance(
-				this.$route.params.assistanceId,
-				target,
-				booklet.beneficiaryId,
-				booklet.code,
-			).then(({ status }) => {
-				if (status === 200) {
-					Notification(
-						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
-						"success",
-					);
-					this.onCloseAssignVoucherModal();
-				}
-			}).catch((e) => {
+			try {
+				const { status, message } = await AssistancesService.assignBookletInAssistance({
+					assistanceId: this.$route.params.assistanceId,
+					beneficiaryId: booklet.beneficiaryId,
+					bookletCode: booklet.code,
+					target,
+				});
+
+				checkResponseStatus(status, message);
+
 				Notification(
-					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e.message || e}`,
+					`${this.$t("Success for Beneficiary")}: ${booklet.beneficiaryId}`,
+					"success",
+				);
+
+				this.onCloseAssignVoucherModal();
+			} catch (e) {
+				Notification(
+					`${this.$t("Error for Beneficiary")}: ${booklet.beneficiaryId} ${e.message || e}`,
 					"error",
 				);
 				this.onCloseAssignVoucherModal();
-			});
-
-			this.assignVoucherModal.isWaiting = false;
+			} finally {
+				this.assignVoucherModal.isWaiting = false;
+			}
 		},
 
 		setAssignedReliefPackages() {
@@ -110,15 +163,26 @@ export default {
 			this.table.progress = 100;
 		},
 
-		getReliefPackages(reliefPackageIds) {
-			return AssistancesService
-				.getReliefPackagesForAssistance(
-					this.$route.params.assistanceId,
-					reliefPackageIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Relief Packages")} ${e.message || e}`, "error");
-				});
+		async getReliefPackages(reliefPackageIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService
+					.getReliefPackagesForAssistance(
+						this.$route.params.assistanceId,
+						reliefPackageIds,
+					);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Relief Packages")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		preparePhoneForTable(phones) {
@@ -141,11 +205,19 @@ export default {
 		},
 
 		async getAssistanceCommodities() {
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodities = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId);
+
+				checkResponseStatus(status, message);
+
+				this.commodities = data;
+			} catch (e) {
+				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onOpenAssignVoucherModal(id, canAssignVoucher) {
@@ -221,12 +293,22 @@ export default {
 					this.fetchInstitutionTypes(),
 				]);
 
-				const institution = await BeneficiariesService.getInstitution(
-					detailedInstitution.institution.id,
-					{ includeArchived: true },
-				);
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await BeneficiariesService.getInstitution({
+						id: detailedInstitution.institution.id,
+						filters: { includeArchived: true },
+					});
 
-				this.institutionModel = this.mapToModel(institution);
+					checkResponseStatus(status, message);
+
+					this.institutionModel = this.mapToModel(data);
+				} catch (e) {
+					Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
+				}
 			} catch (e) {
 				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "error");
 			} finally {

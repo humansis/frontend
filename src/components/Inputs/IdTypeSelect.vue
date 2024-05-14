@@ -16,6 +16,7 @@ import { requiredIf } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -82,11 +83,19 @@ export default {
 
 	methods: {
 		async fetchNationalCardTypes() {
-			return BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.idType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				checkResponseStatus(status, message);
+
+				this.options.idType = data;
+			} catch (e) {
+				Notification(`${this.$t("National IDs")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onSubmit() {

@@ -58,6 +58,7 @@ import LocationsService from "@/services/LocationsService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -186,13 +187,19 @@ export default {
 		},
 
 		async fetchLocation(id) {
-			await LocationsService.getLocation(id)
-				.then((data) => {
-					this.criteriaLocation = data?.code;
-				})
-				.catch((e) => {
-					Notification(`Location ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await LocationsService.getLocation(id);
+
+				checkResponseStatus(status, message);
+
+				this.criteriaLocation = data?.code;
+			} catch (e) {
+				Notification(`${this.$t("Location")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onRemove(index) {

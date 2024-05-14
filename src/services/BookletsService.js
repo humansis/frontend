@@ -1,57 +1,45 @@
-import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfBooklets(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `booklets?${pageText + sizeText + sortText + fulltext + filtersUri}`,
+	getListOfBooklets({ page, size, sort, search, filters }) {
+		return fetcher({
+			uri: `booklets${queryBuilder({ page, size, sort, search, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async createBooklet(body) {
-		const { data, status } = await fetcher({
-			uri: "booklets/batches", method: "POST", body,
+	createBooklet(body) {
+		return fetcher({
+			uri: "booklets/batches",
+			method: "POST",
+			body,
 		});
-		return { data, status };
 	},
 
-	async updateBooklet(body, id) {
-		const { data, status } = await fetcher({
-			uri: `booklets/${id}`, method: "PUT", body,
-		});
-		return { data, status };
-	},
-
-	async getDetailOfBooklet(id) {
-		const { data: { data, totalCount } } = await fetcher({
+	updateBooklet({ body, id }) {
+		return fetcher({
 			uri: `booklets/${id}`,
+			method: "PUT",
+			body,
 		});
-		return { data, totalCount };
 	},
 
-	async removeBooklet(id) {
-		const { data, status } = await fetcher({
-			uri: `booklets/${id}`, method: "DELETE",
+	removeBooklet(id) {
+		return fetcher({
+			uri: `booklets/${id}`,
+			method: "DELETE",
 		});
-		return { data, status };
 	},
 
-	async exportBooklets(format, ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const formatText = format ? `type=${format}` : "";
-		return download({ uri: `booklets/exports?${formatText + idsText}` });
+	exportBooklets({ format, ids }) {
+		return download({
+			uri: `booklets/exports${queryBuilder({ format, ids })}`,
+		});
 	},
 
-	async exportQRVouchers(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		return download({ uri: `booklets/prints?${idsText}` });
+	exportQRVouchers(ids) {
+		return download({
+			uri: `booklets/prints${queryBuilder({ ids })}`,
+		});
 	},
 };
